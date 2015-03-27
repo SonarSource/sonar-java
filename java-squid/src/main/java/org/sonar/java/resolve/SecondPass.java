@@ -86,27 +86,8 @@ public class SecondPass implements JavaSymbol.Completer {
     ClassTree tree = symbol.declaration;
     completeTypeParameters(tree.typeParameters(), env);
 
-    //Superclass
-    Tree superClassTree = tree.superClass();
-    if (superClassTree != null) {
-      type.supertype = resolveType(env, superClassTree);
-      checkHierarchyCycles(symbol.type);
-    } else if (tree.is(Tree.Kind.ENUM)) {
-      // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
-      Scope enumParameters = ((JavaSymbol.TypeJavaSymbol) symbols.enumType.symbol()).typeParameters();
-      JavaType.TypeVariableJavaType enumParameter = (JavaType.TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
-      type.supertype = parametrizedTypeCache.getParametrizedTypeType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, type));
-    } else if (tree.is(Tree.Kind.CLASS)) {
-      // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
-      // the type given in the extends clause of the declaration of C
-      // if an extends clause is present, or Object otherwise.
-      type.supertype = symbols.objectType;
-    } else if(tree.is(Tree.Kind.INTERFACE)) {
-      // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are
-      // extensions.
-      // but we can call object method on any interface type.
-      type.supertype = symbols.objectType;
-    }
+    populateSuperclass(symbol, env, type);
+
     if ((symbol.flags() & Flags.INTERFACE) == 0) {
       symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
     }
@@ -127,6 +108,30 @@ public class SecondPass implements JavaSymbol.Completer {
     }
 
     type.interfaces = interfaces.build();
+  }
+
+  private void populateSuperclass(JavaSymbol.TypeJavaSymbol symbol, Resolve.Env env, JavaType.ClassJavaType type) {
+    ClassTree tree = symbol.declaration;
+    Tree superClassTree = tree.superClass();
+    if (superClassTree != null) {
+      type.supertype = resolveType(env, superClassTree);
+      checkHierarchyCycles(symbol.type);
+    } else if (tree.is(Tree.Kind.ENUM)) {
+      // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
+      Scope enumParameters = ((JavaSymbol.TypeJavaSymbol) symbols.enumType.symbol()).typeParameters();
+      JavaType.TypeVariableJavaType enumParameter = (JavaType.TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
+      type.supertype = parametrizedTypeCache.getParametrizedTypeType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, type));
+    } else if (tree.is(Tree.Kind.CLASS)) {
+      // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
+      // the type given in the extends clause of the declaration of C
+      // if an extends clause is present, or Object otherwise.
+      type.supertype = symbols.objectType;
+    } else if(tree.is(Tree.Kind.INTERFACE)) {
+      // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are
+      // extensions.
+      // but we can call object method on any interface type.
+      type.supertype = symbols.objectType;
+    }
   }
 
   private void completeTypeParameters(TypeParameters typeParameters, Resolve.Env env) {
