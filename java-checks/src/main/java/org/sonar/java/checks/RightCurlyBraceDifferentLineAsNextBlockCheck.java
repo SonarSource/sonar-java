@@ -26,6 +26,7 @@ import com.sonar.sslr.api.Token;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.checks.SquidCheck;
@@ -40,7 +41,7 @@ import java.util.Set;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
+public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor, JavaCheck {
 
   private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(
       "else",

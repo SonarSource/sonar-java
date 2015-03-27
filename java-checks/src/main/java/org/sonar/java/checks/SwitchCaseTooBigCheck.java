@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -42,7 +43,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> {
+public class SwitchCaseTooBigCheck extends SquidCheck<LexerlessGrammar> implements JavaCheck {
 
   private static final int DEFAULT_MAX = 5;
 

@@ -26,14 +26,14 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
 
-public abstract class BytecodeVisitor implements CodeVisitor {
+public abstract class BytecodeVisitor implements JavaCheck {
 
   SquidIndex index;
   JavaResourceLocator javaResourceLocator;

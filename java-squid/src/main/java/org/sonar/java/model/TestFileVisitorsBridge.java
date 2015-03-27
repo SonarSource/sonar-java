@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -28,7 +29,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
@@ -70,17 +70,17 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
     }
 
     @Override
-    public void addIssue(Tree tree, CodeVisitor codeVisitor, String message) {
+    public void addIssue(Tree tree, JavaCheck javaCheck, String message) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addIssueOnFile(CodeVisitor codeVisitor, String message) {
+    public void addIssueOnFile(JavaCheck javaCheck, String message) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public void addIssue(int line, CodeVisitor codeVisitor, String message) {
+    public void addIssue(int line, JavaCheck javaCheck, String message) {
       throw new UnsupportedOperationException();
     }
 

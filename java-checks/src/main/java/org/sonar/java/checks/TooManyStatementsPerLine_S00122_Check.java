@@ -28,6 +28,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaLexer;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -46,7 +47,7 @@ import java.util.Map;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessGrammar> {
+public class TooManyStatementsPerLine_S00122_Check extends SquidCheck<LexerlessGrammar> implements JavaCheck {
 
   private static final AstNodeType[] STATEMENTS_KINDS = new ImmutableList.Builder<AstNodeType>()
     .add(

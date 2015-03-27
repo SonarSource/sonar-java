@@ -48,7 +48,6 @@ import java.util.List;
 public class TabCharacter_S00105_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private Charset charset;
-
   @Override
   public void setCharset(Charset charset) {
     this.charset = charset;

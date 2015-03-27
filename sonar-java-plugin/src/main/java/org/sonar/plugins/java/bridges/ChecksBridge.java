@@ -32,6 +32,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.ActiveRule;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.PackageInfoCheck;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
@@ -41,12 +42,12 @@ import java.util.Set;
 
 public class ChecksBridge {
 
-  private final Checks<CodeVisitor> checks;
+  private final Checks<JavaCheck> checks;
   private final ResourcePerspectives resourcePerspectives;
   private final RulesProfile rulesProfile;
   private Set<Directory> dirsWithoutPackageInfo;
 
-  public ChecksBridge(Checks<CodeVisitor> checks, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
+  public ChecksBridge(Checks<JavaCheck> checks, ResourcePerspectives resourcePerspectives, RulesProfile rulesProfile) {
     this.checks = checks;
     this.resourcePerspectives = resourcePerspectives;
     this.rulesProfile = rulesProfile;
@@ -64,7 +65,7 @@ public class ChecksBridge {
             // VisitorsBridge uses RuleKey
             ruleKey = (RuleKey) check;
           } else {
-            ruleKey = checks.ruleKey((CodeVisitor) checkMessage.getCheck());
+            ruleKey = checks.ruleKey((JavaCheck) checkMessage.getCheck());
           }
           if (ruleKey != null) {
             Issue issue = issuable.newIssueBuilder()

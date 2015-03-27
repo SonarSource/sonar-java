@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -41,7 +42,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar> {
+public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar> implements JavaCheck {
 
   @Override
   public void init() {

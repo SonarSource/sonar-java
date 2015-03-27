@@ -33,9 +33,9 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.bridges.ChecksBridge;
 import org.sonar.plugins.java.bridges.DesignBridge;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 public class Bridges {
@@ -50,7 +50,7 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, Checks<CodeVisitor> checks, ResourceMapping resourceMapping,
+  public void save(SensorContext context, Project project, Checks<JavaCheck> checks, ResourceMapping resourceMapping,
     ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter, RulesProfile rulesProfile) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design

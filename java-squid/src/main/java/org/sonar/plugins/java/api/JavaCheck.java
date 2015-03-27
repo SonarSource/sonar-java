@@ -19,11 +19,7 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
+import org.sonar.squidbridge.api.CodeVisitor;
 
-@Beta
-public interface JavaFileScanner extends JavaCheck {
-
-  void scanFile(JavaFileScannerContext context);
-
+public interface JavaCheck extends CodeVisitor{
 }

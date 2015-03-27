@@ -31,6 +31,7 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -39,7 +40,6 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
@@ -169,21 +169,20 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
 
     @Override
-    public void addIssue(Tree tree, Object codeVisitor, String message) {
-      addIssue(((JavaTree) tree).getLine(), codeVisitor, message);
+    public void addIssue(Tree tree, JavaCheck javaCheck, String message) {
+      addIssue(((JavaTree) tree).getLine(), javaCheck, message);
     }
 
     @Override
-    public void addIssueOnFile(Object codeVisitor, String message) {
-      addIssue(-1, codeVisitor, message);
+    public void addIssueOnFile(JavaCheck javaCheck, String message) {
+      addIssue(-1, javaCheck, message);
     }
 
     @Override
-    public void addIssue(int line, Object codeVisitor, String message) {
-      Preconditions.checkNotNull(codeVisitor);
-      Preconditions.checkArgument(codeVisitor instanceof CodeVisitor);
+    public void addIssue(int line, JavaCheck javaCheck, String message) {
+      Preconditions.checkNotNull(javaCheck);
       Preconditions.checkNotNull(message);
-      CheckMessage checkMessage = new CheckMessage(codeVisitor, message);
+      CheckMessage checkMessage = new CheckMessage(javaCheck, message);
       if (line > 0) {
         checkMessage.setLine(line);
       }

@@ -35,11 +35,11 @@ public interface JavaFileScannerContext {
 
   CompilationUnitTree getTree();
 
-  void addIssue(Tree tree, Object check, String message);
+  void addIssue(Tree tree, JavaCheck check, String message);
 
-  void addIssueOnFile(Object check, String message);
+  void addIssueOnFile(JavaCheck check, String message);
 
-  void addIssue(int line, Object check, String message);
+  void addIssue(int line, JavaCheck check, String message);
 
   void addIssue(Tree tree, CheckMessage checkMessage);
 

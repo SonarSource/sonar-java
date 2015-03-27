@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaLexer;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -38,7 +39,7 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
+public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> implements JavaCheck {
 
   @Override
   public void init() {
