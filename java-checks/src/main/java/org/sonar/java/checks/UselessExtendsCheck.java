@@ -49,7 +49,7 @@ import java.util.Set;
 @SqaleConstantRemediation("1min")
 public class UselessExtendsCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
 
-  private final String ERROR_MESSAGE = "\"%s\" is listed multiple times.";
+  private static final String ERROR_MESSAGE = "\"%s\" is listed multiple times.";
 
   @Override
   public List<Kind> nodesToVisit() {
