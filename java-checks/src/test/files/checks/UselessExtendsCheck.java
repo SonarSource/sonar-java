@@ -25,7 +25,15 @@ extends java.lang.Object // Noncompliant
 implements I2 {
 }
 
-class Class4 extends UnknownClass implements UnknownInterface { // Compliant
+class Class4 extends UnknownClass1 implements UnknownInterface1, UnknownInterface2 { // Compliant
+}
+
+class Class5 extends UnknownClass1 implements UnknownInterface,
+UnknownInterface, // Noncompliant
+java.io.UnknownInterface,
+java.io.UnknownInterface, // Noncompliant
+UnknownParametrized<Unknown>,
+UnknownParametrized<Unknown> { // Noncompliant
 }
 
 interface I1 {

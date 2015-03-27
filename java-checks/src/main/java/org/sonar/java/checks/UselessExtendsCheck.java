@@ -23,9 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -53,31 +57,54 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    TypeTree superClass = classTree.superClass();
-    if (superClass != null && superClass.symbolType().is("java.lang.Object")) {
-      super.addIssue(superClass, "\"Object\" should not be explicitly extended.");
+    TypeTree superClassTree = classTree.superClass();
+    if (superClassTree != null && superClassTree.symbolType().is("java.lang.Object")) {
+      addIssue(superClassTree, "\"Object\" should not be explicitly extended.");
     }
     Set<Type> interfaces = new HashSet<>();
-    for (TypeTree superInterface : classTree.superInterfaces()) {
-      Type interfaceType = superInterface.symbolType();
-      String interfaceName = interfaceType.fullyQualifiedName();
-      if (interfaces.contains(interfaceType)) {
-        super.addIssue(superInterface, String.format("\"%s\" is listed multiple times.", interfaceName));
+    for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
+      Type interfaceType = superInterfaceTree.symbolType();
+      if (interfaceType.isClass()) {
+        String interfaceName = interfaceType.fullyQualifiedName();
+        if (interfaces.contains(interfaceType)) {
+          addIssue(superInterfaceTree, String.format("\"%s\" is listed multiple times.", interfaceName));
+        } else {
+          checkExtending(classTree, interfaceType, interfaceName);
+        }
+        interfaces.add(interfaceType);
       } else {
-        checkExtending(classTree, interfaceType, interfaceName);
+        checkExtending(classTree, superInterfaceTree);
       }
-      interfaces.add(interfaceType);
     }
   }
 
   private void checkExtending(ClassTree classTree, Type currentInterfaceType, String currentInterfaceName) {
-    for (TypeTree superInterface : classTree.superInterfaces()) {
-      if (!currentInterfaceType.equals(superInterface.symbolType()) && currentInterfaceType.isSubtypeOf(superInterface.symbolType())) {
-        String interfaceName = superInterface.symbolType().fullyQualifiedName();
-        super.addIssue(superInterface, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
+    for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
+      if (!currentInterfaceType.equals(superInterfaceTree.symbolType()) && currentInterfaceType.isSubtypeOf(superInterfaceTree.symbolType())) {
+        String interfaceName = superInterfaceTree.symbolType().fullyQualifiedName();
+        addIssue(superInterfaceTree, String.format("\"%s\" is an \"%s\" so \"%s\" can be removed from the extension list.",
           currentInterfaceName, interfaceName, interfaceName));
       }
     }
+  }
+
+  private void checkExtending(ClassTree classTree, TypeTree currentInterfaceTree) {
+    for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
+      if (!currentInterfaceTree.equals(superInterfaceTree) && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterfaceTree)) {
+        addIssue(superInterfaceTree, String.format("\"%s\" is listed multiple times.", extractInterfaceName(currentInterfaceTree)));
+      }
+    }
+  }
+
+  private String extractInterfaceName(TypeTree interfaceTree) {
+    if (interfaceTree.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) interfaceTree).name();
+    } else if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {
+      return ((MemberSelectExpressionTree) interfaceTree).identifier().name();
+    } else if (interfaceTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      return extractInterfaceName(((ParameterizedTypeTree) interfaceTree).type());
+    }
+    throw new IllegalStateException("cannot process " + interfaceTree.toString());
   }
 
 }
