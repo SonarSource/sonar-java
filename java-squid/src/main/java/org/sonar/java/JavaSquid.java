@@ -76,12 +76,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
       Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
       visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
     }
-    if (sonarComponents != null) {
-      visitorsToBridge = Iterables.concat(
-          sonarComponents.createJavaFileScanners(),
-          visitorsToBridge
-      );
-    }
+
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());

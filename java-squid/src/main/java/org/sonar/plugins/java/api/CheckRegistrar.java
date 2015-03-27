@@ -20,10 +20,33 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
+import com.google.common.base.Preconditions;
+import org.apache.commons.lang.StringUtils;
+import org.sonar.api.BatchExtension;
 
 @Beta
-public interface JavaFileScannersFactory {
+public interface CheckRegistrar extends BatchExtension {
 
-  Iterable<JavaFileScanner> createJavaFileScanners();
+  void register(RegistrarContext registrarContext);
+
+  class RegistrarContext {
+    private String repositoryKey;
+    private Iterable<Class> checkClasses;
+
+    public void registerClassesForRepository(String repositoryKey, Iterable<Class> checkClasses){
+      Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
+      this.repositoryKey = repositoryKey;
+      this.checkClasses = checkClasses;
+    }
+
+    public String repositoryKey() {
+      return repositoryKey;
+    }
+
+    public Iterable<Class> checkClasses() {
+      return checkClasses;
+    }
+
+  }
 
 }

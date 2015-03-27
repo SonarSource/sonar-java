@@ -23,17 +23,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.checks.NoSonarFilter;
-import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.JavaSquid;
+import org.sonar.java.SonarComponents;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.bridges.ChecksBridge;
 import org.sonar.plugins.java.bridges.DesignBridge;
 import org.sonar.squidbridge.api.SourceFile;
@@ -50,16 +48,16 @@ public class Bridges {
     this.settings = settings;
   }
 
-  public void save(SensorContext context, Project project, Checks<JavaCheck> checks, ResourceMapping resourceMapping,
-    ResourcePerspectives resourcePerspectives, NoSonarFilter noSonarFilter, RulesProfile rulesProfile) {
+  public void save(SensorContext context, Project project, SonarComponents sonarComponents, ResourceMapping resourceMapping,
+    NoSonarFilter noSonarFilter, RulesProfile rulesProfile) {
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     //Design
     if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
-      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), resourceMapping, resourcePerspectives);
+      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), resourceMapping, sonarComponents.getResourcePerspectives());
       designBridge.saveDesign(project);
     }
     //Report Issues
-    ChecksBridge checksBridge = new ChecksBridge(checks, resourcePerspectives, rulesProfile);
+    ChecksBridge checksBridge = new ChecksBridge(sonarComponents, rulesProfile);
     reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
   }
 

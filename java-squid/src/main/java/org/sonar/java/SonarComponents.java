@@ -19,10 +19,10 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
@@ -30,43 +30,46 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannersFactory;
+import org.sonar.plugins.java.api.CheckRegistrar;
+import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 public class SonarComponents implements BatchExtension {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
-  private final JavaFileScannersFactory[] fileScannersFactories;
+  private final CheckFactory checkFactory;
   private final JavaClasspath javaClasspath;
   private final Project project;
+  private final List<Checks<JavaCheck>> checks;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, JavaClasspath javaClasspath) {
-    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, null);
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, JavaClasspath javaClasspath,
+                         CheckFactory checkFactory) {
+    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, checkFactory, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         JavaClasspath javaClasspath,
-                         @Nullable JavaFileScannersFactory[] fileScannersFactories) {
+                         JavaClasspath javaClasspath, CheckFactory checkFactory,
+                         @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.project = project;
     this.javaClasspath = javaClasspath;
-    this.fileScannersFactories = fileScannersFactories;
-  }
+    this.checkFactory = checkFactory;
+    checks = Lists.newArrayList();
 
-  public Iterable<JavaFileScanner> createJavaFileScanners() {
-    Iterable<JavaFileScanner> result = ImmutableList.of();
-    if (fileScannersFactories != null) {
-      for (JavaFileScannersFactory factory : fileScannersFactories) {
-        result = Iterables.concat(result, factory.createJavaFileScanners());
+    if(checkRegistrars != null) {
+      CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
+      for (CheckRegistrar checkClassesRegister : checkRegistrars) {
+        checkClassesRegister.register(registrarContext);
+        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(registrarContext.checkClasses()));
       }
     }
-    return result;
   }
 
   public Resource resourceFromIOFile(File file) {
@@ -94,5 +97,21 @@ public class SonarComponents implements BatchExtension {
 
   public ResourcePerspectives getResourcePerspectives() {
     return resourcePerspectives;
+  }
+
+  public void registerCheckClasses(String repositoryKey, Collection<Class> checkClasses) {
+    checks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
+  }
+
+  public CodeVisitor[] checkClasses() {
+    List<CodeVisitor> visitors = Lists.newArrayList();
+    for (Checks<JavaCheck> check : checks) {
+      visitors.addAll(check.all());
+    }
+    return visitors.toArray(new CodeVisitor[visitors.size()]);
+  }
+
+  public Iterable<Checks<JavaCheck>> checks() {
+    return checks;
   }
 }
