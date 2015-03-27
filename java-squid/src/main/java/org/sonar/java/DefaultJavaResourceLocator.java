@@ -31,7 +31,6 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.java.filters.SuppressWarningsFilter;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -39,7 +38,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
-public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFileScanner {
+public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaResourceLocator.class);
 

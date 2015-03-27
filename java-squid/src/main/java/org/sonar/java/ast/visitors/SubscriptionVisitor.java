@@ -29,13 +29,12 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisitor {
+public abstract class SubscriptionVisitor implements JavaFileScanner {
 
 
   protected JavaFileScannerContext context;
