@@ -75,12 +75,22 @@ public class TestFileVisitorsBridge extends SquidAstVisitor<LexerlessGrammar> {
     }
 
     @Override
+    public void addIssue(Tree tree, JavaCheck check, String message, @Nullable Double cost) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void addIssueOnFile(JavaCheck javaCheck, String message) {
       throw new UnsupportedOperationException();
     }
 
     @Override
     public void addIssue(int line, JavaCheck javaCheck, String message) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
       throw new UnsupportedOperationException();
     }
 

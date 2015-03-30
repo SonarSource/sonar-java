@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -39,12 +40,15 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.SquidAstVisitor;
+import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
+import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
@@ -170,7 +174,12 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
 
     @Override
     public void addIssue(Tree tree, JavaCheck javaCheck, String message) {
-      addIssue(((JavaTree) tree).getLine(), javaCheck, message);
+      addIssue(((JavaTree) tree).getLine(), javaCheck, message, null);
+    }
+
+    @Override
+    public void addIssue(Tree tree, JavaCheck check, String message, @Nullable Double cost) {
+      addIssue(((JavaTree) tree).getLine(), check, message, cost);
     }
 
     @Override
@@ -180,11 +189,25 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
 
     @Override
     public void addIssue(int line, JavaCheck javaCheck, String message) {
+      addIssue(line, javaCheck, message, null);
+    }
+
+    @Override
+    public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
       Preconditions.checkNotNull(javaCheck);
       Preconditions.checkNotNull(message);
       CheckMessage checkMessage = new CheckMessage(javaCheck, message);
       if (line > 0) {
         checkMessage.setLine(line);
+      }
+      if (cost == null) {
+        Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
+        Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
+        if(linear != null || linearWithOffset != null) {
+          throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
+        }
+      } else {
+        checkMessage.setCost(cost);
       }
       sourceFile.log(checkMessage);
     }
