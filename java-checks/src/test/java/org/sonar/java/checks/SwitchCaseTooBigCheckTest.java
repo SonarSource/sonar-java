@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
@@ -34,14 +35,16 @@ public class SwitchCaseTooBigCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new SwitchCaseTooBigCheck());
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new VisitorsBridge(new SwitchCaseTooBigCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(9).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(15).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(21).withMessage("Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.")
-      .next().atLine(29)
-      .next().atLine(43).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(49);
+      .next().atLine(10).withMessage("Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.")
+      .next().atLine(18).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+      .next().atLine(24).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+      .next().atLine(32).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+      .next().atLine(38).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+      .next().atLine(44).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+      .next().atLine(51).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
+      .noMore();
   }
 
   @Test
@@ -49,9 +52,10 @@ public class SwitchCaseTooBigCheckTest {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 6;
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(21).withMessage("Reduce this switch case number of lines from 7 to at most 6, for example by extracting code into methods.");
+      .next().atLine(10).withMessage("Reduce this switch case number of lines from 7 to at most 6, for example by extracting code into methods.")
+      .noMore();
   }
 
   @Test
@@ -59,19 +63,22 @@ public class SwitchCaseTooBigCheckTest {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 0;
 
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), check);
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(4)
-      .next().atLine(9)
-      .next().atLine(15)
-      .next().atLine(21)
-      .next().atLine(28)
-      .next().atLine(29)
+      .next().atLine(10)
+      .next().atLine(18)
+      .next().atLine(24)
+      .next().atLine(31)
+      .next().atLine(32)
       .next().atLine(38)
-      .next().atLine(43)
-      .next().atLine(49)
-      .next().atLine(58)
-      .next().atLine(58);
+      .next().atLine(44)
+      .next().atLine(51)
+      .next().atLine(61)
+      .next().atLine(66)
+      .next().atLine(74)
+      .next().atLine(74)
+      .noMore();
   }
 
 }
