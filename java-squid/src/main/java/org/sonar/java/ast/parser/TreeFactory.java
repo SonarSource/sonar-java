@@ -495,7 +495,8 @@ public class TreeFactory {
       children.toArray(new AstNode[0]));
     newClass.completeWithIdentifier(identifier);
 
-    EnumConstantTreeImpl result = new EnumConstantTreeImpl(ModifiersTreeImpl.EMPTY, identifier, newClass);
+    @SuppressWarnings("unchecked")
+    EnumConstantTreeImpl result = new EnumConstantTreeImpl(modifiers((Optional<List<ModifierTree>>)(Optional<?>)annotations), identifier, newClass);
 
     result.addChild(identifier);
     result.addChild(newClass);
