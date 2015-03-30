@@ -57,7 +57,9 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     int complexity = context.getComplexity(tree);
     if (complexity > max) {
-      addIssue(tree, MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max));
+      addIssue(tree,
+          MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max),
+          complexity-max);
     }
   }
 

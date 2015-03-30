@@ -37,7 +37,7 @@ public class StringLiteralDuplicatedCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralDuplicatedCheck.java"), new VisitorsBridge(new StringLiteralDuplicatedCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.");
+        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.").withCost(3.0);
   }
 
   @Test
@@ -46,8 +46,8 @@ public class StringLiteralDuplicatedCheckTest {
     visitor.threshold = 2;
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringLiteralDuplicatedCheck.java"), new VisitorsBridge(visitor));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Define a constant instead of duplicating this literal \"bbbbb\" 2 times.")
-        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.");
+        .next().atLine(8).withMessage("Define a constant instead of duplicating this literal \"bbbbb\" 2 times.").withCost(2.0)
+        .next().atLine(10).withMessage("Define a constant instead of duplicating this literal \"ccccc\" 3 times.").withCost(3.0);
   }
 
 }

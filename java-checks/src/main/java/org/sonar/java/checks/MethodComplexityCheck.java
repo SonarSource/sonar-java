@@ -64,7 +64,7 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
     if (complexity > max) {
       addIssue(tree, MessageFormat.format(
           "The Cyclomatic Complexity of this method \"{0}\" is {1,number,integer} which is greater than {2,number,integer} authorized.",
-          methodTree.simpleName().name(), complexity, max));
+          methodTree.simpleName().name(), complexity, max), complexity - max);
     }
   }
 

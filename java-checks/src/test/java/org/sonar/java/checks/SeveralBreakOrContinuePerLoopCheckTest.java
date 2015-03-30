@@ -37,11 +37,11 @@ public class SeveralBreakOrContinuePerLoopCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SeveralBreakOrContinuePerLoopCheck.java"), new VisitorsBridge(new SeveralBreakOrContinuePerLoopCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.")
-        .next().atLine(15).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.")
-        .next().atLine(20).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.")
-        .next().atLine(41).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.")
-        .next().atLine(67).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.")
+        .next().atLine(10).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.").withCost(1.0)
+        .next().atLine(15).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.").withCost(1.0)
+        .next().atLine(20).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.").withCost(1.0)
+        .next().atLine(41).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.").withCost(2.0)
+        .next().atLine(67).withMessage("Reduce the total number of break and continue statements in this loop to use at most one.").withCost(1.0)
     ;
   }
 
