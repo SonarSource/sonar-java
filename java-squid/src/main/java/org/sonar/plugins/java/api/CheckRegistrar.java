@@ -24,9 +24,24 @@ import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 
+/**
+ * This batch extension should be extended to provide the classes to be used to instantiate checks.
+ * The register method has to be implemented and the registrarContext should register the repository keys.
+ * <pre>
+ *   {@code
+ *   public void register(RegistrarContext registrarContext) {
+ *     registrarContext.registerClassesForRepository("RepositoryKey", listOfCheckClasses);
+ *   }
+ *   }
+ * </pre>
+ */
 @Beta
 public interface CheckRegistrar extends BatchExtension {
 
+  /**
+   * This method is called during an analysis to get the classes to use to instantiate checks.
+   * @param registrarContext the context that will be used by the java-plugin to retrieve the classes for checks.
+   */
   void register(RegistrarContext registrarContext);
 
   class RegistrarContext {
