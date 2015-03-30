@@ -49,6 +49,10 @@ public interface Symbol {
    */
   Symbol owner();
 
+  /**
+   * Type of symbol.
+   * @return the type of this symbol.
+   */
   Type type();
 
   // kinds of symbols
@@ -96,11 +100,22 @@ public interface Symbol {
   @Nullable
   TypeSymbol enclosingClass();
 
+  /**
+   * The identifier trees that reference this symbol.
+   * @return a list of IdentifierTree referencing this symbol. An empty list if this symbol is unused.
+   */
   List<IdentifierTree> usages();
 
+  /**
+   * Declaration node of this symbol. Currently, only works for declaration within the same file.
+   * @return the Tree of the declaration of this symbol. Null if declaration does not occur in the currently analyzed file.
+   */
   @Nullable
   Tree declaration();
 
+  /**
+   * Symbol for a type : class, enum, interface or annotation.
+   */
   interface TypeSymbol extends Symbol {
 
     /**
@@ -110,6 +125,10 @@ public interface Symbol {
     @CheckForNull
     Type superClass();
 
+    /**
+     * Interfaces implemented by this type.
+     * @return an empty list if this type does not implement any interface.
+     */
     List<Type> interfaces();
 
     /**
@@ -132,6 +151,9 @@ public interface Symbol {
 
   }
 
+  /**
+   * Symbol for field, method parameters and local variables.
+   */
   interface VariableSymbol extends Symbol {
 
     @Nullable
@@ -140,12 +162,23 @@ public interface Symbol {
 
   }
 
+  /**
+   * Symbol for methods.
+   */
   interface MethodSymbol extends Symbol {
 
+    /**
+     * Type of parameters declared by this method.
+     * @return empty list if method has a zero arity.
+     */
     List<Type> parameterTypes();
 
     TypeSymbol returnType();
 
+    /**
+     * List of the exceptions that can be thrown by the method.
+     * @return empty list if no exception are declared in the throw clause of the method.
+     */
     List<Type> thrownTypes();
 
     @Nullable
@@ -154,12 +187,24 @@ public interface Symbol {
 
   }
 
+  /**
+   * Label symbol. Note: this is not a Symbol per say.
+   */
   interface LabelSymbol {
 
+    /**
+     * Name of that label.
+     */
     String name();
 
+    /**
+     * Usages tree of this label.
+     */
     List<IdentifierTree> usages();
 
+    /**
+     * Declaration tree of this label.
+     */
     LabeledStatementTree declaration();
 
   }

@@ -155,8 +155,14 @@ public interface Type {
    */
   Type erasure();
 
+  /**
+   * Type for arrays.
+   */
   interface ArrayType extends Type {
 
+    /**
+     * Type of elements in this array.
+     */
     Type elementType();
 
   }

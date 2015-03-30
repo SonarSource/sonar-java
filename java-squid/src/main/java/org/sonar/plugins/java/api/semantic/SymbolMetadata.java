@@ -23,8 +23,8 @@ import javax.annotation.CheckForNull;
 import java.util.List;
 
 /**
- * Holds the metadata information of a symbol.
- * Mainly annotation.
+ * Holds the metadata information (annotations) of a symbol.
+ *
  */
 public interface SymbolMetadata {
 
