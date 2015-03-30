@@ -28,6 +28,10 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
     context.addIssue(tree, this, message);
   }
 
+  public void addIssue(Tree tree, String message, double effortToFix) {
+    context.addIssue(tree, this, message, effortToFix);
+  }
+
   public void addIssue(int line, String message) {
     context.addIssue(line, this, message);
   }

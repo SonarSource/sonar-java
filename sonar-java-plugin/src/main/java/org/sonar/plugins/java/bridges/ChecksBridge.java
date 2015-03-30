@@ -68,7 +68,10 @@ public class ChecksBridge {
             Issue issue = issuable.newIssueBuilder()
                 .ruleKey(ruleKey)
                 .line(checkMessage.getLine())
-                .message(checkMessage.formatDefaultMessage()).build();
+                .message(checkMessage.formatDefaultMessage())
+                .effortToFix(checkMessage.getCost())
+                .build();
+
             issuable.addIssue(issue);
           } else {
             throw new IllegalStateException("Cannot find rule key for instance of "+check.getClass());

@@ -68,7 +68,9 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
     for (String literal : occurences.elementSet()) {
       int literalOccurence = occurences.count(literal);
       if (literalOccurence >= threshold) {
-        context.addIssue(firstOccurrence.get(literal), this, "Define a constant instead of duplicating this literal " + literal + " " + literalOccurence + " times.");
+        context.addIssue(firstOccurrence.get(literal), this,
+            "Define a constant instead of duplicating this literal " + literal + " " + literalOccurence + " times.",
+            (double) literalOccurence);
       }
     }
   }
