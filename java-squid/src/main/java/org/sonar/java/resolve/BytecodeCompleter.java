@@ -164,8 +164,8 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         symbol.completer = this;
       } else {
         LOG.error("Class not found: " + bytecodeName);
-        // TODO(Godin): why only interfaces, but not supertype for example?
         ((JavaType.ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+        ((JavaType.ClassJavaType) symbol.type).supertype = Symbols.unknownType;
       }
 
       classes.put(flatName, symbol);
