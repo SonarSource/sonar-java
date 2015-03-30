@@ -29,6 +29,7 @@ import org.sonar.java.resolve.targets.InnerClassBeforeOuter;
 import org.sonar.java.resolve.targets.NamedClassWithinMethod;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import java.io.File;
 import java.util.Iterator;
@@ -288,6 +289,17 @@ public class BytecodeCompleterTest {
       assertThat(arg.metadata().annotations()).hasSize(1);
       assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable"));
     }
+  }
 
+  @Test
+  public void class_not_found_should_have_unknown_super_type_and_no_interfaces() {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.UnknownClass");
+    assertThat(clazz.type()).isNotNull();
+    Type superClass = clazz.superClass();
+    assertThat(superClass).isNotNull();
+    assertThat(superClass).isSameAs(Symbols.unknownType);
+    List<Type> interfaces = clazz.interfaces();
+    assertThat(interfaces).isNotNull();
+    assertThat(interfaces).isEmpty();
   }
 }
