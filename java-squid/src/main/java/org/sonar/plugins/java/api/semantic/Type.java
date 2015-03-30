@@ -34,6 +34,7 @@ public interface Type {
     DOUBLE,
     BOOLEAN
   }
+
   /**
    * Check whether a type is the one designed by the fully qualified name.
    *
@@ -105,6 +106,17 @@ public interface Type {
    */
   boolean isPrimitive();
 
+  /**
+   * Check if this type is the given primitive.
+   * 
+   * <code><pre>
+   *   Type type;
+   *   type.isPrimitive(Primitives.INT);
+   *</pre></code>
+   *
+   * @param primitive primitive type to be checked with.
+   * @return true if this is the primitive type
+   */
   boolean isPrimitive(Primitives primitive);
 
   /**
@@ -148,6 +160,5 @@ public interface Type {
     Type elementType();
 
   }
-
 
 }

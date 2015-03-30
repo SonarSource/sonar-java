@@ -28,6 +28,11 @@ import java.util.List;
  */
 public interface SymbolMetadata {
 
+  /**
+   * Check if the symbol is annotated with the specified annotation.
+   * @param fullyQualifiedName fully Qualified Name of the annotation
+   * @return true if the symbol is annotated with the annotation
+   */
   boolean isAnnotatedWith(String fullyQualifiedName);
 
   /**
@@ -41,13 +46,13 @@ public interface SymbolMetadata {
   List<AnnotationInstance> annotations();
 
   /**
-   * Occurence of an annotation on a symbol.
+   * Occurrence of an annotation on a symbol.
    */
   interface AnnotationInstance {
 
     /**
      * Type symbol of this annotation. Can be unknown if bytecode for this annotation is not provided.
-     * @return the symbol declarting this annotation.
+     * @return the symbol declaring this annotation.
      */
     Symbol symbol();
 

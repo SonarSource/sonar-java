@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -362,8 +364,8 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
-    public List<org.sonar.plugins.java.api.semantic.Type> interfaces() {
-      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(getInterfaces());
+    public List<Type> interfaces() {
+      return Lists.<Type>newArrayList(getInterfaces());
     }
 
     @Override
@@ -578,8 +580,8 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public ClassTree declaration() {
-      //FIXME: declaration should not be ClassTree: a type Variable is declared by an identifier with bounds
-      //This probably implies to refactor this class to not inherit form TypeJavaSymbol and/or to implement its dedicated interface
+      // FIXME: declaration should not be ClassTree: a type Variable is declared by an identifier with bounds
+      // This probably implies to refactor this class to not inherit form TypeJavaSymbol and/or to implement its dedicated interface
       return null;
     }
   }
@@ -597,7 +599,6 @@ public class JavaSymbol implements Symbol {
     public LabeledStatementTree declaration() {
       return declaration;
     }
-
 
   }
 
