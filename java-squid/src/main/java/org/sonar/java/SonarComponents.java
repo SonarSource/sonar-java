@@ -99,7 +99,7 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives;
   }
 
-  public void registerCheckClasses(String repositoryKey, Collection<Class> checkClasses) {
+  public void registerCheckClasses(String repositoryKey, Collection<Class<? extends JavaCheck>> checkClasses) {
     checks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
   }
 

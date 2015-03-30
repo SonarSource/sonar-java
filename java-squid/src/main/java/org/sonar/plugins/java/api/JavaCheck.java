@@ -21,5 +21,8 @@ package org.sonar.plugins.java.api;
 
 import org.sonar.squidbridge.api.CodeVisitor;
 
+/**
+ * Marker interface for all java checks.
+ */
 public interface JavaCheck extends CodeVisitor{
 }

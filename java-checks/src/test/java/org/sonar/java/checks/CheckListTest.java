@@ -59,7 +59,6 @@ public class CheckListTest {
   @Test
   public void test() {
     List<Class> checks = CheckList.getChecks();
-
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       assertThat(getClass().getResource(testName))
@@ -100,9 +99,8 @@ public class CheckListTest {
    */
   @Test
   public void should_not_fail_on_invalid_file() throws Exception {
-    List<Class> checks = CheckList.getChecks();
 
-    for (Class check : checks) {
+    for (Class check : CheckList.getChecks()) {
       CodeVisitor visitor = (CodeVisitor) check.newInstance();
       if (visitor instanceof SquidAstVisitor) {
         JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), (SquidAstVisitor) visitor);

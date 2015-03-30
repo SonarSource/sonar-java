@@ -64,7 +64,7 @@ public class SonarComponentsTest {
   private static class MyCheckRegistrer implements CheckRegistrar {
     @Override
     public void register(RegistrarContext registrarContext) {
-      registrarContext.registerClassesForRepository("myRepo", Lists.<Class>newArrayList(CustomCheck.class));
+      registrarContext.registerClassesForRepository("myRepo", Lists.<Class<? extends JavaCheck>>newArrayList(CustomCheck.class));
     }
   }
 

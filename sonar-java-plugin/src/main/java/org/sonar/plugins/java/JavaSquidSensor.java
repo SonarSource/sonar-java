@@ -78,7 +78,7 @@ public class JavaSquidSensor implements Sensor {
   @Override
   public void analyse(Project project, SensorContext context) {
     javaResourceLocator.setSensorContext(context);
-    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getChecks());
+    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(project, context, configuration.separatesAccessorsFromMethods());
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());

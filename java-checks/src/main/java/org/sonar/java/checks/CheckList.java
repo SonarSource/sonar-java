@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.plugins.java.api.JavaCheck;
 
 import java.util.List;
 
@@ -31,7 +32,11 @@ public final class CheckList {
   }
 
   public static List<Class> getChecks() {
-    return ImmutableList.<Class>of(
+    return (List<Class>) (List) getJavaChecks();
+  }
+
+  public static List<Class<? extends JavaCheck>> getJavaChecks() {
+    return ImmutableList.of(
       TabCharacter_S00105_Check.class,
       TooLongLine_S00103_Check.class,
       MissingNewLineAtEndOfFile_S00113_Check.class,
