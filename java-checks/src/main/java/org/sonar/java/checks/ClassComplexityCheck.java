@@ -45,7 +45,7 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
   private static final int DEFAULT_MAX = 200;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX,
-      description = "Maximum complexity allowed.")
+    description = "Maximum complexity allowed.")
   private int max = DEFAULT_MAX;
 
   @Override
@@ -58,8 +58,8 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
     int complexity = context.getComplexity(tree);
     if (complexity > max) {
       addIssue(tree,
-          MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max),
-          complexity-max);
+        MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max),
+          (double) complexity - max);
     }
   }
 

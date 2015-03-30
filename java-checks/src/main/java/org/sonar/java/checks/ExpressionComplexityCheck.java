@@ -152,7 +152,7 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
       if (currentLevel == 1) {
         int opCount = count.pop();
         if (opCount > max) {
-          addIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").", opCount - max);
+          addIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").", (double) opCount - max);
         }
         count.push(0);
       }
