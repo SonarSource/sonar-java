@@ -75,11 +75,11 @@ public class ExecutionStateTest {
     // relations containing an unknown value are not registered.
     ExecutionState state = new ExecutionState();
     state.setRelation(UNKNOWN_VALUE, SymbolicRelation.UNKNOWN, UNKNOWN_VALUE);
-    assertThat(state.relations).isEmpty();
+    assertThat(state.relations.isEmpty()).isTrue();
     state.setRelation(new SymbolicValue(), SymbolicRelation.UNKNOWN, UNKNOWN_VALUE);
-    assertThat(state.relations).isEmpty();
+    assertThat(state.relations.isEmpty()).isTrue();
     state.setRelation(UNKNOWN_VALUE, SymbolicRelation.UNKNOWN, new SymbolicValue());
-    assertThat(state.relations).isEmpty();
+    assertThat(state.relations.isEmpty()).isTrue();
 
     // unregistered relations should evaluate to UNKNOWN.
     assertThat(state.getRelation(leftValue, rightValue)).isSameAs(SymbolicRelation.UNKNOWN);

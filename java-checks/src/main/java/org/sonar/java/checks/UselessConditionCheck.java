@@ -62,10 +62,14 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   private void checkCondition(ExpressionTree tree) {
     SymbolicValue result = evaluator.evaluate(new ExecutionState(), tree);
     if (result.equals(SymbolicValue.BOOLEAN_FALSE)) {
-      context.addIssue(tree, this, "Change this condition so that it does not always evaluate to \"false\"");
+      raiseIssue(tree, "false");
     } else if (result.equals(SymbolicValue.BOOLEAN_TRUE)) {
-      context.addIssue(tree, this, "Change this condition so that it does not always evaluate to \"true\"");
+      raiseIssue(tree, "true");
     }
+  }
+
+  private void raiseIssue(ExpressionTree tree, String value) {
+    context.addIssue(tree, this, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
   }
 
 }

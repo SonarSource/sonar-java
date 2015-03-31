@@ -20,12 +20,15 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Table;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
@@ -104,31 +107,25 @@ public class ExecutionState {
 
   @Nullable
   final ExecutionState parentState;
-  final Map<SymbolicValue, Map<SymbolicValue, SymbolicRelation>> relations;
+  final Table<SymbolicValue, SymbolicValue, SymbolicRelation> relations;
   final Map<Symbol.VariableSymbol, SymbolicValue> variables;
 
   public ExecutionState() {
     this.parentState = null;
-    this.relations = new HashMap<>();
+    this.relations = HashBasedTable.create();
     this.variables = new HashMap<>();
   }
 
   ExecutionState(ExecutionState parentState) {
     this.parentState = parentState;
-    this.relations = new HashMap<>();
+    this.relations = HashBasedTable.create();
     this.variables = new HashMap<>();
   }
 
   @VisibleForTesting
   SymbolicRelation getRelation(SymbolicValue leftValue, SymbolicValue rightValue) {
-    Map<SymbolicValue, SymbolicRelation> map = relations.get(leftValue);
-    if (map != null) {
-      SymbolicRelation result = map.get(rightValue);
-      if (result != null) {
-        return result;
-      }
-    }
-    return parentState != null ? parentState.getRelation(leftValue, rightValue) : SymbolicRelation.UNKNOWN;
+    SymbolicRelation result = relations.get(leftValue, rightValue);
+    return result != null ? result : parentState != null ? parentState.getRelation(leftValue, rightValue) : SymbolicRelation.UNKNOWN;
   }
 
   SymbolicValue evaluateRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
@@ -140,39 +137,37 @@ public class ExecutionState {
       if (relation == SymbolicRelation.UNKNOWN) {
         throw new IllegalStateException("relation cannot be UNKNOWN");
       }
-      Map<SymbolicValue, SymbolicRelation> leftMap = relations.get(leftValue);
-      if (leftMap == null) {
-        leftMap = new HashMap<SymbolicValue, SymbolicRelation>();
-        relations.put(leftValue, leftMap);
-      }
-      leftMap.put(rightValue, relation);
-      Map<SymbolicValue, SymbolicRelation> rightMap = relations.get(rightValue);
-      if (rightMap == null) {
-        rightMap = new HashMap<SymbolicValue, SymbolicRelation>();
-        relations.put(rightValue, rightMap);
-      }
-      rightMap.put(leftValue, relation.swap());
+      relations.put(leftValue, rightValue, relation);
+      relations.put(rightValue, leftValue, relation.swap());
     }
   }
 
   SymbolicValue getSymbolicValue(ExpressionTree tree) {
+    Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree);
+    if (symbol == null) {
+      return SymbolicValue.UNKNOWN_VALUE;
+    }
+    for (ExecutionState state = this; state != null; state = state.parentState) {
+      SymbolicValue result = state.variables.get(symbol);
+      if (result != null) {
+        return result;
+      }
+    }
+    SymbolicValue result = new SymbolicValue();
+    variables.put(symbol, result);
+    return result;
+  }
+
+  @CheckForNull
+  private Symbol.VariableSymbol extractLocalVariableSymbol(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) tree;
       Symbol symbol = ((IdentifierTree) identifierTree).symbol();
       if (symbol.owner().isMethodSymbol()) {
-        Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) symbol;
-        for (ExecutionState state = this; state != null; state = state.parentState) {
-          SymbolicValue result = state.variables.get(variableSymbol);
-          if (result != null) {
-            return result;
-          }
-        }
-        SymbolicValue result = new SymbolicValue();
-        variables.put(variableSymbol, result);
-        return result;
+        return (Symbol.VariableSymbol) symbol;
       }
     }
-    return SymbolicValue.UNKNOWN_VALUE;
+    return null;
   }
 
 }
