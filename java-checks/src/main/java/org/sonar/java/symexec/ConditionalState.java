@@ -17,16 +17,16 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.se;
+package org.sonar.java.symexec;
 
-/** symbolic value. */
-public class SymbolicValue {
+class ConditionalState {
 
-  public static final SymbolicValue BOOLEAN_FALSE = new SymbolicValue();
+  final ExecutionState falseState;
+  final ExecutionState trueState;
 
-  public static final SymbolicValue BOOLEAN_TRUE = new SymbolicValue();
-
-  /** unknown value. */
-  public static final SymbolicValue UNKNOWN_VALUE = new SymbolicValue();
+  ConditionalState(ExecutionState currentState) {
+    falseState = new ExecutionState(currentState);
+    trueState = new ExecutionState(currentState);
+  }
 
 }

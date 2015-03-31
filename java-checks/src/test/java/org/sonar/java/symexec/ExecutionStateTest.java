@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.se;
+package org.sonar.java.symexec;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -33,7 +33,7 @@ import java.util.Map;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.se.SymbolicValue.UNKNOWN_VALUE;
+import static org.sonar.java.symexec.SymbolicValue.UNKNOWN_VALUE;
 
 public class ExecutionStateTest {
 
