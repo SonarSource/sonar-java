@@ -27,9 +27,44 @@ import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
 
 public class ExecutionStateTest {
+
+  @Test
+  public void test_get_set_boolean_constraint() {
+    ExecutionState state = new ExecutionState();
+
+    Symbol.TypeSymbol ownerSymbol = mock(Symbol.TypeSymbol.class);
+
+    Symbol.VariableSymbol fieldSymbol = mock(Symbol.VariableSymbol.class);
+    when(fieldSymbol.isVariableSymbol()).thenReturn(true);
+    when(fieldSymbol.owner()).thenReturn(ownerSymbol);
+
+    // constraint for a class field is unknown by default and cannot be set.
+    when(ownerSymbol.isMethodSymbol()).thenReturn(false);
+    assertThat(state.getBooleanConstraint(fieldSymbol)).isSameAs(UNKNOWN);
+    state.setBooleanConstraint(fieldSymbol, FALSE);
+    assertThat(state.getBooleanConstraint(fieldSymbol)).isSameAs(UNKNOWN);
+
+    // constraint for a local variable is unknown by default and can be set.
+    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
+    assertThat(state.getBooleanConstraint(fieldSymbol)).isSameAs(UNKNOWN);
+    state.setBooleanConstraint(fieldSymbol, FALSE);
+    assertThat(state.getBooleanConstraint(fieldSymbol)).isSameAs(FALSE);
+
+    // constraint for a local variable must be queried in the parent state.
+    ExecutionState nestedState = new ExecutionState(state);
+    assertThat(nestedState.getBooleanConstraint(fieldSymbol)).isSameAs(FALSE);
+
+    // constraint for a local variable must shadow constraint from the parent state.
+    nestedState.setBooleanConstraint(fieldSymbol, TRUE);
+    assertThat(state.getBooleanConstraint(fieldSymbol)).isSameAs(FALSE);
+    assertThat(nestedState.getBooleanConstraint(fieldSymbol)).isSameAs(TRUE);
+  }
 
   @Test
   public void test_get_set_relation() {
