@@ -23,7 +23,10 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
@@ -79,7 +82,16 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
           falseStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
           trueStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
       }
+    } else {
+      falseStates.add(currentState);
+      trueStates.add(currentState);
     }
+  }
+
+  @Override
+  public void visitInstanceOf(InstanceOfTree tree) {
+    falseStates.add(currentState);
+    trueStates.add(currentState);
   }
 
   @Override
@@ -88,7 +100,22 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
       falseStates.add(currentState);
     } else if ("true".equals(tree.value())) {
       trueStates.add(currentState);
+    } else {
+      falseStates.add(currentState);
+      trueStates.add(currentState);
     }
+  }
+
+  @Override
+  public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    falseStates.add(currentState);
+    trueStates.add(currentState);
+  }
+
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    falseStates.add(currentState);
+    trueStates.add(currentState);
   }
 
   @Override
@@ -97,6 +124,9 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
       ExpressionEvaluatorVisitor currentResults = new ExpressionEvaluatorVisitor(currentState, tree.expression());
       falseStates.addAll(currentResults.trueStates);
       trueStates.addAll(currentResults.falseStates);
+    } else {
+      falseStates.add(currentState);
+      trueStates.add(currentState);
     }
   }
 
@@ -135,6 +165,9 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
           falseStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
           trueStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
       }
+    } else {
+      falseStates.add(currentState);
+      trueStates.add(currentState);
     }
   }
 

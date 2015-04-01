@@ -19,18 +19,24 @@
  */
 package org.sonar.java.symexec;
 
+import com.google.common.collect.ImmutableList;
+import com.sonar.sslr.api.AstNode;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.expression.InstanceOfTreeImpl;
 import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LiteralTreeImpl;
+import org.sonar.java.model.expression.MemberSelectExpressionTreeImpl;
+import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 
@@ -178,9 +184,14 @@ public class ExpressionEvaluatorVisitorTest {
     assertThat(unknownVisitor.trueStates.get(0).getBooleanConstraint(identifierSymbol)).isSameAs(TRUE);
 
     when(ownerSymbol.isMethodSymbol()).thenReturn(false);
-    ExpressionEvaluatorVisitor fieldVisitor = new ExpressionEvaluatorVisitor(state, identifierTree);
-    assertThat(fieldVisitor.falseStates).isEmpty();
-    assertThat(fieldVisitor.trueStates).isEmpty();
+    validateUnknownResult(identifierTree);
+  }
+
+  @Test
+  public void test_instanceof() {
+    InstanceOfTreeImpl tree = new InstanceOfTreeImpl(TOKEN, mock(TypeTree.class), mock(AstNode.class));
+    tree.complete(VARIABLE1);
+    validateUnknownResult(tree);
   }
 
   @Test
@@ -190,14 +201,13 @@ public class ExpressionEvaluatorVisitorTest {
     assertThat(falseVisitor.falseStates.get(0).constraints).isEmpty();
     assertThat(falseVisitor.trueStates).isEmpty();
 
-    ExpressionEvaluatorVisitor nullVisitor = new ExpressionEvaluatorVisitor(new ExecutionState(), LITERAL_NULL);
-    assertThat(nullVisitor.falseStates).isEmpty();
-    assertThat(nullVisitor.trueStates).isEmpty();
+    validateUnknownResult(LITERAL_NULL);
 
     ExpressionEvaluatorVisitor trueVisitor = new ExpressionEvaluatorVisitor(new ExecutionState(), LITERAL_TRUE);
     assertThat(trueVisitor.falseStates).isEmpty();
     assertThat(trueVisitor.trueStates.size()).isEqualTo(1);
     assertThat(trueVisitor.trueStates.get(0).constraints).isEmpty();
+    assertThat(trueVisitor.trueStates.get(0).relations.isEmpty()).isEqualTo(true);
   }
 
   @Test
@@ -245,6 +255,18 @@ public class ExpressionEvaluatorVisitorTest {
   }
 
   @Test
+  public void test_member_select() {
+    MemberSelectExpressionTreeImpl tree = new MemberSelectExpressionTreeImpl(VARIABLE1, VARIABLE2);
+    validateUnknownResult(tree);
+  }
+
+  @Test
+  public void test_method_invocation() {
+    MethodInvocationTreeImpl tree = new MethodInvocationTreeImpl(VARIABLE1, null, ImmutableList.<ExpressionTree>of());
+    validateUnknownResult(tree);
+  }
+
+  @Test
   public void test_relational() {
     ExecutionState state = new ExecutionState();
 
@@ -272,17 +294,14 @@ public class ExpressionEvaluatorVisitorTest {
     validateState(notEqualVisitor.falseStates.get(0), SymbolicRelation.EQUAL_TO, SymbolicRelation.EQUAL_TO);
     validateState(notEqualVisitor.trueStates.get(0), SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
 
-    ExpressionEvaluatorVisitor fieldfieldVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, FIELD, TOKEN, FIELD));
-    assertThat(fieldfieldVisitor.falseStates).isEmpty();
-    assertThat(fieldfieldVisitor.trueStates).isEmpty();
+    ExpressionEvaluatorVisitor fieldFieldVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, FIELD, TOKEN, FIELD));
+    validateUnknownResult(state, fieldFieldVisitor);
 
     ExpressionEvaluatorVisitor fieldLocalVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, FIELD, TOKEN, VARIABLE2));
-    assertThat(fieldLocalVisitor.falseStates).isEmpty();
-    assertThat(fieldLocalVisitor.trueStates).isEmpty();
+    validateUnknownResult(state, fieldLocalVisitor);
 
     ExpressionEvaluatorVisitor localFieldVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, VARIABLE1, TOKEN, FIELD));
-    assertThat(localFieldVisitor.falseStates).isEmpty();
-    assertThat(localFieldVisitor.trueStates).isEmpty();
+    validateUnknownResult(state, localFieldVisitor);
 
     ExpressionEvaluatorVisitor nestedFalseVisitor = new ExpressionEvaluatorVisitor(notEqualVisitor.falseStates.get(0),
       new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, VARIABLE1, TOKEN, VARIABLE2));
@@ -293,6 +312,9 @@ public class ExpressionEvaluatorVisitorTest {
       new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, VARIABLE1, TOKEN, VARIABLE2));
     assertThat(nestedTrueVisitor.falseStates).isEmpty();
     validateState(nestedTrueVisitor.trueStates.get(0), SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
+
+    // comparison must not fail if either or both operands are not identifiers.
+    new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.EQUAL_TO, LITERAL_NULL, TOKEN, LITERAL_NULL));
   }
 
   private ExpressionEvaluatorVisitor evaluateRelationalOperator(ExecutionState state, Tree.Kind operatorKind) {
@@ -302,10 +324,33 @@ public class ExpressionEvaluatorVisitorTest {
     return result;
   }
 
+  @Test
+  public void test_unary() {
+    Symbol.VariableSymbol ownerSymbol = mock(Symbol.VariableSymbol.class);
+    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
+    Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
+    when(identifierSymbol.isVariableSymbol()).thenReturn(true);
+    when(identifierSymbol.owner()).thenReturn(ownerSymbol);
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(TOKEN);
+    identifierTree.setSymbol(identifierSymbol);
+    InternalPrefixUnaryExpression tree = new InternalPrefixUnaryExpression(Tree.Kind.UNARY_PLUS, TOKEN, identifierTree);
+    validateUnknownResult(tree);
+  }
+
   private void validateState(ExecutionState state, SymbolicRelation leftRight, SymbolicRelation rightLeft) {
     assertThat(state.relations.size()).isEqualTo(2);
     assertThat(state.getRelation(SYMBOL1, SYMBOL2)).isSameAs(leftRight);
     assertThat(state.getRelation(SYMBOL2, SYMBOL1)).isSameAs(rightLeft);
+  }
+
+  private void validateUnknownResult(Tree tree) {
+    ExecutionState state = new ExecutionState();
+    validateUnknownResult(state, new ExpressionEvaluatorVisitor(state, tree));
+  }
+
+  private void validateUnknownResult(ExecutionState state, ExpressionEvaluatorVisitor result) {
+    assertThat(result.falseStates).containsOnly(state);
+    assertThat(result.trueStates).containsOnly(state);
   }
 
 }
