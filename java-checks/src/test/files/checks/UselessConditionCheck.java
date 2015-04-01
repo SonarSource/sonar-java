@@ -19,6 +19,14 @@ public static class Class {
     }
     if (condition || !condition) { // Noncompliant, always true
     }
+    if ((foo == bar || condition) && !(foo == bar || condition)) { // Noncompliant, always false
+    }
+    if ((foo == bar || condition) || !(foo == bar || condition)) { // Noncompliant, always true
+    }
+    if (!(foo == bar || condition) && (foo == bar || condition)) { // Noncompliant, always false
+    }
+    if (!(foo == bar || condition) || (foo == bar || condition)) { // Noncompliant, always true
+    }
   }
 
 }

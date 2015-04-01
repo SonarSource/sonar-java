@@ -44,7 +44,11 @@ public class UselessConditionCheckTest {
       .next().atLine(14).withMessage("Change this condition so that it does not always evaluate to \"false\"")
       .next().atLine(16).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(18).withMessage("Change this condition so that it does not always evaluate to \"false\"")
-      .next().atLine(20).withMessage("Change this condition so that it does not always evaluate to \"true\"");
+      .next().atLine(20).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(22).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(24).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(26).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(28).withMessage("Change this condition so that it does not always evaluate to \"true\"");
   }
 
 }

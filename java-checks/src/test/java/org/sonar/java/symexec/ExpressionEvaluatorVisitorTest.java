@@ -32,6 +32,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -41,21 +43,31 @@ import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
 
 public class ExpressionEvaluatorVisitorTest {
 
-  private static LiteralTree EXPRESSION_UNKNOWN;
+  private static IdentifierTreeImpl FIELD;
+  private static LiteralTree LITERAL_NULL;
   private static LiteralTree LITERAL_FALSE;
   private static LiteralTree LITERAL_TRUE;
   private static Symbol.VariableSymbol SYMBOL1;
   private static Symbol.VariableSymbol SYMBOL2;
   private static IdentifierTreeImpl VARIABLE1;
   private static IdentifierTreeImpl VARIABLE2;
-
-  private static final ExpressionEvaluatorVisitor VISITOR = new ExpressionEvaluatorVisitor();
+  private static InternalSyntaxToken TOKEN = mock(InternalSyntaxToken.class);
 
   @BeforeClass
   public static void setup() {
+    Symbol classSymbol = Mockito.mock(Symbol.class);
+    when(classSymbol.isMethodSymbol()).thenReturn(false);
+
+    Symbol.VariableSymbol fieldSymbol = Mockito.mock(Symbol.VariableSymbol.class);
+    when(fieldSymbol.isVariableSymbol()).thenReturn(true);
+    when(fieldSymbol.owner()).thenReturn(classSymbol);
+
+    FIELD = new IdentifierTreeImpl(mock(InternalSyntaxToken.class));
+    FIELD.setSymbol(fieldSymbol);
+
     InternalSyntaxToken tokenNull = mock(InternalSyntaxToken.class);
     when(tokenNull.text()).thenReturn("null");
-    EXPRESSION_UNKNOWN = new LiteralTreeImpl(Tree.Kind.BOOLEAN_LITERAL, tokenNull);
+    LITERAL_NULL = new LiteralTreeImpl(Tree.Kind.NULL_LITERAL, tokenNull);
 
     InternalSyntaxToken tokenFalse = mock(InternalSyntaxToken.class);
     when(tokenFalse.text()).thenReturn("false");
@@ -83,49 +95,44 @@ public class ExpressionEvaluatorVisitorTest {
     when(SYMBOL2.isVariableSymbol()).thenReturn(true);
     when(SYMBOL2.owner()).thenReturn(ownerSymbol);
 
-    VARIABLE2 = new IdentifierTreeImpl(mock(InternalSyntaxToken.class));
+    VARIABLE2 = new IdentifierTreeImpl(TOKEN);
     VARIABLE2.setSymbol(SYMBOL2);
   }
 
   @Test
-  public void test_boolean_literal() {
-    assertThat(VISITOR.evaluate(new ExecutionState(), LITERAL_FALSE)).isSameAs(SymbolicBooleanConstraint.FALSE);
-    assertThat(VISITOR.evaluate(new ExecutionState(), LITERAL_TRUE)).isSameAs(SymbolicBooleanConstraint.TRUE);
-    assertThat(VISITOR.evaluate(new ExecutionState(), EXPRESSION_UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
-  }
-
-  @Test
   public void test_conditional_and() {
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_FALSE, LITERAL_TRUE)).isSameAs(FALSE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_FALSE, LITERAL_TRUE)).isSameAs(FALSE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_FALSE, EXPRESSION_UNKNOWN)).isSameAs(FALSE);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_FALSE, LITERAL_TRUE, 0, 1);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_FALSE, LITERAL_TRUE, 0, 1);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_FALSE, VARIABLE2, 0, 1);
 
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_TRUE, LITERAL_FALSE)).isSameAs(FALSE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_TRUE, LITERAL_TRUE)).isSameAs(TRUE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_TRUE, EXPRESSION_UNKNOWN)).isSameAs(UNKNOWN);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_TRUE, LITERAL_FALSE, 0, 1);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_TRUE, LITERAL_TRUE, 1, 0);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, LITERAL_TRUE, VARIABLE2, 1, 1);
 
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, EXPRESSION_UNKNOWN, LITERAL_FALSE)).isSameAs(FALSE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, EXPRESSION_UNKNOWN, LITERAL_TRUE)).isSameAs(UNKNOWN);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_AND, EXPRESSION_UNKNOWN, EXPRESSION_UNKNOWN)).isSameAs(UNKNOWN);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, VARIABLE1, LITERAL_FALSE, 0, 2);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, VARIABLE1, LITERAL_TRUE, 1, 1);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_AND, VARIABLE1, VARIABLE2, 1, 2);
   }
 
   @Test
   public void test_conditional_or() {
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_FALSE, LITERAL_FALSE)).isSameAs(FALSE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_FALSE, LITERAL_TRUE)).isSameAs(TRUE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_FALSE, EXPRESSION_UNKNOWN)).isSameAs(UNKNOWN);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_FALSE, LITERAL_FALSE, 0, 1);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_FALSE, LITERAL_TRUE, 1, 0);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_FALSE, VARIABLE2, 1, 1);
 
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_TRUE, LITERAL_FALSE)).isSameAs(TRUE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_TRUE, LITERAL_TRUE)).isSameAs(TRUE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_TRUE, EXPRESSION_UNKNOWN)).isSameAs(TRUE);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_TRUE, LITERAL_FALSE, 1, 0);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_TRUE, LITERAL_TRUE, 1, 0);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, LITERAL_TRUE, VARIABLE2, 1, 0);
 
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, EXPRESSION_UNKNOWN, LITERAL_FALSE)).isSameAs(UNKNOWN);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, EXPRESSION_UNKNOWN, LITERAL_TRUE)).isSameAs(TRUE);
-    assertThat(evaluateBinaryOperator(Tree.Kind.CONDITIONAL_OR, EXPRESSION_UNKNOWN, EXPRESSION_UNKNOWN)).isSameAs(UNKNOWN);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, VARIABLE1, LITERAL_FALSE, 1, 1);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, VARIABLE1, LITERAL_TRUE, 2, 0);
+    validateLogicalOperator(Tree.Kind.CONDITIONAL_OR, VARIABLE1, VARIABLE2, 2, 1);
   }
 
-  private SymbolicBooleanConstraint evaluateBinaryOperator(Tree.Kind operatorKind, ExpressionTree leftTree, ExpressionTree rightTree) {
-    return VISITOR.evaluate(new ExecutionState(), new BinaryExpressionTreeImpl(operatorKind, leftTree, mock(InternalSyntaxToken.class), rightTree));
+  private void validateLogicalOperator(Tree.Kind operatorKind, ExpressionTree leftTree, ExpressionTree rightTree, int trueCount, int falseCount) {
+    ExpressionEvaluatorVisitor visitor = new ExpressionEvaluatorVisitor(new ExecutionState(), new BinaryExpressionTreeImpl(operatorKind, leftTree, TOKEN, rightTree));
+    assertThat(visitor.falseStates.size()).isSameAs(falseCount);
+    assertThat(visitor.trueStates.size()).isSameAs(trueCount);
   }
 
   @Test
@@ -135,35 +142,62 @@ public class ExpressionEvaluatorVisitorTest {
     Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
     when(identifierSymbol.isVariableSymbol()).thenReturn(true);
     when(identifierSymbol.owner()).thenReturn(ownerSymbol);
-    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(mock(InternalSyntaxToken.class));
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(TOKEN);
     identifierTree.setSymbol(identifierSymbol);
 
     ExecutionState state = new ExecutionState();
 
-    ConditionalState defaultConditionalState = new ConditionalState(state);
-    assertThat(VISITOR.evaluate(state, defaultConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
-    assertThat(defaultConditionalState.falseState.constraints.size()).isEqualTo(1);
-    assertThat(defaultConditionalState.falseState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.FALSE);
-    assertThat(defaultConditionalState.trueState.constraints.size()).isEqualTo(1);
-    assertThat(defaultConditionalState.trueState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.TRUE);
+    ExpressionEvaluatorVisitor defaultVisitor = new ExpressionEvaluatorVisitor(state, identifierTree);
+    assertThat(defaultVisitor.falseStates.size()).isEqualTo(1);
+    assertThat(defaultVisitor.falseStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(defaultVisitor.falseStates.get(0).getBooleanConstraint(identifierSymbol)).isSameAs(FALSE);
+    assertThat(defaultVisitor.trueStates.size()).isEqualTo(1);
+    assertThat(defaultVisitor.trueStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(defaultVisitor.trueStates.get(0).getBooleanConstraint(identifierSymbol)).isSameAs(TRUE);
 
-    ConditionalState falseConditionalState = new ConditionalState(state);
-    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.FALSE);
-    assertThat(VISITOR.evaluate(state, falseConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.FALSE);
-    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
-    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+    state.setBooleanConstraint(identifierSymbol, FALSE);
+    ExpressionEvaluatorVisitor falseVisitor = new ExpressionEvaluatorVisitor(state, identifierTree);
+    assertThat(falseVisitor.falseStates.size()).isEqualTo(1);
+    assertThat(falseVisitor.falseStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(falseVisitor.trueStates).isEmpty();
 
-    ConditionalState trueConditionalState = new ConditionalState(state);
-    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.TRUE);
-    assertThat(VISITOR.evaluate(state, trueConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.TRUE);
-    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
-    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+    state.setBooleanConstraint(identifierSymbol, TRUE);
+    ExpressionEvaluatorVisitor trueVisitor = new ExpressionEvaluatorVisitor(state, identifierTree);
+    assertThat(trueVisitor.falseStates).isEmpty();
+    assertThat(trueVisitor.trueStates.size()).isEqualTo(1);
+    assertThat(trueVisitor.trueStates.get(0).constraints.size()).isEqualTo(1);
 
-    ConditionalState unknownConditionalState = new ConditionalState(state);
-    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.UNKNOWN);
-    assertThat(VISITOR.evaluate(state, unknownConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
-    assertThat(unknownConditionalState.falseState.constraints.size()).isEqualTo(1);
-    assertThat(unknownConditionalState.trueState.constraints.size()).isEqualTo(1);
+    state.setBooleanConstraint(identifierSymbol, UNKNOWN);
+
+    ExpressionEvaluatorVisitor unknownVisitor = new ExpressionEvaluatorVisitor(state, identifierTree);
+    assertThat(unknownVisitor.falseStates.size()).isEqualTo(1);
+    assertThat(unknownVisitor.falseStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(unknownVisitor.falseStates.get(0).getBooleanConstraint(identifierSymbol)).isSameAs(FALSE);
+    assertThat(unknownVisitor.trueStates.size()).isEqualTo(1);
+    assertThat(unknownVisitor.trueStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(unknownVisitor.trueStates.get(0).getBooleanConstraint(identifierSymbol)).isSameAs(TRUE);
+
+    when(ownerSymbol.isMethodSymbol()).thenReturn(false);
+    ExpressionEvaluatorVisitor fieldVisitor = new ExpressionEvaluatorVisitor(state, identifierTree);
+    assertThat(fieldVisitor.falseStates).isEmpty();
+    assertThat(fieldVisitor.trueStates).isEmpty();
+  }
+
+  @Test
+  public void test_literal() {
+    ExpressionEvaluatorVisitor falseVisitor = new ExpressionEvaluatorVisitor(new ExecutionState(), LITERAL_FALSE);
+    assertThat(falseVisitor.falseStates.size()).isEqualTo(1);
+    assertThat(falseVisitor.falseStates.get(0).constraints).isEmpty();
+    assertThat(falseVisitor.trueStates).isEmpty();
+
+    ExpressionEvaluatorVisitor nullVisitor = new ExpressionEvaluatorVisitor(new ExecutionState(), LITERAL_NULL);
+    assertThat(nullVisitor.falseStates).isEmpty();
+    assertThat(nullVisitor.trueStates).isEmpty();
+
+    ExpressionEvaluatorVisitor trueVisitor = new ExpressionEvaluatorVisitor(new ExecutionState(), LITERAL_TRUE);
+    assertThat(trueVisitor.falseStates).isEmpty();
+    assertThat(trueVisitor.trueStates.size()).isEqualTo(1);
+    assertThat(trueVisitor.trueStates.get(0).constraints).isEmpty();
   }
 
   @Test
@@ -173,76 +207,99 @@ public class ExpressionEvaluatorVisitorTest {
     Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
     when(identifierSymbol.isVariableSymbol()).thenReturn(true);
     when(identifierSymbol.owner()).thenReturn(ownerSymbol);
-    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(mock(InternalSyntaxToken.class));
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(TOKEN);
     identifierTree.setSymbol(identifierSymbol);
-    InternalPrefixUnaryExpression logicalNotTree = new InternalPrefixUnaryExpression(Tree.Kind.LOGICAL_COMPLEMENT, mock(InternalSyntaxToken.class), identifierTree);
+    InternalPrefixUnaryExpression logicalNotTree = new InternalPrefixUnaryExpression(Tree.Kind.LOGICAL_COMPLEMENT, TOKEN, identifierTree);
 
     ExecutionState state = new ExecutionState();
 
-    ConditionalState defaultConditionalState = new ConditionalState(state);
-    assertThat(VISITOR.evaluate(state, defaultConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
-    assertThat(defaultConditionalState.trueState.constraints.size()).isEqualTo(1);
-    assertThat(defaultConditionalState.trueState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.FALSE);
-    assertThat(defaultConditionalState.falseState.constraints.size()).isEqualTo(1);
-    assertThat(defaultConditionalState.falseState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.TRUE);
+    evaluateUnaryOperator(state, logicalNotTree, identifierSymbol, FALSE, TRUE);
 
-    ConditionalState falseConditionalState = new ConditionalState(state);
-    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.FALSE);
-    assertThat(VISITOR.evaluate(state, falseConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.TRUE);
-    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
-    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+    state.setBooleanConstraint(identifierSymbol, FALSE);
+    evaluateUnaryOperator(state, logicalNotTree, identifierSymbol, FALSE, null);
 
-    ConditionalState trueConditionalState = new ConditionalState(state);
-    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.TRUE);
-    assertThat(VISITOR.evaluate(state, trueConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.FALSE);
-    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
-    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+    state.setBooleanConstraint(identifierSymbol, TRUE);
+    evaluateUnaryOperator(state, logicalNotTree, identifierSymbol, null, TRUE);
 
-    ConditionalState unknownConditionalState = new ConditionalState(state);
-    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.UNKNOWN);
-    assertThat(VISITOR.evaluate(state, unknownConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
-    assertThat(unknownConditionalState.falseState.constraints.size()).isEqualTo(1);
-    assertThat(unknownConditionalState.trueState.constraints.size()).isEqualTo(1);
+    state.setBooleanConstraint(identifierSymbol, UNKNOWN);
+    evaluateUnaryOperator(state, logicalNotTree, identifierSymbol, FALSE, TRUE);
+  }
+
+  public void evaluateUnaryOperator(ExecutionState state, Tree tree, Symbol.VariableSymbol symbol,
+    @Nullable SymbolicBooleanConstraint trueValue, @Nullable SymbolicBooleanConstraint falseValue) {
+    ExpressionEvaluatorVisitor defaultVisitor = new ExpressionEvaluatorVisitor(state, tree);
+    if (trueValue != null) {
+      assertThat(defaultVisitor.trueStates.size()).isEqualTo(1);
+      assertThat(defaultVisitor.trueStates.get(0).constraints.size()).isEqualTo(1);
+      assertThat(defaultVisitor.trueStates.get(0).getBooleanConstraint(symbol)).isSameAs(trueValue);
+    } else {
+      assertThat(defaultVisitor.trueStates).isEmpty();
+    }
+    if (falseValue != null) {
+      assertThat(defaultVisitor.falseStates.size()).isEqualTo(1);
+      assertThat(defaultVisitor.falseStates.get(0).constraints.size()).isEqualTo(1);
+      assertThat(defaultVisitor.falseStates.get(0).getBooleanConstraint(symbol)).isSameAs(falseValue);
+    } else {
+      assertThat(defaultVisitor.falseStates).isEmpty();
+    }
   }
 
   @Test
   public void test_relational() {
     ExecutionState state = new ExecutionState();
 
-    ConditionalState greaterThanConditionalState = new ConditionalState(state);
-    assertThat(evaluateBinaryOperator(state, greaterThanConditionalState, Tree.Kind.GREATER_THAN, VARIABLE1, VARIABLE2)).isSameAs(UNKNOWN);
-    validateState(greaterThanConditionalState.falseState, SymbolicRelation.LESS_EQUAL, SymbolicRelation.GREATER_EQUAL);
-    validateState(greaterThanConditionalState.trueState, SymbolicRelation.GREATER_THAN, SymbolicRelation.LESS_THAN);
+    ExpressionEvaluatorVisitor greaterThanVisitor = evaluateRelationalOperator(state, Tree.Kind.GREATER_THAN);
+    validateState(greaterThanVisitor.falseStates.get(0), SymbolicRelation.LESS_EQUAL, SymbolicRelation.GREATER_EQUAL);
+    validateState(greaterThanVisitor.trueStates.get(0), SymbolicRelation.GREATER_THAN, SymbolicRelation.LESS_THAN);
 
-    ConditionalState greaterEqualConditionalState = new ConditionalState(state);
-    assertThat(evaluateBinaryOperator(state, greaterEqualConditionalState, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, VARIABLE1, VARIABLE2)).isSameAs(UNKNOWN);
-    validateState(greaterEqualConditionalState.falseState, SymbolicRelation.LESS_THAN, SymbolicRelation.GREATER_THAN);
-    validateState(greaterEqualConditionalState.trueState, SymbolicRelation.GREATER_EQUAL, SymbolicRelation.LESS_EQUAL);
+    ExpressionEvaluatorVisitor greaterEqualVisitor = evaluateRelationalOperator(state, Tree.Kind.GREATER_THAN_OR_EQUAL_TO);
+    validateState(greaterEqualVisitor.falseStates.get(0), SymbolicRelation.LESS_THAN, SymbolicRelation.GREATER_THAN);
+    validateState(greaterEqualVisitor.trueStates.get(0), SymbolicRelation.GREATER_EQUAL, SymbolicRelation.LESS_EQUAL);
 
-    ConditionalState equalToConditionalState = new ConditionalState(state);
-    assertThat(evaluateBinaryOperator(state, equalToConditionalState, Tree.Kind.EQUAL_TO, VARIABLE1, VARIABLE2)).isSameAs(UNKNOWN);
-    validateState(equalToConditionalState.falseState, SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
-    validateState(equalToConditionalState.trueState, SymbolicRelation.EQUAL_TO, SymbolicRelation.EQUAL_TO);
+    ExpressionEvaluatorVisitor equalToVisitor = evaluateRelationalOperator(state, Tree.Kind.EQUAL_TO);
+    validateState(equalToVisitor.falseStates.get(0), SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
+    validateState(equalToVisitor.trueStates.get(0), SymbolicRelation.EQUAL_TO, SymbolicRelation.EQUAL_TO);
 
-    ConditionalState lessThanConditionalState = new ConditionalState(state);
-    assertThat(evaluateBinaryOperator(state, lessThanConditionalState, Tree.Kind.LESS_THAN, VARIABLE1, VARIABLE2)).isSameAs(UNKNOWN);
-    validateState(lessThanConditionalState.falseState, SymbolicRelation.GREATER_EQUAL, SymbolicRelation.LESS_EQUAL);
-    validateState(lessThanConditionalState.trueState, SymbolicRelation.LESS_THAN, SymbolicRelation.GREATER_THAN);
+    ExpressionEvaluatorVisitor lessThanVisitor = evaluateRelationalOperator(state, Tree.Kind.LESS_THAN);
+    validateState(lessThanVisitor.falseStates.get(0), SymbolicRelation.GREATER_EQUAL, SymbolicRelation.LESS_EQUAL);
+    validateState(lessThanVisitor.trueStates.get(0), SymbolicRelation.LESS_THAN, SymbolicRelation.GREATER_THAN);
 
-    ConditionalState lessEqualConditionalState = new ConditionalState(state);
-    assertThat(evaluateBinaryOperator(state, lessEqualConditionalState, Tree.Kind.LESS_THAN_OR_EQUAL_TO, VARIABLE1, VARIABLE2)).isSameAs(UNKNOWN);
-    validateState(lessEqualConditionalState.falseState, SymbolicRelation.GREATER_THAN, SymbolicRelation.LESS_THAN);
-    validateState(lessEqualConditionalState.trueState, SymbolicRelation.LESS_EQUAL, SymbolicRelation.GREATER_EQUAL);
+    ExpressionEvaluatorVisitor lessEqualVisitor = evaluateRelationalOperator(state, Tree.Kind.LESS_THAN_OR_EQUAL_TO);
+    validateState(lessEqualVisitor.falseStates.get(0), SymbolicRelation.GREATER_THAN, SymbolicRelation.LESS_THAN);
+    validateState(lessEqualVisitor.trueStates.get(0), SymbolicRelation.LESS_EQUAL, SymbolicRelation.GREATER_EQUAL);
 
-    ConditionalState notEqualConditionalState = new ConditionalState(state);
-    assertThat(evaluateBinaryOperator(state, notEqualConditionalState, Tree.Kind.NOT_EQUAL_TO, VARIABLE1, VARIABLE2)).isSameAs(UNKNOWN);
-    validateState(notEqualConditionalState.falseState, SymbolicRelation.EQUAL_TO, SymbolicRelation.EQUAL_TO);
-    validateState(notEqualConditionalState.trueState, SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
+    ExpressionEvaluatorVisitor notEqualVisitor = evaluateRelationalOperator(state, Tree.Kind.NOT_EQUAL_TO);
+    validateState(notEqualVisitor.falseStates.get(0), SymbolicRelation.EQUAL_TO, SymbolicRelation.EQUAL_TO);
+    validateState(notEqualVisitor.trueStates.get(0), SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
+
+    ExpressionEvaluatorVisitor fieldfieldVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, FIELD, TOKEN, FIELD));
+    assertThat(fieldfieldVisitor.falseStates).isEmpty();
+    assertThat(fieldfieldVisitor.trueStates).isEmpty();
+
+    ExpressionEvaluatorVisitor fieldLocalVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, FIELD, TOKEN, VARIABLE2));
+    assertThat(fieldLocalVisitor.falseStates).isEmpty();
+    assertThat(fieldLocalVisitor.trueStates).isEmpty();
+
+    ExpressionEvaluatorVisitor localFieldVisitor = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, VARIABLE1, TOKEN, FIELD));
+    assertThat(localFieldVisitor.falseStates).isEmpty();
+    assertThat(localFieldVisitor.trueStates).isEmpty();
+
+    ExpressionEvaluatorVisitor nestedFalseVisitor = new ExpressionEvaluatorVisitor(notEqualVisitor.falseStates.get(0),
+      new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, VARIABLE1, TOKEN, VARIABLE2));
+    validateState(nestedFalseVisitor.falseStates.get(0), SymbolicRelation.EQUAL_TO, SymbolicRelation.EQUAL_TO);
+    assertThat(nestedFalseVisitor.trueStates).isEmpty();
+
+    ExpressionEvaluatorVisitor nestedTrueVisitor = new ExpressionEvaluatorVisitor(notEqualVisitor.trueStates.get(0),
+      new BinaryExpressionTreeImpl(Tree.Kind.NOT_EQUAL_TO, VARIABLE1, TOKEN, VARIABLE2));
+    assertThat(nestedTrueVisitor.falseStates).isEmpty();
+    validateState(nestedTrueVisitor.trueStates.get(0), SymbolicRelation.NOT_EQUAL, SymbolicRelation.NOT_EQUAL);
   }
 
-  private SymbolicBooleanConstraint evaluateBinaryOperator(ExecutionState state, ConditionalState conditionalState, Tree.Kind operatorKind, ExpressionTree leftTree,
-    ExpressionTree rightTree) {
-    return VISITOR.evaluate(state, conditionalState, new BinaryExpressionTreeImpl(operatorKind, leftTree, mock(InternalSyntaxToken.class), rightTree));
+  private ExpressionEvaluatorVisitor evaluateRelationalOperator(ExecutionState state, Tree.Kind operatorKind) {
+    ExpressionEvaluatorVisitor result = new ExpressionEvaluatorVisitor(state, new BinaryExpressionTreeImpl(operatorKind, VARIABLE1, TOKEN, VARIABLE2));
+    assertThat(result.falseStates.size()).isEqualTo(1);
+    assertThat(result.trueStates.size()).isEqualTo(1);
+    return result;
   }
 
   private void validateState(ExecutionState state, SymbolicRelation leftRight, SymbolicRelation rightLeft) {

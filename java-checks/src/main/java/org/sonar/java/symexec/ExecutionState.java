@@ -142,11 +142,12 @@ public class ExecutionState {
     return RELATION_RELATION_MAP.get(getRelation(leftValue, rightValue), relation);
   }
 
-  void setRelation(Symbol.VariableSymbol leftValue, SymbolicRelation relation, Symbol.VariableSymbol rightValue) {
+  ExecutionState setRelation(Symbol.VariableSymbol leftValue, SymbolicRelation relation, Symbol.VariableSymbol rightValue) {
     if (!leftValue.equals(rightValue)) {
       relations.put(leftValue, rightValue, relation);
       relations.put(rightValue, leftValue, relation.swap());
     }
+    return this;
   }
 
   SymbolicBooleanConstraint getBooleanConstraint(Symbol.VariableSymbol symbol) {
@@ -159,10 +160,11 @@ public class ExecutionState {
     return SymbolicBooleanConstraint.UNKNOWN;
   }
 
-  void setBooleanConstraint(Symbol.VariableSymbol symbol, SymbolicBooleanConstraint constraint) {
+  ExecutionState setBooleanConstraint(Symbol.VariableSymbol symbol, SymbolicBooleanConstraint constraint) {
     if (symbol.owner().isMethodSymbol()) {
       constraints.put(symbol, constraint);
     }
+    return this;
   }
 
 }
