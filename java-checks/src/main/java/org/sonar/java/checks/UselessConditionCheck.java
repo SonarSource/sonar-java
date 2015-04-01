@@ -24,7 +24,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
 import org.sonar.java.symexec.ExpressionEvaluatorVisitor;
-import org.sonar.java.symexec.SymbolicBooleanConstraint;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -45,7 +44,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private final ExpressionEvaluatorVisitor evaluator = new ExpressionEvaluatorVisitor();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -60,10 +58,11 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   private void checkCondition(ExpressionTree tree) {
-    SymbolicBooleanConstraint result = evaluator.evaluate(new ExecutionState(), tree);
-    if (result == SymbolicBooleanConstraint.FALSE) {
+    ExpressionEvaluatorVisitor evaluation = new ExpressionEvaluatorVisitor(new ExecutionState(), tree);
+    if(evaluation.isAlwaysFalse()) {
       raiseIssue(tree, "false");
-    } else if (result == SymbolicBooleanConstraint.TRUE) {
+    }
+    if(evaluation.isAwlaysTrue()) {
       raiseIssue(tree, "true");
     }
   }
