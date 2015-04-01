@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.BinaryExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.expression.InternalPrefixUnaryExpression;
 import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -125,6 +126,83 @@ public class ExpressionEvaluatorVisitorTest {
 
   private SymbolicBooleanConstraint evaluateBinaryOperator(Tree.Kind operatorKind, ExpressionTree leftTree, ExpressionTree rightTree) {
     return VISITOR.evaluate(new ExecutionState(), new BinaryExpressionTreeImpl(operatorKind, leftTree, mock(InternalSyntaxToken.class), rightTree));
+  }
+
+  @Test
+  public void test_identifier() {
+    Symbol.VariableSymbol ownerSymbol = mock(Symbol.VariableSymbol.class);
+    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
+    Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
+    when(identifierSymbol.isVariableSymbol()).thenReturn(true);
+    when(identifierSymbol.owner()).thenReturn(ownerSymbol);
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(mock(InternalSyntaxToken.class));
+    identifierTree.setSymbol(identifierSymbol);
+
+    ExecutionState state = new ExecutionState();
+
+    ConditionalState defaultConditionalState = new ConditionalState(state);
+    assertThat(VISITOR.evaluate(state, defaultConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(defaultConditionalState.falseState.constraints.size()).isEqualTo(1);
+    assertThat(defaultConditionalState.falseState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.FALSE);
+    assertThat(defaultConditionalState.trueState.constraints.size()).isEqualTo(1);
+    assertThat(defaultConditionalState.trueState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.TRUE);
+
+    ConditionalState falseConditionalState = new ConditionalState(state);
+    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.FALSE);
+    assertThat(VISITOR.evaluate(state, falseConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.FALSE);
+    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
+    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+
+    ConditionalState trueConditionalState = new ConditionalState(state);
+    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.TRUE);
+    assertThat(VISITOR.evaluate(state, trueConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.TRUE);
+    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
+    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+
+    ConditionalState unknownConditionalState = new ConditionalState(state);
+    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(VISITOR.evaluate(state, unknownConditionalState, identifierTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(unknownConditionalState.falseState.constraints.size()).isEqualTo(1);
+    assertThat(unknownConditionalState.trueState.constraints.size()).isEqualTo(1);
+  }
+
+  @Test
+  public void test_logical_not() {
+    Symbol.VariableSymbol ownerSymbol = mock(Symbol.VariableSymbol.class);
+    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
+    Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
+    when(identifierSymbol.isVariableSymbol()).thenReturn(true);
+    when(identifierSymbol.owner()).thenReturn(ownerSymbol);
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(mock(InternalSyntaxToken.class));
+    identifierTree.setSymbol(identifierSymbol);
+    InternalPrefixUnaryExpression logicalNotTree = new InternalPrefixUnaryExpression(Tree.Kind.LOGICAL_COMPLEMENT, mock(InternalSyntaxToken.class), identifierTree);
+
+    ExecutionState state = new ExecutionState();
+
+    ConditionalState defaultConditionalState = new ConditionalState(state);
+    assertThat(VISITOR.evaluate(state, defaultConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(defaultConditionalState.trueState.constraints.size()).isEqualTo(1);
+    assertThat(defaultConditionalState.trueState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.FALSE);
+    assertThat(defaultConditionalState.falseState.constraints.size()).isEqualTo(1);
+    assertThat(defaultConditionalState.falseState.getBooleanConstraint(identifierSymbol)).isSameAs(SymbolicBooleanConstraint.TRUE);
+
+    ConditionalState falseConditionalState = new ConditionalState(state);
+    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.FALSE);
+    assertThat(VISITOR.evaluate(state, falseConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.TRUE);
+    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
+    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+
+    ConditionalState trueConditionalState = new ConditionalState(state);
+    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.TRUE);
+    assertThat(VISITOR.evaluate(state, trueConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.FALSE);
+    assertThat(falseConditionalState.falseState.constraints.isEmpty()).isTrue();
+    assertThat(falseConditionalState.trueState.constraints.isEmpty()).isTrue();
+
+    ConditionalState unknownConditionalState = new ConditionalState(state);
+    state.setBooleanConstraint(identifierSymbol, SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(VISITOR.evaluate(state, unknownConditionalState, logicalNotTree)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(unknownConditionalState.falseState.constraints.size()).isEqualTo(1);
+    assertThat(unknownConditionalState.trueState.constraints.size()).isEqualTo(1);
   }
 
   @Test

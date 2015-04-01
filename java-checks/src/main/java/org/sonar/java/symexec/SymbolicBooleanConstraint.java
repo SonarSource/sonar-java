@@ -26,7 +26,7 @@ public enum SymbolicBooleanConstraint {
   UNKNOWN;
 
   public SymbolicBooleanConstraint negate() {
-    switch(this) {
+    switch (this) {
       case FALSE:
         return TRUE;
       case TRUE:
