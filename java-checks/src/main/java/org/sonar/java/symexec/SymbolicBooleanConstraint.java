@@ -19,14 +19,10 @@
  */
 package org.sonar.java.symexec;
 
-/** symbolic value. */
-public class SymbolicValue {
+public enum SymbolicBooleanConstraint {
 
-  public static final SymbolicValue BOOLEAN_FALSE = new SymbolicValue();
-
-  public static final SymbolicValue BOOLEAN_TRUE = new SymbolicValue();
-
-  /** unknown value. */
-  public static final SymbolicValue UNKNOWN_VALUE = new SymbolicValue();
+  FALSE,
+  TRUE,
+  UNKNOWN
 
 }

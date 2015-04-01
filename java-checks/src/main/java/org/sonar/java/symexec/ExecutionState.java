@@ -24,11 +24,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
@@ -38,77 +34,77 @@ public class ExecutionState {
 
   // FIXME(merciesa): find a better name...
   @VisibleForTesting
-  static final Map<SymbolicRelation, Map<SymbolicRelation, SymbolicValue>> RELATION_RELATION_MAP = ImmutableMap
-    .<SymbolicRelation, Map<SymbolicRelation, SymbolicValue>>builder()
-    .put(SymbolicRelation.EQUAL_TO, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.BOOLEAN_TRUE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+  static final Map<SymbolicRelation, Map<SymbolicRelation, SymbolicBooleanConstraint>> RELATION_RELATION_MAP = ImmutableMap
+    .<SymbolicRelation, Map<SymbolicRelation, SymbolicBooleanConstraint>>builder()
+    .put(SymbolicRelation.EQUAL_TO, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.TRUE)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
-    .put(SymbolicRelation.GREATER_EQUAL, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.BOOLEAN_TRUE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+    .put(SymbolicRelation.GREATER_EQUAL, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.TRUE)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
-    .put(SymbolicRelation.GREATER_THAN, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.BOOLEAN_TRUE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+    .put(SymbolicRelation.GREATER_THAN, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.TRUE)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
-    .put(SymbolicRelation.LESS_EQUAL, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.BOOLEAN_TRUE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+    .put(SymbolicRelation.LESS_EQUAL, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.TRUE)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
-    .put(SymbolicRelation.LESS_THAN, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.BOOLEAN_TRUE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+    .put(SymbolicRelation.LESS_THAN, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.TRUE)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
-    .put(SymbolicRelation.NOT_EQUAL, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.BOOLEAN_FALSE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.BOOLEAN_TRUE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+    .put(SymbolicRelation.NOT_EQUAL, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.FALSE)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.TRUE)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
-    .put(SymbolicRelation.UNKNOWN, ImmutableMap.<SymbolicRelation, SymbolicValue>builder()
-      .put(SymbolicRelation.EQUAL_TO, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.GREATER_THAN, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.LESS_THAN, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.NOT_EQUAL, SymbolicValue.UNKNOWN_VALUE)
-      .put(SymbolicRelation.UNKNOWN, SymbolicValue.UNKNOWN_VALUE)
+    .put(SymbolicRelation.UNKNOWN, ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
+      .put(SymbolicRelation.EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.LESS_THAN, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(SymbolicRelation.UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
       .build())
     .build();
 
   @Nullable
   final ExecutionState parentState;
-  final Table<SymbolicValue, SymbolicValue, SymbolicRelation> relations;
-  final Map<Symbol.VariableSymbol, SymbolicValue> variables;
+  final Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> relations;
+  final Map<Symbol.VariableSymbol, SymbolicBooleanConstraint> variables;
 
   public ExecutionState() {
     this.parentState = null;
@@ -123,51 +119,20 @@ public class ExecutionState {
   }
 
   @VisibleForTesting
-  SymbolicRelation getRelation(SymbolicValue leftValue, SymbolicValue rightValue) {
+  SymbolicRelation getRelation(Symbol.VariableSymbol leftValue, Symbol.VariableSymbol rightValue) {
     SymbolicRelation result = relations.get(leftValue, rightValue);
     return result != null ? result : parentState != null ? parentState.getRelation(leftValue, rightValue) : SymbolicRelation.UNKNOWN;
   }
 
-  SymbolicValue evaluateRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
+  SymbolicBooleanConstraint evaluateRelation(Symbol.VariableSymbol leftValue, SymbolicRelation relation, Symbol.VariableSymbol rightValue) {
     return RELATION_RELATION_MAP.get(getRelation(leftValue, rightValue)).get(relation);
   }
 
-  void setRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
-    if (!leftValue.equals(SymbolicValue.UNKNOWN_VALUE) && !rightValue.equals(SymbolicValue.UNKNOWN_VALUE)) {
-      if (relation == SymbolicRelation.UNKNOWN) {
-        throw new IllegalStateException("relation cannot be UNKNOWN");
-      }
+  void setRelation(Symbol.VariableSymbol leftValue, SymbolicRelation relation, Symbol.VariableSymbol rightValue) {
+    if (!leftValue.equals(rightValue)) {
       relations.put(leftValue, rightValue, relation);
       relations.put(rightValue, leftValue, relation.swap());
     }
-  }
-
-  SymbolicValue getSymbolicValue(ExpressionTree tree) {
-    Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree);
-    if (symbol == null) {
-      return SymbolicValue.UNKNOWN_VALUE;
-    }
-    for (ExecutionState state = this; state != null; state = state.parentState) {
-      SymbolicValue result = state.variables.get(symbol);
-      if (result != null) {
-        return result;
-      }
-    }
-    SymbolicValue result = new SymbolicValue();
-    variables.put(symbol, result);
-    return result;
-  }
-
-  @CheckForNull
-  private Symbol.VariableSymbol extractLocalVariableSymbol(Tree tree) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) tree;
-      Symbol symbol = ((IdentifierTree) identifierTree).symbol();
-      if (symbol.owner().isMethodSymbol()) {
-        return (Symbol.VariableSymbol) symbol;
-      }
-    }
-    return null;
   }
 
 }

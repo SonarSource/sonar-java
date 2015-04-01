@@ -20,32 +20,36 @@
 package org.sonar.java.symexec;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.CheckForNull;
+
 public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
 
-  public SymbolicValue evaluate(ExecutionState state, Tree tree) {
+  public SymbolicBooleanConstraint evaluate(ExecutionState state, Tree tree) {
     currentConditionalState = new ConditionalState(state);
     currentState = state;
-    result = SymbolicValue.UNKNOWN_VALUE;
+    result = SymbolicBooleanConstraint.UNKNOWN;
     scan(tree);
     return result;
   }
 
   @VisibleForTesting
-  SymbolicValue evaluate(ExecutionState state, ConditionalState conditionalState, Tree tree) {
+  SymbolicBooleanConstraint evaluate(ExecutionState state, ConditionalState conditionalState, Tree tree) {
     currentConditionalState = conditionalState;
     currentState = state;
-    result = SymbolicValue.UNKNOWN_VALUE;
+    result = SymbolicBooleanConstraint.UNKNOWN;
     scan(tree);
     return result;
   }
 
-  private SymbolicValue evaluate(Tree tree) {
-    result = SymbolicValue.UNKNOWN_VALUE;
+  private SymbolicBooleanConstraint evaluate(Tree tree) {
+    result = SymbolicBooleanConstraint.UNKNOWN;
     scan(tree);
     return result;
   }
@@ -53,7 +57,7 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
   @VisibleForTesting
   ConditionalState currentConditionalState;
   private ExecutionState currentState;
-  private SymbolicValue result;
+  private SymbolicBooleanConstraint result;
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
@@ -79,56 +83,70 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
   @Override
   public void visitLiteral(LiteralTree tree) {
     if ("false".equals(tree.value())) {
-      result = SymbolicValue.BOOLEAN_FALSE;
+      result = SymbolicBooleanConstraint.FALSE;
     } else if ("true".equals(tree.value())) {
-      result = SymbolicValue.BOOLEAN_TRUE;
+      result = SymbolicBooleanConstraint.TRUE;
     }
   }
 
   private void evaluateConditionalAnd(BinaryExpressionTree tree) {
     currentConditionalState = new ConditionalState(currentState);
-    SymbolicValue leftResult = evaluate(tree.leftOperand());
-    if (!leftResult.equals(SymbolicValue.BOOLEAN_FALSE)) {
+    SymbolicBooleanConstraint leftResult = evaluate(tree.leftOperand());
+    if (leftResult != SymbolicBooleanConstraint.FALSE) {
       currentState = currentConditionalState.trueState;
-      SymbolicValue rightResult = evaluate(tree.rightOperand());
-      if (!rightResult.equals(SymbolicValue.BOOLEAN_FALSE)) {
-        if (leftResult.equals(SymbolicValue.BOOLEAN_TRUE) && rightResult.equals(SymbolicValue.BOOLEAN_TRUE)) {
-          result = SymbolicValue.BOOLEAN_TRUE;
+      SymbolicBooleanConstraint rightResult = evaluate(tree.rightOperand());
+      if (rightResult != SymbolicBooleanConstraint.FALSE) {
+        if (leftResult == SymbolicBooleanConstraint.TRUE && rightResult == SymbolicBooleanConstraint.TRUE) {
+          result = SymbolicBooleanConstraint.TRUE;
         } else {
-          result = SymbolicValue.UNKNOWN_VALUE;
+          result = SymbolicBooleanConstraint.UNKNOWN;
         }
         return;
       }
     }
-    result = SymbolicValue.BOOLEAN_FALSE;
+    result = SymbolicBooleanConstraint.FALSE;
   }
 
   private void evaluateConditionalOr(BinaryExpressionTree tree) {
     currentConditionalState = new ConditionalState(currentState);
-    SymbolicValue leftResult = evaluate(tree.leftOperand());
-    if (!leftResult.equals(SymbolicValue.BOOLEAN_TRUE)) {
+    SymbolicBooleanConstraint leftResult = evaluate(tree.leftOperand());
+    if (leftResult != SymbolicBooleanConstraint.TRUE) {
       currentState = currentConditionalState.falseState;
-      SymbolicValue rightResult = evaluate(tree.rightOperand());
-      if (!rightResult.equals(SymbolicValue.BOOLEAN_TRUE)) {
-        if (leftResult.equals(SymbolicValue.BOOLEAN_FALSE) && rightResult.equals(SymbolicValue.BOOLEAN_FALSE)) {
-          result = SymbolicValue.BOOLEAN_FALSE;
+      SymbolicBooleanConstraint rightResult = evaluate(tree.rightOperand());
+      if (rightResult != SymbolicBooleanConstraint.TRUE) {
+        if (leftResult == SymbolicBooleanConstraint.FALSE && rightResult == SymbolicBooleanConstraint.FALSE) {
+          result = SymbolicBooleanConstraint.FALSE;
         } else {
-          result = SymbolicValue.UNKNOWN_VALUE;
+          result = SymbolicBooleanConstraint.UNKNOWN;
         }
         return;
       }
     }
-    result = SymbolicValue.BOOLEAN_TRUE;
+    result = SymbolicBooleanConstraint.TRUE;
   }
 
   private void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-    SymbolicValue leftValue = currentState.getSymbolicValue(tree.leftOperand());
-    SymbolicValue rightValue = currentState.getSymbolicValue(tree.rightOperand());
-    result = currentState.evaluateRelation(leftValue, operator, rightValue);
-    if (result.equals(SymbolicValue.UNKNOWN_VALUE)) {
-      currentConditionalState.trueState.setRelation(leftValue, operator, rightValue);
-      currentConditionalState.falseState.setRelation(leftValue, operator.negate(), rightValue);
+    Symbol.VariableSymbol leftSymbol = extractLocalVariableSymbol(tree.leftOperand());
+    Symbol.VariableSymbol rightSymbol = extractLocalVariableSymbol(tree.rightOperand());
+    if (leftSymbol != null && rightSymbol != null) {
+      result = currentState.evaluateRelation(leftSymbol, operator, rightSymbol);
+      if (result == SymbolicBooleanConstraint.UNKNOWN) {
+        currentConditionalState.trueState.setRelation(leftSymbol, operator, rightSymbol);
+        currentConditionalState.falseState.setRelation(leftSymbol, operator.negate(), rightSymbol);
+      }
     }
+  }
+
+  @CheckForNull
+  private Symbol.VariableSymbol extractLocalVariableSymbol(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifierTree = (IdentifierTree) tree;
+      Symbol symbol = ((IdentifierTree) identifierTree).symbol();
+      if (symbol.owner().isMethodSymbol()) {
+        return (Symbol.VariableSymbol) symbol;
+      }
+    }
+    return null;
   }
 
 }

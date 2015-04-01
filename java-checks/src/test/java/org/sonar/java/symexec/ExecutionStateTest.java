@@ -20,69 +20,29 @@
 package org.sonar.java.symexec;
 
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.model.expression.LiteralTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.sonar.java.symexec.SymbolicValue.UNKNOWN_VALUE;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
 
 public class ExecutionStateTest {
 
   @Test
-  public void test_get_symbolic_value() {
-    LiteralTree literalTree = new LiteralTreeImpl(Tree.Kind.NULL_LITERAL, Mockito.mock(InternalSyntaxToken.class));
-    assertThat(new ExecutionState().getSymbolicValue(literalTree)).isSameAs(UNKNOWN_VALUE);
-
-    Symbol.TypeSymbol ownerSymbol = mock(Symbol.TypeSymbol.class);
-
-    Symbol.VariableSymbol fieldSymbol = mock(Symbol.VariableSymbol.class);
-    when(fieldSymbol.isVariableSymbol()).thenReturn(true);
-    when(fieldSymbol.owner()).thenReturn(ownerSymbol);
-
-    IdentifierTreeImpl fieldTree = new IdentifierTreeImpl(Mockito.mock(InternalSyntaxToken.class));
-    fieldTree.setSymbol(fieldSymbol);
-
-    // symbolic value for a class field is unknown
-    when(ownerSymbol.isMethodSymbol()).thenReturn(false);
-    assertThat(new ExecutionState().getSymbolicValue(fieldTree)).isSameAs(UNKNOWN_VALUE);
-
-    // symbolic value for a local variable is not unknown
-    ExecutionState state = new ExecutionState();
-    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
-    SymbolicValue value = state.getSymbolicValue(fieldTree);
-    assertThat(value).isNotSameAs(UNKNOWN_VALUE);
-    assertThat(state.getSymbolicValue(fieldTree)).isSameAs(value);
-
-    // symbolic value for a local variable in a nested state is not unknown
-    ExecutionState nestedState = new ExecutionState(state);
-    assertThat(nestedState.getSymbolicValue(fieldTree)).isSameAs(value);
-  }
-
-  @Test
   public void test_get_set_relation() {
-    SymbolicValue leftValue = mock(SymbolicValue.class);
-    SymbolicValue rightValue = mock(SymbolicValue.class);
+    Symbol.VariableSymbol leftValue = mock(Symbol.VariableSymbol.class);
+    Symbol.VariableSymbol rightValue = mock(Symbol.VariableSymbol.class);
 
-    // relations containing an unknown value are not registered.
     ExecutionState state = new ExecutionState();
-    state.setRelation(UNKNOWN_VALUE, SymbolicRelation.UNKNOWN, UNKNOWN_VALUE);
-    assertThat(state.relations.isEmpty()).isTrue();
-    state.setRelation(new SymbolicValue(), SymbolicRelation.UNKNOWN, UNKNOWN_VALUE);
-    assertThat(state.relations.isEmpty()).isTrue();
-    state.setRelation(UNKNOWN_VALUE, SymbolicRelation.UNKNOWN, new SymbolicValue());
-    assertThat(state.relations.isEmpty()).isTrue();
 
     // unregistered relations should evaluate to UNKNOWN.
     assertThat(state.getRelation(leftValue, rightValue)).isSameAs(SymbolicRelation.UNKNOWN);
+
+    // relations cannot be set between the same symbol.
+    state.setRelation(leftValue, SymbolicRelation.GREATER_EQUAL, leftValue);
+    assertThat(state.relations.size()).isEqualTo(0);
 
     // relations should be registered (relations are registered twice).
     state.setRelation(leftValue, SymbolicRelation.GREATER_EQUAL, rightValue);
@@ -103,26 +63,20 @@ public class ExecutionStateTest {
     assertThat(nestedState.getRelation(rightValue, leftValue)).isSameAs(SymbolicRelation.LESS_THAN);
   }
 
-  @Test(expected = IllegalStateException.class)
-  public void test_set_relation_invalid() {
-    // relations with an unknown relational operator are not allowed.
-    new ExecutionState().setRelation(new SymbolicValue(), SymbolicRelation.UNKNOWN, new SymbolicValue());
-  }
-
   @Test
   public void test_evaluate_relation() {
     // associativity: op1 op2 === op2 op1
-    for (Map.Entry<SymbolicRelation, Map<SymbolicRelation, SymbolicValue>> entry1 : ExecutionState.RELATION_RELATION_MAP.entrySet()) {
-      for (Map.Entry<SymbolicRelation, SymbolicValue> entry2 : entry1.getValue().entrySet()) {
+    for (Map.Entry<SymbolicRelation, Map<SymbolicRelation, SymbolicBooleanConstraint>> entry1 : ExecutionState.RELATION_RELATION_MAP.entrySet()) {
+      for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry2 : entry1.getValue().entrySet()) {
         assertThat(ExecutionState.RELATION_RELATION_MAP.get(entry2.getKey()).get(entry1.getKey())).isSameAs(entry2.getValue());
       }
     }
     // if one of the relation is unknown the result in unknown, regardless of the second relation.
-    for (Map.Entry<SymbolicRelation, Map<SymbolicRelation, SymbolicValue>> entry : ExecutionState.RELATION_RELATION_MAP.entrySet()) {
-      assertThat(entry.getValue().get(SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN_VALUE);
+    for (Map.Entry<SymbolicRelation, Map<SymbolicRelation, SymbolicBooleanConstraint>> entry : ExecutionState.RELATION_RELATION_MAP.entrySet()) {
+      assertThat(entry.getValue().get(SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
     }
-    for (Map.Entry<SymbolicRelation, SymbolicValue> entry : ExecutionState.RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN).entrySet()) {
-      assertThat(entry.getValue()).isSameAs(UNKNOWN_VALUE);
+    for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN).entrySet()) {
+      assertThat(entry.getValue()).isSameAs(UNKNOWN);
     }
   }
 
