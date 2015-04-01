@@ -64,6 +64,9 @@ public class ExecutionStateTest {
     nestedState.setBooleanConstraint(fieldSymbol, TRUE);
     assertThat(state.getBooleanConstraint(fieldSymbol)).isSameAs(FALSE);
     assertThat(nestedState.getBooleanConstraint(fieldSymbol)).isSameAs(TRUE);
+
+    // state.setBooleanConstraint must return state
+    assertThat(state.setBooleanConstraint(fieldSymbol, UNKNOWN)).isSameAs(state);
   }
 
   @Test
@@ -75,6 +78,7 @@ public class ExecutionStateTest {
 
     // unregistered relations should evaluate to UNKNOWN.
     assertThat(state.getRelation(leftValue, rightValue)).isSameAs(SymbolicRelation.UNKNOWN);
+    assertThat(state.evaluateRelation(leftValue, SymbolicRelation.UNKNOWN, rightValue)).isSameAs(UNKNOWN);
 
     // relations cannot be set between the same symbol.
     state.setRelation(leftValue, SymbolicRelation.GREATER_EQUAL, leftValue);
@@ -97,6 +101,9 @@ public class ExecutionStateTest {
     assertThat(nestedState.relations.size()).isEqualTo(1 * 2);
     assertThat(nestedState.getRelation(leftValue, rightValue)).isSameAs(SymbolicRelation.GREATER_THAN);
     assertThat(nestedState.getRelation(rightValue, leftValue)).isSameAs(SymbolicRelation.LESS_THAN);
+
+    // state.setRelation must return state
+    assertThat(state.setRelation(leftValue, SymbolicRelation.UNKNOWN, rightValue)).isSameAs(state);
   }
 
   @Test
