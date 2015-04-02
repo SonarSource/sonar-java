@@ -91,38 +91,27 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
 
   private void evaluateConditionalAnd(BinaryExpressionTree tree) {
     currentConditionalState = new ConditionalState(currentState);
-    SymbolicBooleanConstraint leftResult = evaluate(tree.leftOperand());
-    if (leftResult != SymbolicBooleanConstraint.FALSE) {
-      currentState = currentConditionalState.trueState;
-      SymbolicBooleanConstraint rightResult = evaluate(tree.rightOperand());
-      if (rightResult != SymbolicBooleanConstraint.FALSE) {
-        if (leftResult == SymbolicBooleanConstraint.TRUE && rightResult == SymbolicBooleanConstraint.TRUE) {
-          result = SymbolicBooleanConstraint.TRUE;
-        } else {
-          result = SymbolicBooleanConstraint.UNKNOWN;
-        }
-        return;
-      }
-    }
-    result = SymbolicBooleanConstraint.FALSE;
+    evaluateConditionalOperator(tree, SymbolicBooleanConstraint.FALSE, currentConditionalState.trueState);
   }
 
   private void evaluateConditionalOr(BinaryExpressionTree tree) {
     currentConditionalState = new ConditionalState(currentState);
+    evaluateConditionalOperator(tree, SymbolicBooleanConstraint.TRUE, currentConditionalState.falseState);
+  }
+
+  private void evaluateConditionalOperator(BinaryExpressionTree tree, SymbolicBooleanConstraint shortcutValue, ExecutionState longState) {
     SymbolicBooleanConstraint leftResult = evaluate(tree.leftOperand());
-    if (leftResult != SymbolicBooleanConstraint.TRUE) {
-      currentState = currentConditionalState.falseState;
+    if (leftResult == shortcutValue) {
+      result = shortcutValue;
+    } else {
+      currentState = longState;
       SymbolicBooleanConstraint rightResult = evaluate(tree.rightOperand());
-      if (rightResult != SymbolicBooleanConstraint.TRUE) {
-        if (leftResult == SymbolicBooleanConstraint.FALSE && rightResult == SymbolicBooleanConstraint.FALSE) {
-          result = SymbolicBooleanConstraint.FALSE;
-        } else {
-          result = SymbolicBooleanConstraint.UNKNOWN;
-        }
-        return;
+      if (rightResult == shortcutValue) {
+        result = shortcutValue;
+      } else {
+        result = areEqual(leftResult, rightResult, shortcutValue.negate()) ? shortcutValue.negate() : SymbolicBooleanConstraint.UNKNOWN;
       }
     }
-    result = SymbolicBooleanConstraint.TRUE;
   }
 
   private void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
@@ -130,7 +119,7 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
     Symbol.VariableSymbol rightSymbol = extractLocalVariableSymbol(tree.rightOperand());
     if (leftSymbol != null && rightSymbol != null) {
       result = currentState.evaluateRelation(leftSymbol, operator, rightSymbol);
-      if (result == SymbolicBooleanConstraint.UNKNOWN) {
+      if (isUnknown(result)) {
         currentConditionalState.trueState.setRelation(leftSymbol, operator, rightSymbol);
         currentConditionalState.falseState.setRelation(leftSymbol, operator.negate(), rightSymbol);
       }
@@ -147,6 +136,14 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
       }
     }
     return null;
+  }
+
+  private boolean areEqual(SymbolicBooleanConstraint constraint1, SymbolicBooleanConstraint constraint2, SymbolicBooleanConstraint constraint3) {
+    return constraint1 == constraint2 && constraint2 == constraint3;
+  }
+
+  private boolean isUnknown(SymbolicBooleanConstraint constraint) {
+    return constraint == SymbolicBooleanConstraint.UNKNOWN;
   }
 
 }

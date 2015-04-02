@@ -19,6 +19,7 @@
  */
 package org.sonar.java.symexec;
 
+import com.google.common.collect.Table;
 import org.junit.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
@@ -66,16 +67,14 @@ public class ExecutionStateTest {
   @Test
   public void test_evaluate_relation() {
     // associativity: op1 op2 === op2 op1
-    for (Map.Entry<SymbolicRelation, Map<SymbolicRelation, SymbolicBooleanConstraint>> entry1 : ExecutionState.RELATION_RELATION_MAP.entrySet()) {
-      for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry2 : entry1.getValue().entrySet()) {
-        assertThat(ExecutionState.RELATION_RELATION_MAP.get(entry2.getKey()).get(entry1.getKey())).isSameAs(entry2.getValue());
-      }
+    for (Table.Cell<SymbolicRelation, SymbolicRelation, SymbolicBooleanConstraint> e : ExecutionState.RELATION_RELATION_MAP.cellSet()) {
+      assertThat(ExecutionState.RELATION_RELATION_MAP.get(e.getRowKey(), e.getColumnKey())).isSameAs(ExecutionState.RELATION_RELATION_MAP.get(e.getColumnKey(), e.getRowKey()));
     }
     // if one of the relation is unknown the result in unknown, regardless of the second relation.
-    for (Map.Entry<SymbolicRelation, Map<SymbolicRelation, SymbolicBooleanConstraint>> entry : ExecutionState.RELATION_RELATION_MAP.entrySet()) {
-      assertThat(entry.getValue().get(SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
+    for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.column(SymbolicRelation.UNKNOWN).entrySet()) {
+      assertThat(entry.getValue()).isSameAs(UNKNOWN);
     }
-    for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN).entrySet()) {
+    for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.row(SymbolicRelation.UNKNOWN).entrySet()) {
       assertThat(entry.getValue()).isSameAs(UNKNOWN);
     }
   }

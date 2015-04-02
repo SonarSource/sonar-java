@@ -19,21 +19,21 @@
  */
 package org.sonar.java.symexec;
 
-public enum SymbolicBooleanConstraint {
+import org.junit.Test;
 
-  FALSE,
-  TRUE,
-  UNKNOWN;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
 
-  public SymbolicBooleanConstraint negate() {
-    switch(this) {
-      case FALSE:
-        return TRUE;
-      case TRUE:
-        return FALSE;
-      default:
-        return UNKNOWN;
-    }
+public class SymbolicBooleanConstraintTest {
+
+  @Test
+  public void test() {
+    assertThat(SymbolicBooleanConstraint.values().length).isEqualTo(3);
+    assertThat(FALSE.negate()).isEqualTo(TRUE);
+    assertThat(TRUE.negate()).isEqualTo(FALSE);
+    assertThat(UNKNOWN.negate()).isEqualTo(UNKNOWN);
   }
 
 }
