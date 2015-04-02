@@ -30,12 +30,15 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -52,14 +55,14 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AnnotatedElement"))
-        .name("isAnnotationPresent").withNoParameterConstraint());
+      .typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AnnotatedElement"))
+      .name("isAnnotationPresent").withNoParameterConstraint());
   }
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
     ExpressionTree expressionTree = mit.arguments().get(0);
-    //For now ignore everything that is not a .class expression
+    // For now ignore everything that is not a .class expression
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       Type symbolType = ((MemberSelectExpressionTree) expressionTree).expression().symbolType();
       if (!symbolType.isUnknown() && isNotRuntimeAnnotation(symbolType)) {
@@ -70,7 +73,27 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
 
   private boolean isNotRuntimeAnnotation(Type symbolType) {
     List<SymbolMetadata.AnnotationValue> valuesFor = symbolType.symbol().metadata().valuesForAnnotation("java.lang.annotation.Retention");
-    //default policy is CLASS
-    return valuesFor == null || !"RUNTIME".equals(((Symbol) valuesFor.get(0).value()).name());
+    // default policy is CLASS
+    if (valuesFor == null) {
+      return true;
+    }
+    String retentionValue = getRetentionValue(valuesFor.get(0).value());
+    return !"RUNTIME".equals(retentionValue);
+  }
+
+  @Nullable
+  private String getRetentionValue(Object value) {
+    String retentionValue = null;
+    if (value instanceof Tree) {
+      Tree tree = (Tree) value;
+      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+        retentionValue = ((MemberSelectExpressionTree) tree).identifier().name();
+      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
+        retentionValue = ((IdentifierTree) tree).name();
+      }
+    } else if (value instanceof Symbol.VariableSymbol) {
+      retentionValue = ((Symbol.VariableSymbol) value).name();
+    }
+    return retentionValue;
   }
 }
