@@ -37,6 +37,7 @@ public class ReturnEmptyArrayNotNullCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(
       new File("src/test/files/checks/ReturnEmptyArrayNotNullCheck.java"), new VisitorsBridge(new ReturnEmptyArrayNotNullCheck()));
+//      new File("/home/benzonico/Development/SonarSource/temp/lucene/lucene/core/src/java/org/apache/lucene/store/MMapDirectory.java"), new VisitorsBridge(new ReturnEmptyArrayNotNullCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(29).withMessage("Return an empty array instead of null.")
       .next().atLine(38)

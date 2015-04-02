@@ -130,4 +130,15 @@ class C {
   public int[] bark() {
     return null; // Compliant
   }
+
+  int[] qix(){
+    plop(a -> {
+      return null;
+    });
+  }
+
+  static final Object CONSTANT = plop(a->{return null;});
+
+
+
 }

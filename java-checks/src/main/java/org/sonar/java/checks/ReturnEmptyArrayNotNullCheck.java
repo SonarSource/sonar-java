@@ -136,7 +136,7 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.RETURN_STATEMENT);
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR, Tree.Kind.RETURN_STATEMENT, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -148,7 +148,7 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
       } else {
         returnType.push(Returns.getReturnType(methodTree.returnType()));
       }
-    } else if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+    } else if (tree.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.LAMBDA_EXPRESSION)) {
       returnType.push(Returns.OTHERS);
     } else {
       ReturnStatementTree returnStatement = (ReturnStatementTree) tree;
