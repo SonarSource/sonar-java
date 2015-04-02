@@ -308,6 +308,7 @@ public final class CheckList {
       ThreadAsRunnableArgumentCheck.class,
       SynchronizedFieldAssignmentCheck.class,
       NullPointerCheck.class,
+      UselessConditionCheck.class,
       StaticFieldUpateCheck.class,
       IgnoredStreamReturnValueCheck.class,
       DateUtilsTruncateCheck.class,
