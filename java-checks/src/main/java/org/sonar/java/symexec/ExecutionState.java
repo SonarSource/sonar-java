@@ -27,15 +27,18 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
-import static org.sonar.java.symexec.SymbolicRelation.UNKNOWN;
 import static org.sonar.java.symexec.SymbolicRelation.EQUAL_TO;
 import static org.sonar.java.symexec.SymbolicRelation.GREATER_EQUAL;
 import static org.sonar.java.symexec.SymbolicRelation.GREATER_THAN;
 import static org.sonar.java.symexec.SymbolicRelation.LESS_EQUAL;
 import static org.sonar.java.symexec.SymbolicRelation.LESS_THAN;
 import static org.sonar.java.symexec.SymbolicRelation.NOT_EQUAL;
+import static org.sonar.java.symexec.SymbolicRelation.UNKNOWN;
 
 public class ExecutionState {
 
@@ -112,14 +115,17 @@ public class ExecutionState {
   @Nullable
   final ExecutionState parentState;
   final Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> relations;
+  final Map<Symbol.VariableSymbol, SymbolicBooleanConstraint> constraints;
 
   public ExecutionState() {
     this.parentState = null;
+    this.constraints = new HashMap<>();
     this.relations = HashBasedTable.create();
   }
 
   ExecutionState(ExecutionState parentState) {
     this.parentState = parentState;
+    this.constraints = new HashMap<>();
     this.relations = HashBasedTable.create();
   }
 
@@ -137,6 +143,22 @@ public class ExecutionState {
     if (!leftValue.equals(rightValue)) {
       relations.put(leftValue, rightValue, relation);
       relations.put(rightValue, leftValue, relation.swap());
+    }
+  }
+
+  SymbolicBooleanConstraint getBooleanConstraint(Symbol.VariableSymbol symbol) {
+    for (ExecutionState state = this; state != null; state = state.parentState) {
+      SymbolicBooleanConstraint result = state.constraints.get(symbol);
+      if (result != null) {
+        return result;
+      }
+    }
+    return SymbolicBooleanConstraint.UNKNOWN;
+  }
+
+  void setBooleanConstraint(Symbol.VariableSymbol symbol, SymbolicBooleanConstraint constraint) {
+    if (symbol.owner().isMethodSymbol()) {
+      constraints.put(symbol, constraint);
     }
   }
 

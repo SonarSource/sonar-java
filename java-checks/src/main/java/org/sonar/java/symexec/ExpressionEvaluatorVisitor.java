@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 
 import javax.annotation.CheckForNull;
 
@@ -81,11 +82,37 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
   }
 
   @Override
+  public void visitIdentifier(IdentifierTree tree) {
+    Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree);
+    if (symbol != null) {
+      result = currentState.getBooleanConstraint(symbol);
+      if (result == SymbolicBooleanConstraint.UNKNOWN) {
+        currentConditionalState.trueState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
+        currentConditionalState.falseState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
+      }
+    }
+  }
+
+  @Override
   public void visitLiteral(LiteralTree tree) {
     if ("false".equals(tree.value())) {
       result = SymbolicBooleanConstraint.FALSE;
     } else if ("true".equals(tree.value())) {
       result = SymbolicBooleanConstraint.TRUE;
+    }
+  }
+
+  @Override
+  public void visitUnaryExpression(UnaryExpressionTree tree) {
+    if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT) && tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(((IdentifierTree) tree.expression()));
+      if (symbol != null) {
+        result = currentState.getBooleanConstraint(symbol).negate();
+        if (result == SymbolicBooleanConstraint.UNKNOWN) {
+          currentConditionalState.trueState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
+          currentConditionalState.falseState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
+        }
+      }
     }
   }
 
