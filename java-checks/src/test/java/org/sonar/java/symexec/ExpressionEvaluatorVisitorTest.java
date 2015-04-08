@@ -40,6 +40,9 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -139,6 +142,44 @@ public class ExpressionEvaluatorVisitorTest {
     ExpressionEvaluatorVisitor visitor = new ExpressionEvaluatorVisitor(new ExecutionState(), new BinaryExpressionTreeImpl(operatorKind, leftTree, TOKEN, rightTree));
     assertThat(visitor.falseStates.size()).isSameAs(falseCount);
     assertThat(visitor.trueStates.size()).isSameAs(trueCount);
+  }
+
+  @Test
+  public void test_constructor_multiple() {
+    Symbol.VariableSymbol ownerSymbol = mock(Symbol.VariableSymbol.class);
+    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
+    Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
+    when(identifierSymbol.isVariableSymbol()).thenReturn(true);
+    when(identifierSymbol.owner()).thenReturn(ownerSymbol);
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(TOKEN);
+    identifierTree.setSymbol(identifierSymbol);
+
+    List<ExecutionState> states = Arrays.asList(new ExecutionState(), new ExecutionState());
+    ExpressionEvaluatorVisitor visitor = new ExpressionEvaluatorVisitor(states, identifierTree);
+    assertThat(visitor.falseStates.size()).isEqualTo(2);
+    assertThat(visitor.falseStates.get(0).parentState).isSameAs(states.get(0));
+    assertThat(visitor.falseStates.get(1).parentState).isSameAs(states.get(1));
+    assertThat(visitor.trueStates.size()).isEqualTo(2);
+    assertThat(visitor.trueStates.get(0).parentState).isSameAs(states.get(0));
+    assertThat(visitor.trueStates.get(1).parentState).isSameAs(states.get(1));
+  }
+
+  @Test
+  public void test_constructor_single() {
+    Symbol.VariableSymbol ownerSymbol = mock(Symbol.VariableSymbol.class);
+    when(ownerSymbol.isMethodSymbol()).thenReturn(true);
+    Symbol.VariableSymbol identifierSymbol = mock(Symbol.VariableSymbol.class);
+    when(identifierSymbol.isVariableSymbol()).thenReturn(true);
+    when(identifierSymbol.owner()).thenReturn(ownerSymbol);
+    IdentifierTreeImpl identifierTree = new IdentifierTreeImpl(TOKEN);
+    identifierTree.setSymbol(identifierSymbol);
+
+    ExecutionState state = new ExecutionState();
+    ExpressionEvaluatorVisitor visitor = new ExpressionEvaluatorVisitor(state, identifierTree);
+    assertThat(visitor.falseStates.size()).isEqualTo(1);
+    assertThat(visitor.falseStates.get(0).parentState).isSameAs(state);
+    assertThat(visitor.trueStates.size()).isEqualTo(1);
+    assertThat(visitor.trueStates.get(0).parentState).isSameAs(state);
   }
 
   @Test
