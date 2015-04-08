@@ -349,8 +349,10 @@ public class ExpressionEvaluatorVisitorTest {
   }
 
   private void validateUnknownResult(ExecutionState state, ExpressionEvaluatorVisitor result) {
-    assertThat(result.falseStates).containsOnly(state);
-    assertThat(result.trueStates).containsOnly(state);
+    assertThat(result.falseStates.size()).isEqualTo(1);
+    assertThat(result.falseStates.get(0).parentState).isSameAs(state);
+    assertThat(result.trueStates.size()).isEqualTo(1);
+    assertThat(result.trueStates.get(0).parentState).isSameAs(state);
   }
 
 }
