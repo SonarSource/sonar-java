@@ -27,6 +27,13 @@ public static class Class {
     }
     if (!(foo == bar || condition) || (foo == bar || condition)) { // Noncompliant, always true
     }
+    if (foo == bar) {
+      if (foo == bar) { // Noncompliant, always true
+      }
+    } else if (foo != bar) { // Noncompliant, always true
+      if (foo == bar) { // Noncompliant, always false
+      }
+    }
   }
 
 }

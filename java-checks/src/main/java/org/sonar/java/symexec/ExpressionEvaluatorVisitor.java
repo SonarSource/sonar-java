@@ -19,7 +19,6 @@
  */
 package org.sonar.java.symexec;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -43,11 +42,16 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
     scan(tree);
   }
 
-  private final ExecutionState currentState;
-  @VisibleForTesting
-  final List<ExecutionState> falseStates = new ArrayList<>();
-  @VisibleForTesting
-  final List<ExecutionState> trueStates = new ArrayList<>();
+  public ExpressionEvaluatorVisitor(List<ExecutionState> states, Tree tree) {
+    for (ExecutionState state : states) {
+      currentState = state;
+      scan(tree);
+    }
+  }
+
+  private ExecutionState currentState;
+  public final List<ExecutionState> falseStates = new ArrayList<>();
+  public final List<ExecutionState> trueStates = new ArrayList<>();
 
   public boolean isAlwaysFalse() {
     return !falseStates.isEmpty() && trueStates.isEmpty();
