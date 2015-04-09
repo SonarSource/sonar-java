@@ -28,7 +28,9 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import javax.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
@@ -49,9 +51,9 @@ public class ExecutionState {
   static {
     RELATION_RELATION_MAP.row(EQUAL_TO).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
       .put(EQUAL_TO, TRUE)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(GREATER_EQUAL, TRUE)
       .put(GREATER_THAN, FALSE)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(LESS_EQUAL, TRUE)
       .put(LESS_THAN, FALSE)
       .put(NOT_EQUAL, FALSE)
       .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
@@ -67,7 +69,7 @@ public class ExecutionState {
       .build());
     RELATION_RELATION_MAP.row(GREATER_THAN).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
       .put(EQUAL_TO, FALSE)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(GREATER_EQUAL, TRUE)
       .put(GREATER_THAN, TRUE)
       .put(LESS_EQUAL, FALSE)
       .put(LESS_THAN, FALSE)
@@ -132,6 +134,11 @@ public class ExecutionState {
     this.relations = HashBasedTable.create();
   }
 
+  void mergeConstraintsAndRelations(Iterable<ExecutionState> states) {
+    mergeBooleanConstraints(states);
+    mergeRelations(states);
+  }
+
   @VisibleForTesting
   SymbolicRelation getRelation(Symbol.VariableSymbol leftValue, Symbol.VariableSymbol rightValue) {
     SymbolicRelation result = relations.get(leftValue, rightValue);
@@ -150,6 +157,39 @@ public class ExecutionState {
     return this;
   }
 
+  private void mergeRelations(Iterable<ExecutionState> states) {
+    for (Table.Cell<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> cell : findCommonRelationSymbols(states).cellSet()) {
+      SymbolicRelation relation = null;
+      for (ExecutionState state : states) {
+        relation = state.getRelation(cell.getRowKey(), cell.getColumnKey()).union(relation);
+      }
+      if (getRelation(cell.getRowKey(), cell.getColumnKey()) != relation) {
+        relations.put(cell.getRowKey(), cell.getColumnKey(), relation);
+        relations.put(cell.getColumnKey(), cell.getRowKey(), relation.swap());
+      }
+    }
+  }
+
+  private Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> findCommonRelationSymbols(Iterable<ExecutionState> states) {
+    // stored value is completely meaningless since only the pair of symbols is relevant, but HashBasedTable does not accept null.
+    Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> result = HashBasedTable.create();
+    for (ExecutionState state : states) {
+      for (ExecutionState current = state; current != this; current = current.parentState) {
+        for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> leftEntry : current.relations.rowMap().entrySet()) {
+          for (Symbol.VariableSymbol rightSymbol : leftEntry.getValue().keySet()) {
+            result.put(leftEntry.getKey(), rightSymbol, UNKNOWN);
+          }
+        }
+        for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> rightEntry : current.relations.columnMap().entrySet()) {
+          for (Symbol.VariableSymbol leftSymbol : rightEntry.getValue().keySet()) {
+            result.put(leftSymbol, rightEntry.getKey(), UNKNOWN);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
   SymbolicBooleanConstraint getBooleanConstraint(Symbol.VariableSymbol symbol) {
     for (ExecutionState state = this; state != null; state = state.parentState) {
       SymbolicBooleanConstraint result = state.constraints.get(symbol);
@@ -165,6 +205,28 @@ public class ExecutionState {
       constraints.put(symbol, constraint);
     }
     return this;
+  }
+
+  private void mergeBooleanConstraints(Iterable<ExecutionState> states) {
+    for (Symbol.VariableSymbol symbolToMerge : findCommonBooleanSymbols(states)) {
+      SymbolicBooleanConstraint constraint = null;
+      for (ExecutionState state : states) {
+        constraint = state.getBooleanConstraint(symbolToMerge).union(constraint);
+      }
+      if (getBooleanConstraint(symbolToMerge) != constraint) {
+        setBooleanConstraint(symbolToMerge, constraint);
+      }
+    }
+  }
+
+  private Set<Symbol.VariableSymbol> findCommonBooleanSymbols(Iterable<ExecutionState> states) {
+    Set<Symbol.VariableSymbol> result = new HashSet<>();
+    for (ExecutionState state : states) {
+      for (ExecutionState current = state; current != this; current = current.parentState) {
+        result.addAll(state.constraints.keySet());
+      }
+    }
+    return result;
   }
 
 }

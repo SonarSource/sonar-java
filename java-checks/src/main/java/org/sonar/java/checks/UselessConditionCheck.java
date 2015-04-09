@@ -23,15 +23,18 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
-import org.sonar.java.symexec.ExpressionEvaluatorVisitor;
+import org.sonar.java.symexec.SymbolicBooleanConstraint;
+import org.sonar.java.symexec.SymbolicEvaluator;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.Map;
 
 @Rule(
   key = "S2583",
@@ -45,6 +48,8 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
 
   private JavaFileScannerContext context;
 
+  private SymbolicEvaluator engine = new SymbolicEvaluator();
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -52,22 +57,22 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   @Override
-  public void visitIfStatement(IfStatementTree tree) {
-    checkCondition(tree.condition());
-    super.visitIfStatement(tree);
+  public void visitMethod(MethodTree tree) {
+    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : engine.evaluateMethod(new ExecutionState(), tree).entrySet()) {
+      switch (entry.getValue()) {
+        case FALSE:
+          raiseIssue(entry.getKey(), "false");
+          break;
+        case TRUE:
+          raiseIssue(entry.getKey(), "true");
+          break;
+        default:
+          break;
+      }
+    }
   }
 
-  private void checkCondition(ExpressionTree tree) {
-    ExpressionEvaluatorVisitor evaluation = new ExpressionEvaluatorVisitor(new ExecutionState(), tree);
-    if(evaluation.isAlwaysFalse()) {
-      raiseIssue(tree, "false");
-    }
-    if(evaluation.isAwlaysTrue()) {
-      raiseIssue(tree, "true");
-    }
-  }
-
-  private void raiseIssue(ExpressionTree tree, String value) {
+  private void raiseIssue(Tree tree, String value) {
     context.addIssue(tree, this, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
   }
 
