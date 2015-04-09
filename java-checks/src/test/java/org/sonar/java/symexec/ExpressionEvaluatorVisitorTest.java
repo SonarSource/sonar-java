@@ -30,7 +30,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
@@ -100,9 +99,9 @@ public class ExpressionEvaluatorVisitorTest {
   }
 
   private void validateLogicalOperator(String input, int trueCount, int falseCount) {
-    ExpressionEvaluatorVisitor visitor = new ExpressionEvaluatorVisitor(new ExecutionState(), parse(input));
-    assertThat(visitor.falseStates.size()).isSameAs(falseCount);
-    assertThat(visitor.trueStates.size()).isSameAs(trueCount);
+    SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(new ExecutionState(), parse(input));
+    assertThat(result.falseStates.size()).isSameAs(falseCount);
+    assertThat(result.trueStates.size()).isSameAs(trueCount);
   }
 
   @Test
@@ -197,16 +196,16 @@ public class ExpressionEvaluatorVisitorTest {
     validateEvaluationFalseWithoutConstraints(state, notEqualTree);
 
     // comparison must not fail if either or both operands are not identifiers.
-    new ExpressionEvaluatorVisitor(state, parse("null == null"));
+    new SymbolicEvaluator().evaluateCondition(state, parse("null == null"));
   }
 
   private void evaluateRelationalOperator(String input, @Nullable SymbolicRelation trueRelation, @Nullable SymbolicRelation falseRelation) {
     evaluateRelationalOperator(new ExecutionState(), analyze(input), trueRelation, falseRelation);
   }
 
-  private ExpressionEvaluatorVisitor evaluateRelationalOperator(ExecutionState state, Tree tree, @Nullable SymbolicRelation trueRelation,
+  private SymbolicEvaluator.PackedStates evaluateRelationalOperator(ExecutionState state, ExpressionTree tree, @Nullable SymbolicRelation trueRelation,
     @Nullable SymbolicRelation falseRelation) {
-    ExpressionEvaluatorVisitor result = new ExpressionEvaluatorVisitor(state, tree);
+    SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(state, tree);
     if (falseRelation != null) {
       assertThat(result.falseStates.size()).isEqualTo(1);
       assertThat(result.falseStates.get(0).relations.get(local1Symbol(), local2Symbol())).isSameAs(falseRelation);
@@ -229,43 +228,43 @@ public class ExpressionEvaluatorVisitorTest {
     validateEvaluationUnknownWithoutConstraints(new ExecutionState(), parse("+local"));
   }
 
-  private ExpressionEvaluatorVisitor validateEvaluation(ExecutionState state, Tree tree, boolean isAlwaysTrue, boolean isAlwaysFalse) {
-    ExpressionEvaluatorVisitor visitor = new ExpressionEvaluatorVisitor(state, tree);
-    assertThat(visitor.isAlwaysFalse()).isSameAs(isAlwaysFalse);
-    assertThat(visitor.isAwlaysTrue()).isSameAs(isAlwaysTrue);
-    return visitor;
+  private SymbolicEvaluator.PackedStates validateEvaluation(ExecutionState state, ExpressionTree tree, boolean isAlwaysTrue, boolean isAlwaysFalse) {
+    SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(state, tree);
+    assertThat(result.isAlwaysFalse()).isSameAs(isAlwaysFalse);
+    assertThat(result.isAlwaysTrue()).isSameAs(isAlwaysTrue);
+    return result;
   }
 
-  private void validateEvaluationFalseWithoutConstraints(ExecutionState state, Tree tree) {
-    ExpressionEvaluatorVisitor visitor = validateEvaluation(state, tree, false, true);
-    assertThat(visitor.falseStates.get(0)).isSameAs(state);
-    assertThat(visitor.trueStates).isEmpty();
+  private void validateEvaluationFalseWithoutConstraints(ExecutionState state, ExpressionTree tree) {
+    SymbolicEvaluator.PackedStates result = validateEvaluation(state, tree, false, true);
+    assertThat(result.falseStates.get(0)).isSameAs(state);
+    assertThat(result.trueStates).isEmpty();
   }
 
-  private void validateEvaluationTrueWithoutConstraints(ExecutionState state, Tree tree) {
-    ExpressionEvaluatorVisitor visitor = validateEvaluation(state, tree, true, false);
-    assertThat(visitor.falseStates).isEmpty();
-    assertThat(visitor.trueStates.get(0)).isSameAs(state);
+  private void validateEvaluationTrueWithoutConstraints(ExecutionState state, ExpressionTree tree) {
+    SymbolicEvaluator.PackedStates result = validateEvaluation(state, tree, true, false);
+    assertThat(result.falseStates).isEmpty();
+    assertThat(result.trueStates.get(0)).isSameAs(state);
   }
 
-  private void validateEvaluationUnknownWithConstraints(ExecutionState state, Tree tree, Symbol.VariableSymbol constrainedSymbol) {
+  private void validateEvaluationUnknownWithConstraints(ExecutionState state, ExpressionTree tree, Symbol.VariableSymbol constrainedSymbol) {
     validateEvaluationUnknownWithConstraints(state, tree, constrainedSymbol, TRUE);
   }
 
-  private void validateEvaluationUnknownWithConstraints(ExecutionState state, Tree tree, Symbol.VariableSymbol constrainedSymbol, SymbolicBooleanConstraint trueConstraint) {
-    ExpressionEvaluatorVisitor visitor = validateEvaluation(state, tree, false, false);
-    assertThat(visitor.falseStates.get(0).constraints.size()).isEqualTo(1);
-    assertThat(visitor.falseStates.get(0).getBooleanConstraint(constrainedSymbol)).isSameAs(trueConstraint.negate());
-    assertThat(visitor.trueStates.get(0).constraints.size()).isEqualTo(1);
-    assertThat(visitor.trueStates.get(0).getBooleanConstraint(constrainedSymbol)).isSameAs(trueConstraint);
+  private void validateEvaluationUnknownWithConstraints(ExecutionState state, ExpressionTree tree, Symbol.VariableSymbol constrainedSymbol, SymbolicBooleanConstraint trueConstraint) {
+    SymbolicEvaluator.PackedStates result = validateEvaluation(state, tree, false, false);
+    assertThat(result.falseStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(result.falseStates.get(0).getBooleanConstraint(constrainedSymbol)).isSameAs(trueConstraint.negate());
+    assertThat(result.trueStates.get(0).constraints.size()).isEqualTo(1);
+    assertThat(result.trueStates.get(0).getBooleanConstraint(constrainedSymbol)).isSameAs(trueConstraint);
   }
 
-  private void validateEvaluationUnknownWithoutConstraints(ExecutionState state, Tree tree) {
-    ExpressionEvaluatorVisitor visitor = validateEvaluation(state, tree, false, false);
-    assertThat(visitor.falseStates.get(0).constraints.size()).isEqualTo(0);
-    assertThat(visitor.falseStates.get(0).relations.size()).isEqualTo(0);
-    assertThat(visitor.trueStates.get(0).constraints.size()).isEqualTo(0);
-    assertThat(visitor.trueStates.get(0).relations.size()).isEqualTo(0);
+  private void validateEvaluationUnknownWithoutConstraints(ExecutionState state, ExpressionTree tree) {
+    SymbolicEvaluator.PackedStates result = validateEvaluation(state, tree, false, false);
+    assertThat(result.falseStates.get(0).constraints.size()).isEqualTo(0);
+    assertThat(result.falseStates.get(0).relations.size()).isEqualTo(0);
+    assertThat(result.trueStates.get(0).constraints.size()).isEqualTo(0);
+    assertThat(result.trueStates.get(0).relations.size()).isEqualTo(0);
   }
 
   private ExpressionTree analyze(String input) {
