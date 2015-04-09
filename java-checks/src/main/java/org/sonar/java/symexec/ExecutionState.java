@@ -49,9 +49,9 @@ public class ExecutionState {
   static {
     RELATION_RELATION_MAP.row(EQUAL_TO).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
       .put(EQUAL_TO, TRUE)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(GREATER_EQUAL, TRUE)
       .put(GREATER_THAN, FALSE)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(LESS_EQUAL, TRUE)
       .put(LESS_THAN, FALSE)
       .put(NOT_EQUAL, FALSE)
       .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
@@ -67,7 +67,7 @@ public class ExecutionState {
       .build());
     RELATION_RELATION_MAP.row(GREATER_THAN).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
       .put(EQUAL_TO, FALSE)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(GREATER_EQUAL, TRUE)
       .put(GREATER_THAN, TRUE)
       .put(LESS_EQUAL, FALSE)
       .put(LESS_THAN, FALSE)
