@@ -44,8 +44,8 @@ public class SymbolicEvaluatorTest {
   @Test
   public void test_expression_array() {
     PackedStates result = evaluateExpression("array[0] = 0;");
-    assertThat(result.falseStates.size()).isEqualTo(0);
-    assertThat(result.trueStates.size()).isEqualTo(0);
+    assertThat(result.falseStates).isEmpty();
+    assertThat(result.trueStates).isEmpty();
     assertThat(result.unknownStates.size()).isEqualTo(1);
   }
 
@@ -243,9 +243,9 @@ public class SymbolicEvaluatorTest {
   }
 
   private void assertOutputStates(SymbolicEvaluator.PackedStates states, int trueCount, int falseCount, int unknownCount) {
-    assertThat(states.falseStates.size()).isSameAs(falseCount);
-    assertThat(states.trueStates.size()).isSameAs(trueCount);
-    assertThat(states.unknownStates.size()).isSameAs(unknownCount);
+    assertThat(states.falseStates).hasSize(falseCount);
+    assertThat(states.trueStates).hasSize(trueCount);
+    assertThat(states.unknownStates).hasSize(unknownCount);
   }
 
 }

@@ -19,10 +19,9 @@
  */
 package org.sonar.java.symexec;
 
-import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Iterables;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -61,64 +60,34 @@ import java.util.Set;
 
 public class SymbolicEvaluator {
 
-  private final ConditionVisitor conditionVisitor = new ConditionVisitor();
-
-  private final ExpressionVisitor expressionVisitor = new ExpressionVisitor();
-
-  private final StatementVisitor statementVisitor = new StatementVisitor();
-
   private final AssignedSymbolExtractor extractor = new AssignedSymbolExtractor();
 
   public PackedStates evaluateCondition(ExecutionState state, ExpressionTree tree) {
-    return splitUnknowns(conditionVisitor.evaluate(state, tree));
+    return new ConditionVisitor().evaluate(state, tree).splitUnknowns();
   }
 
   public PackedStates evaluateCondition(List<ExecutionState> states, ExpressionTree tree) {
-    return splitUnknowns(conditionVisitor.evaluate(states, tree));
+    return new ConditionVisitor().evaluate(states, tree).splitUnknowns();
   }
 
   public PackedStates evaluateCondition(PackedStates states, ExpressionTree tree) {
-    return splitUnknowns(conditionVisitor.evaluate(states, tree));
+    return new ConditionVisitor().evaluate(states, tree).splitUnknowns();
   }
 
   public PackedStates evaluateExpression(ExecutionState state, ExpressionTree tree) {
-    return expressionVisitor.evaluate(state, tree);
+    return new ExpressionVisitor().evaluate(state, tree);
   }
 
   public PackedStates evaluateExpression(PackedStates states, ExpressionTree tree) {
-    return expressionVisitor.evaluate(states, tree);
+    return new ExpressionVisitor().evaluate(states, tree);
   }
 
   public PackedStates evaluateStatement(List<ExecutionState> states, StatementTree tree) {
-    return statementVisitor.evaluate(new PackedStates(states), tree);
+    return new StatementVisitor().evaluate(new PackedStates(states), tree);
   }
 
   public PackedStates evaluateStatement(PackedStates states, StatementTree tree) {
-    return statementVisitor.evaluate(states, tree);
-  }
-
-  public PackedStates invalidateAssignedVariables(PackedStates states, Set<Symbol.VariableSymbol> assignedVariables) {
-    for (Symbol.VariableSymbol symbol : assignedVariables) {
-      for (ExecutionState state : states.falseStates) {
-        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-      }
-      for (ExecutionState state : states.trueStates) {
-        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-      }
-      for (ExecutionState state : states.unknownStates) {
-        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-      }
-    }
-    return states;
-  }
-
-  private PackedStates splitUnknowns(PackedStates states) {
-    for (ExecutionState state : states.unknownStates) {
-      states.falseStates.add(new ExecutionState(state));
-      states.trueStates.add(new ExecutionState(state));
-    }
-    states.unknownStates.clear();
-    return states;
+    return new StatementVisitor().evaluate(states, tree);
   }
 
   abstract class BaseExpressionVisitor extends BaseTreeVisitor {
@@ -135,30 +104,19 @@ public class SymbolicEvaluator {
     }
 
     public PackedStates evaluate(ExecutionState state, Tree tree) {
-      PackedStates oldResult = currentResult;
-      ExecutionState oldState = currentState;
-      PackedStates result = new PackedStates();
-      currentResult = result;
+      currentResult = new PackedStates();
       this.currentState = state;
       scan(tree);
-      currentResult = oldResult;
-      currentState = oldState;
-      return result;
+      return currentResult;
     }
 
     public PackedStates evaluate(List<ExecutionState> states, Tree tree) {
-      PackedStates oldResult = currentResult;
-      ExecutionState oldState = currentState;
-      PackedStates result = new PackedStates();
-      currentResult = result;
-
+      currentResult = new PackedStates();
       for (ExecutionState state : states) {
         this.currentState = state;
         scan(tree);
       }
-      currentResult = oldResult;
-      currentState = oldState;
-      return result;
+      return currentResult;
     }
 
     public PackedStates evaluate(PackedStates states, ExpressionTree tree) {
@@ -166,15 +124,7 @@ public class SymbolicEvaluator {
       ExecutionState oldState = currentState;
       PackedStates result = new PackedStates();
       currentResult = result;
-      for (ExecutionState state : states.falseStates) {
-        this.currentState = state;
-        scan(tree);
-      }
-      for (ExecutionState state : states.trueStates) {
-        this.currentState = state;
-        scan(tree);
-      }
-      for (ExecutionState state : states.unknownStates) {
+      for (ExecutionState state : Iterables.concat(states.falseStates, states.trueStates, states.unknownStates)) {
         this.currentState = state;
         scan(tree);
       }
@@ -186,29 +136,14 @@ public class SymbolicEvaluator {
     @Override
     public final void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
       PackedStates result = evaluate(evaluate(tree.expression()), tree.index());
-      currentResult.falseStates.addAll(result.falseStates);
-      currentResult.trueStates.addAll(result.trueStates);
-      currentResult.unknownStates.addAll(result.unknownStates);
+      currentResult.add(result);
     }
 
     @Override
     public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.variable());
       PackedStates result = evaluate(evaluate(tree.variable()), tree.expression());
-      if (symbol != null) {
-        for (ExecutionState state : result.falseStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
-        }
-        for (ExecutionState state : result.trueStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
-        }
-        for (ExecutionState state : result.unknownStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-        }
-      }
-      currentResult.falseStates.addAll(result.falseStates);
-      currentResult.trueStates.addAll(result.trueStates);
-      currentResult.unknownStates.addAll(result.unknownStates);
+      result.setBooleanConstraintOnSymbol(extractLocalVariableSymbol(tree.variable()));
+      currentResult.add(result);
     }
 
     @Override
@@ -274,18 +209,14 @@ public class SymbolicEvaluator {
       PackedStates leftResult = evaluateCondition(currentState, tree.leftOperand());
       currentResult.falseStates.addAll(leftResult.falseStates);
       PackedStates rightResult = evaluateCondition(leftResult.trueStates, tree.rightOperand());
-      currentResult.falseStates.addAll(rightResult.falseStates);
-      currentResult.trueStates.addAll(rightResult.trueStates);
-      currentResult.unknownStates.addAll(rightResult.unknownStates);
+      currentResult.add(rightResult);
     }
 
     private void evaluateConditionalOr(BinaryExpressionTree tree) {
       PackedStates leftResult = evaluateCondition(currentState, tree.leftOperand());
       currentResult.trueStates.addAll(leftResult.trueStates);
       PackedStates rightResult = evaluateCondition(leftResult.falseStates, tree.rightOperand());
-      currentResult.falseStates.addAll(rightResult.falseStates);
-      currentResult.trueStates.addAll(rightResult.trueStates);
-      currentResult.unknownStates.addAll(rightResult.unknownStates);
+      currentResult.add(rightResult);
     }
 
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
@@ -413,7 +344,7 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitDoWhileStatement(DoWhileStatementTree tree) {
-      invalidateAssignedVariables(currentStates, extractor.findAssignedVariables(tree));
+      currentStates.invalidateAssignedVariables(extractor.findAssignedVariables(tree));
       currentStates = evaluateStatement(currentStates, tree.statement());
       currentStates = new PackedStates(evaluateExpression(currentStates, tree.condition()).falseStates);
     }
@@ -425,7 +356,7 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitForStatement(ForStatementTree tree) {
-      invalidateAssignedVariables(currentStates, extractor.findAssignedVariables(tree));
+      currentStates.invalidateAssignedVariables(extractor.findAssignedVariables(tree));
       PackedStates conditionStates = tree.condition() != null ? evaluateCondition(currentStates, tree.condition()) : currentStates;
       currentStates = evaluateStatement(conditionStates.trueStates, tree.statement());
       currentStates = new PackedStates(new ArrayList<>(conditionStates.falseStates));
@@ -434,9 +365,9 @@ public class SymbolicEvaluator {
     @Override
     public void visitForEachStatement(ForEachStatement tree) {
       currentStates = evaluateExpression(currentStates, tree.expression());
-      invalidateAssignedVariables(currentStates, extractor.findAssignedVariables(tree));
+      currentStates.invalidateAssignedVariables(extractor.findAssignedVariables(tree));
       currentStates = evaluateStatement(currentStates, tree.statement());
-      invalidateAssignedVariables(currentStates, extractor.findAssignedVariables(tree));
+      currentStates.invalidateAssignedVariables(extractor.findAssignedVariables(tree));
     }
 
     @Override
@@ -496,37 +427,23 @@ public class SymbolicEvaluator {
     public void visitVariable(VariableTree tree) {
       if (tree.initializer() != null) {
         currentStates = evaluateExpression(currentStates, tree.initializer());
-        Symbol.VariableSymbol symbol = (Symbol.VariableSymbol) tree.symbol();
-        if (symbol != null) {
-          for (ExecutionState state : currentStates.falseStates) {
-            state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
-          }
-          for (ExecutionState state : currentStates.trueStates) {
-            state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
-          }
-          for (ExecutionState state : currentStates.unknownStates) {
-            state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-          }
-        }
+        currentStates.setBooleanConstraintOnSymbol((Symbol.VariableSymbol) tree.symbol());
       }
     }
 
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
-      invalidateAssignedVariables(currentStates, extractor.findAssignedVariables(tree));
+      currentStates.invalidateAssignedVariables(extractor.findAssignedVariables(tree));
       PackedStates conditionStates = evaluateCondition(currentStates, tree.condition());
       evaluateStatement(conditionStates.trueStates, tree.statement());
       currentStates = new PackedStates(conditionStates.falseStates);
-      invalidateAssignedVariables(currentStates, extractor.findAssignedVariables(tree));
+      currentStates.invalidateAssignedVariables(extractor.findAssignedVariables(tree));
     }
   }
 
   public static class PackedStates {
-    @VisibleForTesting
     public final List<ExecutionState> falseStates;
-    @VisibleForTesting
     public final List<ExecutionState> trueStates;
-    @VisibleForTesting
     public final List<ExecutionState> unknownStates;
 
     public PackedStates() {
@@ -541,6 +458,43 @@ public class SymbolicEvaluator {
       this.unknownStates = unknownStates;
     }
 
+    void add(PackedStates that) {
+      falseStates.addAll(that.falseStates);
+      trueStates.addAll(that.trueStates);
+      unknownStates.addAll(that.unknownStates);
+    }
+
+    void setBooleanConstraintOnSymbol(Symbol.VariableSymbol symbol) {
+      if (symbol != null) {
+        for (ExecutionState state : falseStates) {
+          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
+        }
+        for (ExecutionState state : trueStates) {
+          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
+        }
+        for (ExecutionState state : unknownStates) {
+          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+        }
+      }
+    }
+
+    void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
+      for (Symbol.VariableSymbol symbol : assignedVariables) {
+        for (ExecutionState state : Iterables.concat(falseStates, trueStates, unknownStates)) {
+          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+        }
+      }
+    }
+
+    PackedStates splitUnknowns() {
+      for (ExecutionState state : unknownStates) {
+        falseStates.add(new ExecutionState(state));
+        trueStates.add(new ExecutionState(state));
+      }
+      unknownStates.clear();
+      return this;
+    }
+
     public boolean isAlwaysFalse() {
       return !falseStates.isEmpty() && trueStates.isEmpty() && unknownStates.isEmpty();
     }
@@ -550,7 +504,7 @@ public class SymbolicEvaluator {
     }
 
     public boolean isUnknown() {
-      return !unknownStates.isEmpty() || !trueStates.isEmpty() && !falseStates.isEmpty();
+      return !unknownStates.isEmpty() || (!trueStates.isEmpty() && !falseStates.isEmpty());
     }
 
     public SymbolicBooleanConstraint getBooleanConstraint() {
