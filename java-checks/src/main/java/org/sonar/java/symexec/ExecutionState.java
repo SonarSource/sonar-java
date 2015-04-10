@@ -46,7 +46,7 @@ public class ExecutionState {
   @VisibleForTesting
   static final Table<SymbolicRelation, SymbolicRelation, SymbolicBooleanConstraint> RELATION_RELATION_MAP = HashBasedTable.create();
 
-  {
+  static {
     RELATION_RELATION_MAP.row(EQUAL_TO).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
       .put(EQUAL_TO, TRUE)
       .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)

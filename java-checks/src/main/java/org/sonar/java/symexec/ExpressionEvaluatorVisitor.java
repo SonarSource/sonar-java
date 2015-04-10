@@ -82,7 +82,8 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
   public void visitIdentifier(IdentifierTree tree) {
     Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree);
     if (symbol != null) {
-      switch (currentState.getBooleanConstraint(symbol)) {
+      SymbolicBooleanConstraint constraint = currentState.getBooleanConstraint(symbol);
+      switch (constraint) {
         case FALSE:
           falseStates.add(currentState);
           break;
@@ -92,6 +93,9 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
         case UNKNOWN:
           falseStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
           trueStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
+          break;
+        default:
+          throw new IllegalStateException("illegal value " + constraint);
       }
     } else {
       falseStates.add(currentState);
@@ -165,7 +169,8 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
     Symbol.VariableSymbol leftSymbol = extractLocalVariableSymbol(tree.leftOperand());
     Symbol.VariableSymbol rightSymbol = extractLocalVariableSymbol(tree.rightOperand());
     if (leftSymbol != null && rightSymbol != null) {
-      switch (currentState.evaluateRelation(leftSymbol, operator, rightSymbol)) {
+      SymbolicBooleanConstraint constraint = currentState.evaluateRelation(leftSymbol, operator, rightSymbol);
+      switch (constraint) {
         case FALSE:
           falseStates.add(currentState);
           break;
@@ -175,6 +180,9 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
         case UNKNOWN:
           falseStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
           trueStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
+          break;
+        default:
+          throw new IllegalStateException("illegal value " + constraint);
       }
     } else {
       falseStates.add(currentState);
@@ -186,7 +194,7 @@ public class ExpressionEvaluatorVisitor extends BaseTreeVisitor {
   private Symbol.VariableSymbol extractLocalVariableSymbol(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) tree;
-      Symbol symbol = ((IdentifierTree) identifierTree).symbol();
+      Symbol symbol = identifierTree.symbol();
       if (symbol.owner().isMethodSymbol()) {
         return (Symbol.VariableSymbol) symbol;
       }
