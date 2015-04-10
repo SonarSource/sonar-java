@@ -43,6 +43,15 @@ import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
 
 public class SymbolicEvaluatorTest {
 
+  @Test(expected = OverrunException.class)
+  public void test_state_instantiation_count() {
+    ExecutionState state = new ExecutionState();
+    SymbolicEvaluator evaluator = new SymbolicEvaluator();
+    for (int i = 0; i < SymbolicEvaluator.INSTANTIATED_EXECUTION_STATE_LIMIT + 1; i += 1) {
+      evaluator.instantiateExecutionState(state);
+    }
+  }
+
   @Test
   public void test_expression_array() {
     PackedStates result = evaluateExpression("array[0] = 0;");

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.symexec;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -60,18 +61,23 @@ import java.util.Set;
 
 public class SymbolicEvaluator {
 
+  @VisibleForTesting
+  static final int INSTANTIATED_EXECUTION_STATE_LIMIT = 262144;
+
   private final AssignedSymbolExtractor extractor = new AssignedSymbolExtractor();
 
+  private int instantiatedExecutionStateCount;
+
   public PackedStates evaluateCondition(ExecutionState state, ExpressionTree tree) {
-    return new ConditionVisitor().evaluate(state, tree).splitUnknowns();
+    return new ConditionVisitor().evaluate(state, tree).splitUnknowns(this);
   }
 
   public PackedStates evaluateCondition(List<ExecutionState> states, ExpressionTree tree) {
-    return new ConditionVisitor().evaluate(states, tree).splitUnknowns();
+    return new ConditionVisitor().evaluate(states, tree).splitUnknowns(this);
   }
 
   public PackedStates evaluateCondition(PackedStates states, ExpressionTree tree) {
-    return new ConditionVisitor().evaluate(states, tree).splitUnknowns();
+    return new ConditionVisitor().evaluate(states, tree).splitUnknowns(this);
   }
 
   public PackedStates evaluateExpression(ExecutionState state, ExpressionTree tree) {
@@ -88,6 +94,14 @@ public class SymbolicEvaluator {
 
   public PackedStates evaluateStatement(PackedStates states, StatementTree tree) {
     return new StatementVisitor().evaluate(states, tree);
+  }
+
+  ExecutionState instantiateExecutionState(ExecutionState state) {
+    if (instantiatedExecutionStateCount >= INSTANTIATED_EXECUTION_STATE_LIMIT) {
+      throw new OverrunException();
+    }
+    instantiatedExecutionStateCount += 1;
+    return new ExecutionState(state);
   }
 
   abstract class BaseExpressionVisitor extends BaseTreeVisitor {
@@ -247,8 +261,8 @@ public class SymbolicEvaluator {
             currentResult.trueStates.add(currentState);
             return;
           case UNKNOWN:
-            currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
-            currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
+            currentResult.falseStates.add(instantiateExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
+            currentResult.trueStates.add(instantiateExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
             return;
         }
       }
@@ -268,8 +282,8 @@ public class SymbolicEvaluator {
             currentResult.trueStates.add(currentState);
             break;
           case UNKNOWN:
-            currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
-            currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
+            currentResult.falseStates.add(instantiateExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
+            currentResult.trueStates.add(instantiateExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
         }
       } else {
         currentResult.unknownStates.add(currentState);
@@ -486,10 +500,10 @@ public class SymbolicEvaluator {
       }
     }
 
-    PackedStates splitUnknowns() {
+    PackedStates splitUnknowns(SymbolicEvaluator evaluator) {
       for (ExecutionState state : unknownStates) {
-        falseStates.add(new ExecutionState(state));
-        trueStates.add(new ExecutionState(state));
+        falseStates.add(evaluator.instantiateExecutionState(state));
+        trueStates.add(evaluator.instantiateExecutionState(state));
       }
       unknownStates.clear();
       return this;

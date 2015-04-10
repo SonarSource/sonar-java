@@ -426,4 +426,43 @@ public static class Class {
     }
   }
 
+  public void split_limit() {
+    if (true) { // False negative, issue is not reported because execution is aborted
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+  }
+
 }

@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
+import org.sonar.java.symexec.OverrunException;
 import org.sonar.java.symexec.SymbolicEvaluator;
 import org.sonar.java.symexec.SymbolicEvaluator.PackedStates;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -38,6 +39,8 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Rule(
   key = "S2583",
@@ -50,14 +53,8 @@ import java.util.Arrays;
 public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-
-  public SymbolicEvaluator engine = new SymbolicEvaluator() {
-    @Override
-    public PackedStates evaluateStatement(PackedStates states, StatementTree tree) {
-      checkCondition(states, tree);
-      return super.evaluateStatement(states, tree);
-    }
-  };
+  private final Map<Tree, String> issues = new HashMap<>();
+  private SymbolicEvaluator engine;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -68,7 +65,21 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   @Override
   public void visitMethod(MethodTree tree) {
     if (tree.block() != null) {
-      engine.evaluateStatement(new PackedStates(Arrays.asList(new ExecutionState())), tree.block());
+      issues.clear();
+      try {
+        engine = new SymbolicEvaluator() {
+          @Override
+          public PackedStates evaluateStatement(PackedStates states, StatementTree tree) {
+            checkCondition(states, tree);
+            return super.evaluateStatement(states, tree);
+          }
+        };
+        engine.evaluateStatement(new PackedStates(Arrays.asList(new ExecutionState())), tree.block());
+        for (Map.Entry<Tree, String> issue : issues.entrySet()) {
+          context.addIssue(issue.getKey(), this, issue.getValue());
+        }
+      } catch (OverrunException e) {
+      }
     }
   }
 
@@ -85,7 +96,7 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   private void raiseIssue(ExpressionTree tree, String value) {
-    context.addIssue(tree, this, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
+    issues.put(tree, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
   }
 
 }
