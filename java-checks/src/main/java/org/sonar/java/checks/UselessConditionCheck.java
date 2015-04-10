@@ -23,15 +23,21 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
-import org.sonar.java.symexec.ExpressionEvaluatorVisitor;
+import org.sonar.java.symexec.SymbolicEvaluator;
+import org.sonar.java.symexec.SymbolicEvaluator.PackedStates;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.Arrays;
 
 @Rule(
   key = "S2583",
@@ -45,6 +51,14 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
 
   private JavaFileScannerContext context;
 
+  public SymbolicEvaluator engine = new SymbolicEvaluator() {
+    @Override
+    public PackedStates evaluateStatement(PackedStates states, StatementTree tree) {
+      checkCondition(states, tree);
+      return super.evaluateStatement(states, tree);
+    }
+  };
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
@@ -52,18 +66,21 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   @Override
-  public void visitIfStatement(IfStatementTree tree) {
-    checkCondition(tree.condition());
-    super.visitIfStatement(tree);
+  public void visitMethod(MethodTree tree) {
+    if (tree.block() != null) {
+      engine.evaluateStatement(new PackedStates(Arrays.asList(new ExecutionState())), tree.block());
+    }
   }
 
-  private void checkCondition(ExpressionTree tree) {
-    ExpressionEvaluatorVisitor evaluation = new ExpressionEvaluatorVisitor(new ExecutionState(), tree);
-    if(evaluation.isAlwaysFalse()) {
-      raiseIssue(tree, "false");
-    }
-    if(evaluation.isAwlaysTrue()) {
-      raiseIssue(tree, "true");
+  private void checkCondition(PackedStates states, StatementTree tree) {
+    if (tree.is(Tree.Kind.IF_STATEMENT)) {
+      PackedStates conditionStates = engine.evaluateCondition(states, ((IfStatementTree) tree).condition());
+      if (conditionStates.isAlwaysFalse()) {
+        raiseIssue(((IfStatementTree) tree).condition(), "false");
+      }
+      if (conditionStates.isAlwaysTrue()) {
+        raiseIssue(((IfStatementTree) tree).condition(), "true");
+      }
     }
   }
 
