@@ -38,6 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Rule(
   key = "S2583",
@@ -53,7 +54,7 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
 
   public SymbolicEvaluator engine = new SymbolicEvaluator() {
     @Override
-    public PackedStates evaluateStatement(PackedStates states, StatementTree tree) {
+    public List<ExecutionState> evaluateStatement(List<ExecutionState> states, StatementTree tree) {
       checkCondition(states, tree);
       return super.evaluateStatement(states, tree);
     }
@@ -68,11 +69,11 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   @Override
   public void visitMethod(MethodTree tree) {
     if (tree.block() != null) {
-      engine.evaluateStatement(new PackedStates(Arrays.asList(new ExecutionState())), tree.block());
+      engine.evaluateStatement(Arrays.asList(new ExecutionState()), tree.block());
     }
   }
 
-  private void checkCondition(PackedStates states, StatementTree tree) {
+  private void checkCondition(List<ExecutionState> states, StatementTree tree) {
     if (tree.is(Tree.Kind.IF_STATEMENT)) {
       PackedStates conditionStates = engine.evaluateCondition(states, ((IfStatementTree) tree).condition());
       if (conditionStates.isAlwaysFalse()) {
