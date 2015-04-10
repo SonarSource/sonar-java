@@ -390,10 +390,12 @@ public class SymbolicEvaluator {
       PackedStates trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
       PackedStates falseStates = tree.elseStatement() != null ? evaluateStatement(conditionStates.falseStates, tree.elseStatement()) : null;
       Set<ExecutionState> states = new HashSet<>();
+      states.addAll(trueStates.trueStates);
       states.addAll(trueStates.falseStates);
       states.addAll(trueStates.unknownStates);
       if (falseStates != null) {
         states.addAll(falseStates.trueStates);
+        states.addAll(falseStates.unknownStates);
       } else {
         states.addAll(conditionStates.falseStates);
       }
