@@ -426,4 +426,53 @@ public static class Class {
     }
   }
 
+  public void statement_if3(boolean parameter1, boolean parameter2) {
+    boolean b = false;
+    if (parameter1) {
+    } else if (parameter2) {
+      b = true;
+    }
+    if (b) { // Compliant
+    }
+  }
+
+  public void split_limit() {
+    if (true) { // False negative, issue is not reported because execution is aborted
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+    if (field) {
+    }
+  }
+
 }
