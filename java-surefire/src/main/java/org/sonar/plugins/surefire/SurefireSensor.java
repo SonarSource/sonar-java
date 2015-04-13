@@ -21,9 +21,7 @@ package org.sonar.plugins.surefire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.DependedUpon;
-import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
@@ -46,11 +44,6 @@ public class SurefireSensor implements Sensor {
     this.surefireJavaParser = surefireJavaParser;
     this.settings = settings;
     this.fs = fs;
-  }
-
-  @DependsUpon
-  public Class dependsUponCoverageSensors() {
-    return CoverageExtension.class;
   }
 
   @Override
