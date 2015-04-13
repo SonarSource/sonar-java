@@ -33,6 +33,10 @@ enum SymbolicRelation {
   NOT_EQUAL,
   UNKNOWN;
 
+  private static final int FLAGS_EQUAL = 1;
+  private static final int FLAGS_GREATER = 2;
+  private static final int FLAGS_LESS = 4;
+
   private static final Map<SymbolicRelation, SymbolicRelation> NEGATE_MAP = ImmutableMap.<SymbolicRelation, SymbolicRelation>builder()
     .put(EQUAL_TO, NOT_EQUAL)
     .put(GREATER_EQUAL, LESS_THAN)
@@ -53,12 +57,36 @@ enum SymbolicRelation {
     .put(UNKNOWN, UNKNOWN)
     .build();
 
+  private static final Map<SymbolicRelation, Integer> CONSTANT_FLAGS_MAP = ImmutableMap.<SymbolicRelation, Integer>builder()
+    .put(EQUAL_TO, FLAGS_EQUAL)
+    .put(GREATER_EQUAL, FLAGS_EQUAL | FLAGS_GREATER)
+    .put(GREATER_THAN, FLAGS_GREATER)
+    .put(LESS_EQUAL, FLAGS_EQUAL | FLAGS_LESS)
+    .put(LESS_THAN, FLAGS_LESS)
+    .put(NOT_EQUAL, FLAGS_GREATER | FLAGS_LESS)
+    .put(UNKNOWN, FLAGS_EQUAL | FLAGS_GREATER | FLAGS_LESS)
+    .build();
+
+  private static final Map<Integer, SymbolicRelation> FLAGS_CONSTANT_MAP = ImmutableMap.<Integer, SymbolicRelation>builder()
+    .put(FLAGS_EQUAL, EQUAL_TO)
+    .put(FLAGS_EQUAL | FLAGS_GREATER, GREATER_EQUAL)
+    .put(FLAGS_GREATER, GREATER_THAN)
+    .put(FLAGS_EQUAL | FLAGS_LESS, LESS_EQUAL)
+    .put(FLAGS_LESS, LESS_THAN)
+    .put(FLAGS_GREATER | FLAGS_LESS, NOT_EQUAL)
+    .put(FLAGS_EQUAL | FLAGS_GREATER | FLAGS_LESS, UNKNOWN)
+    .build();
+
   public SymbolicRelation negate() {
     return NEGATE_MAP.get(this);
   }
 
   public SymbolicRelation swap() {
     return SWAP_MAP.get(this);
+  }
+
+  public SymbolicRelation union(SymbolicRelation other) {
+    return other == null ? this : FLAGS_CONSTANT_MAP.get(CONSTANT_FLAGS_MAP.get(this) | CONSTANT_FLAGS_MAP.get(other));
   }
 
 }
