@@ -426,4 +426,36 @@ public static class Class {
     }
   }
 
+  public void test_assign(boolean param1, boolean param2, bool falseParam, bool trueParam) {
+    boolean boolAnd1 = true;
+    boolAnd1 = param1 && param2;
+    if (!boolAnd1) { // Compliant
+    }
+
+    boolean boolAnd2 = true;
+    boolAnd2 = falseParam && param2;
+    if (!boolAnd2) { // Compliant
+    }
+
+    boolean boolAnd3 = true;
+    boolAnd3 = param1 && falseParam;
+    if (!boolAnd3) { // Compliant
+    }
+
+    boolean boolOr1 = true;
+    boolOr1 = param1 || param2;
+    if (!boolOr1) { // Compliant
+    }
+
+    boolean boolOr2 = true;
+    boolOr2 = trueParam || param1;
+    if (!boolOr2) { // Compliant
+    }
+
+    boolean boolOr3 = true;
+    boolOr3 = param1 || trueParam;
+    if (!boolOr3) { // Compliant
+    }
+  }
+
 }

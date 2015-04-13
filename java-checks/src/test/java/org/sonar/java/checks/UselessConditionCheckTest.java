@@ -40,7 +40,6 @@ public class UselessConditionCheckTest {
       new VisitorsBridge(new UselessConditionCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
       .next().atLine(15).withMessage("Change this condition so that it does not always evaluate to \"false\"")
-      // .next().atLine(16).withMessage("Change this condition so that it does not always evaluate to \"false\"")
       .next().atLine(19).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(20).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(26).withMessage("Change this condition so that it does not always evaluate to \"false\"")
