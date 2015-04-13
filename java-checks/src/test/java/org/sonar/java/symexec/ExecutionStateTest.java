@@ -19,6 +19,7 @@
  */
 package org.sonar.java.symexec;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
@@ -114,6 +115,86 @@ public class ExecutionStateTest {
     for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.row(SymbolicRelation.UNKNOWN).entrySet()) {
       assertThat(entry.getValue()).isSameAs(UNKNOWN);
     }
+  }
+
+  @Test
+  public void test_merge_boolean_constraints() {
+    Symbol.VariableSymbol booleanFalse = mockLocalVariable();
+    Symbol.VariableSymbol booleanTrue = mockLocalVariable();
+    Symbol.VariableSymbol booleanBoth = mockLocalVariable();
+
+    ExecutionState parentState = new ExecutionState();
+    ExecutionState state = new ExecutionState(parentState);
+    ExecutionState childState1 = new ExecutionState(state);
+    ExecutionState childState21 = new ExecutionState(state);
+    ExecutionState childState22 = new ExecutionState(new ExecutionState(childState21));
+    ExecutionState childState31 = new ExecutionState(state);
+    ExecutionState childState32 = new ExecutionState(new ExecutionState(childState31));
+
+    // constraint must not be set if it can be retrieved from the parent state.
+    parentState.setBooleanConstraint(booleanFalse, FALSE);
+    childState1.setBooleanConstraint(booleanFalse, FALSE);
+    childState21.setBooleanConstraint(booleanFalse, FALSE);
+    childState32.setBooleanConstraint(booleanFalse, FALSE);
+    state.union(ImmutableList.of(childState1, childState22, childState32));
+    assertThat(state.constraints.get(booleanFalse)).isNull();
+    assertThat(state.getBooleanConstraint(booleanFalse)).isSameAs(FALSE);
+
+    // constraint must shadow constraint in parent state.
+    childState1.setBooleanConstraint(booleanTrue, TRUE);
+    childState21.setBooleanConstraint(booleanTrue, TRUE);
+    childState32.setBooleanConstraint(booleanTrue, TRUE);
+    state.union(ImmutableList.of(childState1, childState22, childState32));
+    assertThat(state.getBooleanConstraint(booleanTrue)).isSameAs(TRUE);
+
+    // union of different value must yield UNKNOWN
+    childState1.setBooleanConstraint(booleanBoth, FALSE);
+    childState21.setBooleanConstraint(booleanBoth, TRUE);
+    childState32.setBooleanConstraint(booleanBoth, TRUE);
+    state.union(ImmutableList.of(childState1, childState22, childState32));
+    assertThat(state.getBooleanConstraint(booleanBoth)).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_merge_relations() {
+    Symbol.VariableSymbol symbol11 = mockLocalVariable();
+    Symbol.VariableSymbol symbol12 = mockLocalVariable();
+
+    ExecutionState parentState = new ExecutionState();
+    ExecutionState state = new ExecutionState(parentState);
+    ExecutionState childState1 = new ExecutionState(state);
+    ExecutionState childState21 = new ExecutionState(state);
+    ExecutionState childState22 = new ExecutionState(new ExecutionState(childState21));
+    ExecutionState childState31 = new ExecutionState(state);
+    ExecutionState childState32 = new ExecutionState(new ExecutionState(childState31));
+
+    parentState.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
+    childState1.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
+    childState21.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
+    childState32.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
+    state.union(ImmutableList.of(childState1, childState22, childState32));
+    assertThat(state.relations.get(symbol11, symbol12)).isNull();
+    assertThat(state.getRelation(symbol11, symbol12)).isEqualTo(SymbolicRelation.GREATER_THAN);
+    assertThat(state.relations.get(symbol12, symbol11)).isNull();
+    assertThat(state.getRelation(symbol12, symbol11)).isEqualTo(SymbolicRelation.LESS_THAN);
+
+    parentState.setRelation(symbol11, SymbolicRelation.UNKNOWN, symbol12);
+    childState1.setRelation(symbol11, SymbolicRelation.LESS_THAN, symbol12);
+    childState21.setRelation(symbol11, SymbolicRelation.LESS_EQUAL, symbol12);
+    childState32.setRelation(symbol11, SymbolicRelation.LESS_EQUAL, symbol12);
+    state.union(ImmutableList.of(childState1, childState22, childState32));
+    assertThat(state.getRelation(symbol11, symbol12)).isEqualTo(SymbolicRelation.LESS_EQUAL);
+    assertThat(state.getRelation(symbol12, symbol11)).isEqualTo(SymbolicRelation.GREATER_EQUAL);
+  }
+
+  private Symbol.VariableSymbol mockLocalVariable() {
+    Symbol.TypeSymbol methodSymbol = mock(Symbol.TypeSymbol.class);
+    when(methodSymbol.isMethodSymbol()).thenReturn(true);
+
+    Symbol.VariableSymbol variableSymbol = mock(Symbol.VariableSymbol.class);
+    when(variableSymbol.isVariableSymbol()).thenReturn(true);
+    when(variableSymbol.owner()).thenReturn(methodSymbol);
+    return variableSymbol;
   }
 
 }
