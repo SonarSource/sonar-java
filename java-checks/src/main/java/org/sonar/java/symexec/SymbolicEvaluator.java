@@ -450,19 +450,21 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitIfStatement(IfStatementTree tree) {
-      PackedStates conditionStates = new PackedStates();
+      List<ExecutionState> nextStates = new ArrayList<>();
       for (ExecutionState state : currentStates) {
-        conditionStates.add(evaluateCondition(state, tree.condition()));
+        PackedStates conditionStates = evaluateCondition(state, tree.condition());
         result.put(tree, conditionStates.getBooleanConstraint().union(result.get(tree)));
+        List<ExecutionState> trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
+        List<ExecutionState> falseStates = conditionStates.falseStates;
+        if (tree.elseStatement() != null) {
+          falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
+        }
+        if (!falseStates.isEmpty() || !trueStates.isEmpty()) {
+          state.union(Iterables.concat(falseStates, trueStates));
+          nextStates.add(state);
+        }
       }
-      List<ExecutionState> trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
-      List<ExecutionState> falseStates = conditionStates.falseStates;
-      if (tree.elseStatement() != null) {
-        falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
-      }
-      currentStates = new ArrayList<>();
-      currentStates.addAll(trueStates);
-      currentStates.addAll(falseStates);
+      currentStates = nextStates;
     }
 
     @Override
