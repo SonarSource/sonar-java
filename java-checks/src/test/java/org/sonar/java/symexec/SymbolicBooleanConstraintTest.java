@@ -29,11 +29,33 @@ import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
 public class SymbolicBooleanConstraintTest {
 
   @Test
-  public void test() {
+  public void test_count() {
     assertThat(SymbolicBooleanConstraint.values().length).isEqualTo(3);
+  }
+
+  @Test
+  public void test_negate() {
     assertThat(FALSE.negate()).isEqualTo(TRUE);
     assertThat(TRUE.negate()).isEqualTo(FALSE);
     assertThat(UNKNOWN.negate()).isEqualTo(UNKNOWN);
+  }
+
+  @Test
+  public void test_union() {
+    assertThat(FALSE.union(null)).isEqualTo(FALSE);
+    assertThat(FALSE.union(FALSE)).isEqualTo(FALSE);
+    assertThat(FALSE.union(TRUE)).isEqualTo(UNKNOWN);
+    assertThat(FALSE.union(UNKNOWN)).isEqualTo(UNKNOWN);
+
+    assertThat(TRUE.union(null)).isEqualTo(TRUE);
+    assertThat(TRUE.union(FALSE)).isEqualTo(UNKNOWN);
+    assertThat(TRUE.union(TRUE)).isEqualTo(TRUE);
+    assertThat(TRUE.union(UNKNOWN)).isEqualTo(UNKNOWN);
+
+    assertThat(UNKNOWN.union(null)).isEqualTo(UNKNOWN);
+    assertThat(UNKNOWN.union(FALSE)).isEqualTo(UNKNOWN);
+    assertThat(UNKNOWN.union(TRUE)).isEqualTo(UNKNOWN);
+    assertThat(UNKNOWN.union(UNKNOWN)).isEqualTo(UNKNOWN);
   }
 
 }
