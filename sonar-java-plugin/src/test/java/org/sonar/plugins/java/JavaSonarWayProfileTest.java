@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 
 public class JavaSonarWayProfileTest {
 
-  private final static int NUMBER_OF_RULES_IN_PROFILE = 199;
+  private final static int NUMBER_OF_RULES_IN_PROFILE = 200;
 
   @Test
   public void should_create_sonar_way_profile() {

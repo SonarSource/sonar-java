@@ -313,16 +313,17 @@ public final class CheckList {
       .add(ChildClassShadowFieldCheck.class)
       .add(OperatorPrecedenceCheck.class)
       .add(NestedEnumStaticCheck.class)
+      .add(CloseResourceCheck.class)
       .build();
   }
 
   public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
-        .add(IgnoredTestsCheck.class)
-        .add(BooleanLiteralInAssertionsCheck.class)
-        .add(AssertionsWithoutMessageCheck.class)
-        .add(CallSuperInTestCaseCheck.class)
-        .add(AssertionInThreadRunCheck.class)
-        .build();
+      .add(IgnoredTestsCheck.class)
+      .add(BooleanLiteralInAssertionsCheck.class)
+      .add(AssertionsWithoutMessageCheck.class)
+      .add(CallSuperInTestCaseCheck.class)
+      .add(AssertionInThreadRunCheck.class)
+      .build();
   }
 }
