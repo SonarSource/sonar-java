@@ -19,6 +19,7 @@
  */
 package org.sonar.java.symexec;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -54,18 +56,30 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.CheckForNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SymbolicEvaluator {
 
   private final AssignedSymbolExtractor extractor = new AssignedSymbolExtractor();
 
+  private final Map<Tree, SymbolicBooleanConstraint> result = new HashMap<>();
+
+  public Map<Tree, SymbolicBooleanConstraint> evaluateMethod(ExecutionState state, MethodTree tree) {
+    result.clear();
+    if (tree.block() != null) {
+      evaluateStatement(ImmutableList.of(state), tree.block());
+    }
+    return result;
+  }
+
   PackedStates evaluateCondition(ExecutionState state, ExpressionTree tree) {
     return new ConditionVisitor().evaluate(state, tree).splitUnknowns();
   }
 
-  public PackedStates evaluateCondition(List<ExecutionState> states, ExpressionTree tree) {
+  PackedStates evaluateCondition(List<ExecutionState> states, ExpressionTree tree) {
     PackedStates result = new PackedStates();
     for (ExecutionState state : states) {
       result.add(new ConditionVisitor().evaluate(state, tree).splitUnknowns());
@@ -77,7 +91,7 @@ public class SymbolicEvaluator {
     return new ExpressionVisitor().evaluate(state, tree);
   }
 
-  public List<ExecutionState> evaluateStatement(List<ExecutionState> states, StatementTree tree) {
+  List<ExecutionState> evaluateStatement(List<ExecutionState> states, StatementTree tree) {
     return new StatementVisitor().evaluate(states, tree);
   }
 
@@ -439,6 +453,7 @@ public class SymbolicEvaluator {
       PackedStates conditionStates = new PackedStates();
       for (ExecutionState state : currentStates) {
         conditionStates.add(evaluateCondition(state, tree.condition()));
+        result.put(tree, conditionStates.getBooleanConstraint().union(result.get(tree)));
       }
       List<ExecutionState> trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
       List<ExecutionState> falseStates = conditionStates.falseStates;
