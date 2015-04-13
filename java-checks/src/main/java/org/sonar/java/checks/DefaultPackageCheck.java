@@ -41,7 +41,7 @@ public class DefaultPackageCheck implements JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     if (context.getTree().packageName() == null) {
-      context.addIssue(context.getTree(), this, "Move this file to a named package.");
+      context.addIssueOnFile(this, "Move this file to a named package.");
     }
   }
 
