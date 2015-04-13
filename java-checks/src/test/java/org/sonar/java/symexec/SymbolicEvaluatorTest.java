@@ -391,10 +391,118 @@ public class SymbolicEvaluatorTest {
     assertThat(evaluateExpression("+local")).isSameAs(UNKNOWN);
   }
 
+  @Test
+  public void test_dowhile_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; do { return; } while(local1); }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; do { local2 = false; } while(local1); }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_for_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; for(; local1; ) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree emptyTree = analyzeStatement("{ local2 = true; for(; ; ) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> emptyResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), emptyTree);
+    assertThat(emptyResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; for(; local1; ) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_if_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingIfTree = analyzeStatement("{ local1 = true; if(local1) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingIfTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree ifTree = analyzeStatement("if(local1) { local2 = true; } else { local2 = false; }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), ifTree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_while_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; while(local1) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; while(local1) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
   private CompilationUnitTree compilationUnit;
 
   private ExpressionTree analyze(String input) {
     ExpressionTree result = parse(input);
+    SemanticModel.createFor(compilationUnit, ImmutableList.<File>of());
+    return result;
+  }
+
+  private StatementTree analyzeStatement(String input) {
+    StatementTree result = parseStatement(input);
     SemanticModel.createFor(compilationUnit, ImmutableList.<File>of());
     return result;
   }
