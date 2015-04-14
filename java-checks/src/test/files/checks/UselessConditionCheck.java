@@ -152,7 +152,7 @@ public static class Class {
 
   public void relational_ge(boolean parameter1, boolean parameter2) {
     if (parameter1 >= parameter2) {
-      if (parameter1 >= parameter2) { // False negative, always true
+      if (parameter1 >= parameter2) { // Noncompliant, always true
       }
       if (parameter1 < parameter2) { // Noncompliant, always false
       }
@@ -209,9 +209,9 @@ public static class Class {
       }
       if (parameter1 > parameter2) { // Noncompliant, always false
       }
-      if (parameter1 <= parameter2) { // False negative, always true
+      if (parameter1 <= parameter2) { // Noncompliant, always true
       }
-      if (parameter1 < parameter2) { // False negative, always true
+      if (parameter1 < parameter2) { // Noncompliant, always true
       }
     }
     if (parameter1 < parameter2) { // Compliant

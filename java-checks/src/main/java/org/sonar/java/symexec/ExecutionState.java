@@ -89,7 +89,7 @@ public class ExecutionState {
       .put(EQUAL_TO, FALSE)
       .put(GREATER_EQUAL, FALSE)
       .put(GREATER_THAN, FALSE)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
+      .put(LESS_EQUAL, SymbolicBooleanConstraint.TRUE)
       .put(LESS_THAN, TRUE)
       .put(NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
       .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
