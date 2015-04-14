@@ -458,4 +458,19 @@ public static class Class {
     }
   }
 
+  public void test_merge(int a, int b, int c, int d) {
+    if (a < b) {
+      return;
+    }
+    if (a >= b) { // Noncompliant, always true
+    }
+
+    if (c < d || c <= d) {
+    } else {
+      return;
+    }
+    if (c <= d) { // Noncompliant, always true
+    }
+  }
+
 }
