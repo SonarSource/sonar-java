@@ -346,7 +346,7 @@ public class SymbolicEvaluator {
           currentResult = leftStates.getBooleanConstraint().union(currentResult);
         }
       }
-      currentState.union(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+      currentState.mergeConstraintsAndRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
     }
 
     @Override
@@ -362,7 +362,7 @@ public class SymbolicEvaluator {
           currentResult = leftStates.getBooleanConstraint().union(currentResult);
         }
       }
-      currentState.union(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+      currentState.mergeConstraintsAndRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
     }
 
     @Override
@@ -435,7 +435,7 @@ public class SymbolicEvaluator {
           PackedStates conditionStates = evaluateCondition(state, tree.condition());
           List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
           if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-            state.union(Iterables.concat(conditionStates.falseStates, loopStates));
+            state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
             nextStates.add(state);
           }
         }
@@ -469,7 +469,7 @@ public class SymbolicEvaluator {
           falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
         }
         if (!falseStates.isEmpty() || !trueStates.isEmpty()) {
-          state.union(Iterables.concat(falseStates, trueStates));
+          state.mergeConstraintsAndRelations(Iterables.concat(falseStates, trueStates));
           nextStates.add(state);
         }
       }
@@ -540,7 +540,7 @@ public class SymbolicEvaluator {
           PackedStates conditionStates = evaluateCondition(state, tree.condition());
           List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
           if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-            state.union(Iterables.concat(conditionStates.falseStates, loopStates));
+            state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
             nextStates.add(state);
           }
         }

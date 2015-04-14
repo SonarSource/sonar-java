@@ -39,7 +39,10 @@ public enum SymbolicBooleanConstraint {
   }
 
   public SymbolicBooleanConstraint union(@Nullable SymbolicBooleanConstraint other) {
-    return other == null ? this : this == other ? other : UNKNOWN;
+    if (other == null) {
+      return this;
+    }
+    return this == other ? other : UNKNOWN;
   }
 
 }

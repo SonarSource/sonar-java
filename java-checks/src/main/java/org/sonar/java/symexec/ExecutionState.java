@@ -125,9 +125,9 @@ public class ExecutionState {
     this.relations = HashBasedTable.create();
   }
 
-  void union(Iterable<ExecutionState> states) {
-    unionBooleanConstraints(states);
-    unionRelations(states);
+  void mergeConstraintsAndRelations(Iterable<ExecutionState> states) {
+    mergeBooleanConstraints(states);
+    mergeRelations(states);
   }
 
   @VisibleForTesting
@@ -148,7 +148,7 @@ public class ExecutionState {
     return this;
   }
 
-  private void unionRelations(Iterable<ExecutionState> states) {
+  private void mergeRelations(Iterable<ExecutionState> states) {
     for (Table.Cell<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> cell : findCommonRelationSymbols(states).cellSet()) {
       SymbolicRelation relation = null;
       for (ExecutionState state : states) {
@@ -198,7 +198,7 @@ public class ExecutionState {
     return this;
   }
 
-  private void unionBooleanConstraints(Iterable<ExecutionState> states) {
+  private void mergeBooleanConstraints(Iterable<ExecutionState> states) {
     for (Symbol.VariableSymbol symbolToMerge : findCommonBooleanSymbols(states)) {
       SymbolicBooleanConstraint constraint = null;
       for (ExecutionState state : states) {

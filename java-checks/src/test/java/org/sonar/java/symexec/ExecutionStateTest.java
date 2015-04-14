@@ -202,7 +202,7 @@ public class ExecutionStateTest {
     childState1.setBooleanConstraint(booleanFalse, FALSE);
     childState21.setBooleanConstraint(booleanFalse, FALSE);
     childState32.setBooleanConstraint(booleanFalse, FALSE);
-    state.union(ImmutableList.of(childState1, childState22, childState32));
+    state.mergeConstraintsAndRelations(ImmutableList.of(childState1, childState22, childState32));
     assertThat(state.constraints.get(booleanFalse)).isNull();
     assertThat(state.getBooleanConstraint(booleanFalse)).isSameAs(FALSE);
 
@@ -210,14 +210,14 @@ public class ExecutionStateTest {
     childState1.setBooleanConstraint(booleanTrue, TRUE);
     childState21.setBooleanConstraint(booleanTrue, TRUE);
     childState32.setBooleanConstraint(booleanTrue, TRUE);
-    state.union(ImmutableList.of(childState1, childState22, childState32));
+    state.mergeConstraintsAndRelations(ImmutableList.of(childState1, childState22, childState32));
     assertThat(state.getBooleanConstraint(booleanTrue)).isSameAs(TRUE);
 
     // union of different value must yield UNKNOWN
     childState1.setBooleanConstraint(booleanBoth, FALSE);
     childState21.setBooleanConstraint(booleanBoth, TRUE);
     childState32.setBooleanConstraint(booleanBoth, TRUE);
-    state.union(ImmutableList.of(childState1, childState22, childState32));
+    state.mergeConstraintsAndRelations(ImmutableList.of(childState1, childState22, childState32));
     assertThat(state.getBooleanConstraint(booleanBoth)).isSameAs(UNKNOWN);
   }
 
@@ -238,7 +238,7 @@ public class ExecutionStateTest {
     childState1.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
     childState21.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
     childState32.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
-    state.union(ImmutableList.of(childState1, childState22, childState32));
+    state.mergeConstraintsAndRelations(ImmutableList.of(childState1, childState22, childState32));
     assertThat(state.relations.get(symbol11, symbol12)).isNull();
     assertThat(state.getRelation(symbol11, symbol12)).isEqualTo(SymbolicRelation.GREATER_THAN);
     assertThat(state.relations.get(symbol12, symbol11)).isNull();
@@ -248,7 +248,7 @@ public class ExecutionStateTest {
     childState1.setRelation(symbol11, SymbolicRelation.LESS_THAN, symbol12);
     childState21.setRelation(symbol11, SymbolicRelation.LESS_EQUAL, symbol12);
     childState32.setRelation(symbol11, SymbolicRelation.LESS_EQUAL, symbol12);
-    state.union(ImmutableList.of(childState1, childState22, childState32));
+    state.mergeConstraintsAndRelations(ImmutableList.of(childState1, childState22, childState32));
     assertThat(state.getRelation(symbol11, symbol12)).isEqualTo(SymbolicRelation.LESS_EQUAL);
     assertThat(state.getRelation(symbol12, symbol11)).isEqualTo(SymbolicRelation.GREATER_EQUAL);
   }
