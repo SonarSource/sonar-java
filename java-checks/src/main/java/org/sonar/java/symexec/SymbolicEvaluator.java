@@ -410,9 +410,7 @@ public class SymbolicEvaluator {
       currentStates = evaluateStatement(currentStates, tree.statement());
       List<ExecutionState> nextStates = new ArrayList<>();
       for (ExecutionState state : currentStates) {
-        PackedStates conditionStates = evaluateCondition(state, tree.condition());
-        if (!conditionStates.falseStates.isEmpty() || !conditionStates.falseStates.isEmpty()) {
-          state.union(Iterables.concat(conditionStates.falseStates, conditionStates.trueStates));
+        if (evaluateExpression(state, tree.condition()) != SymbolicBooleanConstraint.TRUE) {
           nextStates.add(state);
         }
       }
