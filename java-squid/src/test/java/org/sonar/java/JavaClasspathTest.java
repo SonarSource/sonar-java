@@ -58,7 +58,7 @@ public class JavaClasspathTest {
 
   @Test
   public void properties() throws Exception {
-    assertThat(JavaClasspathProperties.getProperties()).hasSize(2);
+    assertThat(JavaClasspathProperties.getProperties()).hasSize(4);
   }
 
   @Test
@@ -243,7 +243,7 @@ public class JavaClasspathTest {
 
   @Test
   public void invalid_sonar_java_binaries_should_fail_analysis() {
-    settings.setProperty("sonar.java.binaries", "dummyDir");
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
     checkIllegalStateException("No files nor directories matching 'dummyDir'");
   }
 
