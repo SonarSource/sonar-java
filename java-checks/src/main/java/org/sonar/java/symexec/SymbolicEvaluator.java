@@ -534,14 +534,24 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitWhileStatement(WhileStatementTree tree) {
-      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
-      PackedStates conditionStates = new PackedStates();
-      for (ExecutionState state : currentStates) {
-        conditionStates.add(evaluateCondition(state, tree.condition()));
+      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
+      invalidateAssignedVariables(assignedSymbols);
+      if (tree.condition() != null) {
+        List<ExecutionState> nextStates = new ArrayList<>();
+        for (ExecutionState state : currentStates) {
+          PackedStates conditionStates = evaluateCondition(state, tree.condition());
+          List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
+          if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
+            state.union(Iterables.concat(conditionStates.falseStates, loopStates));
+            nextStates.add(state);
+          }
+        }
+        currentStates = nextStates;
+        invalidateAssignedVariables(assignedSymbols);
+      } else {
+        currentStates = evaluateStatement(currentStates, tree.statement());
+        currentStates = new ArrayList<>();
       }
-      evaluateStatement(conditionStates.trueStates, tree.statement());
-      currentStates = conditionStates.falseStates;
-      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
     }
 
     void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
