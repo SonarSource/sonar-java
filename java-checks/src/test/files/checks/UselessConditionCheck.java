@@ -195,29 +195,29 @@ public static class Class {
     if (parameter1 > parameter2) { // Compliant
     }
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  public void test_invalidate_relations(int i, int j, int k) {
+    if (j > i && j < k) {
+      i = 1;
+      if (i < j) { // Compliant
+      }
+      if (j > i) { // Compliant
+      }
+      if (j < k) { // Noncompliant, always true
+      }
+      if (k > j) {// Noncompliant, always true
+      }
+    }
+    if (i < j) {
+      ++i;
+      if (i < j) { // Compliant
+      }
+    }
+    if (i < j) {
+      i--;
+      if (i < j) { // Compliant
+      }
+    }
+  }
   public void statement_assign_variable() {
     boolean condition1 = true, condition2;
     if (condition1) { // Noncompliant, condition is always true
