@@ -285,6 +285,7 @@ public class SymbolicEvaluator {
       super.visitAssignmentExpression(tree);
       Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.variable());
       if (symbol != null) {
+        currentState.invalidateRelationsOnSymbol(symbol);
         currentState.setBooleanConstraint(symbol, currentResult);
       }
     }
@@ -329,6 +330,12 @@ public class SymbolicEvaluator {
       if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
         currentResult = currentResult.negate();
       } else {
+        if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
+          Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.expression());
+          if (symbol != null) {
+            currentState.invalidateRelationsOnSymbol(symbol);
+          }
+        }
         currentResult = SymbolicBooleanConstraint.UNKNOWN;
       }
     }

@@ -21,6 +21,8 @@ package org.sonar.java.symexec;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
@@ -218,6 +220,26 @@ public class ExecutionState {
       }
     }
     return result;
+  }
+
+  void invalidateRelationsOnSymbol(Symbol.VariableSymbol symbol) {
+    Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> pairs = HashMultimap.create();
+    for (ExecutionState current = this; current != null; current = current.parentState) {
+      pairs.putAll(current.findRelationPairs(symbol));
+    }
+    for (Map.Entry<Symbol.VariableSymbol, Symbol.VariableSymbol> cell : pairs.entries()) {
+      setRelation(cell.getKey(), SymbolicRelation.UNKNOWN, cell.getValue());
+    }
+  }
+
+  private Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> findRelationPairs(Symbol.VariableSymbol symbol) {
+    Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> pairs = HashMultimap.create();
+    for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> leftEntry : relations.rowMap().entrySet()) {
+      if (leftEntry.getKey().equals(symbol)) {
+        pairs.putAll(leftEntry.getKey(), leftEntry.getValue().keySet());
+      }
+    }
+    return pairs;
   }
 
 }
