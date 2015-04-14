@@ -59,7 +59,7 @@ public class SonarSymbolTableVisitorTest {
   public void sonar_symbol_table() throws Exception {
     File file = new File("src/test/files/highlighter/SonarSymTable.java");
     lines = Files.readLines(file, Charsets.UTF_8);
-    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(ImmutableList.of(), sonarComponents));
+    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(ImmutableList.of(), sonarComponents.getJavaClasspath(), sonarComponents));
 
     // import List
     verify(symboltableBuilder).newSymbol(offset(1, 18), offset(1, 22));

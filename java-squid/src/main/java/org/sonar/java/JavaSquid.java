@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +45,11 @@ import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class JavaSquid implements SourceCodeSearchEngine {
 
@@ -76,8 +79,11 @@ public class JavaSquid implements SourceCodeSearchEngine {
       Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
       visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
     }
-
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, sonarComponents);
+    List<File> classpath = Lists.newArrayList();
+    if(sonarComponents != null) {
+      classpath = sonarComponents.getJavaClasspath();
+    }
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     astScanner.accept(visitorsBridge);
