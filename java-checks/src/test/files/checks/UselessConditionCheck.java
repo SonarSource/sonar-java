@@ -145,6 +145,8 @@ public static class Class {
       }
       if (parameter1 < parameter2) { // Noncompliant, always false
       }
+      if (parameter1 != parameter2) { // Noncompliant, always false
+      }
     }
     if (parameter1 == parameter2) { // Compliant
     }
@@ -152,18 +154,26 @@ public static class Class {
 
   public void relational_ge(boolean parameter1, boolean parameter2) {
     if (parameter1 >= parameter2) {
-      if (parameter1 >= parameter2) { // False negative, always true
+      if (parameter1 >= parameter2) { // Noncompliant, always true
       }
       if (parameter1 < parameter2) { // Noncompliant, always false
       }
+    }
+    if (parameter1 >= parameter2) {
       if (parameter1 == parameter2) { // Compliant
       }
+    }
+    if (parameter1 >= parameter2) {
       if (parameter1 > parameter2) { // Compliant
       }
+    }
+    if (parameter1 >= parameter2) {
       if (parameter1 <= parameter2) { // Compliant
       }
     }
-    if (parameter1 >= parameter2) { // Compliant
+    if (parameter1 >= parameter2) {
+      if (parameter1 != parameter2) { // Compliant
+      }
     }
   }
 
@@ -179,44 +189,34 @@ public static class Class {
       }
       if (parameter1 < parameter2) { // Noncompliant, always false
       }
+      if (parameter1 != parameter2) { // Noncompliant, always true
+      }
     }
     if (parameter1 > parameter2) { // Compliant
     }
   }
 
-  public void relationa_le(boolean parameter1, boolean parameter2) {
-    if (parameter1 <= parameter2) {
-      if (parameter1 > parameter2) { // Noncompliant, always false
-      }
-      if (parameter1 <= parameter2) { // Noncompliant, always true
-      }
-      if (parameter1 == parameter2) { // Compliant
-      }
-      if (parameter1 >= parameter2) { // Compliant
-      }
-      if (parameter1 < parameter2) { // Compliant
-      }
-    }
-    if (parameter1 <= parameter2) { // Compliant
-    }
-  }
 
-  public void relational_l(boolean parameter1, boolean parameter2) {
-    if (parameter1 < parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant, always false
-      }
-      if (parameter1 >= parameter2) { // Noncompliant, always false
-      }
-      if (parameter1 > parameter2) { // Noncompliant, always false
-      }
-      if (parameter1 <= parameter2) { // False negative, always true
-      }
-      if (parameter1 < parameter2) { // False negative, always true
-      }
-    }
-    if (parameter1 < parameter2) { // Compliant
-    }
-  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   public void statement_assign_variable() {
     boolean condition1 = true, condition2;
@@ -470,6 +470,75 @@ public static class Class {
       return;
     }
     if (c <= d) { // Noncompliant, always true
+    }
+  }
+
+  public void relationa_le(boolean parameter1, boolean parameter2) {
+    if (parameter1 <= parameter2) {
+      if (parameter1 > parameter2) { // Noncompliant, always false
+      }
+      if (parameter1 <= parameter2) { // Noncompliant, always true
+      }
+    }
+    if (parameter1 <= parameter2) {
+      if (parameter1 == parameter2) { // Compliant
+      }
+    }
+    if (parameter1 <= parameter2) {
+      if (parameter1 >= parameter2) { // Compliant
+      }
+    }
+    if (parameter1 <= parameter2) {
+      if (parameter1 < parameter2) { // Compliant
+      }
+    }
+    if (parameter1 <= parameter2) {
+      if (parameter1 != parameter2) { // Compliant
+      }
+    }
+  }
+
+  public void relational_l(boolean parameter1, boolean parameter2) {
+    if (parameter1 < parameter2) {
+      if (parameter1 == parameter2) { // Noncompliant, always false
+      }
+      if (parameter1 >= parameter2) { // Noncompliant, always false
+      }
+      if (parameter1 > parameter2) { // Noncompliant, always false
+      }
+      if (parameter1 <= parameter2) { // Noncompliant, always true
+      }
+      if (parameter1 < parameter2) { // Noncompliant, always true
+      }
+      if (parameter1 != parameter2) { // Noncompliant, always true
+      }
+    }
+    if (parameter1 < parameter2) { // Compliant
+    }
+  }
+
+  public void relational_ne(boolean parameter1, boolean parameter2) {
+    if (parameter1 != parameter2) {
+      if (parameter1 == parameter2) { // Noncompliant, always false
+      }
+      if (parameter1 != parameter2) { // Noncompliant, always true
+      }
+    }
+    if (parameter1 != parameter2) {
+      if (parameter1 >= parameter2) { // Compliant
+      }
+    }
+    if (parameter1 != parameter2) {
+      if (parameter1 > parameter2) { // Compliant
+      }
+    }
+    if (parameter1 != parameter2) {
+      if (parameter1 <= parameter2) { // Compliant
+      }
+    }
+    if (parameter1 != parameter2) {
+      if (parameter1 < parameter2) { // Compliant
+      }
     }
   }
 
