@@ -80,11 +80,11 @@ public class SymbolicEvaluator {
   }
 
   PackedStates evaluateCondition(List<ExecutionState> states, ExpressionTree tree) {
-    PackedStates result = new PackedStates();
+    PackedStates conditionResult = new PackedStates();
     for (ExecutionState state : states) {
-      result.add(new ConditionVisitor().evaluate(state, tree).splitUnknowns());
+      conditionResult.add(new ConditionVisitor().evaluate(state, tree).splitUnknowns());
     }
-    return result;
+    return conditionResult;
   }
 
   SymbolicBooleanConstraint evaluateExpression(ExecutionState state, ExpressionTree tree) {
@@ -127,7 +127,7 @@ public class SymbolicEvaluator {
     final Symbol.VariableSymbol extractLocalVariableSymbol(Tree tree) {
       if (tree.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) tree;
-        Symbol symbol = ((IdentifierTree) identifierTree).symbol();
+        Symbol symbol = identifierTree.symbol();
         if (symbol.owner().isMethodSymbol() && symbol.isVariableSymbol()) {
           return (Symbol.VariableSymbol) symbol;
         }
@@ -158,9 +158,11 @@ public class SymbolicEvaluator {
     public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
       evaluateExpression(currentState, tree.variable());
       evaluateExpression(currentState, tree.expression());
-      PackedStates result = new PackedStates(currentState);
-      result.setBooleanConstraintOnSymbol(extractLocalVariableSymbol(tree.variable()));
-      currentResult.add(result);
+      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.variable());
+      if (symbol != null) {
+        currentState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+      }
+      currentResult.unknownStates.add(currentState);
     }
 
     @Override
@@ -174,7 +176,7 @@ public class SymbolicEvaluator {
           case TRUE:
             currentResult.trueStates.add(currentState);
             return;
-          case UNKNOWN:
+          default:
             currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
             currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
             return;
@@ -212,10 +214,10 @@ public class SymbolicEvaluator {
     @Override
     public final void visitUnaryExpression(UnaryExpressionTree tree) {
       if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
-        PackedStates result = evaluateCondition(currentState, tree.expression());
-        currentResult.falseStates.addAll(result.trueStates);
-        currentResult.trueStates.addAll(result.falseStates);
-        currentResult.unknownStates.addAll(result.unknownStates);
+        PackedStates unaryResult = evaluateCondition(currentState, tree.expression());
+        currentResult.falseStates.addAll(unaryResult.trueStates);
+        currentResult.trueStates.addAll(unaryResult.falseStates);
+        currentResult.unknownStates.addAll(unaryResult.unknownStates);
       } else {
         currentResult.unknownStates.add(currentState);
       }
@@ -253,7 +255,7 @@ public class SymbolicEvaluator {
           case TRUE:
             currentResult.trueStates.add(currentState);
             break;
-          case UNKNOWN:
+          default:
             currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
             currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
         }
@@ -541,22 +543,17 @@ public class SymbolicEvaluator {
     public void visitWhileStatement(WhileStatementTree tree) {
       Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
       invalidateAssignedVariables(assignedSymbols);
-      if (tree.condition() != null) {
-        List<ExecutionState> nextStates = new ArrayList<>();
-        for (ExecutionState state : currentStates) {
-          PackedStates conditionStates = evaluateCondition(state, tree.condition());
-          List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
-          if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-            state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
-            nextStates.add(state);
-          }
+      List<ExecutionState> nextStates = new ArrayList<>();
+      for (ExecutionState state : currentStates) {
+        PackedStates conditionStates = evaluateCondition(state, tree.condition());
+        List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
+        if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
+          state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
+          nextStates.add(state);
         }
-        currentStates = nextStates;
-        invalidateAssignedVariables(assignedSymbols);
-      } else {
-        currentStates = evaluateStatement(currentStates, tree.statement());
-        currentStates = new ArrayList<>();
       }
+      currentStates = nextStates;
+      invalidateAssignedVariables(assignedSymbols);
     }
 
     void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
@@ -569,29 +566,14 @@ public class SymbolicEvaluator {
   }
 
   public static class PackedStates {
-    public final List<ExecutionState> falseStates;
-    public final List<ExecutionState> trueStates;
-    public final List<ExecutionState> unknownStates;
+    final List<ExecutionState> falseStates;
+    final List<ExecutionState> trueStates;
+    final List<ExecutionState> unknownStates;
 
     public PackedStates() {
       falseStates = new ArrayList<>();
       trueStates = new ArrayList<>();
       unknownStates = new ArrayList<>();
-    }
-
-    public PackedStates(ExecutionState unknownState) {
-      falseStates = new ArrayList<>();
-      trueStates = new ArrayList<>();
-      this.unknownStates = new ArrayList<>();
-      this.unknownStates.add(unknownState);
-    }
-
-    List<ExecutionState> toList() {
-      List<ExecutionState> result = new ArrayList<>();
-      result.addAll(falseStates);
-      result.addAll(trueStates);
-      result.addAll(unknownStates);
-      return result;
     }
 
     public void add(PackedStates that) {
@@ -601,16 +583,14 @@ public class SymbolicEvaluator {
     }
 
     void setBooleanConstraintOnSymbol(Symbol.VariableSymbol symbol) {
-      if (symbol != null) {
-        for (ExecutionState state : falseStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
-        }
-        for (ExecutionState state : trueStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
-        }
-        for (ExecutionState state : unknownStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-        }
+      for (ExecutionState state : falseStates) {
+        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
+      }
+      for (ExecutionState state : trueStates) {
+        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
+      }
+      for (ExecutionState state : unknownStates) {
+        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
       }
     }
 

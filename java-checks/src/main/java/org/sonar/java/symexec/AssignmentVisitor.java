@@ -40,7 +40,7 @@ class AssignedSymbolExtractor {
     return visitor.assignedSymbols;
   }
 
-  class Visitor extends BaseTreeVisitor {
+  private static class Visitor extends BaseTreeVisitor {
     @VisibleForTesting
     Set<VariableSymbol> assignedSymbols;
 

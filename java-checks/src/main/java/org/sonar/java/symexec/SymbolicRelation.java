@@ -19,9 +19,10 @@
  */
 package org.sonar.java.symexec;
 
-import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
+
+import javax.annotation.Nullable;
 
 import java.util.Map;
 
@@ -79,7 +80,7 @@ enum SymbolicRelation {
     return SWAP_MAP.get(this);
   }
 
-  public SymbolicRelation union(SymbolicRelation other) {
+  public SymbolicRelation union(@Nullable SymbolicRelation other) {
     return other == null ? this : FLAGS_CONSTANT_MAP.get(CONSTANT_FLAGS_MAP.get(this) | CONSTANT_FLAGS_MAP.get(other));
   }
 

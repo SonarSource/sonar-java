@@ -156,6 +156,9 @@ public class ExecutionState {
       for (ExecutionState state : states) {
         relation = state.getRelation(cell.getRowKey(), cell.getColumnKey()).union(relation);
       }
+      if (relation == null) {
+        relation = SymbolicRelation.UNKNOWN;
+      }
       if (getRelation(cell.getRowKey(), cell.getColumnKey()) != relation) {
         relations.put(cell.getRowKey(), cell.getColumnKey(), relation);
         relations.put(cell.getColumnKey(), cell.getRowKey(), relation.swap());
@@ -167,7 +170,7 @@ public class ExecutionState {
     // stored value is completely meaningless since only the pair of symbols is relevant, but HashBasedTable does not accept null.
     Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> result = HashBasedTable.create();
     for (ExecutionState state : states) {
-      for (ExecutionState current = state; current != this; current = current.parentState) {
+      for (ExecutionState current = state; !current.equals(this); current = current.parentState) {
         for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> leftEntry : current.relations.rowMap().entrySet()) {
           for (Symbol.VariableSymbol rightSymbol : leftEntry.getValue().keySet()) {
             result.put(leftEntry.getKey(), rightSymbol, UNKNOWN);
@@ -215,7 +218,7 @@ public class ExecutionState {
   private Set<Symbol.VariableSymbol> findCommonBooleanSymbols(Iterable<ExecutionState> states) {
     Set<Symbol.VariableSymbol> result = new HashSet<>();
     for (ExecutionState state : states) {
-      for (ExecutionState current = state; current != this; current = current.parentState) {
+      for (ExecutionState current = state; !current.equals(this); current = current.parentState) {
         result.addAll(state.constraints.keySet());
       }
     }
