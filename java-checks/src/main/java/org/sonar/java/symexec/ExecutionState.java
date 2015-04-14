@@ -21,7 +21,6 @@ package org.sonar.java.symexec;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Table;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
@@ -49,69 +48,61 @@ public class ExecutionState {
   static final Table<SymbolicRelation, SymbolicRelation, SymbolicBooleanConstraint> RELATION_RELATION_MAP = HashBasedTable.create();
 
   static {
-    RELATION_RELATION_MAP.row(EQUAL_TO).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, TRUE)
-      .put(GREATER_EQUAL, TRUE)
-      .put(GREATER_THAN, FALSE)
-      .put(LESS_EQUAL, TRUE)
-      .put(LESS_THAN, FALSE)
-      .put(NOT_EQUAL, FALSE)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
-    RELATION_RELATION_MAP.row(GREATER_EQUAL).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN)
-      .put(GREATER_EQUAL, TRUE)
-      .put(GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(LESS_THAN, FALSE)
-      .put(NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
-    RELATION_RELATION_MAP.row(GREATER_THAN).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, FALSE)
-      .put(GREATER_EQUAL, TRUE)
-      .put(GREATER_THAN, TRUE)
-      .put(LESS_EQUAL, FALSE)
-      .put(LESS_THAN, FALSE)
-      .put(NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
-    RELATION_RELATION_MAP.row(LESS_EQUAL).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(GREATER_THAN, FALSE)
-      .put(LESS_EQUAL, TRUE)
-      .put(LESS_THAN, SymbolicBooleanConstraint.UNKNOWN)
-      .put(NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
-    RELATION_RELATION_MAP.row(LESS_THAN).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, FALSE)
-      .put(GREATER_EQUAL, FALSE)
-      .put(GREATER_THAN, FALSE)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.TRUE)
-      .put(LESS_THAN, TRUE)
-      .put(NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
-    RELATION_RELATION_MAP.row(NOT_EQUAL).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, FALSE)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(LESS_THAN, SymbolicBooleanConstraint.UNKNOWN)
-      .put(NOT_EQUAL, TRUE)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
-    RELATION_RELATION_MAP.row(UNKNOWN).putAll(ImmutableMap.<SymbolicRelation, SymbolicBooleanConstraint>builder()
-      .put(EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN)
-      .put(GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN)
-      .put(LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(LESS_THAN, SymbolicBooleanConstraint.UNKNOWN)
-      .put(NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN)
-      .put(UNKNOWN, SymbolicBooleanConstraint.UNKNOWN)
-      .build());
+    RELATION_RELATION_MAP.put(EQUAL_TO, EQUAL_TO, TRUE);
+    RELATION_RELATION_MAP.put(EQUAL_TO, GREATER_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(EQUAL_TO, GREATER_THAN, FALSE);
+    RELATION_RELATION_MAP.put(EQUAL_TO, LESS_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(EQUAL_TO, LESS_THAN, FALSE);
+    RELATION_RELATION_MAP.put(EQUAL_TO, NOT_EQUAL, FALSE);
+    RELATION_RELATION_MAP.put(EQUAL_TO, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
+
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, GREATER_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, LESS_THAN, FALSE);
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(GREATER_EQUAL, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
+
+    RELATION_RELATION_MAP.put(GREATER_THAN, EQUAL_TO, FALSE);
+    RELATION_RELATION_MAP.put(GREATER_THAN, GREATER_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(GREATER_THAN, GREATER_THAN, TRUE);
+    RELATION_RELATION_MAP.put(GREATER_THAN, LESS_EQUAL, FALSE);
+    RELATION_RELATION_MAP.put(GREATER_THAN, LESS_THAN, FALSE);
+    RELATION_RELATION_MAP.put(GREATER_THAN, NOT_EQUAL, SymbolicBooleanConstraint.TRUE);
+    RELATION_RELATION_MAP.put(GREATER_THAN, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
+
+    RELATION_RELATION_MAP.put(LESS_EQUAL, EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(LESS_EQUAL, GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(LESS_EQUAL, GREATER_THAN, FALSE);
+    RELATION_RELATION_MAP.put(LESS_EQUAL, LESS_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(LESS_EQUAL, LESS_THAN, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(LESS_EQUAL, NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(LESS_EQUAL, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
+
+    RELATION_RELATION_MAP.put(LESS_THAN, EQUAL_TO, FALSE);
+    RELATION_RELATION_MAP.put(LESS_THAN, GREATER_EQUAL, FALSE);
+    RELATION_RELATION_MAP.put(LESS_THAN, GREATER_THAN, FALSE);
+    RELATION_RELATION_MAP.put(LESS_THAN, LESS_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(LESS_THAN, LESS_THAN, TRUE);
+    RELATION_RELATION_MAP.put(LESS_THAN, NOT_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(LESS_THAN, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
+
+    RELATION_RELATION_MAP.put(NOT_EQUAL, EQUAL_TO, FALSE);
+    RELATION_RELATION_MAP.put(NOT_EQUAL, GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(NOT_EQUAL, GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(NOT_EQUAL, LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(NOT_EQUAL, LESS_THAN, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(NOT_EQUAL, NOT_EQUAL, TRUE);
+    RELATION_RELATION_MAP.put(NOT_EQUAL, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
+
+    RELATION_RELATION_MAP.put(UNKNOWN, EQUAL_TO, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(UNKNOWN, GREATER_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(UNKNOWN, GREATER_THAN, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(UNKNOWN, LESS_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(UNKNOWN, LESS_THAN, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(UNKNOWN, NOT_EQUAL, SymbolicBooleanConstraint.UNKNOWN);
+    RELATION_RELATION_MAP.put(UNKNOWN, UNKNOWN, SymbolicBooleanConstraint.UNKNOWN);
   }
 
   @Nullable
