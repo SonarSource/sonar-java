@@ -19,6 +19,8 @@
  */
 package org.sonar.java.symexec;
 
+import javax.annotation.Nullable;
+
 public enum SymbolicBooleanConstraint {
 
   FALSE,
@@ -34,6 +36,13 @@ public enum SymbolicBooleanConstraint {
       default:
         return UNKNOWN;
     }
+  }
+
+  public SymbolicBooleanConstraint union(@Nullable SymbolicBooleanConstraint other) {
+    if (other == null) {
+      return this;
+    }
+    return this == other ? other : UNKNOWN;
   }
 
 }

@@ -31,10 +31,12 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 
 import javax.annotation.Nullable;
 
 import java.io.File;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
@@ -45,10 +47,7 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_array() {
-    PackedStates result = evaluateExpression("array[0] = 0;");
-    assertThat(result.falseStates).isEmpty();
-    assertThat(result.trueStates).isEmpty();
-    assertThat(result.unknownStates).hasSize(1);
+    assertThat(evaluateExpression("array[0] = 0;")).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -56,20 +55,20 @@ public class SymbolicEvaluatorTest {
     // must evaluate to FALSE and set local1 to FALSE
     ExpressionTree tree = analyze("local1 = false;");
     ExecutionState state = new ExecutionState();
-    assertThat(evaluateExpression(state, tree).isAlwaysFalse()).isTrue();
+    assertThat(evaluateExpression(state, tree)).isSameAs(FALSE);
     assertThat(state.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
 
     // must evaluate to FALSE and set local2 to FALSE when local1 = false;
     ExpressionTree transitiveTree = analyze("local2 = local1;");
     ExecutionState transitiveState = new ExecutionState();
     transitiveState.setBooleanConstraint(local1Symbol(), FALSE);
-    assertThat(evaluateExpression(transitiveState, transitiveTree).isAlwaysFalse()).isTrue();
+    assertThat(evaluateExpression(transitiveState, transitiveTree)).isSameAs(FALSE);
     assertThat(transitiveState.getBooleanConstraint(local2Symbol())).isSameAs(FALSE);
 
     // must evaluate to UNKNOWN and set local1 to FALSE
     ExpressionTree nestedTree = analyze("array[(local1 = true) ? 1 : 0] = null;");
     ExecutionState nestedState = new ExecutionState();
-    assertThat(evaluateExpression(nestedState, nestedTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(nestedState, nestedTree)).isSameAs(UNKNOWN);
     assertThat(nestedState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
   }
 
@@ -125,28 +124,28 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_conditional_and() {
-    assertThat(evaluateExpression("false && false").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("false && true").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("false && local2").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("true && false").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("true && true").isAlwaysTrue()).isTrue();
-    assertThat(evaluateExpression("true && local2").isUnknown()).isTrue();
-    assertThat(evaluateExpression("local1 && false").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("local1 && true").isUnknown()).isTrue();
-    assertThat(evaluateExpression("local1 && local").isUnknown()).isTrue();
+    assertThat(evaluateExpression("false && false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false && true")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false && local2")).isSameAs(FALSE);
+    assertThat(evaluateExpression("true && false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("true && true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true && local2")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 && false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("local1 && true")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 && local")).isSameAs(UNKNOWN);
   }
 
   @Test
   public void test_expression_conditional_or() {
-    assertThat(evaluateExpression("false || false").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("false || true").isAlwaysTrue()).isTrue();
-    assertThat(evaluateExpression("false || local2").isUnknown()).isTrue();
-    assertThat(evaluateExpression("true || false").isAlwaysTrue()).isTrue();
-    assertThat(evaluateExpression("true || true").isAlwaysTrue()).isTrue();
-    assertThat(evaluateExpression("true || local2").isAlwaysTrue()).isTrue();
-    assertThat(evaluateExpression("local1 || false").isUnknown()).isTrue();
-    assertThat(evaluateExpression("local1 || true").isAlwaysTrue()).isTrue();
-    assertThat(evaluateExpression("local1 || local").isUnknown()).isTrue();
+    assertThat(evaluateExpression("false || false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false || true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("false || local2")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("true || false")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true || true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true || local2")).isSameAs(TRUE);
+    assertThat(evaluateExpression("local1 || false")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 || true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("local1 || local")).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -178,24 +177,23 @@ public class SymbolicEvaluatorTest {
     ExpressionTree identifierTree = analyze("local1");
 
     // no constraint. must propagate as unknown state
-    assertThat(evaluateExpression(identifierTree).isUnknown()).isTrue();
-    assertOutputStates(evaluateExpression(identifierTree), 0, 0, 1);
+    assertThat(evaluateExpression(identifierTree)).isSameAs(UNKNOWN);
 
     ExecutionState state = new ExecutionState();
 
     // unconditionally evaluates to false if there is already a false constraint
     state.setBooleanConstraint(local1Symbol(), FALSE);
-    validateEvaluationFalse(state, evaluateExpression(state, identifierTree));
+    assertThat(evaluateExpression(state, identifierTree)).isSameAs(FALSE);
 
     // unconditionally evaluates to true if there is already a true constraint
     state.setBooleanConstraint(local1Symbol(), TRUE);
-    validateEvaluationTrue(state, evaluateExpression(state, identifierTree));
+    assertThat(evaluateExpression(state, identifierTree)).isSameAs(TRUE);
 
     // unknown constraint. must spawn a true state and false state with constraints
     state.setBooleanConstraint(local1Symbol(), UNKNOWN);
-    assertThat(evaluateExpression(state, identifierTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, identifierTree)).isSameAs(UNKNOWN);
 
-    assertThat(evaluateExpression(analyze("field1")).isUnknown()).isTrue();
+    assertThat(evaluateExpression(analyze("field1"))).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -206,9 +204,7 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_instanceof() {
-    SymbolicEvaluator.PackedStates expressionResult = evaluateExpression("local1 instanceof Object");
-    assertThat(expressionResult.isUnknown()).isTrue();
-    assertOutputStates(expressionResult, 0, 0, 1);
+    assertThat(evaluateExpression("local1 instanceof Object")).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -221,9 +217,9 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_literal() {
-    assertThat(evaluateExpression("false").isAlwaysFalse()).isTrue();
-    assertThat(evaluateExpression("null").isUnknown()).isTrue();
-    assertThat(evaluateExpression("true").isAlwaysTrue()).isTrue();
+    assertThat(evaluateExpression("false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("null")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("true")).isSameAs(TRUE);
   }
 
   @Test
@@ -251,17 +247,17 @@ public class SymbolicEvaluatorTest {
     ExecutionState state = new ExecutionState();
 
     // result is unknown without constraint.
-    assertThat(evaluateExpression(logicalNotTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(logicalNotTree)).isSameAs(UNKNOWN);
 
     state.setBooleanConstraint(local1Symbol(), FALSE);
-    assertThat(evaluateExpression(state, logicalNotTree).isAlwaysTrue()).isTrue();
+    assertThat(evaluateExpression(state, logicalNotTree)).isSameAs(TRUE);
 
     state.setBooleanConstraint(local1Symbol(), TRUE);
-    assertThat(evaluateExpression(state, logicalNotTree).isAlwaysFalse()).isTrue();
+    assertThat(evaluateExpression(state, logicalNotTree)).isSameAs(FALSE);
 
     // result is unknown with unknown constraint.
     state.setBooleanConstraint(local1Symbol(), UNKNOWN);
-    assertThat(evaluateExpression(state, logicalNotTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, logicalNotTree)).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -272,9 +268,7 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_member_select() {
-    SymbolicEvaluator.PackedStates expressionResult = evaluateExpression("field.field;");
-    assertThat(expressionResult.isUnknown()).isTrue();
-    assertOutputStates(expressionResult, 0, 0, 1);
+    assertThat(evaluateExpression("field.field;")).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -285,9 +279,7 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_method_invocation() {
-    SymbolicEvaluator.PackedStates expressionResult = evaluateExpression("field.method();");
-    assertThat(expressionResult.isUnknown()).isTrue();
-    assertOutputStates(expressionResult, 0, 0, 1);
+    assertThat(evaluateExpression("field.method();")).isSameAs(UNKNOWN);
   }
 
   @Test
@@ -351,32 +343,41 @@ public class SymbolicEvaluatorTest {
     ExpressionTree notEqualTree = analyze("local1 != local2");
 
     // unknown without relations and constraints.
-    assertThat(evaluateExpression(state, notEqualTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, notEqualTree)).isSameAs(UNKNOWN);
 
     // unknown for now with relations. should be false
     state.setBooleanConstraint(local1Symbol(), TRUE);
     state.setBooleanConstraint(local2Symbol(), TRUE);
-    assertThat(evaluateExpression(state, notEqualTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, notEqualTree)).isSameAs(UNKNOWN);
 
     // unknown for now with relations. should be true
     state.setBooleanConstraint(local1Symbol(), TRUE);
     state.setBooleanConstraint(local2Symbol(), FALSE);
-    assertThat(evaluateExpression(state, notEqualTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, notEqualTree)).isSameAs(UNKNOWN);
 
     state.setBooleanConstraint(local1Symbol(), TRUE);
     state.setBooleanConstraint(local2Symbol(), UNKNOWN);
-    assertThat(evaluateExpression(state, notEqualTree).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, notEqualTree)).isSameAs(UNKNOWN);
 
     // true with not equal relation
     state.setRelation(local1Symbol(), SymbolicRelation.NOT_EQUAL, local2Symbol());
-    assertThat(evaluateExpression(state, notEqualTree).isAlwaysTrue()).isTrue();
+    assertThat(evaluateExpression(state, notEqualTree)).isSameAs(TRUE);
 
     // false with equal to relation
     state.setRelation(local1Symbol(), SymbolicRelation.EQUAL_TO, local2Symbol());
-    assertThat(evaluateExpression(state, notEqualTree).isAlwaysFalse()).isTrue();
+    assertThat(evaluateExpression(state, notEqualTree)).isSameAs(FALSE);
 
     // comparison must not fail if either or both operands are not identifiers.
-    assertThat(evaluateExpression(state, parse("null == null")).isUnknown()).isTrue();
+    assertThat(evaluateExpression(state, parse("null == null"))).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_expression_statement() {
+    ExecutionState state = new ExecutionState();
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(state), parseStatement("local1 && local1;"));
+    assertThat(result).containsExactly(state);
+    assertThat(state.constraints.isEmpty());
+    assertThat(state.relations.isEmpty());
   }
 
   @Test
@@ -387,7 +388,109 @@ public class SymbolicEvaluatorTest {
 
   @Test
   public void test_expression_unary() {
-    assertThat(evaluateExpression("+local").isUnknown()).isTrue();
+    assertThat(evaluateExpression("+local")).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_dowhile_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; do { return; } while(local1); }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; do { local2 = false; } while(local1); }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_for_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; for(; local1; ) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree emptyTree = analyzeStatement("{ local2 = true; for(; ; ) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> emptyResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), emptyTree);
+    assertThat(emptyResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; for(; local1; ) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_if_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingIfTree = analyzeStatement("{ local1 = true; if(local1) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingIfTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree ifTree = analyzeStatement("if(local1) { local2 = true; } else { local2 = false; }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), ifTree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_while_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; while(local1) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; while(local1) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
   }
 
   private CompilationUnitTree compilationUnit;
@@ -398,10 +501,22 @@ public class SymbolicEvaluatorTest {
     return result;
   }
 
+  private StatementTree analyzeStatement(String input) {
+    StatementTree result = parseStatement(input);
+    SemanticModel.createFor(compilationUnit, ImmutableList.<File>of());
+    return result;
+  }
+
   private ExpressionTree parse(String input) {
     String p = "class Test { boolean field1; boolean field2; void wrapperMethod(boolean local1, boolean local2) { " + input + "; } }";
     compilationUnit = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
     return ((ExpressionStatementTree) ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).block().body().get(0)).expression();
+  }
+
+  private StatementTree parseStatement(String input) {
+    String p = "class Test { boolean field1; boolean field2; void wrapperMethod(boolean local1, boolean local2) { " + input + "; } }";
+    compilationUnit = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
+    return ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).block().body().get(0);
   }
 
   private Symbol.VariableSymbol local1Symbol() {
@@ -424,15 +539,15 @@ public class SymbolicEvaluatorTest {
     return new SymbolicEvaluator().evaluateCondition(state, tree);
   }
 
-  private SymbolicEvaluator.PackedStates evaluateExpression(String input) {
+  private SymbolicBooleanConstraint evaluateExpression(String input) {
     return evaluateExpression(new ExecutionState(), parse(input));
   }
 
-  private SymbolicEvaluator.PackedStates evaluateExpression(ExpressionTree tree) {
+  private SymbolicBooleanConstraint evaluateExpression(ExpressionTree tree) {
     return evaluateExpression(new ExecutionState(), tree);
   }
 
-  private SymbolicEvaluator.PackedStates evaluateExpression(ExecutionState state, ExpressionTree tree) {
+  private SymbolicBooleanConstraint evaluateExpression(ExecutionState state, ExpressionTree tree) {
     return new SymbolicEvaluator().evaluateExpression(state, tree);
   }
 

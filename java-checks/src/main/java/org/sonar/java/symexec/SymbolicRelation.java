@@ -19,6 +19,8 @@
  */
 package org.sonar.java.symexec;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -32,6 +34,10 @@ enum SymbolicRelation {
   LESS_THAN,
   NOT_EQUAL,
   UNKNOWN;
+
+  private static final int FLAGS_EQUAL = 1 << 0;
+  private static final int FLAGS_GREATER = 1 << 1;
+  private static final int FLAGS_LESS = 1 << 2;
 
   private static final Map<SymbolicRelation, SymbolicRelation> NEGATE_MAP = ImmutableMap.<SymbolicRelation, SymbolicRelation>builder()
     .put(EQUAL_TO, NOT_EQUAL)
@@ -53,12 +59,28 @@ enum SymbolicRelation {
     .put(UNKNOWN, UNKNOWN)
     .build();
 
+  private static final Map<SymbolicRelation, Integer> CONSTANT_FLAGS_MAP = ImmutableMap.<SymbolicRelation, Integer>builder()
+    .put(EQUAL_TO, FLAGS_EQUAL)
+    .put(GREATER_EQUAL, FLAGS_EQUAL | FLAGS_GREATER)
+    .put(GREATER_THAN, FLAGS_GREATER)
+    .put(LESS_EQUAL, FLAGS_EQUAL | FLAGS_LESS)
+    .put(LESS_THAN, FLAGS_LESS)
+    .put(NOT_EQUAL, FLAGS_GREATER | FLAGS_LESS)
+    .put(UNKNOWN, FLAGS_EQUAL | FLAGS_GREATER | FLAGS_LESS)
+    .build();
+
+  private static final Map<Integer, SymbolicRelation> FLAGS_CONSTANT_MAP = HashBiMap.create(CONSTANT_FLAGS_MAP).inverse();
+
   public SymbolicRelation negate() {
     return NEGATE_MAP.get(this);
   }
 
   public SymbolicRelation swap() {
     return SWAP_MAP.get(this);
+  }
+
+  public SymbolicRelation union(SymbolicRelation other) {
+    return other == null ? this : FLAGS_CONSTANT_MAP.get(CONSTANT_FLAGS_MAP.get(this) | CONSTANT_FLAGS_MAP.get(other));
   }
 
 }
