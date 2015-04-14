@@ -274,7 +274,7 @@ public static class Class {
       if (parameter1 == parameter2) { // Noncompliant, condition is always true
       }
     }
-    if (parameter1 == parameter2) { // Noncompliant, condition is always false
+    if (parameter1 == parameter2) { // False negative
     }
   }
 

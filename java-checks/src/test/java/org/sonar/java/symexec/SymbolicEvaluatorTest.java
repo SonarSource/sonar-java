@@ -392,6 +392,37 @@ public class SymbolicEvaluatorTest {
   }
 
   @Test
+  public void test_for_merge() {
+    ExecutionState falseState = new ExecutionState();
+    ExecutionState trueState = new ExecutionState();
+    ExecutionState unknownState = new ExecutionState();
+
+    StatementTree blockingTree = analyzeStatement("{ local1 = true; for(; local1; ) { return; } }");
+    List<ExecutionState> blockingResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(unknownState), blockingTree);
+    assertThat(blockingResult).isEmpty();
+
+    StatementTree emptyTree = analyzeStatement("{ local2 = true; for(; ; ) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> emptyResult = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), emptyTree);
+    assertThat(emptyResult).isEmpty();
+
+    StatementTree tree = analyzeStatement("{ local2 = true; for(; local1; ) { local2 = false; } }");
+    falseState.setBooleanConstraint(local1Symbol(), FALSE);
+    trueState.setBooleanConstraint(local1Symbol(), TRUE);
+    unknownState.setBooleanConstraint(local1Symbol(), UNKNOWN);
+    List<ExecutionState> result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(falseState, trueState, unknownState), tree);
+    assertThat(result).containsOnly(falseState, trueState, unknownState);
+    assertThat(falseState.getBooleanConstraint(local1Symbol())).isSameAs(FALSE);
+    assertThat(trueState.getBooleanConstraint(local1Symbol())).isSameAs(TRUE);
+    assertThat(unknownState.getBooleanConstraint(local1Symbol())).isSameAs(UNKNOWN);
+    assertThat(falseState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(trueState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+    assertThat(unknownState.getBooleanConstraint(local2Symbol())).isSameAs(UNKNOWN);
+  }
+
+  @Test
   public void test_if_merge() {
     ExecutionState falseState = new ExecutionState();
     ExecutionState trueState = new ExecutionState();

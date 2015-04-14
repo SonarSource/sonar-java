@@ -424,14 +424,20 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitForStatement(ForStatementTree tree) {
-      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
+      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
+      invalidateAssignedVariables(assignedSymbols);
       if (tree.condition() != null) {
-        PackedStates conditionStates = new PackedStates();
+        List<ExecutionState> nextStates = new ArrayList<>();
         for (ExecutionState state : currentStates) {
-          conditionStates.add(evaluateCondition(state, tree.condition()));
+          PackedStates conditionStates = evaluateCondition(state, tree.condition());
+          List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
+          if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
+            state.union(Iterables.concat(conditionStates.falseStates, loopStates));
+            nextStates.add(state);
+          }
         }
-        currentStates = evaluateStatement(conditionStates.trueStates, tree.statement());
-        currentStates = conditionStates.falseStates;
+        currentStates = nextStates;
+        invalidateAssignedVariables(assignedSymbols);
       } else {
         currentStates = evaluateStatement(currentStates, tree.statement());
         currentStates = new ArrayList<>();
