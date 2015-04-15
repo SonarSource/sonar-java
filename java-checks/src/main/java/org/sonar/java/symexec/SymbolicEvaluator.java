@@ -131,11 +131,11 @@ public class SymbolicEvaluator {
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
 
     @CheckForNull
-    final Symbol.VariableSymbol extractLocalVariableSymbol(Tree tree) {
+    final Symbol.VariableSymbol extractVariableSymbol(Tree tree) {
       if (tree.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) tree;
         Symbol symbol = identifierTree.symbol();
-        if (symbol.owner().isMethodSymbol() && symbol.isVariableSymbol()) {
+        if (symbol.isVariableSymbol()) {
           return (Symbol.VariableSymbol) symbol;
         }
       }
@@ -165,7 +165,7 @@ public class SymbolicEvaluator {
     public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
       evaluateExpression(currentState, tree.variable());
       evaluateExpression(currentState, tree.expression());
-      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.variable());
+      Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
         currentState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
       }
@@ -174,7 +174,7 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree);
+      Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
       if (symbol != null) {
         switch (currentState.getBooleanConstraint(symbol)) {
           case FALSE:
@@ -215,6 +215,7 @@ public class SymbolicEvaluator {
 
     @Override
     public final void visitMethodInvocation(MethodInvocationTree tree) {
+      currentState.invalidateFields();
       currentResult.unknownStates.add(currentState);
     }
 
@@ -252,8 +253,8 @@ public class SymbolicEvaluator {
 
     @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      Symbol.VariableSymbol leftSymbol = extractLocalVariableSymbol(tree.leftOperand());
-      Symbol.VariableSymbol rightSymbol = extractLocalVariableSymbol(tree.rightOperand());
+      Symbol.VariableSymbol leftSymbol = extractVariableSymbol(tree.leftOperand());
+      Symbol.VariableSymbol rightSymbol = extractVariableSymbol(tree.rightOperand());
       if (leftSymbol != null && rightSymbol != null) {
         switch (currentState.evaluateRelation(leftSymbol, operator, rightSymbol)) {
           case FALSE:
@@ -292,7 +293,7 @@ public class SymbolicEvaluator {
     @Override
     public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
       super.visitAssignmentExpression(tree);
-      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.variable());
+      Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
         currentState.invalidateRelationsOnSymbol(symbol);
         currentState.setBooleanConstraint(symbol, currentResult);
@@ -301,7 +302,7 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
-      Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree);
+      Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
       currentResult = symbol != null ? currentState.getBooleanConstraint(symbol) : SymbolicBooleanConstraint.UNKNOWN;
     }
 
@@ -330,6 +331,7 @@ public class SymbolicEvaluator {
     @Override
     public final void visitMethodInvocation(MethodInvocationTree tree) {
       super.visitMethodInvocation(tree);
+      currentState.invalidateFields();
       currentResult = SymbolicBooleanConstraint.UNKNOWN;
     }
 
@@ -340,7 +342,7 @@ public class SymbolicEvaluator {
         currentResult = currentResult.negate();
       } else {
         if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
-          Symbol.VariableSymbol symbol = extractLocalVariableSymbol(tree.expression());
+          Symbol.VariableSymbol symbol = extractVariableSymbol(tree.expression());
           if (symbol != null) {
             currentState.invalidateRelationsOnSymbol(symbol);
           }
@@ -383,8 +385,8 @@ public class SymbolicEvaluator {
 
     @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      Symbol.VariableSymbol leftSymbol = extractLocalVariableSymbol(tree.leftOperand());
-      Symbol.VariableSymbol rightSymbol = extractLocalVariableSymbol(tree.rightOperand());
+      Symbol.VariableSymbol leftSymbol = extractVariableSymbol(tree.leftOperand());
+      Symbol.VariableSymbol rightSymbol = extractVariableSymbol(tree.rightOperand());
       if (leftSymbol != null && rightSymbol != null) {
         currentResult = currentState.evaluateRelation(leftSymbol, operator, rightSymbol);
       } else {

@@ -33,11 +33,11 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
 import java.io.File;
-import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
@@ -170,7 +170,7 @@ public class SymbolicEvaluatorTest {
     validateEvaluationUnknownWithConstraints(state, evaluateCondition(state, identifierTree), local1Symbol());
 
     state = new ExecutionState();
-    validateEvaluationUnknownWithoutConstraints(state, evaluateCondition(analyze("field1")));
+    validateEvaluationUnknownWithConstraints(state, evaluateCondition(state, analyze("field1")), field1Symbol());
   }
 
   @Test
@@ -296,9 +296,9 @@ public class SymbolicEvaluatorTest {
     ExecutionState state = new ExecutionState();
 
     // no constraint must be registered if there is a field.
-    validateEvaluationUnknownWithoutConstraints(state, evaluateCondition(analyze("field1 != field2")));
-    validateEvaluationUnknownWithoutConstraints(state, evaluateCondition(analyze("field1 != local2")));
-    validateEvaluationUnknownWithoutConstraints(state, evaluateCondition(analyze("local1 != field2")));
+    evaluateRelationalOperator(analyze("field1 != field2"), SymbolicRelation.NOT_EQUAL, SymbolicRelation.EQUAL_TO, field1Symbol(), field2Symbol());
+    evaluateRelationalOperator(analyze("field1 != local2"), SymbolicRelation.NOT_EQUAL, SymbolicRelation.EQUAL_TO, field1Symbol(), local2Symbol());
+    evaluateRelationalOperator(analyze("local1 != field2"), SymbolicRelation.NOT_EQUAL, SymbolicRelation.EQUAL_TO, local1Symbol(), field2Symbol());
 
     ExpressionTree notEqualTree = analyze("local1 != local2");
 
@@ -315,23 +315,23 @@ public class SymbolicEvaluatorTest {
   }
 
   private void evaluateRelationalOperator(String input, @Nullable SymbolicRelation trueRelation, @Nullable SymbolicRelation falseRelation) {
-    evaluateRelationalOperator(new ExecutionState(), analyze(input), trueRelation, falseRelation);
+    evaluateRelationalOperator(analyze(input), trueRelation, falseRelation, local1Symbol(), local2Symbol());
   }
 
-  private SymbolicEvaluator.PackedStates evaluateRelationalOperator(ExecutionState state, ExpressionTree tree, @Nullable SymbolicRelation trueRelation,
-    @Nullable SymbolicRelation falseRelation) {
-    SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(state, tree);
+  private SymbolicEvaluator.PackedStates evaluateRelationalOperator(ExpressionTree tree, @Nullable SymbolicRelation trueRelation,
+    @Nullable SymbolicRelation falseRelation, Symbol.VariableSymbol symbol1, Symbol.VariableSymbol symbol2) {
+    SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(new ExecutionState(), tree);
     if (falseRelation != null) {
       assertThat(result.falseStates).hasSize(1);
-      assertThat(result.falseStates.get(0).relations.get(local1Symbol(), local2Symbol())).isSameAs(falseRelation);
-      assertThat(result.falseStates.get(0).relations.get(local2Symbol(), local1Symbol())).isSameAs(falseRelation.swap());
+      assertThat(result.falseStates.get(0).relations.get(symbol1, symbol2)).isSameAs(falseRelation);
+      assertThat(result.falseStates.get(0).relations.get(symbol2, symbol1)).isSameAs(falseRelation.swap());
     } else {
       assertThat(result.falseStates).isEmpty();
     }
     if (trueRelation != null) {
       assertThat(result.trueStates).hasSize(1);
-      assertThat(result.trueStates.get(0).relations.get(local1Symbol(), local2Symbol())).isSameAs(trueRelation);
-      assertThat(result.trueStates.get(0).relations.get(local2Symbol(), local1Symbol())).isSameAs(trueRelation.swap());
+      assertThat(result.trueStates.get(0).relations.get(symbol1, symbol2)).isSameAs(trueRelation);
+      assertThat(result.trueStates.get(0).relations.get(symbol2, symbol1)).isSameAs(trueRelation.swap());
     } else {
       assertThat(result.trueStates).isEmpty();
     }
@@ -518,6 +518,14 @@ public class SymbolicEvaluatorTest {
     String p = "class Test { boolean field1; boolean field2; void wrapperMethod(boolean local1, boolean local2) { " + input + "; } }";
     compilationUnit = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
     return ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).block().body().get(0);
+  }
+
+  private Symbol.VariableSymbol field1Symbol() {
+    return (Symbol.VariableSymbol) ((VariableTree) ((ClassTree) compilationUnit.types().get(0)).members().get(0)).symbol();
+  }
+
+  private Symbol.VariableSymbol field2Symbol() {
+    return (Symbol.VariableSymbol) ((VariableTree) ((ClassTree) compilationUnit.types().get(0)).members().get(1)).symbol();
   }
 
   private Symbol.VariableSymbol local1Symbol() {

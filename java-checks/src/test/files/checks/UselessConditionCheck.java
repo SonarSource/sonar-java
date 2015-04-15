@@ -8,7 +8,7 @@ public static class Class {
     }
   }
 
-  private boolean field;
+  private boolean field, field1, field2;
 
   public void assign(boolean parameter) {
     parameter = false;
@@ -609,4 +609,37 @@ public static class Class {
     if (var6) { // Compliant
     }
   }
+
+  public test_instance_fields(boolean local, boolean local1, boolean local2) {
+    if (field && field1 == field2) {
+      if (field) { // Noncompliant
+      }
+      if (field1 == field2) { // Noncompliant
+      }
+    }
+    if (field && field1 == field2 && local && local1 == local2) {
+      otherMethod();
+      if (field) { // Compliant
+      }
+      if (field1 == field2) { // Compliant
+      }
+      if (local) { // Noncompliant
+      }
+      if (local1 == local2) { // Noncompliant
+      }
+    }
+    if (field && field1 == field2 && local && local1 == local2) {
+      if (otherMethod()) {
+        if (field) { // Compliant
+        }
+        if (field1 == field2) { // Compliant
+        }
+        if (local) { // Noncompliant
+        }
+        if (local1 == local2) { // Noncompliant
+        }
+      }
+    }
+  }
+
 }
