@@ -24,7 +24,6 @@ import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
@@ -47,16 +46,14 @@ public class JavaClasspath extends AbstractJavaClasspath {
   }
 
   public JavaClasspath(Project project, Settings settings, FileSystem fs, @Nullable MavenProject pom) {
-    super(project, settings, fs);
+    super(project, settings, fs, InputFile.Type.MAIN);
     this.pom = pom;
   }
 
   protected void init() {
-    if (!initalized) {
-      initalized = true;
+    if (!initialized) {
+      initialized = true;
       validateLibraries = project.getModules().isEmpty();
-      FilePredicates predicates = fs.predicates();
-      hasJavaSources = fs.hasFiles(predicates.and(predicates.hasLanguage("java"), predicates.hasType(InputFile.Type.MAIN)));
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
       boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();

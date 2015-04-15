@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.batch.fs.FilePredicates;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
@@ -33,15 +32,13 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
 
 
   public JavaTestClasspath(Project project, Settings settings, FileSystem fs) {
-    super(project, settings, fs);
+    super(project, settings, fs, InputFile.Type.TEST);
   }
 
   protected void init() {
-    if (!initalized) {
-      initalized = true;
+    if (!initialized) {
+      initialized = true;
       validateLibraries = project.getModules().isEmpty();
-      FilePredicates predicates = fs.predicates();
-      hasJavaSources = fs.hasFiles(predicates.and(predicates.hasLanguage("java"), predicates.hasType(InputFile.Type.TEST)));
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
       elements = Lists.newArrayList(binaries);
