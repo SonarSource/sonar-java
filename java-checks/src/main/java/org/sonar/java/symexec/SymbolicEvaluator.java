@@ -409,7 +409,7 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitBreakStatement(BreakStatementTree tree) {
-      currentStates = PackedStatementStates.instantiate();
+      currentStates = PackedStatementStates.instantiateWithBreakStates(currentStates.states);
     }
 
     @Override
@@ -509,22 +509,30 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitSwitchStatement(SwitchStatementTree tree) {
+      PackedStatementStates nextStates = PackedStatementStates.instantiate();
       for (ExecutionState state : currentStates) {
         evaluateExpression(state, tree.expression());
+        List<ExecutionState> endStates = new ArrayList<>();
         for (int i = 0; i < tree.cases().size(); i += 1) {
-          processCase(tree, i, new ExecutionState(state));
+          PackedStatementStates caseStates = processCase(tree, i, new ExecutionState(state));
+          endStates.addAll(caseStates.states);
+          endStates.addAll(caseStates.breakStates);
+        }
+        if (!endStates.isEmpty()) {
+          state.mergeConstraintsAndRelations(endStates);
+          nextStates.addState(state);
         }
       }
-      // TODO: stop evaluation for now
-      currentStates = PackedStatementStates.instantiate();
+      currentStates = nextStates;
     }
 
-    private void processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
+    private PackedStatementStates processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
       PackedStatementStates caseStates = PackedStatementStates.instantiate();
       caseStates.addState(state);
       for (int i = caseIndex; i < tree.cases().size() && !caseStates.isEmpty(); i += 1) {
         caseStates = evaluateStatement(caseStates, tree.cases().get(i));
       }
+      return caseStates;
     }
 
     @Override
@@ -645,6 +653,7 @@ public class SymbolicEvaluator {
   }
 
   static class PackedStatementStates implements Iterable<ExecutionState> {
+    final List<ExecutionState> breakStates = new ArrayList<>();
     final List<ExecutionState> states = new ArrayList<>();
 
     static PackedStatementStates instantiate() {
@@ -654,6 +663,12 @@ public class SymbolicEvaluator {
     static PackedStatementStates instantiateWithStates(List<ExecutionState> states) {
       PackedStatementStates result = new PackedStatementStates();
       result.states.addAll(states);
+      return result;
+    }
+
+    static PackedStatementStates instantiateWithBreakStates(List<ExecutionState> breakStates) {
+      PackedStatementStates result = new PackedStatementStates();
+      result.breakStates.addAll(breakStates);
       return result;
     }
 

@@ -570,6 +570,16 @@ public static class Class {
           var1 = 1;
           var6 = false;
       }
+      if (var1 == var2) { // Compliant
+      }
+      if (var3 == var4) { // Noncompliant
+      }
+      if (var5) { // Compliant
+      }
+      if (var6) { // Compliant
+      }
+      if (var7) { // Noncompliant
+      }
     }
   }
 
