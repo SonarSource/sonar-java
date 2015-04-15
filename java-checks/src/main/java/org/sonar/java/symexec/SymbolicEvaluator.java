@@ -28,6 +28,8 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -518,12 +520,26 @@ public class SymbolicEvaluator {
           endStates.addAll(caseStates.states);
           endStates.addAll(caseStates.breakStates);
         }
+        if (!switchContainsDefault(tree)) {
+          endStates.add(state);
+        }
         if (!endStates.isEmpty()) {
           state.mergeConstraintsAndRelations(endStates);
           nextStates.addState(state);
         }
       }
       currentStates = nextStates;
+    }
+
+    private boolean switchContainsDefault(SwitchStatementTree tree) {
+      for (CaseGroupTree caseGroupTree : tree.cases()) {
+        for (CaseLabelTree label : caseGroupTree.labels()) {
+          if ("default".equals(label.caseOrDefaultKeyword().text())) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     private PackedStatementStates processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {

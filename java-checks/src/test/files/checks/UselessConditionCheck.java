@@ -581,6 +581,15 @@ public static class Class {
       if (var7) { // Noncompliant
       }
     }
-  }
 
+    var5 = false;
+    switch (condition) {
+      case 0:
+        var5 = true;
+      default:
+        var5 = true;
+    }
+    if (var5) { // Noncompliant
+    }
+  }
 }
