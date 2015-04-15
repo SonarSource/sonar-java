@@ -197,9 +197,7 @@ public class ExecutionState {
   }
 
   ExecutionState setBooleanConstraint(Symbol.VariableSymbol symbol, SymbolicBooleanConstraint constraint) {
-    if (symbol.owner().isMethodSymbol()) {
-      constraints.put(symbol, constraint);
-    }
+    constraints.put(symbol, constraint);
     return this;
   }
 
@@ -243,6 +241,22 @@ public class ExecutionState {
       }
     }
     return pairs;
+  }
+
+  void invalidateFields() {
+    for (ExecutionState state = this; state != null; state = state.parentState) {
+      for (Symbol.VariableSymbol symbol : state.constraints.keySet()) {
+        if (symbol.owner().isTypeSymbol()) {
+          setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+        }
+      }
+      for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> entry : state.relations.rowMap().entrySet()) {
+        if (entry.getKey().owner().isTypeSymbol()) {
+          for (Symbol.VariableSymbol other : entry.getValue().keySet())
+            setRelation(entry.getKey(), SymbolicRelation.UNKNOWN, other);
+        }
+      }
+    }
   }
 
 }
