@@ -48,6 +48,7 @@ public class SonarComponents implements BatchExtension {
   private final JavaClasspath javaClasspath;
   private final Project project;
   private final List<Checks<JavaCheck>> checks;
+  private Checks<JavaCheck> testChecks;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
                          JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
@@ -121,4 +122,18 @@ public class SonarComponents implements BatchExtension {
   public Iterable<Checks<JavaCheck>> checks() {
     return checks;
   }
+
+  public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> javaTestChecks) {
+    testChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaTestChecks);
+  }
+
+  public Collection<JavaCheck> testCheckClasses() {
+    if(testChecks == null) {
+      return Lists.newArrayList();
+    }
+    return testChecks.all();
+  }
+
+
+
 }
