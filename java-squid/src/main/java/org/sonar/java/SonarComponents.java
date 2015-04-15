@@ -43,23 +43,26 @@ public class SonarComponents implements BatchExtension {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
+  private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
   private final JavaClasspath javaClasspath;
   private final Project project;
   private final List<Checks<JavaCheck>> checks;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, JavaClasspath javaClasspath,
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
                          CheckFactory checkFactory) {
-    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, checkFactory, null);
+    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, javaTestClasspath, checkFactory, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         JavaClasspath javaClasspath, CheckFactory checkFactory,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
                          @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.project = project;
     this.javaClasspath = javaClasspath;
+    this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
     checks = Lists.newArrayList();
 
@@ -93,6 +96,10 @@ public class SonarComponents implements BatchExtension {
       return Lists.newArrayList();
     }
     return javaClasspath.getElements();
+  }
+
+  public List<File> getJavaTestClasspath() {
+    return javaTestClasspath.getElements();
   }
 
   public ResourcePerspectives getResourcePerspectives() {
