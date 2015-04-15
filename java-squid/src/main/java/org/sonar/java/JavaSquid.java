@@ -111,12 +111,13 @@ public class JavaSquid implements SourceCodeSearchEngine {
     astScannerForTests = new AstScanner(astScanner);
     List<File> testClasspath = Lists.newArrayList();
     astScannerForTests.accept(new FileVisitor());
-    Collection<JavaCheck> testCheckClasses = Lists.newArrayList();
+    Collection<CodeVisitor> testCheckClasses = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
     if(sonarComponents != null) {
       testClasspath = sonarComponents.getJavaTestClasspath();
       astScannerForTests.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
       astScannerForTests.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
-      testCheckClasses = sonarComponents.testCheckClasses();
+      testCheckClasses.addAll(sonarComponents.testCheckClasses());
+
     }
     astScannerForTests.accept(new VisitorsBridge(testCheckClasses, testClasspath, sonarComponents));
   }

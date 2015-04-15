@@ -125,6 +125,7 @@ public class SonarComponents implements BatchExtension {
 
   public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> javaTestChecks) {
     testChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaTestChecks);
+    checks.add(testChecks);
   }
 
   public Collection<JavaCheck> testCheckClasses() {
