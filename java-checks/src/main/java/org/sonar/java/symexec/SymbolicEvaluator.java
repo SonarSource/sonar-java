@@ -490,6 +490,8 @@ public class SymbolicEvaluator {
           state.mergeConstraintsAndRelations(Iterables.concat(falseStates, trueStates));
           nextStates.addState(state);
         }
+        nextStates.breakStates.addAll(falseStates.breakStates);
+        nextStates.breakStates.addAll(trueStates.breakStates);
       }
       currentStates = nextStates;
     }

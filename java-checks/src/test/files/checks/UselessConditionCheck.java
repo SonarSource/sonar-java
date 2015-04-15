@@ -591,5 +591,22 @@ public static class Class {
     }
     if (var5) { // Noncompliant
     }
+
+    switch (condition) {
+      default:
+        var5 = true;
+        if (unknown) {
+          var6 = true;
+          break;
+        } else {
+          var6 = false;
+          break;
+        }
+        var5 = false;
+    }
+    if (var5) { // Noncompliant
+    }
+    if (var6) { // Compliant
+    }
   }
 }
