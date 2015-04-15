@@ -542,4 +542,71 @@ public static class Class {
     }
   }
 
+  public test_switch(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
+    if (var1 == var2 && var3 == var4) {
+      var5 = false;
+      var7 = false;
+      switch (condition) {
+        case 0:
+          if (var1 == var2) { // Noncompliant, always true
+          }
+          if (var5) { // Noncompliant, always false
+          }
+          var1 = 1;
+          var5 = unknown;
+          break;
+        case 1:
+          if (var1 == var2) { // Noncompliant, always true
+          }
+          if (var5) { // Noncompliant, always false
+          }
+          var1 = 1;
+          var5 = true;
+        case 2:
+          if (var1 == var2) { // Compliant
+          }
+          if (var5) { // Compliant
+          }
+          var1 = 1;
+          var6 = false;
+      }
+      if (var1 == var2) { // Compliant
+      }
+      if (var3 == var4) { // Noncompliant
+      }
+      if (var5) { // Compliant
+      }
+      if (var6) { // Compliant
+      }
+      if (var7) { // Noncompliant
+      }
+    }
+
+    var5 = false;
+    switch (condition) {
+      case 0:
+        var5 = true;
+      default:
+        var5 = true;
+    }
+    if (var5) { // Noncompliant
+    }
+
+    switch (condition) {
+      default:
+        var5 = true;
+        if (unknown) {
+          var6 = true;
+          break;
+        } else {
+          var6 = false;
+          break;
+        }
+        var5 = false;
+    }
+    if (var5) { // Noncompliant
+    }
+    if (var6) { // Compliant
+    }
+  }
 }
