@@ -57,6 +57,7 @@ import javax.annotation.CheckForNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -91,7 +92,11 @@ public class SymbolicEvaluator {
     return new ExpressionVisitor().evaluate(state, tree);
   }
 
-  List<ExecutionState> evaluateStatement(List<ExecutionState> states, Tree tree) {
+  PackedStatementStates evaluateStatement(List<ExecutionState> states, StatementTree tree) {
+    return new StatementVisitor().evaluate(PackedStatementStates.instantiateWithStates(states), tree);
+  }
+
+  PackedStatementStates evaluateStatement(PackedStatementStates states, Tree tree) {
     return new StatementVisitor().evaluate(states, tree);
   }
 
@@ -387,9 +392,9 @@ public class SymbolicEvaluator {
   }
 
   public class StatementVisitor extends BaseTreeVisitor {
-    private List<ExecutionState> currentStates;
+    private PackedStatementStates currentStates;
 
-    private List<ExecutionState> evaluate(List<ExecutionState> states, Tree tree) {
+    private PackedStatementStates evaluate(PackedStatementStates states, Tree tree) {
       currentStates = states;
       scan(tree);
       return currentStates;
@@ -404,12 +409,12 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitBreakStatement(BreakStatementTree tree) {
-      currentStates = new ArrayList<>();
+      currentStates = PackedStatementStates.instantiate();
     }
 
     @Override
     public void visitContinueStatement(ContinueStatementTree tree) {
-      currentStates = new ArrayList<>();
+      currentStates = PackedStatementStates.instantiate();
     }
 
     @Override
@@ -417,10 +422,10 @@ public class SymbolicEvaluator {
       Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
       invalidateAssignedVariables(assignedSymbols);
       currentStates = evaluateStatement(currentStates, tree.statement());
-      List<ExecutionState> nextStates = new ArrayList<>();
+      PackedStatementStates nextStates = PackedStatementStates.instantiate();
       for (ExecutionState state : currentStates) {
         if (evaluateExpression(state, tree.condition()) != SymbolicBooleanConstraint.TRUE) {
-          nextStates.add(state);
+          nextStates.addState(state);
         }
       }
       currentStates = nextStates;
@@ -439,20 +444,20 @@ public class SymbolicEvaluator {
       Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
       invalidateAssignedVariables(assignedSymbols);
       if (tree.condition() != null) {
-        List<ExecutionState> nextStates = new ArrayList<>();
+        PackedStatementStates nextStates = PackedStatementStates.instantiate();
         for (ExecutionState state : currentStates) {
           PackedStates conditionStates = evaluateCondition(state, tree.condition());
-          List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
+          PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
           if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
             state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
-            nextStates.add(state);
+            nextStates.addState(state);
           }
         }
         currentStates = nextStates;
         invalidateAssignedVariables(assignedSymbols);
       } else {
         currentStates = evaluateStatement(currentStates, tree.statement());
-        currentStates = new ArrayList<>();
+        currentStates = PackedStatementStates.instantiate();
       }
     }
 
@@ -468,18 +473,20 @@ public class SymbolicEvaluator {
 
     @Override
     public void visitIfStatement(IfStatementTree tree) {
-      List<ExecutionState> nextStates = new ArrayList<>();
+      PackedStatementStates nextStates = PackedStatementStates.instantiate();
       for (ExecutionState state : currentStates) {
         PackedStates conditionStates = evaluateCondition(state, tree.condition());
         result.put(tree, conditionStates.getBooleanConstraint().union(result.get(tree)));
-        List<ExecutionState> trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
-        List<ExecutionState> falseStates = conditionStates.falseStates;
-        if (tree.elseStatement() != null) {
+        PackedStatementStates trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
+        PackedStatementStates falseStates;
+        if (tree.elseStatement() == null) {
+          falseStates = PackedStatementStates.instantiateWithStates(conditionStates.falseStates);
+        } else {
           falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
         }
         if (!falseStates.isEmpty() || !trueStates.isEmpty()) {
           state.mergeConstraintsAndRelations(Iterables.concat(falseStates, trueStates));
-          nextStates.add(state);
+          nextStates.addState(state);
         }
       }
       currentStates = nextStates;
@@ -497,7 +504,7 @@ public class SymbolicEvaluator {
           evaluateExpression(state, tree.expression());
         }
       }
-      currentStates = new ArrayList<>();
+      currentStates = PackedStatementStates.instantiate();
     }
 
     @Override
@@ -509,12 +516,12 @@ public class SymbolicEvaluator {
         }
       }
       // TODO: stop evaluation for now
-      currentStates = new ArrayList<>();
+      currentStates = PackedStatementStates.instantiate();
     }
 
     private void processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
-      List<ExecutionState> caseStates = new ArrayList<>();
-      caseStates.add(state);
+      PackedStatementStates caseStates = PackedStatementStates.instantiate();
+      caseStates.addState(state);
       for (int i = caseIndex; i < tree.cases().size() && !caseStates.isEmpty(); i += 1) {
         caseStates = evaluateStatement(caseStates, tree.cases().get(i));
       }
@@ -533,7 +540,7 @@ public class SymbolicEvaluator {
       for (ExecutionState state : currentStates) {
         evaluateExpression(state, tree.expression());
       }
-      currentStates = new ArrayList<>();
+      currentStates = PackedStatementStates.instantiate();
     }
 
     @Override
@@ -554,13 +561,13 @@ public class SymbolicEvaluator {
     public void visitWhileStatement(WhileStatementTree tree) {
       Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
       invalidateAssignedVariables(assignedSymbols);
-      List<ExecutionState> nextStates = new ArrayList<>();
+      PackedStatementStates nextStates = PackedStatementStates.instantiate();
       for (ExecutionState state : currentStates) {
         PackedStates conditionStates = evaluateCondition(state, tree.condition());
-        List<ExecutionState> loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
+        PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
         if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
           state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
-          nextStates.add(state);
+          nextStates.addState(state);
         }
       }
       currentStates = nextStates;
@@ -634,6 +641,33 @@ public class SymbolicEvaluator {
       } else {
         return SymbolicBooleanConstraint.UNKNOWN;
       }
+    }
+  }
+
+  static class PackedStatementStates implements Iterable<ExecutionState> {
+    final List<ExecutionState> states = new ArrayList<>();
+
+    static PackedStatementStates instantiate() {
+      return new PackedStatementStates();
+    }
+
+    static PackedStatementStates instantiateWithStates(List<ExecutionState> states) {
+      PackedStatementStates result = new PackedStatementStates();
+      result.states.addAll(states);
+      return result;
+    }
+
+    public void addState(ExecutionState state) {
+      states.add(state);
+    }
+
+    @Override
+    public Iterator<ExecutionState> iterator() {
+      return states.iterator();
+    }
+
+    public boolean isEmpty() {
+      return states.isEmpty();
     }
   }
 
