@@ -28,6 +28,7 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
+import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
@@ -51,6 +52,7 @@ public class JavaPlugin extends SonarPlugin {
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
         JavaClasspath.class,
+        JavaTestClasspath.class,
         JavaCommonRulesEngine.class,
         JavaCommonRulesDecorator.class,
         Java.class,
