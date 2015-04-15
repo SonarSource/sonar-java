@@ -91,7 +91,7 @@ public class SymbolicEvaluator {
     return new ExpressionVisitor().evaluate(state, tree);
   }
 
-  List<ExecutionState> evaluateStatement(List<ExecutionState> states, StatementTree tree) {
+  List<ExecutionState> evaluateStatement(List<ExecutionState> states, Tree tree) {
     return new StatementVisitor().evaluate(states, tree);
   }
 
@@ -389,7 +389,7 @@ public class SymbolicEvaluator {
   public class StatementVisitor extends BaseTreeVisitor {
     private List<ExecutionState> currentStates;
 
-    private List<ExecutionState> evaluate(List<ExecutionState> states, StatementTree tree) {
+    private List<ExecutionState> evaluate(List<ExecutionState> states, Tree tree) {
       currentStates = states;
       scan(tree);
       return currentStates;
@@ -504,9 +504,20 @@ public class SymbolicEvaluator {
     public void visitSwitchStatement(SwitchStatementTree tree) {
       for (ExecutionState state : currentStates) {
         evaluateExpression(state, tree.expression());
+        for (int i = 0; i < tree.cases().size(); i += 1) {
+          processCase(tree, i, new ExecutionState(state));
+        }
       }
       // TODO: stop evaluation for now
       currentStates = new ArrayList<>();
+    }
+
+    private void processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
+      List<ExecutionState> caseStates = new ArrayList<>();
+      caseStates.add(state);
+      for (int i = caseIndex; i < tree.cases().size() && !caseStates.isEmpty(); i += 1) {
+        caseStates = evaluateStatement(caseStates, tree.cases().get(i));
+      }
     }
 
     @Override
