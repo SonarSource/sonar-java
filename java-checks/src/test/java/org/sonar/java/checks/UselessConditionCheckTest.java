@@ -114,6 +114,20 @@ public class UselessConditionCheckTest {
       .next().atLine(511).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(513).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(522).withMessage("Change this condition so that it does not always evaluate to \"false\"")
-      .next().atLine(524).withMessage("Change this condition so that it does not always evaluate to \"true\"");
+      .next().atLine(524).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(551).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(553).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(559).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(561).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(575).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(581).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(592).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(607).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(615).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(617).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(626).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(628).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(637).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(639).withMessage("Change this condition so that it does not always evaluate to \"true\"");
   }
 }

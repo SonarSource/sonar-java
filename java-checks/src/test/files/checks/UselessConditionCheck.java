@@ -8,7 +8,7 @@ public static class Class {
     }
   }
 
-  private boolean field;
+  private boolean field, field1, field2;
 
   public void assign(boolean parameter) {
     parameter = false;
@@ -538,6 +538,106 @@ public static class Class {
     }
     if (parameter1 != parameter2) {
       if (parameter1 < parameter2) { // Compliant
+      }
+    }
+  }
+
+  public test_switch(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
+    if (var1 == var2 && var3 == var4) {
+      var5 = false;
+      var7 = false;
+      switch (condition) {
+        case 0:
+          if (var1 == var2) { // Noncompliant, always true
+          }
+          if (var5) { // Noncompliant, always false
+          }
+          var1 = 1;
+          var5 = unknown;
+          break;
+        case 1:
+          if (var1 == var2) { // Noncompliant, always true
+          }
+          if (var5) { // Noncompliant, always false
+          }
+          var1 = 1;
+          var5 = true;
+        case 2:
+          if (var1 == var2) { // Compliant
+          }
+          if (var5) { // Compliant
+          }
+          var1 = 1;
+          var6 = false;
+      }
+      if (var1 == var2) { // Compliant
+      }
+      if (var3 == var4) { // Noncompliant
+      }
+      if (var5) { // Compliant
+      }
+      if (var6) { // Compliant
+      }
+      if (var7) { // Noncompliant
+      }
+    }
+
+    var5 = false;
+    switch (condition) {
+      case 0:
+        var5 = true;
+      default:
+        var5 = true;
+    }
+    if (var5) { // Noncompliant
+    }
+
+    switch (condition) {
+      default:
+        var5 = true;
+        if (unknown) {
+          var6 = true;
+          break;
+        } else {
+          var6 = false;
+          break;
+        }
+        var5 = false;
+    }
+    if (var5) { // Noncompliant
+    }
+    if (var6) { // Compliant
+    }
+  }
+
+  public test_instance_fields(boolean local, boolean local1, boolean local2) {
+    if (field && field1 == field2) {
+      if (field) { // Noncompliant
+      }
+      if (field1 == field2) { // Noncompliant
+      }
+    }
+    if (field && field1 == field2 && local && local1 == local2) {
+      otherMethod();
+      if (field) { // Compliant
+      }
+      if (field1 == field2) { // Compliant
+      }
+      if (local) { // Noncompliant
+      }
+      if (local1 == local2) { // Noncompliant
+      }
+    }
+    if (field && field1 == field2 && local && local1 == local2) {
+      if (otherMethod()) {
+        if (field) { // Compliant
+        }
+        if (field1 == field2) { // Compliant
+        }
+        if (local) { // Noncompliant
+        }
+        if (local1 == local2) { // Noncompliant
+        }
       }
     }
   }
