@@ -112,7 +112,7 @@ public class ExecutionState {
   @VisibleForTesting
   final ExecutionState parentState;
   @VisibleForTesting
-  final Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> relations;
+  final Table<SymbolicValue, SymbolicValue, SymbolicRelation> relations;
   @VisibleForTesting
   final Map<Symbol.VariableSymbol, SymbolicBooleanConstraint> constraints;
 
@@ -134,16 +134,16 @@ public class ExecutionState {
   }
 
   @VisibleForTesting
-  SymbolicRelation getRelation(Symbol.VariableSymbol leftValue, Symbol.VariableSymbol rightValue) {
+  SymbolicRelation getRelation(SymbolicValue leftValue, SymbolicValue rightValue) {
     SymbolicRelation result = relations.get(leftValue, rightValue);
     return result != null ? result : parentState != null ? parentState.getRelation(leftValue, rightValue) : UNKNOWN;
   }
 
-  SymbolicBooleanConstraint evaluateRelation(Symbol.VariableSymbol leftValue, SymbolicRelation relation, Symbol.VariableSymbol rightValue) {
+  SymbolicBooleanConstraint evaluateRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
     return RELATION_RELATION_MAP.get(getRelation(leftValue, rightValue), relation);
   }
 
-  ExecutionState setRelation(Symbol.VariableSymbol leftValue, SymbolicRelation relation, Symbol.VariableSymbol rightValue) {
+  ExecutionState setRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
     if (!leftValue.equals(rightValue)) {
       relations.put(leftValue, rightValue, relation);
       relations.put(rightValue, leftValue, relation.swap());
@@ -152,7 +152,7 @@ public class ExecutionState {
   }
 
   private void mergeRelations(Iterable<ExecutionState> states) {
-    for (Map.Entry<Symbol.VariableSymbol, Symbol.VariableSymbol> entry : findCommonRelationSymbols(states).entries()) {
+    for (Map.Entry<SymbolicValue, SymbolicValue> entry : findRelatedValues(states).entries()) {
       SymbolicRelation relation = null;
       for (ExecutionState state : states) {
         relation = state.getRelation(entry.getKey(), entry.getValue()).union(relation);
@@ -167,11 +167,11 @@ public class ExecutionState {
     }
   }
 
-  private Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> findCommonRelationSymbols(Iterable<ExecutionState> states) {
-    Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> result = HashMultimap.create();
+  private Multimap<SymbolicValue, SymbolicValue> findRelatedValues(Iterable<ExecutionState> states) {
+    Multimap<SymbolicValue, SymbolicValue> result = HashMultimap.create();
     for (ExecutionState state : states) {
       for (ExecutionState current = state; !current.equals(this); current = current.parentState) {
-        for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> leftEntry : current.relations.rowMap().entrySet()) {
+        for (Map.Entry<SymbolicValue, Map<SymbolicValue, SymbolicRelation>> leftEntry : current.relations.rowMap().entrySet()) {
           result.putAll(leftEntry.getKey(), leftEntry.getValue().keySet());
         }
       }
@@ -216,19 +216,19 @@ public class ExecutionState {
     return result;
   }
 
-  void invalidateRelationsOnSymbol(Symbol.VariableSymbol symbol) {
-    Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> pairs = HashMultimap.create();
+  void invalidateRelationsOnValue(SymbolicValue value) {
+    Multimap<SymbolicValue, SymbolicValue> pairs = HashMultimap.create();
     for (ExecutionState current = this; current != null; current = current.parentState) {
-      pairs.putAll(symbol, current.findRelatedSymbols(symbol));
+      pairs.putAll(value, current.findRelatedValues(value));
     }
-    for (Map.Entry<Symbol.VariableSymbol, Symbol.VariableSymbol> cell : pairs.entries()) {
-      setRelation(cell.getKey(), SymbolicRelation.UNKNOWN, cell.getValue());
+    for (Map.Entry<SymbolicValue, SymbolicValue> entry : pairs.entries()) {
+      setRelation(entry.getKey(), SymbolicRelation.UNKNOWN, entry.getValue());
     }
   }
 
-  private Set<Symbol.VariableSymbol> findRelatedSymbols(Symbol.VariableSymbol symbol) {
-    Map<Symbol.VariableSymbol, SymbolicRelation> map = relations.rowMap().get(symbol);
-    return map != null ? map.keySet() : ImmutableSet.<Symbol.VariableSymbol>of();
+  private Set<SymbolicValue> findRelatedValues(SymbolicValue value) {
+    Map<SymbolicValue, SymbolicRelation> map = relations.rowMap().get(value);
+    return map != null ? map.keySet() : ImmutableSet.<SymbolicValue>of();
   }
 
   void invalidateFields() {
@@ -238,14 +238,18 @@ public class ExecutionState {
           setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
         }
       }
-      for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> entry : state.relations.rowMap().entrySet()) {
-        if (entry.getKey().owner().isTypeSymbol()) {
-          for (Symbol.VariableSymbol other : entry.getValue().keySet()) {
+      for (Map.Entry<SymbolicValue, Map<SymbolicValue, SymbolicRelation>> entry : state.relations.rowMap().entrySet()) {
+        if (isField(entry.getKey())) {
+          for (SymbolicValue other : entry.getValue().keySet()) {
             setRelation(entry.getKey(), SymbolicRelation.UNKNOWN, other);
           }
         }
       }
     }
+  }
+
+  private boolean isField(SymbolicValue value) {
+    return value instanceof SymbolicValue.SymbolicVariableValue && ((SymbolicValue.SymbolicVariableValue) value).variable.owner().isTypeSymbol();
   }
 
 }
