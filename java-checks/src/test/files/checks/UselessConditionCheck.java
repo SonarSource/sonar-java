@@ -1,4 +1,4 @@
-public static class Class {
+public static class Class extends SuperClass {
 
   private static class Class {
     Object field;
@@ -611,10 +611,10 @@ public static class Class {
   }
 
   public test_instance_fields(boolean local, boolean local1, boolean local2) {
-    if (field && field1 == field2) {
-      if (field) { // Noncompliant
+    if (field && this.field1 == field2) {
+      if (this.field) { // Noncompliant
       }
-      if (field1 == field2) { // Noncompliant
+      if (field1 == this.field2) { // Noncompliant
       }
     }
     if (field && field1 == field2 && local && local1 == local2) {
@@ -640,6 +640,47 @@ public static class Class {
         }
       }
     }
+
+    this.field1 = false;
+    this.field2 = this.field1;
+    if (field1 || field2) { // Noncompliant, always false
+    }
+
+    if (super.field && !super.field) { // Noncompliant, always false
+    }
+    if (super.field && !this.field) { // Compliant
+    }
+
+    if (super.field && super.field1 == super.field2) {
+      if (super.field) { // Noncompliant, always true
+      }
+      if (super.field1 == super.field2) { // Noncompliant, always true
+      }
+      otherMethod();
+      if (super.field) { // Compliant
+      }
+      if (super.field1 == super.field2) { // Compliant
+      }
+    }
+
+    super.field1 = false;
+    super.field2 = super.field1;
+    if (super.field1 || super.field2) { // Noncompliant, always false
+    }
+
+    SuperClass instance1, instance2;
+    if (instance1.field && instance1.field1 == instance2.field2) {
+      if (instance1.field && instance1.field1 == instance2.field2) { // Compliant
+      }
+    }
+    if (instance1.field && field1 == instance2.field2) {
+      if (field && field1 == instance2.field2) { // Compliant
+      }
+    }
   }
 
+}
+
+class SuperClass {
+  boolean field, field1, field2;
 }
