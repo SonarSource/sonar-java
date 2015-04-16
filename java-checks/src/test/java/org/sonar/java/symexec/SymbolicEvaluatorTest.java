@@ -303,11 +303,11 @@ public class SymbolicEvaluatorTest {
     ExpressionTree notEqualTree = analyze("local1 != local2");
 
     // under constraint local1 != local2 evaluation or local1 != local2 must return unconditionally true
-    state.setRelation(local1Symbol(), SymbolicRelation.NOT_EQUAL, local2Symbol());
+    state.setRelation(new SymbolicValue.SymbolicVariableValue(local1Symbol()), SymbolicRelation.NOT_EQUAL, new SymbolicValue.SymbolicVariableValue(local2Symbol()));
     validateEvaluationTrue(state, evaluateCondition(state, notEqualTree));
 
     // under constraint local1 == local2 evaluation or local1 == local2 must return unconditionally false
-    state.setRelation(local1Symbol(), SymbolicRelation.EQUAL_TO, local2Symbol());
+    state.setRelation(new SymbolicValue.SymbolicVariableValue(local1Symbol()), SymbolicRelation.EQUAL_TO, new SymbolicValue.SymbolicVariableValue(local2Symbol()));
     validateEvaluationFalse(state, evaluateCondition(state, notEqualTree));
 
     // comparison must not fail if either or both operands are not identifiers.
@@ -320,18 +320,20 @@ public class SymbolicEvaluatorTest {
 
   private SymbolicEvaluator.PackedStates evaluateRelationalOperator(ExpressionTree tree, @Nullable SymbolicRelation trueRelation,
     @Nullable SymbolicRelation falseRelation, Symbol.VariableSymbol symbol1, Symbol.VariableSymbol symbol2) {
+    SymbolicValue value1 = new SymbolicValue.SymbolicVariableValue(symbol1);
+    SymbolicValue value2 = new SymbolicValue.SymbolicVariableValue(symbol2);
     SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(new ExecutionState(), tree);
     if (falseRelation != null) {
       assertThat(result.falseStates).hasSize(1);
-      assertThat(result.falseStates.get(0).relations.get(symbol1, symbol2)).isSameAs(falseRelation);
-      assertThat(result.falseStates.get(0).relations.get(symbol2, symbol1)).isSameAs(falseRelation.swap());
+      assertThat(result.falseStates.get(0).relations.get(value1, value2)).isSameAs(falseRelation);
+      assertThat(result.falseStates.get(0).relations.get(value2, value1)).isSameAs(falseRelation.swap());
     } else {
       assertThat(result.falseStates).isEmpty();
     }
     if (trueRelation != null) {
       assertThat(result.trueStates).hasSize(1);
-      assertThat(result.trueStates.get(0).relations.get(symbol1, symbol2)).isSameAs(trueRelation);
-      assertThat(result.trueStates.get(0).relations.get(symbol2, symbol1)).isSameAs(trueRelation.swap());
+      assertThat(result.trueStates.get(0).relations.get(value1, value2)).isSameAs(trueRelation);
+      assertThat(result.trueStates.get(0).relations.get(value2, value1)).isSameAs(trueRelation.swap());
     } else {
       assertThat(result.trueStates).isEmpty();
     }
@@ -361,11 +363,11 @@ public class SymbolicEvaluatorTest {
     assertThat(evaluateExpression(state, notEqualTree)).isSameAs(UNKNOWN);
 
     // true with not equal relation
-    state.setRelation(local1Symbol(), SymbolicRelation.NOT_EQUAL, local2Symbol());
+    state.setRelation(new SymbolicValue.SymbolicVariableValue(local1Symbol()), SymbolicRelation.NOT_EQUAL, new SymbolicValue.SymbolicVariableValue(local2Symbol()));
     assertThat(evaluateExpression(state, notEqualTree)).isSameAs(TRUE);
 
     // false with equal to relation
-    state.setRelation(local1Symbol(), SymbolicRelation.EQUAL_TO, local2Symbol());
+    state.setRelation(new SymbolicValue.SymbolicVariableValue(local1Symbol()), SymbolicRelation.EQUAL_TO, new SymbolicValue.SymbolicVariableValue(local2Symbol()));
     assertThat(evaluateExpression(state, notEqualTree)).isSameAs(FALSE);
 
     // comparison must not fail if either or both operands are not identifiers.

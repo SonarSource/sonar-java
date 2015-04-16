@@ -123,6 +123,22 @@ public class SymbolicEvaluator {
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
 
     @CheckForNull
+    final SymbolicValue retrieveSymbolicValue(ExpressionTree tree) {
+      Tree currentTree = tree;
+      if (isSuperOrThisMemberSelect(tree)) {
+        currentTree = ((MemberSelectExpressionTree) currentTree).identifier();
+      }
+      if (currentTree.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifierTree = (IdentifierTree) currentTree;
+        Symbol symbol = identifierTree.symbol();
+        if (symbol.isVariableSymbol()) {
+          return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) symbol);
+        }
+      }
+      return null;
+    }
+
+    @CheckForNull
     final Symbol.VariableSymbol extractVariableSymbol(ExpressionTree tree) {
       Tree currentTree = tree;
       if (isSuperOrThisMemberSelect(tree)) {
@@ -267,10 +283,10 @@ public class SymbolicEvaluator {
 
     @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      Symbol.VariableSymbol leftSymbol = extractVariableSymbol(tree.leftOperand());
-      Symbol.VariableSymbol rightSymbol = extractVariableSymbol(tree.rightOperand());
-      if (leftSymbol != null && rightSymbol != null) {
-        switch (currentState.evaluateRelation(leftSymbol, operator, rightSymbol)) {
+      SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
+      SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
+      if (leftValue != null && rightValue != null) {
+        switch (currentState.evaluateRelation(leftValue, operator, rightValue)) {
           case FALSE:
             currentResult.falseStates.add(currentState);
             break;
@@ -278,8 +294,8 @@ public class SymbolicEvaluator {
             currentResult.trueStates.add(currentState);
             break;
           default:
-            currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
-            currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
+            currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftValue, operator.negate(), rightValue));
+            currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftValue, operator, rightValue));
         }
       } else {
         currentResult.unknownStates.add(currentState);
@@ -309,7 +325,7 @@ public class SymbolicEvaluator {
       super.visitAssignmentExpression(tree);
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
-        currentState.invalidateRelationsOnSymbol(symbol);
+        currentState.invalidateRelationsOnValue(new SymbolicValue.SymbolicVariableValue(symbol));
         currentState.setBooleanConstraint(symbol, currentResult);
       }
     }
@@ -362,7 +378,7 @@ public class SymbolicEvaluator {
         if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
           Symbol.VariableSymbol symbol = extractVariableSymbol(tree.expression());
           if (symbol != null) {
-            currentState.invalidateRelationsOnSymbol(symbol);
+            currentState.invalidateRelationsOnValue(new SymbolicValue.SymbolicVariableValue(symbol));
           }
         }
         currentResult = SymbolicBooleanConstraint.UNKNOWN;
@@ -403,10 +419,10 @@ public class SymbolicEvaluator {
 
     @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      Symbol.VariableSymbol leftSymbol = extractVariableSymbol(tree.leftOperand());
-      Symbol.VariableSymbol rightSymbol = extractVariableSymbol(tree.rightOperand());
-      if (leftSymbol != null && rightSymbol != null) {
-        currentResult = currentState.evaluateRelation(leftSymbol, operator, rightSymbol);
+      SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
+      SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
+      if (leftValue != null && rightValue != null) {
+        currentResult = currentState.evaluateRelation(leftValue, operator, rightValue);
       } else {
         currentResult = SymbolicBooleanConstraint.UNKNOWN;
       }

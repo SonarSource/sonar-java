@@ -127,8 +127,8 @@ public class ExecutionStateTest {
 
   @Test
   public void test_get_set_relation() {
-    Symbol.VariableSymbol leftValue = mock(Symbol.VariableSymbol.class);
-    Symbol.VariableSymbol rightValue = mock(Symbol.VariableSymbol.class);
+    SymbolicValue leftValue = new SymbolicValue.SymbolicVariableValue(mock(Symbol.VariableSymbol.class));
+    SymbolicValue rightValue = new SymbolicValue.SymbolicVariableValue(mock(Symbol.VariableSymbol.class));
 
     ExecutionState state = new ExecutionState();
 
@@ -213,8 +213,8 @@ public class ExecutionStateTest {
 
   @Test
   public void test_merge_relations() {
-    Symbol.VariableSymbol symbol11 = mockLocalVariable();
-    Symbol.VariableSymbol symbol12 = mockLocalVariable();
+    SymbolicValue symbol11 = new SymbolicValue.SymbolicVariableValue(mockLocalVariable());
+    SymbolicValue symbol12 = new SymbolicValue.SymbolicVariableValue(mockLocalVariable());
 
     ExecutionState parentState = new ExecutionState();
     ExecutionState state = new ExecutionState(parentState);
