@@ -21,6 +21,7 @@ package org.sonar.java.symexec;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -123,6 +124,27 @@ public class SymbolicEvaluator {
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
 
     @CheckForNull
+    final SymbolicValue retrieveSymbolicValue(ExpressionTree tree) {
+      ExpressionTree currentTree = tree;
+      if (isSuperOrThisMemberSelect(tree)) {
+        currentTree = ((MemberSelectExpressionTree) currentTree).identifier();
+      }
+      if (currentTree.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifierTree = (IdentifierTree) currentTree;
+        Symbol symbol = identifierTree.symbol();
+        if (symbol.isVariableSymbol()) {
+          return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) symbol);
+        }
+      } else {
+        Long value = LiteralUtils.longLiteralValue(currentTree);
+        if (value != null) {
+          return new SymbolicValue.SymbolicLongValue(value);
+        }
+      }
+      return null;
+    }
+
+    @CheckForNull
     final Symbol.VariableSymbol extractVariableSymbol(ExpressionTree tree) {
       Tree currentTree = tree;
       if (isSuperOrThisMemberSelect(tree)) {
@@ -177,7 +199,7 @@ public class SymbolicEvaluator {
       evaluateExpression(currentState, tree.expression());
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
-        currentState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+        currentState.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
       }
       currentResult.unknownStates.add(currentState);
     }
@@ -186,7 +208,8 @@ public class SymbolicEvaluator {
     public void visitIdentifier(IdentifierTree tree) {
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
       if (symbol != null) {
-        switch (currentState.getBooleanConstraint(symbol)) {
+        SymbolicValue.SymbolicVariableValue value = new SymbolicValue.SymbolicVariableValue(symbol);
+        switch (currentState.getBooleanConstraint(value)) {
           case FALSE:
             currentResult.falseStates.add(currentState);
             return;
@@ -194,8 +217,8 @@ public class SymbolicEvaluator {
             currentResult.trueStates.add(currentState);
             return;
           default:
-            currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
-            currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
+            currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(value, SymbolicBooleanConstraint.FALSE));
+            currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(value, SymbolicBooleanConstraint.TRUE));
             return;
         }
       }
@@ -267,10 +290,10 @@ public class SymbolicEvaluator {
 
     @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      Symbol.VariableSymbol leftSymbol = extractVariableSymbol(tree.leftOperand());
-      Symbol.VariableSymbol rightSymbol = extractVariableSymbol(tree.rightOperand());
-      if (leftSymbol != null && rightSymbol != null) {
-        switch (currentState.evaluateRelation(leftSymbol, operator, rightSymbol)) {
+      SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
+      SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
+      if (leftValue != null && rightValue != null) {
+        switch (currentState.evaluateRelation(leftValue, operator, rightValue)) {
           case FALSE:
             currentResult.falseStates.add(currentState);
             break;
@@ -278,8 +301,8 @@ public class SymbolicEvaluator {
             currentResult.trueStates.add(currentState);
             break;
           default:
-            currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator.negate(), rightSymbol));
-            currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftSymbol, operator, rightSymbol));
+            currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftValue, operator.negate(), rightValue));
+            currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftValue, operator, rightValue));
         }
       } else {
         currentResult.unknownStates.add(currentState);
@@ -309,15 +332,16 @@ public class SymbolicEvaluator {
       super.visitAssignmentExpression(tree);
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
-        currentState.invalidateRelationsOnSymbol(symbol);
-        currentState.setBooleanConstraint(symbol, currentResult);
+        SymbolicValue.SymbolicVariableValue variable = new SymbolicValue.SymbolicVariableValue(symbol);
+        currentState.invalidateRelationsOnValue(variable);
+        currentState.setBooleanConstraint(variable, currentResult);
       }
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
-      currentResult = symbol != null ? currentState.getBooleanConstraint(symbol) : SymbolicBooleanConstraint.UNKNOWN;
+      currentResult = symbol != null ? currentState.getBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol)) : SymbolicBooleanConstraint.UNKNOWN;
     }
 
     @Override
@@ -362,7 +386,7 @@ public class SymbolicEvaluator {
         if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
           Symbol.VariableSymbol symbol = extractVariableSymbol(tree.expression());
           if (symbol != null) {
-            currentState.invalidateRelationsOnSymbol(symbol);
+            currentState.invalidateRelationsOnValue(new SymbolicValue.SymbolicVariableValue(symbol));
           }
         }
         currentResult = SymbolicBooleanConstraint.UNKNOWN;
@@ -382,7 +406,7 @@ public class SymbolicEvaluator {
           currentResult = leftStates.getBooleanConstraint().union(currentResult);
         }
       }
-      currentState.mergeConstraintsAndRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+      currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
     }
 
     @Override
@@ -398,15 +422,15 @@ public class SymbolicEvaluator {
           currentResult = leftStates.getBooleanConstraint().union(currentResult);
         }
       }
-      currentState.mergeConstraintsAndRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+      currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
     }
 
     @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      Symbol.VariableSymbol leftSymbol = extractVariableSymbol(tree.leftOperand());
-      Symbol.VariableSymbol rightSymbol = extractVariableSymbol(tree.rightOperand());
-      if (leftSymbol != null && rightSymbol != null) {
-        currentResult = currentState.evaluateRelation(leftSymbol, operator, rightSymbol);
+      SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
+      SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
+      if (leftValue != null && rightValue != null) {
+        currentResult = currentState.evaluateRelation(leftValue, operator, rightValue);
       } else {
         currentResult = SymbolicBooleanConstraint.UNKNOWN;
       }
@@ -471,7 +495,7 @@ public class SymbolicEvaluator {
           PackedStates conditionStates = evaluateCondition(state, tree.condition());
           PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
           if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-            state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
+            state.mergeRelations(Iterables.concat(conditionStates.falseStates, loopStates));
             nextStates.addState(state);
           }
         }
@@ -507,7 +531,7 @@ public class SymbolicEvaluator {
           falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
         }
         if (!falseStates.isEmpty() || !trueStates.isEmpty()) {
-          state.mergeConstraintsAndRelations(Iterables.concat(falseStates, trueStates));
+          state.mergeRelations(Iterables.concat(falseStates, trueStates));
           nextStates.addState(state);
         }
         nextStates.breakStates.addAll(falseStates.breakStates);
@@ -546,7 +570,7 @@ public class SymbolicEvaluator {
           endStates.add(state);
         }
         if (!endStates.isEmpty()) {
-          state.mergeConstraintsAndRelations(endStates);
+          state.mergeRelations(endStates);
           nextStates.addState(state);
         }
       }
@@ -598,7 +622,7 @@ public class SymbolicEvaluator {
     public void visitVariable(VariableTree tree) {
       if (tree.initializer() != null) {
         for (ExecutionState state : currentStates) {
-          state.setBooleanConstraint((Symbol.VariableSymbol) tree.symbol(), evaluateExpression(state, tree.initializer()));
+          state.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) tree.symbol()), evaluateExpression(state, tree.initializer()));
         }
       }
     }
@@ -612,7 +636,7 @@ public class SymbolicEvaluator {
         PackedStates conditionStates = evaluateCondition(state, tree.condition());
         PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
         if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-          state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
+          state.mergeRelations(Iterables.concat(conditionStates.falseStates, loopStates));
           nextStates.addState(state);
         }
       }
@@ -623,7 +647,7 @@ public class SymbolicEvaluator {
     void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
       for (Symbol.VariableSymbol symbol : assignedVariables) {
         for (ExecutionState state : currentStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+          state.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
         }
       }
     }

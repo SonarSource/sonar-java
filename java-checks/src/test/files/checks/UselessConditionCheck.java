@@ -797,6 +797,41 @@ public static class Class extends SuperClass {
 
   public abstract boolean otherMethod();
 
+  int intField;
+
+  public test_integer_literals(boolean condition, int value) {
+    if (3 > value && value > 3) { // Noncompliant, always false
+    }
+    // invalidation due to merge
+    if (3 > value || value > 3) { // Compliant
+    }
+    // two level nesting
+    if (value > 0x3) {
+      if (condition || value > 0x3L) { // Noncompliant, always true
+      }
+    }
+    // invalidation due to method call
+    if (intField == 3 && 3 == value) {
+      if (intField == 3) { // Noncompliant, always true
+      }
+      if (value == 3) { // Noncompliant, always true
+      }
+      otherMethod();
+      if (intField == 3) { // Compliant
+      }
+      if (value == 3) { // Noncompliant, always true
+      }
+    }
+    // out of scope, must evaluate to unknown
+    if (3 > 3) {
+      if (false) { // Noncompliant, path is examined
+      }
+    } else {
+      if (false) { // Noncompliant
+      }
+    }
+  }
+
 }
 
 class SuperClass {

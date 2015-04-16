@@ -319,19 +319,19 @@ public class SymbolicEvaluatorTest {
   }
 
   private SymbolicEvaluator.PackedStates evaluateRelationalOperator(ExpressionTree tree, @Nullable SymbolicRelation trueRelation,
-    @Nullable SymbolicRelation falseRelation, Symbol.VariableSymbol symbol1, Symbol.VariableSymbol symbol2) {
+    @Nullable SymbolicRelation falseRelation, SymbolicValue.SymbolicVariableValue value1, SymbolicValue.SymbolicVariableValue value2) {
     SymbolicEvaluator.PackedStates result = new SymbolicEvaluator().evaluateCondition(new ExecutionState(), tree);
     if (falseRelation != null) {
       assertThat(result.falseStates).hasSize(1);
-      assertThat(result.falseStates.get(0).relations.get(symbol1, symbol2)).isSameAs(falseRelation);
-      assertThat(result.falseStates.get(0).relations.get(symbol2, symbol1)).isSameAs(falseRelation.swap());
+      assertThat(result.falseStates.get(0).relations.get(value1, value2)).isSameAs(falseRelation);
+      assertThat(result.falseStates.get(0).relations.get(value2, value1)).isSameAs(falseRelation.swap());
     } else {
       assertThat(result.falseStates).isEmpty();
     }
     if (trueRelation != null) {
       assertThat(result.trueStates).hasSize(1);
-      assertThat(result.trueStates.get(0).relations.get(symbol1, symbol2)).isSameAs(trueRelation);
-      assertThat(result.trueStates.get(0).relations.get(symbol2, symbol1)).isSameAs(trueRelation.swap());
+      assertThat(result.trueStates.get(0).relations.get(value1, value2)).isSameAs(trueRelation);
+      assertThat(result.trueStates.get(0).relations.get(value2, value1)).isSameAs(trueRelation.swap());
     } else {
       assertThat(result.trueStates).isEmpty();
     }
@@ -377,7 +377,6 @@ public class SymbolicEvaluatorTest {
     ExecutionState state = new ExecutionState();
     PackedStatementStates result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(state), parseStatement("local1 && local1;"));
     assertThat(result.states).containsExactly(state);
-    assertThat(state.constraints.isEmpty());
     assertThat(state.relations.isEmpty());
   }
 
@@ -520,20 +519,22 @@ public class SymbolicEvaluatorTest {
     return ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).block().body().get(0);
   }
 
-  private Symbol.VariableSymbol field1Symbol() {
-    return (Symbol.VariableSymbol) ((VariableTree) ((ClassTree) compilationUnit.types().get(0)).members().get(0)).symbol();
+  private SymbolicValue.SymbolicVariableValue field1Symbol() {
+    return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) ((VariableTree) ((ClassTree) compilationUnit.types().get(0)).members().get(0)).symbol());
   }
 
-  private Symbol.VariableSymbol field2Symbol() {
-    return (Symbol.VariableSymbol) ((VariableTree) ((ClassTree) compilationUnit.types().get(0)).members().get(1)).symbol();
+  private SymbolicValue.SymbolicVariableValue field2Symbol() {
+    return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) ((VariableTree) ((ClassTree) compilationUnit.types().get(0)).members().get(1)).symbol());
   }
 
-  private Symbol.VariableSymbol local1Symbol() {
-    return (Symbol.VariableSymbol) ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).parameters().get(0).symbol();
+  private SymbolicValue.SymbolicVariableValue local1Symbol() {
+    return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).parameters().get(0)
+      .symbol());
   }
 
-  private Symbol.VariableSymbol local2Symbol() {
-    return (Symbol.VariableSymbol) ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).parameters().get(1).symbol();
+  private SymbolicValue.SymbolicVariableValue local2Symbol() {
+    return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) ((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2)).parameters().get(1)
+      .symbol());
   }
 
   private SymbolicEvaluator.PackedStates evaluateCondition(String input) {
@@ -576,25 +577,22 @@ public class SymbolicEvaluatorTest {
     assertThat(result.trueStates.get(0)).isSameAs(state);
   }
 
-  private void validateEvaluationUnknownWithConstraints(ExecutionState state, PackedStates result, Symbol.VariableSymbol constrainedSymbol) {
+  private void validateEvaluationUnknownWithConstraints(ExecutionState state, PackedStates result, SymbolicValue.SymbolicVariableValue constrainedSymbol) {
     validateEvaluationUnknownWithConstraints(state, result, constrainedSymbol, TRUE);
   }
 
-  private void validateEvaluationUnknownWithConstraints(ExecutionState state, PackedStates result, Symbol.VariableSymbol constrainedSymbol, SymbolicBooleanConstraint trueConstraint) {
+  private void validateEvaluationUnknownWithConstraints(ExecutionState state, PackedStates result, SymbolicValue.SymbolicVariableValue constrainedSymbol,
+    SymbolicBooleanConstraint trueConstraint) {
     assertThat(result.isAlwaysFalse()).isFalse();
     assertThat(result.isAlwaysTrue()).isFalse();
-    assertThat(result.falseStates.get(0).constraints).hasSize(1);
     assertThat(result.falseStates.get(0).getBooleanConstraint(constrainedSymbol)).isSameAs(trueConstraint.negate());
-    assertThat(result.trueStates.get(0).constraints).hasSize(1);
     assertThat(result.trueStates.get(0).getBooleanConstraint(constrainedSymbol)).isSameAs(trueConstraint);
   }
 
   private void validateEvaluationUnknownWithoutConstraints(ExecutionState state, PackedStates result) {
     assertThat(result.isAlwaysFalse()).isFalse();
     assertThat(result.isAlwaysTrue()).isFalse();
-    assertThat(result.falseStates.get(0).constraints).isEmpty();
     assertThat(result.falseStates.get(0).relations.size()).isEqualTo(0);
-    assertThat(result.trueStates.get(0).constraints).isEmpty();
     assertThat(result.trueStates.get(0).relations.size()).isEqualTo(0);
   }
 
