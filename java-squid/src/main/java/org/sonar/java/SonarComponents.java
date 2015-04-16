@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -120,12 +121,11 @@ public class SonarComponents implements BatchExtension {
   }
 
   public Iterable<Checks<JavaCheck>> checks() {
-    return checks;
+    return Iterables.concat(checks, Lists.newArrayList(testChecks));
   }
 
   public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> javaTestChecks) {
     testChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaTestChecks);
-    checks.add(testChecks);
   }
 
   public Collection<JavaCheck> testCheckClasses() {

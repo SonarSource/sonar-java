@@ -37,7 +37,6 @@ import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.Query;
@@ -59,7 +58,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
   private final AstScanner astScanner;
   private final AstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
-  private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<Resource, Dependency>();
+  private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<>();
 
   private boolean bytecodeScanned = false;
 
@@ -80,19 +79,14 @@ public class JavaSquid implements SourceCodeSearchEngine {
       visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
     }
     List<File> classpath = Lists.newArrayList();
+    List<File> testClasspath = Lists.newArrayList();
+    Collection<CodeVisitor> testCheckClasses = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
     if(sonarComponents != null) {
       classpath = sonarComponents.getJavaClasspath();
+      testClasspath = sonarComponents.getJavaTestClasspath();
+      testCheckClasses.addAll(sonarComponents.testCheckClasses());
     }
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
-    visitorsBridge.setCharset(conf.getCharset());
-    visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
-    astScanner.accept(visitorsBridge);
-
-    if (sonarComponents != null) {
-      astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
-      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
-    }
-
+    setupAstScanner(astScanner, visitorsToBridge, classpath, conf, sonarComponents);
     // TODO unchecked cast
     squidIndex = (SquidIndex) astScanner.getIndex();
 
@@ -109,18 +103,22 @@ public class JavaSquid implements SourceCodeSearchEngine {
     }
 
     astScannerForTests = new AstScanner(astScanner);
-    List<File> testClasspath = Lists.newArrayList();
     astScannerForTests.accept(new FileVisitor());
-    Collection<CodeVisitor> testCheckClasses = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
-    if(sonarComponents != null) {
-      testClasspath = sonarComponents.getJavaTestClasspath();
-      astScannerForTests.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
-      astScannerForTests.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
-      testCheckClasses.addAll(sonarComponents.testCheckClasses());
-
-    }
-    astScannerForTests.accept(new VisitorsBridge(testCheckClasses, testClasspath, sonarComponents));
+    setupAstScanner(astScannerForTests, testCheckClasses, testClasspath, conf, sonarComponents);
   }
+
+  private void setupAstScanner(AstScanner astScanner, Iterable<CodeVisitor> visitorsToBridge, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
+    if(sonarComponents != null) {
+      astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
+      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
+    }
+    VisitorsBridge visitorsBridgeTest = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
+    visitorsBridgeTest.setCharset(conf.getCharset());
+    visitorsBridgeTest.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
+    astScanner.accept(visitorsBridgeTest);
+  }
+
+
 
   public void scan(Iterable<File> sourceFiles, Iterable<File> testFiles, Collection<File> bytecodeFilesOrDirectories) {
     scanSources(sourceFiles);

@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.WildcardPattern;
@@ -54,18 +55,19 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
   protected final Project project;
   protected final Settings settings;
   protected final FileSystem fs;
+  private final InputFile.Type fileType;
 
   protected List<File> binaries;
   protected List<File> elements;
   protected boolean validateLibraries;
-  protected boolean hasJavaSources;
-  protected boolean initalized;
+  protected boolean initialized;
 
-  public AbstractJavaClasspath(Project project, Settings settings, FileSystem fs) {
+  public AbstractJavaClasspath(Project project, Settings settings, FileSystem fs, InputFile.Type fileType) {
     this.project = project;
     this.settings = settings;
     this.fs = fs;
-    initalized = false;
+    this.fileType = fileType;
+    initialized = false;
   }
 
   protected abstract void init();
@@ -75,10 +77,11 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
     String fileList = settings.getString(property);
     if (StringUtils.isNotEmpty(fileList)) {
       Iterable<String> fileNames = Splitter.on(SEPARATOR).omitEmptyStrings().split(fileList);
+      File baseDir = fs.baseDir();
+      boolean isLibraryProperty = property.endsWith("libraries");
       for (String pathPattern : fileNames) {
-        boolean isLibraryProperty = property.endsWith("libraries");
-        List<File> libraryFilesForPattern = getFilesForPattern(fs.baseDir(), pathPattern, isLibraryProperty);
-        if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources) {
+        List<File> libraryFilesForPattern = getFilesForPattern(baseDir, pathPattern, isLibraryProperty);
+        if (validateLibraries && libraryFilesForPattern.isEmpty() && hasJavaSources()) {
           LOG.error("Invalid value for " + property);
           String message = "No files nor directories matching '" + pathPattern + "'";
           throw new IllegalStateException(message);
@@ -87,6 +90,10 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
       }
     }
     return result;
+  }
+
+  private boolean hasJavaSources() {
+    return fs.hasFiles(fs.predicates().and(fs.predicates().hasLanguage("java"), fs.predicates().hasType(fileType)));
   }
 
 
