@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -85,6 +86,10 @@ public class SymbolicEvaluator {
 
   SymbolicBooleanConstraint evaluateExpression(ExecutionState state, ExpressionTree tree) {
     return new ExpressionVisitor().evaluate(state, tree);
+  }
+
+  PackedStatementStates evaluateStatement(ExecutionState state, StatementTree tree) {
+    return new StatementVisitor().evaluate(PackedStatementStates.instantiateWithState(state), tree);
   }
 
   PackedStatementStates evaluateStatement(List<ExecutionState> states, StatementTree tree) {
@@ -616,6 +621,16 @@ public class SymbolicEvaluator {
     @Override
     public void visitTryStatement(TryStatementTree tree) {
       currentStates = evaluateStatement(currentStates, tree.block());
+      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
+      for (ExecutionState state : currentStates) {
+        List<ExecutionState> catchStates = new ArrayList<>();
+        for (CatchTree catchTree : tree.catches()) {
+          catchStates.addAll(evaluateStatement(new ExecutionState(state), catchTree.block()).states);
+        }
+        catchStates.add(state);
+        state.mergeRelations(catchStates);
+      }
+      currentStates = evaluateStatement(currentStates, tree.finallyBlock());
     }
 
     @Override
@@ -702,6 +717,10 @@ public class SymbolicEvaluator {
 
     static PackedStatementStates instantiate() {
       return new PackedStatementStates();
+    }
+
+    static PackedStatementStates instantiateWithState(ExecutionState state) {
+      return instantiateWithStates(ImmutableList.of(state));
     }
 
     static PackedStatementStates instantiateWithStates(List<ExecutionState> states) {
