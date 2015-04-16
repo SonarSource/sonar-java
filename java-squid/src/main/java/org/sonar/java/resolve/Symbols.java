@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
 
 /**
  * Predefined symbols.
@@ -91,7 +92,7 @@ public class Symbols {
     unknownSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "!unknownSymbol!", rootPackage) {
       @Override
       public void addUsage(IdentifierTree tree) {
-        //noop
+        // noop
       }
 
       @Override
@@ -107,7 +108,7 @@ public class Symbols {
     unknownSymbol.members = new Scope(unknownSymbol) {
       @Override
       public void enter(JavaSymbol symbol) {
-        //noop
+        // noop
       }
 
     };
@@ -174,9 +175,9 @@ public class Symbols {
     boxedTypes.put(doubleType, bytecodeCompleter.loadClass("java.lang.Double").type);
     boxedTypes.put(booleanType, bytecodeCompleter.loadClass("java.lang.Boolean").type);
 
-    for (JavaType boxedType : boxedTypes.keySet()) {
-      boxedType.primitiveWrapperType = boxedTypes.get(boxedType);
-      boxedTypes.get(boxedType).primitiveType = boxedType;
+    for (Entry<JavaType, JavaType> entry : boxedTypes.entrySet()) {
+      entry.getKey().primitiveWrapperType = entry.getValue();
+      entry.getValue().primitiveType = entry.getKey();
     }
 
     // TODO comment me
