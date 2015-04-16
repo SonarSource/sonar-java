@@ -128,6 +128,11 @@ public class UselessConditionCheckTest {
       .next().atLine(626).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(628).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(637).withMessage("Change this condition so that it does not always evaluate to \"true\"")
-      .next().atLine(639).withMessage("Change this condition so that it does not always evaluate to \"true\"");
+      .next().atLine(639).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(646).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(649).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(655).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(657).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(668).withMessage("Change this condition so that it does not always evaluate to \"false\"");
   }
 }

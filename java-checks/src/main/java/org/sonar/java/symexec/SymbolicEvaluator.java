@@ -131,9 +131,13 @@ public class SymbolicEvaluator {
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
 
     @CheckForNull
-    final Symbol.VariableSymbol extractVariableSymbol(Tree tree) {
-      if (tree.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) tree;
+    final Symbol.VariableSymbol extractVariableSymbol(ExpressionTree tree) {
+      Tree currentTree = tree;
+      if (isSuperOrThisMemberSelect(tree)) {
+        currentTree = ((MemberSelectExpressionTree) currentTree).identifier();
+      }
+      if (currentTree.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifierTree = (IdentifierTree) currentTree;
         Symbol symbol = identifierTree.symbol();
         if (symbol.isVariableSymbol()) {
           return (Symbol.VariableSymbol) symbol;
@@ -141,6 +145,20 @@ public class SymbolicEvaluator {
       }
       return null;
     }
+
+    final boolean isSuperOrThisMemberSelect(ExpressionTree tree) {
+      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
+        if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {
+          IdentifierTree identifierExpression = (IdentifierTree) memberSelectTree.expression();
+          if ("super".equals(identifierExpression.name()) || "this".equals(identifierExpression.name())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
   }
 
   public class ConditionVisitor extends BaseExpressionVisitor {
@@ -210,7 +228,11 @@ public class SymbolicEvaluator {
 
     @Override
     public final void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      currentResult.unknownStates.add(currentState);
+      if (isSuperOrThisMemberSelect(tree)) {
+        scan(tree.identifier());
+      } else {
+        currentResult.unknownStates.add(currentState);
+      }
     }
 
     @Override
@@ -324,8 +346,12 @@ public class SymbolicEvaluator {
 
     @Override
     public final void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      super.visitMemberSelectExpression(tree);
-      currentResult = SymbolicBooleanConstraint.UNKNOWN;
+      if (isSuperOrThisMemberSelect(tree)) {
+        scan(tree.identifier());
+      } else {
+        super.visitMemberSelectExpression(tree);
+        currentResult = SymbolicBooleanConstraint.UNKNOWN;
+      }
     }
 
     @Override
