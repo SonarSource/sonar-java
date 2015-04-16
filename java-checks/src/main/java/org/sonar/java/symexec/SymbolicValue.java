@@ -24,6 +24,11 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 public class SymbolicValue {
 
+  static final SymbolicBooleanValue BOOLEAN_TRUE = new SymbolicBooleanValue();
+
+  public static final class SymbolicBooleanValue extends SymbolicValue {
+  }
+
   public static final class SymbolicVariableValue extends SymbolicValue {
     final Symbol.VariableSymbol variable;
 
@@ -34,7 +39,7 @@ public class SymbolicValue {
 
     @Override
     public boolean equals(Object that) {
-      return that instanceof SymbolicVariableValue && this.variable.equals(((SymbolicVariableValue) that).variable);
+      return that instanceof SymbolicVariableValue && variable.equals(((SymbolicVariableValue) that).variable);
     }
 
     @Override
