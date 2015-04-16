@@ -252,8 +252,9 @@ public class ExecutionState {
       }
       for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> entry : state.relations.rowMap().entrySet()) {
         if (entry.getKey().owner().isTypeSymbol()) {
-          for (Symbol.VariableSymbol other : entry.getValue().keySet())
+          for (Symbol.VariableSymbol other : entry.getValue().keySet()) {
             setRelation(entry.getKey(), SymbolicRelation.UNKNOWN, other);
+          }
         }
       }
     }

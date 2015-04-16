@@ -82,14 +82,6 @@ public class SymbolicEvaluator {
     return new ConditionVisitor().evaluate(state, tree).splitUnknowns();
   }
 
-  PackedStates evaluateCondition(List<ExecutionState> states, ExpressionTree tree) {
-    PackedStates conditionResult = new PackedStates();
-    for (ExecutionState state : states) {
-      conditionResult.add(new ConditionVisitor().evaluate(state, tree).splitUnknowns());
-    }
-    return conditionResult;
-  }
-
   SymbolicBooleanConstraint evaluateExpression(ExecutionState state, ExpressionTree tree) {
     return new ExpressionVisitor().evaluate(state, tree);
   }
@@ -486,7 +478,7 @@ public class SymbolicEvaluator {
         currentStates = nextStates;
         invalidateAssignedVariables(assignedSymbols);
       } else {
-        currentStates = evaluateStatement(currentStates, tree.statement());
+        evaluateStatement(currentStates, tree.statement());
         currentStates = PackedStatementStates.instantiate();
       }
     }
@@ -638,32 +630,14 @@ public class SymbolicEvaluator {
   }
 
   public static class PackedStates {
-    final List<ExecutionState> falseStates;
-    final List<ExecutionState> trueStates;
-    final List<ExecutionState> unknownStates;
-
-    public PackedStates() {
-      falseStates = new ArrayList<>();
-      trueStates = new ArrayList<>();
-      unknownStates = new ArrayList<>();
-    }
+    final List<ExecutionState> falseStates = new ArrayList<>();
+    final List<ExecutionState> trueStates = new ArrayList<>();
+    final List<ExecutionState> unknownStates = new ArrayList<>();
 
     public void add(PackedStates that) {
       falseStates.addAll(that.falseStates);
       trueStates.addAll(that.trueStates);
       unknownStates.addAll(that.unknownStates);
-    }
-
-    void setBooleanConstraintOnSymbol(Symbol.VariableSymbol symbol) {
-      for (ExecutionState state : falseStates) {
-        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE);
-      }
-      for (ExecutionState state : trueStates) {
-        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE);
-      }
-      for (ExecutionState state : unknownStates) {
-        state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
-      }
     }
 
     PackedStates splitUnknowns() {

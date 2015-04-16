@@ -133,6 +133,23 @@ public class UselessConditionCheckTest {
       .next().atLine(649).withMessage("Change this condition so that it does not always evaluate to \"false\"")
       .next().atLine(655).withMessage("Change this condition so that it does not always evaluate to \"true\"")
       .next().atLine(657).withMessage("Change this condition so that it does not always evaluate to \"true\"")
-      .next().atLine(668).withMessage("Change this condition so that it does not always evaluate to \"false\"");
+      .next().atLine(668).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(684).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(686).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(707).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(717).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(724).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(727).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(730).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(733).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(741).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(744).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(749).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(752).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(762).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(776).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(779).withMessage("Change this condition so that it does not always evaluate to \"true\"")
+      .next().atLine(788).withMessage("Change this condition so that it does not always evaluate to \"false\"")
+      .next().atLine(793).withMessage("Change this condition so that it does not always evaluate to \"false\"");
   }
 }

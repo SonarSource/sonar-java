@@ -679,6 +679,124 @@ public static class Class extends SuperClass {
     }
   }
 
+  public test_array(boolean local1, boolean local2) {
+    (local1 = false)[local2 = true];
+    if(local1) { // Noncompliant, always false
+    }
+    if(local2) { // Noncompliant, always true
+    }
+  }
+
+  public test_instanceof(Object object, boolean local) {
+    local = object instanceof Object; // unknown for now
+    if (local) { // Compliant
+    }
+  }
+
+  public void member_select2() {
+    // member select
+    Class instance = new Class();
+    instance.field = false;
+    if (instance.field) { // Compliant
+    }
+  }
+
+  public void statement_for(boolean parameter1, boolean parameter2) {
+    for (;;) {
+      if (parameter1 == parameter2) {
+        if (parameter1 == parameter2) { // Noncompliant, condition is always true
+        }
+      }
+    }
+    if (parameter1 == parameter2) { // False negative
+    }
+  }
+
+  public void unary_negate() {
+    boolean bool = !false;
+    if (bool) { // Noncompliant, always false
+    }
+  }
+
+  public void conditional_operators(boolean unknown) {
+    boolean condition;
+    condition = false && unknown;
+    if (condition) { // Noncompliant, always false
+    }
+    condition = unknown && false;
+    if (condition) { // Noncompliant, always false
+    }
+    condition = true || unknown;
+    if (condition) { // Noncompliant, always true
+    }
+    condition = unknown || true;
+    if (condition) { // Noncompliant, always true
+    }
+  }
+
+  public void relational_unknown(Object object) {
+    boolean condition;
+    condition = object != null;
+    if (condition) {
+      if (false) { // Noncompliant, always false
+      }
+    } else {
+      if (false) { // Noncompliant, always false
+      }
+    }
+    condition = null != object;
+    if (condition != null) {
+      if (false) { // Noncompliant, always false
+      }
+    } else {
+      if (false) { // Noncompliant, always false
+      }
+    }
+  }
+
+  public void test_switch(int condition) {
+    switch (condition) {
+      case 0:
+        return;
+    }
+    if (false) { // Noncompliant, always false
+    }
+    switch (condition) {
+      case 0:
+        return;
+      default:
+        return;
+    }
+    if (false) { // Compliant, unreachable
+    }
+  }
+
+  public void test_condition_array(boolean local1, boolean local2) {
+    if ((local1 = false)[local2 = true]) {
+      if (!local1 && local2) { // Noncompliant, always true
+      }
+    } else {
+      if (!local1 && local2) { // Noncompliant, always true
+      }
+    }
+  }
+
+  public void test_condition_assignment(boolean local1, boolean local2) {
+    if (local1 = false) {
+      if (!local1) { // False negative, assignement is not taken into consideration
+      }
+      if (false) { // Noncompliant, path is examined
+      }
+    } else {
+      if (local1) { // False negative, assignment is not taken into consideration
+      }
+      if (false) { // Noncompliant, path is examined
+      }
+    }
+  }
+
+  public abstract boolean otherMethod();
+
 }
 
 class SuperClass {
