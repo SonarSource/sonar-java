@@ -193,7 +193,7 @@ public class SymbolicEvaluator {
       evaluateExpression(currentState, tree.expression());
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
-        currentState.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+        currentState.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
       }
       currentResult.unknownStates.add(currentState);
     }
@@ -202,7 +202,8 @@ public class SymbolicEvaluator {
     public void visitIdentifier(IdentifierTree tree) {
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
       if (symbol != null) {
-        switch (currentState.getBooleanConstraint(symbol)) {
+        SymbolicValue.SymbolicVariableValue value = new SymbolicValue.SymbolicVariableValue(symbol);
+        switch (currentState.getBooleanConstraint(value)) {
           case FALSE:
             currentResult.falseStates.add(currentState);
             return;
@@ -210,8 +211,8 @@ public class SymbolicEvaluator {
             currentResult.trueStates.add(currentState);
             return;
           default:
-            currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.FALSE));
-            currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(symbol, SymbolicBooleanConstraint.TRUE));
+            currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(value, SymbolicBooleanConstraint.FALSE));
+            currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(value, SymbolicBooleanConstraint.TRUE));
             return;
         }
       }
@@ -325,15 +326,16 @@ public class SymbolicEvaluator {
       super.visitAssignmentExpression(tree);
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
-        currentState.invalidateRelationsOnValue(new SymbolicValue.SymbolicVariableValue(symbol));
-        currentState.setBooleanConstraint(symbol, currentResult);
+        SymbolicValue.SymbolicVariableValue variable = new SymbolicValue.SymbolicVariableValue(symbol);
+        currentState.invalidateRelationsOnValue(variable);
+        currentState.setBooleanConstraint(variable, currentResult);
       }
     }
 
     @Override
     public void visitIdentifier(IdentifierTree tree) {
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
-      currentResult = symbol != null ? currentState.getBooleanConstraint(symbol) : SymbolicBooleanConstraint.UNKNOWN;
+      currentResult = symbol != null ? currentState.getBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol)) : SymbolicBooleanConstraint.UNKNOWN;
     }
 
     @Override
@@ -398,7 +400,7 @@ public class SymbolicEvaluator {
           currentResult = leftStates.getBooleanConstraint().union(currentResult);
         }
       }
-      currentState.mergeConstraintsAndRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+      currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
     }
 
     @Override
@@ -414,7 +416,7 @@ public class SymbolicEvaluator {
           currentResult = leftStates.getBooleanConstraint().union(currentResult);
         }
       }
-      currentState.mergeConstraintsAndRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+      currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
     }
 
     @Override
@@ -487,7 +489,7 @@ public class SymbolicEvaluator {
           PackedStates conditionStates = evaluateCondition(state, tree.condition());
           PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
           if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-            state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
+            state.mergeRelations(Iterables.concat(conditionStates.falseStates, loopStates));
             nextStates.addState(state);
           }
         }
@@ -523,7 +525,7 @@ public class SymbolicEvaluator {
           falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
         }
         if (!falseStates.isEmpty() || !trueStates.isEmpty()) {
-          state.mergeConstraintsAndRelations(Iterables.concat(falseStates, trueStates));
+          state.mergeRelations(Iterables.concat(falseStates, trueStates));
           nextStates.addState(state);
         }
         nextStates.breakStates.addAll(falseStates.breakStates);
@@ -562,7 +564,7 @@ public class SymbolicEvaluator {
           endStates.add(state);
         }
         if (!endStates.isEmpty()) {
-          state.mergeConstraintsAndRelations(endStates);
+          state.mergeRelations(endStates);
           nextStates.addState(state);
         }
       }
@@ -614,7 +616,7 @@ public class SymbolicEvaluator {
     public void visitVariable(VariableTree tree) {
       if (tree.initializer() != null) {
         for (ExecutionState state : currentStates) {
-          state.setBooleanConstraint((Symbol.VariableSymbol) tree.symbol(), evaluateExpression(state, tree.initializer()));
+          state.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) tree.symbol()), evaluateExpression(state, tree.initializer()));
         }
       }
     }
@@ -628,7 +630,7 @@ public class SymbolicEvaluator {
         PackedStates conditionStates = evaluateCondition(state, tree.condition());
         PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
         if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-          state.mergeConstraintsAndRelations(Iterables.concat(conditionStates.falseStates, loopStates));
+          state.mergeRelations(Iterables.concat(conditionStates.falseStates, loopStates));
           nextStates.addState(state);
         }
       }
@@ -639,7 +641,7 @@ public class SymbolicEvaluator {
     void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
       for (Symbol.VariableSymbol symbol : assignedVariables) {
         for (ExecutionState state : currentStates) {
-          state.setBooleanConstraint(symbol, SymbolicBooleanConstraint.UNKNOWN);
+          state.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
         }
       }
     }
