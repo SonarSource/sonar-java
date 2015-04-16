@@ -21,6 +21,7 @@ package org.sonar.java.symexec;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -124,7 +125,7 @@ public class SymbolicEvaluator {
 
     @CheckForNull
     final SymbolicValue retrieveSymbolicValue(ExpressionTree tree) {
-      Tree currentTree = tree;
+      ExpressionTree currentTree = tree;
       if (isSuperOrThisMemberSelect(tree)) {
         currentTree = ((MemberSelectExpressionTree) currentTree).identifier();
       }
@@ -133,6 +134,11 @@ public class SymbolicEvaluator {
         Symbol symbol = identifierTree.symbol();
         if (symbol.isVariableSymbol()) {
           return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) symbol);
+        }
+      } else {
+        Long value = LiteralUtils.longLiteralValue(currentTree);
+        if (value != null) {
+          return new SymbolicValue.SymbolicLongValue(value);
         }
       }
       return null;

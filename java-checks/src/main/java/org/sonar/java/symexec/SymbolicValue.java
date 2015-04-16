@@ -28,6 +28,24 @@ public class SymbolicValue {
   public static final class SymbolicBooleanValue extends SymbolicValue {
   }
 
+  public static final class SymbolicLongValue extends SymbolicValue {
+    final long value;
+
+    public SymbolicLongValue(long value) {
+      this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object that) {
+      return that instanceof SymbolicLongValue && value == ((SymbolicLongValue) that).value;
+    }
+
+    @Override
+    public int hashCode() {
+      return (int) (value ^ (value >>> 32));
+    }
+  }
+
   public static final class SymbolicVariableValue extends SymbolicValue {
     final Symbol.VariableSymbol variable;
 
