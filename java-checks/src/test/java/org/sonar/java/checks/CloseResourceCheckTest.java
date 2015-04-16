@@ -33,12 +33,21 @@ public class CloseResourceCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CloseResourceCheck.java"), new VisitorsBridge(check));
+    SourceFile file = JavaAstScanner.scanSingleFile(
+      new File("src/test/files/checks/CloseResourceCheck.java"),
+      new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(22).withMessage("Close this \"Reader\"")
-      .next().atLine(24).withMessage("Close this \"Writer\"")
-      .next().atLine(30).withMessage("Close this \"InputStream\"")
-      .next().atLine(32).withMessage("Close this \"RandomAccessFile\"")
+      .next().atLine(25).withMessage("Close this \"Reader\"")
+      .next().atLine(27).withMessage("Close this \"Writer\"")
+      .next().atLine(33).withMessage("Close this \"InputStream\"")
+      .next().atLine(35).withMessage("Close this \"RandomAccessFile\"")
+      .next().atLine(82).withMessage("Close this \"Reader\"")
+      .next().atLine(87).withMessage("Close this \"Reader\"")
+      .next().atLine(93).withMessage("Close this \"Writer\"")
+      .next().atLine(98).withMessage("Close this \"Formatter\"")
+      .next().atLine(104).withMessage("Close this \"BufferedWriter\"")
+      .next().atLine(111).withMessage("Close this \"FileInputStream\"")
+      .next().atLine(184).withMessage("Close this \"InputStream\"")
       .noMore();
   }
 }

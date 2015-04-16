@@ -33,8 +33,10 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -52,6 +54,7 @@ import javax.annotation.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 @Rule(
@@ -64,8 +67,8 @@ import java.util.Set;
 @SqaleConstantRemediation("5min")
 public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
-  private static enum CloseableState {
-    NULL, CLOSED, NOT_CLOSED, IGNORED
+  private static enum State {
+    NULL, CLOSED, OPEN, IGNORED
   }
 
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
@@ -87,7 +90,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     if (block != null) {
       CloseableVisitor closeableVisitor = new CloseableVisitor(methodTree.parameters());
       block.accept(closeableVisitor);
-      for (Tree ref : closeableVisitor.closeableTracker.getUnclosedClosables()) {
+      for (Tree ref : closeableVisitor.executionState.getUnclosedClosables()) {
         insertIssue(ref);
       }
     }
@@ -112,19 +115,19 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
   private static class CloseableVisitor extends BaseTreeVisitor {
 
-    private final CloseableTracker closeableTracker;
+    private ExecutionState executionState;
 
     public CloseableVisitor(List<VariableTree> methodParameters) {
-      closeableTracker = new CloseableTracker(extractCloseableSymbols(methodParameters));
+      executionState = new ExecutionState(extractCloseableSymbols(methodParameters));
     }
 
     @Override
     public void visitVariable(VariableTree tree) {
       ExpressionTree initializer = tree.initializer();
       if (tree.symbol().type().isSubtypeOf(JAVA_IO_CLOSEABLE)) {
-        closeableTracker.addCloseable(tree.symbol(), tree, initializer);
+        executionState.addCloseable(tree.symbol(), tree, initializer);
       }
-      closeableTracker.checkUsageOfClosables(initializer);
+      executionState.checkUsageOfClosables(initializer);
     }
 
     @Override
@@ -134,10 +137,16 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         IdentifierTree identifier = (IdentifierTree) variable;
         Symbol symbol = identifier.symbol();
         if (identifier.symbolType().isSubtypeOf(JAVA_IO_CLOSEABLE) && symbol.owner().isMethodSymbol()) {
-          closeableTracker.addCloseable(symbol, variable, tree.expression());
+          executionState.addCloseable(symbol, variable, tree.expression());
         }
-        closeableTracker.checkUsageOfClosables(tree.expression());
+        executionState.checkUsageOfClosables(tree.expression());
       }
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      super.visitNewClass(tree);
+      executionState.checkUsageOfClosables(tree);
     }
 
     @Override
@@ -147,24 +156,67 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
           if (expression.is(Tree.Kind.IDENTIFIER)) {
-            closeableTracker.markAsClosed(((IdentifierTree) expression).symbol());
+            executionState.markAsClosed(((IdentifierTree) expression).symbol());
           }
         }
       } else {
-        closeableTracker.checkUsageOfClosables(tree);
+        executionState.checkUsageOfClosables(tree);
       }
     }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       super.visitReturnStatement(tree);
-      closeableTracker.checkUsageOfClosables(tree.expression());
+      executionState.checkUsageOfClosables(tree.expression());
     }
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
-      closeableTracker.excludedCloseables.addAll(extractCloseableSymbols(tree.resources()));
-      super.visitTryStatement(tree);
+      executionState.exclude(extractCloseableSymbols(tree.resources()));
+
+      ExecutionState currentES = new ExecutionState(executionState);
+      ExecutionState endES = new ExecutionState(executionState);
+
+      visitBlock(tree.block(), currentES, endES);
+
+      for (CatchTree catchTree : tree.catches()) {
+        visitBlock(catchTree.block(), new ExecutionState(currentES), endES);
+      }
+
+      if (tree.finallyBlock() != null) {
+        visitBlock(tree.finallyBlock(), new ExecutionState(currentES), endES, true);
+      }
+
+      executionState = endES;
+    }
+
+    private void visitBlock(BlockTree block, ExecutionState startES, ExecutionState endEs) {
+      visitBlock(block, startES, endEs, false);
+    }
+
+    private void visitBlock(BlockTree block, ExecutionState startES, ExecutionState endEs, boolean forceState) {
+      ExecutionState currentES = new ExecutionState(startES);
+      executionState = currentES;
+      block.accept(this);
+      endEs.merge(currentES, forceState);
+    }
+
+    @Override
+    public void visitIfStatement(IfStatementTree tree) {
+      tree.condition().accept(this);
+
+      ExecutionState currentES = executionState;
+      ExecutionState thenES = new ExecutionState(currentES);
+      ExecutionState elseES = new ExecutionState(currentES);
+
+      executionState = thenES;
+      tree.thenStatement().accept(this);
+
+      if (tree.elseStatement() != null) {
+        executionState = elseES;
+        tree.elseStatement().accept(this);
+      }
+      executionState = currentES.merge(thenES, elseES);
     }
 
     private Set<Symbol> extractCloseableSymbols(List<VariableTree> variableTrees) {
@@ -178,13 +230,74 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       return symbols;
     }
 
-    private static class CloseableTracker {
-      private final Set<Symbol> excludedCloseables;
+    private static class ExecutionState {
+      private Set<Symbol> excludedCloseables;
       private Map<Symbol, CloseableOccurence> closeableOccurenceBySymbol = Maps.newHashMap();
-      private List<Tree> unclosedCloseableReferences = Lists.newLinkedList();
+      private Set<Tree> unclosedCloseableReferences = Sets.newHashSet();
 
-      CloseableTracker(Set<Symbol> excludedCloseables) {
+      ExecutionState(Set<Symbol> excludedCloseables) {
         this.excludedCloseables = excludedCloseables;
+      }
+
+      public ExecutionState(ExecutionState baseES) {
+        this.excludedCloseables = Sets.newHashSet(baseES.excludedCloseables);
+        for (Entry<Symbol, CloseableOccurence> entry : baseES.closeableOccurenceBySymbol.entrySet()) {
+          this.closeableOccurenceBySymbol.put(entry.getKey(), new CloseableOccurence(entry.getValue()));
+        }
+        // the unclosed closeable set is let empty
+      }
+
+      public ExecutionState merge(ExecutionState es, boolean forceNewState) {
+        return this.merge(es, null, forceNewState);
+      }
+
+      public ExecutionState merge(ExecutionState es1, @Nullable ExecutionState es2) {
+        return this.merge(es1, es2, false);
+      }
+
+      public ExecutionState merge(ExecutionState es1, @Nullable ExecutionState es2, boolean forceFirstState) {
+        // only look for symbols which are known from the current execution state
+        for (Symbol symbol : closeableOccurenceBySymbol.keySet()) {
+          CloseableOccurence currentOccurence = closeableOccurenceBySymbol.get(symbol);
+          State state1 = es1.closeableOccurenceBySymbol.get(symbol).state;
+          State state2 = currentOccurence.state;
+          if (es2 != null) {
+            state2 = es2.closeableOccurenceBySymbol.get(symbol).state;
+          }
+
+          // * | C | O | I | N |
+          // --+---+---+---+---|
+          // C | C | O | I | I | <- CLOSED
+          // --+---+---+---+---|
+          // O | O | O | I | I | <- OPEN
+          // --+---+---+---+---|
+          // I | I | I | I | I | <- IGNORED
+          // --+---+---+---+---|
+          // N | I | I | I | N | <- NULL
+          // ------------------+
+
+          // same state after the if statement
+          if (forceFirstState || state1.equals(state2)) {
+            currentOccurence.state = state1;
+          } else if ((State.CLOSED.equals(state1) && State.OPEN.equals(state2)) || (State.OPEN.equals(state1) && State.CLOSED.equals(state2))) {
+            currentOccurence.state = State.OPEN;
+          } else {
+            currentOccurence.state = State.IGNORED;
+          }
+
+          // clear the closeable occurences from the child execution states
+          es1.closeableOccurenceBySymbol.remove(symbol);
+          if (es2 != null) {
+            es2.closeableOccurenceBySymbol.remove(symbol);
+          }
+        }
+
+        // add the closeables which could have been created but not properly closed in the context of the child ESs
+        unclosedCloseableReferences.addAll(es1.getUnclosedClosables());
+        if (es2 != null) {
+          unclosedCloseableReferences.addAll(es2.getUnclosedClosables());
+        }
+        return this;
       }
 
       private void addCloseable(Symbol symbol, Tree lastAssignmentTree, @Nullable ExpressionTree assignmentExpression) {
@@ -206,8 +319,10 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
             } else {
               arguments = ((NewClassTree) expression).arguments();
             }
-            markCloseableArgumentsAsIgnored(arguments);
-          } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+            for (ExpressionTree argument : arguments) {
+              checkUsageOfClosables(argument);
+            }
+          } else if (expression.is(Tree.Kind.IDENTIFIER) && expression.symbolType().isSubtypeOf(JAVA_IO_CLOSEABLE)) {
             markAsIgnored(((IdentifierTree) expression).symbol());
           } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
             checkUsageOfClosables(((MemberSelectExpressionTree) expression).identifier());
@@ -217,21 +332,13 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         }
       }
 
-      private void markCloseableArgumentsAsIgnored(List<ExpressionTree> arguments) {
-        for (ExpressionTree argument : arguments) {
-          if (argument.is(Tree.Kind.IDENTIFIER) && argument.symbolType().isSubtypeOf(JAVA_IO_CLOSEABLE)) {
-            markAsIgnored(((IdentifierTree) argument).symbol());
-          }
-        }
-      }
-
-      private CloseableState getCloseableState(ExpressionTree expression) {
+      private State getCloseableState(ExpressionTree expression) {
         if (expression == null || expression.is(Tree.Kind.NULL_LITERAL)) {
-          return CloseableState.NULL;
+          return State.NULL;
         } else if (expression.is(Tree.Kind.NEW_CLASS)) {
-          return CloseableState.NOT_CLOSED;
+          return State.OPEN;
         }
-        return CloseableState.IGNORED;
+        return State.IGNORED;
       }
 
       private void markAsIgnored(Symbol symbol) {
@@ -246,13 +353,17 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         }
       }
 
-      private boolean isCloseableNotClosed(Symbol symbol) {
-        CloseableOccurence occurence = closeableOccurenceBySymbol.get(symbol);
-        return occurence != null && CloseableState.NOT_CLOSED.equals(occurence.state);
+      public void exclude(Set<Symbol> symbols) {
+        excludedCloseables.addAll(symbols);
       }
 
-      private List<Tree> getUnclosedClosables() {
-        List<Tree> results = Lists.newArrayList(unclosedCloseableReferences);
+      private boolean isCloseableNotClosed(Symbol symbol) {
+        CloseableOccurence occurence = closeableOccurenceBySymbol.get(symbol);
+        return occurence != null && State.OPEN.equals(occurence.state);
+      }
+
+      private Set<Tree> getUnclosedClosables() {
+        Set<Tree> results = Sets.newHashSet(unclosedCloseableReferences);
         for (Symbol symbol : closeableOccurenceBySymbol.keySet()) {
           if (isCloseableNotClosed(symbol)) {
             results.add(closeableOccurenceBySymbol.get(symbol).lastAssignment);
@@ -264,19 +375,24 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       private static class CloseableOccurence {
 
         private Tree lastAssignment;
-        private CloseableState state;
+        private State state;
 
-        public CloseableOccurence(Tree lastAssignment, CloseableState state) {
+        public CloseableOccurence(Tree lastAssignment, State state) {
           this.lastAssignment = lastAssignment;
           this.state = state;
         }
 
+        public CloseableOccurence(CloseableOccurence value) {
+          this.lastAssignment = value.lastAssignment;
+          this.state = value.state;
+        }
+
         public void close() {
-          this.state = CloseableState.CLOSED;
+          this.state = State.CLOSED;
         }
 
         public void ignore() {
-          this.state = CloseableState.IGNORED;
+          this.state = State.IGNORED;
         }
       }
     }

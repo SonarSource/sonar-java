@@ -5,16 +5,19 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
-import java.net.URLClassLoader;
 import java.util.Formatter;
 
 class A {
-  private enum MyEnum { A, B, C; }
+  private enum MyEnum {
+    A, B, C;
+  }
+
   private final static int MAX_LOOP = 42;
   private BufferedReader br;
 
@@ -34,8 +37,8 @@ class A {
     raf = new RandomAccessFile("", "r"); // Compliant
     raf.close();
   }
-  
-  Closeable closeable_state_is_lost(Closeable closeable) throws Exception {
+
+  Closeable closeable_never_closed_but_state_is_lost(Closeable closeable) throws Exception {
     Formatter formatter = new Formatter(); // Compliant - (unknown) as Closeable instance is later used as method parameter
     myMethod(formatter);
 
@@ -46,9 +49,9 @@ class A {
 
     BufferedWriter bw = new BufferedWriter(new FileWriter("")); // Compliant - closeable state is lost
     Object o = getObject(bw);
-    
+
     closeable = new FileReader(""); // Compliant - responsability of closing the variable is not in the method
-    
+
     RandomAccessFile raf = new RandomAccessFile("", "r"); // Compliant - Closeable is returned so its state is unknown
     return (Closeable) raf;
   }
@@ -75,19 +78,68 @@ class A {
     }
   }
 
-  void closeable_not_closed_in_every_paths(boolean test, int x, MyEnum enumValue) throws Exception {
-    Reader reader = new FileReader(""); // Noncompliant - false negative
+  void closeable_not_closed_in_every_paths_when_using_if(boolean test, int x) throws Exception {
+    Reader reader = new FileReader(""); // Noncompliant
     if (test) {
       reader.close();
     }
 
-    Writer writer = new FileWriter(""); // Noncompliant - false negative
+    reader = new FileReader(""); // Noncompliant
+    if (test) {
+    } else {
+      reader.close();
+    }
+
+    Writer writer = new FileWriter(""); // Noncompliant - one branch is missing
     if (test) {
       writer.close();
     } else {
       if (x > 0) {
+        Formatter formatter = new Formatter(); // Noncompliant - only used in the local then clause and not closed
+        formatter.out();
         writer.close();
       }
+    }
+
+    BufferedWriter bw; // Noncompliant - not closed
+    if (test) {
+      bw = new BufferedWriter(new FileWriter(""));
+    } else {
+      bw = new BufferedWriter(new FileWriter(""));
+    }
+
+    FileInputStream fis; // Noncompliant - not closed in else branch
+    if (test) {
+      fis = new FileInputStream("");
+      fis.close();
+    } else {
+      fis = new FileInputStream("");
+    }
+
+    FileInputStream fis1; // Compliant - has an unknown status
+    if (test) {
+      fis1 = new FileInputStream("");
+    } else {
+      fis1 = getFileInputStream();
+    }
+
+    FileInputStream fis2; // Compliant - has an unknown status
+    if (test) {
+      fis2 = getFileInputStream();
+    } else {
+      fis2 = new FileInputStream("");
+    }
+
+    FileInputStream fis3; // Compliant - has an unknown status
+    if (test) {
+      fis3 = new FileInputStream("");
+    } else {
+    }
+
+    FileInputStream fis4; // Compliant - has an unknown status
+    if (test) {
+    } else {
+      fis4 = new FileInputStream("");
     }
 
     InputStream is = new FileInputStream(""); // Compliant
@@ -95,7 +147,14 @@ class A {
       is.close();
     } else {
       is.close();
+      if (x > 0) {
+        Formatter formatter = new Formatter(); // Compliant
+        formatter.close();
+      }
     }
+  }
+
+  void closeable_not_closed_in_every_paths_when_using_switch(MyEnum enumValue) throws Exception {
 
     Formatter formatter = new Formatter(); // Noncompliant - false negative
     switch (enumValue) {
@@ -121,7 +180,43 @@ class A {
     }
   }
 
-  void closeable_used_in_try_with_resource() {
+  void closeable_used_in_try_with_resource() throws Exception {
+    InputStream is = new FileInputStream(""); // Noncompliant
+    try {
+      is.close();
+    } catch (IOException e) {
+
+    } catch (Exception e) {
+      is.close();
+    }
+    
+    Reader reader; // Compliant
+    try {
+      reader = new FileReader("");
+    } catch (Exception e) {
+      reader = new FileReader("");
+    }
+    reader.close();
+
+    Writer writer; // Compliant
+    try {
+      writer = new FileWriter("");
+    } catch (Exception e) {
+
+    } finally {
+      writer = new FileWriter("");
+    }
+    writer.close();
+    
+    FileWriter fileWriter = new FileWriter(""); // Compliant
+    try {
+      fileWriter.flush();
+    } catch (Exception e) {
+
+    } finally {
+      fileWriter.close();
+    }
+    
     try (BufferedReader br = new BufferedReader(new FileReader(""))) { // Compliant
       // ...
     } catch (Exception e) {
