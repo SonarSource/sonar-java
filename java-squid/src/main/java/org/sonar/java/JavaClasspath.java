@@ -50,6 +50,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
     this.pom = pom;
   }
 
+  @Override
   protected void init() {
     if (!initialized) {
       initialized = true;

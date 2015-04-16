@@ -35,6 +35,7 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
     super(project, settings, fs, InputFile.Type.TEST);
   }
 
+  @Override
   protected void init() {
     if (!initialized) {
       initialized = true;
