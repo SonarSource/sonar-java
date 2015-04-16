@@ -50,7 +50,7 @@ public class SonarComponentsTest {
     when(checkFactory.<JavaCheck>create(anyString())).thenReturn(checks);
     when(checks.addAnnotatedChecks(anyCollectionOf(Class.class))).thenReturn(checks);
     when(checks.all()).thenReturn(Lists.<JavaCheck>newArrayList(new CustomCheck()));
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null,
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null, null,
         checkFactory, new CheckRegistrar[]{new MyCheckRegistrer()});
 
     assertThat(sonarComponents.checkClasses()).hasSize(1);

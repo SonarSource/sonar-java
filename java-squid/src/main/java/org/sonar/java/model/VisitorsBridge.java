@@ -67,16 +67,15 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Arrays.asList(visitor), null);
+    this(Arrays.asList(visitor), Lists.<File>newArrayList(), null);
   }
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor, List<File> projectClasspath) {
-    this(Arrays.asList(visitor), null);
-    this.projectClasspath = projectClasspath;
+    this(Arrays.asList(visitor), projectClasspath, null);
   }
 
-  public VisitorsBridge(Iterable visitors, @Nullable SonarComponents sonarComponents) {
+  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -85,11 +84,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
     this.scanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
-    if (sonarComponents != null) {
-      projectClasspath = sonarComponents.getJavaClasspath();
-    } else {
-      projectClasspath = Lists.newArrayList();
-    }
+    this.projectClasspath = projectClasspath;
   }
 
   public void setAnalyseAccessors(boolean analyseAccessors) {

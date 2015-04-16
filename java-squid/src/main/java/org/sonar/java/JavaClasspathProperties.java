@@ -31,6 +31,8 @@ public class JavaClasspathProperties {
 
   public static final String SONAR_JAVA_BINARIES = "sonar.java.binaries";
   public static final String SONAR_JAVA_LIBRARIES = "sonar.java.libraries";
+  public static final String SONAR_JAVA_TEST_BINARIES = "sonar.java.test.binaries";
+  public static final String SONAR_JAVA_TEST_LIBRARIES = "sonar.java.test.libraries";
 
   public static List<PropertyDefinition> getProperties() {
     ImmutableList.Builder<PropertyDefinition> extensions = ImmutableList.builder();
@@ -40,6 +42,16 @@ public class JavaClasspathProperties {
             .build()
     );
     extensions.add(PropertyDefinition.builder(SONAR_JAVA_LIBRARIES)
+            .description("Comma-separated paths to libraries required by the project.")
+            .hidden()
+            .build()
+    );
+    extensions.add(PropertyDefinition.builder(SONAR_JAVA_TEST_BINARIES)
+            .description("Comma-separated paths to directories containing the binary files (directories with class files).")
+            .hidden()
+            .build()
+    );
+    extensions.add(PropertyDefinition.builder(SONAR_JAVA_TEST_LIBRARIES)
             .description("Comma-separated paths to libraries required by the project.")
             .hidden()
             .build()

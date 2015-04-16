@@ -19,6 +19,7 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.rule.CheckFactory;
@@ -43,23 +44,27 @@ public class SonarComponents implements BatchExtension {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
+  private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
   private final JavaClasspath javaClasspath;
   private final Project project;
   private final List<Checks<JavaCheck>> checks;
+  private Checks<JavaCheck> testChecks;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project, JavaClasspath javaClasspath,
+  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
                          CheckFactory checkFactory) {
-    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, checkFactory, null);
+    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, javaTestClasspath, checkFactory, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         JavaClasspath javaClasspath, CheckFactory checkFactory,
+                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
                          @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.project = project;
     this.javaClasspath = javaClasspath;
+    this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
     checks = Lists.newArrayList();
 
@@ -95,6 +100,10 @@ public class SonarComponents implements BatchExtension {
     return javaClasspath.getElements();
   }
 
+  public List<File> getJavaTestClasspath() {
+    return javaTestClasspath.getElements();
+  }
+
   public ResourcePerspectives getResourcePerspectives() {
     return resourcePerspectives;
   }
@@ -112,6 +121,20 @@ public class SonarComponents implements BatchExtension {
   }
 
   public Iterable<Checks<JavaCheck>> checks() {
-    return checks;
+    return Iterables.concat(checks, Lists.newArrayList(testChecks));
   }
+
+  public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> javaTestChecks) {
+    testChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaTestChecks);
+  }
+
+  public Collection<JavaCheck> testCheckClasses() {
+    if(testChecks == null) {
+      return Lists.newArrayList();
+    }
+    return testChecks.all();
+  }
+
+
+
 }

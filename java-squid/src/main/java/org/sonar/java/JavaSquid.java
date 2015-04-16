@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +32,10 @@ import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
+import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
-import org.sonar.java.model.TestFileVisitorsBridge;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -47,6 +48,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class JavaSquid implements SourceCodeSearchEngine {
 
@@ -56,7 +58,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
   private final AstScanner astScanner;
   private final AstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
-  private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<Resource, Dependency>();
+  private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<>();
 
   private boolean bytecodeScanned = false;
 
@@ -76,17 +78,15 @@ public class JavaSquid implements SourceCodeSearchEngine {
       Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
       visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
     }
-
-    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, sonarComponents);
-    visitorsBridge.setCharset(conf.getCharset());
-    visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
-    astScanner.accept(visitorsBridge);
-
-    if (sonarComponents != null) {
-      astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
-      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
+    List<File> classpath = Lists.newArrayList();
+    List<File> testClasspath = Lists.newArrayList();
+    Collection<CodeVisitor> testCheckClasses = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+    if(sonarComponents != null) {
+      classpath = sonarComponents.getJavaClasspath();
+      testClasspath = sonarComponents.getJavaTestClasspath();
+      testCheckClasses.addAll(sonarComponents.testCheckClasses());
     }
-
+    setupAstScanner(astScanner, visitorsToBridge, classpath, conf, sonarComponents);
     // TODO unchecked cast
     squidIndex = (SquidIndex) astScanner.getIndex();
 
@@ -103,8 +103,22 @@ public class JavaSquid implements SourceCodeSearchEngine {
     }
 
     astScannerForTests = new AstScanner(astScanner);
-    astScannerForTests.accept(new TestFileVisitorsBridge(javaResourceLocator));
+    astScannerForTests.accept(new FileVisitor());
+    setupAstScanner(astScannerForTests, testCheckClasses, testClasspath, conf, sonarComponents);
   }
+
+  private void setupAstScanner(AstScanner astScanner, Iterable<CodeVisitor> visitorsToBridge, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
+    if(sonarComponents != null) {
+      astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
+      astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
+    }
+    VisitorsBridge visitorsBridgeTest = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
+    visitorsBridgeTest.setCharset(conf.getCharset());
+    visitorsBridgeTest.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
+    astScanner.accept(visitorsBridgeTest);
+  }
+
+
 
   public void scan(Iterable<File> sourceFiles, Iterable<File> testFiles, Collection<File> bytecodeFilesOrDirectories) {
     scanSources(sourceFiles);
