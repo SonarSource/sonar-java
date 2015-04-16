@@ -667,6 +667,16 @@ public static class Class extends SuperClass {
     super.field2 = super.field1;
     if (super.field1 || super.field2) { // Noncompliant, always false
     }
+
+    SuperClass instance1, instance2;
+    if (instance1.field && instance1.field1 == instance2.field2) {
+      if (instance1.field && instance1.field1 == instance2.field2) { // Compliant
+      }
+    }
+    if (instance1.field && field1 == instance2.field2) {
+      if (field && field1 == instance2.field2) { // Compliant
+      }
+    }
   }
 
 }
