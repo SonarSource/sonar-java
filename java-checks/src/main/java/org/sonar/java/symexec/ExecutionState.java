@@ -22,6 +22,7 @@ package org.sonar.java.symexec;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -151,35 +152,27 @@ public class ExecutionState {
   }
 
   private void mergeRelations(Iterable<ExecutionState> states) {
-    for (Table.Cell<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> cell : findCommonRelationSymbols(states).cellSet()) {
+    for (Map.Entry<Symbol.VariableSymbol, Symbol.VariableSymbol> entry : findCommonRelationSymbols(states).entries()) {
       SymbolicRelation relation = null;
       for (ExecutionState state : states) {
-        relation = state.getRelation(cell.getRowKey(), cell.getColumnKey()).union(relation);
+        relation = state.getRelation(entry.getKey(), entry.getValue()).union(relation);
       }
       if (relation == null) {
         relation = SymbolicRelation.UNKNOWN;
       }
-      if (getRelation(cell.getRowKey(), cell.getColumnKey()) != relation) {
-        relations.put(cell.getRowKey(), cell.getColumnKey(), relation);
-        relations.put(cell.getColumnKey(), cell.getRowKey(), relation.swap());
+      if (getRelation(entry.getKey(), entry.getValue()) != relation) {
+        relations.put(entry.getKey(), entry.getValue(), relation);
+        relations.put(entry.getValue(), entry.getKey(), relation.swap());
       }
     }
   }
 
-  private Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> findCommonRelationSymbols(Iterable<ExecutionState> states) {
-    // stored value is completely meaningless since only the pair of symbols is relevant, but HashBasedTable does not accept null.
-    Table<Symbol.VariableSymbol, Symbol.VariableSymbol, SymbolicRelation> result = HashBasedTable.create();
+  private Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> findCommonRelationSymbols(Iterable<ExecutionState> states) {
+    Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> result = HashMultimap.create();
     for (ExecutionState state : states) {
       for (ExecutionState current = state; !current.equals(this); current = current.parentState) {
         for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> leftEntry : current.relations.rowMap().entrySet()) {
-          for (Symbol.VariableSymbol rightSymbol : leftEntry.getValue().keySet()) {
-            result.put(leftEntry.getKey(), rightSymbol, UNKNOWN);
-          }
-        }
-        for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> rightEntry : current.relations.columnMap().entrySet()) {
-          for (Symbol.VariableSymbol leftSymbol : rightEntry.getValue().keySet()) {
-            result.put(leftSymbol, rightEntry.getKey(), UNKNOWN);
-          }
+          result.putAll(leftEntry.getKey(), leftEntry.getValue().keySet());
         }
       }
     }
@@ -226,21 +219,16 @@ public class ExecutionState {
   void invalidateRelationsOnSymbol(Symbol.VariableSymbol symbol) {
     Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> pairs = HashMultimap.create();
     for (ExecutionState current = this; current != null; current = current.parentState) {
-      pairs.putAll(current.findRelationPairs(symbol));
+      pairs.putAll(symbol, current.findRelatedSymbols(symbol));
     }
     for (Map.Entry<Symbol.VariableSymbol, Symbol.VariableSymbol> cell : pairs.entries()) {
       setRelation(cell.getKey(), SymbolicRelation.UNKNOWN, cell.getValue());
     }
   }
 
-  private Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> findRelationPairs(Symbol.VariableSymbol symbol) {
-    Multimap<Symbol.VariableSymbol, Symbol.VariableSymbol> pairs = HashMultimap.create();
-    for (Map.Entry<Symbol.VariableSymbol, Map<Symbol.VariableSymbol, SymbolicRelation>> leftEntry : relations.rowMap().entrySet()) {
-      if (leftEntry.getKey().equals(symbol)) {
-        pairs.putAll(leftEntry.getKey(), leftEntry.getValue().keySet());
-      }
-    }
-    return pairs;
+  private Set<Symbol.VariableSymbol> findRelatedSymbols(Symbol.VariableSymbol symbol) {
+    Map<Symbol.VariableSymbol, SymbolicRelation> map = relations.rowMap().get(symbol);
+    return map != null ? map.keySet() : ImmutableSet.<Symbol.VariableSymbol>of();
   }
 
   void invalidateFields() {
