@@ -832,6 +832,66 @@ public static class Class extends SuperClass {
     }
   }
 
+  public try_catch() {
+    boolean a = false, b = false, c = false, d = false;
+    try {
+      b = true;
+      c = true;
+    } catch (Exception e) {
+      if (a) { // Noncompliant, condition is always false
+      }
+      if (b) { // Compliant
+      }
+      c = true;
+      d = true;
+    } catch (Exception e) {
+      if (a) { // Noncompliant, condition is always false
+      }
+      if (c) { // Compliant
+      }
+      d = true;
+    }
+    if (a) { // Noncompliant, condition is always false
+    }
+    if (b) { // Compliant
+    }
+    if (c) { // Compliant
+    }
+    if (d) { // Compliant
+    }
+  }
+
+  public try_finally() {
+    boolean a = false, b = false, c = false;
+    try {
+      b = true;
+      c = true;
+    } finally {
+      if (a) { // Noncompliant, condition is always false
+      }
+      if (b) { // Compliant
+      }
+      if (c) { // Compliant
+      }
+      b = true;
+    }
+    if (a) { // Noncompliant, always false
+    }
+    if (b) { // Noncompliant, always true
+    }
+    if (c) { // Compliant
+    }
+  }
+
+  public finally_with_return() {
+    try {
+    } finally {
+      return;
+    }
+    if (false) { // Compliant, unreachable
+    }
+  }
+
 }
 
 class SuperClass {
