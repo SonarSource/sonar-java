@@ -45,8 +45,9 @@ public class CloseResourceCheckTest {
       .next().atLine(87).withMessage("Close this \"Reader\"")
       .next().atLine(93).withMessage("Close this \"Writer\"")
       .next().atLine(98).withMessage("Close this \"Formatter\"")
-      .next().atLine(104).withMessage("Close this \"BufferedWriter\"")
       .next().atLine(111).withMessage("Close this \"FileInputStream\"")
+      .next().atLine(133).withMessage("Close this \"FileInputStream\"")
+      .next().atLine(139).withMessage("Close this \"FileInputStream\"")
       .next().atLine(184).withMessage("Close this \"InputStream\"")
       .noMore();
   }

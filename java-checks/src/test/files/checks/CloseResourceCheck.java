@@ -101,9 +101,9 @@ class A {
       }
     }
 
-    BufferedWriter bw; // Noncompliant - not closed
+    BufferedWriter bw; // Compliant - ignored
     if (test) {
-      bw = new BufferedWriter(new FileWriter(""));
+      bw = new BufferedWriter(new FileWriter("")); // IGNORED - use another closeable as argument
     } else {
       bw = new BufferedWriter(new FileWriter(""));
     }
@@ -130,13 +130,13 @@ class A {
       fis2 = new FileInputStream("");
     }
 
-    FileInputStream fis3; // Compliant - has an unknown status
+    FileInputStream fis3; // Noncompliant - not closed after the if
     if (test) {
       fis3 = new FileInputStream("");
     } else {
     }
 
-    FileInputStream fis4; // Compliant - has an unknown status
+    FileInputStream fis4; // Nonompliant - not closed after the if
     if (test) {
     } else {
       fis4 = new FileInputStream("");
@@ -180,7 +180,7 @@ class A {
     }
   }
 
-  void closeable_used_in_try_with_resource() throws Exception {
+  int closeable_used_in_try_with_resource() throws Exception {
     InputStream is = new FileInputStream(""); // Noncompliant
     try {
       is.close();
@@ -222,6 +222,15 @@ class A {
     } catch (Exception e) {
       // ...
     }
+    
+    try {
+      FileInputStream fis = new FileInputStream(""); // Compliant
+      try {
+      } finally {
+        fis.close();
+      }
+    } catch (Exception E) {
+    }
   }
 
   void myMethod(Closeable closeable) {
@@ -236,7 +245,6 @@ class A {
   }
 }
 
-// Covers all the cases for code coverage
 abstract class B {
   static final int MAGIC_NUMBER = 42;
 
