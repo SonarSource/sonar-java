@@ -627,6 +627,7 @@ public class SymbolicEvaluator {
         for (CatchTree catchTree : tree.catches()) {
           catchStates.addAll(evaluateStatement(new ExecutionState(state), catchTree.block()).states);
         }
+        catchStates.add(state);
         state.mergeRelations(catchStates);
       }
       currentStates = evaluateStatement(currentStates, tree.finallyBlock());

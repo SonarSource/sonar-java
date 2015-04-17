@@ -857,7 +857,7 @@ public static class Class extends SuperClass {
     }
     if (c) { // Compliant
     }
-    if (d) { // Noncompliant, always true
+    if (d) { // Compliant
     }
   }
 
