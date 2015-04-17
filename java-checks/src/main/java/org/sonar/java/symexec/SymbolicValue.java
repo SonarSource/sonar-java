@@ -22,17 +22,17 @@ package org.sonar.java.symexec;
 import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-public class SymbolicValue {
+abstract class SymbolicValue {
 
   static final SymbolicBooleanValue BOOLEAN_TRUE = new SymbolicBooleanValue();
 
-  public static final class SymbolicBooleanValue extends SymbolicValue {
+  static final class SymbolicBooleanValue extends SymbolicValue {
   }
 
-  public static final class SymbolicLongValue extends SymbolicValue {
+  static final class SymbolicLongValue extends SymbolicValue {
     final long value;
 
-    public SymbolicLongValue(long value) {
+    SymbolicLongValue(long value) {
       this.value = value;
     }
 
@@ -47,10 +47,10 @@ public class SymbolicValue {
     }
   }
 
-  public static final class SymbolicVariableValue extends SymbolicValue {
+  static final class SymbolicVariableValue extends SymbolicValue {
     final Symbol.VariableSymbol variable;
 
-    public SymbolicVariableValue(Symbol.VariableSymbol variable) {
+    SymbolicVariableValue(Symbol.VariableSymbol variable) {
       Preconditions.checkNotNull(variable);
       this.variable = variable;
     }
