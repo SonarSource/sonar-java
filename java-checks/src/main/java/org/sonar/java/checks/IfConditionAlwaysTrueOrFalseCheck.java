@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -34,9 +33,8 @@ import java.util.List;
 @Rule(
   key = "S1145",
   name = "\"if\" statement conditions should not unconditionally evaluate to \"true\" or to \"false\"",
-  tags = {"bug", "cwe", "misra", "security"},
-  priority = Priority.MAJOR)
-@ActivatedByDefault
+  priority = Priority.MAJOR,
+  status = "DEPRECATED")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {
