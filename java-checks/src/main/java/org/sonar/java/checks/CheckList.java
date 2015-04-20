@@ -311,6 +311,7 @@ public final class CheckList {
       .add(PreparedStatementAndResultSetCheck.class)
       .add(URLHashCodeAndEqualsCheck.class)
       .add(ChildClassShadowFieldCheck.class)
+      .add(OperatorPrecedenceCheck.class)
       .build();
   }
 
