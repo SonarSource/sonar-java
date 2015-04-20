@@ -1,0 +1,51 @@
+<p>The rules of operator precedence are complicated and can lead to errors. For this reason, parentheses should be used for clarification in complex statements.
+However, this does not mean that parentheses should be gratuitously added around every operation.</p>
+
+<p>Parentheses are not needed:
+<ul>
+  <li>with a unary operator</li>
+  <li>when all the operators in an expression are the same</li>
+  <li>when only a single operator is involved</li>
+  <li>around the right-hand side of an assignment operator unless the right-hand side itself contains an assignment</li>
+</ul>
+</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+x = a + b;
+x = a * -1;
+x = a + b + c;
+x = f ( a + b, c );
+
+x = a == b ? a : a - b; // Noncompliant
+x = a + b - c + d; // Noncompliant
+x = a * 3 + c + d; // Noncompliant
+
+if (a = f(b,c) == 1) { ... } // Noncompliant; == evaluated first
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+x = a + b;
+x = a * -1;
+x = a + b + c;
+x = f ( a + b, c );
+
+x = ( a == b ) ? a : ( a - b );
+x = ( a + b ) - ( c + d );
+x = ( a * 3 ) + c + d;
+
+if ( (a = f(b,c)) == 1) { ... }
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li>MISRA C:2004, 12.1 - Limited dependence should be placed on C's operator precedence rules in expressions</li>
+  <li>MISRA C++:2008, 5-0-2 - Limited dependence should be placed on C++ operator precedence rules in expressions</li>
+  <li>MISRA C:2012, 12.1 - The precedence of operators within expressions should be made explicit</li>
+  <li><a href="https://www.securecoding.cert.org/confluence/x/_wI">CERT EXP00-C</a> - Use parentheses for precedence of operation</li>
+  <li><a href="https://www.securecoding.cert.org/confluence/x/VoAyAQ">CERT EXP00-CPP</a> - Use parentheses for precedence of operation</li>
+  <li><a href="http://cwe.mitre.org/data/definitions/783.html">MITRE, CWE-783</a> - Operator Precedence Logic Error</li>
+</ul>
