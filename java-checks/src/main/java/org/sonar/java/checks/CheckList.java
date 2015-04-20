@@ -310,6 +310,7 @@ public final class CheckList {
       .add(DateUtilsTruncateCheck.class)
       .add(PreparedStatementAndResultSetCheck.class)
       .add(URLHashCodeAndEqualsCheck.class)
+      .add(ChildClassShadowFieldCheck.class)
       .build();
   }
 
