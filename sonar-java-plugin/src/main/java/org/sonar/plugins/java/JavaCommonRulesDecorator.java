@@ -19,12 +19,13 @@
  */
 package org.sonar.plugins.java;
 
-import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.resources.ProjectFileSystem;
-import org.sonar.commonrules.api.CommonRulesDecorator;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.rule.CheckFactory;
+import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.squidbridge.commonrules.api.CommonRulesDecorator;
 
 public class JavaCommonRulesDecorator extends CommonRulesDecorator {
-  public JavaCommonRulesDecorator(ProjectFileSystem fs, RulesProfile qProfile) {
-    super(Java.KEY, fs, qProfile);
+  public JavaCommonRulesDecorator(FileSystem fs, CheckFactory checkFactory, ResourcePerspectives resourcePerspective) {
+    super(Java.KEY, fs, checkFactory, resourcePerspective);
   }
 }

@@ -20,7 +20,8 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
-import org.sonar.commonrules.api.CommonRulesRepository;
+import org.sonar.squidbridge.commonrules.api.CommonRulesRepository;
+import org.sonar.squidbridge.commonrules.internal.CommonRulesConstants;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -36,13 +37,13 @@ public class JavaCommonRulesEngineTest {
   public void enable_common_rules() {
     JavaCommonRulesEngine provider = new JavaCommonRulesEngine();
     CommonRulesRepository repo = provider.newRepository();
-    assertThat(repo.rules()).hasSize(6);
-    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_COMMENT_DENSITY)).isNotNull();
-    assertThat(repo.rule(CommonRulesRepository.RULE_FAILED_UNIT_TESTS)).isNotNull();
-    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_COMMENT_DENSITY)).isNotNull();
-    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_BRANCH_COVERAGE)).isNotNull();
-    assertThat(repo.rule(CommonRulesRepository.RULE_INSUFFICIENT_LINE_COVERAGE)).isNotNull();
-    assertThat(repo.rule(CommonRulesRepository.RULE_SKIPPED_UNIT_TESTS)).isNotNull();
+    assertThat(repo.enabledRuleKeys()).containsOnly(
+    CommonRulesConstants.RULE_INSUFFICIENT_COMMENT_DENSITY,
+    CommonRulesConstants.RULE_DUPLICATED_BLOCKS,
+    CommonRulesConstants.RULE_FAILED_UNIT_TESTS,
+    CommonRulesConstants.RULE_INSUFFICIENT_BRANCH_COVERAGE,
+    CommonRulesConstants.RULE_INSUFFICIENT_LINE_COVERAGE,
+    CommonRulesConstants.RULE_SKIPPED_UNIT_TESTS);
   }
 }
 
