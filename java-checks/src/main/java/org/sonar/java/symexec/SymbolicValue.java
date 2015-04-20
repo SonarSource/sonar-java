@@ -24,6 +24,9 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 abstract class SymbolicValue {
 
+  private SymbolicValue() {
+  }
+
   static final SymbolicBooleanValue BOOLEAN_TRUE = new SymbolicBooleanValue();
 
   static final class SymbolicBooleanValue extends SymbolicValue {
