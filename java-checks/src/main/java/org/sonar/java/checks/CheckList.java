@@ -314,6 +314,9 @@ public final class CheckList {
   }
 
   public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
-    return ImmutableList.<Class<? extends JavaCheck>>builder().add(IgnoredTestsCheck.class).build();
+    return ImmutableList.<Class<? extends JavaCheck>>builder()
+        .add(IgnoredTestsCheck.class)
+        .add(BooleanLiteralInAssertionsCheck.class)
+        .build();
   }
 }

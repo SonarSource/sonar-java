@@ -62,22 +62,25 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   private Integer expectFileIssueOnline;
 
   public static void verify(String filename, JavaFileScanner check) {
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, new JavaCheckVerifier()), Lists.<File>newArrayList(), null));
+    scanFile(filename, check, new JavaCheckVerifier());
   }
 
   public static void verifyNoIssue(String filename, JavaFileScanner check) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectNoIssues = true;
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.<File>newArrayList(), null));
+    scanFile(filename, check, javaCheckVerifier);
   }
 
   public static void verifyIssueOnFile(String filename, String message, JavaFileScanner check) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectFileIssue = message;
     javaCheckVerifier.expectFileIssueOnline = null;
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.<File>newArrayList(), null));
+    scanFile(filename, check, javaCheckVerifier);
   }
 
+  private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier) {
+    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(new File("target/test-classes")), null));
+  }
 
 
   @Override
