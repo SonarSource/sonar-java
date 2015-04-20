@@ -147,9 +147,11 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
   }
 
-  private static class DefaultJavaFileScannerContext implements JavaFileScannerContext {
+  @VisibleForTesting
+  public static class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     private final CompilationUnitTree tree;
-    private final SourceFile sourceFile;
+    @VisibleForTesting
+    public final SourceFile sourceFile;
     private final SemanticModel semanticModel;
     private final ComplexityVisitor complexityVisitor;
     private final File file;
