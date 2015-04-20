@@ -162,13 +162,18 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       ExpressionTree variable = tree.variable();
-      if (variable.is(Tree.Kind.IDENTIFIER)) {
+      if (variable.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = tree.expression();
 
         // check first usage of closeables in order to manage use of same symbol
         executionState.checkUsageOfClosables(expression);
 
-        IdentifierTree identifier = (IdentifierTree) variable;
+        IdentifierTree identifier;
+        if (variable.is(Tree.Kind.IDENTIFIER)) {
+          identifier = (IdentifierTree) variable;
+        } else {
+          identifier = ((MemberSelectExpressionTree) variable).identifier();
+        }
         Symbol symbol = identifier.symbol();
         if (isCloseableOrAutoCloseableSubtype(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
           executionState.addCloseable(symbol, identifier, expression);
@@ -315,8 +320,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
             // N | C | O | I | N | <- NULL
             // ------------------+
 
-            // same state after the if statement
-            if (state1.equals(state2)) {
+            if (state1 != null && state1.equals(state2)) {
               currentOccurence.state = state1;
             } else if ((State.CLOSED.equals(state1) && State.OPEN.equals(state2)) || (State.OPEN.equals(state1) && State.CLOSED.equals(state2))) {
               currentOccurence.state = State.OPEN;
@@ -404,9 +408,15 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
       private boolean usesIgnoredCloseable(List<ExpressionTree> arguments) {
         for (ExpressionTree argument : arguments) {
-          if (argument.is(Tree.Kind.IDENTIFIER)) {
-            Symbol symbol = ((IdentifierTree) argument).symbol();
-            if (!symbol.owner().isMethodSymbol()) {
+          if (argument.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
+            IdentifierTree identifier;
+            if (argument.is(Tree.Kind.MEMBER_SELECT)) {
+              identifier = ((MemberSelectExpressionTree) argument).identifier();
+            } else {
+              identifier = (IdentifierTree) argument;
+            }
+            Symbol symbol = identifier.symbol();
+            if (isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
               return true;
             } else {
               CloseableOccurence currentOccurence = getCloseableOccurence(symbol);
