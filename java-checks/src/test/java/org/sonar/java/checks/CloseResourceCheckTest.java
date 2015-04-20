@@ -20,12 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CloseResourceCheckTest {
 
@@ -33,23 +28,6 @@ public class CloseResourceCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/CloseResourceCheck.java"),
-      new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(26).withMessage("Close this \"Reader\"")
-      .next().atLine(28).withMessage("Close this \"Writer\"")
-      .next().atLine(34).withMessage("Close this \"InputStream\"")
-      .next().atLine(36).withMessage("Close this \"RandomAccessFile\"")
-      .next().atLine(86).withMessage("Close this \"Reader\"")
-      .next().atLine(91).withMessage("Close this \"Reader\"")
-      .next().atLine(97).withMessage("Close this \"Writer\"")
-      .next().atLine(102).withMessage("Close this \"Formatter\"")
-      .next().atLine(108).withMessage("Close this \"BufferedWriter\"")
-      .next().atLine(115).withMessage("Close this \"FileInputStream\"")
-      .next().atLine(137).withMessage("Close this \"FileInputStream\"")
-      .next().atLine(143).withMessage("Close this \"FileInputStream\"")
-      .next().atLine(188).withMessage("Close this \"InputStream\"")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CloseResourceCheck.java", check);
   }
 }
