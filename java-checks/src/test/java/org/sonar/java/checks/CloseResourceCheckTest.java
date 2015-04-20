@@ -37,18 +37,19 @@ public class CloseResourceCheckTest {
       new File("src/test/files/checks/CloseResourceCheck.java"),
       new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(25).withMessage("Close this \"Reader\"")
-      .next().atLine(27).withMessage("Close this \"Writer\"")
-      .next().atLine(33).withMessage("Close this \"InputStream\"")
-      .next().atLine(35).withMessage("Close this \"RandomAccessFile\"")
-      .next().atLine(82).withMessage("Close this \"Reader\"")
-      .next().atLine(87).withMessage("Close this \"Reader\"")
-      .next().atLine(93).withMessage("Close this \"Writer\"")
-      .next().atLine(98).withMessage("Close this \"Formatter\"")
-      .next().atLine(111).withMessage("Close this \"FileInputStream\"")
-      .next().atLine(133).withMessage("Close this \"FileInputStream\"")
-      .next().atLine(139).withMessage("Close this \"FileInputStream\"")
-      .next().atLine(184).withMessage("Close this \"InputStream\"")
+      .next().atLine(26).withMessage("Close this \"Reader\"")
+      .next().atLine(28).withMessage("Close this \"Writer\"")
+      .next().atLine(34).withMessage("Close this \"InputStream\"")
+      .next().atLine(36).withMessage("Close this \"RandomAccessFile\"")
+      .next().atLine(86).withMessage("Close this \"Reader\"")
+      .next().atLine(91).withMessage("Close this \"Reader\"")
+      .next().atLine(97).withMessage("Close this \"Writer\"")
+      .next().atLine(102).withMessage("Close this \"Formatter\"")
+      .next().atLine(108).withMessage("Close this \"BufferedWriter\"")
+      .next().atLine(115).withMessage("Close this \"FileInputStream\"")
+      .next().atLine(137).withMessage("Close this \"FileInputStream\"")
+      .next().atLine(143).withMessage("Close this \"FileInputStream\"")
+      .next().atLine(188).withMessage("Close this \"InputStream\"")
       .noMore();
   }
 }

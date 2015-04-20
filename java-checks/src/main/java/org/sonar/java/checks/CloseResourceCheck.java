@@ -27,9 +27,11 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -84,7 +86,9 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
   };
 
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
-  private static final MethodInvocationMatcher CLOSE_INVOCATION = closeMethodInvocationMatcher();
+  private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
+
+  private static final MethodInvocationMatcherCollection CLOSE_INVOCATIONS = closeMethodInvocationMatcher();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -118,11 +122,16 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     addIssue(tree, "Close this \"" + type.name() + "\"");
   }
 
-  private static MethodInvocationMatcher closeMethodInvocationMatcher() {
-    return MethodInvocationMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_CLOSEABLE))
-      .name("close")
-      .withNoParameterConstraint();
+  private static MethodInvocationMatcherCollection closeMethodInvocationMatcher() {
+    return MethodInvocationMatcherCollection.create(
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_CLOSEABLE))
+        .name("close")
+        .withNoParameterConstraint(),
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_AUTOCLOSEABLE))
+        .name("close")
+        .withNoParameterConstraint());
   }
 
   private static class CloseableVisitor extends BaseTreeVisitor {
@@ -140,36 +149,35 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitVariable(VariableTree tree) {
       ExpressionTree initializer = tree.initializer();
-      if (isRelevantCloseable(tree.symbol().type())) {
-        executionState.addCloseable(tree.symbol(), tree, initializer);
-      }
+
+      // check first usage of closeables in order to manage use of same symbol
       executionState.checkUsageOfClosables(initializer);
+
+      Symbol symbol = tree.symbol();
+      if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
+        executionState.addCloseable(symbol, tree, initializer);
+      }
     }
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       ExpressionTree variable = tree.variable();
       if (variable.is(Tree.Kind.IDENTIFIER)) {
+        ExpressionTree expression = tree.expression();
+
+        // check first usage of closeables in order to manage use of same symbol
+        executionState.checkUsageOfClosables(expression);
+
         IdentifierTree identifier = (IdentifierTree) variable;
         Symbol symbol = identifier.symbol();
-        if (isRelevantCloseable(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
-          executionState.addCloseable(symbol, variable, tree.expression());
+        if (isCloseableOrAutoCloseableSubtype(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
+          executionState.addCloseable(symbol, identifier, expression);
         }
-        executionState.checkUsageOfClosables(tree.expression());
       }
     }
 
-    private boolean isRelevantCloseable(Type type) {
-      return type.isSubtypeOf(JAVA_IO_CLOSEABLE) && !isIgnoredCloseableType(type);
-    }
-
-    private boolean isIgnoredCloseableType(Type type) {
-      for (String fullyQualifiedName : IGNORED_CLOSEABLE_SUBTYPES) {
-        if (type.isSubtypeOf(fullyQualifiedName)) {
-          return true;
-        }
-      }
-      return false;
+    private static boolean isCloseableOrAutoCloseableSubtype(Type type) {
+      return type.isSubtypeOf(JAVA_IO_CLOSEABLE) || type.isSubtypeOf(JAVA_LANG_AUTOCLOSEABLE);
     }
 
     @Override
@@ -179,7 +187,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (CLOSE_INVOCATION.matches(tree)) {
+      if (CLOSE_INVOCATIONS.anyMatch(tree)) {
         ExpressionTree methodSelect = tree.methodSelect();
         if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
@@ -205,7 +213,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitTryStatement(TryStatementTree tree) {
-      executionState.exclude(extractCloseableSymbols(tree.resources()));
+      executionState.markAsIgnored(extractCloseableSymbols(tree.resources()));
 
       ExecutionState blockES = new ExecutionState(executionState);
       executionState = blockES;
@@ -248,7 +256,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       Set<Symbol> symbols = Sets.newHashSet();
       for (VariableTree variableTree : variableTrees) {
         Symbol symbol = variableTree.symbol();
-        if (symbol.type().isSubtypeOf(JAVA_IO_CLOSEABLE)) {
+        if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
           symbols.add(symbol);
         }
       }
@@ -258,16 +266,16 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     private static class ExecutionState {
       @Nullable
       private ExecutionState parentExecutionState;
-      private Set<Symbol> excludedCloseables = Sets.newHashSet();
       private Map<Symbol, CloseableOccurence> closeableOccurenceBySymbol = Maps.newHashMap();
       private Set<Tree> unclosedCloseableReferences = Sets.newHashSet();
 
       ExecutionState(Set<Symbol> excludedCloseables) {
-        this.excludedCloseables = excludedCloseables;
+        for (Symbol symbol : excludedCloseables) {
+          closeableOccurenceBySymbol.put(symbol, new CloseableOccurence(null, State.IGNORED));
+        }
       }
 
       public ExecutionState(ExecutionState parentState) {
-        this.excludedCloseables = parentState.excludedCloseables;
         this.parentExecutionState = parentState;
       }
 
@@ -345,18 +353,85 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       }
 
       private void addCloseable(Symbol symbol, Tree lastAssignmentTree, @Nullable ExpressionTree assignmentExpression) {
-        if (!excludedCloseables.contains(symbol)) {
-          if (isCloseableStillOpen(symbol)) {
-            Tree lastAssignment = closeableOccurenceBySymbol.get(symbol).lastAssignment;
-            unclosedCloseableReferences.add(lastAssignment);
+        CloseableOccurence newOccurence = new CloseableOccurence(lastAssignmentTree, getCloseableStateFromExpression(symbol, assignmentExpression));
+        CloseableOccurence currentOccurence = getCloseableOccurence(symbol);
+        if (currentOccurence != null) {
+          if (State.OPEN.equals(currentOccurence.state)) {
+            unclosedCloseableReferences.add(currentOccurence.lastAssignment);
+          } else if (!State.IGNORED.equals(currentOccurence.state)) {
+            closeableOccurenceBySymbol.put(symbol, newOccurence);
           }
-          closeableOccurenceBySymbol.put(symbol, new CloseableOccurence(lastAssignmentTree, getCloseableStateFromExpression(assignmentExpression)));
+        } else {
+          closeableOccurenceBySymbol.put(symbol, newOccurence);
         }
+      }
+
+      private State getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
+        if (isIgnoredCloseableSubtype(symbol.type())
+          || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type())
+          || (expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()))) {
+          return State.IGNORED;
+        } else if (expression == null
+          || expression.is(Tree.Kind.NULL_LITERAL)) {
+          return State.NULL;
+        } else if (expression.is(Tree.Kind.NEW_CLASS)) {
+          if (usesIgnoredCloseable(((NewClassTree) expression).arguments())) {
+            return State.IGNORED;
+          }
+          return State.OPEN;
+        }
+        // FIXME ATM engine ignore closeable which are retrieved from method calls. Handle them as OPEN ?
+        return State.IGNORED;
+      }
+
+      private static boolean isIgnoredCloseableSubtype(Type type) {
+        for (String fullyQualifiedName : IGNORED_CLOSEABLE_SUBTYPES) {
+          if (type.isSubtypeOf(fullyQualifiedName)) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      private static boolean isSubclassOfInputStreamOrOutputStreamWithoutClose(Type type) {
+        TypeSymbol typeSymbol = type.symbol();
+        Type superClass = typeSymbol.superClass();
+        if (superClass != null && (superClass.is("java.io.OutputStream") || superClass.is("java.io.InputStream"))) {
+          return typeSymbol.lookupSymbols("close").isEmpty();
+        }
+        return false;
+      }
+
+      private boolean usesIgnoredCloseable(List<ExpressionTree> arguments) {
+        for (ExpressionTree argument : arguments) {
+          if (argument.is(Tree.Kind.IDENTIFIER)) {
+            Symbol symbol = ((IdentifierTree) argument).symbol();
+            if (!symbol.owner().isMethodSymbol()) {
+              return true;
+            } else {
+              CloseableOccurence currentOccurence = getCloseableOccurence(symbol);
+              if (currentOccurence != null && State.IGNORED.equals(currentOccurence.state)) {
+                return true;
+              }
+            }
+          } else if (argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseable(((NewClassTree) argument).arguments())) {
+            return true;
+          } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseable(((MethodInvocationTree) argument).arguments())) {
+            return true;
+          }
+        }
+        return false;
       }
 
       private void checkUsageOfClosables(@Nullable ExpressionTree expression) {
         if (expression != null) {
-          if (expression.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
+          if (expression.is(Tree.Kind.IDENTIFIER) && isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
+            markAsIgnored(((IdentifierTree) expression).symbol());
+          } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+            checkUsageOfClosables(((MemberSelectExpressionTree) expression).identifier());
+          } else if (expression.is(Tree.Kind.TYPE_CAST)) {
+            checkUsageOfClosables(((TypeCastTree) expression).expression());
+          } else if (expression.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
             List<ExpressionTree> arguments = Lists.newArrayList();
             if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
               arguments = ((MethodInvocationTree) expression).arguments();
@@ -366,28 +441,14 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
             for (ExpressionTree argument : arguments) {
               checkUsageOfClosables(argument);
             }
-          } else if (expression.is(Tree.Kind.IDENTIFIER) && expression.symbolType().isSubtypeOf(JAVA_IO_CLOSEABLE)) {
-            markAsIgnored(((IdentifierTree) expression).symbol());
-          } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-            checkUsageOfClosables(((MemberSelectExpressionTree) expression).identifier());
-          } else if (expression.is(Tree.Kind.TYPE_CAST)) {
-            checkUsageOfClosables(((TypeCastTree) expression).expression());
           }
         }
       }
 
-      private State getCloseableStateFromExpression(@Nullable ExpressionTree expression) {
-        if (expression == null || expression.is(Tree.Kind.NULL_LITERAL)) {
-          return State.NULL;
-        } else if (expression.is(Tree.Kind.NEW_CLASS)) {
-          for (ExpressionTree argument : ((NewClassTree) expression).arguments()) {
-            if (argument.symbolType().isSubtypeOf(JAVA_IO_CLOSEABLE)) {
-              return State.IGNORED;
-            }
-          }
-          return State.OPEN;
+      public void markAsIgnored(Set<Symbol> symbols) {
+        for (Symbol symbol : symbols) {
+          markAsIgnored(symbol);
         }
-        return State.IGNORED;
       }
 
       private void markAsIgnored(Symbol symbol) {
@@ -409,13 +470,8 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         }
       }
 
-      public void exclude(Set<Symbol> symbols) {
-        excludedCloseables.addAll(symbols);
-      }
-
       private boolean isCloseableStillOpen(Symbol symbol) {
-        CloseableOccurence occurence = closeableOccurenceBySymbol.get(symbol);
-        return occurence != null && State.OPEN.equals(getCloseableState(symbol));
+        return State.OPEN.equals(getCloseableState(symbol));
       }
 
       private Set<Tree> getUnclosedClosables() {

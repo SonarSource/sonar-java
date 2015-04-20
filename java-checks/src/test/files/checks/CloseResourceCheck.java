@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Formatter;
+import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
 
 class A {
   private enum MyEnum {
@@ -51,6 +52,9 @@ class A {
     Object o = getObject(bw);
 
     closeable = new FileReader(""); // Compliant - responsability of closing the variable is not in the method
+    
+    OutputStream ubaos = new UnsyncByteArrayOutputStream(); // Compliant - UnsyncByteArrayOutputStream does not implements close()
+    ubaos.write(0);
 
     RandomAccessFile raf = new RandomAccessFile("", "r"); // Compliant - Closeable is returned so its state is unknown
     return (Closeable) raf;
@@ -84,10 +88,10 @@ class A {
       reader.close();
     }
 
-    reader = new FileReader(""); // Noncompliant
+    Reader reader2 = new FileReader(""); // Noncompliant
     if (test) {
     } else {
-      reader.close();
+      reader2.close();
     }
 
     Writer writer = new FileWriter(""); // Noncompliant - one branch is missing
