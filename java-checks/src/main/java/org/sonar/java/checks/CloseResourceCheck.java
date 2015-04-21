@@ -348,10 +348,11 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       public ExecutionState overrideBy(ExecutionState currentES) {
         for (Entry<Symbol, CloseableOccurence> entry : currentES.closeableOccurenceBySymbol.entrySet()) {
           Symbol symbol = entry.getKey();
-          if (closeableOccurenceBySymbol.containsKey(symbol) || unknownCloseable(symbol)) {
-            closeableOccurenceBySymbol.put(symbol, entry.getValue());
-          } else if (parentExecutionState != null) {
-            parentExecutionState.overrideBy(currentES);
+          CloseableOccurence occurence = entry.getValue();
+          if (unknownCloseable(symbol)) {
+            closeableOccurenceBySymbol.put(symbol, occurence);
+          } else {
+            markAs(symbol, occurence.state);
           }
         }
         return this;
