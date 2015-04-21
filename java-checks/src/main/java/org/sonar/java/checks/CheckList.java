@@ -321,6 +321,7 @@ public final class CheckList {
         .add(BooleanLiteralInAssertionsCheck.class)
         .add(AssertionsWithoutMessageCheck.class)
         .add(CallSuperInTestCaseCheck.class)
+        .add(AssertionInThreadRunCheck.class)
         .build();
   }
 }
