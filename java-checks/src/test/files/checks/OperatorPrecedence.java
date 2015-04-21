@@ -30,7 +30,7 @@ public class Class {
       a = a = 1; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
 
-    return a == a ? a : a; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    return 1 + 2 - 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     return a; // Compliant
 
     switch (a = a == 1) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
@@ -38,7 +38,7 @@ public class Class {
         a = a = 1; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
 
-    throw a == a ? new RuntimeException() : new RuntimeException(); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    throw 1 + 2 - 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     throw new RuntimeException(); // Compliant
 
     while (a = a == 1) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
@@ -63,5 +63,12 @@ public class Class {
 
     if ((a = f(b, c)) == 1) { // Compliant
     }
+
+    b = a == a && a == a && a == a; // Compliant, exception
+    b = a && b || c; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    b = (a == a && b == b) || c == c; // Compliant, exception
+    b = a == a ? 0 : 0; // Compliant, exception
+    b = a ? 1 + 2 : 0; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    b = a ? 0 : 1 + 2; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
   }
 }

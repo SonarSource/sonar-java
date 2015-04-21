@@ -6,7 +6,8 @@ However, this does not mean that parentheses should be gratuitously added around
   <li>with a unary operator</li>
   <li>when all the operators in an expression are the same</li>
   <li>when only a single operator is involved</li>
-  <li>around the right-hand side of an assignment operator unless the right-hand side itself contains an assignment</li>
+  <li>when a single type of logical operator is used with or without relational operators</li>
+  <li>around the right-hand side of an assignment operator unless the right-hand side itself contains an assignment or if the right-hand side would otherwise require parentheses</li>
 </ul>
 </p>
 
@@ -17,12 +18,14 @@ x = a + b;
 x = a * -1;
 x = a + b + c;
 x = f ( a + b, c );
+if ( a > b || c < d || a == d) {...}
 
 x = a == b ? a : a - b; // Noncompliant
 x = a + b - c + d; // Noncompliant
 x = a * 3 + c + d; // Noncompliant
 
 if (a = f(b,c) == 1) { ... } // Noncompliant; == evaluated first
+if (a > b && c < d || a == d) {...} // Noncompliant
 </pre>
 
 <h2>Compliant Solution</h2>
@@ -32,12 +35,14 @@ x = a + b;
 x = a * -1;
 x = a + b + c;
 x = f ( a + b, c );
+if ( a > b || c < d || a == d) {...}
 
 x = ( a == b ) ? a : ( a - b );
 x = ( a + b ) - ( c + d );
 x = ( a * 3 ) + c + d;
 
 if ( (a = f(b,c)) == 1) { ... }
+if ( (a > b && c < d) || a == d) {...}
 </pre>
 
 <h2>See</h2>
