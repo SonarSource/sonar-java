@@ -44,21 +44,22 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
+  private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
   private static final MethodInvocationMatcher FEST_AS_METHOD = MethodInvocationMatcher.create()
-        .typeDefinition("org.fest.assertions.GenericAssert").name("as").addParameter("java.lang.String");
+        .typeDefinition(GENERIC_ASSERT).name("as").addParameter("java.lang.String");
 
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return Lists.newArrayList(
         MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
         MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name(NameCriteria.any()).withNoParameterConstraint()
+        MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(GENERIC_ASSERT)).name(NameCriteria.any()).withNoParameterConstraint()
     );
   }
 
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
-    if(mit.symbol().owner().type().isSubtypeOf("org.fest.assertions.GenericAssert") && !FEST_AS_METHOD.matches(mit)) {
+    if(mit.symbol().owner().type().isSubtypeOf(GENERIC_ASSERT) && !FEST_AS_METHOD.matches(mit)) {
       FestVisitor visitor = new FestVisitor();
       mit.methodSelect().accept(visitor);
       if(!visitor.useDescription) {
