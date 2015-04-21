@@ -22,7 +22,9 @@ package org.sonar.java.checks.methods;
 public abstract class NameCriteria {
 
   public abstract boolean matches(String name);
-
+  public static NameCriteria any() {
+    return new AnyNameCriteria();
+  }
   public static NameCriteria is(String exactName) {
     return new ExactNameCriteria(exactName);
   }
@@ -56,5 +58,12 @@ public abstract class NameCriteria {
       return name.startsWith(prefix);
     }
 
+  }
+
+  private static class AnyNameCriteria extends NameCriteria {
+    @Override
+    public boolean matches(String name) {
+      return true;
+    }
   }
 }
