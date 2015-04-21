@@ -24,6 +24,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Fail;
 import org.sonar.java.JavaAstScanner;
@@ -37,6 +38,7 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceCode;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -79,7 +81,9 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier) {
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(new File("target/test-classes")), null));
+    Collection<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[]{"jar", "zip"}, true);
+    classpath.add(new File("target/test-classes"));
+    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null));
   }
 
 

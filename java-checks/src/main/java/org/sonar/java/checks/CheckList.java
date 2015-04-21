@@ -318,6 +318,7 @@ public final class CheckList {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
         .add(IgnoredTestsCheck.class)
         .add(BooleanLiteralInAssertionsCheck.class)
+        .add(AssertionsWithoutMessageCheck.class)
         .build();
   }
 }
