@@ -320,6 +320,7 @@ public final class CheckList {
         .add(IgnoredTestsCheck.class)
         .add(BooleanLiteralInAssertionsCheck.class)
         .add(AssertionsWithoutMessageCheck.class)
+        .add(CallSuperInTestCaseCheck.class)
         .build();
   }
 }
