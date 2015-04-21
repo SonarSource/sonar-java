@@ -39,7 +39,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -170,9 +172,25 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    super.visitReturnStatement(tree);
+    if (hasIssue) {
+      raiseIssue(tree.expression());
+    }
+  }
+
+  @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
     visitCondition(tree.expression());
     scan(tree.cases());
+  }
+
+  @Override
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    super.visitThrowStatement(tree);
+    if (hasIssue) {
+      raiseIssue(tree.expression());
+    }
   }
 
   @Override
