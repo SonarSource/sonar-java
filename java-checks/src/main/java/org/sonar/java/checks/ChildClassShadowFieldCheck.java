@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import javax.annotation.CheckForNull;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "S2387",
@@ -46,6 +48,8 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
+
+  private static final Set<String> IGNORED_FIELDS = ImmutableSet.of("serialVersionUID");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -60,9 +64,11 @@ public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
           String fieldName = ((VariableTree) member).simpleName().name();
-          Symbol.TypeSymbol definingClass = getDefiningClassInHierarchyForField(superclassSymbol, fieldName);
-          if (definingClass != null) {
-            addIssue(member, String.format("\"%s\" is the name of a field in \"%s\".", fieldName, definingClass.name()));
+          if (!IGNORED_FIELDS.contains(fieldName)) {
+            Symbol.TypeSymbol definingClass = getDefiningClassInHierarchyForField(superclassSymbol, fieldName);
+            if (definingClass != null) {
+              addIssue(member, String.format("\"%s\" is the name of a field in \"%s\".", fieldName, definingClass.name()));
+            }
           }
         }
       }
@@ -73,7 +79,7 @@ public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
   private Symbol.TypeSymbol getDefiningClassInHierarchyForField(Symbol.TypeSymbol classSymbol, String fieldName) {
     for (Symbol.TypeSymbol symbol = classSymbol; symbol != null; symbol = getSuperclass(symbol)) {
       for (Symbol member : symbol.memberSymbols()) {
-        if (member.isVariableSymbol() && member.name().equals(fieldName)) {
+        if (member.isVariableSymbol() && !member.isPrivate() && member.name().equals(fieldName)) {
           return symbol;
         }
       }

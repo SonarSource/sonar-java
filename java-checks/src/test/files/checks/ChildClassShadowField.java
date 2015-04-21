@@ -1,7 +1,11 @@
 package test;
 
 class Base {
+  static final long serialVersionUID = 1L;
+
   String baseField; // Compliant
+
+  private String privateBaseField; // Compliant
 
   String baseMethod() {
     return null;
@@ -9,9 +13,13 @@ class Base {
 }
 
 class Derived11 extends Base {
-  boolean baseField; // Noncompliant
+  boolean baseField; // Noncompliant {{"baseField" is the name of a field in "Base".}}
+
+  String privateBaseField; // Compliant, exception
 
   boolean derived11Field; // Compliant
+
+  static final long serialVersionUID; // Compliant, exception
 
   @Override
   String baseMethod() { // Compliant
@@ -24,7 +32,7 @@ class Derived12 extends Base {
 }
 
 class Derived22 extends Derived12 {
-  boolean baseField; // Noncompliant
+  boolean baseField; // Noncompliant {{"baseField" is the name of a field in "Base".}}
 
   boolean derived22Field; // Compliant
 

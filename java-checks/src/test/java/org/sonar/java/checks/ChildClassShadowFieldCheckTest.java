@@ -19,26 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ChildClassShadowFieldCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ChildClassShadowField.java"), new VisitorsBridge(new ChildClassShadowFieldCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(12).withMessage("\"baseField\" is the name of a field in \"Base\".")
-      .next().atLine(27).withMessage("\"baseField\" is the name of a field in \"Base\".");
+    JavaCheckVerifier.verify("src/test/files/checks/ChildClassShadowField.java", new ChildClassShadowFieldCheck());
   }
 
 }
