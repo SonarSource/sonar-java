@@ -48,7 +48,8 @@ public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
       MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("assertTrue").withNoParameterConstraint(),
       MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("assertFalse").withNoParameterConstraint(),
       MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name("assertTrue").withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name("assertFalse").withNoParameterConstraint()
+      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name("assertFalse").withNoParameterConstraint(),
+      MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter("boolean")
       );
   }
 

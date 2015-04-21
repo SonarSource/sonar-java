@@ -9,5 +9,9 @@ class A {
     junit.framework.Assert.assertTrue("message", true); // Noncompliant
     junit.framework.Assert.assertTrue(1 > 2);
     junit.framework.Assert.assertFalse(true); // Noncompliant {{Remove or correct this assertion.}}
+    org.fest.assertions.Assertions.assertThat(true).isTrue(); // Noncompliant {{Remove or correct this assertion.}}
+    org.fest.assertions.Assertions.assertThat(1 > 2).isTrue();
+    org.fest.assertions.Assertions.assertThat("foo").isNotNull();
+
   }
 }
