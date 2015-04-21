@@ -28,6 +28,8 @@ public class CloseResourceCheckTest {
 
   @Test
   public void detected() {
+    // JavaCheckVerifier.verify("C:/dev/workspaces/git/it-sources/sslr/oracle-jdk-1.7.0.3/javax/rmi/CORBA/GetORBPropertiesFileAction.java",
+    // check);
     JavaCheckVerifier.verify("src/test/files/checks/CloseResourceCheck.java", check);
   }
 }

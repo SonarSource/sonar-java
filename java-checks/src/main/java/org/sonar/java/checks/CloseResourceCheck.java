@@ -207,12 +207,11 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitClass(ClassTree tree) {
-      // do nothing
+      // do nothing, inner methods will be visited later
     }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
-      super.visitReturnStatement(tree);
       executionState.checkUsageOfClosables(tree.expression());
     }
 
@@ -233,10 +232,10 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       if (tree.finallyBlock() != null) {
         executionState = new ExecutionState(blockES.parentExecutionState);
         tree.finallyBlock().accept(this);
-        blockES.overrideBy(executionState);
+        executionState = blockES.parentExecutionState.overrideBy(blockES.overrideBy(executionState));
+      } else {
+        executionState = blockES.parentExecutionState.merge(blockES);
       }
-
-      executionState = blockES.parentExecutionState.merge(blockES);
     }
 
     @Override
@@ -303,10 +302,12 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
             State state1 = es1.getCloseableState(symbol);
             es1.closeableOccurenceBySymbol.remove(symbol);
 
-            State state2 = getCloseableState(symbol);
+            State state2;
             if (useState2) {
               state2 = es2.getCloseableState(symbol);
               es2.closeableOccurenceBySymbol.remove(symbol);
+            } else {
+              state2 = getCloseableState(symbol);
             }
 
             // * | C | O | I | N |
@@ -346,14 +347,18 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
       public ExecutionState overrideBy(ExecutionState currentES) {
         for (Entry<Symbol, CloseableOccurence> entry : currentES.closeableOccurenceBySymbol.entrySet()) {
-          if (closeableOccurenceBySymbol.containsKey(entry.getKey())) {
-            closeableOccurenceBySymbol.put(entry.getKey(), entry.getValue());
-          }
-          if (parentExecutionState != null) {
+          Symbol symbol = entry.getKey();
+          if (closeableOccurenceBySymbol.containsKey(symbol) || unknownCloseable(symbol)) {
+            closeableOccurenceBySymbol.put(symbol, entry.getValue());
+          } else if (parentExecutionState != null) {
             parentExecutionState.overrideBy(currentES);
           }
         }
         return this;
+      }
+
+      protected boolean unknownCloseable(Symbol symbol) {
+        return getCloseableOccurence(symbol) == null;
       }
 
       private void addCloseable(Symbol symbol, Tree lastAssignmentTree, @Nullable ExpressionTree assignmentExpression) {
@@ -384,7 +389,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
           }
           return State.OPEN;
         }
-        // FIXME ATM engine ignore closeable which are retrieved from method calls. Handle them as OPEN ?
+        // FIXME Engine ignore closeable which are retrieved from method calls. Handle them as OPEN ?
         return State.IGNORED;
       }
 
@@ -455,7 +460,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         }
       }
 
-      public void markAsIgnored(Set<Symbol> symbols) {
+      public void markAsIgnored(Iterable<Symbol> symbols) {
         for (Symbol symbol : symbols) {
           markAsIgnored(symbol);
         }
@@ -480,15 +485,11 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         }
       }
 
-      private boolean isCloseableStillOpen(Symbol symbol) {
-        return State.OPEN.equals(getCloseableState(symbol));
-      }
-
       private Set<Tree> getUnclosedClosables() {
         Set<Tree> results = Sets.newHashSet(unclosedCloseableReferences);
-        for (Symbol symbol : closeableOccurenceBySymbol.keySet()) {
-          if (isCloseableStillOpen(symbol)) {
-            results.add(closeableOccurenceBySymbol.get(symbol).lastAssignment);
+        for (CloseableOccurence occurence : closeableOccurenceBySymbol.values()) {
+          if (State.OPEN.equals(occurence.state)) {
+            results.add(occurence.lastAssignment);
           }
         }
         return results;
@@ -498,7 +499,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       private CloseableOccurence getCloseableOccurence(Symbol symbol) {
         CloseableOccurence occurence = closeableOccurenceBySymbol.get(symbol);
         if (occurence != null) {
-          return occurence;
+          return new CloseableOccurence(occurence.lastAssignment, occurence.state);
         } else if (parentExecutionState != null) {
           return parentExecutionState.getCloseableOccurence(symbol);
         }
@@ -507,13 +508,8 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
       @CheckForNull
       private State getCloseableState(Symbol symbol) {
-        CloseableOccurence occurence = closeableOccurenceBySymbol.get(symbol);
-        if (occurence != null) {
-          return occurence.state;
-        } else if (parentExecutionState != null) {
-          return parentExecutionState.getCloseableState(symbol);
-        }
-        return null;
+        CloseableOccurence occurence = getCloseableOccurence(symbol);
+        return occurence != null ? occurence.state : null;
       }
 
       private static class CloseableOccurence {

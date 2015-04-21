@@ -193,7 +193,7 @@ class A {
     }
   }
 
-  int closeable_used_in_try_with_resource() throws Exception {
+  void closeable_used_in_try_with_resource() throws Exception {
     InputStream is = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
     try {
       is.close();
@@ -213,7 +213,7 @@ class A {
 
     Writer writer; // Compliant
     try {
-      writer = new FileWriter("");
+      writer = new FileWriter(""); 
     } catch (Exception e) {
 
     } finally {
@@ -242,7 +242,29 @@ class A {
       } finally {
         fis.close();
       }
-    } catch (Exception E) {
+    } catch (Exception e) {
+    }
+    
+    InputStream is2 = new FileInputStream("");
+    try {
+      is2.close();
+    } catch (Exception e) {
+      is2.close();
+    } finally {
+      InputStream is2 = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
+      is2.read();
+    }
+    is2.close();
+    
+    try {
+      InputStream is3 = new FileInputStream("");
+      try {
+        myMethod(is3);
+      } finally {
+        is3.read();
+      }
+    } catch (Exception e) {
+      
     }
   }
 
