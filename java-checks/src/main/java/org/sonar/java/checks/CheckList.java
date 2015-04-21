@@ -314,6 +314,7 @@ public final class CheckList {
       .add(OperatorPrecedenceCheck.class)
       .add(NestedEnumStaticCheck.class)
       .add(CloseResourceCheck.class)
+      .add(UnusedReturnedDataCheck.class)
       .build();
   }
 
