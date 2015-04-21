@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableSet;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,7 +40,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -50,6 +53,7 @@ import javax.annotation.Nullable;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Set;
 
 @Rule(
   key = "S864",
@@ -59,6 +63,20 @@ import java.util.LinkedList;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final Set<Tree.Kind> LOGICAL_OPERATORS = ImmutableSet.of(
+    Tree.Kind.CONDITIONAL_AND,
+    Tree.Kind.CONDITIONAL_OR
+    );
+
+  private static final Set<Tree.Kind> RELATIONAL_OPERATORS = ImmutableSet.of(
+    Tree.Kind.EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO,
+    Tree.Kind.GREATER_THAN,
+    Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
+    Tree.Kind.LESS_THAN,
+    Tree.Kind.LESS_THAN_OR_EQUAL_TO
+    );
 
   private JavaFileScannerContext context;
   private Deque<Tree.Kind> stack = new LinkedList<>();
@@ -93,7 +111,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind kind = getKind(tree);
     Tree.Kind peek = stack.peek();
-    if (peek != null && (inCondition || peek != Tree.Kind.ASSIGNMENT) && peek != kind) {
+    if (peek != null && (inCondition || peek != Tree.Kind.ASSIGNMENT) && !isRelationalNestedInLogical(peek, kind) && peek != kind) {
       hasIssue = true;
     }
     stack.push(kind);
@@ -101,10 +119,18 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.pop();
   }
 
+  private boolean isRelationalNestedInLogical(Tree.Kind base, Tree.Kind nested) {
+    return LOGICAL_OPERATORS.contains(base) && RELATIONAL_OPERATORS.contains(nested);
+  }
+
   @Override
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    stack.push(null);
+    scan(tree.condition());
+    stack.pop();
     stack.push(Tree.Kind.CONDITIONAL_EXPRESSION);
-    super.visitConditionalExpression(tree);
+    scan(tree.trueExpression());
+    scan(tree.falseExpression());
     stack.pop();
   }
 
@@ -170,9 +196,25 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    super.visitReturnStatement(tree);
+    if (hasIssue) {
+      raiseIssue(tree.expression());
+    }
+  }
+
+  @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
     visitCondition(tree.expression());
     scan(tree.cases());
+  }
+
+  @Override
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    super.visitThrowStatement(tree);
+    if (hasIssue) {
+      raiseIssue(tree.expression());
+    }
   }
 
   @Override
