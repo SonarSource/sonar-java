@@ -38,6 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     boolean isMethodInJunit3 = isWithinJunit3TestCase(methodSymbol) && isSetUpOrTearDown(methodSymbol);
-    if(isMethodInJunit3 && requiresSuperCall(methodSymbol) && !callSuperOnOverride(methodTree.block(), methodSymbol)) {
+    if (isMethodInJunit3 && requiresSuperCall(methodSymbol) && !callSuperOnOverride(methodTree.block(), methodSymbol)) {
       addIssue(tree, String.format("Add a \"super.%s()\" call to this method.", methodSymbol.name()));
     }
   }
@@ -71,15 +72,15 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
   private boolean requiresSuperCall(Symbol.MethodSymbol methodSymbol) {
     Type superType = methodSymbol.owner().type().symbol().superClass();
     Collection<Symbol> symbols = Lists.newArrayList();
-    while(!superType.is(JUNIT_FRAMEWORK_TEST_CASE) && symbols.isEmpty()) {
-     symbols = superType.symbol().lookupSymbols(methodSymbol.name());
-     superType = superType.symbol().superClass();
+    while (superType != null && !superType.is(JUNIT_FRAMEWORK_TEST_CASE) && symbols.isEmpty()) {
+      symbols = superType.symbol().lookupSymbols(methodSymbol.name());
+      superType = superType.symbol().superClass();
     }
     return !symbols.isEmpty() && !symbols.iterator().next().owner().type().is(JUNIT_FRAMEWORK_TEST_CASE);
   }
 
   private boolean callSuperOnOverride(@Nullable BlockTree block, Symbol.MethodSymbol methodSymbol) {
-    if(block == null) {
+    if (block == null) {
       return false;
     }
     InvocationVisitor visitor = new InvocationVisitor(methodSymbol.name());
@@ -93,8 +94,8 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isSetUpOrTearDown(Symbol.MethodSymbol methodSymbol) {
-    return (methodSymbol.name().equals("setUp") || methodSymbol.name().equals("tearDown"))
-        && methodSymbol.parameterTypes().size() == 0;
+    return ("setUp".equals(methodSymbol.name()) || "tearDown".equals(methodSymbol.name()))
+      && methodSymbol.parameterTypes().isEmpty();
   }
 
   private static class InvocationVisitor extends BaseTreeVisitor {
@@ -108,9 +109,9 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if(tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree.methodSelect();
-        if(mse.expression().is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) mse.expression()).name().equals("super") && mse.identifier().name().equals(methodName)) {
+        if (mse.expression().is(Tree.Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mse.expression()).name()) && mse.identifier().name().equals(methodName)) {
           superCallOnOverride |= !((IdentifierTree) mse.expression()).symbol().type().is(JUNIT_FRAMEWORK_TEST_CASE);
         }
       }

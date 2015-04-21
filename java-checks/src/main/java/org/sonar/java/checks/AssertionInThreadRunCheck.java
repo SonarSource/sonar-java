@@ -60,7 +60,7 @@ public class AssertionInThreadRunCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isRunMethod(MethodTree methodTree) {
-    return methodTree.symbol().owner().type().isSubtypeOf("java.lang.Thread") && methodTree.simpleName().name().equals("run") && methodTree.parameters().isEmpty();
+    return methodTree.symbol().owner().type().isSubtypeOf("java.lang.Thread") && "run".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty();
   }
 
   private class AssertionsVisitor extends BaseTreeVisitor {
