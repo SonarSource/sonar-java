@@ -109,18 +109,16 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
         final char firstChar = comment.charAt(1);
         final int endIndex = comment.indexOf(' ');
         if (endIndex == -1) {
-          lineAdjustment = Integer.parseInt(comment.substring(1));
+          lineAdjustment = Integer.parseInt(comment.substring(2));
           comment = "";
         } else {
-          lineAdjustment = Integer.parseInt(comment.substring(1, endIndex));
+          lineAdjustment = Integer.parseInt(comment.substring(2, endIndex));
           comment = comment.substring(endIndex + 1).trim();
         }
         if (firstChar == '+') {
           line += lineAdjustment;
         } else if (firstChar == '-') {
           line -= lineAdjustment;
-        } else {
-          line = lineAdjustment;
         }
       }
       comment = StringUtils.trim(comment);
