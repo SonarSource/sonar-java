@@ -65,26 +65,29 @@ public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
         if (member.is(Tree.Kind.VARIABLE)) {
           String fieldName = ((VariableTree) member).simpleName().name();
           if (!IGNORED_FIELDS.contains(fieldName)) {
-            Symbol.TypeSymbol definingClass = getDefiningClassInHierarchyForField(superclassSymbol, fieldName);
-            if (definingClass != null) {
-              addIssue(member, String.format("\"%s\" is the name of a field in \"%s\".", fieldName, definingClass.name()));
-            }
+            checkForIssue(superclassSymbol, member, fieldName);
           }
         }
       }
     }
   }
 
-  @CheckForNull
-  private Symbol.TypeSymbol getDefiningClassInHierarchyForField(Symbol.TypeSymbol classSymbol, String fieldName) {
+  private void checkForIssue(Symbol.TypeSymbol classSymbol, Tree memberTree, String fieldName) {
+    String upperCaseFieldName = fieldName.toUpperCase();
     for (Symbol.TypeSymbol symbol = classSymbol; symbol != null; symbol = getSuperclass(symbol)) {
       for (Symbol member : symbol.memberSymbols()) {
-        if (member.isVariableSymbol() && !member.isPrivate() && member.name().equals(fieldName)) {
-          return symbol;
+        if (member.isVariableSymbol() && !member.isPrivate()) {
+          if (member.name().equals(fieldName)) {
+            addIssue(memberTree, String.format("\"%s\" is the name of a field in \"%s\".", fieldName, symbol.name()));
+            return;
+          }
+          if (member.name().toUpperCase().equals(upperCaseFieldName)) {
+            addIssue(memberTree, String.format("\"%s\" differs only by case from \"%s\" in \"%s\".", fieldName, member.name(), symbol.name()));
+            return;
+          }
         }
       }
     }
-    return null;
   }
 
   @CheckForNull
