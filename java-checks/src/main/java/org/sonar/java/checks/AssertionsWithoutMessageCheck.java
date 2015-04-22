@@ -37,7 +37,7 @@ import java.util.List;
 
 @Rule(
   key = "S2698",
-  name = "Literal boolean values should not be used in assertions",
+  name = "JUnit assertions should include messages",
   tags = {"junit"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)

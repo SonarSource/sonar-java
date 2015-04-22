@@ -67,10 +67,13 @@ public class CheckListTest {
     }
 
     Set<String> keys = Sets.newHashSet();
+    Set<String> names = Sets.newHashSet();
     List<Rule> rules = new AnnotationRuleParser().parse("repositoryKey", checks);
     for (Rule rule : rules) {
       assertThat(keys).as("Duplicate key " + rule.getKey()).excludes(rule.getKey());
+      assertThat(names).as("Duplicate name "+rule.getKey()+" : " + rule.getName()).excludes(rule.getName());
       keys.add(rule.getKey());
+      names.add(rule.getName());
 
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.getKey() + ".html"))
         .overridingErrorMessage("No description for " + rule.getKey())
