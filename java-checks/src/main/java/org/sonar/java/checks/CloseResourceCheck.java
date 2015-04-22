@@ -37,7 +37,10 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -45,10 +48,12 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -310,6 +315,39 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       }
     }
 
+    @Override
+    public void visitWhileStatement(WhileStatementTree tree) {
+      scan(tree.condition());
+      visitStatement(tree.statement());
+    }
+
+    @Override
+    public void visitDoWhileStatement(DoWhileStatementTree tree) {
+      scan(tree.statement());
+      tree.condition().accept(this);
+    }
+
+    @Override
+    public void visitForStatement(ForStatementTree tree) {
+      scan(tree.condition());
+      scan(tree.initializer());
+      scan(tree.update());
+      visitStatement(tree.statement());
+    }
+
+    @Override
+    public void visitForEachStatement(ForEachStatement tree) {
+      scan(tree.variable());
+      scan(tree.expression());
+      visitStatement(tree.statement());
+    }
+
+    private void visitStatement(StatementTree tree) {
+      executionState = new ExecutionState(executionState);
+      scan(tree);
+      executionState = executionState.restoreParent();
+    }
+
     private Set<Symbol> extractCloseableSymbols(List<VariableTree> variableTrees) {
       Set<Symbol> symbols = Sets.newHashSet();
       for (VariableTree variableTree : variableTrees) {
@@ -368,6 +406,27 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       return this;
     }
 
+    public ExecutionState overrideBy(ExecutionState currentES) {
+      for (Entry<Symbol, CloseableOccurence> entry : currentES.closeableOccurenceBySymbol.entrySet()) {
+        Symbol symbol = entry.getKey();
+        CloseableOccurence occurence = entry.getValue();
+        if (getCloseableOccurence(symbol) != null) {
+          markAs(symbol, occurence.state);
+        } else {
+          closeableOccurenceBySymbol.put(symbol, occurence);
+        }
+      }
+      return this;
+    }
+
+    public ExecutionState restoreParent() {
+      if (parent != null) {
+        insertIssues();
+        return parent.merge(this);
+      }
+      return this;
+    }
+
     private void insertIssues() {
       for (Tree tree : getUnclosedClosables()) {
         insertIssue(tree);
@@ -382,18 +441,6 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         type = ((IdentifierTree) tree).symbol().type();
       }
       check.addIssue(tree, "Close this \"" + type.name() + "\"");
-    }
-
-    public ExecutionState overrideBy(ExecutionState currentES) {
-      for (Entry<Symbol, CloseableOccurence> entry : currentES.closeableOccurenceBySymbol.entrySet()) {
-        Symbol symbol = entry.getKey();
-        CloseableOccurence occurence = entry.getValue();
-        markAs(symbol, occurence.state);
-        if (!closeableOccurenceBySymbol.containsKey(symbol)) {
-          closeableOccurenceBySymbol.put(symbol, occurence);
-        }
-      }
-      return this;
     }
 
     private void addCloseable(Symbol symbol, Tree lastAssignmentTree, @Nullable ExpressionTree assignmentExpression) {
@@ -439,7 +486,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
           return true;
         } else if (isMethodInvocationWithIgnoredArguments(argument)) {
           return true;
-        } else if (useIgnoredCloseable(argument)) {
+        } else if (useIgnoredCloseable(argument) || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType())) {
           return true;
         }
       }

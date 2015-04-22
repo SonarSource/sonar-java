@@ -67,26 +67,59 @@ class A {
     return (Closeable) raf;
   }
 
-  void closeable_not_closed_in_loops() throws Exception {
+  void closeable_not_closed_in_loops(Collection<Object> objects) throws Exception {
     Reader reader = null;
     for (int i = 0; i < MAX_LOOP; i++) {
-      reader = new FileReader(""); // False negative - Noncompliant {{Close this "Reader"}}
+      reader = new FileReader(""); // Noncompliant {{Close this "Reader"}}
     }
     reader.close();
+    
+    Reader reader2 = null;
+    for (int i = 0; i < MAX_LOOP; i++) {
+      reader2 = new FileReader(""); // Compliant
+      reader2.close();
+    }
+    
+    Reader reader3 = null;
+    for (;;) {
+      reader3 = new FileReader(""); // Compliant
+      reader3.close();
+    }
 
-    int i = 0;
     InputStream is = null;
-    while (i < MAX_LOOP) {
-      is = new FileInputStream(""); // False negative - Noncompliant {{Close this "InputStream"}}
-      i++;
+    while (true) {
+      is = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
     }
     is.close();
-
-    Writer writer = null;
-    for (int j = 0; j < MAX_LOOP; j++) {
-      writer = new FileWriter(""); // Compliant
-      writer.close();
+    
+    InputStream is2 = null;
+    while (true) {
+      is2 = new FileInputStream(""); // Compliant
+      is2.close();
     }
+    
+    Writer writer = null;
+    for (Object object : objects) {
+      writer = new FileWriter(""); // Noncompliant {{Close this "Writer"}}
+    }
+    writer.close();
+    
+    Writer writer2 = null;
+    for (Object object : objects) {
+      writer2 = new FileWriter(""); // Compliant
+      writer2.close();
+    }
+    
+    FileInputStream fis = null;
+    do {
+      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream"}}
+    } while (true);
+    
+    FileInputStream fis2 = null;
+    do {
+      fis2 = new FileInputStream(""); // Compliant
+      fis2.close();
+    } while (true);
   }
 
   void closeable_not_closed_in_every_paths_when_using_if(boolean test, int x) throws Exception {
