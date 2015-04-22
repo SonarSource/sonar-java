@@ -59,6 +59,8 @@ class A {
     
     OutputStream ubaos = new UnsyncByteArrayOutputStream(); // Compliant - UnsyncByteArrayOutputStream does not implements close()
     ubaos.write(0);
+    
+    Reader reader = new BufferedReader(br); // Compliant - uses a field
 
     RandomAccessFile raf = new RandomAccessFile("", "r"); // Compliant - Closeable is returned so its state is unknown
     return (Closeable) raf;
