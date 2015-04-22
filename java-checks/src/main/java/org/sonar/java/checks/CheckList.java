@@ -320,11 +320,12 @@ public final class CheckList {
 
   public static List<Class<? extends JavaCheck>> getJavaTestChecks() {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
-      .add(IgnoredTestsCheck.class)
-      .add(BooleanLiteralInAssertionsCheck.class)
-      .add(AssertionsWithoutMessageCheck.class)
-      .add(CallSuperInTestCaseCheck.class)
-      .add(AssertionInThreadRunCheck.class)
-      .build();
+        .add(IgnoredTestsCheck.class)
+        .add(BooleanLiteralInAssertionsCheck.class)
+        .add(AssertionsWithoutMessageCheck.class)
+        .add(CallSuperInTestCaseCheck.class)
+        .add(AssertionInThreadRunCheck.class)
+        .add(NoTestInTestClassCheck.class)
+        .build();
   }
 }
