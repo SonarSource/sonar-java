@@ -20,3 +20,12 @@ abstract class B {
   }
   abstract foo();
 }
+
+class C extends junit.framework.TestCase {
+  class A extends Thread {
+    @Override
+    public void run() {
+      assertTrue(true); // Noncompliant
+    }
+  }
+}
