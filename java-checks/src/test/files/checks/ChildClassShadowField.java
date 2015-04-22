@@ -15,6 +15,8 @@ class Base {
 class Derived11 extends Base {
   boolean baseField; // Noncompliant {{"baseField" is the name of a field in "Base".}}
 
+  int BaseField; // Noncompliant {{"BaseField" differs only by case from "baseField" in "Base".}}
+
   String privateBaseField; // Compliant, exception
 
   boolean derived11Field; // Compliant
@@ -33,6 +35,8 @@ class Derived12 extends Base {
 
 class Derived22 extends Derived12 {
   boolean baseField; // Noncompliant {{"baseField" is the name of a field in "Base".}}
+
+  int BaseField; // Noncompliant {{"BaseField" differs only by case from "baseField" in "Base".}}
 
   boolean derived22Field; // Compliant
 
