@@ -25,10 +25,8 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -40,7 +38,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -52,54 +49,42 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class UnusedReturnedDataCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
 
   private static final List<MethodInvocationMatcher> CHECKED_METHODS = ImmutableList.of(
     MethodInvocationMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.BufferedReader"))
-      .name("readLine")
-      .withNoParameterConstraint(),
+      .name("readLine"),
     MethodInvocationMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator"))
-      .name("next")
-      .withNoParameterConstraint(),
+      .name("next"),
     MethodInvocationMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.Reader"))
-      .name("read")
-      .withNoParameterConstraint());
-
-  @Nullable
-  private MethodInvocationTree currentMethodTree;
-  private JavaFileScannerContext context;
+      .name("read"));
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
   }
 
   @Override
-  public void visitExpressionStatement(ExpressionStatementTree tree) {
-    super.visitExpressionStatement(tree);
-    for (MethodInvocationMatcher matcher : CHECKED_METHODS) {
-      Symbol symbol = isTreeMethodInvocation(tree.expression(), matcher);
-      if (symbol != null) {
-        raiseIssue(tree, symbol.name());
-      }
-    }
-  }
-
-  @Override
-  public void visitBinaryExpression(BinaryExpressionTree tree) {
-    super.visitBinaryExpression(tree);
-    if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       for (MethodInvocationMatcher matcher : CHECKED_METHODS) {
-        Symbol leftSymbol = isTreeMethodInvocation(tree.leftOperand(), matcher);
-        if (leftSymbol != null && isTreeLiteralNull(tree.rightOperand())) {
+        Symbol symbol = isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher);
+        if (symbol != null) {
+          raiseIssue(tree, symbol.name());
+        }
+      }
+    } else {
+      BinaryExpressionTree expressionTree = (BinaryExpressionTree) tree;
+      for (MethodInvocationMatcher matcher : CHECKED_METHODS) {
+        Symbol leftSymbol = isTreeMethodInvocation(expressionTree.leftOperand(), matcher);
+        if (leftSymbol != null && isTreeLiteralNull(expressionTree.rightOperand())) {
           raiseIssue(tree, leftSymbol.name());
         }
-        Symbol rightSymbol = isTreeMethodInvocation(tree.rightOperand(), matcher);
-        if (rightSymbol != null && isTreeLiteralNull(tree.leftOperand())) {
+        Symbol rightSymbol = isTreeMethodInvocation(expressionTree.rightOperand(), matcher);
+        if (rightSymbol != null && isTreeLiteralNull(expressionTree.leftOperand())) {
           raiseIssue(tree, rightSymbol.name());
         }
       }
@@ -131,7 +116,7 @@ public class UnusedReturnedDataCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private void raiseIssue(Tree tree, String methodName) {
-    context.addIssue(tree, UnusedReturnedDataCheck.this, String.format("Use or store the value returned from \"%s\" instead of throwing it away.", methodName));
+    addIssue(tree, String.format("Use or store the value returned from \"%s\" instead of throwing it away.", methodName));
   }
 
 }
