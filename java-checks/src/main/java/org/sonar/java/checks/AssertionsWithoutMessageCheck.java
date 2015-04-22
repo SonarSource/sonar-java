@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,6 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "S2698",
@@ -47,12 +49,17 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
   private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
   private static final MethodInvocationMatcher FEST_AS_METHOD = MethodInvocationMatcher.create()
         .typeDefinition(GENERIC_ASSERT).name("as").addParameter("java.lang.String");
+  private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = Sets.newHashSet("assertNull", "assertNotNull");
+  private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = Sets.newHashSet("assertEquals", "assertSame", "assertNotSame", "assertThat");
 
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return Lists.newArrayList(
         MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
         MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+        MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
         MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(GENERIC_ASSERT)).name(NameCriteria.any()).withNoParameterConstraint()
     );
   }
@@ -66,17 +73,22 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
         addIssue(mit, "Add a message to this assertion.");
       }
     } else {
-      if(!isString(mit.arguments().get(0)) || isAssertEqualsOnString(mit)) {
+      if(mit.arguments().isEmpty() || !isString(mit.arguments().get(0)) || isAssertingOnStringWithNoMessage(mit)) {
         addIssue(mit, "Add a message to this assertion.");
       }
     }
   }
 
-  private boolean isAssertEqualsOnString(MethodInvocationTree mit) {
-    if("assertEquals".equals(mit.symbol().name())) {
-      return mit.arguments().size() == 2 && isString(mit.arguments().get(0)) && isString(mit.arguments().get(1));
-    }
-    return false;
+  private boolean isAssertingOnStringWithNoMessage(MethodInvocationTree mit) {
+    return isAssertWithTwoParams(mit) || isAssertWithOneParam(mit);
+  }
+
+  private boolean isAssertWithOneParam(MethodInvocationTree mit) {
+    return ASSERT_METHODS_WITH_ONE_PARAM.contains(mit.symbol().name()) && mit.arguments().size() == 1;
+  }
+
+  private boolean isAssertWithTwoParams(MethodInvocationTree mit) {
+    return ASSERT_METHODS_WITH_TWO_PARAMS.contains(mit.symbol().name()) && mit.arguments().size() == 2;
   }
 
   private boolean isString(ExpressionTree expressionTree) {
