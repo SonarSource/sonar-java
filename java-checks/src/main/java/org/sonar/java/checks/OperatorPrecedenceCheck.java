@@ -26,30 +26,22 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
-import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
-import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -63,6 +55,21 @@ import java.util.Set;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final Set<Tree.Kind> ASSIGNMENT_OPERATORS = ImmutableSet.of(
+    Tree.Kind.AND_ASSIGNMENT,
+    Tree.Kind.ASSIGNMENT,
+    Tree.Kind.DIVIDE_ASSIGNMENT,
+    Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
+    Tree.Kind.MINUS_ASSIGNMENT,
+    Tree.Kind.MULTIPLY_ASSIGNMENT,
+    Tree.Kind.OR_ASSIGNMENT,
+    Tree.Kind.PLUS_ASSIGNMENT,
+    Tree.Kind.REMAINDER_ASSIGNMENT,
+    Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
+    Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
+    Tree.Kind.XOR_ASSIGNMENT
+    );
 
   private static final Set<Tree.Kind> LOGICAL_OPERATORS = ImmutableSet.of(
     Tree.Kind.CONDITIONAL_AND,
@@ -80,13 +87,24 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private JavaFileScannerContext context;
   private Deque<Tree.Kind> stack = new LinkedList<>();
-  private boolean inCondition;
-  private boolean hasIssue;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     scan(context.getTree());
+  }
+
+  @Override
+  public void visitAnnotation(AnnotationTree tree) {
+    stack.push(null);
+    for (ExpressionTree argument : tree.arguments()) {
+      if (argument.is(Tree.Kind.ASSIGNMENT)) {
+        scan(((AssignmentExpressionTree) argument).expression());
+      } else {
+        scan(argument);
+      }
+    }
+    stack.pop();
   }
 
   @Override
@@ -111,8 +129,8 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind kind = getKind(tree);
     Tree.Kind peek = stack.peek();
-    if (peek != null && (inCondition || peek != Tree.Kind.ASSIGNMENT) && !isRelationalNestedInLogical(peek, kind) && peek != kind) {
-      hasIssue = true;
+    if (peek != null && peek != kind && !isRelationalNestedInLogical(peek, kind) && !isNestedInRelational(peek, kind)) {
+      raiseIssue(tree);
     }
     stack.push(kind);
     super.visitBinaryExpression(tree);
@@ -121,6 +139,10 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private boolean isRelationalNestedInLogical(Tree.Kind base, Tree.Kind nested) {
     return LOGICAL_OPERATORS.contains(base) && RELATIONAL_OPERATORS.contains(nested);
+  }
+
+  private boolean isNestedInRelational(Tree.Kind base, Tree.Kind nested) {
+    return RELATIONAL_OPERATORS.contains(base);
   }
 
   @Override
@@ -135,32 +157,16 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   @Override
-  public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    scan(tree.statement());
-    visitCondition(tree.condition());
-  }
-
-  @Override
   public void visitExpressionStatement(ExpressionStatementTree tree) {
-    super.visitExpressionStatement(tree);
-    if (hasIssue) {
-      raiseIssue(tree.expression());
+    if (ASSIGNMENT_OPERATORS.contains(getKind(tree.expression()))) {
+      AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) tree.expression();
+      if (ASSIGNMENT_OPERATORS.contains(getKind(assignmentTree.expression()))) {
+        raiseIssue(assignmentTree);
+      }
+      super.visitAssignmentExpression(assignmentTree);
+    } else {
+      scan(tree.expression());
     }
-  }
-
-  @Override
-  public void visitForStatement(ForStatementTree tree) {
-    scan(tree.initializer());
-    visitCondition(tree.condition());
-    scan(tree.update());
-    scan(tree.statement());
-  }
-
-  @Override
-  public void visitIfStatement(IfStatementTree tree) {
-    visitCondition(tree.condition());
-    scan(tree.thenStatement());
-    scan(tree.elseStatement());
   }
 
   @Override
@@ -196,59 +202,20 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   @Override
-  public void visitReturnStatement(ReturnStatementTree tree) {
-    super.visitReturnStatement(tree);
-    if (hasIssue) {
-      raiseIssue(tree.expression());
-    }
-  }
-
-  @Override
-  public void visitSwitchStatement(SwitchStatementTree tree) {
-    visitCondition(tree.expression());
-    scan(tree.cases());
-  }
-
-  @Override
-  public void visitThrowStatement(ThrowStatementTree tree) {
-    super.visitThrowStatement(tree);
-    if (hasIssue) {
-      raiseIssue(tree.expression());
-    }
-  }
-
-  @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-    if (tree.initializer() != null && hasIssue) {
-      raiseIssue(tree.initializer());
+    ExpressionTree initializerTree = tree.initializer();
+    if (initializerTree != null && ASSIGNMENT_OPERATORS.contains(getKind(initializerTree))) {
+      raiseIssue(initializerTree);
     }
-  }
-
-  @Override
-  public void visitWhileStatement(WhileStatementTree tree) {
-    visitCondition(tree.condition());
-    scan(tree.statement());
   }
 
   private void raiseIssue(Tree tree) {
     context.addIssue(tree, this, "Add parentheses to make the operator precedence explicit.");
-    hasIssue = false;
   }
 
   private Tree.Kind getKind(Tree tree) {
     return ((JavaTree) tree).getKind();
-  }
-
-  private void visitCondition(@Nullable ExpressionTree condition) {
-    if (condition != null) {
-      inCondition = true;
-      scan(condition);
-      inCondition = false;
-      if (hasIssue) {
-        raiseIssue(condition);
-      }
-    }
   }
 
 }

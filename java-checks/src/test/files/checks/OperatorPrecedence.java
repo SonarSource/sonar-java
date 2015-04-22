@@ -1,5 +1,9 @@
 public class Class {
 
+  @Annotation1(1 + 2 + 3) // Compliant
+  @Annotation2(1 + 2 - 3) // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+  @Annotation3(key = 1 + 2 + 3) // Compliant
+  @Annotation4(key = 1 + 2 - 3) // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
   public void method(int[] array, int value) {
     int a;
     ;
@@ -7,8 +11,12 @@ public class Class {
     b = +(1 + 2 / 3); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     b = array[1 * 2 / 3]; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     b = method(array, 1 + 2 << 3); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
-    b = 1 == 2 ? 1 + 1 : 1 - 1; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    b = 1 == 2 ? 1 + 1 : 1 - 1; // Noncompliant 2 {{Add parentheses to make the operator precedence explicit.}}
     b = b = 1; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    int c = b = a; // Noncompliant
+    int d = (b = a); // Compliant
+    method(array, 1 + 2 << 3); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    method(array, a = b = c); // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
     do {
       a = a = 1; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
@@ -70,5 +78,11 @@ public class Class {
     b = a == a ? 0 : 0; // Compliant, exception
     b = a ? 1 + 2 : 0; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     b = a ? 0 : 1 + 2; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+
+    if (a < b) { // Compliant
+    }
+
+    if (a < b + 1) { // Compliant, exception
+    }
   }
 }
