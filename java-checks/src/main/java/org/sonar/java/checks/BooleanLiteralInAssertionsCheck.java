@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,10 +46,8 @@ public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return Lists.newArrayList(
-      MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("assertTrue").withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("assertFalse").withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name("assertTrue").withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name("assertFalse").withNoParameterConstraint(),
+      MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
       MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter("boolean")
       );
   }
@@ -56,10 +55,11 @@ public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodFound(MethodInvocationTree mit) {
     int arity = mit.arguments().size();
-    if (arity == 1 || arity == 2) {
-      ExpressionTree booleanArg = mit.arguments().get(arity - 1);
+    for (int i = 0; i < arity; i++) {
+      ExpressionTree booleanArg = mit.arguments().get(i);
       if (booleanArg.is(Tree.Kind.BOOLEAN_LITERAL)) {
         raiseIssue(booleanArg);
+        break;
       }
     }
   }

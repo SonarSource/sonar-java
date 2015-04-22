@@ -488,7 +488,7 @@ public class Resolve {
   }
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
-    return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal));
+    return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {
