@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.collect.Lists;
 import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -90,7 +91,12 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    createSymbol(tree.simpleName(), tree.symbol().usages());
+    //as long as SONAR-5894 is not fixed, do not provide references to enum constructors
+    if(tree.symbol().returnType() == null && tree.symbol().owner().isEnum()) {
+      createSymbol(tree.simpleName(), Lists.<IdentifierTree>newArrayList());
+    } else {
+      createSymbol(tree.simpleName(), tree.symbol().usages());
+    }
     super.visitMethod(tree);
   }
 

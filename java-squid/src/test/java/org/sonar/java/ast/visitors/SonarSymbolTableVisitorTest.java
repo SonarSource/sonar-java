@@ -81,8 +81,11 @@ public class SonarSymbolTableVisitorTest {
     //label
     verify(symboltableBuilder).newSymbol(offset(10, 5), offset(10, 10));
     //Enum
-    verify(symboltableBuilder).newSymbol(offset(13, 8), offset(13, 14));
+    verify(symboltableBuilder).newSymbol(offset(13, 8), offset(13, 26));
     verify(symboltableBuilder).newSymbol(offset(14, 5), offset(14, 12));
+    //Do not reference constructor of enum as it can leads to failure in analysis as long as SONAR-5894 is not fixed
+    //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(14, 5)));
+    verify(symboltableBuilder).newSymbol(offset(15, 5), offset(15, 23));
     verify(symboltableBuilder).build();
     verifyNoMoreInteractions(symboltableBuilder);
   }
