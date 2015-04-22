@@ -39,6 +39,7 @@ import org.sonar.squidbridge.api.SourceCode;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -146,19 +147,24 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
       assertSingleIssue(sourceCode);
     } else {
       Preconditions.checkState(sourceCode.hasCheckMessages(), "At least one issue expected");
+      List<Integer> unexpectedLines = Lists.newLinkedList();
       for (CheckMessage checkMessage : sourceCode.getCheckMessages()) {
         int line = checkMessage.getLine();
         if (!expected.containsKey(line)) {
-          throw Fail.fail("Unexpected at " + line);
-        }
-        List<String> list = expected.get(line);
-        String expectedMessage = list.remove(list.size() - 1);
-        if (expectedMessage != null) {
-          assertThat(checkMessage.getText(Locale.US)).isEqualTo(expectedMessage);
+          unexpectedLines.add(line);
+        } else {
+          List<String> list = expected.get(line);
+          String expectedMessage = list.remove(list.size() - 1);
+          if (expectedMessage != null) {
+            assertThat(checkMessage.getText(Locale.US)).isEqualTo(expectedMessage);
+          }
         }
       }
-      if (!expected.isEmpty()) {
-        throw Fail.fail("Expected " + expected);
+      if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
+        Collections.sort(unexpectedLines);
+        String expectedMsg = !expected.isEmpty() ? "Expected " + expected : "";
+        String unexpectedMsg = !unexpectedLines.isEmpty() ? (expectedMsg.isEmpty() ? "" : ", ") + "Unexpected at " + unexpectedLines : "";
+        throw Fail.fail(expectedMsg + unexpectedMsg);
       }
     }
 
