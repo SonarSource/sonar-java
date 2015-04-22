@@ -281,6 +281,12 @@ class A {
       // ...
     }
     
+    try (FileWriter fw = new FileWriter("")) { // Compliant
+      fw.write("hello");
+    } catch (Exception e) {
+      // ...
+    }
+    
     try {
       FileInputStream fis = new FileInputStream(""); // Compliant
       try {
