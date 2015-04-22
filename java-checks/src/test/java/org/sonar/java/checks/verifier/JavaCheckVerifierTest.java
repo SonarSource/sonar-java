@@ -47,6 +47,12 @@ public class JavaCheckVerifierTest {
         super.scanFile(context);
         addIssue(1, "message");
         addIssue(3, "message1");
+        addIssue(7, "message2");
+        addIssue(8, "message3");
+        addIssue(8, "message3");
+        addIssue(10, "message4");
+        addIssue(10, "message4");
+        addIssue(11, "no message");
       }
     };
 
@@ -67,6 +73,12 @@ public class JavaCheckVerifierTest {
         addIssue(1, "message");
         addIssue(3, "message1");
         addIssue(4, "message1");
+        addIssue(7, "message2");
+        addIssue(8, "message3");
+        addIssue(8, "message3");
+        addIssue(10, "message4");
+        addIssue(10, "message4");
+        addIssue(11, "no message");
       }
     };
 
@@ -74,7 +86,66 @@ public class JavaCheckVerifierTest {
       JavaCheckVerifier.verify(FILENAME, visitor);
       Fail.fail();
     } catch (AssertionError e) {
-      assertThat(e).hasMessage("Unexpected at 4");
+      assertThat(e).hasMessage("Unexpected at [4]");
+    }
+  }
+
+  @Test
+  public void verify_combined_missing_expected_and_unexpected_issues() {
+    IssuableSubscriptionVisitor visitor = new IssuableSubscriptionVisitor() {
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return ImmutableList.of();
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        super.scanFile(context);
+        addIssue(3, "message1");
+        addIssue(4, "message1");
+        addIssue(7, "message2");
+        addIssue(8, "message3");
+        addIssue(8, "message3");
+        addIssue(10, "message4");
+        addIssue(10, "message4");
+        addIssue(11, "no message");
+      }
+    };
+
+    try {
+      JavaCheckVerifier.verify(FILENAME, visitor);
+      Fail.fail();
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("Expected {1=[message]}, Unexpected at [4]");
+    }
+  }
+
+  @Test
+  public void verify_missing_expected_issue() {
+    IssuableSubscriptionVisitor visitor = new IssuableSubscriptionVisitor() {
+      @Override
+      public List<Tree.Kind> nodesToVisit() {
+        return ImmutableList.of();
+      }
+
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        super.scanFile(context);
+        addIssue(3, "message1");
+        addIssue(7, "message2");
+        addIssue(8, "message3");
+        addIssue(8, "message3");
+        addIssue(10, "message4");
+        addIssue(10, "message4");
+        addIssue(11, "no message");
+      }
+    };
+
+    try {
+      JavaCheckVerifier.verify(FILENAME, visitor);
+      Fail.fail();
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("Expected {1=[message]}");
     }
   }
 
