@@ -312,6 +312,7 @@ public final class CheckList {
       .add(URLHashCodeAndEqualsCheck.class)
       .add(ChildClassShadowFieldCheck.class)
       .add(OperatorPrecedenceCheck.class)
+      .add(UnusedReturnedDataCheck.class)
       .build();
   }
 
