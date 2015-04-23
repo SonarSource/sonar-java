@@ -1,4 +1,4 @@
-<p>Java's garbage collection cannot be relied on to clean up everything. Specifically, connections, streams, files and other classes that implement the <code>Closeable</code> interface must be manually closed after creation. Failure to do so will result in a resource leak which could bring first the application and then perhaps the box it's on to their knees.</p>
+<p>Java's garbage collection cannot be relied on to clean up everything. Specifically, connections, streams, files and other classes that implement the <code>Closeable</code> interface or it's super-interface, <code>AutoCloseable</code>, must be manually closed after creation. Failure to do so will result in a resource leak which could bring first the application and then perhaps the box it's on to their knees.</p>
 
 <h2>Noncompliant Code Example</h2>
 
