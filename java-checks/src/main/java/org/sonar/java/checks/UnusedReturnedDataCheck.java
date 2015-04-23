@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -43,7 +42,7 @@ import java.util.List;
 
 @Rule(
   key = "S2677",
-  name = "\"read\", \"readLine\", and \"next\" return values should be used",
+  name = "\"read\" and \"readLine\" return values should be used",
   tags = {"bug"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
@@ -55,9 +54,6 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
     MethodInvocationMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.BufferedReader"))
       .name("readLine"),
-    MethodInvocationMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator"))
-      .name("next"),
     MethodInvocationMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.Reader"))
       .name("read"));
