@@ -1,0 +1,34 @@
+<p>Comparisons of dissimilar types will always return false. The comparison and all its dependent code can simply be removed. This includes:</p>
+<ul>
+    <li>comparing an array to a non-array</li>
+    <li>comparing incompatible arrays</li>
+    <li>comparing an object with null</li>
+</ul>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+interface KitchenTool { ... };
+interface Plant {...}
+
+public class Spatula implements KitchenTool { ... }
+public class Tree implements Plant { ... }
+
+//...
+
+KitchenTool tool = new Spatula();
+KitchenTool [] tools = {tool};
+
+Tree tree = new Tree();
+Tree [] trees = new Tree {tree};
+
+if (tool.equals(tools)) { // Noncompliant; array & non-array
+  // ...
+}
+else if (trees.equals(tools)) {  // Noncompliant; incompatible arrays
+  // ...
+}
+else if (tree.equals(null)) {  // Noncompliant
+  // ...
+}
+</pre>

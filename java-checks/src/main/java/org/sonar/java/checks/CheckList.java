@@ -325,6 +325,7 @@ public final class CheckList {
       .add(LocksNotUnlockedCheck.class)
       .add(EqualsArgumentTypeCheck.class)
       .add(ConstantMathCheck.class)
+      .add(SillyEqualsCheck.class)
       .build();
   }
 
