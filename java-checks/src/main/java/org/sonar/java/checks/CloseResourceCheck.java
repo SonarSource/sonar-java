@@ -72,32 +72,50 @@ import java.util.Set;
 public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
   private enum State {
-    NULL, CLOSED, OPEN, IGNORED;
 
-    public static State mergeStates(State state1, State state2) {
+    // * | C | O | I | N |
+    // --+---+---+---+---|
+    // C | C | O | I | C | <- CLOSED
+    // --+---+---+---+---|
+    // O | O | O | I | O | <- OPEN
+    // --+---+---+---+---|
+    // I | I | I | I | I | <- IGNORED
+    // --+---+---+---+---|
+    // N | C | O | I | N | <- NULL
+    // ------------------+
 
-      // * | C | O | I | N |
-      // --+---+---+---+---|
-      // C | C | O | I | C | <- CLOSED
-      // --+---+---+---+---|
-      // O | O | O | I | O | <- OPEN
-      // --+---+---+---+---|
-      // I | I | I | I | I | <- IGNORED
-      // --+---+---+---+---|
-      // N | C | O | I | N | <- NULL
-      // ------------------+
-
-      if (state1.equals(state2)) {
-        return state1;
-      } else if ((State.CLOSED.equals(state1) && State.OPEN.equals(state2)) || (State.OPEN.equals(state1) && State.CLOSED.equals(state2))) {
-        return State.OPEN;
-      } else if (State.NULL.equals(state1)) {
-        return state2;
-      } else if (State.NULL.equals(state2)) {
-        return state1;
+    NULL {
+      @Override
+      public State merge(State s) {
+        return s;
       }
-      return State.IGNORED;
-    }
+    },
+    CLOSED {
+      @Override
+      public State merge(State s) {
+        if (s == NULL) {
+          return this;
+        }
+        return s;
+      }
+    },
+    OPEN {
+      @Override
+      public State merge(State s) {
+        if (s == IGNORED) {
+          return s;
+        }
+        return this;
+      }
+    },
+    IGNORED {
+      @Override
+      public State merge(State s) {
+        return this;
+      }
+    };
+
+    public abstract State merge(State s);
 
     public boolean isIgnored() {
       return this.equals(IGNORED);
@@ -108,7 +126,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private static final String IGNORED_CLOSEABLE_SUBTYPES[] = {
+  private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
     "java.io.ByteArrayOutputStream",
     "java.io.ByteArrayInputStream",
     "java.io.StringReader",
@@ -117,6 +135,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     "java.io.CharArrayWriter"
   };
 
+  private static final String CLOSE_METHOD_NAME = "close";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
 
@@ -146,11 +165,11 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     return MethodInvocationMatcherCollection.create(
       MethodInvocationMatcher.create()
         .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_CLOSEABLE))
-        .name("close")
+        .name(CLOSE_METHOD_NAME)
         .withNoParameterConstraint(),
       MethodInvocationMatcher.create()
         .typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_AUTOCLOSEABLE))
-        .name("close")
+        .name(CLOSE_METHOD_NAME)
         .withNoParameterConstraint());
   }
 
@@ -171,7 +190,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     TypeSymbol typeSymbol = type.symbol();
     Type superClass = typeSymbol.superClass();
     if (superClass != null && (superClass.is("java.io.OutputStream") || superClass.is("java.io.InputStream"))) {
-      return typeSymbol.lookupSymbols("close").isEmpty();
+      return typeSymbol.lookupSymbols(CLOSE_METHOD_NAME).isEmpty();
     }
     return false;
   }
@@ -306,10 +325,11 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
   private static class CloseableOccurence {
 
     private static final CloseableOccurence IGNORED = new CloseableOccurence(null, State.IGNORED);
+    @Nullable
     private Tree lastAssignment;
     private State state;
 
-    public CloseableOccurence(Tree lastAssignment, State state) {
+    public CloseableOccurence(@Nullable Tree lastAssignment, State state) {
       this.lastAssignment = lastAssignment;
       this.state = state;
     }
@@ -339,7 +359,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         CloseableOccurence currentOccurence = getCloseableOccurence(symbol);
         CloseableOccurence occurenceToMerge = entry.getValue();
         if (currentOccurence != null) {
-          currentOccurence.state = State.mergeStates(currentOccurence.state, occurenceToMerge.state);
+          currentOccurence.state = currentOccurence.state.merge(occurenceToMerge.state);
           closeableOccurenceBySymbol.put(symbol, currentOccurence);
         } else if (occurenceToMerge.state.isOpen()) {
           insertIssue(occurenceToMerge.lastAssignment);
@@ -392,15 +412,12 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     }
 
     private State getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
-      if (isIgnoredCloseableSubtype(symbol.type())
-        || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type())
-        || (expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()))) {
+      if (shouldBeIgnored(symbol, expression)) {
         return State.IGNORED;
-      } else if (expression == null
-        || expression.is(Tree.Kind.NULL_LITERAL)) {
+      } else if (expression == null || expression.is(Tree.Kind.NULL_LITERAL)) {
         return State.NULL;
       } else if (expression.is(Tree.Kind.NEW_CLASS)) {
-        if (usesIgnoredCloseable(((NewClassTree) expression).arguments())) {
+        if (usesIgnoredCloseableAsArgument(((NewClassTree) expression).arguments())) {
           return State.IGNORED;
         }
         return State.OPEN;
@@ -409,21 +426,34 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       return State.IGNORED;
     }
 
-    private boolean usesIgnoredCloseable(List<ExpressionTree> arguments) {
+    private static boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
+      return isIgnoredCloseableSubtype(symbol.type())
+        || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type())
+        || (expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()));
+    }
+
+    private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {
       for (ExpressionTree argument : arguments) {
-        if (argument.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
-          IdentifierTree identifier;
-          if (argument.is(Tree.Kind.MEMBER_SELECT)) {
-            identifier = ((MemberSelectExpressionTree) argument).identifier();
-          } else {
-            identifier = (IdentifierTree) argument;
-          }
-          if (isIgnoredCloseable(identifier.symbol())) {
-            return true;
-          }
-        } else if (argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseable(((NewClassTree) argument).arguments())) {
+        if (argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments())) {
           return true;
-        } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseable(((MethodInvocationTree) argument).arguments())) {
+        } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments())) {
+          return true;
+        } else if (useIgnoredCloseable(argument)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    private boolean useIgnoredCloseable(ExpressionTree expression) {
+      if (expression.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
+        IdentifierTree identifier;
+        if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+          identifier = ((MemberSelectExpressionTree) expression).identifier();
+        } else {
+          identifier = (IdentifierTree) expression;
+        }
+        if (isIgnoredCloseable(identifier.symbol())) {
           return true;
         }
       }
