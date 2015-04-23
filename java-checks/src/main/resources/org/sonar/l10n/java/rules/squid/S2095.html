@@ -3,32 +3,32 @@
 <h2>Noncompliant Code Example</h2>
 
 <pre>
-Connection conn = null;
+OutputStream stream = null;
 try{
   for (String property : propertyList) {
-    conn = ConnectionFactory.getConnection();  // Noncompliant
+    stream = new FileOutputStream("myfile.txt");  // Noncompliant
     // ...
   }
 }catch(Exception e){
   // ...
 }finally{
-  conn.close();  // Multiple connections were opened. Only the last is closed.
+  stream.close();  // Multiple streams were opened. Only the last is closed.
 }
 </pre>
 
-<h2></h2>
+<h2>Compliant Solution</h2>
 
 <pre>
-Connection conn = null;
+OutputStream stream = null;
 try{
-  conn = ConnectionFactory.getConnection();
+  stream = new FileOutputStream("myfile.txt");
   for (String property : propertyList) {
     // ...
   }
 }catch(Exception e){
   // ...
 }finally{
-  conn.close();
+  stream.close();
 }
 </pre>
 
