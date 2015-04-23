@@ -12,6 +12,7 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.Formatter;
+import java.util.Collection;
 import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
 
 class A {
@@ -84,11 +85,13 @@ class A {
     for (;;) {
       reader3 = new FileReader(""); // Compliant
       reader3.close();
+      break;
     }
 
     InputStream is = null;
     while (true) {
       is = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
+      break;
     }
     is.close();
     
@@ -96,6 +99,7 @@ class A {
     while (true) {
       is2 = new FileInputStream(""); // Compliant
       is2.close();
+      break;
     }
     
     Writer writer = null;
@@ -113,6 +117,7 @@ class A {
     FileInputStream fis = null;
     do {
       fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream"}}
+      break;
     } while (true);
     
     FileInputStream fis2 = null;
@@ -213,8 +218,20 @@ class A {
   }
 
   void closeable_not_closed_in_every_paths_when_using_switch(MyEnum enumValue) throws Exception {
+    Reader reader = new FileReader(""); // Compliant
+    switch (enumValue) {
+      case A:
+        reader.close();
+        break;
+      case B:
+        reader.close();
+        break;
+      default:
+        reader.close();
+        break;
+    }
 
-    Formatter formatter = new Formatter(); // False negative - Noncompliant {{Close this "Formatter"}}
+    Formatter formatter = new Formatter(); // Noncompliant {{Close this "Formatter"}}
     switch (enumValue) {
       case A:
         formatter.close();
@@ -235,6 +252,83 @@ class A {
       default:
         os.close();
         break;
+    }
+
+    Writer w1 = new FileWriter(""); // Compliant
+    switch (enumValue) {
+      case A:
+        w1.write("A");
+      default:
+        w1.close();
+        break;
+    }
+
+    Writer w2 = new FileWriter(""); // Compliant
+    switch (enumValue) {
+      case A:
+        w2.write("A");
+        break;
+      default:
+        w2.flush();
+        break;
+    }
+    w2.close();
+
+    Writer w3 = new FileWriter(""); // Noncompliant {{Close this "Writer"}}
+    switch (enumValue) {
+    // as there is no "default", we can not guarantee that the closeable is closed
+      case A:
+        w3.close();
+        break;
+    }
+
+    Writer w4 = new FileWriter(""); // Compliant
+    switch (enumValue) {
+      case A:
+        w4.write("A");
+      default:
+        w4.close();
+        break;
+    }
+
+    Writer w5;
+    switch (enumValue) {
+      case A:
+        w5 = new FileWriter(""); // Noncompliant {{Close this "Writer"}}
+      default:
+        w5 = new FileWriter("");
+        break;
+    }
+    w5.close();
+
+    Writer w6; // Compliant
+    switch (enumValue) {
+      case A:
+        w6 = new FileWriter("");
+        break;
+      default:
+        w6 = new FileWriter("");
+        break;
+    }
+    w6.close();
+
+    Writer w7; // Compliant (last statement does not contain a break)
+    switch (enumValue) {
+      case A:
+        w7 = new FileWriter("");
+        break;
+      default:
+        w7 = new FileWriter("");
+    }
+    w7.close();
+    
+    Writer w8; // Compliant (last statement does not contain a break)
+    switch (enumValue) {
+    }
+    
+    Writer w9; // Compliant (last statement does not contain a break)
+    switch (enumValue) {
+      case A:
     }
   }
 
@@ -258,7 +352,7 @@ class A {
 
     Writer writer; // Compliant
     try {
-      writer = new FileWriter(""); 
+      writer = new FileWriter("");
     } catch (Exception e) {
 
     } finally {

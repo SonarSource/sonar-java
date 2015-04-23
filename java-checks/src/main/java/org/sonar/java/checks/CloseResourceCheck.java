@@ -35,6 +35,8 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -49,6 +51,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -313,6 +316,58 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         scan(tree.elseStatement());
         executionState = thenES.parent.overrideBy(thenES.merge(elseES));
       }
+    }
+
+    @Override
+    public void visitSwitchStatement(SwitchStatementTree tree) {
+      scan(tree.expression());
+      ExecutionState caseGroupsES = new ExecutionState(executionState);
+      executionState = new ExecutionState(caseGroupsES.parent);
+      for (CaseGroupTree caseGroupTree : tree.cases()) {
+        for (StatementTree statement : caseGroupTree.body()) {
+          if (isBreakOrReturnStatement(statement)) {
+            caseGroupsES = executionState.merge(caseGroupsES);
+            executionState = new ExecutionState(caseGroupsES.parent);
+          } else {
+            scan(statement);
+          }
+        }
+      }
+      if (!lastStatementIsBreakOrReturn(tree)) {
+        // merge the last execution state
+        caseGroupsES = executionState.merge(caseGroupsES);
+      }
+
+      if (switchContainsDefaultLabel(tree)) {
+        // the default block guarantees that we will cover all the paths
+        executionState = caseGroupsES.parent.overrideBy(caseGroupsES);
+      } else {
+        executionState = caseGroupsES.parent.merge(caseGroupsES);
+      }
+    }
+
+    private boolean isBreakOrReturnStatement(StatementTree statement) {
+      return statement.is(Tree.Kind.BREAK_STATEMENT, Tree.Kind.RETURN_STATEMENT);
+    }
+
+    private boolean switchContainsDefaultLabel(SwitchStatementTree tree) {
+      for (CaseGroupTree caseGroupTree : tree.cases()) {
+        for (CaseLabelTree label : caseGroupTree.labels()) {
+          if ("default".equals(label.caseOrDefaultKeyword().text())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    private boolean lastStatementIsBreakOrReturn(SwitchStatementTree tree) {
+      List<CaseGroupTree> cases = tree.cases();
+      if (!cases.isEmpty()) {
+        List<StatementTree> lastStatements = cases.get(cases.size() - 1).body();
+        return !lastStatements.isEmpty() && isBreakOrReturnStatement(lastStatements.get(lastStatements.size() - 1));
+      }
+      return false;
     }
 
     @Override
