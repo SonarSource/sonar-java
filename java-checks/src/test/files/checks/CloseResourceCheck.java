@@ -47,8 +47,9 @@ class A {
     Formatter formatter = new Formatter(); // Compliant - (unknown) as Closeable instance is later used as method parameter
     myMethod(formatter);
 
-    FileInputStream fis = getFileInputStream(); // Compliant - Closeable is retrieved from unknown location
+    FileInputStream fis = getFileInputStream(); // Compliant - Closeable is retrieved but then used as argument
     fis.available();
+    myMethod(fis);
 
     br = new BufferedReader(new FileReader("")); // Compliant - only look at local variables
 
@@ -99,6 +100,13 @@ class A {
     } else {
       reader2.close();
     }
+    
+    Reader reader3 = new FileReader(""); // Noncompliant {{Close this "Reader"}}
+    if (test) {
+      reader3 = new FileReader(""); 
+    } else {
+      reader3 = new FileReader(""); 
+    }
 
     // Noncompliant@+1 {{Close this "Writer"}}
     Writer writer = new FileWriter(""); // One branch is missing
@@ -131,16 +139,18 @@ class A {
 
     FileInputStream fis1; // Compliant - has an unknown status
     if (test) {
-      fis1 = new FileInputStream("");
+      fis1 = new FileInputStream(""); // OPEN
+      myMethod(fis1);                 // UNKNOWN
     } else {
-      fis1 = getFileInputStream();
+      fis1 = getFileInputStream();    // UNKNOWN
     }
 
     FileInputStream fis2; // Compliant - has an unknown status
     if (test) {
-      fis2 = getFileInputStream();
+      fis2 = getFileInputStream(); // UNKNOWN
+      myMethod(fis2);
     } else {
-      fis2 = new FileInputStream("");
+      fis2 = new FileInputStream("");  // OPEN
     }
 
     // Noncompliant@+1 {{Close this "FileInputStream"}}

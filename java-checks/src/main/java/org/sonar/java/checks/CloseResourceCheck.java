@@ -398,12 +398,13 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
     private void addCloseable(Symbol symbol, Tree lastAssignmentTree, @Nullable ExpressionTree assignmentExpression) {
       CloseableOccurence newOccurence = new CloseableOccurence(lastAssignmentTree, getCloseableStateFromExpression(symbol, assignmentExpression));
-      CloseableOccurence currentOccurence = getCloseableOccurence(symbol);
-      if (currentOccurence != null) {
-        if (currentOccurence.state.isOpen()) {
-          insertIssue(currentOccurence.lastAssignment);
+      CloseableOccurence knownOccurence = getCloseableOccurence(symbol);
+      if (knownOccurence != null) {
+        CloseableOccurence currentOccurence = closeableOccurenceBySymbol.get(symbol);
+        if (currentOccurence != null && currentOccurence.state.isOpen()) {
+          insertIssue(knownOccurence.lastAssignment);
         }
-        if (!currentOccurence.state.isIgnored()) {
+        if (!knownOccurence.state.isIgnored()) {
           closeableOccurenceBySymbol.put(symbol, newOccurence);
         }
       } else {
@@ -434,15 +435,23 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
     private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {
       for (ExpressionTree argument : arguments) {
-        if (argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments())) {
+        if (isNewClassWithIgnoredArguments(argument)) {
           return true;
-        } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments())) {
+        } else if (isMethodInvocationWithIgnoredArguments(argument)) {
           return true;
         } else if (useIgnoredCloseable(argument)) {
           return true;
         }
       }
       return false;
+    }
+
+    private boolean isNewClassWithIgnoredArguments(ExpressionTree argument) {
+      return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments());
+    }
+
+    private boolean isMethodInvocationWithIgnoredArguments(ExpressionTree argument) {
+      return argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments());
     }
 
     private boolean useIgnoredCloseable(ExpressionTree expression) {
