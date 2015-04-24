@@ -132,12 +132,16 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind kind = getKind(tree);
     Tree.Kind peek = stack.peek();
-    if (peek != null && peek != kind && !isRelationalNestedInLogical(peek, kind) && !isNestedInRelational(peek, kind) && !isArithmeticException(peek, kind)) {
+    if (peek != null && peek != kind && !isException(peek, kind)) {
       raiseIssue(tree);
     }
     stack.push(kind);
     super.visitBinaryExpression(tree);
     stack.pop();
+  }
+
+  private boolean isException(Tree.Kind peek, Tree.Kind kind) {
+    return isRelationalNestedInLogical(peek, kind) || isNestedInRelational(peek, kind) || isArithmeticException(peek, kind);
   }
 
   private boolean isNestedInRelational(Tree.Kind base, Tree.Kind nested) {

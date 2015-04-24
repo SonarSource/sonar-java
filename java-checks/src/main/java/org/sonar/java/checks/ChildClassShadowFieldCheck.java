@@ -80,7 +80,7 @@ public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
             addIssue(memberTree, String.format("\"%s\" is the name of a field in \"%s\".", fieldName, symbol.name()));
             return;
           }
-          if (member.name().toUpperCase().equals(fieldName.toUpperCase())) {
+          if (member.name().equalsIgnoreCase(fieldName)) {
             addIssue(memberTree, String.format("\"%s\" differs only by case from \"%s\" in \"%s\".", fieldName, member.name(), symbol.name()));
             return;
           }
