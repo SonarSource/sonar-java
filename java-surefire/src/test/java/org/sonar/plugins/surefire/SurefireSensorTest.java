@@ -36,6 +36,7 @@ import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsResource;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.api.SurefireUtils;
@@ -61,11 +62,13 @@ public class SurefireSensorTest {
   private JavaResourceLocator javaResourceLocator;
   private SurefireSensor surefireSensor;
   private DefaultFileSystem fs;
+  private PathResolver pathResolver = new PathResolver();
 
   @Before
   public void before() {
     project = mock(Project.class);
     fs = new DefaultFileSystem();
+    fs.setBaseDir(new File("src/test/resource"));
     DefaultInputFile javaFile = new DefaultInputFile("src/org/foo/java");
     javaFile.setLanguage("java");
     fs.add(javaFile);
@@ -79,7 +82,7 @@ public class SurefireSensorTest {
       }
     });
 
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs, pathResolver);
   }
 
   private org.sonar.api.resources.File resource(String key) {
@@ -90,13 +93,13 @@ public class SurefireSensorTest {
 
   @Test
   public void should_execute_if_filesystem_contains_java_files() {
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs, pathResolver);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isTrue();
   }
 
   @Test
   public void should_not_execute_if_filesystem_does_not_contains_java_files() {
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem());
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem(), pathResolver);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isFalse();
   }
 
@@ -111,7 +114,7 @@ public class SurefireSensorTest {
     Project project = mock(Project.class);
     when(project.getFileSystem()).thenReturn(projectFileSystem);
 
-    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings, fs);
+    SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings, fs, pathResolver);
     surefireSensor.analyse(project, mockContext());
   }
 

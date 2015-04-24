@@ -19,10 +19,13 @@
  */
 package org.sonar.plugins.surefire.api;
 
-import org.sonar.api.batch.maven.MavenPlugin;
-import org.sonar.api.batch.maven.MavenSurefireUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.PathResolver;
+
+import javax.annotation.CheckForNull;
 
 import java.io.File;
 
@@ -31,43 +34,31 @@ import java.io.File;
  */
 public final class SurefireUtils {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(SurefireUtils.class);
   public static final String SUREFIRE_REPORTS_PATH_PROPERTY = "sonar.junit.reportsPath";
 
-  public static File getReportsDirectory(Settings settings, Project project) {
-    File dir = getReportsDirectoryFromProperty(settings, project);
+  private SurefireUtils() {
+  }
+
+  public static File getReportsDirectory(Settings settings, FileSystem fs, PathResolver pathResolver) {
+    File dir = getReportsDirectoryFromProperty(settings, fs, pathResolver);
     if (dir == null) {
-      dir = getReportsDirectoryFromPluginConfiguration(project);
-    }
-    if (dir == null) {
-      dir = getReportsDirectoryFromDefaultConfiguration(project);
+      dir = new File(fs.baseDir(), "target/surefire-reports");
     }
     return dir;
   }
 
-  private static File getReportsDirectoryFromProperty(Settings settings, Project project) {
+  @CheckForNull
+  private static File getReportsDirectoryFromProperty(Settings settings, FileSystem fs, PathResolver pathResolver) {
     String path = settings.getString(SUREFIRE_REPORTS_PATH_PROPERTY);
     if (path != null) {
-      return project.getFileSystem().resolvePath(path);
-    }
-    return null;
-  }
-
-  private static File getReportsDirectoryFromPluginConfiguration(Project project) {
-    MavenPlugin plugin = MavenPlugin.getPlugin(project.getPom(), MavenSurefireUtils.GROUP_ID, MavenSurefireUtils.ARTIFACT_ID);
-    if (plugin != null) {
-      String path = plugin.getParameter("reportsDirectory");
-      if (path != null) {
-        return project.getFileSystem().resolvePath(path);
+      try {
+        return pathResolver.relativeFile(fs.baseDir(), path);
+      } catch (Exception e) {
+        LOGGER.info("Surefire report path: "+fs.baseDir()+"/"+path +" not found.");
       }
     }
     return null;
-  }
-
-  private static File getReportsDirectoryFromDefaultConfiguration(Project project) {
-    return new File(project.getFileSystem().getBuildDir(), "surefire-reports");
-  }
-
-  private SurefireUtils() {
   }
 
 }
