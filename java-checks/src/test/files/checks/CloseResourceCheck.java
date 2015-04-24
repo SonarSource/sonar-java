@@ -68,7 +68,7 @@ class A {
     return (Closeable) raf;
   }
 
-  void closeable_not_closed_in_loops(Collection<Object> objects) throws Exception {
+  void closeable_not_closed_in_loops(Collection<Object> objects, Collection<String> propertyList) throws Exception {
     Reader reader = null;
     for (int i = 0; i < MAX_LOOP; i++) {
       reader = new FileReader(""); // Noncompliant {{Close this "Reader"}}
@@ -125,6 +125,30 @@ class A {
       fis2 = new FileInputStream(""); // Compliant
       fis2.close();
     } while (true);
+    
+    OutputStream stream = null;
+    try{
+      for (String property : propertyList) {
+        stream = new FileOutputStream("myfile.txt");  // Noncompliant {{Close this "OutputStream"}}
+        // ...
+      }
+    }catch(Exception e){
+      // ...
+    }finally{
+      stream.close();  // Multiple stream were opened. Only the last is closed.
+    }
+    
+    OutputStream stream2 = null;
+    try{
+      stream2 = new FileOutputStream("myfile.txt");  // Compliant
+      for (String property : propertyList) {
+        // ...
+      }
+    }catch(Exception e){
+      // ...
+    }finally{
+      stream2.close();  // Multiple stream were opened. Only the last is closed.
+    }
   }
 
   void closeable_not_closed_in_every_paths_when_using_if(boolean test, int x) throws Exception {
