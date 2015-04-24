@@ -27,6 +27,7 @@ import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
@@ -39,11 +40,13 @@ public class SurefireSensor implements Sensor {
   private final SurefireJavaParser surefireJavaParser;
   private final Settings settings;
   private final FileSystem fs;
+  private final PathResolver pathResolver;
 
-  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings, FileSystem fs) {
+  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings, FileSystem fs, PathResolver pathResolver) {
     this.surefireJavaParser = surefireJavaParser;
     this.settings = settings;
     this.fs = fs;
+    this.pathResolver = pathResolver;
   }
 
   @Override
@@ -53,7 +56,7 @@ public class SurefireSensor implements Sensor {
 
   @Override
   public void analyse(Project project, SensorContext context) {
-    File dir = SurefireUtils.getReportsDirectory(settings, project);
+    File dir = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
     collect(context, dir);
   }
 
