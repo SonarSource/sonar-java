@@ -515,9 +515,9 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     }
 
     private State getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
-      if (shouldBeIgnored(symbol) || shouldBeIgnored(expression)) {
+      if (shouldBeIgnored(symbol, expression)) {
         return State.IGNORED;
-      } else if (expression == null || expression.is(Tree.Kind.NULL_LITERAL)) {
+      } else if (isNull(expression)) {
         return State.NULL;
       } else if (expression.is(Tree.Kind.NEW_CLASS)) {
         if (usesIgnoredCloseableAsArgument(((NewClassTree) expression).arguments())) {
@@ -527,6 +527,14 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       }
       // TODO SONARJAVA-1029 : Engine currently ignore closeables which are retrieved from method calls. Handle them as OPEN.
       return State.IGNORED;
+    }
+
+    private static boolean isNull(ExpressionTree expression) {
+      return expression == null || expression.is(Tree.Kind.NULL_LITERAL);
+    }
+
+    private static boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
+      return shouldBeIgnored(symbol) || shouldBeIgnored(expression);
     }
 
     private static boolean shouldBeIgnored(Symbol symbol) {
