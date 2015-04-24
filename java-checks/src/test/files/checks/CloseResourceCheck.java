@@ -13,6 +13,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.Formatter;
 import java.util.Collection;
+
 import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
 
 class A {
@@ -458,7 +459,38 @@ class A {
       
     }
   }
+  
 
+
+  InputStream closeable_used_in_anonymous_or_inner_classes_should_be_ignored() throws Exception {
+    final InputStream is = new FileInputStream(""); // Compliant - Closeable is used in returned anonymous class
+    final OutputStream os = new FileOutputStream(""); // Compliant - Closeable is used in inner class
+    
+    class MyClass {
+      void doSomething() throws IOException {
+        os.read();
+        os.close();
+      }
+    }
+      
+    new MyClass().doSomething();
+    
+    return new InputStream() {
+
+      @Override
+      public void close() throws IOException {
+        is.close();
+        super.close();
+      }
+
+      @Override
+      public int read() throws IOException {
+        is.close();
+        return 0;
+      }
+    };
+  }
+  
   void myMethod(Closeable closeable) {
   }
 

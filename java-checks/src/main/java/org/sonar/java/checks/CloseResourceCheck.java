@@ -530,7 +530,8 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     }
 
     private static boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
-      return isIgnoredCloseableSubtype(symbol.type())
+      return symbol.isFinal()
+        || isIgnoredCloseableSubtype(symbol.type())
         || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type())
         || (expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()));
     }
