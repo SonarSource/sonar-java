@@ -55,7 +55,7 @@ public class SurefireUtilsTest {
     fs.setBaseDir(project.getFileSystem().getBasedir());
     PathResolver pathResolver = new PathResolver();
     File directory = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
-    assertThat(directory.getCanonicalPath()).endsWith("target/surefire-reports");
+    assertThat(directory.getCanonicalPath()).endsWith("target"+File.separator+"surefire-reports");
     assertThat(directory.exists()).isFalse();
     assertThat(directory.isDirectory()).isFalse();
   }
