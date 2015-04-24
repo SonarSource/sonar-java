@@ -515,7 +515,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     }
 
     private State getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
-      if (shouldBeIgnored(symbol, expression)) {
+      if (shouldBeIgnored(symbol) || shouldBeIgnored(expression)) {
         return State.IGNORED;
       } else if (expression == null || expression.is(Tree.Kind.NULL_LITERAL)) {
         return State.NULL;
@@ -529,11 +529,14 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       return State.IGNORED;
     }
 
-    private static boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
+    private static boolean shouldBeIgnored(Symbol symbol) {
       return symbol.isFinal()
         || isIgnoredCloseableSubtype(symbol.type())
-        || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type())
-        || (expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()));
+        || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
+    }
+
+    private static boolean shouldBeIgnored(@Nullable ExpressionTree expression) {
+      return expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType());
     }
 
     private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {
