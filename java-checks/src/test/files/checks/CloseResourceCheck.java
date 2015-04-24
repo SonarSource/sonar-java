@@ -85,21 +85,23 @@ class A {
     for (;;) {
       reader3 = new FileReader(""); // Compliant
       reader3.close();
-      break;
     }
+    
+    int j = 0;
 
     InputStream is = null;
-    while (true) {
+    while (j < MAX_LOOP) {
       is = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
-      break;
+      j++;
     }
     is.close();
     
+    j = 0;
     InputStream is2 = null;
-    while (true) {
+    while (j < MAX_LOOP) {
       is2 = new FileInputStream(""); // Compliant
       is2.close();
-      break;
+      j++;
     }
     
     Writer writer = null;
@@ -114,17 +116,21 @@ class A {
       writer2.close();
     }
     
+    j = 0;
     FileInputStream fis = null;
     do {
       fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream"}}
-      break;
-    } while (true);
+      j++;
+    } while (j < MAX_LOOP);
+    fis.close();
     
+    j = 0;
     FileInputStream fis2 = null;
     do {
       fis2 = new FileInputStream(""); // Compliant
       fis2.close();
-    } while (true);
+      j++;
+    } while (j < MAX_LOOP);
     
     OutputStream stream = null;
     try{
@@ -393,13 +399,13 @@ class A {
       fileWriter.close();
     }
     
-    try (BufferedReader br = new BufferedReader(new FileReader(""))) { // Compliant
+    try (BufferedReader br = new BufferedReader(new FileReader(""))) { // Compliant - JLS8 - 14.20.3 : try-with-resources
       // ...
     } catch (Exception e) {
       // ...
     }
     
-    try (FileWriter fw = new FileWriter("")) { // Compliant
+    try (FileWriter fw = new FileWriter("")) { // Compliant - JLS8 - 14.20.3 : try-with-resources
       fw.write("hello");
     } catch (Exception e) {
       // ...

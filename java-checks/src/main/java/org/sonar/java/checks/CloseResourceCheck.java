@@ -378,8 +378,8 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitDoWhileStatement(DoWhileStatementTree tree) {
-      scan(tree.statement());
-      tree.condition().accept(this);
+      visitStatement(tree.statement());
+      scan(tree.condition());
     }
 
     @Override
