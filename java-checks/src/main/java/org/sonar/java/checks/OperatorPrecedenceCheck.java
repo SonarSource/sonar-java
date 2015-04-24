@@ -71,14 +71,17 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind.XOR_ASSIGNMENT
     );
 
+  private static final Set<Tree.Kind> EQUALITY_OPERATORS = ImmutableSet.of(
+    Tree.Kind.EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO
+    );
+
   private static final Set<Tree.Kind> LOGICAL_OPERATORS = ImmutableSet.of(
     Tree.Kind.CONDITIONAL_AND,
     Tree.Kind.CONDITIONAL_OR
     );
 
   private static final Set<Tree.Kind> RELATIONAL_OPERATORS = ImmutableSet.of(
-    Tree.Kind.EQUAL_TO,
-    Tree.Kind.NOT_EQUAL_TO,
     Tree.Kind.GREATER_THAN,
     Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
     Tree.Kind.LESS_THAN,
@@ -129,7 +132,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind kind = getKind(tree);
     Tree.Kind peek = stack.peek();
-    if (peek != null && peek != kind && !isRelationalNestedInLogical(peek, kind) && !isNestedInRelational(peek, kind)) {
+    if (peek != null && peek != kind && !isRelationalNestedInLogical(peek, kind) && !isNestedInRelational(peek, kind) && !isArithmeticException(peek, kind)) {
       raiseIssue(tree);
     }
     stack.push(kind);
@@ -137,12 +140,29 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.pop();
   }
 
-  private boolean isRelationalNestedInLogical(Tree.Kind base, Tree.Kind nested) {
-    return LOGICAL_OPERATORS.contains(base) && RELATIONAL_OPERATORS.contains(nested);
+  private boolean isNestedInRelational(Tree.Kind base, Tree.Kind nested) {
+    // exception: a + 1 == 2
+    // however, makes sure to raise an issue for e.g. a >= b == 2, since >= has greater precedence than ==
+    return (EQUALITY_OPERATORS.contains(base) && !RELATIONAL_OPERATORS.contains(nested)) || RELATIONAL_OPERATORS.contains(base);
   }
 
-  private boolean isNestedInRelational(Tree.Kind base, Tree.Kind nested) {
-    return RELATIONAL_OPERATORS.contains(base);
+  private boolean isArithmeticException(Tree.Kind base, Tree.Kind nested) {
+    // exception: a + b - c
+    if (base == Tree.Kind.MINUS && nested == Tree.Kind.PLUS) {
+      return true;
+    }
+    // exception: a * b / c
+    // exception: a * b - c
+    // exception: a * b + c
+    if ((base == Tree.Kind.DIVIDE || base == Tree.Kind.MINUS || base == Tree.Kind.PLUS) && nested == Tree.Kind.MULTIPLY) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isRelationalNestedInLogical(Tree.Kind base, Tree.Kind nested) {
+    // exception: a == b || ...
+    return LOGICAL_OPERATORS.contains(base) && (EQUALITY_OPERATORS.contains(nested) || RELATIONAL_OPERATORS.contains(nested));
   }
 
   @Override
