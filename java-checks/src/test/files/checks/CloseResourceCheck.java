@@ -248,6 +248,22 @@ class A {
   }
 
   void closeable_not_closed_in_every_paths_when_using_switch(MyEnum enumValue) throws Exception {
+    FileWriter fw = new FileWriter(""); // False-negative : NonCompliant {{Close this "FileWriter"}}
+    switch (enumValue) {
+      case A:
+        // known engine limitation: break statements are ignored when within other statements
+        if ("UTF-8".equals(fw.getEncoding())) {
+          fw.close();
+          break; // exit switch case with fw = CLOSED
+        } else{
+          fw.write("");
+          break;  // exit switch case with fw = OPEN --> should be non compliant
+        }
+      default:
+        fw.close();
+        break;
+    }
+    
     Reader reader = new FileReader(""); // Compliant
     switch (enumValue) {
       case A:
@@ -352,11 +368,11 @@ class A {
     }
     w7.close();
     
-    Writer w8; // Compliant (last statement does not contain a break)
+    Writer w8; // Compliant (empty switch)
     switch (enumValue) {
     }
     
-    Writer w9; // Compliant (last statement does not contain a break)
+    Writer w9; // Compliant (no statements)
     switch (enumValue) {
       case A:
     }

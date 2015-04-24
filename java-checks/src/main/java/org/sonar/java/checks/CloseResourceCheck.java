@@ -321,13 +321,13 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitSwitchStatement(SwitchStatementTree tree) {
       scan(tree.expression());
-      ExecutionState caseGroupsES = new ExecutionState(executionState);
-      executionState = new ExecutionState(caseGroupsES.parent);
+      ExecutionState resultingES = new ExecutionState(executionState);
+      executionState = new ExecutionState(executionState);
       for (CaseGroupTree caseGroupTree : tree.cases()) {
         for (StatementTree statement : caseGroupTree.body()) {
           if (isBreakOrReturnStatement(statement)) {
-            caseGroupsES = executionState.merge(caseGroupsES);
-            executionState = new ExecutionState(caseGroupsES.parent);
+            resultingES = executionState.merge(resultingES);
+            executionState = new ExecutionState(resultingES.parent);
           } else {
             scan(statement);
           }
@@ -335,14 +335,14 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       }
       if (!lastStatementIsBreakOrReturn(tree)) {
         // merge the last execution state
-        caseGroupsES = executionState.merge(caseGroupsES);
+        resultingES = executionState.merge(resultingES);
       }
 
       if (switchContainsDefaultLabel(tree)) {
         // the default block guarantees that we will cover all the paths
-        executionState = caseGroupsES.parent.overrideBy(caseGroupsES);
+        executionState = resultingES.parent.overrideBy(resultingES);
       } else {
-        executionState = caseGroupsES.parent.merge(caseGroupsES);
+        executionState = resultingES.parent.merge(resultingES);
       }
     }
 
