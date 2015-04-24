@@ -43,12 +43,14 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
 
+  private static final String ASSERT = "assert";
+
   @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return Lists.newArrayList(
-      MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.TestCase").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+      MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
+      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
+      MethodInvocationMatcher.create().typeDefinition("junit.framework.TestCase").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
       MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter("boolean")
       );
   }
