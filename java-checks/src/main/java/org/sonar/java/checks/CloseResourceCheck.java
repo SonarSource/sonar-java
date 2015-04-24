@@ -35,9 +35,14 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -45,10 +50,13 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -310,6 +318,91 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       }
     }
 
+    @Override
+    public void visitSwitchStatement(SwitchStatementTree tree) {
+      scan(tree.expression());
+      ExecutionState resultingES = new ExecutionState(executionState);
+      executionState = new ExecutionState(executionState);
+      for (CaseGroupTree caseGroupTree : tree.cases()) {
+        for (StatementTree statement : caseGroupTree.body()) {
+          if (isBreakOrReturnStatement(statement)) {
+            resultingES = executionState.merge(resultingES);
+            executionState = new ExecutionState(resultingES.parent);
+          } else {
+            scan(statement);
+          }
+        }
+      }
+      if (!lastStatementIsBreakOrReturn(tree)) {
+        // merge the last execution state
+        resultingES = executionState.merge(resultingES);
+      }
+
+      if (switchContainsDefaultLabel(tree)) {
+        // the default block guarantees that we will cover all the paths
+        executionState = resultingES.parent.overrideBy(resultingES);
+      } else {
+        executionState = resultingES.parent.merge(resultingES);
+      }
+    }
+
+    private boolean isBreakOrReturnStatement(StatementTree statement) {
+      return statement.is(Tree.Kind.BREAK_STATEMENT, Tree.Kind.RETURN_STATEMENT);
+    }
+
+    private boolean switchContainsDefaultLabel(SwitchStatementTree tree) {
+      for (CaseGroupTree caseGroupTree : tree.cases()) {
+        for (CaseLabelTree label : caseGroupTree.labels()) {
+          if ("default".equals(label.caseOrDefaultKeyword().text())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    private boolean lastStatementIsBreakOrReturn(SwitchStatementTree tree) {
+      List<CaseGroupTree> cases = tree.cases();
+      if (!cases.isEmpty()) {
+        List<StatementTree> lastStatements = cases.get(cases.size() - 1).body();
+        return !lastStatements.isEmpty() && isBreakOrReturnStatement(lastStatements.get(lastStatements.size() - 1));
+      }
+      return false;
+    }
+
+    @Override
+    public void visitWhileStatement(WhileStatementTree tree) {
+      scan(tree.condition());
+      visitStatement(tree.statement());
+    }
+
+    @Override
+    public void visitDoWhileStatement(DoWhileStatementTree tree) {
+      visitStatement(tree.statement());
+      scan(tree.condition());
+    }
+
+    @Override
+    public void visitForStatement(ForStatementTree tree) {
+      scan(tree.condition());
+      scan(tree.initializer());
+      scan(tree.update());
+      visitStatement(tree.statement());
+    }
+
+    @Override
+    public void visitForEachStatement(ForEachStatement tree) {
+      scan(tree.variable());
+      scan(tree.expression());
+      visitStatement(tree.statement());
+    }
+
+    private void visitStatement(StatementTree tree) {
+      executionState = new ExecutionState(executionState);
+      scan(tree);
+      executionState = executionState.restoreParent();
+    }
+
     private Set<Symbol> extractCloseableSymbols(List<VariableTree> variableTrees) {
       Set<Symbol> symbols = Sets.newHashSet();
       for (VariableTree variableTree : variableTrees) {
@@ -368,6 +461,27 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       return this;
     }
 
+    public ExecutionState overrideBy(ExecutionState currentES) {
+      for (Entry<Symbol, CloseableOccurence> entry : currentES.closeableOccurenceBySymbol.entrySet()) {
+        Symbol symbol = entry.getKey();
+        CloseableOccurence occurence = entry.getValue();
+        if (getCloseableOccurence(symbol) != null) {
+          markAs(symbol, occurence.state);
+        } else {
+          closeableOccurenceBySymbol.put(symbol, occurence);
+        }
+      }
+      return this;
+    }
+
+    public ExecutionState restoreParent() {
+      if (parent != null) {
+        insertIssues();
+        return parent.merge(this);
+      }
+      return this;
+    }
+
     private void insertIssues() {
       for (Tree tree : getUnclosedClosables()) {
         insertIssue(tree);
@@ -384,26 +498,15 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
       check.addIssue(tree, "Close this \"" + type.name() + "\"");
     }
 
-    public ExecutionState overrideBy(ExecutionState currentES) {
-      for (Entry<Symbol, CloseableOccurence> entry : currentES.closeableOccurenceBySymbol.entrySet()) {
-        Symbol symbol = entry.getKey();
-        CloseableOccurence occurence = entry.getValue();
-        markAs(symbol, occurence.state);
-        if (!closeableOccurenceBySymbol.containsKey(symbol)) {
-          closeableOccurenceBySymbol.put(symbol, occurence);
-        }
-      }
-      return this;
-    }
-
     private void addCloseable(Symbol symbol, Tree lastAssignmentTree, @Nullable ExpressionTree assignmentExpression) {
       CloseableOccurence newOccurence = new CloseableOccurence(lastAssignmentTree, getCloseableStateFromExpression(symbol, assignmentExpression));
-      CloseableOccurence currentOccurence = getCloseableOccurence(symbol);
-      if (currentOccurence != null) {
-        if (currentOccurence.state.isOpen()) {
-          insertIssue(currentOccurence.lastAssignment);
+      CloseableOccurence knownOccurence = getCloseableOccurence(symbol);
+      if (knownOccurence != null) {
+        CloseableOccurence currentOccurence = closeableOccurenceBySymbol.get(symbol);
+        if (currentOccurence != null && currentOccurence.state.isOpen()) {
+          insertIssue(knownOccurence.lastAssignment);
         }
-        if (!currentOccurence.state.isIgnored()) {
+        if (!knownOccurence.state.isIgnored()) {
           closeableOccurenceBySymbol.put(symbol, newOccurence);
         }
       } else {
@@ -427,22 +530,31 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     }
 
     private static boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
-      return isIgnoredCloseableSubtype(symbol.type())
+      return symbol.isFinal()
+        || isIgnoredCloseableSubtype(symbol.type())
         || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type())
         || (expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()));
     }
 
     private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {
       for (ExpressionTree argument : arguments) {
-        if (argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments())) {
+        if (isNewClassWithIgnoredArguments(argument)) {
           return true;
-        } else if (argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments())) {
+        } else if (isMethodInvocationWithIgnoredArguments(argument)) {
           return true;
-        } else if (useIgnoredCloseable(argument)) {
+        } else if (useIgnoredCloseable(argument) || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType())) {
           return true;
         }
       }
       return false;
+    }
+
+    private boolean isNewClassWithIgnoredArguments(ExpressionTree argument) {
+      return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments());
+    }
+
+    private boolean isMethodInvocationWithIgnoredArguments(ExpressionTree argument) {
+      return argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments());
     }
 
     private boolean useIgnoredCloseable(ExpressionTree expression) {
