@@ -20,6 +20,7 @@ class A {
     org.junit.Assert.assertEquals(true, true); // Noncompliant
     org.junit.Assert.assertThat(true, null); // Noncompliant
     org.junit.Assert.assertThat("", not(false)); // Compliant
+    new junit.framework.TestCase().assertTrue(true); // Noncompliant
   }
 
 }

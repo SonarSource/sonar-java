@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -45,6 +46,11 @@ import java.util.List;
 @ActivatedByDefault
 public class AssertionInThreadRunCheck extends SubscriptionBaseVisitor {
 
+  private static final Iterable<String> CHECKED_TYPES = Lists.newArrayList("org.junit.Assert",
+      "junit.framework.Assert",
+      "junit.framework.TestCase",
+      "org.fest.assertions.Assertions");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD);
@@ -67,10 +73,19 @@ public class AssertionInThreadRunCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Type type = tree.symbol().owner().type();
-      if (type.is("org.junit.Assert") || type.is("junit.framework.Assert") || type.is("org.fest.assertions.Assertions")) {
+      if (isCheckedType(type)) {
         addIssue(tree, "Remove this assertion.");
       }
       super.visitMethodInvocation(tree);
+    }
+
+    private boolean isCheckedType(Type type) {
+      for (String checkedType : CHECKED_TYPES) {
+        if(type.is(checkedType)) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 }
