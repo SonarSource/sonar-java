@@ -11,6 +11,33 @@ It is quite likely that the code does not match the programmer's intent.
 Either the condition should be removed or it should be updated so that it does not always evaluate to TRUE or FALSE.
 </p>
 
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+//foo can't be both equal and not equal to bar in the same expression
+if( foo == bar &amp;&amp; something &amp;&amp; foo != bar) {...}
+
+private void compute(int foo) {
+  if ( foo == 4 ) {
+    doSomething();
+    // We know that foo is equal to 4 at this point and so the next condition is always false
+    if ( foo &gt; 4 ) {...}
+    ...
+  }
+  ...
+}
+
+private void compute(boolean foo) {
+  if ( foo ) {
+    return;
+  }
+  doSomething();
+  // foo is always false here
+  if ( foo ) {...}
+  ...
+}
+</pre>
+
 <h2>See</h2>
 <ul>
   <li><a href="http://cwe.mitre.org/data/definitions/489">MITRE, CWE-489</a> - Leftover Debug Code</li>
