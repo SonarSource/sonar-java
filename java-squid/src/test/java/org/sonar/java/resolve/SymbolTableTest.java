@@ -253,7 +253,7 @@ public class SymbolTableTest {
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedEnum");
     assertThat(typeSymbol.owner()).isSameAs(interfaceSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM | Flags.STATIC);
   }
 
   @Test
@@ -262,7 +262,7 @@ public class SymbolTableTest {
 
     JavaSymbol.TypeJavaSymbol enumSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Declaration");
     assertThat(enumSymbol.owner()).isSameAs(result.symbol("EnumDeclaration"));
-    assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM);
+    assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM | Flags.STATIC);
 
     JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType)enumSymbol.getSuperclass();
     JavaSymbol.TypeJavaSymbol superclass = superType.symbol;
@@ -356,7 +356,7 @@ public class SymbolTableTest {
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedEnum");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM | Flags.STATIC);
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedAnnotationType");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
