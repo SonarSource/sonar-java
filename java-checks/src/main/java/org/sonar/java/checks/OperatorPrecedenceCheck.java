@@ -23,6 +23,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Table;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -35,6 +36,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -56,7 +58,7 @@ import java.util.Set;
 @SqaleConstantRemediation("2min")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Table<Tree.Kind, Tree.Kind, Boolean> TABLE;
+  private static final Table<Tree.Kind, Tree.Kind, Boolean> OPERATORS_RELATION_TABLE;
 
   private static final Set<Tree.Kind> ARITHMETIC_OPERATORS = ImmutableSet.of(
     Tree.Kind.MINUS,
@@ -74,13 +76,13 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
     for (Tree.Kind first : firstSet) {
       for (Tree.Kind second : secondSet) {
-        TABLE.put(first, second, true);
+        OPERATORS_RELATION_TABLE.put(first, second, true);
       }
     }
   }
 
   static {
-    TABLE = HashBasedTable.create();
+    OPERATORS_RELATION_TABLE = HashBasedTable.create();
     put(ARITHMETIC_OPERATORS, Iterables.concat(SHIFT_OPERATORS, ImmutableSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
     put(SHIFT_OPERATORS, Iterables.concat(ARITHMETIC_OPERATORS, ImmutableSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
     put(ImmutableSet.of(Tree.Kind.AND), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, ImmutableSet.of(Tree.Kind.XOR, Tree.Kind.OR)));
@@ -124,12 +126,16 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind peek = stack.peek();
     Tree.Kind kind = getKind(tree);
-    if (Boolean.TRUE.equals(TABLE.get(peek, kind))) {
+    if (requiresParenthesis(peek, kind)) {
       raiseIssue(tree);
     }
     stack.push(kind);
     super.visitBinaryExpression(tree);
     stack.pop();
+  }
+
+  private boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
+    return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(kind1, kind2));
   }
 
   @Override
