@@ -67,6 +67,15 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind.PLUS
     );
 
+  private static final Set<Tree.Kind> EQUALITY_RELATIONAL_OPERATORS = ImmutableSet.of(
+    Tree.Kind.EQUAL_TO,
+    Tree.Kind.GREATER_THAN,
+    Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
+    Tree.Kind.LESS_THAN,
+    Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO
+    );
+
   private static final Set<Tree.Kind> SHIFT_OPERATORS = ImmutableSet.of(
     Tree.Kind.LEFT_SHIFT,
     Tree.Kind.RIGHT_SHIFT,
@@ -136,6 +145,15 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
     return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(kind1, kind2));
+  }
+
+  @Override
+  public void visitIfStatement(IfStatementTree tree) {
+    super.visitIfStatement(tree);
+    ExpressionTree condition = tree.condition();
+    if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(getKind(((AssignmentExpressionTree) condition).expression()))) {
+      raiseIssue(tree);
+    }
   }
 
   @Override

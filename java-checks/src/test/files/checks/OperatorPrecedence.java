@@ -87,5 +87,10 @@ public class Class {
     1 ^ 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
     1 && 2 || 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+
+    if ( a = b = c) { // Compliant
+    }
+    if ( a = b == c) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    }
   }
 }
