@@ -19,7 +19,11 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Table;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -31,15 +35,13 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -56,37 +58,48 @@ import java.util.Set;
 @SqaleConstantRemediation("2min")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Set<Tree.Kind> ASSIGNMENT_OPERATORS = ImmutableSet.of(
-    Tree.Kind.AND_ASSIGNMENT,
-    Tree.Kind.ASSIGNMENT,
-    Tree.Kind.DIVIDE_ASSIGNMENT,
-    Tree.Kind.LEFT_SHIFT_ASSIGNMENT,
-    Tree.Kind.MINUS_ASSIGNMENT,
-    Tree.Kind.MULTIPLY_ASSIGNMENT,
-    Tree.Kind.OR_ASSIGNMENT,
-    Tree.Kind.PLUS_ASSIGNMENT,
-    Tree.Kind.REMAINDER_ASSIGNMENT,
-    Tree.Kind.RIGHT_SHIFT_ASSIGNMENT,
-    Tree.Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
-    Tree.Kind.XOR_ASSIGNMENT
+  private static final Table<Tree.Kind, Tree.Kind, Boolean> OPERATORS_RELATION_TABLE;
+
+  private static final Set<Tree.Kind> ARITHMETIC_OPERATORS = ImmutableSet.of(
+    Tree.Kind.MINUS,
+    Tree.Kind.REMAINDER,
+    Tree.Kind.MULTIPLY,
+    Tree.Kind.PLUS
     );
 
-  private static final Set<Tree.Kind> EQUALITY_OPERATORS = ImmutableSet.of(
+  private static final Set<Tree.Kind> EQUALITY_RELATIONAL_OPERATORS = ImmutableSet.of(
     Tree.Kind.EQUAL_TO,
-    Tree.Kind.NOT_EQUAL_TO
-    );
-
-  private static final Set<Tree.Kind> LOGICAL_OPERATORS = ImmutableSet.of(
-    Tree.Kind.CONDITIONAL_AND,
-    Tree.Kind.CONDITIONAL_OR
-    );
-
-  private static final Set<Tree.Kind> RELATIONAL_OPERATORS = ImmutableSet.of(
     Tree.Kind.GREATER_THAN,
     Tree.Kind.GREATER_THAN_OR_EQUAL_TO,
     Tree.Kind.LESS_THAN,
-    Tree.Kind.LESS_THAN_OR_EQUAL_TO
+    Tree.Kind.LESS_THAN_OR_EQUAL_TO,
+    Tree.Kind.NOT_EQUAL_TO
     );
+
+  private static final Set<Tree.Kind> SHIFT_OPERATORS = ImmutableSet.of(
+    Tree.Kind.LEFT_SHIFT,
+    Tree.Kind.RIGHT_SHIFT,
+    Tree.Kind.UNSIGNED_RIGHT_SHIFT
+    );
+
+  private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
+    for (Tree.Kind first : firstSet) {
+      for (Tree.Kind second : secondSet) {
+        OPERATORS_RELATION_TABLE.put(first, second, true);
+      }
+    }
+  }
+
+  static {
+    OPERATORS_RELATION_TABLE = HashBasedTable.create();
+    put(ARITHMETIC_OPERATORS, Iterables.concat(SHIFT_OPERATORS, ImmutableSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
+    put(SHIFT_OPERATORS, Iterables.concat(ARITHMETIC_OPERATORS, ImmutableSet.of(Tree.Kind.AND, Tree.Kind.XOR, Tree.Kind.OR)));
+    put(ImmutableSet.of(Tree.Kind.AND), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, ImmutableSet.of(Tree.Kind.XOR, Tree.Kind.OR)));
+    put(ImmutableSet.of(Tree.Kind.XOR), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, ImmutableSet.of(Tree.Kind.AND, Tree.Kind.OR)));
+    put(ImmutableSet.of(Tree.Kind.OR), Iterables.concat(ARITHMETIC_OPERATORS, SHIFT_OPERATORS, ImmutableSet.of(Tree.Kind.AND, Tree.Kind.XOR)));
+    put(ImmutableSet.of(Tree.Kind.CONDITIONAL_AND), ImmutableSet.of(Tree.Kind.CONDITIONAL_OR));
+    put(ImmutableSet.of(Tree.Kind.CONDITIONAL_OR), ImmutableSet.of(Tree.Kind.CONDITIONAL_AND));
+  }
 
   private JavaFileScannerContext context;
   private Deque<Tree.Kind> stack = new LinkedList<>();
@@ -119,20 +132,10 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   }
 
   @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    if (stack.peek() != null) {
-      raiseIssue(tree);
-    }
-    stack.push(Tree.Kind.ASSIGNMENT);
-    super.visitAssignmentExpression(tree);
-    stack.pop();
-  }
-
-  @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
-    Tree.Kind kind = getKind(tree);
     Tree.Kind peek = stack.peek();
-    if (peek != null && peek != kind && !isException(peek, kind)) {
+    Tree.Kind kind = getKind(tree);
+    if (requiresParenthesis(peek, kind)) {
       raiseIssue(tree);
     }
     stack.push(kind);
@@ -140,56 +143,16 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.pop();
   }
 
-  private boolean isException(Tree.Kind peek, Tree.Kind kind) {
-    return isRelationalNestedInLogical(peek, kind) || isNestedInRelational(peek, kind) || isArithmeticException(peek, kind);
-  }
-
-  private boolean isNestedInRelational(Tree.Kind base, Tree.Kind nested) {
-    // exception: a + 1 == 2
-    // however, makes sure to raise an issue for e.g. a >= b == 2, since >= has greater precedence than ==
-    return (EQUALITY_OPERATORS.contains(base) && !RELATIONAL_OPERATORS.contains(nested)) || RELATIONAL_OPERATORS.contains(base);
-  }
-
-  private boolean isArithmeticException(Tree.Kind base, Tree.Kind nested) {
-    // exception: a + b - c
-    if (base == Tree.Kind.MINUS && nested == Tree.Kind.PLUS) {
-      return true;
-    }
-    // exception: a * b / c
-    // exception: a * b - c
-    // exception: a * b + c
-    if ((base == Tree.Kind.DIVIDE || base == Tree.Kind.MINUS || base == Tree.Kind.PLUS) && nested == Tree.Kind.MULTIPLY) {
-      return true;
-    }
-    return false;
-  }
-
-  private boolean isRelationalNestedInLogical(Tree.Kind base, Tree.Kind nested) {
-    // exception: a == b || ...
-    return LOGICAL_OPERATORS.contains(base) && (EQUALITY_OPERATORS.contains(nested) || RELATIONAL_OPERATORS.contains(nested));
+  private boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
+    return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(kind1, kind2));
   }
 
   @Override
-  public void visitConditionalExpression(ConditionalExpressionTree tree) {
-    stack.push(null);
-    scan(tree.condition());
-    stack.pop();
-    stack.push(Tree.Kind.CONDITIONAL_EXPRESSION);
-    scan(tree.trueExpression());
-    scan(tree.falseExpression());
-    stack.pop();
-  }
-
-  @Override
-  public void visitExpressionStatement(ExpressionStatementTree tree) {
-    if (ASSIGNMENT_OPERATORS.contains(getKind(tree.expression()))) {
-      AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) tree.expression();
-      if (ASSIGNMENT_OPERATORS.contains(getKind(assignmentTree.expression()))) {
-        raiseIssue(assignmentTree);
-      }
-      super.visitAssignmentExpression(assignmentTree);
-    } else {
-      scan(tree.expression());
+  public void visitIfStatement(IfStatementTree tree) {
+    super.visitIfStatement(tree);
+    ExpressionTree condition = tree.condition();
+    if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(getKind(((AssignmentExpressionTree) condition).expression()))) {
+      raiseIssue(tree);
     }
   }
 
@@ -223,15 +186,6 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.push(null);
     super.visitParenthesized(tree);
     stack.pop();
-  }
-
-  @Override
-  public void visitVariable(VariableTree tree) {
-    super.visitVariable(tree);
-    ExpressionTree initializerTree = tree.initializer();
-    if (initializerTree != null && ASSIGNMENT_OPERATORS.contains(getKind(initializerTree))) {
-      raiseIssue(initializerTree);
-    }
   }
 
   private void raiseIssue(Tree tree) {
