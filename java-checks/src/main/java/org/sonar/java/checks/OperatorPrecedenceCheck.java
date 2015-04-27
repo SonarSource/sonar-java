@@ -124,7 +124,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind peek = stack.peek();
     Tree.Kind kind = getKind(tree);
-    if (TABLE.get(peek, kind) == Boolean.TRUE) {
+    if (Boolean.TRUE.equals(TABLE.get(peek, kind))) {
       raiseIssue(tree);
     }
     stack.push(kind);
