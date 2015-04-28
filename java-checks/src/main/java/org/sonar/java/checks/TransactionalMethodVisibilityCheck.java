@@ -27,7 +27,6 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -45,14 +44,17 @@ import java.util.List;
 public class TransactionalMethodVisibilityCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public List<Kind> nodesToVisit() {
+  public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    boolean isPublic = method.modifiers().modifiers().contains(Modifier.PUBLIC);
+    boolean isPublic = method.modifiers().contains(Modifier.PUBLIC);
+    if (hasSemantic()) {
+      isPublic = method.symbol().isPublic();
+    }
     if (!isPublic && hasTransactionalAnnotation(method)) {
       addIssue(method, "Make this method \"public\" or remove the \"@Transactional\" annotation");
     }
