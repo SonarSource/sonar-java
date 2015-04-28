@@ -19,32 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ForLoopIncrementAndUpdateCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java"), new VisitorsBridge(new ForLoopIncrementAndUpdateCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("This loop's stop condition tests \"i\" but the incrementer updates \"j\".")
-      .next().atLine(15).withMessage("This loop's stop condition tests \"k\" but the incrementer updates \"i, j, l\".")
-      .next().atLine(17).withMessage("This loop's stop condition tests \"k, l\" but the incrementer updates \"i, j\".")
-      .next().atLine(19).withMessage("This loop's stop condition tests \"k\" but the incrementer updates \"i\".")
-      .next().atLine(27).withMessage("This loop's stop condition tests \"foo()\" but the incrementer updates \"l\".")
-      .next().atLine(28).withMessage("This loop's stop condition tests \"foo()\" but the incrementer updates \"l\".")
-      .next().atLine(29).withMessage("This loop's stop condition tests \"bar\" but the incrementer updates \"l\".")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ForLoopIncrementAndUpdateCheck.java", new ForLoopIncrementAndUpdateCheck());
   }
-
-  }
+}

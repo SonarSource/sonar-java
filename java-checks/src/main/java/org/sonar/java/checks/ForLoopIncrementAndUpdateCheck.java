@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -96,18 +97,22 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitUnaryExpression(UnaryExpressionTree tree) {
-      if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
-        addSymbol((IdentifierTree) tree.expression());
-      }
+      checkIdentifier(tree.expression());
       super.visitUnaryExpression(tree);
     }
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        addSymbol((IdentifierTree) tree.variable());
-      }
+      checkIdentifier(tree.variable());
       super.visitAssignmentExpression(tree);
+    }
+
+    private void checkIdentifier(ExpressionTree expression) {
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        addSymbol((IdentifierTree) expression);
+      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        addSymbol(((MemberSelectExpressionTree) expression).identifier());
+      }
     }
 
     private void addSymbol(IdentifierTree identifierTree) {
@@ -138,7 +143,13 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if(tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        checkIdentifier(((MemberSelectExpressionTree) tree.methodSelect()).identifier());
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree.methodSelect();
+        ExpressionTree expression = mset.expression();
+        if (expression.is(Tree.Kind.IDENTIFIER)) {
+          checkIdentifier((IdentifierTree) expression);
+        } else {
+          checkIdentifier(mset.identifier());
+        }
       } else {
         scan(tree.methodSelect());
       }
