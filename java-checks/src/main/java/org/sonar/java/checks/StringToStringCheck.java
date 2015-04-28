@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -31,7 +32,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -47,34 +47,29 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class StringToStringCheck extends SubscriptionBaseVisitor {
-
-  private static final MethodInvocationMatcher STRING_TO_STRING = MethodInvocationMatcher.create()
-    .typeDefinition("java.lang.String")
-    .name("toString");
+public class StringToStringCheck extends AbstractMethodDetection {
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodInvocationMatcher.create()
+      .typeDefinition("java.lang.String")
+      .name("toString"));
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-    if (STRING_TO_STRING.matches(methodTree)) {
-      ExpressionTree expressionTree = extractBaseExpression(((MemberSelectExpressionTree) methodTree.methodSelect()).expression());
-      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        addIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.",
-          ((IdentifierTree) expressionTree).identifierToken().text()));
-      } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
-        addIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
-      } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-        addIssue(expressionTree, String.format("\"%s\" returns a string, there's no need to call \"toString()\".",
-          extractName(((MethodInvocationTree) expressionTree).methodSelect())));
-      } else if (expressionTree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-        addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".",
-          extractName(((ArrayAccessExpressionTree) expressionTree).expression())));
-      }
+  protected void onMethodFound(MethodInvocationTree tree) {
+    ExpressionTree expressionTree = extractBaseExpression(((MemberSelectExpressionTree) tree.methodSelect()).expression());
+    if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
+      addIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.",
+        ((IdentifierTree) expressionTree).identifierToken().text()));
+    } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
+      addIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
+    } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      addIssue(expressionTree, String.format("\"%s\" returns a string, there's no need to call \"toString()\".",
+        extractName(((MethodInvocationTree) expressionTree).methodSelect())));
+    } else if (expressionTree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".",
+        extractName(((ArrayAccessExpressionTree) expressionTree).expression())));
     }
   }
 
