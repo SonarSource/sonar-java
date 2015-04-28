@@ -1,3 +1,6 @@
+import com.sun.org.apache.bcel.internal.util.ByteSequence;
+import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
@@ -11,10 +14,9 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Formatter;
+import java.lang.Exception;
 import java.util.Collection;
-
-import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
+import java.util.Formatter;
 
 class A {
   private enum MyEnum {
@@ -25,20 +27,21 @@ class A {
   private BufferedReader br;
 
   void closeable_never_closed() throws Exception {
-    // Noncompliant@+1 {{Close this "Reader"}}
+
+    // Noncompliant@+1 {{Close this "FileReader".}}
     Reader reader = new FileReader(""); // Reader is not used and not closed
 
-    // Noncompliant@+1 {{Close this "Writer"}}
+    // Noncompliant@+1 {{Close this "FileWriter".}}
     Writer writer = new FileWriter(""); // Writer is not closed
     writer.write(10);
 
     InputStream is;
     is = new FileInputStream(""); // Compliant
     is.close();
-    // Noncompliant@+1 {{Close this "InputStream"}}
+    // Noncompliant@+1 {{Close this "FileInputStream".}}
     is = new FileInputStream(""); // InputStream reinitialized and not closed
 
-    // Noncompliant@+1 {{Close this "RandomAccessFile"}}
+    // Noncompliant@+1 {{Close this "RandomAccessFile".}}
     RandomAccessFile raf = new RandomAccessFile("", "r"); // RandomAccessFile reinitialized before closing
     raf.length();
     raf = new RandomAccessFile("", "r"); // Compliant
@@ -59,10 +62,10 @@ class A {
     Object o = getObject(bw);
 
     closeable = new FileReader(""); // Compliant - responsability of closing the variable is not in the method
-    
+
     OutputStream ubaos = new UnsyncByteArrayOutputStream(); // Compliant - UnsyncByteArrayOutputStream does not implements close()
     ubaos.write(0);
-    
+
     Reader reader = new BufferedReader(br); // Compliant - uses a field
 
     RandomAccessFile raf = new RandomAccessFile("", "r"); // Compliant - Closeable is returned so its state is unknown
@@ -72,31 +75,31 @@ class A {
   void closeable_not_closed_in_loops(Collection<Object> objects, Collection<String> propertyList) throws Exception {
     Reader reader = null;
     for (int i = 0; i < MAX_LOOP; i++) {
-      reader = new FileReader(""); // Noncompliant {{Close this "Reader"}}
+      reader = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     }
     reader.close();
-    
+
     Reader reader2 = null;
     for (int i = 0; i < MAX_LOOP; i++) {
       reader2 = new FileReader(""); // Compliant
       reader2.close();
     }
-    
+
     Reader reader3 = null;
     for (;;) {
       reader3 = new FileReader(""); // Compliant
       reader3.close();
     }
-    
+
     int j = 0;
 
     InputStream is = null;
     while (j < MAX_LOOP) {
-      is = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
+      is = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
       j++;
     }
     is.close();
-    
+
     j = 0;
     InputStream is2 = null;
     while (j < MAX_LOOP) {
@@ -104,27 +107,27 @@ class A {
       is2.close();
       j++;
     }
-    
+
     Writer writer = null;
     for (Object object : objects) {
-      writer = new FileWriter(""); // Noncompliant {{Close this "Writer"}}
+      writer = new FileWriter(""); // Noncompliant {{Close this "FileWriter".}}
     }
     writer.close();
-    
+
     Writer writer2 = null;
     for (Object object : objects) {
       writer2 = new FileWriter(""); // Compliant
       writer2.close();
     }
-    
+
     j = 0;
     FileInputStream fis = null;
     do {
-      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream"}}
+      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
       j++;
     } while (j < MAX_LOOP);
     fis.close();
-    
+
     j = 0;
     FileInputStream fis2 = null;
     do {
@@ -132,86 +135,84 @@ class A {
       fis2.close();
       j++;
     } while (j < MAX_LOOP);
-    
+
     OutputStream stream = null;
-    try{
+    try {
       for (String property : propertyList) {
-        stream = new FileOutputStream("myfile.txt");  // Noncompliant {{Close this "OutputStream"}}
+        stream = new FileOutputStream("myfile.txt"); // Noncompliant {{Close this "FileOutputStream".}}
         // ...
       }
-    }catch(Exception e){
+    } catch (Exception e) {
       // ...
-    }finally{
-      stream.close();  // Multiple stream were opened. Only the last is closed.
+    } finally {
+      stream.close(); // Multiple stream were opened. Only the last is closed.
     }
-    
+
     OutputStream stream2 = null;
-    try{
-      stream2 = new FileOutputStream("myfile.txt");  // Compliant
+    try {
+      stream2 = new FileOutputStream("myfile.txt"); // Compliant
       for (String property : propertyList) {
         // ...
       }
-    }catch(Exception e){
+    } catch (Exception e) {
       // ...
-    }finally{
-      stream2.close();  // Multiple stream were opened. Only the last is closed.
+    } finally {
+      stream2.close();
     }
   }
 
   void closeable_not_closed_in_every_paths_when_using_if(boolean test, int x) throws Exception {
-    Reader reader = new FileReader(""); // Noncompliant {{Close this "Reader"}}
+    Reader reader = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     if (test) {
       reader.close();
     }
 
-    Reader reader2 = new FileReader(""); // Noncompliant {{Close this "Reader"}}
+    Reader reader2 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
     if (test) {
     } else {
       reader2.close();
     }
-    
-    Reader reader3 = new FileReader(""); // Noncompliant {{Close this "Reader"}}
-    if (test) {
-      reader3 = new FileReader(""); // TODO SONARJAVA-1031 : False-negative  : NonCompliant {{Close this "Reader"}}
-    } else {
-      reader3 = new FileReader(""); // TODO SONARJAVA-1031 : False-negative : NonCompliant {{Close this "Reader"}}
-    }
 
-    // Noncompliant@+1 {{Close this "Writer"}}
+    Reader reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
+    if (test) {
+      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
+    } else {
+      reader3 = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
+    }
+    // Noncompliant@+1
     Writer writer = new FileWriter(""); // One branch is missing
     if (test) {
       writer.close();
     } else {
       if (x > 0) {
-        // Noncompliant@+1 {{Close this "Formatter"}}
+        // Noncompliant@+1
         Formatter formatter = new Formatter(); // Only used in the local then clause and not closed
         formatter.out();
         writer.close();
       }
     }
 
-    BufferedWriter bw; // Noncompliant {{Close this "BufferedWriter"}}
+    BufferedWriter bw;
     if (test) {
-      bw = new BufferedWriter(new FileWriter(""));
+      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "BufferedWriter".}}
     } else {
-      bw = new BufferedWriter(new FileWriter(""));
+      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "BufferedWriter".}}
     }
 
-    // Noncompliant@+1 {{Close this "FileInputStream"}}
     FileInputStream fis; // Not closed in else branch
     if (test) {
       fis = new FileInputStream("");
       fis.close();
     } else {
-      fis = new FileInputStream("");
+      fis = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
     }
 
     FileInputStream fis1; // Compliant - has an unknown status
     if (test) {
       fis1 = new FileInputStream(""); // OPEN
-      myMethod(fis1);                 // UNKNOWN
+      myMethod(fis1); // UNKNOWN
     } else {
-      fis1 = getFileInputStream();    // UNKNOWN
+      fis1 = getFileInputStream(); // UNKNOWN
     }
 
     FileInputStream fis2; // Compliant - has an unknown status
@@ -219,21 +220,19 @@ class A {
       fis2 = getFileInputStream(); // UNKNOWN
       myMethod(fis2);
     } else {
-      fis2 = new FileInputStream("");  // OPEN
+      fis2 = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
     }
 
-    // Noncompliant@+1 {{Close this "FileInputStream"}}
     FileInputStream fis3; // Not closed after the if
     if (test) {
-      fis3 = new FileInputStream("");
+      fis3 = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
     } else {
     }
 
-    // Noncompliant@+1 {{Close this "FileInputStream"}}
     FileInputStream fis4; // Not closed after the if
     if (test) {
     } else {
-      fis4 = new FileInputStream("");
+      fis4 = new FileInputStream(""); // Noncompliant {{Close this "FileInputStream".}}
     }
 
     InputStream is = new FileInputStream(""); // Compliant
@@ -249,22 +248,22 @@ class A {
   }
 
   void closeable_not_closed_in_every_paths_when_using_switch(MyEnum enumValue) throws Exception {
-    FileWriter fw = new FileWriter(""); // False-negative : NonCompliant {{Close this "FileWriter"}}
+    FileWriter fw = new FileWriter(""); // False-negative : NonCompliant
     switch (enumValue) {
       case A:
         // known engine limitation: break statements are ignored when within other statements
         if ("UTF-8".equals(fw.getEncoding())) {
           fw.close();
           break; // exit switch case with fw = CLOSED
-        } else{
+        } else {
           fw.write("");
-          break;  // exit switch case with fw = OPEN --> should be non compliant
+          break; // exit switch case with fw = OPEN --> should be non compliant
         }
       default:
         fw.close();
         break;
     }
-    
+
     Reader reader = new FileReader(""); // Compliant
     switch (enumValue) {
       case A:
@@ -278,7 +277,7 @@ class A {
         break;
     }
 
-    Formatter formatter = new Formatter(); // Noncompliant {{Close this "Formatter"}}
+    Formatter formatter = new Formatter(); // Noncompliant {{Close this "Formatter".}}
     switch (enumValue) {
       case A:
         formatter.close();
@@ -321,7 +320,7 @@ class A {
     }
     w2.close();
 
-    Writer w3 = new FileWriter(""); // Noncompliant {{Close this "Writer"}}
+    Writer w3 = new FileWriter(""); // Noncompliant {{Close this "FileWriter".}}
     switch (enumValue) {
     // as there is no "default", we can not guarantee that the closeable is closed
       case A:
@@ -341,7 +340,7 @@ class A {
     Writer w5;
     switch (enumValue) {
       case A:
-        w5 = new FileWriter(""); // Noncompliant {{Close this "Writer"}}
+        w5 = new FileWriter(""); // Noncompliant {{Close this "FileWriter".}}
       default:
         w5 = new FileWriter("");
         break;
@@ -368,11 +367,11 @@ class A {
         w7 = new FileWriter("");
     }
     w7.close();
-    
+
     Writer w8; // Compliant (empty switch)
     switch (enumValue) {
     }
-    
+
     Writer w9; // Compliant (no statements)
     switch (enumValue) {
       case A:
@@ -380,7 +379,7 @@ class A {
   }
 
   void closeable_used_in_try_with_resource() throws Exception {
-    InputStream is = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
+    InputStream is = new FileInputStream(""); // Noncompliant
     try {
       is.close();
     } catch (IOException e) {
@@ -388,7 +387,7 @@ class A {
     } catch (Exception e) {
       is.close();
     }
-    
+
     Reader reader; // Compliant
     try {
       reader = new FileReader("");
@@ -406,7 +405,7 @@ class A {
       writer = new FileWriter("");
     }
     writer.close();
-    
+
     FileWriter fileWriter = new FileWriter(""); // Compliant
     try {
       fileWriter.flush();
@@ -415,19 +414,19 @@ class A {
     } finally {
       fileWriter.close();
     }
-    
+
     try (BufferedReader br = new BufferedReader(new FileReader(""))) { // Compliant - JLS8 - 14.20.3 : try-with-resources
       // ...
     } catch (Exception e) {
       // ...
     }
-    
+
     try (FileWriter fw = new FileWriter("")) { // Compliant - JLS8 - 14.20.3 : try-with-resources
       fw.write("hello");
     } catch (Exception e) {
       // ...
     }
-    
+
     try {
       FileInputStream fis = new FileInputStream(""); // Compliant
       try {
@@ -436,18 +435,18 @@ class A {
       }
     } catch (Exception e) {
     }
-    
+
     InputStream is2 = new FileInputStream("");
     try {
       is2.close();
     } catch (Exception e) {
       is2.close();
     } finally {
-      InputStream is2 = new FileInputStream(""); // Noncompliant {{Close this "InputStream"}}
+      InputStream is2 = new FileInputStream(""); // Noncompliant
       is2.read();
     }
     is2.close();
-    
+
     try {
       InputStream is3 = new FileInputStream("");
       try {
@@ -456,25 +455,25 @@ class A {
         is3.read();
       }
     } catch (Exception e) {
-      
+
     }
   }
-  
-
 
   InputStream closeable_used_in_anonymous_or_inner_classes_should_be_ignored() throws Exception {
-    final InputStream is = new FileInputStream(""); // Compliant - Closeable is used in returned anonymous class (simplification: "final" closeable are ignored)
-    final OutputStream os = new FileOutputStream(""); // Compliant - Closeable is used in inner class (simplification: "final" closeable are ignored)
-    
+    final InputStream is = new FileInputStream(""); // Compliant - Closeable is used in returned anonymous class (simplification: "final"
+                                                    // closeable are ignored)
+    final OutputStream os = new FileOutputStream(""); // Compliant - Closeable is used in inner class (simplification: "final" closeable are
+                                                      // ignored)
+
     class MyClass {
       void doSomething() throws IOException {
         os.read();
         os.close();
       }
     }
-      
+
     new MyClass().doSomething();
-    
+
     return new InputStream() {
 
       @Override
@@ -490,7 +489,7 @@ class A {
       }
     };
   }
-  
+
   void myMethod(Closeable closeable) {
   }
 
@@ -536,4 +535,35 @@ class MyCloseable implements Closeable {
 
   public void close() {
   }
+
+  void if_nested_in_for() {
+    for (;;) {
+      if (true) {
+        FileInputStream auxinput = new FileInputStream();
+        auxinput.close();
+      }
+    }
+
+    for (;;) {
+      if (true) {
+        FileInputStream auxinput = new FileInputStream();
+        auxinput.close();
+      } else {
+        FileInputStream auxinput = new FileInputStream(); // Noncompliant
+      }
+    }
+  }
+
+  void closeableSymbol() {
+    ByteSequence stream = new ByteSequence(code);
+      try {
+        for(;;) {
+          codeToString(stream, constant_pool, verbose);
+        }
+      }catch (Exception e) {
+
+      }
+  }
+
+
 }

@@ -322,6 +322,7 @@ public final class CheckList {
       .add(ReadObjectSynchronizedCheck.class)
       .add(AbsOnNegativeCheck.class)
       .add(StaticMultithreadedUnsafeFieldsCheck.class)
+      .add(LocksNotUnlockedCheck.class)
       .build();
   }
 
