@@ -209,7 +209,7 @@ public class AsmMethod extends AsmResource {
   }
 
   private boolean isMethodNotAccessorOrAccessingDifferentField(AsmMethod method) {
-    return !method.isAccessor() || accessedField != null && !accessedField.equals(method.getAccessedField());
+    return !method.isAccessor() || (accessedField != null && !accessedField.equals(method.getAccessedField()));
   }
 
   private boolean isFieldAccesingDifferentField(AsmField field) {

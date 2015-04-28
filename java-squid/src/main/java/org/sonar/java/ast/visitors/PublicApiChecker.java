@@ -156,7 +156,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
   }
 
   public boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
-    return currentClass != null && isPublicInterface(currentClass) || hasPublic(classTree.modifiers());
+    return (currentClass != null && isPublicInterface(currentClass)) || hasPublic(classTree.modifiers());
   }
 
   public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {

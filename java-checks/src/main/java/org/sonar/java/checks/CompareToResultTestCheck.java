@@ -67,8 +67,8 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isInvalidTest(ExpressionTree operand1, ExpressionTree operand2) {
-    return isNonZeroInt(operand1) && isCompareToResult(operand2)
-      || isNonZeroInt(operand2) && isCompareToResult(operand1);
+    return (isNonZeroInt(operand1) && isCompareToResult(operand2))
+      || (isNonZeroInt(operand2) && isCompareToResult(operand1));
   }
 
   private boolean isCompareToResult(ExpressionTree expression) {
@@ -109,7 +109,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
 
   private boolean isNonZeroInt(ExpressionTree expression) {
     return isNonZeroIntLiteral(expression)
-      || expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression());
+      || (expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression()));
   }
 
   private boolean isNonZeroIntLiteral(ExpressionTree expression) {

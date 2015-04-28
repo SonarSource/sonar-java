@@ -37,7 +37,7 @@ public class Types {
       switch (t.tag) {
         case JavaType.BYTE:
         case JavaType.CHAR:
-          result = t.tag == s.tag || t.tag + /* skip char for byte and short for char */2 <= s.tag && s.tag <= JavaType.DOUBLE;
+          result = t.tag == s.tag || (t.tag + /* skip char for byte and short for char */2 <= s.tag && s.tag <= JavaType.DOUBLE);
           break;
         case JavaType.SHORT:
         case JavaType.INT:

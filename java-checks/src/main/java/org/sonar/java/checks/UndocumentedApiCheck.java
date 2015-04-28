@@ -171,8 +171,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     if (!classTrees.isEmpty() && !classTrees.peek().is(Tree.Kind.INTERFACE) && tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       String name = methodTree.simpleName().name();
-      return setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1 ||
-        getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty();
+      return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
+        (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
     }
     return false;
   }

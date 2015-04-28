@@ -52,7 +52,7 @@ public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar>
 
   @Override
   public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(TreeFactory.WRAPPER_AST_NODE) || node.is(Kind.VARIABLE) && ((VariableTreeImpl) node).dims() > 0) {
+    if (node.hasDirectChildren(TreeFactory.WRAPPER_AST_NODE) || (node.is(Kind.VARIABLE) && ((VariableTreeImpl) node).dims() > 0)) {
       getContext().createLineViolation(this, "Move the array designator from the variable to the type.", node);
     }
   }
