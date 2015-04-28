@@ -49,7 +49,7 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class StringToStringCheck extends SubscriptionBaseVisitor {
 
-  private final static MethodInvocationMatcher STRING_TO_STRING = MethodInvocationMatcher.create()
+  private static final MethodInvocationMatcher STRING_TO_STRING = MethodInvocationMatcher.create()
     .typeDefinition("java.lang.String")
     .name("toString");
 
@@ -64,13 +64,16 @@ public class StringToStringCheck extends SubscriptionBaseVisitor {
     if (STRING_TO_STRING.matches(methodTree)) {
       ExpressionTree expressionTree = extractBaseExpression(((MemberSelectExpressionTree) methodTree.methodSelect()).expression());
       if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        addIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.", ((IdentifierTree) expressionTree).identifierToken().text()));
+        addIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.",
+          ((IdentifierTree) expressionTree).identifierToken().text()));
       } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
         addIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
       } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-        addIssue(expressionTree, String.format("\"%s\" returns a string, there's no need to call \"toString()\".", extractName(((MethodInvocationTree) expressionTree).methodSelect())));
+        addIssue(expressionTree, String.format("\"%s\" returns a string, there's no need to call \"toString()\".",
+          extractName(((MethodInvocationTree) expressionTree).methodSelect())));
       } else if (expressionTree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-        addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".", extractName(((ArrayAccessExpressionTree) expressionTree).expression())));
+        addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".",
+          extractName(((ArrayAccessExpressionTree) expressionTree).expression())));
       }
     }
   }
