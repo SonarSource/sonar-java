@@ -317,6 +317,7 @@ public final class CheckList {
       .add(UnusedReturnedDataCheck.class)
       .add(StringToStringCheck.class)
       .add(ThreadStartedInConstructorCheck.class)
+      .add(KeySetInsteadOfEntrySetCheck.class)
       .build();
   }
 
