@@ -52,7 +52,7 @@ public class TransactionalMethodVisibilityCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     MethodTree method = (MethodTree) tree;
-    boolean isPublic = method.modifiers().modifiers().contains(Modifier.PUBLIC);
+    boolean isPublic = method.modifiers().modifiers().contains(Modifier.PUBLIC) || method.symbol().owner().isInterface();
     if (!isPublic && hasTransactionalAnnotation(method)) {
       addIssue(method, "Make this method \"public\" or remove the \"@Transactional\" annotation");
     }
