@@ -115,6 +115,7 @@ public class LockedVisitor extends DataFlowVisitor {
     return null;
   }
 
+  @Override
   public void insertIssues() {
     executionState.insertIssues();
   }

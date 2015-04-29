@@ -54,8 +54,6 @@ public class ExecutionState {
         currentValue.state = currentValue.state.merge(valueToMerge.state);
         valuesBySymbol.put(symbol, currentValue);
       } else {
-        // possible way to solve the problem of variable defined in outer Execution state. lockedOccurencesBySymbol.put(symbol,
-        // occurenceToMerge);
         if (valueToMerge.shouldRaiseIssue()) {
           insertIssue(valueToMerge.treeNode);
         }
@@ -111,7 +109,6 @@ public class ExecutionState {
 
   public ExecutionState restoreParent() {
     if (parent != null) {
-      // insertIssues();
       return parent.merge(this);
     }
     return this;
