@@ -100,10 +100,10 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
   @CheckForNull
   private Symbol isFieldAccessedUsingSuperOrThis(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectTree = ((MemberSelectExpressionTree) expressionTree);
+      MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) expressionTree;
       if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifierTree = (IdentifierTree) memberSelectTree.expression();
-        if (identifierTree.identifierToken().text().equals("super") || identifierTree.identifierToken().text().equals("this")) {
+        if ("super".equals(identifierTree.identifierToken().text()) || "this".equals(identifierTree.identifierToken().text())) {
           return memberSelectTree.identifier().symbol();
         }
       }
@@ -130,7 +130,7 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (MAP_GET_METHOD.matches(tree)) {
         Tree firstArgument = Iterables.getOnlyElement(tree.arguments());
-        if (getMapSymbol(tree).equals(mapSymbol) && firstArgument.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) firstArgument).symbol().equals(variable)) {
+        if (mapSymbol.equals(getMapSymbol(tree)) && firstArgument.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) firstArgument).symbol().equals(variable)) {
           result = true;
         }
       }

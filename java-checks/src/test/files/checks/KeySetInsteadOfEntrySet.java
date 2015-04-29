@@ -44,6 +44,9 @@ public class MyExtendedClass extends MyClass {
     for (String key5 : inner.inner.keySet()) { // Compliant, false negative
       Object value = inner.inner.get(key5);
     }
+    for (String key5 : keySet()) { // Compliant, false negative
+      Object value = map3[0].get(key5);
+    }
     for (String key5 : super.inner.keySet()) { // Compliant, false negative
       Object value = super.inner.get(key5);
     }
