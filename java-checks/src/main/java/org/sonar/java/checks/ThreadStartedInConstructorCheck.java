@@ -47,7 +47,7 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class ThreadStartedInConstructorCheck extends SubscriptionBaseVisitor {
 
-  private final static MethodInvocationMatcher THREAD_START = MethodInvocationMatcher.create()
+  private static final MethodInvocationMatcher THREAD_START = MethodInvocationMatcher.create()
     .typeDefinition("java.lang.Thread")
     .name("start");
 
