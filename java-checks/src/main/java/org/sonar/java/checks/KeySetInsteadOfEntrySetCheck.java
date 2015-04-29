@@ -74,16 +74,16 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
       ExpressionTree expressionTree = forEachTree.expression();
       if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree methodTree = (MethodInvocationTree) expressionTree;
-        Symbol mapSymbol = getMapSymbol(methodTree);
-        if (mapSymbol != null && MAP_KEYSET_METHOD.matches(methodTree)) {
-          new GetUsageVisitor().isCallingGetWithSymbol(forEachTree, forEachTree.variable().symbol(), mapSymbol);
+        Symbol ownerSymbol = getOwnerSymbol(methodTree);
+        if (ownerSymbol != null && MAP_KEYSET_METHOD.matches(methodTree)) {
+          new GetUsageVisitor().isCallingGetWithSymbol(forEachTree, forEachTree.variable().symbol(), ownerSymbol);
         }
       }
     }
   }
 
   @CheckForNull
-  private Symbol getMapSymbol(MethodInvocationTree tree) {
+  private Symbol getOwnerSymbol(MethodInvocationTree tree) {
     ExpressionTree expressionTree = tree.methodSelect();
     // direct invocation: symbol is implicitly this
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
@@ -93,17 +93,17 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) expressionTree).symbol();
     } else {
-      return isFieldAccessedUsingSuperOrThis(expressionTree);
+      return getFieldAccessedUsingSuperOrThis(expressionTree);
     }
   }
 
   @CheckForNull
-  private Symbol isFieldAccessedUsingSuperOrThis(ExpressionTree expressionTree) {
+  private Symbol getFieldAccessedUsingSuperOrThis(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) expressionTree;
       if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) memberSelectTree.expression();
-        if ("super".equals(identifierTree.identifierToken().text()) || "this".equals(identifierTree.identifierToken().text())) {
+        String identifierText = ((IdentifierTree) memberSelectTree.expression()).identifierToken().text();
+        if ("super".equals(identifierText) || "this".equals(identifierText)) {
           return memberSelectTree.identifier().symbol();
         }
       }
@@ -130,8 +130,9 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (MAP_GET_METHOD.matches(tree)) {
         Tree firstArgument = Iterables.getOnlyElement(tree.arguments());
-        if (mapSymbol.equals(getMapSymbol(tree)) && firstArgument.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) firstArgument).symbol().equals(variable)) {
+        if (mapSymbol.equals(getOwnerSymbol(tree)) && firstArgument.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) firstArgument).symbol().equals(variable)) {
           result = true;
+          return;
         }
       }
       super.visitMethodInvocation(tree);
