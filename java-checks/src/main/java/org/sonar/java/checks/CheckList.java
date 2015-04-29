@@ -318,6 +318,7 @@ public final class CheckList {
       .add(StringToStringCheck.class)
       .add(ThreadStartedInConstructorCheck.class)
       .add(KeySetInsteadOfEntrySetCheck.class)
+      .add(IndexOfWithPositiveNumberCheck.class)
       .build();
   }
 
