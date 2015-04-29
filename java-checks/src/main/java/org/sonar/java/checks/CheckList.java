@@ -315,6 +315,7 @@ public final class CheckList {
       .add(NestedEnumStaticCheck.class)
       .add(CloseResourceCheck.class)
       .add(UnusedReturnedDataCheck.class)
+      .add(ReadObjectSynchronizedCheck.class)
       .build();
   }
 
