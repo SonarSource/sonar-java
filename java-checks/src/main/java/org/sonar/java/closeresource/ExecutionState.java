@@ -100,7 +100,7 @@ public class ExecutionState {
     }
   }
 
-  public void insertIssue(Tree tree) {
+  void insertIssue(Tree tree) {
     Type type;
     if (tree.is(Tree.Kind.VARIABLE)) {
       type = ((VariableTree) tree).symbol().type();
@@ -204,13 +204,13 @@ public class ExecutionState {
     }
   }
 
-  public void checkUsageOfClosables(List<ExpressionTree> expressions) {
+  void checkUsageOfClosables(List<ExpressionTree> expressions) {
     for (ExpressionTree expression : expressions) {
       checkUsageOfClosables(expression);
     }
   }
 
-  public void checkUsageOfClosables(@Nullable ExpressionTree expression) {
+  void checkUsageOfClosables(@Nullable ExpressionTree expression) {
     if (expression != null) {
       if (expression.is(Tree.Kind.IDENTIFIER) && CloseableVisitor.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
         markAsIgnored(((IdentifierTree) expression).symbol());
