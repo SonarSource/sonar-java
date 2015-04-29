@@ -19,7 +19,9 @@
  */
 package org.sonar.java.locks;
 
-public enum State {
+import org.sonar.java.symexecengine.State;
+
+public enum LockState implements State{
 
   // * | U | L | I | N |
   // --+---+---+---+---|
@@ -55,6 +57,11 @@ public enum State {
       }
       return this;
     }
+
+    @Override
+    public boolean shouldRaiseIssue() {
+      return true;
+    }
   },
   IGNORED {
     @Override
@@ -63,13 +70,8 @@ public enum State {
     }
   };
 
-  public abstract State merge(State s);
-
-  public boolean isIgnored() {
-    return this.equals(IGNORED);
-  }
-
-  public boolean isLocked() {
-    return this.equals(LOCKED);
+  @Override
+  public boolean shouldRaiseIssue() {
+    return false;
   }
 }

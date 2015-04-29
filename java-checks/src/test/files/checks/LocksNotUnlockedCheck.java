@@ -114,6 +114,14 @@ public class MyClass {
     } catch (MyOtherException e) {
       lock.unlock();
     }
+    ReentrantLock lock2 = new ReentrantLock();
+    lock2.lock();
+    try {
+      System.out.println("");
+      return;
+    } finally {
+      lock2.unlock();
+    }
   }
 
   public void while_statement() {

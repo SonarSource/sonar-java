@@ -17,26 +17,12 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.locks;
+package org.sonar.java.symexecengine;
 
-import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.tree.Tree;
+public interface State {
 
-import javax.annotation.Nullable;
+  State merge(State s);
 
-public class LockedOccurence {
+  boolean shouldRaiseIssue();
 
-  @Nullable
-  Tree lastAssignment;
-  State state;
-
-  public LockedOccurence(@Nullable Tree lastAssignment, State state) {
-    this.lastAssignment = lastAssignment;
-    this.state = state;
-  }
-
-  @Override
-  public String toString() {
-    return ((JavaTree) lastAssignment).getLine() + " : " + state.name();
-  }
 }
