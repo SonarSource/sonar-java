@@ -4,8 +4,8 @@
 
 <pre>
 public void doSomethingWithMap(Map&lt;String,Object&gt; map) {
-  for (String key : map.keySet()) {
-    Object value = map.get(key);  // Noncompliant
+  for (String key : map.keySet()) { // Noncompliant
+    Object value = map.get(key);
     // ...
   }
 }
