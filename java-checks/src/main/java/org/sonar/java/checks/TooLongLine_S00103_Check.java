@@ -30,6 +30,10 @@ import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.EmptyStatementTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -82,13 +86,29 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
   }
 
   public void ignoreLines(CompilationUnitTree tree) {
-    if (!tree.imports().isEmpty()) {
-      int start = ((InternalSyntaxToken) tree.imports().get(0).importKeyword()).getLine();
-      int end = ((InternalSyntaxToken) tree.imports().get(tree.imports().size() - 1).semicolonToken()).getLine();
+    List<ImportClauseTree> imports = tree.imports();
+    if (!imports.isEmpty()) {
+      int start = getLine(imports.get(0), true);
+      int end = getLine(imports.get(imports.size() - 1), false);
       for (int i = start; i <= end; i++) {
         ignoredLines.add(i);
       }
     }
+  }
+
+  private int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
+    if (importClauseTree.is(Tree.Kind.IMPORT)) {
+      if (fromStart) {
+        return getLine(((ImportTree) importClauseTree).importKeyword());
+      } else {
+        return getLine(((ImportTree) importClauseTree).semicolonToken());
+      }
+    }
+    return getLine(((EmptyStatementTree) importClauseTree).semicolonToken());
+  }
+
+  private int getLine(SyntaxToken keyword) {
+    return ((InternalSyntaxToken) keyword).getLine();
   }
 
   private void visitFile(File file) {
