@@ -41,12 +41,12 @@ import java.util.Set;
 
 @Rule(
   key = "ForLoopCounterChangedCheck",
-  name = "Loop invariants should not be calculated inside the loop",
-  tags = {"performance"},
+  name = "\"for\" loop stop conditions should be invariant",
+  tags = {"misra", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation("3min")
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Set<String> loopCounters = Sets.newHashSet();
@@ -104,6 +104,5 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
       context.addIssue(identifierTree, this, "Refactor the code in order to not assign to this loop counter from within the loop body.");
     }
   }
-
 
 }
