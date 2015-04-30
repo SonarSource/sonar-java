@@ -161,8 +161,8 @@ public class DataFlowVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    scan(tree.condition());
     scan(tree.initializer());
+    scan(tree.condition());
     scan(tree.update());
     visitStatement(tree.statement());
   }

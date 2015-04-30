@@ -43,7 +43,7 @@ public enum CloseableState implements State {
   CLOSED {
     @Override
     public State merge(State s) {
-      if (s == NULL) {
+      if (s.equals(NULL)) {
         return this;
       }
       return s;
@@ -52,7 +52,7 @@ public enum CloseableState implements State {
   OPEN {
     @Override
     public State merge(State s) {
-      if (s == IGNORED) {
+      if (s.equals(IGNORED)) {
         return s;
       }
       return this;
@@ -70,14 +70,8 @@ public enum CloseableState implements State {
     }
   };
 
-  public abstract State merge(State s);
-
   public boolean isIgnored() {
     return this.equals(IGNORED);
-  }
-
-  public boolean isOpen() {
-    return this.equals(OPEN);
   }
 
   @Override
