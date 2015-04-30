@@ -19,44 +19,32 @@
  */
 package org.sonar.java.closeresource;
 
-import com.google.common.collect.Sets;
 import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.CaseLabelTree;
-import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ForEachStatement;
-import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import javax.annotation.Nullable;
 import java.util.List;
-import java.util.Set;
 
-public class CloseableVisitor extends BaseTreeVisitor {
+public class CloseableVisitor extends DataFlowVisitor {
 
   private static final MethodInvocationMatcherCollection CLOSE_INVOCATIONS = closeMethodInvocationMatcher();
 
-  private ExecutionState executionState;
   private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
     "java.io.ByteArrayOutputStream",
     "java.io.ByteArrayInputStream",
@@ -71,7 +59,17 @@ public class CloseableVisitor extends BaseTreeVisitor {
   private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
 
   public CloseableVisitor(List<VariableTree> methodParameters, SubscriptionBaseVisitor check) {
-    executionState = new ExecutionState(extractCloseableSymbols(methodParameters), check);
+    super(check);
+    ignoreVariables(methodParameters);
+  }
+
+  private void ignoreVariables(List<VariableTree> variables) {
+    for (VariableTree methodParameter : variables) {
+      Symbol symbol = methodParameter.symbol();
+      if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
+        executionState.newValueForSymbol(symbol, methodParameter, CloseableState.IGNORED);
+      }
+    }
   }
 
   private static MethodInvocationMatcherCollection closeMethodInvocationMatcher() {
@@ -86,11 +84,11 @@ public class CloseableVisitor extends BaseTreeVisitor {
         .withNoParameterConstraint());
   }
 
-  static boolean isCloseableOrAutoCloseableSubtype(Type type) {
+  private static boolean isCloseableOrAutoCloseableSubtype(Type type) {
     return type.isSubtypeOf(JAVA_IO_CLOSEABLE) || type.isSubtypeOf(JAVA_LANG_AUTOCLOSEABLE);
   }
 
-  static boolean isIgnoredCloseableSubtype(Type type) {
+  private static boolean isIgnoredCloseableSubtype(Type type) {
     for (String fullyQualifiedName : IGNORED_CLOSEABLE_SUBTYPES) {
       if (type.isSubtypeOf(fullyQualifiedName)) {
         return true;
@@ -99,7 +97,7 @@ public class CloseableVisitor extends BaseTreeVisitor {
     return false;
   }
 
-  static boolean isSubclassOfInputStreamOrOutputStreamWithoutClose(Type type) {
+  private static boolean isSubclassOfInputStreamOrOutputStreamWithoutClose(Type type) {
     Symbol.TypeSymbol typeSymbol = type.symbol();
     Type superClass = typeSymbol.superClass();
     if (superClass != null && (superClass.is("java.io.OutputStream") || superClass.is("java.io.InputStream"))) {
@@ -113,11 +111,91 @@ public class CloseableVisitor extends BaseTreeVisitor {
     ExpressionTree initializer = tree.initializer();
 
     // check first usage of closeables in order to manage use of same symbol
-    executionState.checkUsageOfClosables(initializer);
+    ignoreClosableSymbols(initializer);
 
     Symbol symbol = tree.symbol();
     if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-      executionState.addCloseable(symbol, tree, initializer);
+      executionState.newValueForSymbol(symbol, tree, getCloseableStateFromExpression(symbol, initializer));
+    }
+  }
+
+  private CloseableState getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
+    if (shouldBeIgnored(symbol, expression)) {
+      return CloseableState.IGNORED;
+    } else if (isNull(expression)) {
+      return CloseableState.NULL;
+    } else if (expression.is(Tree.Kind.NEW_CLASS)) {
+      if (usesIgnoredCloseableAsArgument(((NewClassTree) expression).arguments())) {
+        return CloseableState.IGNORED;
+      }
+      return CloseableState.OPEN;
+    }
+    // TODO SONARJAVA-1029 : Engine currently ignore closeables which are retrieved from method calls. Handle them as OPEN.
+    return CloseableState.IGNORED;
+  }
+
+
+  private static boolean isNull(ExpressionTree expression) {
+    return expression == null || expression.is(Tree.Kind.NULL_LITERAL);
+  }
+
+  private  boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
+    return shouldBeIgnored(symbol) || shouldBeIgnored(expression);
+  }
+
+  private boolean shouldBeIgnored(Symbol symbol) {
+    CloseableState state = (CloseableState) executionState.getStateOf(symbol);
+    return (state != null && state.isIgnored()) || symbol.isFinal()
+        || isIgnoredCloseableSubtype(symbol.type())
+        || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
+  }
+
+  private static boolean shouldBeIgnored(@Nullable ExpressionTree expression) {
+    return expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType());
+  }
+
+  private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {
+    for (ExpressionTree argument : arguments) {
+      if (isNewClassWithIgnoredArguments(argument)) {
+        return true;
+      } else if (isMethodInvocationWithIgnoredArguments(argument)) {
+        return true;
+      } else if (useIgnoredCloseable(argument) || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isNewClassWithIgnoredArguments(ExpressionTree argument) {
+    return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments());
+  }
+
+  private boolean isMethodInvocationWithIgnoredArguments(ExpressionTree argument) {
+    return argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments());
+  }
+
+  private boolean useIgnoredCloseable(ExpressionTree expression) {
+    if (expression.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
+      IdentifierTree identifier;
+      if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        identifier = ((MemberSelectExpressionTree) expression).identifier();
+      } else {
+        identifier = (IdentifierTree) expression;
+      }
+      if (isIgnoredCloseable(identifier.symbol())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isIgnoredCloseable(Symbol symbol) {
+    if (CloseableVisitor.isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
+      return true;
+    } else {
+      CloseableState state = (CloseableState) executionState.getStateOf(symbol);
+      return state != null && state.isIgnored();
     }
   }
 
@@ -128,7 +206,7 @@ public class CloseableVisitor extends BaseTreeVisitor {
       ExpressionTree expression = tree.expression();
 
       // check first usage of closeables in order to manage use of same symbol
-      executionState.checkUsageOfClosables(expression);
+      ignoreClosableSymbols(expression);
 
       IdentifierTree identifier;
       if (variable.is(Tree.Kind.IDENTIFIER)) {
@@ -138,14 +216,26 @@ public class CloseableVisitor extends BaseTreeVisitor {
       }
       Symbol symbol = identifier.symbol();
       if (isCloseableOrAutoCloseableSubtype(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
-        executionState.addCloseable(symbol, identifier, expression);
+        CloseableState closeableStateFromExpression = getCloseableStateFromExpression(symbol, expression);
+        executionState.newValueForSymbol(symbol, identifier, closeableStateFromExpression);
       }
     }
   }
 
   @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    ignoreVariables(tree.resources());
+    super.visitTryStatement(tree);
+  }
+
+  @Override
   public void visitNewClass(NewClassTree tree) {
-    executionState.checkUsageOfClosables(tree.arguments());
+    ignoreClosableSymbols(tree.arguments());
+  }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    ignoreClosableSymbols(tree.expression());
   }
 
   @Override
@@ -155,163 +245,35 @@ public class CloseableVisitor extends BaseTreeVisitor {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          executionState.markAsClosed(((IdentifierTree) expression).symbol());
+          executionState.markValueAs(((IdentifierTree) expression).symbol(), CloseableState.CLOSED);
         }
       }
     } else {
-      executionState.checkUsageOfClosables(tree.arguments());
+      ignoreClosableSymbols(tree.arguments());
     }
   }
 
-  @Override
-  public void visitClass(ClassTree tree) {
-    // do nothing, inner methods will be visited later
-  }
 
-  @Override
-  public void visitReturnStatement(ReturnStatementTree tree) {
-    executionState.checkUsageOfClosables(tree.expression());
-  }
-
-  @Override
-  public void visitTryStatement(TryStatementTree tree) {
-    for (VariableTree resource : tree.resources()) {
-      executionState.markAsIgnored(resource.symbol());
-    }
-
-    ExecutionState blockES = new ExecutionState(executionState);
-    executionState = blockES;
-    scan(tree.block());
-
-    for (CatchTree catchTree : tree.catches()) {
-      executionState = new ExecutionState(blockES.parent);
-      scan(catchTree.block());
-      blockES.merge(executionState);
-    }
-
-    if (tree.finallyBlock() != null) {
-      executionState = new ExecutionState(blockES.parent);
-      scan(tree.finallyBlock());
-      executionState = blockES.parent.overrideBy(blockES.overrideBy(executionState));
-    } else {
-      executionState = blockES.parent.merge(blockES);
+  private void ignoreClosableSymbols(List<ExpressionTree> expressions) {
+    for (ExpressionTree expression : expressions) {
+      ignoreClosableSymbols(expression);
     }
   }
 
-  @Override
-  public void visitIfStatement(IfStatementTree tree) {
-    scan(tree.condition());
-    ExecutionState thenES = new ExecutionState(executionState);
-    executionState = thenES;
-    scan(tree.thenStatement());
-
-    if (tree.elseStatement() == null) {
-      executionState = thenES.parent.merge(thenES);
-    } else {
-      ExecutionState elseES = new ExecutionState(thenES.parent);
-      executionState = elseES;
-      scan(tree.elseStatement());
-      executionState = thenES.parent.overrideBy(thenES.merge(elseES));
-    }
-  }
-
-  @Override
-  public void visitSwitchStatement(SwitchStatementTree tree) {
-    scan(tree.expression());
-    ExecutionState resultingES = new ExecutionState(executionState);
-    executionState = new ExecutionState(executionState);
-    for (CaseGroupTree caseGroupTree : tree.cases()) {
-      for (StatementTree statement : caseGroupTree.body()) {
-        if (isBreakOrReturnStatement(statement)) {
-          resultingES = executionState.merge(resultingES);
-          executionState = new ExecutionState(resultingES.parent);
-        } else {
-          scan(statement);
-        }
+  private void ignoreClosableSymbols(@Nullable ExpressionTree expression) {
+    if (expression != null) {
+      if (expression.is(Tree.Kind.IDENTIFIER) && CloseableVisitor.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
+        executionState.markValueAs(((IdentifierTree) expression).symbol(), CloseableState.IGNORED);
+      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        ignoreClosableSymbols(((MemberSelectExpressionTree) expression).identifier());
+      } else if (expression.is(Tree.Kind.TYPE_CAST)) {
+        ignoreClosableSymbols(((TypeCastTree) expression).expression());
+      } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
+        ignoreClosableSymbols(((MethodInvocationTree) expression).arguments());
+      } else if (expression.is(Tree.Kind.NEW_CLASS)) {
+        ignoreClosableSymbols(((NewClassTree) expression).arguments());
       }
     }
-    if (!lastStatementIsBreakOrReturn(tree)) {
-      // merge the last execution state
-      resultingES = executionState.merge(resultingES);
-    }
-
-    if (switchContainsDefaultLabel(tree)) {
-      // the default block guarantees that we will cover all the paths
-      executionState = resultingES.parent.overrideBy(resultingES);
-    } else {
-      executionState = resultingES.parent.merge(resultingES);
-    }
   }
 
-  private boolean isBreakOrReturnStatement(StatementTree statement) {
-    return statement.is(Tree.Kind.BREAK_STATEMENT, Tree.Kind.RETURN_STATEMENT);
-  }
-
-  private boolean switchContainsDefaultLabel(SwitchStatementTree tree) {
-    for (CaseGroupTree caseGroupTree : tree.cases()) {
-      for (CaseLabelTree label : caseGroupTree.labels()) {
-        if ("default".equals(label.caseOrDefaultKeyword().text())) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean lastStatementIsBreakOrReturn(SwitchStatementTree tree) {
-    List<CaseGroupTree> cases = tree.cases();
-    if (!cases.isEmpty()) {
-      List<StatementTree> lastStatements = cases.get(cases.size() - 1).body();
-      return !lastStatements.isEmpty() && isBreakOrReturnStatement(lastStatements.get(lastStatements.size() - 1));
-    }
-    return false;
-  }
-
-  @Override
-  public void visitWhileStatement(WhileStatementTree tree) {
-    scan(tree.condition());
-    visitStatement(tree.statement());
-  }
-
-  @Override
-  public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    visitStatement(tree.statement());
-    scan(tree.condition());
-  }
-
-  @Override
-  public void visitForStatement(ForStatementTree tree) {
-    scan(tree.condition());
-    scan(tree.initializer());
-    scan(tree.update());
-    visitStatement(tree.statement());
-  }
-
-  @Override
-  public void visitForEachStatement(ForEachStatement tree) {
-    scan(tree.variable());
-    scan(tree.expression());
-    visitStatement(tree.statement());
-  }
-
-  private void visitStatement(StatementTree tree) {
-    executionState = new ExecutionState(executionState);
-    scan(tree);
-    executionState = executionState.restoreParent();
-  }
-
-  private Set<Symbol> extractCloseableSymbols(List<VariableTree> variableTrees) {
-    Set<Symbol> symbols = Sets.newHashSet();
-    for (VariableTree variableTree : variableTrees) {
-      Symbol symbol = variableTree.symbol();
-      if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-        symbols.add(symbol);
-      }
-    }
-    return symbols;
-  }
-
-  public void insertIssues() {
-    executionState.insertIssues();
-  }
 }

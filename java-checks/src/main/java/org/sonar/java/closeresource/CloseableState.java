@@ -19,7 +19,9 @@
  */
 package org.sonar.java.closeresource;
 
-public enum State {
+import org.sonar.java.symexecengine.State;
+
+public enum CloseableState implements State {
 
   // * | C | O | I | N |
   // --+---+---+---+---|
@@ -55,6 +57,11 @@ public enum State {
       }
       return this;
     }
+
+    @Override
+    public boolean shouldRaiseIssue() {
+      return true;
+    }
   },
   IGNORED {
     @Override
@@ -71,5 +78,10 @@ public enum State {
 
   public boolean isOpen() {
     return this.equals(OPEN);
+  }
+
+  @Override
+  public boolean shouldRaiseIssue() {
+    return false;
   }
 }

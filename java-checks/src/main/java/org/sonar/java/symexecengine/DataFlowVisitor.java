@@ -61,6 +61,7 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     ExecutionState blockES = new ExecutionState(executionState);
     executionState = blockES;
     scan(tree.block());
+    scan(tree.resources());
 
     for (CatchTree catchTree : tree.catches()) {
       executionState = new ExecutionState(blockES.parent);

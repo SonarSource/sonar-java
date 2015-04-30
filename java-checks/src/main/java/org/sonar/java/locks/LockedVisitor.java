@@ -47,16 +47,16 @@ public class LockedVisitor extends DataFlowVisitor {
 
   private static MethodInvocationMatcherCollection lockMethodInvocationMatcher() {
     return MethodInvocationMatcherCollection.create(
-      MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
-        .name("lock"),
-      MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
-        .name("lockInterruptibly"),
-      MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
-        .name("tryLock")
-        .withNoParameterConstraint());
+        MethodInvocationMatcher.create()
+            .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
+            .name("lock"),
+        MethodInvocationMatcher.create()
+            .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
+            .name("lockInterruptibly"),
+        MethodInvocationMatcher.create()
+            .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
+            .name("tryLock")
+            .withNoParameterConstraint());
   }
 
   @Override
@@ -115,8 +115,4 @@ public class LockedVisitor extends DataFlowVisitor {
     return null;
   }
 
-  @Override
-  public void insertIssues() {
-    executionState.insertIssues();
-  }
 }

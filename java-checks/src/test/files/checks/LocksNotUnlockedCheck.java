@@ -126,7 +126,8 @@ public class MyClass {
 
   public void while_statement() {
     while (foo) {
-      lock.tryLock();
+      //False positive
+      lock.tryLock();  // Noncompliant
     }
     lock.unlock();
     while (foo) {
@@ -144,7 +145,8 @@ public class MyClass {
 
   public void do_while_statement() {
     do {
-      lock.tryLock();
+      //False positive
+      lock.tryLock(); // Noncompliant
     } while (foo);
     lock.unlock();
     do {

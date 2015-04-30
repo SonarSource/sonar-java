@@ -21,7 +21,6 @@ package org.sonar.java.symexecengine;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.sonar.java.locks.LockState;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -83,7 +82,17 @@ public class ExecutionState {
       }
     } else {
       // no known occurence, means its a field or a method param.
-      createValueInTopExecutionState(symbol, tree, LockState.NULL);
+      createValueInTopExecutionState(symbol, tree, new State() {
+        @Override
+        public State merge(State s) {
+          return s;
+        }
+
+        @Override
+        public boolean shouldRaiseIssue() {
+          return false;
+        }
+      });
     }
     valuesBySymbol.put(symbol, new Value(tree, state));
   }
@@ -109,13 +118,10 @@ public class ExecutionState {
 
   public ExecutionState restoreParent() {
     if (parent != null) {
+      insertIssues();
       return parent.merge(this);
     }
     return this;
-  }
-
-  public ExecutionState parent() {
-    return parent;
   }
 
   public void insertIssues() {
@@ -141,6 +147,15 @@ public class ExecutionState {
       return new Value(value.treeNode, value.state);
     } else if (parent != null) {
       return parent.getValue(symbol);
+    }
+    return null;
+  }
+
+  @CheckForNull
+  public State getStateOf(Symbol symbol) {
+    Value value = getValue(symbol);
+    if(value != null) {
+      return value.state;
     }
     return null;
   }
