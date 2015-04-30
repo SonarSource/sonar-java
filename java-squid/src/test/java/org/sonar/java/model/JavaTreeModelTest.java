@@ -54,6 +54,7 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -189,29 +190,49 @@ public class JavaTreeModelTest {
     assertThat(tree.packageName()).isNotNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
+
+    tree = (CompilationUnitTree) p.parse("import foo; ; import bar; class Foo {} class Bar {}");
+    assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
+    assertThat(tree.packageName()).isNull();
+    assertThat(tree.imports()).hasSize(3);
+    assertThat(tree.imports().get(1).is(Kind.EMPTY_STATEMENT)).isTrue();
+    assertThat(tree.types()).hasSize(2);
   }
 
   @Test
   public void import_declaration() {
-    AstNode astNode = p.parse("import foo.Bar;");
-    ImportTree tree = ((CompilationUnitTree) astNode).imports().get(0);
-    assertThat(tree.isStatic()).isFalse();
-    assertThat(tree.qualifiedIdentifier()).isNotNull();
+    AstNode astNode = p.parse(";");
+    ImportClauseTree tree = ((CompilationUnitTree) astNode).imports().get(0);
+    assertThat(tree.is(Kind.EMPTY_STATEMENT)).isTrue();
+    assertThat(tree.is(Kind.IMPORT)).isFalse();
+
+    astNode = p.parse("import foo.Bar;");
+    tree = ((CompilationUnitTree) astNode).imports().get(0);
+    assertThat(tree.is(Kind.IMPORT)).isTrue();
+    ImportTree importTree = (ImportTree) tree;
+    assertThat(importTree.isStatic()).isFalse();
+    assertThat(importTree.qualifiedIdentifier()).isNotNull();
 
     astNode = p.parse("import foo.bar.*;");
     tree = ((CompilationUnitTree) astNode).imports().get(0);
-    assertThat(tree.isStatic()).isFalse();
-    assertThat(tree.qualifiedIdentifier()).isNotNull();
+    assertThat(tree.is(Kind.IMPORT)).isTrue();
+    importTree = (ImportTree) tree;
+    assertThat(importTree.isStatic()).isFalse();
+    assertThat(importTree.qualifiedIdentifier()).isNotNull();
 
     astNode = p.parse("import static foo.Bar.method;");
     tree = ((CompilationUnitTree) astNode).imports().get(0);
-    assertThat(tree.isStatic()).isTrue();
-    assertThat(tree.qualifiedIdentifier()).isNotNull();
+    assertThat(tree.is(Kind.IMPORT)).isTrue();
+    importTree = (ImportTree) tree;
+    assertThat(importTree.isStatic()).isTrue();
+    assertThat(importTree.qualifiedIdentifier()).isNotNull();
 
     astNode = p.parse("import static foo.Bar.*;");
     tree = ((CompilationUnitTree) astNode).imports().get(0);
-    assertThat(tree.isStatic()).isTrue();
-    assertThat(tree.qualifiedIdentifier()).isNotNull();
+    assertThat(tree.is(Kind.IMPORT)).isTrue();
+    importTree = (ImportTree) tree;
+    assertThat(importTree.isStatic()).isTrue();
+    assertThat(importTree.qualifiedIdentifier()).isNotNull();
   }
 
   /**
