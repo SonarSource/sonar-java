@@ -24,6 +24,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.symexecengine.DataFlowVisitor;
+import org.sonar.java.symexecengine.State;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -64,10 +65,11 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   private void ignoreVariables(List<VariableTree> variables) {
+    scan(variables);
     for (VariableTree methodParameter : variables) {
       Symbol symbol = methodParameter.symbol();
       if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-        executionState.newValueForSymbol(symbol, methodParameter, CloseableState.IGNORED);
+        executionState.markValueAs(symbol, new CloseableState.Ignored(methodParameter));
       }
     }
   }
@@ -107,7 +109,13 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   @Override
+  protected boolean isSymbolRelevant(Symbol symbol) {
+    return isCloseableOrAutoCloseableSubtype(symbol.type());
+  }
+
+  @Override
   public void visitVariable(VariableTree tree) {
+    super.visitVariable(tree);
     ExpressionTree initializer = tree.initializer();
 
     // check first usage of closeables in order to manage use of same symbol
@@ -115,23 +123,23 @@ public class CloseableVisitor extends DataFlowVisitor {
 
     Symbol symbol = tree.symbol();
     if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-      executionState.newValueForSymbol(symbol, tree, getCloseableStateFromExpression(symbol, initializer));
+      executionState.markValueAs(symbol, getCloseableStateFromExpression(symbol, initializer));
     }
   }
 
   private CloseableState getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
     if (shouldBeIgnored(symbol, expression)) {
-      return CloseableState.IGNORED;
+      return new CloseableState.Ignored(expression);
     } else if (isNull(expression)) {
-      return CloseableState.NULL;
+      return new CloseableState.Null(expression);
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {
       if (usesIgnoredCloseableAsArgument(((NewClassTree) expression).arguments())) {
-        return CloseableState.IGNORED;
+        return new CloseableState.Ignored(expression);
       }
-      return CloseableState.OPEN;
+      return new CloseableState.Open(expression);
     }
     // TODO SONARJAVA-1029 : Engine currently ignore closeables which are retrieved from method calls. Handle them as OPEN.
-    return CloseableState.IGNORED;
+    return new CloseableState.Ignored(expression);
   }
 
 
@@ -144,8 +152,7 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   private boolean shouldBeIgnored(Symbol symbol) {
-    CloseableState state = (CloseableState) executionState.getStateOf(symbol);
-    return (state != null && state.isIgnored()) || symbol.isFinal()
+    return isSymbolIgnored(symbol)|| symbol.isFinal()
         || isIgnoredCloseableSubtype(symbol.type())
         || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
   }
@@ -194,13 +201,25 @@ public class CloseableVisitor extends DataFlowVisitor {
     if (CloseableVisitor.isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
       return true;
     } else {
-      CloseableState state = (CloseableState) executionState.getStateOf(symbol);
-      return state != null && state.isIgnored();
+      return isSymbolIgnored(symbol);
     }
+  }
+
+  private boolean isSymbolIgnored(Symbol symbol) {
+    List<State> statesOf = executionState.getStatesOf(symbol);
+    for (State state : statesOf) {
+      System.out.println(symbol.name()+"  "+state.getClass().getName());
+      if((state instanceof CloseableState) && ((CloseableState) state).isIgnored()) {
+        return true;
+      }
+    }
+    return false;
+
   }
 
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
     ExpressionTree variable = tree.variable();
     if (variable.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = tree.expression();
@@ -217,7 +236,7 @@ public class CloseableVisitor extends DataFlowVisitor {
       Symbol symbol = identifier.symbol();
       if (isCloseableOrAutoCloseableSubtype(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
         CloseableState closeableStateFromExpression = getCloseableStateFromExpression(symbol, expression);
-        executionState.newValueForSymbol(symbol, identifier, closeableStateFromExpression);
+        executionState.markValueAs(symbol, closeableStateFromExpression);
       }
     }
   }
@@ -245,7 +264,7 @@ public class CloseableVisitor extends DataFlowVisitor {
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          executionState.markValueAs(((IdentifierTree) expression).symbol(), CloseableState.CLOSED);
+          executionState.markValueAs(((IdentifierTree) expression).symbol(), new CloseableState.Closed(expression));
         }
       }
     } else {
@@ -263,7 +282,7 @@ public class CloseableVisitor extends DataFlowVisitor {
   private void ignoreClosableSymbols(@Nullable ExpressionTree expression) {
     if (expression != null) {
       if (expression.is(Tree.Kind.IDENTIFIER) && CloseableVisitor.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
-        executionState.markValueAs(((IdentifierTree) expression).symbol(), CloseableState.IGNORED);
+        executionState.markValueAs(((IdentifierTree) expression).symbol(), new CloseableState.Ignored(expression));
       } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
         ignoreClosableSymbols(((MemberSelectExpressionTree) expression).identifier());
       } else if (expression.is(Tree.Kind.TYPE_CAST)) {

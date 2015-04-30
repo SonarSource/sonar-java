@@ -19,9 +19,25 @@
  */
 package org.sonar.java.closeresource;
 
+import com.google.common.collect.Lists;
 import org.sonar.java.symexecengine.State;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public enum CloseableState implements State {
+import java.util.List;
+
+public abstract class CloseableState implements State {
+
+  final List<Tree> changingStateTrees;
+
+
+  public CloseableState(Tree tree) {
+    changingStateTrees = Lists.newArrayList();
+    changingStateTrees.add(tree);
+  }
+  public CloseableState(List<Tree> tree) {
+    this.changingStateTrees = tree;
+  }
+
 
   // * | C | O | I | N |
   // --+---+---+---+---|
@@ -34,36 +50,61 @@ public enum CloseableState implements State {
   // N | C | O | I | N | <- NULL
   // ------------------+
 
-  NULL {
+  public static class Null extends CloseableState  {
+
+    public Null(Tree tree) {
+      super(tree);
+    }
+
     @Override
     public State merge(State s) {
       return s;
     }
-  },
-  CLOSED {
+  }
+  public static class Closed extends CloseableState  {
+    public Closed(Tree tree) {
+      super(tree);
+    }
+
     @Override
     public State merge(State s) {
-      if (s.equals(NULL)) {
+      if (s instanceof Null) {
         return this;
+      }
+      if(!(s instanceof CloseableState)) {
+        throw new IllegalStateException("Merging incompatible states");
       }
       return s;
     }
-  },
-  OPEN {
+  }
+  public static class Open extends CloseableState  {
+    public Open(Tree tree) {
+      super(tree);
+    }
+
+    public Open(List<Tree> changingStateTrees) {
+      super(changingStateTrees);
+    }
+
     @Override
     public State merge(State s) {
-      if (s.equals(IGNORED)) {
-        return s;
+      if(s instanceof Open) {
+        List<Tree> trees = Lists.newArrayList(((Open) s).changingStateTrees);
+        trees.addAll(changingStateTrees);
+        return new Open(changingStateTrees);
       }
       return this;
     }
-
     @Override
     public boolean shouldRaiseIssue() {
       return true;
     }
-  },
-  IGNORED {
+  }
+  public static class Ignored extends CloseableState  {
+    public Ignored(Tree tree) {
+      super(tree);
+    }
+
     @Override
     public State merge(State s) {
       return this;
@@ -71,11 +112,16 @@ public enum CloseableState implements State {
   };
 
   public boolean isIgnored() {
-    return this.equals(IGNORED);
+    return this instanceof Ignored;
   }
 
   @Override
   public boolean shouldRaiseIssue() {
     return false;
+  }
+
+  @Override
+  public List<Tree> reportingTrees() {
+    return changingStateTrees;
   }
 }

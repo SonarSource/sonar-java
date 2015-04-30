@@ -19,41 +19,66 @@
  */
 package org.sonar.java.locks;
 
+import com.google.common.collect.Lists;
 import org.sonar.java.symexecengine.State;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public enum LockState implements State {
+import java.util.List;
 
-  // * | U | L | I | N |
-  // --+---+---+---+---|
-  // U | U | L | I | U | <- UNLOCKED
-  // --+---+---+---+---|
-  // L | L | L | I | L | <- LOCKED
-  // --+---+---+---+---|
-  // I | I | I | I | I | <- IGNORED
-  // --+---+---+---+---|
-  // N | U | L | I | N | <- NULL
-  // ------------------+
+public abstract class LockState implements State {
 
-  NULL {
-    @Override
-    public State merge(State s) {
-      return s;
+  final List<Tree> changingStateTrees;
+
+  public LockState(Tree tree) {
+    changingStateTrees = Lists.newArrayList();
+    changingStateTrees.add(tree);
+  }
+  public LockState(List<Tree> tree) {
+    this.changingStateTrees = tree;
+  }
+
+  @Override
+  public boolean shouldRaiseIssue() {
+    return false;
+  }
+
+  @Override
+  public List<Tree> reportingTrees() {
+    return changingStateTrees;
+  }
+
+  public static class Unlocked extends LockState{
+    public Unlocked(Tree tree) {
+      super(tree);
     }
-  },
-  UNLOCKED {
+
     @Override
     public State merge(State s) {
-      if (s.equals(NULL)) {
+      if (s.equals(State.UNSET)) {
         return this;
+      }
+      if(!(s instanceof LockState)) {
+        throw new IllegalStateException("Merging incompatible states");
       }
       return s;
     }
-  },
-  LOCKED {
+  }
+  public static class Locked extends LockState{
+
+    public Locked(Tree tree) {
+      super(tree);
+    }
+
+    public Locked(List<Tree> changingStateTrees) {
+      super(changingStateTrees);
+    }
+
     @Override
     public State merge(State s) {
-      if (s.equals(IGNORED)) {
-        return s;
+      if(s instanceof Locked) {
+        List<Tree> trees = Lists.newArrayList(((Locked) s).changingStateTrees);
+        trees.addAll(changingStateTrees);
+        return new Locked(changingStateTrees);
       }
       return this;
     }
@@ -62,16 +87,11 @@ public enum LockState implements State {
     public boolean shouldRaiseIssue() {
       return true;
     }
-  },
-  IGNORED {
-    @Override
-    public State merge(State s) {
-      return this;
-    }
-  };
-
-  @Override
-  public boolean shouldRaiseIssue() {
-    return false;
   }
+
+
+
+
+
+
 }

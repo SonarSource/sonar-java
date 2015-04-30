@@ -25,7 +25,6 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -47,34 +46,21 @@ public class LockedVisitor extends DataFlowVisitor {
 
   private static MethodInvocationMatcherCollection lockMethodInvocationMatcher() {
     return MethodInvocationMatcherCollection.create(
-        MethodInvocationMatcher.create()
-            .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
-            .name("lock"),
-        MethodInvocationMatcher.create()
-            .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
-            .name("lockInterruptibly"),
-        MethodInvocationMatcher.create()
-            .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
-            .name("tryLock")
-            .withNoParameterConstraint());
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
+        .name("lock"),
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
+        .name("lockInterruptibly"),
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
+        .name("tryLock")
+        .withNoParameterConstraint());
   }
 
   @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    ExpressionTree variable = tree.variable();
-    if (variable.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
-
-      IdentifierTree identifier;
-      if (variable.is(Tree.Kind.IDENTIFIER)) {
-        identifier = (IdentifierTree) variable;
-      } else {
-        identifier = ((MemberSelectExpressionTree) variable).identifier();
-      }
-      Symbol symbol = identifier.symbol();
-      if (symbol.type().isSubtypeOf(JAVA_LOCK)) {
-        executionState.newValueForSymbol(symbol, tree, LockState.NULL);
-      }
-    }
+  protected boolean isSymbolRelevant(Symbol symbol) {
+    return symbol.type().isSubtypeOf(JAVA_LOCK);
   }
 
   @Override
@@ -82,14 +68,14 @@ public class LockedVisitor extends DataFlowVisitor {
     if (LOCK_INVOCATIONS.anyMatch(tree)) {
       Symbol symbol = extractInvokedOnSymbol(tree.methodSelect());
       if (symbol != null) {
-        executionState.newValueForSymbol(symbol, tree, LockState.LOCKED);
+        executionState.markValueAs(symbol, new LockState.Locked(tree));
       }
     } else if (UNLOCK_INVOCATION.matches(tree)) {
       ExpressionTree methodSelect = tree.methodSelect();
       if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {
-          executionState.markValueAs(((IdentifierTree) expression).symbol(), LockState.UNLOCKED);
+          executionState.markValueAs(((IdentifierTree) expression).symbol(), new LockState.Unlocked(tree));
         }
       }
     }

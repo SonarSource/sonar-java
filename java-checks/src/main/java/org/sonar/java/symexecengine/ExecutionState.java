@@ -19,13 +19,17 @@
  */
 package org.sonar.java.symexecengine;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,87 +37,60 @@ public class ExecutionState {
 
   private final IssuableSubscriptionVisitor check;
   ExecutionState parent;
-  private Map<Symbol, Value> valuesBySymbol = Maps.newHashMap();
+  private SetMultimap<Symbol, Value> reachableValues = HashMultimap.create();
+  private SetMultimap<Symbol, Value> unreachableValues = HashMultimap.create();
+  private List<Symbol> definedInState = Lists.newArrayList();
+  private Map<Value, State> stateOfValue = Maps.newHashMap();
 
   public ExecutionState(ExecutionState executionState) {
     this.parent = executionState;
     this.check = executionState.check;
+    this.reachableValues = HashMultimap.create(executionState.reachableValues);
+    this.unreachableValues = HashMultimap.create(executionState.unreachableValues);
   }
 
   public ExecutionState(IssuableSubscriptionVisitor check) {
     this.check = check;
   }
 
+  public void defineSymbol(Symbol symbol) {
+    definedInState.add(symbol);
+  }
+
   public ExecutionState merge(ExecutionState executionState) {
-    for (Map.Entry<Symbol, Value> entry : executionState.valuesBySymbol.entrySet()) {
-      Symbol symbol = entry.getKey();
-      Value currentValue = getValue(symbol);
-      Value valueToMerge = entry.getValue();
-      if (currentValue != null) {
-        currentValue.state = currentValue.state.merge(valueToMerge.state);
-        valuesBySymbol.put(symbol, currentValue);
-      } else {
-        if (valueToMerge.shouldRaiseIssue()) {
-          insertIssue(valueToMerge.treeNode);
-        }
+    for (Symbol symbol : executionState.reachableValues.keys()) {
+      this.reachableValues.putAll(symbol, executionState.reachableValues.get(symbol));
+    }
+    for (Symbol symbol : executionState.unreachableValues.keys()) {
+      this.unreachableValues.putAll(symbol, executionState.unreachableValues.get(symbol));
+    }
+
+    for (Symbol symbol : unreachableValues.keys()) {
+      //cleanup after merge of reachable/unreachable values
+      for (Value value : unreachableValues.get(symbol)) {
+        reachableValues.remove(symbol, value);
       }
+    }
+
+    for (Map.Entry<Value, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
+      Value value = valueStateEntry.getKey();
+      State state = valueStateEntry.getValue();
+      State stateOfValue = getStateOfValue(value);
+      if(stateOfValue == null) {
+        stateOfValue = state;
+      } else {
+        stateOfValue = stateOfValue.merge(state);
+      }
+      this.stateOfValue.put(value, stateOfValue);
     }
     return this;
   }
 
   public ExecutionState overrideBy(ExecutionState executionState) {
-    for (Map.Entry<Symbol, Value> entry : executionState.valuesBySymbol.entrySet()) {
-      Symbol symbol = entry.getKey();
-      Value value = entry.getValue();
-      if (getValue(symbol) != null) {
-        markValueAs(symbol, value.state);
-      } else {
-        valuesBySymbol.put(symbol, value);
-      }
-    }
+    this.unreachableValues = executionState.unreachableValues;
+    this.reachableValues = executionState.reachableValues;
+    this.stateOfValue.putAll(executionState.stateOfValue);
     return this;
-  }
-
-  public void newValueForSymbol(Symbol symbol, Tree tree, State state) {
-    Value knownValue = getValue(symbol);
-    if (knownValue != null) {
-      if (knownValue.shouldRaiseIssue()) {
-        insertIssue(knownValue.treeNode);
-      }
-    } else {
-      // no known occurence, means its a field or a method param.
-      createValueInTopExecutionState(symbol, tree, new State() {
-        @Override
-        public State merge(State s) {
-          return s;
-        }
-
-        @Override
-        public boolean shouldRaiseIssue() {
-          return false;
-        }
-      });
-    }
-    valuesBySymbol.put(symbol, new Value(tree, state));
-  }
-
-  private void createValueInTopExecutionState(Symbol symbol, Tree tree, State state) {
-    ExecutionState top = this;
-    while (top.parent != null) {
-      top = top.parent;
-    }
-    top.valuesBySymbol.put(symbol, new Value(tree, state));
-  }
-
-  private void insertIssue(Tree treeNode) {
-    check.addIssue(treeNode, "");
-  }
-
-  public void markValueAs(Symbol symbol, State state) {
-    Value value = getValue(symbol);
-    if (value != null) {
-      valuesBySymbol.put(symbol, new Value(value.treeNode, state));
-    }
   }
 
   public ExecutionState restoreParent() {
@@ -126,52 +103,81 @@ public class ExecutionState {
 
   public void insertIssues() {
     for (Tree tree : getIssuableTrees()) {
-      insertIssue(tree);
+      check.addIssue(tree, "");
     }
   }
 
   private Set<Tree> getIssuableTrees() {
     Set<Tree> results = Sets.newHashSet();
-    for (Value value: valuesBySymbol.values()) {
-      if (value.shouldRaiseIssue()) {
-        results.add(value.treeNode);
+    for (Symbol symbol : definedInState) {
+      for (Value value : unreachableValues.get(symbol)) {
+        State state = stateOfValue.get(value);
+        if (state.shouldRaiseIssue()) {
+          results.addAll(state.reportingTrees());
+        }
+      }
+      for (Value value : reachableValues.get(symbol)) {
+        State state = stateOfValue.get(value);
+        if (state.shouldRaiseIssue()) {
+          results.addAll(state.reportingTrees());
+        }
       }
     }
     return results;
   }
 
   @CheckForNull
-  private Value getValue(Symbol symbol) {
-    Value value = valuesBySymbol.get(symbol);
-    if (value != null) {
-      return new Value(value.treeNode, value.state);
-    } else if (parent != null) {
-      return parent.getValue(symbol);
+  public List<State> getStatesOf(Symbol symbol) {
+    List<State> states = Lists.newArrayList();
+    List<Value> values = Lists.newArrayList(reachableValues.get(symbol));
+    values.addAll(unreachableValues.get(symbol));
+    for (Value value : values) {
+      State state = stateOfValue.get(value);
+      if(state != null) {
+        states.add(state);
+      }
     }
-    return null;
+    return states;
   }
 
   @CheckForNull
-  public State getStateOf(Symbol symbol) {
-    Value value = getValue(symbol);
-    if(value != null) {
-      return value.state;
+  private State getStateOfValue(Value value) {
+    ExecutionState currentState = this;
+    while (currentState != null) {
+      State state = currentState.stateOfValue.get(value);
+      if(state != null) {
+        return state;
+      }
+      currentState = currentState.parent;
     }
     return null;
   }
 
-  private static class Value {
+  private Iterable<Value> getValues(Symbol symbol) {
+    return reachableValues.get(symbol);
+  }
 
-    State state;
-    Tree treeNode;
+  public void createValueForSymbol(Symbol symbol, Tree tree) {
+    // When creating a new value, all reachable values are now unreachable.
+    Set<Value> values = this.reachableValues.get(symbol);
+    unreachableValues.putAll(symbol, values);
+    values.clear();
+    Value value = new Value(tree);
+    reachableValues.put(symbol, value);
+    stateOfValue.put(value, State.UNSET);
+  }
 
-    public Value(Tree treeNode, State state) {
-      this.treeNode = treeNode;
-      this.state = state;
+  public void markValueAs(Symbol symbol, State state) {
+    for (Value value : getValues(symbol)) {
+      stateOfValue.put(value, state);
     }
+  }
 
-    public boolean shouldRaiseIssue() {
-      return state.shouldRaiseIssue();
+  private static class Value {
+    final Tree treeNode;
+
+    public Value(Tree treeNode) {
+      this.treeNode = treeNode;
     }
   }
 

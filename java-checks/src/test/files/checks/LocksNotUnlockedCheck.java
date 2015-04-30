@@ -2,18 +2,22 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MyClass {
-    Lock lock = new ReentrantLock();
+
+
 
   public void acquireLock() {
+    Lock lock = new ReentrantLock();
     lock.lock();  // Noncompliant
   }
 
   public void acquireAndReleaseLock() {
+    Lock lock = new ReentrantLock();
     lock.lock();  // Compliant
     lock.unlock();
   }
 
   public void releaseLock() {
+    Lock lock = new ReentrantLock();
     lock.unlock();
   }
 
@@ -24,6 +28,7 @@ public class MyClass {
   }
 
   public void doTheOtherThing() {
+    Lock lock = new ReentrantLock();
     try {
       lock.tryLock();  // False negative Noncompliant
       // do work...
@@ -34,6 +39,7 @@ public class MyClass {
   }
 
   public void reassigned_lock() {
+    Lock lock = new ReentrantLock();
     lock.tryLock(); // Noncompliant
     lock = new ReentrantLock();
     lock.lock();
@@ -41,6 +47,7 @@ public class MyClass {
   }
 
   public void if_statement() {
+    Lock lock = new ReentrantLock();
     boolean a;
     lock.tryLock();
     if(a) {
@@ -48,16 +55,25 @@ public class MyClass {
     } else {
       lock.unlock();
     }
+    lock = new ReentrantLock();
     lock.tryLock(); // Noncompliant
     if(a) {
       //lock not unlocked.
     } else {
       lock.unlock();
     }
+
+    Lock l1 = new ReentrantLock();
+    l1.lock(); // Noncompliant
+    if(a){
+      l1 = new ReentrantLock();
+    } else {
+      l1.unlock();
+    }
   }
 
   public void switch_statement() {
-    lock = new ReentrantLock();
+    Lock lock = new ReentrantLock();
     lock.tryLock(); // Noncompliant
     switch (foo) {
       case 0:
@@ -92,6 +108,7 @@ public class MyClass {
   }
 
   public void tryStatement() {
+    Lock lock = new ReentrantLock();
     try {
       lock.tryLock();
     } catch (MyException e) {
@@ -99,17 +116,17 @@ public class MyClass {
     } finally {
       lock.unlock();
     }
-    lock = new ReentrantLock(); // Noncompliant
+    lock = new ReentrantLock();
     try {
-      lock.tryLock();
+      lock.tryLock(); // Noncompliant
     } catch (MyException e) {
       lock.unlock();
     } catch (MyOtherException e) {
       lock.unlock();
     }
-    lock = new ReentrantLock(); // Noncompliant
+    lock = new ReentrantLock();
     try {
-      lock.tryLock();
+      lock.tryLock(); // Noncompliant
     } catch (MyException e) {
     } catch (MyOtherException e) {
       lock.unlock();
@@ -125,9 +142,9 @@ public class MyClass {
   }
 
   public void while_statement() {
+    Lock lock = new ReentrantLock();
     while (foo) {
-      //False positive
-      lock.tryLock();  // Noncompliant
+      lock.tryLock();
     }
     lock.unlock();
     while (foo) {
@@ -138,15 +155,16 @@ public class MyClass {
   }
 
   public void doubleLock() {
-    lock.tryLock(); // Noncompliant
+    Lock lock = new ReentrantLock();
+    lock.tryLock();
     lock.tryLock();
     lock.unlock();
   }
 
   public void do_while_statement() {
+    Lock lock = new ReentrantLock();
     do {
-      //False positive
-      lock.tryLock(); // Noncompliant
+      lock.tryLock();
     } while (foo);
     lock.unlock();
     do {
@@ -157,6 +175,7 @@ public class MyClass {
   }
 
   public void for_statement() {
+    Lock lock = new ReentrantLock();
     for (int i = 0; i <10; i++) {
       lock.tryLock(); // Noncompliant
       lock =  new ReentrantLock();
@@ -170,7 +189,4 @@ public class MyClass {
     lock.unlock();
 
   }
-
-
-
 }

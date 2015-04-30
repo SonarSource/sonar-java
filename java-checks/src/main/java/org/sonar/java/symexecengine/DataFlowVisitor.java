@@ -20,31 +20,72 @@
 package org.sonar.java.symexecengine;
 
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 
-public class DataFlowVisitor extends BaseTreeVisitor {
+public abstract class DataFlowVisitor extends BaseTreeVisitor {
 
   public DataFlowVisitor(IssuableSubscriptionVisitor check) {
     executionState = new ExecutionState(check);
   }
 
   protected ExecutionState executionState;
+
+  protected abstract boolean isSymbolRelevant(Symbol symbol);
+
+  @Override
+  public void visitVariable(VariableTree tree) {
+    super.visitVariable(tree);
+    executionState.defineSymbol(tree.symbol());
+    if (isSymbolRelevant(tree.symbol())) {
+      executionState.createValueForSymbol(tree.symbol(), tree);
+    }
+  }
+
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    super.visitAssignmentExpression(tree);
+    Symbol symbol = getSymbol(tree.variable());
+    if(symbol != null && isSymbolRelevant(symbol)) {
+      executionState.createValueForSymbol(symbol, tree.expression());
+    }
+  }
+
+  @CheckForNull
+  private Symbol getSymbol(ExpressionTree variable) {
+    if (!variable.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
+      return null;
+    }
+    IdentifierTree identifier;
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      identifier = (IdentifierTree) variable;
+    } else {
+      identifier = ((MemberSelectExpressionTree) variable).identifier();
+    }
+    return identifier.symbol();
+  }
 
   @Override
   public void visitNewClass(NewClassTree tree) {

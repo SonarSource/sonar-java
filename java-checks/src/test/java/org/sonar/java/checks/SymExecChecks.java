@@ -17,35 +17,12 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.symexecengine;
+package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
 
-import java.util.List;
-
-public interface State {
-
-  State UNSET = new State() {
-    @Override
-    public State merge(State s) {
-      return s;
-    }
-
-    @Override
-    public boolean shouldRaiseIssue() {
-      return false;
-    }
-
-    @Override
-    public List<Tree> reportingTrees() {
-      return Lists.newArrayList();
-    }
-  };
-
-  State merge(State s);
-
-  boolean shouldRaiseIssue();
-
-  List<Tree> reportingTrees();
+@RunWith(Suite.class)
+@Suite.SuiteClasses({CloseResourceCheckTest.class, LocksNotUnlockedCheckTest.class})
+public class SymExecChecks {
 }
