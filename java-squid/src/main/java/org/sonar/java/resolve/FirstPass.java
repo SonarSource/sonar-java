@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -134,10 +135,10 @@ public class FirstPass extends BaseTreeVisitor {
     }
   }
 
-  private void resolveImports(List<ImportTree> imports) {
+  private void resolveImports(List<ImportClauseTree> imports) {
     ImportResolverVisitor importResolverVisitor = new ImportResolverVisitor();
-    for (ImportTree importTree : imports) {
-      importTree.accept(importResolverVisitor);
+    for (ImportClauseTree importClauseTree : imports) {
+      importClauseTree.accept(importResolverVisitor);
     }
   }
 

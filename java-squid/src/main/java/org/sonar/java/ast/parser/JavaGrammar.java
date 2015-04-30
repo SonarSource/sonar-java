@@ -26,7 +26,6 @@ import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
-import org.sonar.java.model.JavaTree.ImportTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -64,6 +63,7 @@ import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.java.parser.sslr.GrammarBuilder;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -152,13 +152,16 @@ public class JavaGrammar {
     return this.<ExpressionTree>QUALIFIED_IDENTIFIER();
   }
 
-  public ImportTreeImpl IMPORT_DECLARATION() {
-    return b.<ImportTreeImpl>nonterminal(JavaLexer.IMPORT_DECLARATION)
+  public ImportClauseTree IMPORT_DECLARATION() {
+    return b.<ImportClauseTree>nonterminal(JavaLexer.IMPORT_DECLARATION)
       .is(
-        f.newImportDeclaration(
-          b.invokeRule(JavaKeyword.IMPORT), b.optional(b.invokeRule(JavaKeyword.STATIC)), EXPRESSION_QUALIFIED_IDENTIFIER(),
-          b.optional(f.newTuple17(b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaPunctuator.STAR))),
-          b.invokeRule(JavaPunctuator.SEMI)));
+        b.firstOf(
+          f.newImportDeclaration(
+            b.invokeRule(JavaKeyword.IMPORT), b.optional(b.invokeRule(JavaKeyword.STATIC)), EXPRESSION_QUALIFIED_IDENTIFIER(),
+            b.optional(f.newTuple17(b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaPunctuator.STAR))),
+            b.invokeRule(JavaPunctuator.SEMI)),
+          // javac accepts empty statements in import declarations
+          f.newEmptyImport(b.invokeRule(JavaPunctuator.SEMI))));
   }
 
   public AstNode TYPE_DECLARATION() {

@@ -33,7 +33,7 @@ import com.google.common.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface EmptyStatementTree extends StatementTree {
+public interface EmptyStatementTree extends StatementTree, ImportClauseTree {
 
   SyntaxToken semicolonToken();
 

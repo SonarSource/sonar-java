@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+; // empty statements should be ignored
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList; //Twice the same import should be ignored
@@ -14,7 +15,7 @@ import static java.util.List.*;
 import static java.net.HttpURLConnection.*;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Collections.reverse;
-import static java.util.Collections.sort;
+import static java.util.Collections.sort;; // extra empty statements should be ignored
 
 @SuppressWarnings("all")
 class ImportResolution {
