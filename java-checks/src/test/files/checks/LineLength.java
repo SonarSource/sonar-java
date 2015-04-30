@@ -1,3 +1,4 @@
+;
 import org.foo.bar.qix.very.very.
                         very.big.importation;
 
