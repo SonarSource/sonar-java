@@ -21,7 +21,7 @@ package org.sonar.java.locks;
 
 import org.sonar.java.symexecengine.State;
 
-public enum LockState implements State{
+public enum LockState implements State {
 
   // * | U | L | I | N |
   // --+---+---+---+---|
@@ -43,7 +43,7 @@ public enum LockState implements State{
   UNLOCKED {
     @Override
     public State merge(State s) {
-      if (s == NULL) {
+      if (s.equals(NULL)) {
         return this;
       }
       return s;
@@ -52,7 +52,7 @@ public enum LockState implements State{
   LOCKED {
     @Override
     public State merge(State s) {
-      if (s == IGNORED) {
+      if (s.equals(IGNORED)) {
         return s;
       }
       return this;
