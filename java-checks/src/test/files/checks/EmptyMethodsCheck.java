@@ -11,7 +11,7 @@ class A {
   private <T> A() {
   }
 
-  // Non-Compliant
+  // Noncompliant@+1
   private void f() {
   }
 
@@ -25,11 +25,11 @@ class A {
     throw new UnsupportedOperationException();
   }
 
-  // Non-Compliant
+  // Noncompliant@+1
   private <T> void f() {
   }
 
-  // Non-Compliant
+  // Noncompliant@+1
   private int f() {
   }
 
@@ -53,14 +53,14 @@ abstract class AAbstract {
     }
 
     static class C {
-      // Non-Compliant
+      // Noncompliant@+1
       private void g() {
       }
     }
   }
 
   Foo bar = new IFoo() {
-    // Noncompliant
+    // Noncompliant@+1
     public void f() {
     }
   };
@@ -69,7 +69,7 @@ abstract class AAbstract {
 enum AEnum {
   ;
 
-  // Non-Compliant
+  // Noncompliant@+1
   public void f() {
   }
 
@@ -82,7 +82,7 @@ class ANestedEnum {
   enum B {
     ;
 
-    // Non-Compliant
+    // Noncompliant@+1
     public void f() {
     }
   }
@@ -91,7 +91,7 @@ class ANestedEnum {
 public interface IFoo {
 
   static IFoo FOO = new IFoo() {
-    // Noncompliant
+    // Noncompliant@+1
     public void foo() {
     }
 
@@ -106,7 +106,7 @@ public interface IFoo {
 enum Foo {
 
   FOO {
-    // Noncompliant
+    // Noncompliant@+1
     public void foo() {
     }
 
@@ -116,7 +116,7 @@ enum Foo {
     }
   };
 
-  // Noncompliant
+  // Noncompliant@+1
   public void foo() {
   }
 
