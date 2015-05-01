@@ -145,6 +145,7 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
       }
     }
 
+    @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (EQUALS_MATCHER.matches(tree)) {
         typeChecked = true;
