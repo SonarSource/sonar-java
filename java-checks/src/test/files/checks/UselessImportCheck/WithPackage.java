@@ -16,8 +16,10 @@ import java.lang.String;            // Non-Compliant
 import java.lang.*;                 // Non-Compliant
 import a.b.c.Foo;                   // Non-Compliant
 
+;  // Compliant
+
 import checks.UselessImportCheck.*;              // Non-Compliant
-import checks.UselessImportCheckClose.*;              // Non-Compliant
+import checks.UselessImportCheckClose.*;         // Compliant
 import static checks.UselessImportCheck.Foo.*;   // Compliant
 import checks.UselessImportCheck.foo.*;          // Compliant
 

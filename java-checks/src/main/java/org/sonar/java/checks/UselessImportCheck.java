@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -74,8 +75,14 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     lineByImportReference.clear();
     pendingImports.clear();
     currentPackage = concatenate(cut.packageName());
-    for (ImportTree importTree : cut.imports()) {
-      if (!importTree.isStatic()) {
+    for (ImportClauseTree importClauseTree : cut.imports()) {
+      ImportTree importTree = null;
+
+      if (importClauseTree.is(Tree.Kind.IMPORT)) {
+        importTree = (ImportTree) importClauseTree;
+      }
+
+      if (importTree != null && !importTree.isStatic()) {
         String importName = concatenate((ExpressionTree) importTree.qualifiedIdentifier());
         if ("java.lang.*".equals(importName)) {
           context.addIssue(importTree, this, "Remove this unnecessary import: java.lang classes are always implicitly imported.");

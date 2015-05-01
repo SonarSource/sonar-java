@@ -42,7 +42,7 @@ public interface CompilationUnitTree extends Tree {
   @Nullable
   ExpressionTree packageName();
 
-  List<ImportTree> imports();
+  List<ImportClauseTree> imports();
 
   List<Tree> types();
 

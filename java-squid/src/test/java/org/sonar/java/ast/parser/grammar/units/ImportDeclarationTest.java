@@ -32,7 +32,9 @@ public class ImportDeclarationTest {
       .matches("import org.example.HelloWorld;")
       .matches("import org.example.*;")
       .matches("import static org.junit.Assert.assertThat;")
-      .matches("import static org.junit.Assert.*;");
+      .matches("import static org.junit.Assert.*;")
+      // javac accepts empty statements in import declarations
+      .matches(";");
   }
 
 }

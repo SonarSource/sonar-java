@@ -83,10 +83,10 @@ public class ImportResolutionTest {
     assertThat(sort.owner().type.symbol.name).isEqualTo("Collections");
     assertThat(sort.kind).isEqualTo(JavaSymbol.MTH);
     assertThat(sort.type.tag).isEqualTo(JavaType.METHOD);
-    assertThat(result.reference(45, 7).name).isEqualTo("sort");
-    assertThat(result.reference(45, 7)).isEqualTo(sort);
     assertThat(result.reference(46, 7).name).isEqualTo("sort");
     assertThat(result.reference(46, 7)).isEqualTo(sort);
+    assertThat(result.reference(47, 7).name).isEqualTo("sort");
+    assertThat(result.reference(47, 7)).isEqualTo(sort);
   }
 
   @Test
@@ -127,7 +127,7 @@ public class ImportResolutionTest {
 
   @Test
   public void import_static_on_demand_should_be_resolved() throws Exception {
-    JavaSymbol http_accepted = result.reference(41, 10);
+    JavaSymbol http_accepted = result.reference(42, 10);
     assertThat(http_accepted.name).isEqualTo("HTTP_ACCEPTED");
     assertThat(http_accepted.owner().name).isEqualTo("HttpURLConnection");
     assertThat(http_accepted.owner().type.symbol.name).isEqualTo("HttpURLConnection");

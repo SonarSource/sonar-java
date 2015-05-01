@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -156,11 +157,11 @@ public abstract class JavaTree extends AstNode implements Tree {
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
     @Nullable
     private final ExpressionTree packageName;
-    private final List<ImportTree> imports;
+    private final List<ImportClauseTree> imports;
     private final List<Tree> types;
     private final List<AnnotationTree> packageAnnotations;
 
-    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportTree> imports,
+    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportClauseTree> imports,
                                    List<Tree> types, List<AnnotationTree> packageAnnotations, List<AstNode> children) {
       super(Kind.COMPILATION_UNIT);
       this.packageName = packageName;
@@ -190,7 +191,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     @Override
-    public List<ImportTree> imports() {
+    public List<ImportClauseTree> imports() {
       return imports;
     }
 

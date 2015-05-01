@@ -87,6 +87,7 @@ import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -129,7 +130,7 @@ public class TreeFactory {
   public CompilationUnitTreeImpl newCompilationUnit(
     AstNode spacing,
     Optional<ExpressionTree> packageDeclaration,
-    Optional<List<ImportTreeImpl>> importDeclarations,
+    Optional<List<ImportClauseTree>> importDeclarations,
     Optional<List<AstNode>> typeDeclarations,
     AstNode eof) {
 
@@ -146,8 +147,17 @@ public class TreeFactory {
       }
     }
 
+    ImmutableList.Builder<ImportClauseTree> imports = ImmutableList.builder();
     if (importDeclarations.isPresent()) {
-      children.addAll(importDeclarations.get());
+      for (ImportClauseTree child : importDeclarations.get()) {
+        children.add((AstNode) child);
+
+        if (!child.is(Kind.EMPTY_STATEMENT)) {
+          imports.add((ImportTreeImpl) child);
+        } else {
+          imports.add((EmptyStatementTreeImpl) child);
+        }
+      }
     }
 
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
@@ -165,7 +175,7 @@ public class TreeFactory {
 
     return new CompilationUnitTreeImpl(
       packageDeclaration.orNull(),
-      (List) importDeclarations.or(ImmutableList.<ImportTreeImpl>of()),
+      imports.build(),
       types.build(),
       packageAnnotations.build(),
       children);
@@ -185,6 +195,10 @@ public class TreeFactory {
     partial.addChild(semicolonTokenAstNode);
 
     return (ExpressionTree) partial;
+  }
+
+  public ImportClauseTree newEmptyImport(AstNode semicolonTokenAstNode) {
+    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
   }
 
   public ImportTreeImpl newImportDeclaration(AstNode importTokenAstNode, Optional<AstNode> staticTokenAstNode, ExpressionTree qualifiedIdentifier,

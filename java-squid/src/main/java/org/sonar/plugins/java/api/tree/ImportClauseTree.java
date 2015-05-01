@@ -21,34 +21,13 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import javax.annotation.Nullable;
-
 /**
- * Import declaration.
+ * Common interface for all import clauses.
  *
- * JLS 7.5
- *
- * <pre>
- *   import {@link #qualifiedIdentifier()} ;
- *   import static {@link #qualifiedIdentifier()} ;
- * </pre>
- *
- * @since Java 1.3
+ * <p><b>WARNING:</b> This interface covers the fact that javac accepts import statements as well as empty statements in the import zone.</p>
+ * 
+ * @since Java 3.3
  */
 @Beta
-public interface ImportTree extends ImportClauseTree {
-
-  /**
-   * @since Java 1.5
-   */
-  boolean isStatic();
-
-  SyntaxToken importKeyword();
-
-  @Nullable
-  SyntaxToken staticKeyword();
-
-  Tree qualifiedIdentifier();
-
-  SyntaxToken semicolonToken();
+public interface ImportClauseTree extends Tree {
 }
