@@ -19,14 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,6 +33,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
   key = "S1186",
   name = "Methods should not be empty",
@@ -45,49 +43,34 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class EmptyMethodsCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class EmptyMethodsCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-
-    scan(context.getTree());
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if (!tree.modifiers().modifiers().contains(Modifier.ABSTRACT)) {
-      super.visitClass(tree);
-    } else {
-      scan(tree.modifiers());
-      scan(tree.typeParameters());
-      scan(tree.superClass());
-      scan(tree.superInterfaces());
-      for (Tree memberTree : tree.members()) {
-        if (memberTree.is(Kind.METHOD)) {
-          super.visitMethod((MethodTree) memberTree);
-        } else {
-          scan(memberTree);
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (!classTree.modifiers().modifiers().contains(Modifier.ABSTRACT)) {
+      for (Tree member : classTree.members()) {
+        if (member.is(Kind.METHOD)) {
+          checkMethod((MethodTree) member);
         }
       }
     }
   }
 
-  @Override
-  public void visitMethod(MethodTree tree) {
-    super.visitMethod(tree);
-
-    BlockTree block = tree.block();
-    if (block != null && block.body().isEmpty() && !tree.is(Kind.CONSTRUCTOR) && !containsComment(block)) {
-      context.addIssue(tree, this, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+  private void checkMethod(MethodTree methodTree) {
+    BlockTree block = methodTree.block();
+    if (block != null && block.body().isEmpty() && !containsComment(block)) {
+      context.addIssue(methodTree, this, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
     }
   }
 
-  private static boolean containsComment(BlockTree tree) {
-    AstNode blockAstNode = ((JavaTree) tree).getAstNode();
-    return blockAstNode.getLastToken().hasTrivia();
+  private static boolean containsComment(BlockTree block) {
+    return !block.closeBraceToken().trivias().isEmpty();
   }
 
 }
