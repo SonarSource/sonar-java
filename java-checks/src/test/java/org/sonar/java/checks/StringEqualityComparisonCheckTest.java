@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class StringEqualityComparisonCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringEqualityComparisonCheck.java"), new StringEqualityComparisonCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.")
-        .next().atLine(4)
-        .next().atLine(5)
-        .next().atLine(6)
-        .next().atLine(7);
+    JavaCheckVerifier.verify("src/test/files/checks/StringEqualityComparisonCheck.java", new StringEqualityComparisonCheck());
   }
 
 }
