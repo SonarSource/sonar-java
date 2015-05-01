@@ -414,17 +414,17 @@ class A {
       fileWriter.close();
     }
 
-//    try (BufferedReader br = new BufferedReader(new FileReader(""))) { // Compliant - JLS8 - 14.20.3 : try-with-resources
-//      // ...
-//    } catch (Exception e) {
-//      // ...
-//    }
-//
-//    try (FileWriter fw = new FileWriter("")) { // Compliant - JLS8 - 14.20.3 : try-with-resources
-//      fw.write("hello");
-//    } catch (Exception e) {
-//      // ...
-//    }
+    try (BufferedReader br = new BufferedReader(new FileReader(""))) { // Compliant - JLS8 - 14.20.3 : try-with-resources
+      // ...
+    } catch (Exception e) {
+      // ...
+    }
+
+    try (FileWriter fw = new FileWriter("")) { // Compliant - JLS8 - 14.20.3 : try-with-resources
+      fw.write("hello");
+    } catch (Exception e) {
+      // ...
+    }
 
     try {
       FileInputStream fis = new FileInputStream(""); // Compliant

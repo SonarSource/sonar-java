@@ -61,8 +61,8 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-    executionState.defineSymbol(tree.symbol());
     if (isSymbolRelevant(tree.symbol())) {
+      executionState.defineSymbol(tree.symbol());
       executionState.createValueForSymbol(tree.symbol(), tree);
     }
   }
@@ -106,7 +106,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     executionState = blockES;
     scan(tree.block());
     scan(tree.resources());
-
+    handleResources(tree.resources());
     for (CatchTree catchTree : tree.catches()) {
       executionState = new ExecutionState(blockES.parent);
       scan(catchTree.block());
@@ -121,6 +121,13 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     } else {
       executionState = blockES.restoreParent();
     }
+  }
+
+  /**
+   * Allow some treatment on resources by implementors.
+   * @param resources
+   */
+  protected void handleResources(List<VariableTree> resources) {
   }
 
   @Override

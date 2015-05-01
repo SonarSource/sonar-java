@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -65,12 +64,16 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   private void ignoreVariables(List<VariableTree> variables) {
-    scan(variables);
     for (VariableTree methodParameter : variables) {
-      Symbol symbol = methodParameter.symbol();
-      if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-        executionState.markValueAs(symbol, new CloseableState.Ignored(methodParameter));
-      }
+      super.visitVariable(methodParameter);
+      ignoreVariable(methodParameter);
+    }
+  }
+
+  private void ignoreVariable(VariableTree variableTree) {
+    Symbol symbol = variableTree.symbol();
+    if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
+      executionState.markValueAs(symbol, new CloseableState.Ignored(variableTree));
     }
   }
 
@@ -241,9 +244,10 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   @Override
-  public void visitTryStatement(TryStatementTree tree) {
-    ignoreVariables(tree.resources());
-    super.visitTryStatement(tree);
+  protected void handleResources(List<VariableTree> resources) {
+    for (VariableTree resource : resources) {
+      ignoreVariable(resource);
+    }
   }
 
   @Override
