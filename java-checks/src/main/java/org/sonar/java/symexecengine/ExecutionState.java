@@ -78,13 +78,13 @@ public class ExecutionState {
     for (Map.Entry<Value, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
       Value value = valueStateEntry.getKey();
       State state = valueStateEntry.getValue();
-      State stateOfValue = getStateOfValue(value);
-      if(stateOfValue == null) {
-        stateOfValue = state;
+      State valueState = getStateOfValue(value);
+      if(valueState == null) {
+        valueState = state;
       } else {
-        stateOfValue = stateOfValue.merge(state);
+        valueState = valueState.merge(state);
       }
-      this.stateOfValue.put(value, stateOfValue);
+      this.stateOfValue.put(value, valueState);
     }
     return this;
   }
@@ -129,7 +129,6 @@ public class ExecutionState {
     return results;
   }
 
-  @CheckForNull
   //FIXME : Hideous hack for closeable to get "Ignored" variables
   public List<State> getStatesOf(Symbol symbol) {
     List<State> states = Lists.newArrayList();

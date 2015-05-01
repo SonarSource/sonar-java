@@ -24,28 +24,36 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public interface State {
+public abstract class State {
+  private final List<Tree> changingStateTrees;
 
-  State UNSET = new State() {
+  public static final State UNSET = new State() {
     @Override
     public State merge(State s) {
       return s;
     }
-
-    @Override
-    public boolean shouldRaiseIssue() {
-      return false;
-    }
-
-    @Override
-    public List<Tree> reportingTrees() {
-      return Lists.newArrayList();
-    }
   };
 
-  State merge(State s);
+  private State() {
+    changingStateTrees = Lists.newArrayList();
+  }
 
-  boolean shouldRaiseIssue();
+  public State(Tree tree) {
+    changingStateTrees = Lists.newArrayList();
+    changingStateTrees.add(tree);
+  }
 
-  List<Tree> reportingTrees();
+  public State(List<Tree> trees) {
+    changingStateTrees = trees;
+  }
+
+  public abstract State merge(State s);
+
+  public boolean shouldRaiseIssue() {
+    return false;
+  }
+
+  public List<Tree> reportingTrees() {
+    return changingStateTrees;
+  }
 }

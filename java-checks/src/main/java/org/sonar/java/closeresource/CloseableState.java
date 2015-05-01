@@ -25,17 +25,14 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public abstract class CloseableState implements State {
-
-  final List<Tree> changingStateTrees;
+public abstract class CloseableState extends State {
 
 
   public CloseableState(Tree tree) {
-    changingStateTrees = Lists.newArrayList();
-    changingStateTrees.add(tree);
+    super(tree);
   }
-  public CloseableState(List<Tree> tree) {
-    this.changingStateTrees = tree;
+  public CloseableState(List<Tree> trees) {
+    super(trees);
   }
 
 
@@ -89,9 +86,9 @@ public abstract class CloseableState implements State {
     @Override
     public State merge(State s) {
       if(s instanceof Open) {
-        List<Tree> trees = Lists.newArrayList(((Open) s).changingStateTrees);
-        trees.addAll(changingStateTrees);
-        return new Open(changingStateTrees);
+        List<Tree> trees = Lists.newArrayList(s.reportingTrees());
+        trees.addAll(reportingTrees());
+        return new Open(trees);
       }
       return this;
     }
@@ -109,19 +106,10 @@ public abstract class CloseableState implements State {
     public State merge(State s) {
       return this;
     }
-  };
+  }
 
   public boolean isIgnored() {
     return this instanceof Ignored;
   }
 
-  @Override
-  public boolean shouldRaiseIssue() {
-    return false;
-  }
-
-  @Override
-  public List<Tree> reportingTrees() {
-    return changingStateTrees;
-  }
 }

@@ -25,26 +25,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public abstract class LockState implements State {
-
-  final List<Tree> changingStateTrees;
+public abstract class LockState extends State {
 
   public LockState(Tree tree) {
-    changingStateTrees = Lists.newArrayList();
-    changingStateTrees.add(tree);
+    super(tree);
   }
-  public LockState(List<Tree> tree) {
-    this.changingStateTrees = tree;
-  }
-
-  @Override
-  public boolean shouldRaiseIssue() {
-    return false;
-  }
-
-  @Override
-  public List<Tree> reportingTrees() {
-    return changingStateTrees;
+  public LockState(List<Tree> trees) {
+    super(trees);
   }
 
   public static class Unlocked extends LockState{
@@ -76,9 +63,9 @@ public abstract class LockState implements State {
     @Override
     public State merge(State s) {
       if(s instanceof Locked) {
-        List<Tree> trees = Lists.newArrayList(((Locked) s).changingStateTrees);
-        trees.addAll(changingStateTrees);
-        return new Locked(changingStateTrees);
+        List<Tree> trees = Lists.newArrayList(s.reportingTrees());
+        trees.addAll(reportingTrees());
+        return new Locked(trees);
       }
       return this;
     }
