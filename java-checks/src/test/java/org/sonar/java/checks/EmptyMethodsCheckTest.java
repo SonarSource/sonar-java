@@ -19,35 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EmptyMethodsCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyMethodsCheck.java"), new VisitorsBridge(new EmptyMethodsCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(15)
-      .withMessage("Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.")
-      .next().atLine(29)
-      .next().atLine(33)
-      .next().atLine(57)
-      .next().atLine(64)
-      .next().atLine(73)
-      .next().atLine(86)
-      .next().atLine(95)
-      .next().atLine(110)
-      .next().atLine(120);
+    JavaCheckVerifier.verify("src/test/files/checks/EmptyMethodsCheck.java", new EmptyMethodsCheck());
   }
-
 }
