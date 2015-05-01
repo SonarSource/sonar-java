@@ -323,6 +323,7 @@ public final class CheckList {
       .add(AbsOnNegativeCheck.class)
       .add(StaticMultithreadedUnsafeFieldsCheck.class)
       .add(LocksNotUnlockedCheck.class)
+      .add(EqualsArgumentTypeCheck.class)
       .build();
   }
 
