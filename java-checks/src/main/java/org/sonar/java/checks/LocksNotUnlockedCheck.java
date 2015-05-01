@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.closeresource.CloseableVisitor;
+import org.sonar.java.locks.LockedVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,14 +34,14 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = "S2095",
-  name = "Resources should be closed",
-  tags = {"bug", "cert", "cwe", "denial-of-service", "leak", "security"},
-  priority = Priority.BLOCKER)
+  key = "S2222",
+  name = "Locks should be released",
+  tags = {"bug", "multi-threading"},
+  priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class CloseResourceCheck extends SubscriptionBaseVisitor {
+public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -57,10 +57,12 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      CloseableVisitor visitor = new CloseableVisitor(methodTree.parameters(), this);
+      LockedVisitor visitor = new LockedVisitor(this);
       block.accept(visitor);
       visitor.insertIssues();
     }
   }
+
+
 
 }

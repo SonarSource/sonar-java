@@ -320,6 +320,7 @@ public final class CheckList {
       .add(KeySetInsteadOfEntrySetCheck.class)
       .add(IndexOfWithPositiveNumberCheck.class)
       .add(ReadObjectSynchronizedCheck.class)
+      .add(LocksNotUnlockedCheck.class)
       .build();
   }
 
