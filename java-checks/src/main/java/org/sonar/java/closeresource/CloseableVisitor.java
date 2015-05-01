@@ -208,7 +208,6 @@ public class CloseableVisitor extends DataFlowVisitor {
   private boolean isSymbolIgnored(Symbol symbol) {
     List<State> statesOf = executionState.getStatesOf(symbol);
     for (State state : statesOf) {
-      System.out.println(symbol.name()+"  "+state.getClass().getName());
       if((state instanceof CloseableState) && ((CloseableState) state).isIgnored()) {
         return true;
       }

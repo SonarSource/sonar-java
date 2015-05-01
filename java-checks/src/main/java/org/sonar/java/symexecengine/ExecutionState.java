@@ -87,7 +87,7 @@ public class ExecutionState {
   }
 
   public ExecutionState overrideBy(ExecutionState executionState) {
-    this.unreachableValues = executionState.unreachableValues;
+    this.unreachableValues.putAll(executionState.unreachableValues);
     this.reachableValues = executionState.reachableValues;
     this.stateOfValue.putAll(executionState.stateOfValue);
     return this;

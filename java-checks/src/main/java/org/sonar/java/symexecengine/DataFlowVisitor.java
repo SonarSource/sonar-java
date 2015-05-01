@@ -127,7 +127,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.thenStatement());
 
     if (tree.elseStatement() == null) {
-      executionState = thenES.parent.merge(thenES);
+      executionState = thenES.restoreParent();
     } else {
       ExecutionState elseES = new ExecutionState(thenES.parent);
       executionState = elseES;
@@ -191,12 +191,12 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     scan(tree.condition());
-    visitStatement(tree.statement());
+    visitLoopStatement(tree.statement());
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    visitStatement(tree.statement());
+    visitLoopStatement(tree.statement());
     scan(tree.condition());
   }
 
@@ -205,18 +205,20 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.initializer());
     scan(tree.condition());
     scan(tree.update());
-    visitStatement(tree.statement());
+    visitLoopStatement(tree.statement());
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
     scan(tree.variable());
     scan(tree.expression());
-    visitStatement(tree.statement());
+    visitLoopStatement(tree.statement());
   }
 
-  private void visitStatement(StatementTree tree) {
+  private void visitLoopStatement(StatementTree tree) {
     executionState = new ExecutionState(executionState);
+    //Scan twice the tree in loop to create multiple value if required
+    scan(tree);
     scan(tree);
     executionState = executionState.restoreParent();
   }
