@@ -26,20 +26,20 @@ class A {
 
   void closeable_never_closed() throws Exception {
 
-    // Noncompliant@+1
+    // Noncompliant@+1 {{Close this "FileReader".}}
     Reader reader = new FileReader(""); // Reader is not used and not closed
 
-    // Noncompliant@+1
+    // Noncompliant@+1 {{Close this "FileWriter".}}
     Writer writer = new FileWriter(""); // Writer is not closed
     writer.write(10);
 
     InputStream is;
     is = new FileInputStream(""); // Compliant
     is.close();
-    // Noncompliant@+1
+    // Noncompliant@+1 {{Close this "FileInputStream".}}
     is = new FileInputStream(""); // InputStream reinitialized and not closed
 
-    // Noncompliant@+1
+    // Noncompliant@+1 {{Close this "RandomAccessFile".}}
     RandomAccessFile raf = new RandomAccessFile("", "r"); // RandomAccessFile reinitialized before closing
     raf.length();
     raf = new RandomAccessFile("", "r"); // Compliant
@@ -73,7 +73,7 @@ class A {
   void closeable_not_closed_in_loops(Collection<Object> objects, Collection<String> propertyList) throws Exception {
     Reader reader = null;
     for (int i = 0; i < MAX_LOOP; i++) {
-      reader = new FileReader(""); // Noncompliant
+      reader = new FileReader(""); // Noncompliant  {{Close this "FileReader".}}
     }
     reader.close();
 
@@ -93,7 +93,7 @@ class A {
 
     InputStream is = null;
     while (j < MAX_LOOP) {
-      is = new FileInputStream(""); // Noncompliant
+      is = new FileInputStream(""); // Noncompliant  {{Close this "FileInputStream".}}
       j++;
     }
     is.close();
@@ -108,7 +108,7 @@ class A {
 
     Writer writer = null;
     for (Object object : objects) {
-      writer = new FileWriter(""); // Noncompliant
+      writer = new FileWriter(""); // Noncompliant  {{Close this "FileWriter".}}
     }
     writer.close();
 
@@ -121,7 +121,7 @@ class A {
     j = 0;
     FileInputStream fis = null;
     do {
-      fis = new FileInputStream(""); // Noncompliant
+      fis = new FileInputStream(""); // Noncompliant  {{Close this "FileInputStream".}}
       j++;
     } while (j < MAX_LOOP);
     fis.close();
@@ -138,7 +138,7 @@ class A {
     OutputStream stream = null;
     try{
       for (String property : propertyList) {
-        stream = new FileOutputStream("myfile.txt");  // Noncompliant
+        stream = new FileOutputStream("myfile.txt");  // Noncompliant  {{Close this "FileOutputStream".}}
         // ...
       }
     }catch(Exception e){
@@ -156,27 +156,27 @@ class A {
     }catch(Exception e){
       // ...
     }finally{
-      stream2.close();  // Multiple stream were opened. Only the last is closed.
+      stream2.close();
     }
   }
 
   void closeable_not_closed_in_every_paths_when_using_if(boolean test, int x) throws Exception {
-    Reader reader = new FileReader(""); // Noncompliant
+    Reader reader = new FileReader(""); // Noncompliant  {{Close this "FileReader".}}
     if (test) {
       reader.close();
     }
 
-    Reader reader2 = new FileReader(""); // Noncompliant
+    Reader reader2 = new FileReader(""); // Noncompliant  {{Close this "FileReader".}}
     if (test) {
     } else {
       reader2.close();
     }
 
-    Reader reader3 = new FileReader(""); // Noncompliant
+    Reader reader3 = new FileReader(""); // Noncompliant  {{Close this "FileReader".}}
     if (test) {
-      reader3 = new FileReader(""); // Noncompliant
+      reader3 = new FileReader(""); // Noncompliant  {{Close this "FileReader".}}
     } else {
-      reader3 = new FileReader(""); // Noncompliant
+      reader3 = new FileReader(""); // Noncompliant  {{Close this "FileReader".}}
     }
     // Noncompliant@+1
     Writer writer = new FileWriter(""); // One branch is missing
@@ -193,9 +193,9 @@ class A {
 
     BufferedWriter bw;
     if (test) {
-      bw = new BufferedWriter(new FileWriter("")); // Noncompliant
+      bw = new BufferedWriter(new FileWriter("")); // Noncompliant  {{Close this "BufferedWriter".}}
     } else {
-      bw = new BufferedWriter(new FileWriter(""));// Noncompliant
+      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "BufferedWriter".}}
     }
 
     FileInputStream fis; // Not closed in else branch
@@ -203,7 +203,7 @@ class A {
       fis = new FileInputStream("");
       fis.close();
     } else {
-      fis = new FileInputStream(""); // Noncompliant
+      fis = new FileInputStream(""); // Noncompliant  {{Close this "FileInputStream".}}
     }
 
     FileInputStream fis1; // Compliant - has an unknown status
@@ -219,19 +219,19 @@ class A {
       fis2 = getFileInputStream(); // UNKNOWN
       myMethod(fis2);
     } else {
-      fis2 = new FileInputStream("");  // Noncompliant
+      fis2 = new FileInputStream("");  // Noncompliant  {{Close this "FileInputStream".}}
     }
 
     FileInputStream fis3; // Not closed after the if
     if (test) {
-      fis3 = new FileInputStream(""); // Noncompliant
+      fis3 = new FileInputStream(""); // Noncompliant  {{Close this "FileInputStream".}}
     } else {
     }
 
     FileInputStream fis4; // Not closed after the if
     if (test) {
     } else {
-      fis4 = new FileInputStream(""); // Noncompliant
+      fis4 = new FileInputStream(""); // Noncompliant  {{Close this "FileInputStream".}}
     }
 
     InputStream is = new FileInputStream(""); // Compliant
@@ -276,7 +276,7 @@ class A {
         break;
     }
 
-    Formatter formatter = new Formatter(); // Noncompliant
+    Formatter formatter = new Formatter(); // Noncompliant  {{Close this "Formatter".}}
     switch (enumValue) {
       case A:
         formatter.close();
@@ -319,7 +319,7 @@ class A {
     }
     w2.close();
 
-    Writer w3 = new FileWriter(""); // Noncompliant
+    Writer w3 = new FileWriter(""); // Noncompliant  {{Close this "FileWriter".}}
     switch (enumValue) {
     // as there is no "default", we can not guarantee that the closeable is closed
       case A:
@@ -339,7 +339,7 @@ class A {
     Writer w5;
     switch (enumValue) {
       case A:
-        w5 = new FileWriter(""); // Noncompliant
+        w5 = new FileWriter(""); // Noncompliant  {{Close this "FileWriter".}}
       default:
         w5 = new FileWriter("");
         break;

@@ -24,9 +24,13 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.closeresource.CloseableVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -59,7 +63,17 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     if (block != null) {
       CloseableVisitor visitor = new CloseableVisitor(methodTree.parameters(), this);
       block.accept(visitor);
-      visitor.insertIssues();
+      for (Tree issueTree : visitor.getIssueTrees()) {
+        Type reportedType = null;
+        if(issueTree.is(Tree.Kind.ASSIGNMENT)) {
+          reportedType = ((AssignmentExpressionTree) issueTree).expression().symbolType();
+        } else if(issueTree.is(Tree.Kind.VARIABLE)) {
+          reportedType = ((VariableTree) issueTree).initializer().symbolType();
+        } else if(issueTree.is(Tree.Kind.NEW_CLASS)) {
+          reportedType = ((NewClassTree) issueTree).symbolType();
+        }
+        addIssue(issueTree, String.format("Close this \"%s\".", reportedType.name()));
+      }
     }
   }
 

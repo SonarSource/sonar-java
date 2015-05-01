@@ -19,6 +19,7 @@
  */
 package org.sonar.java.symexecengine;
 
+import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -43,12 +44,14 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
+import java.util.Set;
 
 public abstract class DataFlowVisitor extends BaseTreeVisitor {
 
   public DataFlowVisitor(IssuableSubscriptionVisitor check) {
-    executionState = new ExecutionState(check);
+    executionState = new ExecutionState();
   }
 
   protected ExecutionState executionState;
@@ -115,7 +118,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
       scan(tree.finallyBlock());
       executionState = blockES.parent.overrideBy(blockES.overrideBy(executionState));
     } else {
-      executionState = blockES.parent.merge(blockES);
+      executionState = blockES.restoreParent();
     }
   }
 
@@ -223,8 +226,9 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     executionState = executionState.restoreParent();
   }
 
-  public void insertIssues() {
-    executionState.insertIssues();
+  public Set<Tree> getIssueTrees() {
+    Preconditions.checkState(executionState.parent == null);
+    return executionState.getIssueTrees();
   }
 
 }

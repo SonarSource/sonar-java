@@ -59,7 +59,9 @@ public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
     if (block != null) {
       LockedVisitor visitor = new LockedVisitor(this);
       block.accept(visitor);
-      visitor.insertIssues();
+      for (Tree issueTree : visitor.getIssueTrees()) {
+        addIssue(issueTree, "Unlock this lock.");
+      }
     }
   }
 

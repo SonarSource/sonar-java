@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -35,7 +34,6 @@ import java.util.Set;
 
 public class ExecutionState {
 
-  private final IssuableSubscriptionVisitor check;
   ExecutionState parent;
   private SetMultimap<Symbol, Value> reachableValues = HashMultimap.create();
   private SetMultimap<Symbol, Value> unreachableValues = HashMultimap.create();
@@ -44,16 +42,20 @@ public class ExecutionState {
    */
   private List<Symbol> definedInState = Lists.newArrayList();
   private Map<Value, State> stateOfValue = Maps.newHashMap();
+  private final Set<Tree> issueTrees;
 
   public ExecutionState(ExecutionState executionState) {
     this.parent = executionState;
-    this.check = executionState.check;
     this.reachableValues = HashMultimap.create(executionState.reachableValues);
     this.unreachableValues = HashMultimap.create(executionState.unreachableValues);
+    issueTrees = null;
   }
 
-  public ExecutionState(IssuableSubscriptionVisitor check) {
-    this.check = check;
+  /**
+   * ParentState constructor.
+   */
+  public ExecutionState() {
+    issueTrees = Sets.newHashSet();
   }
 
   public void defineSymbol(Symbol symbol) {
@@ -69,17 +71,17 @@ public class ExecutionState {
     }
 
     for (Symbol symbol : unreachableValues.keys()) {
-      //cleanup after merge of reachable/unreachable values
+      // cleanup after merge of reachable/unreachable values
       for (Value value : unreachableValues.get(symbol)) {
         reachableValues.remove(symbol, value);
       }
     }
-    //Merge states of values
+    // Merge states of values
     for (Map.Entry<Value, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
       Value value = valueStateEntry.getKey();
       State state = valueStateEntry.getValue();
       State valueState = getStateOfValue(value);
-      if(valueState == null) {
+      if (valueState == null) {
         valueState = state;
       } else {
         valueState = valueState.merge(state);
@@ -98,19 +100,26 @@ public class ExecutionState {
 
   public ExecutionState restoreParent() {
     if (parent != null) {
-      insertIssues();
+      reportIssuesToTopState(getIssuableTreesOfCurrentState());
       return parent.merge(this);
     }
     return this;
   }
 
-  public void insertIssues() {
-    for (Tree tree : getIssuableTrees()) {
-      check.addIssue(tree, "");
+  private void reportIssuesToTopState(Set<Tree> trees) {
+    if (parent == null) {
+      issueTrees.addAll(trees);
+    } else {
+      parent.reportIssuesToTopState(trees);
     }
   }
 
-  private Set<Tree> getIssuableTrees() {
+  public Set<Tree> getIssueTrees() {
+    issueTrees.addAll(getIssuableTreesOfCurrentState());
+    return issueTrees;
+  }
+
+  private Set<Tree> getIssuableTreesOfCurrentState() {
     Set<Tree> results = Sets.newHashSet();
     for (Symbol symbol : definedInState) {
       for (Value value : unreachableValues.get(symbol)) {
@@ -129,14 +138,14 @@ public class ExecutionState {
     return results;
   }
 
-  //FIXME : Hideous hack for closeable to get "Ignored" variables
+  // FIXME : Hideous hack for closeable to get "Ignored" variables
   public List<State> getStatesOf(Symbol symbol) {
     List<State> states = Lists.newArrayList();
     List<Value> values = Lists.newArrayList(reachableValues.get(symbol));
     values.addAll(unreachableValues.get(symbol));
     for (Value value : values) {
       State state = stateOfValue.get(value);
-      if(state != null) {
+      if (state != null) {
         states.add(state);
       }
     }
@@ -148,7 +157,7 @@ public class ExecutionState {
     ExecutionState currentState = this;
     while (currentState != null) {
       State state = currentState.stateOfValue.get(value);
-      if(state != null) {
+      if (state != null) {
         return state;
       }
       currentState = currentState.parent;
