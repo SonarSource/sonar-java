@@ -435,16 +435,16 @@ class A {
     } catch (Exception e) {
     }
 
-//    InputStream is2 = new FileInputStream("");
-//    try {
-//      is2.close();
-//    } catch (Exception e) {
-//      is2.close();
-//    } finally {
-//      InputStream is2 = new FileInputStream(""); // Noncompliant
-//      is2.read();
-//    }
-//    is2.close();
+    InputStream is2 = new FileInputStream("");
+    try {
+      is2.close();
+    } catch (Exception e) {
+      is2.close();
+    } finally {
+      InputStream is2 = new FileInputStream(""); // Noncompliant
+      is2.read();
+    }
+    is2.close();
 
     try {
       InputStream is3 = new FileInputStream("");

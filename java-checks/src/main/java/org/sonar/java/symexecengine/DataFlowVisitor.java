@@ -116,6 +116,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     if (tree.finallyBlock() != null) {
       executionState = new ExecutionState(blockES.parent);
       scan(tree.finallyBlock());
+      executionState.reportIssues();
       executionState = blockES.parent.overrideBy(blockES.overrideBy(executionState));
     } else {
       executionState = blockES.restoreParent();

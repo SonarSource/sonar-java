@@ -100,18 +100,10 @@ public class ExecutionState {
 
   public ExecutionState restoreParent() {
     if (parent != null) {
-      reportIssuesToTopState(getIssuableTreesOfCurrentState());
+      reportIssues();
       return parent.merge(this);
     }
     return this;
-  }
-
-  private void reportIssuesToTopState(Set<Tree> trees) {
-    if (parent == null) {
-      issueTrees.addAll(trees);
-    } else {
-      parent.reportIssuesToTopState(trees);
-    }
   }
 
   public Set<Tree> getIssueTrees() {
@@ -182,6 +174,18 @@ public class ExecutionState {
   public void markValueAs(Symbol symbol, State state) {
     for (Value value : getValues(symbol)) {
       stateOfValue.put(value, state);
+    }
+  }
+
+  public void reportIssues() {
+    reportIssuesToTopState(getIssuableTreesOfCurrentState());
+  }
+
+  private void reportIssuesToTopState(Set<Tree> trees) {
+    if (parent == null) {
+      issueTrees.addAll(trees);
+    } else {
+      parent.reportIssuesToTopState(trees);
     }
   }
 
