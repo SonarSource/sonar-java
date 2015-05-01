@@ -19,16 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
   key = "StringEqualityComparisonCheck",
@@ -38,28 +38,18 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class StringEqualityComparisonCheck extends SquidCheck<LexerlessGrammar> implements JavaCheck {
+public class StringEqualityComparisonCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(Kind.EQUAL_TO);
-    subscribeTo(Kind.NOT_EQUAL_TO);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (hasStringLiteralOperand(node)) {
-      getContext().createLineViolation(
-        this,
-        "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.",
-        node);
+  public void visitNode(Tree tree) {
+    BinaryExpressionTree bet = (BinaryExpressionTree) tree;
+    if (bet.leftOperand().is(Tree.Kind.STRING_LITERAL) || bet.rightOperand().is(Tree.Kind.STRING_LITERAL)) {
+      addIssue(tree, "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.");
     }
   }
-
-  private static boolean hasStringLiteralOperand(AstNode node) {
-    return node.select()
-      .children(Kind.STRING_LITERAL)
-      .isNotEmpty();
-  }
-
 }
