@@ -36,11 +36,14 @@ public class EmptyStatementUsageCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyStatementUsageCheck.java"), new EmptyStatementUsageCheck());
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Remove this empty statement.")
-        .next().atLine(4)
-        .next().atLine(7)
-        .next().atLine(8)
-        .next().atLine(9);
+      .next().atLine(2).withMessage("Remove this empty statement.")
+      .next().atLine(3)
+      .next().atLine(7)
+      .next().atLine(8)
+      .next().atLine(11)
+      .next().atLine(12)
+      .next().atLine(13)
+      .noMore();
   }
 
 }

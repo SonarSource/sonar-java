@@ -1,3 +1,7 @@
+import arg.goo;  // Compliant
+import arg.foo;; // Non-Compliant
+; // Non-Compliant 
+
 class Foo {
   int a;                           // Compliant
   int b;;                          // Non-Compliant
