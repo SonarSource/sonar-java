@@ -27,7 +27,10 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -97,9 +100,17 @@ public class AbsOnNegativeCheck extends SubscriptionBaseVisitor implements JavaF
   }
 
   private void checkForIssue(ExpressionTree tree) {
-    MethodInvocationTree nestedTree = extractMethodInvocation(tree);
-    if (nestedTree != null && NEGATIVE_METHODS.anyMatch(nestedTree)) {
-      addIssue(nestedTree, "Use the original value instead.");
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      Symbol identifierSymbol = ((MemberSelectExpressionTree) tree).identifier().symbol();
+      Type ownerType = identifierSymbol.owner().type();
+      if ("MIN_VALUE".equals(identifierSymbol.name()) && (ownerType.is("java.lang.Integer") || ownerType.is("java.lang.Long"))) {
+        addIssue(tree, "Use the original value instead.");
+      }
+    } else {
+      MethodInvocationTree nestedTree = extractMethodInvocation(tree);
+      if (nestedTree != null && NEGATIVE_METHODS.anyMatch(nestedTree)) {
+        addIssue(nestedTree, "Use the original value instead.");
+      }
     }
   }
 
