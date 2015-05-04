@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class CloseableVisitor extends DataFlowVisitor {
@@ -50,7 +51,7 @@ public class CloseableVisitor extends DataFlowVisitor {
     "java.io.ByteArrayInputStream",
     "java.io.StringReader",
     "java.io.StringWriter",
-    "java.io.CharArraReader",
+    "java.io.CharArrayReader",
     "java.io.CharArrayWriter"
   };
 
@@ -71,10 +72,7 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   private void ignoreVariable(VariableTree variableTree) {
-    Symbol symbol = variableTree.symbol();
-    if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-      executionState.markValueAs(symbol, new CloseableState.Ignored(variableTree));
-    }
+    executionState.markValueAs(variableTree.symbol(), new CloseableState.Ignored(variableTree));
   }
 
   private static MethodInvocationMatcherCollection closeMethodInvocationMatcher() {
@@ -130,11 +128,11 @@ public class CloseableVisitor extends DataFlowVisitor {
     }
   }
 
-  private CloseableState getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
+  private State getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
     if (shouldBeIgnored(symbol, expression)) {
       return new CloseableState.Ignored(expression);
     } else if (isNull(expression)) {
-      return new CloseableState.Null(expression);
+      return State.UNSET;
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {
       if (usesIgnoredCloseableAsArgument(((NewClassTree) expression).arguments())) {
         return new CloseableState.Ignored(expression);
@@ -145,19 +143,18 @@ public class CloseableVisitor extends DataFlowVisitor {
     return new CloseableState.Ignored(expression);
   }
 
-
   private static boolean isNull(ExpressionTree expression) {
     return expression == null || expression.is(Tree.Kind.NULL_LITERAL);
   }
 
-  private  boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
+  private boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
     return shouldBeIgnored(symbol) || shouldBeIgnored(expression);
   }
 
   private boolean shouldBeIgnored(Symbol symbol) {
-    return isSymbolIgnored(symbol)|| symbol.isFinal()
-        || isIgnoredCloseableSubtype(symbol.type())
-        || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
+    return isSymbolIgnored(symbol) || symbol.isFinal()
+      || isIgnoredCloseableSubtype(symbol.type())
+      || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
   }
 
   private static boolean shouldBeIgnored(@Nullable ExpressionTree expression) {
@@ -211,7 +208,7 @@ public class CloseableVisitor extends DataFlowVisitor {
   private boolean isSymbolIgnored(Symbol symbol) {
     List<State> statesOf = executionState.getStatesOf(symbol);
     for (State state : statesOf) {
-      if((state instanceof CloseableState) && ((CloseableState) state).isIgnored()) {
+      if ((state instanceof CloseableState) && ((CloseableState) state).isIgnored()) {
         return true;
       }
     }
@@ -237,8 +234,7 @@ public class CloseableVisitor extends DataFlowVisitor {
       }
       Symbol symbol = identifier.symbol();
       if (isCloseableOrAutoCloseableSubtype(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
-        CloseableState closeableStateFromExpression = getCloseableStateFromExpression(symbol, expression);
-        executionState.markValueAs(symbol, closeableStateFromExpression);
+        executionState.markValueAs(symbol, getCloseableStateFromExpression(symbol, expression));
       }
     }
   }
@@ -274,7 +270,6 @@ public class CloseableVisitor extends DataFlowVisitor {
       ignoreClosableSymbols(tree.arguments());
     }
   }
-
 
   private void ignoreClosableSymbols(List<ExpressionTree> expressions) {
     for (ExpressionTree expression : expressions) {

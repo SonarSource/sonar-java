@@ -35,29 +35,6 @@ public abstract class CloseableState extends State {
     super(trees);
   }
 
-
-  // * | C | O | I | N |
-  // --+---+---+---+---|
-  // C | C | O | I | C | <- CLOSED
-  // --+---+---+---+---|
-  // O | O | O | I | O | <- OPEN
-  // --+---+---+---+---|
-  // I | I | I | I | I | <- IGNORED
-  // --+---+---+---+---|
-  // N | C | O | I | N | <- NULL
-  // ------------------+
-
-  public static class Null extends CloseableState  {
-
-    public Null(Tree tree) {
-      super(tree);
-    }
-
-    @Override
-    public State merge(State s) {
-      return s;
-    }
-  }
   public static class Closed extends CloseableState  {
     public Closed(Tree tree) {
       super(tree);
@@ -65,12 +42,6 @@ public abstract class CloseableState extends State {
 
     @Override
     public State merge(State s) {
-      if (s instanceof Null) {
-        return this;
-      }
-      if(!(s instanceof CloseableState)) {
-        throw new IllegalStateException("Merging incompatible states");
-      }
       return s;
     }
   }
