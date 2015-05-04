@@ -89,7 +89,10 @@ public abstract class CloseableState extends State {
         List<Tree> trees = Lists.newArrayList(s.reportingTrees());
         trees.addAll(reportingTrees());
         return new Open(trees);
+      } else if(s instanceof Ignored) {
+        return s;
       }
+
       return this;
     }
     @Override

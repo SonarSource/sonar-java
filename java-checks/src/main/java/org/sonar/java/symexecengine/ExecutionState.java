@@ -64,10 +64,14 @@ public class ExecutionState {
 
   public ExecutionState merge(ExecutionState executionState) {
     for (Symbol symbol : executionState.reachableValues.keys()) {
-      this.reachableValues.putAll(symbol, executionState.reachableValues.get(symbol));
+      if(!executionState.definedInState.contains(symbol)) {
+        this.reachableValues.putAll(symbol, executionState.reachableValues.get(symbol));
+      }
     }
     for (Symbol symbol : executionState.unreachableValues.keys()) {
-      this.unreachableValues.putAll(symbol, executionState.unreachableValues.get(symbol));
+      if(!executionState.definedInState.contains(symbol)) {
+        this.unreachableValues.putAll(symbol, executionState.unreachableValues.get(symbol));
+      }
     }
 
     for (Symbol symbol : unreachableValues.keys()) {
@@ -105,6 +109,20 @@ public class ExecutionState {
     }
     return this;
   }
+
+  public void reportIssues() {
+    reportIssuesToTopState(getIssuableTreesOfCurrentState());
+  }
+
+  private void reportIssuesToTopState(Set<Tree> trees) {
+    if (parent == null) {
+      issueTrees.addAll(trees);
+    } else {
+      parent.reportIssuesToTopState(trees);
+    }
+  }
+
+
 
   public Set<Tree> getIssueTrees() {
     issueTrees.addAll(getIssuableTreesOfCurrentState());
@@ -174,18 +192,6 @@ public class ExecutionState {
   public void markValueAs(Symbol symbol, State state) {
     for (Value value : getValues(symbol)) {
       stateOfValue.put(value, state);
-    }
-  }
-
-  public void reportIssues() {
-    reportIssuesToTopState(getIssuableTreesOfCurrentState());
-  }
-
-  private void reportIssuesToTopState(Set<Tree> trees) {
-    if (parent == null) {
-      issueTrees.addAll(trees);
-    } else {
-      parent.reportIssuesToTopState(trees);
     }
   }
 

@@ -161,7 +161,7 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   private static boolean shouldBeIgnored(@Nullable ExpressionTree expression) {
-    return expression != null && isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType());
+    return expression != null && (isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()) || isIgnoredCloseableSubtype(expression.symbolType()));
   }
 
   private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {

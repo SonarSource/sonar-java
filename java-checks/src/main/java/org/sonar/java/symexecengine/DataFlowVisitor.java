@@ -143,6 +143,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
       ExecutionState elseES = new ExecutionState(thenES.parent);
       executionState = elseES;
       scan(tree.elseStatement());
+      elseES.reportIssues();
       executionState = thenES.parent.overrideBy(thenES.merge(elseES));
     }
   }
