@@ -116,6 +116,10 @@ public class ExecutionState {
     reportIssuesToTopState(getIssuableTreesOfCurrentState());
   }
 
+  public void reportIssue(Tree tree) {
+    reportIssuesToTopState(Sets.newHashSet(tree));
+  }
+
   private void reportIssuesToTopState(Set<Tree> trees) {
     if (parent == null) {
       issueTrees.addAll(trees);
@@ -140,6 +144,16 @@ public class ExecutionState {
       }
     }
     return results;
+  }
+
+  public boolean hasState(Symbol symbol, Class<? extends State> stateClass) {
+    Set<Value> values = reachableValues.get(symbol);
+    if(values.isEmpty()) {
+      return false;
+    }
+    Value value = values.iterator().next();
+    State state = stateOfValue.get(value);
+    return state!= null && state.getClass().equals(stateClass);
   }
 
   // FIXME : Hideous hack for closeable to get "Ignored" variables

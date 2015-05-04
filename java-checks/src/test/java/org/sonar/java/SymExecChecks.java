@@ -23,8 +23,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.sonar.java.checks.CloseResourceCheckTest;
 import org.sonar.java.checks.LocksNotUnlockedCheckTest;
+import org.sonar.java.checks.NullPointerDereferenceCheckTest;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({CloseResourceCheckTest.class, LocksNotUnlockedCheckTest.class})
+@Suite.SuiteClasses({CloseResourceCheckTest.class, LocksNotUnlockedCheckTest.class, NullPointerDereferenceCheckTest.class})
 public class SymExecChecks {
 }

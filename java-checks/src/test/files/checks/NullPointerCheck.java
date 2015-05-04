@@ -141,22 +141,22 @@ class NullPointerTest {
     method1(checkForNullMethod(), // No issue
       checkForNullMethod(), // No issue
       checkForNullMethod()); // No issue
-    method2(checkForNullMethod(), // Not compliant
-      checkForNullMethod(), // Not compliant
-      checkForNullMethod()); // Not compliant
+    method2(checkForNullMethod(), // Noncompliant
+      checkForNullMethod(), // Noncompliant
+      checkForNullMethod()); // Noncompliant
 
     method1(null, // No issue
       null, // No issue
       null); // No issue
-    method2(null, // Not compliant
-      null, // Not compliant
-      null); // Not compliant
+    method2(null, // Noncompliant
+      null, // Noncompliant
+      null); // Noncompliant
   }
 
   public void testIf(Object argument1, Object argument2, Object argument3) {
     argument1.hashCode(); // Compliant
     if (argument1 == null) {
-      argument1.hashCode(); // Noncompliant
+      argument1.hashCode(); // False negative condition Noncompliant
       argument1 = argument3;
       argument1.hashCode(); // Compliant
     } else {
@@ -171,7 +171,7 @@ class NullPointerTest {
       argument2 = null;
       argument2.hashCode(); // Noncompliant
     } else {
-      argument2.hashCode(); // Noncompliant
+      argument2.hashCode(); // False negative condition Noncompliant
       argument2 = argument3;
       argument2.hashCode(); // Compliant
     }
