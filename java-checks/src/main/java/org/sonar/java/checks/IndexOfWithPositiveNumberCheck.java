@@ -68,13 +68,13 @@ public class IndexOfWithPositiveNumberCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.GREATER_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO);
+    return ImmutableList.of(Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
   }
 
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
-    if (tree.is(Tree.Kind.GREATER_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
+    if (tree.is(Tree.Kind.GREATER_THAN)) {
       checkForIssue(tree, binaryTree.leftOperand(), LiteralUtils.longLiteralValue(binaryTree.rightOperand()));
     } else {
       checkForIssue(tree, binaryTree.rightOperand(), LiteralUtils.longLiteralValue(binaryTree.leftOperand()));
@@ -82,17 +82,13 @@ public class IndexOfWithPositiveNumberCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkForIssue(Tree tree, ExpressionTree operand, @Nullable Long constant) {
-    if (constant != null && constant >= getConstant(tree) && isIndexOfOnArrayOrString(operand)) {
+    if (constant != null && constant == 0 && isIndexOfOnArrayOrString(operand)) {
       addIssue(tree, "0 is a valid index, but is ignored by this check.");
     }
   }
 
   private boolean isIndexOfOnArrayOrString(Tree tree) {
     return tree.is(Tree.Kind.METHOD_INVOCATION) && CHECKED_METHODS.anyMatch((MethodInvocationTree) tree);
-  }
-
-  private long getConstant(Tree tree) {
-    return tree.is(Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN) ? 0 : 1;
   }
 
 }
