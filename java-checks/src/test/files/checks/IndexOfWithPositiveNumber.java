@@ -26,9 +26,9 @@ class TestClass {
     }
     if ("".indexOf("") > 0) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
     }
-    if ("".indexOf("") >= 1) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
+    if ("".indexOf("") >= 1) { // Compliant
     }
-    if ("".indexOf("") >= 2) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
+    if ("".indexOf("") >= 2) { // Compliant
     }
 
     if (-1 <= "".indexOf("")) { // Compliant
@@ -37,9 +37,9 @@ class TestClass {
     }
     if (0 < "".indexOf("")) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
     }
-    if (1 <= "".indexOf("")) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
+    if (1 <= "".indexOf("")) { // Compliant
     }
-    if (2 <= "".indexOf("")) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
+    if (2 <= "".indexOf("")) { // Compliant
     }
   }
 }
