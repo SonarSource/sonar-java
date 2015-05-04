@@ -19,7 +19,6 @@
  */
 package org.sonar.java.closeresource;
 
-import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -39,7 +38,6 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 public class CloseableVisitor extends DataFlowVisitor {
@@ -59,8 +57,7 @@ public class CloseableVisitor extends DataFlowVisitor {
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
 
-  public CloseableVisitor(List<VariableTree> methodParameters, SubscriptionBaseVisitor check) {
-    super(check);
+  public CloseableVisitor(List<VariableTree> methodParameters) {
     ignoreVariables(methodParameters);
   }
 

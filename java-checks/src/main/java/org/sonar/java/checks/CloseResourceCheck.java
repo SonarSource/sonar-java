@@ -61,7 +61,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      CloseableVisitor visitor = new CloseableVisitor(methodTree.parameters(), this);
+      CloseableVisitor visitor = new CloseableVisitor(methodTree.parameters());
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
         Type reportedType = null;

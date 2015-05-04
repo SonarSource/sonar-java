@@ -20,7 +20,6 @@
 package org.sonar.java.symexecengine;
 
 import com.google.common.base.Preconditions;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,13 +43,12 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 import java.util.Set;
 
 public abstract class DataFlowVisitor extends BaseTreeVisitor {
 
-  public DataFlowVisitor(IssuableSubscriptionVisitor check) {
+  public DataFlowVisitor() {
     executionState = new ExecutionState();
   }
 
@@ -77,7 +75,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
   }
 
   @CheckForNull
-  private Symbol getSymbol(ExpressionTree variable) {
+  protected Symbol getSymbol(ExpressionTree variable) {
     if (!variable.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       return null;
     }

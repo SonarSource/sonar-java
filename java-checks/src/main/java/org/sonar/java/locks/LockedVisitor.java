@@ -19,7 +19,6 @@
  */
 package org.sonar.java.locks;
 
-import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -39,10 +38,6 @@ public class LockedVisitor extends DataFlowVisitor {
 
   private static final MethodInvocationMatcherCollection LOCK_INVOCATIONS = lockMethodInvocationMatcher();
   private static final MethodInvocationMatcher UNLOCK_INVOCATION = MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK)).name("unlock");
-
-  public LockedVisitor(SubscriptionBaseVisitor check) {
-    super(check);
-  }
 
   private static MethodInvocationMatcherCollection lockMethodInvocationMatcher() {
     return MethodInvocationMatcherCollection.create(
