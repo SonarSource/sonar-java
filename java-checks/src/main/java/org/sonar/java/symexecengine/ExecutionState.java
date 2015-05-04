@@ -20,6 +20,7 @@
 package org.sonar.java.symexecengine;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
@@ -28,6 +29,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,12 +66,12 @@ public class ExecutionState {
 
   public ExecutionState merge(ExecutionState executionState) {
     for (Symbol symbol : executionState.reachableValues.keys()) {
-      if(!executionState.definedInState.contains(symbol)) {
+      if (!executionState.definedInState.contains(symbol)) {
         this.reachableValues.putAll(symbol, executionState.reachableValues.get(symbol));
       }
     }
     for (Symbol symbol : executionState.unreachableValues.keys()) {
-      if(!executionState.definedInState.contains(symbol)) {
+      if (!executionState.definedInState.contains(symbol)) {
         this.unreachableValues.putAll(symbol, executionState.unreachableValues.get(symbol));
       }
     }
@@ -122,8 +124,6 @@ public class ExecutionState {
     }
   }
 
-
-
   public Set<Tree> getIssueTrees() {
     issueTrees.addAll(getIssuableTreesOfCurrentState());
     return issueTrees;
@@ -132,13 +132,7 @@ public class ExecutionState {
   private Set<Tree> getIssuableTreesOfCurrentState() {
     Set<Tree> results = Sets.newHashSet();
     for (Symbol symbol : definedInState) {
-      for (Value value : unreachableValues.get(symbol)) {
-        State state = stateOfValue.get(value);
-        if (state.shouldRaiseIssue()) {
-          results.addAll(state.reportingTrees());
-        }
-      }
-      for (Value value : reachableValues.get(symbol)) {
+      for (Value value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
         State state = stateOfValue.get(value);
         if (state.shouldRaiseIssue()) {
           results.addAll(state.reportingTrees());
@@ -151,9 +145,7 @@ public class ExecutionState {
   // FIXME : Hideous hack for closeable to get "Ignored" variables
   public List<State> getStatesOf(Symbol symbol) {
     List<State> states = Lists.newArrayList();
-    List<Value> values = Lists.newArrayList(reachableValues.get(symbol));
-    values.addAll(unreachableValues.get(symbol));
-    for (Value value : values) {
+    for (Value value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
       State state = stateOfValue.get(value);
       if (state != null) {
         states.add(state);
