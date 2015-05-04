@@ -324,6 +324,7 @@ public final class CheckList {
       .add(StaticMultithreadedUnsafeFieldsCheck.class)
       .add(LocksNotUnlockedCheck.class)
       .add(EqualsArgumentTypeCheck.class)
+      .add(ConstantMathCheck.class)
       .build();
   }
 
