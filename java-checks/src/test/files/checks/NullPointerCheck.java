@@ -104,7 +104,7 @@ class NullPointerTest {
 
   public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) {
     a1.hashCode(); // No issue
-    a2.hashCode(); // False negative
+    a2.hashCode(); // Noncompliant
     a3.hashCode(); // False negative
 
     a1.a.hashCode(); // No issue
@@ -156,7 +156,7 @@ class NullPointerTest {
   public void testIf(Object argument1, Object argument2, Object argument3) {
     argument1.hashCode(); // Compliant
     if (argument1 == null) {
-      argument1.hashCode(); // False negative condition Noncompliant
+      argument1.hashCode(); // Noncompliant
       argument1 = argument3;
       argument1.hashCode(); // Compliant
     } else {
@@ -171,7 +171,7 @@ class NullPointerTest {
       argument2 = null;
       argument2.hashCode(); // Noncompliant
     } else {
-      argument2.hashCode(); // False negative condition Noncompliant
+      argument2.hashCode(); // Noncompliant
       argument2 = argument3;
       argument2.hashCode(); // Compliant
     }
@@ -208,18 +208,18 @@ class NullPointerTest {
     }
     argument4.hashCode(); // Noncompliant
   }
-
-  public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
-    int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
-    argument1.hashCode(); // Compliant
-    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant
-    argument2.hashCode(); // Compliant
-    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant
-    argument3.hashCode(); // Compliant
-    int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
-    argument4.hashCode(); // Compliant
-  }
-
+//
+//  public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
+//    int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
+//    argument1.hashCode(); // Compliant
+//    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant
+//    argument2.hashCode(); // Compliant
+//    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant
+//    argument3.hashCode(); // Compliant
+//    int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
+//    argument4.hashCode(); // Compliant
+//  }
+//
   public void testCondition() {
     String var1 = null;
     if (var1.equals("")) { } // Noncompliant
@@ -237,225 +237,225 @@ class NullPointerTest {
       object.hashCode(); // Noncompliant
     }
   }
-
-  public void testLogicalAnd(String str) {
-    Object object = null;
-    if (object != null && object.hashCode() == 0); // Compliant
-    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
-    if (object == null && object.hashCode() == 0); // Noncompliant
-    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant
-    boolean b2 = str != null && str.length() == 0; // Compliant
-    boolean b1 = str == null && str.length() == 0; // Noncompliant
-  }
-
-  public void testLogicalOr(String str) {
-    Object object = null;
-    if (object == null || object.hashCode() == 0); // Compliant
-    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
-    if (object != null || object.hashCode() == 0); // Noncompliant
-    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant
-    boolean b1 = str == null || str.length() == 0; // Compliant
-    boolean b2 = str != null || str.length() == 0; // Noncompliant
-  }
-
-  public void testDoWhileLoop(boolean condition) {
-    Object object1 = null, object2 = null, object3 = null;
-    do {
-      object1.hashCode(); // False negative
-      if (condition) {
-        object2 = new Object();
-      }
-      object1 = null;
-      object3 = new Object();
-    } while (object1.hashCode()); // Noncompliant
-    object1.hashCode(); // False negative
-    object2.hashCode(); // Compliant
-    object3.hashCode(); // Compliant
-  }
-
-  public void testForLoop() {
-    Object object = null;
-    for(; object.hashCode() != 0; object.hashCode()) { // Noncompliant
-      object.hashCode(); // False negative
-      object = null;
-    }
-    object.hashCode(); // False negative
-    for(Object object1 = null, object2 = null; true; object2.hashCode()) { // Noncompliant
-      object1.hashCode(); // Noncompliant
-    }
-  }
-
-  public void testForEachLoop() {
-    Object value;
-    Set<Object> set = null;
-    Entry head = null;
-    for(Object entry : set.values()) { // Noncompliant
-      head.hashCode(); // Noncompliant
-      value = null;
-      value.hashCode(); // Noncompliant
-    }
-    head.hashCode(); // Noncompliant
-    value.hashCode(); // False negative
-  }
-
-  public void testWhileLoop() {
-    Object object1 = null, object2 = null, object3 = null;
-    while(object1.hashCode()) { // Noncompliant
-      object2.hashCode(); // False negative, object2 is modified in the loop
-      object2 = null;
-      object2.hashCode(); // Noncompliant
-     }
-    object1.hashCode(); // Compliant, issue already raised
-    object2.hashCode(); // Compliant
-    object3.hashCode(); // Noncompliant
-  }
-
-  public void testHoistedLoop(boolean condition) {
-    Object a = null;
-    if (condition) {
-      if (condition) {
-        while(condition) {
-          a.hashCode(); // False negative
-          a = null;
-        }
-      }
-    }
-    a.hashCode(); // False negative
-  }
-
-  public void testInstanceField() {
-    nullableField = null;
-    nullableField.hashCode(); // False negative, instance fields are not checked
-  }
-
-  public void testSwitch() {
-    String str1 = null, str2 = null, str3 = null;
-    switch(str1) { // Noncompliant
-    case "ONE":
-      str2.length(); // Noncompliant
-    }
-    str3.length(); // Noncompliant
-  }
-
-  public void testMergeOnParameter(@Nullable Object o) {
-    if(o == null) {
-      return;
-    }
-    o.hashCode(); // Compliant, constraint is lost
-    Object a = o;
-    a.hashCode(); // Compliant
-  }
-
-  public void testAssignNullableMethod() {
-    Object object;
-    object = nullableMethod();
-    if(object.hashCode()) { } // Compliant
-    object = null;
-    if(object.hashCode()) { } // Noncompliant
-  }
-
-  public void testComplexLoop(@Nullable Object nullableObject) {
-    Object object1 = null, object11 = null, object12 = null;
-    for(int i = 0; object11 == null; i += 1) {
-      object11.hashCode(); // False negative
-      object12.hashCode(); // Noncompliant
-      nullableObject.hashCode(); // Noncompliant
-      if(i == 1) {
-        object1.hashCode(); // Compliant
-      } else if(i == 0) {
-        object1 = new Object();
-      }
-      object11 = null;
-    }
-    object1.hashCode(); // False negative
-
-    Object object2 = null, object21 = null, object22 = null;
-    int i = 0;
-    while(object21 == null) {
-      object21.hashCode(); // False negative
-      object22.hashCode(); // Noncompliant
-      nullableObject.hashCode(); // Noncompliant
-      if(i == 1) {
-        object2.hashCode(); // Compliant
-      } else if(i == 0) {
-        object2 = new Object();
-      }
-      object21 = null;
-    }
-    object2.hashCode(); // False negative
-
-    Object object3 = null;
-    int i = 0;
-    do {
-      if(i == 1) {
-        object3.hashCode(); // False negative
-      } else if(i == 0) {
-        object3 = new Object();
-      }
-    } while (condition);
-    object3.hashCode(); // False negative
-  }
-
-  void testComplexSwitch(String str) {
-    Object object1 = null, object2 = null, object3 = null, object4 = new Object();
-    switch(str) {
-    case "ONE":
-      object1 = new Object();
-      break;
-    case "TWO":
-      object1.hashCode(); // False negative
-      break;
-    case "THREE":
-      object2 = new Object();
-    case "FOUR":
-      object2.hashCode(); // Compliant
-      break;
-    case "FIVE":
-      object3.hashCode(); // Noncompliant
-      object4 = null;
-    case "SIX":
-      object4.hashCode(); // False negative
-    }
-  }
-
-  public static class LinkedListEntry {
-    @Nullable
-    LinkedList parent() {
-      return null;
-    }
-  }
-
-  public void testAssignSelfMember() {
-    LinkedListEntry entry1 = entry1.parent(); // Compliant
-    LinkedListEntry entry2;
-    entry2 = entry2.parent(); // Compliant
-  }
-
-  @interface CoverageAnnotation {
-  }
-
-  @CoverageAnnotation // Coverage
-  public Object coverageMethod() { // Coverage
-    return new Object();
-  }
-
-  public void testCoverage(Object[] a) {
-    coverageMethod().hashCode(); // Coverage
-    invalidMethod(); // Coverage
-    if (0) { } // Coverage
-    if (0 == 0) { } // Coverage
-    a[0] = null; // Coverage
-    if (null == coverageMethod()) { } // Coverage
-    if (a == a) { } // Coverage
-    if (a == null) { } // Coverage
-    if (a != null) { } // Coverage
-    undefined.field; // Coverage
-    a = 1 + 2; // Coverage
-  }
-
-  static int a;
-  static {
-    a = 0;
-  }
+//
+//  public void testLogicalAnd(String str) {
+//    Object object = null;
+//    if (object != null && object.hashCode() == 0); // Compliant
+//    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
+//    if (object == null && object.hashCode() == 0); // Noncompliant
+//    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant
+//    boolean b2 = str != null && str.length() == 0; // Compliant
+//    boolean b1 = str == null && str.length() == 0; // Noncompliant
+//  }
+//
+//  public void testLogicalOr(String str) {
+//    Object object = null;
+//    if (object == null || object.hashCode() == 0); // Compliant
+//    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
+//    if (object != null || object.hashCode() == 0); // Noncompliant
+//    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant
+//    boolean b1 = str == null || str.length() == 0; // Compliant
+//    boolean b2 = str != null || str.length() == 0; // Noncompliant
+//  }
+//
+//  public void testDoWhileLoop(boolean condition) {
+//    Object object1 = null, object2 = null, object3 = null;
+//    do {
+//      object1.hashCode(); // False negative
+//      if (condition) {
+//        object2 = new Object();
+//      }
+//      object1 = null;
+//      object3 = new Object();
+//    } while (object1.hashCode()); // Noncompliant
+//    object1.hashCode(); // False negative
+//    object2.hashCode(); // Compliant
+//    object3.hashCode(); // Compliant
+//  }
+//
+//  public void testForLoop() {
+//    Object object = null;
+//    for(; object.hashCode() != 0; object.hashCode()) { // Noncompliant
+//      object.hashCode(); // False negative
+//      object = null;
+//    }
+//    object.hashCode(); // False negative
+//    for(Object object1 = null, object2 = null; true; object2.hashCode()) { // Noncompliant
+//      object1.hashCode(); // Noncompliant
+//    }
+//  }
+//
+//  public void testForEachLoop() {
+//    Object value;
+//    Set<Object> set = null;
+//    Entry head = null;
+//    for(Object entry : set.values()) { // Noncompliant
+//      head.hashCode(); // Noncompliant
+//      value = null;
+//      value.hashCode(); // Noncompliant
+//    }
+//    head.hashCode(); // Noncompliant
+//    value.hashCode(); // False negative
+//  }
+//
+//  public void testWhileLoop() {
+//    Object object1 = null, object2 = null, object3 = null;
+//    while(object1.hashCode()) { // Noncompliant
+//      object2.hashCode(); // False negative, object2 is modified in the loop
+//      object2 = null;
+//      object2.hashCode(); // Noncompliant
+//     }
+//    object1.hashCode(); // Compliant, issue already raised
+//    object2.hashCode(); // Compliant
+//    object3.hashCode(); // Noncompliant
+//  }
+//
+//  public void testHoistedLoop(boolean condition) {
+//    Object a = null;
+//    if (condition) {
+//      if (condition) {
+//        while(condition) {
+//          a.hashCode(); // False negative
+//          a = null;
+//        }
+//      }
+//    }
+//    a.hashCode(); // False negative
+//  }
+//
+//  public void testInstanceField() {
+//    nullableField = null;
+//    nullableField.hashCode(); // False negative, instance fields are not checked
+//  }
+//
+//  public void testSwitch() {
+//    String str1 = null, str2 = null, str3 = null;
+//    switch(str1) { // Noncompliant
+//    case "ONE":
+//      str2.length(); // Noncompliant
+//    }
+//    str3.length(); // Noncompliant
+//  }
+//
+//  public void testMergeOnParameter(@Nullable Object o) {
+//    if(o == null) {
+//      return;
+//    }
+//    o.hashCode(); // Compliant, constraint is lost
+//    Object a = o;
+//    a.hashCode(); // Compliant
+//  }
+//
+//  public void testAssignNullableMethod() {
+//    Object object;
+//    object = nullableMethod();
+//    if(object.hashCode()) { } // Compliant
+//    object = null;
+//    if(object.hashCode()) { } // Noncompliant
+//  }
+//
+//  public void testComplexLoop(@Nullable Object nullableObject) {
+//    Object object1 = null, object11 = null, object12 = null;
+//    for(int i = 0; object11 == null; i += 1) {
+//      object11.hashCode(); // False negative
+//      object12.hashCode(); // Noncompliant
+//      nullableObject.hashCode(); // Noncompliant
+//      if(i == 1) {
+//        object1.hashCode(); // Compliant
+//      } else if(i == 0) {
+//        object1 = new Object();
+//      }
+//      object11 = null;
+//    }
+//    object1.hashCode(); // False negative
+//
+//    Object object2 = null, object21 = null, object22 = null;
+//    int i = 0;
+//    while(object21 == null) {
+//      object21.hashCode(); // False negative
+//      object22.hashCode(); // Noncompliant
+//      nullableObject.hashCode(); // Noncompliant
+//      if(i == 1) {
+//        object2.hashCode(); // Compliant
+//      } else if(i == 0) {
+//        object2 = new Object();
+//      }
+//      object21 = null;
+//    }
+//    object2.hashCode(); // False negative
+//
+//    Object object3 = null;
+//    int i = 0;
+//    do {
+//      if(i == 1) {
+//        object3.hashCode(); // False negative
+//      } else if(i == 0) {
+//        object3 = new Object();
+//      }
+//    } while (condition);
+//    object3.hashCode(); // False negative
+//  }
+//
+//  void testComplexSwitch(String str) {
+//    Object object1 = null, object2 = null, object3 = null, object4 = new Object();
+//    switch(str) {
+//    case "ONE":
+//      object1 = new Object();
+//      break;
+//    case "TWO":
+//      object1.hashCode(); // False negative
+//      break;
+//    case "THREE":
+//      object2 = new Object();
+//    case "FOUR":
+//      object2.hashCode(); // Compliant
+//      break;
+//    case "FIVE":
+//      object3.hashCode(); // Noncompliant
+//      object4 = null;
+//    case "SIX":
+//      object4.hashCode(); // False negative
+//    }
+//  }
+//
+//  public static class LinkedListEntry {
+//    @Nullable
+//    LinkedList parent() {
+//      return null;
+//    }
+//  }
+//
+//  public void testAssignSelfMember() {
+//    LinkedListEntry entry1 = entry1.parent(); // Compliant
+//    LinkedListEntry entry2;
+//    entry2 = entry2.parent(); // Compliant
+//  }
+//
+//  @interface CoverageAnnotation {
+//  }
+//
+//  @CoverageAnnotation // Coverage
+//  public Object coverageMethod() { // Coverage
+//    return new Object();
+//  }
+//
+//  public void testCoverage(Object[] a) {
+//    coverageMethod().hashCode(); // Coverage
+//    invalidMethod(); // Coverage
+//    if (0) { } // Coverage
+//    if (0 == 0) { } // Coverage
+//    a[0] = null; // Coverage
+//    if (null == coverageMethod()) { } // Coverage
+//    if (a == a) { } // Coverage
+//    if (a == null) { } // Coverage
+//    if (a != null) { } // Coverage
+//    undefined.field; // Coverage
+//    a = 1 + 2; // Coverage
+//  }
+//
+//  static int a;
+//  static {
+//    a = 0;
+//  }
 
 }

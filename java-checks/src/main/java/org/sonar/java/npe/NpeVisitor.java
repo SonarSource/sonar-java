@@ -1,5 +1,6 @@
 package org.sonar.java.npe;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.symexecengine.DataFlowVisitor;
@@ -7,6 +8,7 @@ import org.sonar.java.symexecengine.State;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -18,6 +20,19 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class NpeVisitor extends DataFlowVisitor {
+
+  public NpeVisitor(List<VariableTree> parameters) {
+    for (VariableTree parameter : parameters) {
+      super.visitVariable(parameter);
+      State state;
+      if(parameter.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+        state = new NPEState.Null(parameter);
+      } else {
+        state = new NPEState.NotNull(parameter);
+      }
+      executionState.markValueAs(parameter.symbol(), state);
+    }
+  }
 
   @Override
   protected boolean isSymbolRelevant(Symbol symbol) {
@@ -87,6 +102,51 @@ public class NpeVisitor extends DataFlowVisitor {
     }
   }
 
+  @Override
+  protected void evaluateConditionToTrue(ExpressionTree condition) {
+    if(condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree equal = (BinaryExpressionTree) condition;
+      Symbol symbol = null;
+      if(isNullTree(equal.leftOperand())) {
+        symbol = getSymbol(equal.rightOperand());
+      } else if(isNullTree(equal.rightOperand())) {
+        symbol = getSymbol(equal.leftOperand());
+      }
+      if(symbol != null) {
+        State state;
+        if(condition.is(Tree.Kind.EQUAL_TO)) {
+          state = new NPEState.Null(condition);
+        } else {
+          state = new NPEState.NotNull(condition);
+        }
+        executionState.markValueAs(symbol, state);
+      }
+    }
+
+  }
+
+  @Override
+  protected void evaluateConditionToFalse(ExpressionTree condition) {
+    if(condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+      BinaryExpressionTree equal = (BinaryExpressionTree) condition;
+      Symbol symbol = null;
+      if(isNullTree(equal.leftOperand())) {
+        symbol = getSymbol(equal.rightOperand());
+      } else if(isNullTree(equal.rightOperand())) {
+        symbol = getSymbol(equal.leftOperand());
+      }
+      if(symbol != null) {
+        State state;
+        if(condition.is(Tree.Kind.EQUAL_TO)) {
+          state = new NPEState.NotNull(condition);
+        } else {
+          state = new NPEState.Null(condition);
+        }
+        executionState.markValueAs(symbol, state);
+      }
+    }
+  }
+
   private abstract static class NPEState extends State {
     public NPEState(Tree tree) {
       super(tree);
@@ -108,15 +168,12 @@ public class NpeVisitor extends DataFlowVisitor {
 
       @Override
       public State merge(State s) {
-        if (s instanceof com.sun.istack.internal.NotNull) {
-          return new Unknown(s.reportingTrees());
-        }
         if (s instanceof Null) {
           List<Tree> trees = Lists.newArrayList(s.reportingTrees());
           trees.addAll(reportingTrees());
           return new Null(trees);
         }
-        return s;
+        return new Unknown(s.reportingTrees());
       }
     }
 
@@ -132,10 +189,12 @@ public class NpeVisitor extends DataFlowVisitor {
 
       @Override
       public State merge(State s) {
-        if (s instanceof Null) {
-          return new Unknown(s.reportingTrees());
+        if (s instanceof NotNull) {
+          List<Tree> trees = Lists.newArrayList(s.reportingTrees());
+          trees.addAll(reportingTrees());
+          return new NotNull(trees);
         }
-        return s;
+        return new Unknown(s.reportingTrees());
       }
     }
 
@@ -151,5 +210,9 @@ public class NpeVisitor extends DataFlowVisitor {
       }
     }
 
+    @Override
+    public String toString() {
+      return getClass().getSimpleName()+" From : "+ Joiner.on(",").join(reportingTrees())+" ";
+    }
   }
 }

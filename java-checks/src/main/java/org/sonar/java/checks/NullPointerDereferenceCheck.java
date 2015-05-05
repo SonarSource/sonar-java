@@ -57,7 +57,7 @@ public class NullPointerDereferenceCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      NpeVisitor visitor = new NpeVisitor();
+      NpeVisitor visitor = new NpeVisitor(methodTree.parameters());
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
         addIssue(issueTree, "NPE!");

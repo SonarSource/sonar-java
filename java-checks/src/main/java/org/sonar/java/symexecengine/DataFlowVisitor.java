@@ -98,6 +98,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     // do nothing, inner methods will be visited later
   }
 
+
   @Override
   public void visitTryStatement(TryStatementTree tree) {
     ExecutionState blockES = new ExecutionState(executionState);
@@ -133,6 +134,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.condition());
     ExecutionState thenES = new ExecutionState(executionState);
     executionState = thenES;
+    evaluateConditionToTrue(tree.condition());
     scan(tree.thenStatement());
 
     if (tree.elseStatement() == null) {
@@ -140,10 +142,18 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     } else {
       ExecutionState elseES = new ExecutionState(thenES.parent);
       executionState = elseES;
+      evaluateConditionToFalse(tree.condition());
       scan(tree.elseStatement());
       elseES.reportIssues();
       executionState = thenES.parent.overrideBy(thenES.merge(elseES));
     }
+  }
+
+  protected void evaluateConditionToTrue(ExpressionTree condition) {
+
+  }
+  protected void evaluateConditionToFalse(ExpressionTree condition) {
+
   }
 
   @Override
