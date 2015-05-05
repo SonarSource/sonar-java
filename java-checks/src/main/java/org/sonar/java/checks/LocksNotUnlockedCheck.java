@@ -39,7 +39,7 @@ import java.util.List;
   tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
 
