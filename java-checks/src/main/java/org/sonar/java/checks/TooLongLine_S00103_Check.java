@@ -27,13 +27,11 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -99,16 +97,12 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
   private int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
     if (importClauseTree.is(Tree.Kind.IMPORT)) {
       if (fromStart) {
-        return getLine(((ImportTree) importClauseTree).importKeyword());
+        return ((ImportTree) importClauseTree).importKeyword().line();
       } else {
-        return getLine(((ImportTree) importClauseTree).semicolonToken());
+        return ((ImportTree) importClauseTree).semicolonToken().line();
       }
     }
-    return getLine(((EmptyStatementTree) importClauseTree).semicolonToken());
-  }
-
-  private int getLine(SyntaxToken keyword) {
-    return ((InternalSyntaxToken) keyword).getLine();
+    return ((EmptyStatementTree) importClauseTree).semicolonToken().line();
   }
 
   private void visitFile(File file) {

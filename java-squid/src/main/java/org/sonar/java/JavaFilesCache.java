@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
@@ -138,7 +137,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private void handleSuppressWarning(ClassTree tree) {
-    int endLine = ((InternalSyntaxToken) tree.closeBraceToken()).getLine();
+    int endLine = tree.closeBraceToken().line();
     handleSuppressWarning(tree.modifiers().annotations(), endLine);
   }
 
@@ -146,7 +145,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     int endLine = ((JavaTree) tree.simpleName()).getLine();
     // if we have no block, then we assume method is on one line on the method name line.
     if (tree.block() != null) {
-      endLine = ((InternalSyntaxToken) tree.block().closeBraceToken()).getLine();
+      endLine = tree.block().closeBraceToken().line();
     }
     handleSuppressWarning(tree.modifiers().annotations(), endLine);
   }
