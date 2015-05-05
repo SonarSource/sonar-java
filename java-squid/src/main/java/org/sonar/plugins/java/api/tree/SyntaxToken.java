@@ -35,4 +35,5 @@ public interface SyntaxToken extends Tree {
 
   List<SyntaxTrivia> trivias();
 
+  int line();
 }
