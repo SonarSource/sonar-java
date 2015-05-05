@@ -55,6 +55,9 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
     .name("equals")
     .addParameter("java.lang.Object");
 
+  private static final MethodInvocationMatcher GETCLASS_MATCHER = MethodInvocationMatcher.create()
+    .name("getClass");
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD);
@@ -124,7 +127,7 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     private boolean isGetClassOnArgument(ExpressionTree tree) {
       ExpressionTree expressionTree = removeParenthesis(tree);
-      if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)) {
         ExpressionTree methodSelect = ((MethodInvocationTree) expressionTree).methodSelect();
         if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
           ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();

@@ -79,6 +79,16 @@ public class TestClassGetClassEqual4 {
 
 }
 
+public class TestClassGetClassEqual5 {
+
+  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+    if ((that.hashCode()) == 0) {
+    }
+    return false;
+  }
+
+}
+
 public class TestClassAssign {
 
   public boolean equals(Object that) { // Compliant
@@ -99,8 +109,32 @@ public class TestClassExplicitComparison1 {
 
 public class TestClassExplicitComparison2 {
 
+  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+    return (that) == that;
+  }
+
+}
+
+public class TestClassExplicitComparison3 {
+
   public boolean equals(Object that) { // Compliant
     return that == this;
+  }
+
+}
+
+public class TestClassExplicitComparison4 {
+
+  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+    return that == that;
+  }
+
+}
+
+public class TestClassExplicitComparison5 {
+
+  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+    return that == "";
   }
 
 }
@@ -109,6 +143,14 @@ public class TestClassEqualsCall {
 
   public boolean equals(Object that) { // Compliant
     return this.equals(that);
+  }
+
+}
+
+public class TestMethodCall {
+
+  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+    return this.hashCode();
   }
 
 }
