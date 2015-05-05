@@ -26,8 +26,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -74,10 +72,10 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    int tokenLine = ((InternalSyntaxToken) syntaxToken).getLine();
+    int tokenLine = syntaxToken.line();
     if (tokenLine != previousTokenLine) {
       for (SyntaxTrivia trivia : syntaxToken.trivias()) {
-        if (((InternalSyntaxTrivia)trivia).getLine() == previousTokenLine) {
+        if (trivia.startLine() == previousTokenLine) {
           String comment = trivia.comment();
 
           comment = comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);

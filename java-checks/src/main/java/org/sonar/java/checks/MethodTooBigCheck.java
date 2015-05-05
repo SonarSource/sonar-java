@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -65,6 +64,6 @@ public class MethodTooBigCheck extends SubscriptionBaseVisitor {
   }
 
   private int getLines(BlockTree block) {
-    return 1 + ((InternalSyntaxToken) block.closeBraceToken()).getLine() - ((InternalSyntaxToken) block.openBraceToken()).getLine();
+    return 1 + block.closeBraceToken().line() - block.openBraceToken().line();
   }
 }

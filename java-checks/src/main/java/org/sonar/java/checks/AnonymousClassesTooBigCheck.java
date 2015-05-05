@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -95,8 +94,8 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   }
 
   private int getNumberOfLines(ClassTree classTree) {
-    int startLine = ((InternalSyntaxToken) classTree.openBraceToken()).getLine();
-    int endline = ((InternalSyntaxToken) classTree.closeBraceToken()).getLine();
+    int startLine = classTree.openBraceToken().line();
+    int endline = classTree.closeBraceToken().line();
     return endline - startLine + 1;
   }
 
