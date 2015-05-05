@@ -1,0 +1,35 @@
+<p>Certain math operations are just silly and should not be performed because their results are predictable.</p>
+<p>In particular, <code>anyValue % 1</code> is silly because it will always return 0.</p>
+<p>Casting a non-floating-point value to floating-point and then passing it to <code>Math.round</code>, <code>Math.ceil</code>, or <code>Math.floor</code> is silly  because the result will always be the original value. </p>
+<p>These operations are silly with any constant value: <code>Math.abs</code>, <code>Math.ceil</code>, <code>Math.floor</code>, <code>Math.rint</code>, <code>Math.round</code>.</p>
+<p>And these oprations are silly with certain constant values:</p>
+<table>
+<tr><th>Operation</th><th>Value</th></tr>
+<tr><td>acos</td><td>0.0 or 1.0</td></tr>
+<tr><td>asin</td><td>0.0 or 1.0</td></tr>
+<tr><td>atan</td><td>0.0 or 1.0</td></tr>
+<tr><td>atan2</td><td>0.0</td></tr>
+<tr><td>cbrt</td><td>0.0 or 1.0</td></tr>
+<tr><td>cos</td><td>0.0</td></tr>
+<tr><td>cosh</td><td>0.0</td></tr>
+<tr><td>exp</td><td>0.0 or 1.0</td></tr>
+<tr><td>expm1</td><td>0.0</td></tr>
+<tr><td>log</td><td>0.0 or 1.0</td></tr>
+<tr><td>log10</td><td>0.0 or 1.0</td></tr>
+<tr><td>sin</td><td>0.0</td></tr>
+<tr><td>sinh</td><td>0.0</td></tr>
+<tr><td>sqrt</td><td>0.0 or 1.0</td></tr>
+<tr><td>tan</td><td>0.0</td></tr>
+<tr><td>tanh</td><td>0.0</td></tr>
+<tr><td>toDegrees</td><td>0.0 or 1.0</td></tr>
+<tr><td>toRadians</td><td>0.0</td></tr>
+</table>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public void doMath(int a)
+double floor = Math.floor((double)a); // Noncompliant
+double ceiling = Math.ceil(4.2);
+double arcTan = Math.atan(0.0);
+</pre>
+
