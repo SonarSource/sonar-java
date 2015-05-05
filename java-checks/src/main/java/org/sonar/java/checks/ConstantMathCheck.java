@@ -19,9 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -33,10 +30,12 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -54,6 +53,7 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
 
+  private static final String ABS = "abs";
   private static final String CEIL = "ceil";
   private static final String DOUBLE = "double";
   private static final String FLOAT = "float";
@@ -61,11 +61,19 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
   private static final String MATH_PACKAGE_NAME = "java.lang.Math";
   private static final String ROUND = "round";
 
+  private static final MethodInvocationMatcherCollection CONSTANT_WITH_LITERAL_METHODS = MethodInvocationMatcherCollection.create(
+    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(DOUBLE),
+    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(FLOAT),
+    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("int"),
+    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("long")
+    );
+
   private static final MethodInvocationMatcherCollection TRUNCATION_METHODS = MethodInvocationMatcherCollection.create(
     MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(DOUBLE),
     MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(FLOAT),
     MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(DOUBLE),
     MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(FLOAT),
+    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("rint").addParameter(DOUBLE),
     MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(DOUBLE),
     MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(FLOAT)
     );
@@ -110,7 +118,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
         }
       } else {
         MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-        if (isTruncation(methodTree) || isConstantWithZero(methodTree) || isConstantWithZeroOrOne(methodTree)) {
+        if (isConstantWithLiteral(methodTree) || isTruncation(methodTree) || isConstantWithZero(methodTree) || isConstantWithZeroOrOne(methodTree)) {
           addIssue(tree, String.format("Remove this silly call to \"Math.%s\"", methodTree.symbol().name()));
         }
       }
@@ -121,12 +129,16 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     return TRUNCATION_METHODS.anyMatch(methodTree) && isCastFromIntegralToFloating(removeParenthesis(methodTree.arguments().get(0)));
   }
 
+  private boolean isConstantWithLiteral(MethodInvocationTree methodTree) {
+    return CONSTANT_WITH_LITERAL_METHODS.anyMatch(methodTree) && isConstant(methodTree.arguments().get(0));
+  }
+
   private boolean isConstantWithZero(MethodInvocationTree methodTree) {
     return CONSTANT_WITH_ZERO_METHODS.anyMatch(methodTree) && isFloatingZero(methodTree.arguments().get(0));
   }
 
   private boolean isConstantWithZeroOrOne(MethodInvocationTree methodTree) {
-    return CONSTANT_WITH_ZERO_OR_ONE_METHODS.anyMatch(methodTree) && isFloatingZeroOrOne(methodTree.arguments().get(0));
+    return CONSTANT_WITH_ZERO_OR_ONE_METHODS.anyMatch(methodTree) && isFloatingZeroOrOne(methodTree.arguments().get(0)) != null;
   }
 
   private boolean isCastFromIntegralToFloating(ExpressionTree tree) {
@@ -139,6 +151,10 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     return isIntegral(resultType);
   }
 
+  private boolean isConstant(ExpressionTree tree) {
+    return getInnerExpression(tree).is(Tree.Kind.CHAR_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL);
+  }
+
   private boolean isIntegral(Type type) {
     return type.isPrimitive() && !type.is(DOUBLE) && !type.is(FLOAT);
   }
@@ -148,7 +164,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     return value != null && value == 1;
   }
 
-  private Type getInnerType(ExpressionTree tree) {
+  private ExpressionTree getInnerExpression(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (true) {
       if (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -156,9 +172,13 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
       } else if (result.is(Tree.Kind.TYPE_CAST)) {
         result = ((TypeCastTree) result).expression();
       } else {
-        return result.symbolType();
+        return result;
       }
     }
+  }
+
+  private Type getInnerType(ExpressionTree tree) {
+    return getInnerExpression(tree).symbolType();
   }
 
   private ExpressionTree removeParenthesis(ExpressionTree tree) {
@@ -170,23 +190,19 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
   }
 
   private boolean isFloatingZero(ExpressionTree tree) {
-    Double value = parseDouble(removeParenthesis(tree));
-    return value != null && Double.compare(value, 0.0d) == 0;
-  }
-
-  private boolean isFloatingZeroOrOne(ExpressionTree tree) {
-    // current implementation of parseDouble returns null for all value but 0 and 1, so there is no need to check the actual returned value.
-    return parseDouble(removeParenthesis(tree)) != null;
+    Integer value = isFloatingZeroOrOne(tree);
+    return value != null && value == 0;
   }
 
   @CheckForNull
-  private Double parseDouble(ExpressionTree tree) {
-    if (tree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
-      String value = ((LiteralTree) tree).value();
-      if ("0.0".equals(value) || "0.0d".equals(value) || "0.0f".equals(value)) {
-        return 0.0d;
-      } else if ("1.0".equals(value) || "1.0d".equals(value) || "1.0f".equals(value)) {
-        return 1.0d;
+  private Integer isFloatingZeroOrOne(ExpressionTree tree) {
+    ExpressionTree expressionTree = removeParenthesis(tree);
+    if (expressionTree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
+      String value = ((LiteralTree) expressionTree).value();
+      if ("0.0".equals(value) || "0.0d".equalsIgnoreCase(value) || "0.0f".equalsIgnoreCase(value)) {
+        return 0;
+      } else if ("1.0".equals(value) || "1.0d".equalsIgnoreCase(value) || "1.0f".equalsIgnoreCase(value)) {
+        return 1;
       }
     }
     return null;

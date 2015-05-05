@@ -6,7 +6,12 @@ public class TestClass {
     int d = a % a; // Compliant, currently not covered by this rule
     short s;
 
-    Math.abs((double) a); // Compliant
+    Math.abs((double)' '); // Noncompliant {{Remove this silly call to "Math.abs"}}
+    Math.abs((float) 0); // Noncompliant {{Remove this silly call to "Math.abs"}}
+    Math.abs(0); // Noncompliant {{Remove this silly call to "Math.abs"}}
+    Math.abs(0L); // Noncompliant {{Remove this silly call to "Math.abs"}}
+    Math.abs(a); // Compliant
+    Math.abs((float) a); // Compliant
 
     // the following does not compile, but is checked anyway from a type perspective.
     Math.ceil((double) true); // Noncompliant {{Remove this silly call to "Math.ceil"}}
@@ -23,8 +28,8 @@ public class TestClass {
     Math.ceil((double) 0.0d); // Compliant
     Math.ceil((float) (byte) 0); // Noncompliant {{Remove this silly call to "Math.ceil"}}
     Math.floor((float) 0); // Noncompliant {{Remove this silly call to "Math.floor"}}
+    Math.rint((float) 0); // Noncompliant {{Remove this silly call to "Math.rint"}}
     Math.round((float) 0); // Noncompliant {{Remove this silly call to "Math.round"}}
-
     Math.ceil(((double) ((double) (a)))); // Noncompliant {{Remove this silly call to "Math.ceil"}}
 
     float value;
@@ -35,14 +40,14 @@ public class TestClass {
     Math.cos(2.0); // Compliant
 
     Math.acos((0.0)); // Noncompliant {{Remove this silly call to "Math.acos"}}
-    Math.acos((0.0f)); // Noncompliant {{Remove this silly call to "Math.acos"}}
+    Math.acos((0.0F)); // Noncompliant {{Remove this silly call to "Math.acos"}}
     Math.acos((1.0)); // Noncompliant {{Remove this silly call to "Math.acos"}}
     Math.acos((1.0f)); // Noncompliant {{Remove this silly call to "Math.acos"}}
     Math.asin(0.0d); // Noncompliant {{Remove this silly call to "Math.asin"}}
     Math.asin(1.0d); // Noncompliant {{Remove this silly call to "Math.asin"}}
     Math.atan(0.0d); // Noncompliant {{Remove this silly call to "Math.atan"}}
     Math.atan(1.0d); // Noncompliant {{Remove this silly call to "Math.atan"}}
-    Math.atan2(0.0d, value); // Noncompliant {{Remove this silly call to "Math.atan2"}}
+    Math.atan2(0.0D, value); // Noncompliant {{Remove this silly call to "Math.atan2"}}
     Math.cbrt(0.0d); // Noncompliant {{Remove this silly call to "Math.cbrt"}}
     Math.cbrt(1.0d); // Noncompliant {{Remove this silly call to "Math.cbrt"}}
     Math.cos((0.0d)); // Noncompliant {{Remove this silly call to "Math.cos"}}
