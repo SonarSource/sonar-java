@@ -19,27 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
-import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -60,8 +55,6 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
     .name("equals")
     .addParameter("java.lang.Object");
 
-  private boolean typeChecked;
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD);
@@ -69,57 +62,25 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      MethodTree methodTree = (MethodTree) tree;
-      if (methodTree.block() != null && "equals".equals(methodTree.symbol().name()) && methodTree.parameters().size() == 1) {
-        Symbol parameterSymbol = methodTree.parameters().get(0).symbol();
-        if (parameterSymbol.type().is("java.lang.Object")) {
-          typeChecked = false;
-          methodTree.accept(new EqualsMethodVisitor(parameterSymbol));
-          if (!typeChecked) {
-            addIssue(tree, "Add a type test to this method.");
-          }
+    if (!hasSemantic()) {
+      return;
+    }
+    MethodTree methodTree = (MethodTree) tree;
+    if (methodTree.block() != null && "equals".equals(methodTree.symbol().name()) && methodTree.parameters().size() == 1) {
+      Symbol parameterSymbol = methodTree.parameters().get(0).symbol();
+      if (parameterSymbol.type().is("java.lang.Object")) {
+        ExpressionVisitor visitor = new ExpressionVisitor(parameterSymbol);
+        methodTree.accept(visitor);
+        if (!visitor.typeChecked) {
+          addIssue(tree, "Add a type test to this method.");
         }
       }
     }
   }
 
-  private class EqualsMethodVisitor extends BaseTreeVisitor {
+  private static class ExpressionVisitor extends BaseTreeVisitor {
     private final Symbol parameterSymbol;
-
-    EqualsMethodVisitor(Symbol parameterSymbol) {
-      this.parameterSymbol = parameterSymbol;
-    }
-
-    @Override
-    public void visitExpressionStatement(ExpressionStatementTree tree) {
-      tree.expression().accept(new ExpressionVisitor(parameterSymbol));
-    }
-
-    @Override
-    public void visitIfStatement(IfStatementTree tree) {
-      tree.condition().accept(new ExpressionVisitor(parameterSymbol));
-      super.visitIfStatement(tree);
-    }
-
-    @Override
-    public void visitReturnStatement(ReturnStatementTree tree) {
-      if (tree.expression() != null) {
-        tree.expression().accept(new ExpressionVisitor(parameterSymbol));
-      }
-    }
-
-    @Override
-    public void visitVariable(VariableTree tree) {
-      if (tree.initializer() != null) {
-        tree.initializer().accept(new ExpressionVisitor(parameterSymbol));
-      }
-      super.visitVariable(tree);
-    }
-  }
-
-  private class ExpressionVisitor extends BaseTreeVisitor {
-    private final Symbol parameterSymbol;
+    private boolean typeChecked;
 
     ExpressionVisitor(Symbol parameterSymbol) {
       this.parameterSymbol = parameterSymbol;
