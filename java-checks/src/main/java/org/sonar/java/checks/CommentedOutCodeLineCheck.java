@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -82,7 +81,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
    * But we assume that probability of this is really low.
    */
   private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
-    return ((InternalSyntaxTrivia) syntaxTrivia).getLine() == 1;
+    return syntaxTrivia.startLine() == 1;
   }
 
   /**
@@ -96,7 +95,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
         if (codeRecognizer.isLineOfCode(lines[i])) {
           // Mark all remaining lines from this comment as a commented out lines of code
           for (int j = i; j < lines.length; j++) {
-            commentedOutCodeLines.add(((InternalSyntaxTrivia) syntaxTrivia).getLine() + j);
+            commentedOutCodeLines.add(syntaxTrivia.startLine() + j);
           }
           break;
         }
