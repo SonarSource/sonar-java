@@ -57,14 +57,11 @@ public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      LockedVisitor visitor = new LockedVisitor();
+      LockedVisitor visitor = new LockedVisitor(methodTree.symbol());
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
         addIssue(issueTree, "Unlock this lock.");
       }
     }
   }
-
-
-
 }
