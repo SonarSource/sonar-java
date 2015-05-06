@@ -1,18 +1,18 @@
 class A {
   private void foo() {
-    myCollection.size() == 0; // Non-Compliant
-    myCollection.size() != 0; // Non-Compliant
-    myCollection.size() > 0; // Non-Compliant
-    myCollection.size() >= 1; // Non-Compliant
-    myCollection.size() < 1; // Non-Compliant
-    myCollection.size() <= 0; // Non-Compliant
+    myCollection.size() == 0; // Noncompliant {{Use isEmpty() to check whether the collection is empty or not.}}
+    myCollection.size() != 0; // Noncompliant
+    myCollection.size() > 0; // Noncompliant
+    myCollection.size() >= 1; // Noncompliant
+    myCollection.size() < 1; // Noncompliant
+    myCollection.size() <= 0; // Noncompliant
 
-    0 == myCollection.size(); // Non-Compliant
-    0 != myCollection.size(); // Non-Compliant
-    0 < myCollection.size(); // Non-Compliant
-    1 <= myCollection.size(); // Non-Compliant
-    1 > myCollection.size(); // Non-Compliant
-    0 >= myCollection.size(); // Non-Compliant
+    0 == myCollection.size(); // Noncompliant
+    0 != myCollection.size(); // Noncompliant
+    0 < myCollection.size(); // Noncompliant
+    1 <= myCollection.size(); // Noncompliant
+    1 > myCollection.size(); // Noncompliant
+    0 >= myCollection.size(); // Noncompliant
 
     myCollection.size() == +0; // Compliant - corner case should be covered by another rule
 
