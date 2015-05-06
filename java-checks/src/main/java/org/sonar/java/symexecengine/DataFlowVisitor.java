@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -164,6 +165,18 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.falseExpression());
     elseES.reportIssues();
     executionState = thenES.parent.overrideBy(thenES.merge(elseES));
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    scan(tree.leftOperand());
+    if(tree.is(Tree.Kind.CONDITIONAL_AND)) {
+      evaluateConditionToTrue(tree.leftOperand());
+    } else if(tree.is(Tree.Kind.CONDITIONAL_OR)) {
+      evaluateConditionToFalse(tree.leftOperand());
+    }
+    scan(tree.rightOperand());
+
   }
 
   protected void evaluateConditionToTrue(ExpressionTree condition) {

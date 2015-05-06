@@ -26,7 +26,7 @@ public class NpeVisitor extends DataFlowVisitor {
     for (VariableTree parameter : parameters) {
       super.visitVariable(parameter);
       State state;
-      if(parameter.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+      if (parameter.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
         state = new NPEState.Null(parameter);
       } else {
         state = new NPEState.NotNull(parameter);
@@ -89,13 +89,13 @@ public class NpeVisitor extends DataFlowVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     super.visitMethodInvocation(tree);
-    if(tree.symbol().isMethodSymbol()) {
+    if (tree.symbol().isMethodSymbol()) {
       JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) tree.symbol();
       List<JavaSymbol> parameters = methodSymbol.getParameters().scopeSymbols();
       if (!parameters.isEmpty()) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
-          if(parameters.get(i < parameters.size() ? i : parameters.size() - 1).metadata().isAnnotatedWith("javax.annotation.Nonnull")
-              && isNullTree(tree.arguments().get(i))) {
+          if (parameters.get(i < parameters.size() ? i : parameters.size() - 1).metadata().isAnnotatedWith("javax.annotation.Nonnull")
+            && isNullTree(tree.arguments().get(i))) {
             executionState.reportIssue(tree.arguments().get(i));
           }
         }
@@ -113,17 +113,18 @@ public class NpeVisitor extends DataFlowVisitor {
 
   @Override
   protected void evaluateConditionToTrue(ExpressionTree condition) {
-    if(condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+    if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree equal = (BinaryExpressionTree) condition;
       Symbol symbol = null;
-      if(isNullTree(equal.leftOperand())) {
+      if (isNullTree(equal.leftOperand())) {
         symbol = getSymbol(equal.rightOperand());
-      } else if(isNullTree(equal.rightOperand())) {
+      }
+      if (symbol == null && isNullTree(equal.rightOperand())) {
         symbol = getSymbol(equal.leftOperand());
       }
-      if(symbol != null) {
+      if (symbol != null) {
         State state;
-        if(condition.is(Tree.Kind.EQUAL_TO)) {
+        if (condition.is(Tree.Kind.EQUAL_TO)) {
           state = new NPEState.Null(condition);
         } else {
           state = new NPEState.NotNull(condition);
@@ -136,17 +137,18 @@ public class NpeVisitor extends DataFlowVisitor {
 
   @Override
   protected void evaluateConditionToFalse(ExpressionTree condition) {
-    if(condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+    if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree equal = (BinaryExpressionTree) condition;
       Symbol symbol = null;
-      if(isNullTree(equal.leftOperand())) {
+      if (isNullTree(equal.leftOperand())) {
         symbol = getSymbol(equal.rightOperand());
-      } else if(isNullTree(equal.rightOperand())) {
+      }
+      if (symbol == null && isNullTree(equal.rightOperand())) {
         symbol = getSymbol(equal.leftOperand());
       }
-      if(symbol != null) {
+      if (symbol != null) {
         State state;
-        if(condition.is(Tree.Kind.EQUAL_TO)) {
+        if (condition.is(Tree.Kind.EQUAL_TO)) {
           state = new NPEState.NotNull(condition);
         } else {
           state = new NPEState.Null(condition);
@@ -221,7 +223,7 @@ public class NpeVisitor extends DataFlowVisitor {
 
     @Override
     public String toString() {
-      return getClass().getSimpleName()+" From : "+ Joiner.on(",").join(reportingTrees())+" ";
+      return getClass().getSimpleName() + " From : " + Joiner.on(",").join(reportingTrees()) + " ";
     }
   }
 }

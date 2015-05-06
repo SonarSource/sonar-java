@@ -237,27 +237,35 @@ class NullPointerTest {
       object.hashCode(); // Noncompliant
     }
   }
-//
-//  public void testLogicalAnd(String str) {
-//    Object object = null;
-//    if (object != null && object.hashCode() == 0); // Compliant
-//    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
-//    if (object == null && object.hashCode() == 0); // Noncompliant
-//    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant
-//    boolean b2 = str != null && str.length() == 0; // Compliant
-//    boolean b1 = str == null && str.length() == 0; // Noncompliant
-//  }
-//
-//  public void testLogicalOr(String str) {
-//    Object object = null;
-//    if (object == null || object.hashCode() == 0); // Compliant
-//    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
-//    if (object != null || object.hashCode() == 0); // Noncompliant
-//    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant
-//    boolean b1 = str == null || str.length() == 0; // Compliant
-//    boolean b2 = str != null || str.length() == 0; // Noncompliant
-//  }
-//
+
+  public void testLogicalAnd(String str) {
+    Object object = null;
+    if (object != null
+        && object.hashCode() == 0); // Compliant
+    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
+    if (object == null && object.hashCode() == 0); // Noncompliant
+    if (object == null && object.hashCode() == 0 // Noncompliant
+        && object.hashCode() == 0); // Noncompliant
+    boolean b2 = str != null && str.length() == 0; // Compliant
+    boolean b1 = str == null && str.length() == 0; // Noncompliant
+  }
+
+  public void testLogicalOr(String str) {
+    Object object = null;
+    if (object == null
+        || object.hashCode() == 0); // Compliant
+    if (object == null
+        || object.hashCode() != 0
+        || object.hashCode() != 0); // Compliant
+    if (object != null
+        || object.hashCode() == 0); // Noncompliant
+    if (object != null
+        || object.hashCode() == 0 // Noncompliant
+        || object.hashCode() == 0); // Noncompliant
+    boolean b1 = str == null || str.length() == 0; // Compliant
+    boolean b2 = str != null || str.length() == 0; // Noncompliant
+  }
+
   public void testDoWhileLoop(boolean condition) {
     Object object1 = null, object2 = null, object3 = null;
     do {
