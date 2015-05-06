@@ -20,10 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.locks.LockedVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -57,12 +59,30 @@ public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      LockedVisitor visitor = new LockedVisitor();
+      LockedVisitor visitor = new LockedVisitor(getAccessibleLockFields(methodTree.symbol()));
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
         addIssue(issueTree, "Unlock this lock.");
       }
     }
+  }
+
+
+  private List<Symbol> getAccessibleLockFields(Symbol.MethodSymbol symbol) {
+    List<Symbol> symbols = Lists.newArrayList();
+    Symbol owner =  symbol.owner();
+    while (owner.isTypeSymbol()) {
+      Symbol.TypeSymbol typeSymbol = ((Symbol.TypeSymbol) owner);
+      for (Symbol member : typeSymbol.memberSymbols()) {
+        if(member.isVariableSymbol() && member.type().isSubtypeOf(LockedVisitor.JAVA_LOCK)) {
+          symbols.add(member);
+        }
+      }
+      owner = owner.owner();
+    }
+
+
+    return symbols;
   }
 
 

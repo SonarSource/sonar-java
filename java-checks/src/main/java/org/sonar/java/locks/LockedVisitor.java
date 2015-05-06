@@ -30,9 +30,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.List;
+
 public class LockedVisitor extends DataFlowVisitor {
 
-  private static final String JAVA_LOCK = "java.util.concurrent.locks.Lock";
+  public static final String JAVA_LOCK = "java.util.concurrent.locks.Lock";
 
   private static final MethodInvocationMatcherCollection LOCK_INVOCATIONS = lockMethodInvocationMatcher();
   private static final MethodInvocationMatcher UNLOCK_INVOCATION = MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK)).name("unlock");
@@ -49,6 +51,14 @@ public class LockedVisitor extends DataFlowVisitor {
         .typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK))
         .name("tryLock")
         .withNoParameterConstraint());
+  }
+
+  public LockedVisitor(List<Symbol> fields) {
+    super();
+    for (Symbol field : fields) {
+      executionState.defineSymbol(field);
+      executionState.createValueForSymbol(field, field.declaration());
+    }
   }
 
   @Override
