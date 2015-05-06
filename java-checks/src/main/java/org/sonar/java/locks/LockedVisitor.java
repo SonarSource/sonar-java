@@ -19,6 +19,7 @@
  */
 package org.sonar.java.locks;
 
+import com.google.common.collect.Lists;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -34,7 +35,7 @@ import java.util.List;
 
 public class LockedVisitor extends DataFlowVisitor {
 
-  public static final String JAVA_LOCK = "java.util.concurrent.locks.Lock";
+  private static final String JAVA_LOCK = "java.util.concurrent.locks.Lock";
 
   private static final MethodInvocationMatcherCollection LOCK_INVOCATIONS = lockMethodInvocationMatcher();
   private static final MethodInvocationMatcher UNLOCK_INVOCATION = MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_LOCK)).name("unlock");
@@ -53,13 +54,29 @@ public class LockedVisitor extends DataFlowVisitor {
         .withNoParameterConstraint());
   }
 
-  public LockedVisitor(List<Symbol> fields) {
+  public LockedVisitor(Symbol.MethodSymbol analyzedMethod) {
     super();
-    for (Symbol field : fields) {
+    for (Symbol field : getAccessibleLockFields(analyzedMethod)) {
       executionState.defineSymbol(field);
       executionState.createValueForSymbol(field, field.declaration());
     }
   }
+
+  private List<Symbol> getAccessibleLockFields(Symbol.MethodSymbol symbol) {
+    List<Symbol> symbols = Lists.newArrayList();
+    Symbol owner =  symbol.owner();
+    while (owner.isTypeSymbol()) {
+      Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) owner;
+      for (Symbol member : typeSymbol.memberSymbols()) {
+        if(member.isVariableSymbol() && member.type().isSubtypeOf(JAVA_LOCK)) {
+          symbols.add(member);
+        }
+      }
+      owner = owner.owner();
+    }
+    return symbols;
+  }
+
 
   @Override
   protected boolean isSymbolRelevant(Symbol symbol) {
