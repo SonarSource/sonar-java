@@ -12,6 +12,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -100,6 +101,14 @@ public class NpeVisitor extends DataFlowVisitor {
         }
       }
     }
+  }
+
+  @Override
+  public void visitSwitchStatement(SwitchStatementTree tree) {
+    if (isNullTree(tree.expression())) {
+      executionState.reportIssue(tree.expression());
+    }
+    super.visitSwitchStatement(tree);
   }
 
   @Override
