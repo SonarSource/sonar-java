@@ -29,9 +29,11 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -60,11 +62,22 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     ClassTree classTree = (ClassTree) tree;
     if (isSerializable(classTree) && !hasSpecialHandlingSerializationMethods(classTree)) {
       for (Tree member : classTree.members()) {
-        if (member.is(Tree.Kind.VARIABLE) && !isStatic((VariableTree) member) && !isTransientOrSerializable((VariableTree) member)) {
-          addIssue(member, "Make \"" + ((VariableTree) member).simpleName().name() + "\" transient or serializable.");
+        if (member.is(Tree.Kind.VARIABLE)) {
+          VariableTree variableTree = (VariableTree) member;
+          if (!isStatic(variableTree) && !isTransientOrSerializable(variableTree) && !isCollectionOfSerializable(variableTree.type())) {
+            addIssue(member, "Make \"" + variableTree.simpleName().name() + "\" transient or serializable.");
+          }
         }
       }
     }
+  }
+
+  private boolean isCollectionOfSerializable(TypeTree typeTree) {
+    Type type = typeTree.symbolType();
+    if (type.isSubtypeOf("java.util.Collection") && typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      return isSerializable(((ParameterizedTypeTree) typeTree).typeArguments().get(0));
+    }
+    return false;
   }
 
   private boolean isStatic(VariableTree member) {
@@ -97,6 +110,9 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     } else if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol symbol = ((ClassTree) tree).symbol();
       return implementsSerializable(symbol.type());
+    } else if (tree.is(Tree.Kind.EXTENDS_WILDCARD, Tree.Kind.UNBOUNDED_WILDCARD)) {
+      TypeTree bound = ((WildcardTree) tree).bound();
+      return bound != null && implementsSerializable(bound.symbolType());
     }
     return implementsSerializable(((TypeTree) tree).symbolType());
   }

@@ -20,27 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SerializableFieldInSerializableClassCheckTest {
 
-  private SerializableFieldInSerializableClassCheck check = new SerializableFieldInSerializableClassCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SerializableFieldInSerializableClassCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Make \"address\" transient or serializable.")
-        .next().atLine(12).withMessage("Make \"address\" transient or serializable.")
-        .next().atLine(13).withMessage("Make \"addressArray\" transient or serializable.")
-        .next().atLine(24).withMessage("Make \"address\" transient or serializable.")
-        .next().atLine(28).withMessage("Make \"s\" transient or serializable.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SerializableFieldInSerializableClassCheck.java", new SerializableFieldInSerializableClassCheck());
   }
 
 }
