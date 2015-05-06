@@ -27,8 +27,10 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -52,10 +54,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher EQUALS_MATCHER = MethodInvocationMatcher.create()
-    .name("equals")
-    .addParameter("java.lang.Object");
-
   private static final MethodInvocationMatcher GETCLASS_MATCHER = MethodInvocationMatcher.create()
     .name("getClass");
 
@@ -75,12 +73,8 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
       if (parameterSymbol.type().is("java.lang.Object")) {
         CastVisitor castVisitor = new CastVisitor(parameterSymbol);
         methodTree.accept(castVisitor);
-        if (castVisitor.hasCast) {
-          ExpressionVisitor expressionVisitor = new ExpressionVisitor(parameterSymbol);
-          methodTree.accept(expressionVisitor);
-          if (!expressionVisitor.typeChecked) {
-            addIssue(tree, "Add a type test to this method.");
-          }
+        if (castVisitor.hasUncheckedCast) {
+          addIssue(tree, "Add a type test to this method.");
         }
       }
     }
@@ -104,21 +98,60 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
   private static class CastVisitor extends BaseTreeVisitor {
     private final Symbol parameterSymbol;
-    boolean hasCast;
+    boolean typeChecked = false;
+    boolean hasUncheckedCast = false;
 
     public CastVisitor(Symbol parameterSymbol) {
       this.parameterSymbol = parameterSymbol;
     }
 
     @Override
+    public void visitBinaryExpression(BinaryExpressionTree tree) {
+      if (tree.is(Tree.Kind.CONDITIONAL_AND)) {
+        ExpressionVisitor expressionVisitor = new ExpressionVisitor(parameterSymbol);
+        tree.leftOperand().accept(expressionVisitor);
+        if (expressionVisitor.typeChecked) {
+          typeChecked = true;
+          return;
+        }
+        scan(tree.rightOperand());
+      } else {
+        super.visitBinaryExpression(tree);
+      }
+    }
+
+    @Override
+    public void visitConditionalExpression(ConditionalExpressionTree tree) {
+      ExpressionVisitor expressionVisitor = new ExpressionVisitor(parameterSymbol);
+      tree.condition().accept(expressionVisitor);
+      if (expressionVisitor.typeChecked) {
+        typeChecked = true;
+        return;
+      }
+      scan(tree.trueExpression());
+      scan(tree.falseExpression());
+    }
+
+    @Override
+    public void visitIfStatement(IfStatementTree tree) {
+      ExpressionVisitor expressionVisitor = new ExpressionVisitor(parameterSymbol);
+      tree.condition().accept(expressionVisitor);
+      if (expressionVisitor.typeChecked) {
+        typeChecked = true;
+        return;
+      }
+      scan(tree.thenStatement());
+      scan(tree.elseStatement());
+    }
+
+    @Override
     public void visitTypeCast(TypeCastTree tree) {
-      if (isArgument(tree.expression(), parameterSymbol)) {
-        hasCast = true;
+      if (isArgument(tree.expression(), parameterSymbol) && !typeChecked) {
+        hasUncheckedCast = true;
       } else {
         super.visitTypeCast(tree);
       }
     }
-
   }
 
   private static class ExpressionVisitor extends BaseTreeVisitor {
@@ -138,12 +171,8 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-        if (isGetClassOnArgument(tree.leftOperand()) || isGetClassOnArgument(tree.rightOperand())) {
-          typeChecked = true;
-        } else if (isExplicitComparison(tree.leftOperand(), tree.rightOperand())) {
-          typeChecked = true;
-        }
+      if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO) && (isGetClassOnArgument(tree.leftOperand()) || isGetClassOnArgument(tree.rightOperand()))) {
+        typeChecked = true;
       } else {
         super.visitBinaryExpression(tree);
       }
@@ -151,32 +180,24 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (EQUALS_MATCHER.matches(tree)) {
-        if (isInvocationOnArgument(tree)) {
+      for (ExpressionTree argument : tree.arguments()) {
+        if (isArgument(argument, parameterSymbol)) {
           typeChecked = true;
-        } else if (isArgument(tree.arguments().get(0), parameterSymbol)) {
-          typeChecked = true;
+          return;
         }
       }
-    }
-
-    private boolean isExplicitComparison(ExpressionTree operand1, ExpressionTree operand2) {
-      return (isArgument(operand1, parameterSymbol) && isThis(operand2)) || (isArgument(operand2, parameterSymbol) && isThis(operand1));
+      super.visitMethodInvocation(tree);
     }
 
     private boolean isGetClassOnArgument(ExpressionTree tree) {
       ExpressionTree expressionTree = removeParenthesis(tree);
-      return expressionTree.is(Tree.Kind.METHOD_INVOCATION) && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
+      return expressionTree.is(Tree.Kind.METHOD_INVOCATION)
+        && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
         && isInvocationOnArgument((MethodInvocationTree) expressionTree);
     }
 
     private boolean isInvocationOnArgument(MethodInvocationTree tree) {
       return tree.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isArgument(((MemberSelectExpressionTree) tree.methodSelect()).expression(), parameterSymbol);
-    }
-
-    private boolean isThis(ExpressionTree tree) {
-      ExpressionTree expressionTree = removeParenthesis(tree);
-      return expressionTree.is(Tree.Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expressionTree).identifierToken().text());
     }
   }
 
