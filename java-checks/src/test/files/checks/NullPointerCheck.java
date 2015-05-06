@@ -258,20 +258,32 @@ class NullPointerTest {
 //    boolean b2 = str != null || str.length() == 0; // Noncompliant
 //  }
 //
-//  public void testDoWhileLoop(boolean condition) {
-//    Object object1 = null, object2 = null, object3 = null;
-//    do {
-//      object1.hashCode(); // False negative
-//      if (condition) {
-//        object2 = new Object();
-//      }
-//      object1 = null;
-//      object3 = new Object();
-//    } while (object1.hashCode()); // Noncompliant
-//    object1.hashCode(); // False negative
-//    object2.hashCode(); // Compliant
-//    object3.hashCode(); // Compliant
-//  }
+  public void testDoWhileLoop(boolean condition) {
+    Object object1 = null, object2 = null, object3 = null;
+    do {
+      object1.hashCode(); // Noncompliant
+      if (condition) {
+        object2 = new Object();
+      }
+      object1 = null;
+      object3 = new Object();
+    } while (object1.hashCode()); // Noncompliant
+    object1.hashCode(); // Noncompliant
+    object2.hashCode(); // Compliant
+    object3.hashCode(); // Compliant
+
+    Object object4=null, object5=new Object();
+    for(int i=0; condition(); i++)
+      if (i == 0) {
+        object4 = new Object();
+        object5=null;
+      } else {
+        //False positive
+        object4.hashCode(); // Noncompliant
+        object5.hashCode(); // Noncompliant
+      }
+  }
+
 //
 //  public void testForLoop() {
 //    Object object = null;
