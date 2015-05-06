@@ -208,18 +208,18 @@ class NullPointerTest {
     }
     argument4.hashCode(); // Noncompliant
   }
-//
-//  public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
-//    int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
-//    argument1.hashCode(); // Compliant
-//    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant
-//    argument2.hashCode(); // Compliant
-//    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant
-//    argument3.hashCode(); // Compliant
-//    int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
-//    argument4.hashCode(); // Compliant
-//  }
-//
+
+  public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
+    int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
+    argument1.hashCode(); // Compliant
+    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant
+    argument2.hashCode(); // Compliant
+    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant
+    argument3.hashCode(); // Compliant
+    int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
+    argument4.hashCode(); // Compliant
+  }
+
   public void testCondition() {
     String var1 = null;
     if (var1.equals("")) { } // Noncompliant

@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -43,6 +44,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Set;
 
@@ -149,6 +151,21 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     }
   }
 
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    scan(tree.condition());
+    ExecutionState thenES = new ExecutionState(executionState);
+    executionState = thenES;
+    evaluateConditionToTrue(tree.condition());
+    scan(tree.trueExpression());
+    ExecutionState elseES = new ExecutionState(thenES.parent);
+    executionState = elseES;
+    evaluateConditionToFalse(tree.condition());
+    scan(tree.falseExpression());
+    elseES.reportIssues();
+    executionState = thenES.parent.overrideBy(thenES.merge(elseES));
+  }
+
   protected void evaluateConditionToTrue(ExpressionTree condition) {
 
   }
@@ -225,6 +242,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.initializer());
     scan(tree.condition());
     scan(tree.update());
+    evaluateConditionToTrue(tree.condition());
     visitLoopStatement(tree.statement());
   }
 
