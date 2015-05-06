@@ -5,15 +5,22 @@ public class MyClass {
 
 
 
+  Lock l1 = new ReentrantLock();
+  Lock l2 = new ReentrantLock();
+  Object a = null;
+
   public void acquireLock() {
     Lock lock = new ReentrantLock();
     lock.lock();  // Noncompliant
+    l1.lock();  // Noncompliant
   }
 
   public void acquireAndReleaseLock() {
     Lock lock = new ReentrantLock();
     lock.lock();  // Compliant
     lock.unlock();
+    l2.lock();
+    l2.unlock();
   }
 
   public void releaseLock() {
