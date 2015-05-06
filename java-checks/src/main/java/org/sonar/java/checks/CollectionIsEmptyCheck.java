@@ -22,14 +22,17 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -45,6 +48,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("2min")
 public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+  private static final MethodInvocationMatcher SIZE_METHOD = getSizeMethodInvocationMatcher();
   private JavaFileScannerContext context;
 
   @Override
@@ -52,6 +57,15 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
     this.context = context;
 
     scan(context.getTree());
+  }
+
+  @Override
+  public void visitClass(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (!tree.symbol().type().isSubtypeOf(JAVA_UTIL_COLLECTION) || !member.is(Tree.Kind.METHOD)) {
+        scan(member);
+      }
+    }
   }
 
   @Override
@@ -72,11 +86,7 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
     if (!tree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
-
-    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-    return methodInvocationTree.arguments().isEmpty() &&
-      methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT) &&
-      "size".equals(((MemberSelectExpressionTree) methodInvocationTree.methodSelect()).identifier().name());
+    return SIZE_METHOD.matches((MethodInvocationTree) tree);
   }
 
   private static boolean isEmptyComparison(BinaryExpressionTree tree) {
@@ -108,6 +118,10 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
   private static boolean isOne(ExpressionTree tree) {
     return tree.is(Kind.INT_LITERAL) &&
       "1".equals(((LiteralTree) tree).value());
+  }
+
+  private static MethodInvocationMatcher getSizeMethodInvocationMatcher() {
+    return MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_UTIL_COLLECTION)).name("size").withNoParameterConstraint();
   }
 
 }

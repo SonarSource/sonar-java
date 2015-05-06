@@ -1,47 +1,82 @@
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+
 class A {
-  private void foo() {
-    myCollection.size() == 0; // Non-Compliant
-    myCollection.size() != 0; // Non-Compliant
-    myCollection.size() > 0; // Non-Compliant
-    myCollection.size() >= 1; // Non-Compliant
-    myCollection.size() < 1; // Non-Compliant
-    myCollection.size() <= 0; // Non-Compliant
+  int[] size = new int[4];
 
-    0 == myCollection.size(); // Non-Compliant
-    0 != myCollection.size(); // Non-Compliant
-    0 < myCollection.size(); // Non-Compliant
-    1 <= myCollection.size(); // Non-Compliant
-    1 > myCollection.size(); // Non-Compliant
-    0 >= myCollection.size(); // Non-Compliant
+  private void foo(Collection myCollection, Collection myCollection2, A foo, ByteArrayOutputStream baot) {
+    boolean b;
+    int i;
+    
+    b = myCollection.size() == 0; // Noncompliant {{Use isEmpty() to check whether the collection is empty or not.}}
+    b = myCollection.size() != 0; // Noncompliant
+    b = myCollection.size() > 0; // Noncompliant
+    b = myCollection.size() >= 1; // Noncompliant
+    b = myCollection.size() < 1; // Noncompliant
+    b = myCollection.size() <= 0; // Noncompliant
 
-    myCollection.size() == +0; // Compliant - corner case should be covered by another rule
+    b = 0 == myCollection.size(); // Noncompliant
+    b = 0 != myCollection.size(); // Noncompliant
+    b = 0 < myCollection.size(); // Noncompliant
+    b = 1 <= myCollection.size(); // Noncompliant
+    b = 1 > myCollection.size(); // Noncompliant
+    b = 0 >= myCollection.size(); // Noncompliant
 
-    myCollection.size(0) == 0; // Compliant
+    b = myCollection.size() == +0; // Compliant - corner case should be covered by another rule
 
-    myCollection.size() == myCollection2.size(); // Compliant
+    b = myCollection.size() == myCollection2.size(); // Compliant
 
-    foo instanceof Object; // Compliant
+    b = foo instanceof Object; // Compliant
 
-    myCollection.size() == 3; // Compliant
-    myCollection.size() < 3; // Compliant
-    myCollection.size() > 3; // Compliant
+    b = myCollection.size() == 3; // Compliant
+    b = myCollection.size() < 3; // Compliant
+    b = myCollection.size() > 3; // Compliant
 
-    0 < 3; // Compliant
-    1 + 1 < 3; // Compliant
+    b = 0 < 3; // Compliant
+    b = 1 + 1 < 3; // Compliant
 
-    myCollection.size < 0; // Compliant
+    b = myCollection.isEmpty();
+    b = !myCollection.isEmpty();
+    b = myCollection.size() == 1;
 
-    myCollection.isEmpty();
-    !myCollection.isEmpty();
-    myCollection.size() == 1;
+    b = 1 + 1 == 0; // Compliant
+    b = foo.size[0] == 0; // Compliant
 
-    1 + 1 == 0; // Compliant
-    foo.size[0] == 0; // Compliant
+    b = size() == 0; // Compliant
+    b = foo.bar() == 0; // Compliant
 
-    size() == 0; // Compliant
-    foo.size() && 0; // Compliant
-    foo.bar() == 0; // Compliant
+    b = foo.col().size() == 0; // Noncompliant
+    
+    b = baot.size() == 0; // Compliant
+    b = foo.size() == 0; // Compliant
+    
+    i = myCollection.size() & 0; // Compliant
+  }
+  
+  private int bar() {
+    return 0;
+  }
 
-    foo.bar().baz().size() == 0; // Noncompliant
+  private Collection col() {
+    return new ArrayList<>();
+  }
+
+  private int size() {
+    return 0;
+  }
+}
+
+class MyCollection<E> extends ArrayList<E> {
+  boolean foo() {
+    return size() == 0; // Compliant
+  }
+  
+  class MyInnerClass {
+    Collection myCollection;
+    
+    boolean bar() {
+      return myCollection.size() == 0; // Noncompliant
+    }
   }
 }
