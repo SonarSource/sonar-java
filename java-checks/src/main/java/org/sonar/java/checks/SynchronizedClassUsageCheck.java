@@ -21,15 +21,16 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,7 +42,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 @Rule(
   key = "S1149",
@@ -62,7 +62,7 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE);
+    return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
@@ -71,43 +71,28 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
       return;
     }
 
-    ClassTree classTree = (ClassTree) tree;
-    TypeTree superClass = classTree.superClass();
-    if (superClass != null && isDeprecatedType(superClass.symbolType())) {
-      reportIssue(classTree, superClass.symbolType());
+    DeprecatedTypeVisitor visitor = new DeprecatedTypeVisitor(this);
+    for (Tree typeTree : ((CompilationUnitTree) tree).types()) {
+      typeTree.accept(visitor);
     }
-
-    DeprecatedTypeVisitor visitor = new DeprecatedTypeVisitor();
-    for (Tree member : classTree.members()) {
-      member.accept(visitor);
-    }
-
-    for (Entry<Tree, Type> usage : visitor.deprecatedUsages.entrySet()) {
-      reportIssue(usage.getKey(), usage.getValue());
-    }
-
   }
 
-  private static boolean isDeprecatedType(Type symbolType) {
-    for (String deprecatedType : REPLACEMENTS.keySet()) {
-      if (symbolType.is(deprecatedType)) {
-        return true;
-      }
+  private static class DeprecatedTypeVisitor extends BaseTreeVisitor {
+
+    private final IssuableSubscriptionVisitor check;
+
+    public DeprecatedTypeVisitor(IssuableSubscriptionVisitor check) {
+      this.check = check;
     }
-    return false;
-  }
-
-  private void reportIssue(Tree tree, Type type) {
-    addIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
-  }
-
-  static class DeprecatedTypeVisitor extends BaseTreeVisitor {
-
-    private Map<Tree, Type> deprecatedUsages = Maps.newHashMap();
 
     @Override
     public void visitClass(ClassTree tree) {
-      // do nothing as inner class will be visited later
+      TypeTree superClass = tree.superClass();
+      if (superClass != null) {
+        reportIssueOnDeprecatedType(tree, superClass.symbolType());
+      }
+
+      scan(tree.members());
     }
 
     @Override
@@ -115,10 +100,7 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
       TypeTree returnTypeTree = tree.returnType();
       if (!isOverriding(tree) || returnTypeTree == null) {
         if (returnTypeTree != null) {
-          Type returnType = returnTypeTree.symbolType();
-          if (isDeprecatedType(returnType)) {
-            deprecatedUsages.put(tree, returnType);
-          }
+          reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
         }
         scan(tree.parameters());
       }
@@ -127,20 +109,32 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitVariable(VariableTree tree) {
-      Type variableType = tree.symbol().type();
       ExpressionTree initializer = tree.initializer();
-      if (isDeprecatedType(variableType)) {
-        deprecatedUsages.put(tree, variableType);
-      } else if (!isNull(initializer) && isDeprecatedType(initializer.symbolType())) {
-        deprecatedUsages.put(initializer, initializer.symbolType());
+      if (!reportIssueOnDeprecatedType(tree.type(), tree.symbol().type()) && initializer != null) {
+        reportIssueOnDeprecatedType(initializer, initializer.symbolType());
       }
     }
 
-    private boolean isNull(ExpressionTree initializer) {
-      return initializer == null || initializer.is(Tree.Kind.NULL_LITERAL);
+    private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
+      if (isDeprecatedType(type)) {
+        check.addIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
+        return true;
+      }
+      return false;
     }
 
-    private boolean isOverriding(MethodTree tree) {
+    private static boolean isDeprecatedType(Type symbolType) {
+      if (symbolType.isClass()) {
+        for (String deprecatedType : REPLACEMENTS.keySet()) {
+          if (symbolType.is(deprecatedType)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    private static boolean isOverriding(MethodTree tree) {
       return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
     }
   }
