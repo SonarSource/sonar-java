@@ -44,9 +44,6 @@ public abstract class LockState extends State {
       if (s.equals(State.UNSET)) {
         return this;
       }
-      if(!(s instanceof LockState)) {
-        throw new IllegalStateException("Merging incompatible states");
-      }
       return s;
     }
   }

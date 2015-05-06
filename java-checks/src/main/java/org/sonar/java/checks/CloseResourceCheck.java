@@ -72,7 +72,9 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
         } else if(issueTree.is(Tree.Kind.NEW_CLASS)) {
           reportedType = ((NewClassTree) issueTree).symbolType();
         }
-        addIssue(issueTree, String.format("Close this \"%s\".", reportedType.name()));
+        if(reportedType != null) {
+          addIssue(issueTree, String.format("Close this \"%s\".", reportedType.name()));
+        }
       }
     }
   }
