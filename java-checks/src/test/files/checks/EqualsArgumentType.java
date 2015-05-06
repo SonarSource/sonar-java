@@ -183,13 +183,10 @@ public class TestMethodCall {
 }
 
 public interface testInterface {
-
   public boolean equals(Object that); // Compliant
-
 }
 
 public class TestClass {
-
   public boolean method(Object that) { // Compliant, different name
     return ((Object) that) == null;
   }
@@ -212,5 +209,4 @@ public class TestClass {
     }
     return false;
   }
-
 }
