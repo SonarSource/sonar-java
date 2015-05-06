@@ -12,10 +12,15 @@ class A {
   Vector<Integer> a;             // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
   StringBuffer a = new StringBuffer(); // Noncompliant {{Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".}}
   java.util.Stack a = new java.util.Stack();         // Noncompliant {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
+  List l = null; // Compliant
+  
+  A(Vector v) { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+    a = v;
+  }
 
   private void f() {
-    System.out.println(Vector.class); // OK
-    a.call(new java.util.Vector()); // OK
+    System.out.println(Vector.class); // Compliant
+    a.call(new java.util.Vector()); // Compliant
     java.util.Vector<Integer> result = null; // Noncompliant
     List result = new java.util.Vector<Integer>(); // Noncompliant
   }
@@ -51,7 +56,7 @@ enum AEnum {
   Vector a() { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
   }
 
-  @Override a(Vector a) { // Compliant
+  @Override Vector a(Vector a) { // Compliant
   }
 }
 
@@ -60,4 +65,7 @@ class B {
   B() {}
   void foo(Stack stack) { // Compliant
   }
+}
+
+class MyVector<T> extends Vector<T> { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
 }
