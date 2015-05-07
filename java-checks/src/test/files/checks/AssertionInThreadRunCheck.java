@@ -29,3 +29,12 @@ class C extends junit.framework.TestCase {
     }
   }
 }
+
+class D extends Thread {
+  
+  @Override
+  public void run() { // Compliant
+    foo();
+  }
+  
+}

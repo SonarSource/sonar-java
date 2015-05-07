@@ -770,13 +770,13 @@ public class Resolve {
 
   public static class JavaSymbolNotFound extends JavaSymbol {
     public JavaSymbolNotFound() {
-      super(JavaSymbol.ABSENT, 0, null, null);
+      super(JavaSymbol.ABSENT, 0, null, Symbols.unknownSymbol);
     }
   }
 
   public static class AmbiguityErrorJavaSymbol extends JavaSymbol {
     public AmbiguityErrorJavaSymbol() {
-      super(JavaSymbol.AMBIGUOUS, 0, null, null);
+      super(JavaSymbol.AMBIGUOUS, 0, null, Symbols.unknownSymbol);
     }
   }
 
