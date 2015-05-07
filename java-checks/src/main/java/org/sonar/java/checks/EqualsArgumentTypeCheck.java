@@ -97,6 +97,11 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
     }
   }
 
+  private static boolean isArgument(ExpressionTree tree, Symbol parameterSymbol) {
+    ExpressionTree expressionTree = removeParenthesis(tree);
+    return expressionTree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expressionTree).symbol().equals(parameterSymbol);
+  }
+
   private static class CastVisitor extends BaseTreeVisitor {
     private final Symbol parameterSymbol;
     boolean hasCast;
@@ -107,17 +112,13 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitTypeCast(TypeCastTree tree) {
-      if (isArgument(tree.expression())) {
+      if (isArgument(tree.expression(), parameterSymbol)) {
         hasCast = true;
       } else {
         super.visitTypeCast(tree);
       }
     }
 
-    private boolean isArgument(ExpressionTree tree) {
-      ExpressionTree expressionTree = removeParenthesis(tree);
-      return expressionTree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expressionTree).symbol().equals(parameterSymbol);
-    }
   }
 
   private static class ExpressionVisitor extends BaseTreeVisitor {
@@ -130,7 +131,7 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitInstanceOf(InstanceOfTree tree) {
-      if (isArgument(tree.expression())) {
+      if (isArgument(tree.expression(), parameterSymbol)) {
         typeChecked = true;
       }
     }
@@ -151,33 +152,26 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (EQUALS_MATCHER.matches(tree)) {
-        if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isArgument(((MemberSelectExpressionTree) tree.methodSelect()).expression())) {
+        if (isInvocationOnArgument(tree)) {
           typeChecked = true;
-        } else if (isArgument(tree.arguments().get(0))) {
+        } else if (isArgument(tree.arguments().get(0), parameterSymbol)) {
           typeChecked = true;
         }
       }
     }
 
-    private boolean isArgument(ExpressionTree tree) {
-      ExpressionTree expressionTree = removeParenthesis(tree);
-      return expressionTree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expressionTree).symbol().equals(parameterSymbol);
-    }
-
     private boolean isExplicitComparison(ExpressionTree operand1, ExpressionTree operand2) {
-      return (isArgument(operand1) && isThis(operand2)) || (isArgument(operand2) && isThis(operand1));
+      return (isArgument(operand1, parameterSymbol) && isThis(operand2)) || (isArgument(operand2, parameterSymbol) && isThis(operand1));
     }
 
     private boolean isGetClassOnArgument(ExpressionTree tree) {
       ExpressionTree expressionTree = removeParenthesis(tree);
-      if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)) {
-        ExpressionTree methodSelect = ((MethodInvocationTree) expressionTree).methodSelect();
-        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-          ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-          return isArgument(expression);
-        }
-      }
-      return false;
+      return expressionTree.is(Tree.Kind.METHOD_INVOCATION) && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
+        && isInvocationOnArgument((MethodInvocationTree) expressionTree);
+    }
+
+    private boolean isInvocationOnArgument(MethodInvocationTree tree) {
+      return tree.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isArgument(((MemberSelectExpressionTree) tree.methodSelect()).expression(), parameterSymbol);
     }
 
     private boolean isThis(ExpressionTree tree) {
