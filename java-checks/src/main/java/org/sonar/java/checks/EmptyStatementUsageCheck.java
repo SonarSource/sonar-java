@@ -19,18 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
   key = "EmptyStatementUsageCheck",
@@ -40,18 +38,15 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")
-public class EmptyStatementUsageCheck extends SquidCheck<LexerlessGrammar> implements JavaCheck {
+public class EmptyStatementUsageCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaPunctuator.SEMI);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.EMPTY_STATEMENT);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.getParent().is(Kind.EMPTY_STATEMENT, Kind.CLASS)) {
-      getContext().createLineViolation(this, "Remove this empty statement.", node);
-    }
+  public void visitNode(Tree tree) {
+    addIssue(tree, "Remove this empty statement.");
   }
-
 }
