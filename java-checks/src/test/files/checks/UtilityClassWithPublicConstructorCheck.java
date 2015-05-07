@@ -87,3 +87,11 @@ class Foo12 { //Non-compliant
     int a;
   }
 }
+
+class Foo13 { // Compliant
+  
+  private Foo13() {
+  }
+  
+  ;
+}
