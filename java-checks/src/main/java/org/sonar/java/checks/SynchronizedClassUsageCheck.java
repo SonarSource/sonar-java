@@ -19,17 +19,18 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.sonar.sslr.api.AstNode;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,7 +40,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import javax.annotation.Nullable;
+import java.util.List;
 import java.util.Map;
 
 @Rule(
@@ -50,7 +51,7 @@ import java.util.Map;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("20min")
-public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
 
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
     .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")
@@ -58,88 +59,83 @@ public class SynchronizedClassUsageCheck extends BaseTreeVisitor implements Java
     .put("java.lang.StringBuffer", "\"StringBuilder\"")
     .put("java.util.Stack", "\"Deque\"")
     .build();
-  private JavaFileScannerContext context;
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
-  public void visitVariable(VariableTree tree) {
-    super.visitVariable(tree);
+  public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
 
-    boolean hasIssueOnDeclaredType = reportIssueIfDeprecatedType(tree.type());
-    if (!hasIssueOnDeclaredType) {
-      ExpressionTree init = tree.initializer();
-      if (init != null && init.is(Tree.Kind.NEW_CLASS)) {
-        reportIssueIfDeprecatedType(tree.initializer());
+    DeprecatedTypeVisitor visitor = new DeprecatedTypeVisitor(this);
+    for (Tree typeTree : ((CompilationUnitTree) tree).types()) {
+      typeTree.accept(visitor);
+    }
+  }
+
+  private static class DeprecatedTypeVisitor extends BaseTreeVisitor {
+
+    private final IssuableSubscriptionVisitor check;
+
+    public DeprecatedTypeVisitor(IssuableSubscriptionVisitor check) {
+      this.check = check;
+    }
+
+    @Override
+    public void visitClass(ClassTree tree) {
+      TypeTree superClass = tree.superClass();
+      if (superClass != null) {
+        reportIssueOnDeprecatedType(tree, superClass.symbolType());
+      }
+
+      scan(tree.members());
+    }
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      TypeTree returnTypeTree = tree.returnType();
+      if (!isOverriding(tree) || returnTypeTree == null) {
+        if (returnTypeTree != null) {
+          reportIssueOnDeprecatedType(returnTypeTree, returnTypeTree.symbolType());
+        }
+        scan(tree.parameters());
+      }
+      scan(tree.block());
+    }
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      ExpressionTree initializer = tree.initializer();
+      if (!reportIssueOnDeprecatedType(tree.type(), tree.symbol().type()) && initializer != null) {
+        reportIssueOnDeprecatedType(initializer, initializer.symbolType());
       }
     }
-  }
 
-  @Override
-  public void visitMethod(MethodTree tree) {
-    scan(tree.modifiers());
-    scan(tree.typeParameters());
-    scan(tree.returnType());
-    scan(tree.defaultValue());
-    scan(tree.block());
-    if (!isOverriding(tree)) {
-      for (VariableTree param : tree.parameters()) {
-        reportIssueIfDeprecatedType(param.type());
-      }
-      reportIssueIfDeprecatedType(tree.returnType());
-    }
-
-  }
-
-  @Override
-  public void visitClass(ClassTree tree) {
-    super.visitClass(tree);
-    for (TypeTree parent : tree.superInterfaces()) {
-      reportIssueIfDeprecatedType(parent);
-    }
-
-  }
-
-  private boolean reportIssueIfDeprecatedType(@Nullable ExpressionTree tree) {
-    if (tree == null) {
-      return false;
-    }
-    return reportIssueIfDeprecatedType(tree.symbolType(), tree);
-  }
-
-  private boolean reportIssueIfDeprecatedType(@Nullable TypeTree tree) {
-    if (tree == null) {
-      return false;
-    }
-    return reportIssueIfDeprecatedType(tree.symbolType(), tree);
-  }
-
-  private boolean reportIssueIfDeprecatedType(org.sonar.plugins.java.api.semantic.Type symbolType, Tree tree) {
-    for (String forbiddenTypeName : REPLACEMENTS.keySet()) {
-      if (symbolType.is(forbiddenTypeName)) {
-        reportIssue(tree, forbiddenTypeName);
+    private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
+      if (isDeprecatedType(type)) {
+        check.addIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
         return true;
       }
+      return false;
     }
-    return false;
-  }
 
-  private void reportIssue(Tree tree, String type) {
-    String simpleTypeName = type.substring(type.lastIndexOf('.') + 1);
-    context.addIssue(tree, this, "Replace the synchronized class \"" + simpleTypeName + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type) + ".");
-  }
-
-  private boolean isOverriding(MethodTree tree) {
-    for (AnnotationTree annotation : tree.modifiers().annotations()) {
-      AstNode node = ((JavaTree) annotation).getAstNode();
-      if (AstNodeTokensMatcher.matches(node, "@Override")) {
-        return true;
+    private static boolean isDeprecatedType(Type symbolType) {
+      if (symbolType.isClass()) {
+        for (String deprecatedType : REPLACEMENTS.keySet()) {
+          if (symbolType.is(deprecatedType)) {
+            return true;
+          }
+        }
       }
+      return false;
     }
-    return false;
+
+    private static boolean isOverriding(MethodTree tree) {
+      return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
+    }
   }
 }
