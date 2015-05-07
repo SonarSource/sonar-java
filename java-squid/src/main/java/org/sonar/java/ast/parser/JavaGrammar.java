@@ -164,8 +164,8 @@ public class JavaGrammar {
           f.newEmptyImport(b.invokeRule(JavaPunctuator.SEMI))));
   }
 
-  public AstNode TYPE_DECLARATION() {
-    return b.<AstNode>nonterminal(JavaLexer.TYPE_DECLARATION)
+  public Tree TYPE_DECLARATION() {
+    return b.<Tree>nonterminal(JavaLexer.TYPE_DECLARATION)
       .is(
         b.firstOf(
           // TODO Unfactor MODIFIERS? It always seems to precede CLASS_DECLARATION()
@@ -176,7 +176,8 @@ public class JavaGrammar {
               ENUM_DECLARATION(),
               INTERFACE_DECLARATION(),
               ANNOTATION_TYPE_DECLARATION())),
-          b.invokeRule(JavaPunctuator.SEMI)));
+          // javac accepts empty statements in type declarations
+          f.newEmptyType(b.invokeRule(JavaPunctuator.SEMI))));
   }
 
   // End of compilation unit
@@ -285,6 +286,7 @@ public class JavaGrammar {
               INTERFACE_DECLARATION(),
               ENUM_DECLARATION())),
           f.newInitializerMember(b.optional(b.invokeRule(JavaKeyword.STATIC)), BLOCK()),
+          // javac accepts empty statements in member declarations
           f.newEmptyMember(b.invokeRule(JavaPunctuator.SEMI))));
   }
 
