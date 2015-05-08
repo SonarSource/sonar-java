@@ -26,7 +26,7 @@ public class NpeVisitor extends DataFlowVisitor {
     for (VariableTree parameter : parameters) {
       super.visitVariable(parameter);
       State state;
-      if (parameter.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+      if (parameter.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull") || parameter.symbol().metadata().isAnnotatedWith("javax.annotation.Nullable")) {
         state = new NPEState.Null(parameter);
       } else {
         state = new NPEState.NotNull(parameter);

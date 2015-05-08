@@ -105,7 +105,7 @@ class NullPointerTest {
   public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) {
     a1.hashCode(); // No issue
     a2.hashCode(); // Noncompliant
-    a3.hashCode(); // False negative
+    a3.hashCode(); // Noncompliant
 
     a1.a.hashCode(); // No issue
     a1.b.hashCode(); // False negative
@@ -362,9 +362,10 @@ class NullPointerTest {
     if(o == null) {
       return;
     }
-    o.hashCode(); // Compliant, constraint is lost
+    //False positive constraint is lost and here o is necessarily not null.
+    o.hashCode(); // Noncompliant
     Object a = o;
-    a.hashCode(); // Compliant
+    a.hashCode(); // Noncompliant
   }
 
   public void testAssignNullableMethod() {
@@ -375,47 +376,50 @@ class NullPointerTest {
     if(object.hashCode()) { } // Noncompliant
   }
 
-//  public void testComplexLoop(@Nullable Object nullableObject) {
-//    Object object1 = null, object11 = null, object12 = null;
-//    for(int i = 0; object11 == null; i += 1) {
-//      object11.hashCode(); // False negative
-//      object12.hashCode(); // Noncompliant
-//      nullableObject.hashCode(); // Noncompliant
-//      if(i == 1) {
-//        object1.hashCode(); // Compliant
-//      } else if(i == 0) {
-//        object1 = new Object();
-//      }
-//      object11 = null;
-//    }
-//    object1.hashCode(); // False negative
-//
-//    Object object2 = null, object21 = null, object22 = null;
-//    int i = 0;
-//    while(object21 == null) {
-//      object21.hashCode(); // False negative
-//      object22.hashCode(); // Noncompliant
-//      nullableObject.hashCode(); // Noncompliant
-//      if(i == 1) {
-//        object2.hashCode(); // Compliant
-//      } else if(i == 0) {
-//        object2 = new Object();
-//      }
-//      object21 = null;
-//    }
-//    object2.hashCode(); // False negative
-//
-//    Object object3 = null;
-//    int i = 0;
-//    do {
-//      if(i == 1) {
-//        object3.hashCode(); // False negative
-//      } else if(i == 0) {
-//        object3 = new Object();
-//      }
-//    } while (condition);
-//    object3.hashCode(); // False negative
-//  }
+  public void testComplexLoop(@Nullable Object nullableObject) {
+    Object object1 = null, object11 = null, object12 = null;
+    for(int i = 0; object11 == null; i += 1) {
+      object11.hashCode(); // Noncompliant
+      object12.hashCode(); // Noncompliant
+      nullableObject.hashCode(); // Noncompliant
+      if(i == 1) {
+        //False Positive
+        object1.hashCode(); // Noncompliant
+      } else if(i == 0) {
+        object1 = new Object();
+      }
+      object11 = null;
+    }
+    object1.hashCode(); // False negative
+
+    Object object2 = null, object21 = null, object22 = null;
+    int i = 0;
+    while(object21 == null) {
+      object21.hashCode(); // Noncompliant
+      object22.hashCode(); // Noncompliant
+      nullableObject.hashCode(); // Noncompliant
+      if(i == 1) {
+        //False Positive
+        object2.hashCode(); // Noncompliant
+      } else if(i == 0) {
+        object2 = new Object();
+      }
+      object21 = null;
+    }
+    object2.hashCode(); // False negative
+
+    Object object3 = null;
+    int i = 0;
+    do {
+      if(i == 1) {
+        //False Positive
+        object3.hashCode(); // Noncompliant
+      } else if(i == 0) {
+        object3 = new Object();
+      }
+    } while (condition);
+    object3.hashCode(); // False negative
+  }
 
   void testComplexSwitch(String str) {
     Object object1 = null, object2 = null, object3 = null, object4 = new Object();
