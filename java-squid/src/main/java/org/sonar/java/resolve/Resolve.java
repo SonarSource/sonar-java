@@ -776,7 +776,7 @@ public class Resolve {
 
   public static class AmbiguityErrorJavaSymbol extends JavaSymbol {
     public AmbiguityErrorJavaSymbol() {
-      super(JavaSymbol.AMBIGUOUS, 0, null, Symbols.unknownSymbol);
+      super(JavaSymbol.AMBIGUOUS, 0, null, null);
     }
   }
 
