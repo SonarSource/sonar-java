@@ -131,7 +131,7 @@ public class TreeFactory {
     AstNode spacing,
     Optional<ExpressionTree> packageDeclaration,
     Optional<List<ImportClauseTree>> importDeclarations,
-    Optional<List<AstNode>> typeDeclarations,
+    Optional<List<Tree>> typeDeclarations,
     AstNode eof) {
 
     List<AstNode> children = Lists.newArrayList();
@@ -162,12 +162,9 @@ public class TreeFactory {
 
     ImmutableList.Builder<Tree> types = ImmutableList.builder();
     if (typeDeclarations.isPresent()) {
-      children.addAll(typeDeclarations.get());
-
-      for (AstNode child : typeDeclarations.get()) {
-        if (!child.is(JavaPunctuator.SEMI)) {
-          types.add((Tree) child);
-        }
+      for (Tree child : typeDeclarations.get()) {
+        children.add((AstNode) child);
+        types.add(child);
       }
     }
 
@@ -225,6 +222,10 @@ public class TreeFactory {
   public ClassTreeImpl newTypeDeclaration(ModifiersTreeImpl modifiers, ClassTreeImpl partial) {
     partial.prependChildren(modifiers);
     return partial.completeModifiers(modifiers);
+  }
+
+  public Tree newEmptyType(AstNode semicolonTokenAstNode) {
+    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
   }
 
   // End of compilation unit
@@ -585,9 +586,8 @@ public class TreeFactory {
       children.toArray(new AstNode[0]));
   }
 
-  // TODO Need a proper strongly typed node for this
   public AstNode newEmptyMember(AstNode semicolonTokenAstNode) {
-    return semicolonTokenAstNode;
+    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
   }
 
   public MethodTreeImpl completeGenericMethodOrConstructorDeclaration(TypeParameterListTreeImpl typeParameters, MethodTreeImpl partial) {

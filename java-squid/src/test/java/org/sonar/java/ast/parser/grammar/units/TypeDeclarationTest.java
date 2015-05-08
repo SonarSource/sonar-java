@@ -38,6 +38,7 @@ public class TypeDeclarationTest {
       .matches("@interface Foo {}")
       .matches("public class Foo {}")
       .matches("public private class Foo {}")
+      // javac accepts empty statements in type declarations
       .matches(";");
   }
 

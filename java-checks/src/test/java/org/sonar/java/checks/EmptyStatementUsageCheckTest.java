@@ -19,31 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EmptyStatementUsageCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyStatementUsageCheck.java"), new EmptyStatementUsageCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2).withMessage("Remove this empty statement.")
-      .next().atLine(3)
-      .next().atLine(7)
-      .next().atLine(8)
-      .next().atLine(11)
-      .next().atLine(12)
-      .next().atLine(13)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/EmptyStatementUsageCheck.java", new EmptyStatementUsageCheck());
   }
-
 }

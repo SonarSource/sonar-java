@@ -76,7 +76,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
       return false;
     }
     for (Tree member : classTree.members()) {
-      if (!isConstructor(member) && !isStatic(member)) {
+      if (!isConstructor(member) && !isStatic(member) && !member.is(Tree.Kind.EMPTY_STATEMENT)) {
         return false;
       }
     }

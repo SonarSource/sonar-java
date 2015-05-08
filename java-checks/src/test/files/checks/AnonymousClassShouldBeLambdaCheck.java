@@ -27,7 +27,7 @@ interface Handler {
 
 class A {
   void toto() {
-    new Handler(){
+    new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
       @Override
       public String handle() {
         return "handled";
@@ -53,7 +53,7 @@ class A {
       }
     }.handle();
 
-    new Handler(){
+    new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
       @Override
       public String handle() {
         class C{
@@ -67,9 +67,25 @@ class A {
         return new C().fun();
       }
     };
+    
+    new Handler(){ // Compliant
+      int myVar;
+      
+      @Override
+      public String handle() {
+        return "";
+      }
+    };
+    
+    new Handler(){ // Noncompliant {{Make this anonymous inner class a lambda}}
+      @Override
+      public String handle() {
+        return "";
+      }; // this empty statement should not be counted!
+    };
 
     new
-    Handler
+    Handler // Noncompliant {{Make this anonymous inner class a lambda}}
     (){
       @Override
       public String handle() {
