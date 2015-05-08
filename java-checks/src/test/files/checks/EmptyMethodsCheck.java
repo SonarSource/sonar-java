@@ -40,6 +40,11 @@ class A {
 
   // Compliant
   private abstract void f();
+  
+  // Noncompliant@+1
+  private void f() {
+    ;
+  }
 
 }
 

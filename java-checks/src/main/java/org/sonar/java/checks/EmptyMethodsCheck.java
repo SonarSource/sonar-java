@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -64,9 +65,21 @@ public class EmptyMethodsCheck extends SubscriptionBaseVisitor {
 
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
-    if (block != null && block.body().isEmpty() && !containsComment(block)) {
+    if (block != null && isEmpty(block) && !containsComment(block)) {
       context.addIssue(methodTree, this, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
     }
+  }
+
+  private boolean isEmpty(BlockTree block) {
+    List<StatementTree> body = block.body();
+    if (!body.isEmpty()) {
+      for (StatementTree statementTree : body) {
+        if (!statementTree.is(Tree.Kind.EMPTY_STATEMENT)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   private static boolean containsComment(BlockTree block) {
