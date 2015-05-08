@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -66,12 +67,25 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   @Override
   public void visitNewClass(NewClassTree tree) {
     super.visitNewClass(tree);
-    if (tree.classBody() != null) {
-      List<Tree> members = tree.classBody().members();
-      if (!useThisIdentifier(tree.classBody()) && !enumConstants.contains(tree.identifier()) && members.size() == 1 && members.get(0).is(Tree.Kind.METHOD)) {
-        context.addIssue(tree.identifier(), this, "Make this anonymous inner class a lambda");
+    ClassTree classBody = tree.classBody();
+    if (classBody != null) {
+      TypeTree identifier = tree.identifier();
+      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && hasOnlyOneMethod(classBody.members())) {
+        context.addIssue(identifier, this, "Make this anonymous inner class a lambda");
       }
     }
+  }
+
+  private boolean hasOnlyOneMethod(List<Tree> members) {
+    int methodCounter = 0;
+    for (Tree tree : members) {
+      if (!tree.is(Tree.Kind.EMPTY_STATEMENT, Tree.Kind.METHOD)) {
+        return false;
+      } else if (tree.is(Tree.Kind.METHOD)) {
+        methodCounter++;
+      }
+    }
+    return methodCounter == 1;
   }
 
   private boolean useThisIdentifier(ClassTree body) {
