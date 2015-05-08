@@ -194,6 +194,17 @@ public class MyClass {
       lock =  new ReentrantLock();
     }
     lock.unlock();
+  }
 
+  void if_try_lock() {
+    Lock lock = new ReentrantLock();
+    //False positive
+    if(lock.tryLock()) { // Noncompliant
+      try {
+
+      } finally {
+        lock.unlock();
+      }
+    }
   }
 }
