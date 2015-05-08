@@ -34,13 +34,13 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = "S2095",
-  name = "Resources should be closed",
-  tags = {"bug", "cert", "cwe", "denial-of-service", "leak", "security"},
+  key = "S2259",
+  name = "Null pointers should not be dereferenced",
+  tags = {"bug", "cert", "cwe", "owasp-a1", "owasp-a2", "owasp-a6", "security"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@SqaleConstantRemediation("10min")
 public class NullPointerDereferenceCheck extends SubscriptionBaseVisitor {
 
   @Override
