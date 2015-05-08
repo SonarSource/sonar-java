@@ -28,6 +28,34 @@ public class TestClassInstanceof3 {
   }
 }
 
+public class TestClassConditional1 {
+  @Override
+  public boolean equals(Object that) { // Noncompliant
+    return condition ? (Object) that == null : false;
+  }
+}
+
+public class TestClassConditional2 {
+  @Override
+  public boolean equals(Object that) { // Compliant
+    return that instanceof Object ? (Object) that == null : false;
+  }
+}
+
+public class TestClassLogical1 {
+  @Override
+  public boolean equals(Object that) { // Noncompliant
+    return condition && (Object) that == null;
+  }
+}
+
+public class TestClassLogical2 {
+  @Override
+  public boolean equals(Object that) { // Compliant
+    return that instanceof Object && (Object) that == null;
+  }
+}
+
 public class TestClassGetClassEqual {
   @Override
   public boolean equals(Object that) { // Compliant
@@ -38,17 +66,7 @@ public class TestClassGetClassEqual {
   }
 }
 
-public class TestClassGetClassNotEqual {
-  @Override
-  public boolean equals(Object that) { // Compliant
-    if (that.getClass() != Object.class) {
-      return ((Object) that) == null;
-    }
-    return true;
-  }
-}
-
-public class TestClassGetClassEqual2 {
+public class TestClassGetClassEqual1 {
   @Override
   public boolean equals(Object that) { // Compliant
     if ((Object.class) == (that.getClass())) {
@@ -58,10 +76,22 @@ public class TestClassGetClassEqual2 {
   }
 }
 
+public class TestClassGetClassEqual2 {
+  @Override
+  public boolean equals(Object that) { // Compliant
+    // call to any method in this or super can contain a typecast
+    if ((Object.class) == (this.getClass())) {
+      return ((Object) that) == null;
+    }
+    return false;
+  }
+}
+
 public class TestClassGetClassEqual3 {
   @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if (0 == 0) {
+  public boolean equals(Object that) { // Compliant
+    // call to any method in this or super can contain a typecast
+    if ((Object.class) == (getClass())) {
       return ((Object) that) == null;
     }
     return false;
@@ -71,7 +101,7 @@ public class TestClassGetClassEqual3 {
 public class TestClassGetClassEqual4 {
   @Override
   public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if (getClass() == Object.class) {
+    if (0 == 0) {
       return ((Object) that) == null;
     }
     return false;
@@ -88,95 +118,77 @@ public class TestClassGetClassEqual5 {
   }
 }
 
-public class TestClassAssign {
+public class TestClassEqualsCall3 {
   @Override
-  public boolean equals(Object that) { // Compliant
-    boolean result;
-    result = that.getClass() == Object.class && true;
-    return ((Object) that) == null;
-  }
-}
-
-public class TestClassExplicitComparison1 {
-  @Override
-  public boolean equals(Object that) { // Compliant
-    if ((this) == that) {
-      return ((Object) that) == null;
-    }
-  }
-}
-
-public class TestClassExplicitComparison2 {
-  @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if ((that) == that) {
-      return ((Object) that) == null;
-    }
-  }
-}
-
-public class TestClassExplicitComparison3 {
-  @Override
-  public boolean equals(Object that) { // Compliant
-    if (that == this) {
-      return ((Object) that) == null;
-    }
-  }
-}
-
-public class TestClassExplicitComparison5 {
-  @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if (that == "") {
-      return ((Object) that) == null;
-    }
-  }
-}
-
-public class TestClassEqualsCall1 {
-  @Override
-  public boolean equals(Object that) { // Compliant
-    if (this.equals(that)) {
-      return ((Object) that) == null;
-    }
-  }
-}
-
-public class TestClassEqualsCall2 {
-  @Override
-  public boolean equals(Object that) { // Compliant
+  public boolean equals(Object that) { // Noncompliant
     if (that.equals(this)) {
       return ((Object) that) == null;
     }
   }
 }
 
-public class TestClassEqualsCall3 {
+public class TestMethodCall1 {
+  public boolean method(Object that) {
+    return that instanceof TestMethodCall;
+  }
+
   @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if (this.equals(this)) {
+  public boolean equals(Object that) { // Noncompliant
+    if (method(that)) {
+    }
+    return ((Object) that) == null; // not guarded by an if
+  }
+}
+
+public class TestMethodCall2 {
+  public boolean method(Object that) {
+    return that instanceof TestMethodCall;
+  }
+
+  @Override
+  public boolean equals(Object that) { // Compliant, implicit call of a method in this
+    if (method(that)) {
       return ((Object) that) == null;
     }
   }
 }
 
-public class TestClassEqualsCall4 {
+public class TestMethodCall3 {
+  public boolean method(Object that) {
+    return that instanceof TestMethodCall;
+  }
+
   @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if (equals(this)) {
+  public boolean equals(Object that) { // Compliant, explicit call of a method in super
+    if (super.method(that)) {
       return ((Object) that) == null;
     }
   }
 }
 
-public class TestMethodCall {
-  public boolean method() {
-    return true;
+public class TestMethodCall4 {
+  public boolean method(Object that) {
+    return that instanceof TestMethodCall;
   }
 
   @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
-    if (method()) {
+  public boolean equals(Object that) { // Compliant, explicit call of a method in this
+    if (this.method(that)) {
+      return ((Object) that) == null;
+    }
+  }
+}
+
+public class TestMethodCall5 {
+  Object[] objects;
+
+  public boolean method(Object that) {
+    return that instanceof TestMethodCall;
+  }
+
+  @Override
+  public boolean equals(Object that) { // Noncompliant
+    if (objects[0].hashCode()) {
       return ((Object) that) == null;
     }
   }
