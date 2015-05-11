@@ -1,6 +1,9 @@
 @SomeAnnotation(name = value)
 package javax.annotation;
 
+import java.lang.IllegalStateException;
+import java.lang.Object;
+
 @interface CheckForNull {}
 
 @interface Nonnull {}
@@ -314,6 +317,7 @@ class NullPointerTest {
       head.hashCode(); // Noncompliant
       value = null;
       value.hashCode(); // Noncompliant
+      entry.hashCode();
     }
     head.hashCode(); // Noncompliant
     value.hashCode(); // Noncompliant
@@ -481,6 +485,28 @@ class NullPointerTest {
   static int a;
   static {
     a = 0;
+  }
+
+  void local_var_in_finally_within_loop() {
+    while (true) {
+      try {
+
+      }finally {
+        Object a = new Object();
+      }
+    }
+  }
+  void throw_statement() {
+    Object a = new Object();
+    if(a == null)
+      throw new IllegalStateException("Error");
+    if(a.hashCode() > 0) {
+
+    }
+    //unknown symbol
+    if(plopo == null)
+      throw new IllegalStateException("Error");
+    plopo.hashCode();
   }
 
 }

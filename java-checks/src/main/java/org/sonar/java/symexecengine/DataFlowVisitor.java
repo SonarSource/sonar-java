@@ -255,7 +255,9 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.initializer());
     scan(tree.condition());
     scan(tree.update());
-    evaluateConditionToTrue(tree.condition());
+    if(tree.condition() != null) {
+      evaluateConditionToTrue(tree.condition());
+    }
     visitLoopStatement(tree.statement());
   }
 

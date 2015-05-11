@@ -62,6 +62,9 @@ public class ExecutionState {
 
   public void defineSymbol(Symbol symbol) {
     definedInState.add(symbol);
+    //Clear values (we are defining the same symbol a second time, (local variables in loops))
+    reachableValues.get(symbol).clear();
+    unreachableValues.get(symbol).clear();
   }
 
   public ExecutionState merge(ExecutionState executionState) {

@@ -24,12 +24,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.symexecengine.DataFlowVisitor;
+import org.sonar.java.symexecengine.ExecutionState;
 import org.sonar.java.symexecengine.State;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -60,7 +62,8 @@ public class NpeVisitor extends DataFlowVisitor {
 
   @Override
   protected boolean isSymbolRelevant(Symbol symbol) {
-    return true;
+    //ignore unknown symbol and fields.
+    return !symbol.isUnknown() && !symbol.owner().isTypeSymbol();
   }
 
   @Override
@@ -133,6 +136,21 @@ public class NpeVisitor extends DataFlowVisitor {
       executionState.reportIssue(tree.expression());
     }
     super.visitSwitchStatement(tree);
+  }
+
+  @Override
+  public void visitForEachStatement(ForEachStatement tree) {
+    scan(tree.expression());
+    executionState = new ExecutionState(executionState);
+    //Scan twice the tree in loop to create multiple value if required
+    VariableTree variable = tree.variable();
+    scan(variable);
+    executionState.markValueAs(variable.symbol(), new NPEState.NotNull(variable));
+    scan(tree.statement());
+    scan(variable);
+    executionState.markValueAs(variable.symbol(), new NPEState.NotNull(variable));
+    scan(tree.statement());
+    executionState = executionState.restoreParent();
   }
 
   @Override
