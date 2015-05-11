@@ -1271,6 +1271,8 @@ public class JavaTreeModelTest {
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     assertThat(((IdentifierTree) tree.methodSelect()).name()).isEqualTo("identifier");
     assertThat(tree.arguments()).hasSize(2);
+    assertThat(tree.closeParenToken()).isNotNull();
+    assertThat(tree.openParenToken()).isNotNull();
 
     tree = (MethodInvocationTree) p.parse("class T { void m() { <T>identifier(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();

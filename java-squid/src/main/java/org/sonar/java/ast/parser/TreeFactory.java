@@ -2023,7 +2023,15 @@ public class TreeFactory {
     ExpressionTree result = identifier;
 
     if (arguments.isPresent()) {
-      result = new MethodInvocationTreeImpl(identifier, typeArguments.orNull(), arguments.get(), identifier, arguments.get());
+      ArgumentListTreeImpl argumentListTree = arguments.get();
+      result = new MethodInvocationTreeImpl(
+        identifier,
+        argumentListTree.openParenToken(),
+        argumentListTree.closeParenToken(),
+        typeArguments.orNull(),
+        argumentListTree,
+        identifier,
+        argumentListTree);
     }
 
     return result;
@@ -2078,9 +2086,16 @@ public class TreeFactory {
 
           List<AstNode> children = Lists.newArrayList();
           children.add(memberSelect);
-          children.add((ArgumentListTreeImpl) methodInvocation.arguments());
+          ArgumentListTreeImpl argumentListTree = (ArgumentListTreeImpl) methodInvocation.arguments();
+          children.add(argumentListTree);
 
-          result = new MethodInvocationTreeImpl(memberSelect, methodInvocation.typeArguments(), methodInvocation.arguments(), children.toArray(new AstNode[0]));
+          result = new MethodInvocationTreeImpl(
+            memberSelect,
+            argumentListTree.openParenToken(),
+            argumentListTree.closeParenToken(),
+            methodInvocation.typeArguments(),
+            methodInvocation.arguments(),
+            children.toArray(new AstNode[0]));
         } else if (selector.is(Kind.NEW_CLASS)) {
           NewClassTreeImpl newClass = (NewClassTreeImpl) selector;
           newClass.prependChildren((AstNode) result);
