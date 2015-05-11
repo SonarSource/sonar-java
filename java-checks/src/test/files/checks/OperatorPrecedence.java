@@ -8,7 +8,7 @@ public class Class {
     int a;
     ;
     // should raise an issue in initializer
-    int b = 1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+    int b = 1 & 2 | 3 & 4; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
 
     // should raise an issue in operand of unary / parenthesized expression
     // nested kind should not leak outside
