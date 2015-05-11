@@ -173,25 +173,19 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (tree.methodSelect().is(Tree.Kind.IDENTIFIER) || isSuperOrThis(((MemberSelectExpressionTree) tree.methodSelect()).expression())) {
-        typeChecked = true;
-      } else {
-        super.visitMethodInvocation(tree);
+      for (ExpressionTree argument : tree.arguments()) {
+        if (isArgument(argument, parameterSymbol)) {
+          typeChecked = true;
+          return;
+        }
       }
-    }
-
-    private boolean isSuperOrThis(ExpressionTree tree) {
-      ExpressionTree expressionTree = removeParenthesis(tree);
-      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        String text = ((IdentifierTree) expressionTree).identifierToken().text();
-        return "super".equals(text) || "this".equals(text);
-      }
-      return false;
+      super.visitMethodInvocation(tree);
     }
 
     private boolean isGetClassOnArgument(ExpressionTree tree) {
       ExpressionTree expressionTree = removeParenthesis(tree);
-      return expressionTree.is(Tree.Kind.METHOD_INVOCATION) && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
+      return expressionTree.is(Tree.Kind.METHOD_INVOCATION)
+        && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
         && isInvocationOnArgument((MethodInvocationTree) expressionTree);
     }
 
