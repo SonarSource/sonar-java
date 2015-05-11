@@ -412,6 +412,7 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(0).modifiers().annotations()).hasSize(1);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
+    assertThat(tree.parameters().get(1).endToken()).isNull();
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
@@ -425,6 +426,7 @@ public class JavaTreeModelTest {
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
+    assertThat(tree.parameters().get(0).endToken()).isNull();
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
@@ -737,6 +739,8 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("a");
     assertThat(tree.initializer()).isNotNull();
+    assertThat(tree.endToken()).isNotNull();
+    assertThat(tree.endToken().text()).isEqualTo(",");
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -744,6 +748,8 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("b");
     assertThat(tree.initializer()).isNull();
+    assertThat(tree.endToken()).isNotNull();
+    assertThat(tree.endToken().text()).isEqualTo(";");
 
     // TODO Test annotation
 
@@ -753,6 +759,8 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("c");
     assertThat(tree.initializer()).isNotNull();
+    assertThat(tree.endToken()).isNotNull();
+    assertThat(tree.endToken().text()).isEqualTo(";");
   }
 
   /**

@@ -893,6 +893,9 @@ public class TreeFactory {
       partial.add(0, variable);
       partial.prependChildren(variable, comma);
 
+      // store the comma as endToken for the variable
+      variable.setEndToken(InternalSyntaxToken.create(comma));
+
       return partial;
     } else {
       return new FormalParametersListTreeImpl(variable);
@@ -940,6 +943,9 @@ public class TreeFactory {
       variable.completeModifiersAndType(modifiers, type);
     }
 
+    // store the semicolon as endToken for the last variable
+    variables.get(variables.size() - 1).setEndToken(InternalSyntaxToken.create(semicolonTokenAstNode));
+
     return variables;
   }
 
@@ -951,10 +957,18 @@ public class TreeFactory {
     children.add(variable);
 
     if (rests.isPresent()) {
+      VariableTreeImpl previousVariable = variable;
       for (Tuple<AstNode, VariableTreeImpl> rest : rests.get()) {
-        variables.add(rest.second());
-        children.add(rest.first());
-        children.add(rest.second());
+        VariableTreeImpl newVariable = rest.second();
+        InternalSyntaxToken separator = InternalSyntaxToken.create(rest.first());
+
+        variables.add(newVariable);
+        children.add(separator);
+        children.add(newVariable);
+
+        // store the separator
+        previousVariable.setEndToken(separator);
+        previousVariable = newVariable;
       }
     }
 
