@@ -44,12 +44,18 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   @Nullable
   private TypeArguments typeArguments;
   private Symbol symbol = Symbols.unknownSymbol;
+  private SyntaxToken openParenToken;
+  private SyntaxToken closeParenToken;
 
-  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, List<ExpressionTree> arguments, AstNode... children) {
+  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments,
+    SyntaxToken openParenToken, List<ExpressionTree> arguments, SyntaxToken closeParenToken,
+    AstNode... children) {
     super(Kind.METHOD_INVOCATION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
     this.typeArguments = typeArguments;
     this.arguments = Preconditions.checkNotNull(arguments);
+    this.openParenToken = openParenToken;
+    this.closeParenToken = closeParenToken;
 
     for (AstNode child : children) {
       addChild(child);
@@ -73,7 +79,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   @Override
   public SyntaxToken openParenToken() {
-    throw new UnsupportedOperationException();
+    return openParenToken;
   }
 
   @Override
@@ -83,7 +89,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
 
   @Override
   public SyntaxToken closeParenToken() {
-    throw new UnsupportedOperationException();
+    return closeParenToken;
   }
 
   @Override

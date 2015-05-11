@@ -49,6 +49,8 @@ public class MethodInvocationTreeImplTest {
     StatementTree statementTree = ((MethodTree) classTree.members().get(1)).block().body().get(0);
     MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree)statementTree).expression();
     Assertions.assertThat(mit.symbol()).isSameAs(declaration);
+    Assertions.assertThat(mit.openParenToken()).isNotNull();
+    Assertions.assertThat(mit.closeParenToken()).isNotNull();
   }
 
   private CompilationUnitTree createTree(String code) {
