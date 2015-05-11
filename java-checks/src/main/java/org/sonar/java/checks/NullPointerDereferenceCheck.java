@@ -20,11 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.npe.NpeVisitor;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -60,9 +65,32 @@ public class NullPointerDereferenceCheck extends SubscriptionBaseVisitor {
       NpeVisitor visitor = new NpeVisitor(methodTree.parameters());
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
-        addIssue(issueTree, "NPE!");
+        String name = getNameFrom(issueTree);
+        String methodName = visitor.isTreeMethodParam(issueTree);
+        if (StringUtils.isNotBlank(methodName)) {
+          if (issueTree.is(Tree.Kind.NULL_LITERAL)) {
+            addIssue(issueTree, "method '" + methodName + "' does not accept nullable argument");
+          } else {
+            addIssue(issueTree, "'" + name + "' is nullable here and method '" + methodName + "' does not accept nullable argument");
+          }
+        } else {
+          addIssue(issueTree, "NullPointerException might be thrown as '" + name + "' is nullable here");
+        }
       }
     }
+  }
+
+  private String getNameFrom(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) tree).symbol().name();
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return ((MethodInvocationTree) tree).symbol().name();
+    } else if (tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      return getNameFrom(((ArrayAccessExpressionTree) tree).expression());
+    } else if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+      return getNameFrom(((MemberSelectExpressionTree) tree).identifier());
+    }
+    return "";
   }
 
 }

@@ -21,6 +21,7 @@ package org.sonar.java.npe;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.java.symexecengine.State;
@@ -35,11 +36,14 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.List;
+import java.util.Map;
 
 public class NpeVisitor extends DataFlowVisitor {
+
+  private Map<Tree, String> parameterErrorsByMethodName = Maps.newHashMap();
 
   public NpeVisitor(List<VariableTree> parameters) {
     for (VariableTree parameter : parameters) {
@@ -101,7 +105,7 @@ public class NpeVisitor extends DataFlowVisitor {
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     super.visitMemberSelectExpression(tree);
     if (isNullTree(tree.expression())) {
-      executionState.reportIssue(tree);
+      executionState.reportIssue(tree.expression());
     }
   }
 
@@ -116,6 +120,7 @@ public class NpeVisitor extends DataFlowVisitor {
           if (parameters.get(i < parameters.size() ? i : parameters.size() - 1).metadata().isAnnotatedWith("javax.annotation.Nonnull")
             && isNullTree(tree.arguments().get(i))) {
             executionState.reportIssue(tree.arguments().get(i));
+            parameterErrorsByMethodName.put(tree.arguments().get(i), methodSymbol.name());
           }
         }
       }
@@ -175,6 +180,11 @@ public class NpeVisitor extends DataFlowVisitor {
         executionState.markValueAs(symbol, state);
       }
     }
+  }
+
+  @CheckForNull
+  public String isTreeMethodParam(Tree issueTree) {
+    return parameterErrorsByMethodName.get(issueTree);
   }
 
   private abstract static class NPEState extends State {
