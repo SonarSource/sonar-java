@@ -46,6 +46,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -103,11 +104,14 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private JavaFileScannerContext context;
   private Deque<Tree.Kind> stack = new LinkedList<>();
+  private Set<Integer> reportedLines = new HashSet<Integer>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    reportedLines.clear();
     scan(context.getTree());
+    reportedLines.clear();
   }
 
   @Override
@@ -136,7 +140,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind peek = stack.peek();
     Tree.Kind kind = getKind(tree);
     if (requiresParenthesis(peek, kind)) {
-      raiseIssue(tree);
+      raiseIssue(tree.operatorToken().line(), tree);
     }
     stack.push(kind);
     super.visitBinaryExpression(tree);
@@ -152,7 +156,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     super.visitIfStatement(tree);
     ExpressionTree condition = tree.condition();
     if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(getKind(((AssignmentExpressionTree) condition).expression()))) {
-      raiseIssue(tree);
+      raiseIssue(((AssignmentExpressionTree) condition).operatorToken().line(), tree);
     }
   }
 
@@ -188,8 +192,10 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.pop();
   }
 
-  private void raiseIssue(Tree tree) {
-    context.addIssue(tree, this, "Add parentheses to make the operator precedence explicit.");
+  private void raiseIssue(int line, Tree tree) {
+    if (reportedLines.add(line)) {
+      context.addIssue(tree, this, "Add parentheses to make the operator precedence explicit.");
+    }
   }
 
   private Tree.Kind getKind(Tree tree) {
