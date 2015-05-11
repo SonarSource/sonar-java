@@ -27,7 +27,7 @@ import com.google.common.annotations.Beta;
  * JLS 14.12
  *
  * <pre>
- *   while ({@link #condition()} {@link #statement}
+ *   while ({@link #condition()}) {@link #statement}
  * </pre>
  *
  * @since Java 1.3
