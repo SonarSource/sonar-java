@@ -176,7 +176,6 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
       evaluateConditionToFalse(tree.leftOperand());
     }
     scan(tree.rightOperand());
-
   }
 
   protected void evaluateConditionToTrue(ExpressionTree condition) {
@@ -241,7 +240,14 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     scan(tree.condition());
-    visitLoopStatement(tree.statement());
+    StatementTree statement = tree.statement();
+    executionState = new ExecutionState(executionState);
+    //Scan twice the tree in loop to create multiple value if required
+    evaluateConditionToTrue(tree.condition());
+    scan(statement);
+    evaluateConditionToTrue(tree.condition());
+    scan(statement);
+    executionState = executionState.restoreParent();
   }
 
   @Override

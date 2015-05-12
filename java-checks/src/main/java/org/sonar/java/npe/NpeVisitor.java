@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -155,7 +156,13 @@ public class NpeVisitor extends DataFlowVisitor {
 
   @Override
   protected void evaluateConditionToTrue(ExpressionTree condition) {
-    if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+    if(condition.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      evaluateConditionToTrue(((ParenthesizedTree) condition).expression());
+    } else if (condition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
+      BinaryExpressionTree binary = (BinaryExpressionTree) condition;
+      evaluateConditionToTrue(binary.leftOperand());
+      evaluateConditionToTrue(binary.rightOperand());
+    } else if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree equal = (BinaryExpressionTree) condition;
       Symbol symbol = null;
       if (isNullTree(equal.leftOperand())) {
@@ -179,7 +186,13 @@ public class NpeVisitor extends DataFlowVisitor {
 
   @Override
   protected void evaluateConditionToFalse(ExpressionTree condition) {
-    if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
+    if(condition.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      evaluateConditionToFalse(((ParenthesizedTree) condition).expression());
+    } else if(condition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
+      BinaryExpressionTree binary = (BinaryExpressionTree) condition;
+      evaluateConditionToFalse(binary.leftOperand());
+      evaluateConditionToFalse(binary.rightOperand());
+    } else if (condition.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
       BinaryExpressionTree equal = (BinaryExpressionTree) condition;
       Symbol symbol = null;
       if (isNullTree(equal.leftOperand())) {

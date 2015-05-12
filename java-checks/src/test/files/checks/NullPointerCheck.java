@@ -142,18 +142,18 @@ class NullPointerTest {
       notnullableMethod(), // No issue
       notnullableMethod()); // No issue
     method1(checkForNullMethod(), // No issue
-      checkForNullMethod(), // No issue
-      checkForNullMethod()); // No issue
+        checkForNullMethod(), // No issue
+        checkForNullMethod()); // No issue
     method2(checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
-      checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
-      checkForNullMethod()); // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+        checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+        checkForNullMethod()); // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
 
     method1(null, // No issue
-      null, // No issue
-      null); // No issue
+        null, // No issue
+        null); // No issue
     method2(null, // Noncompliant {{method 'method2' does not accept nullable argument}}
-      null, // Noncompliant {{method 'method2' does not accept nullable argument}}
-      null); // Noncompliant {{method 'method2' does not accept nullable argument}}
+        null, // Noncompliant {{method 'method2' does not accept nullable argument}}
+        null); // Noncompliant {{method 'method2' does not accept nullable argument}}
   }
 
   public void testIf(Object argument1, Object argument2, Object argument3) {
@@ -333,6 +333,46 @@ class NullPointerTest {
     object1.hashCode(); // Noncompliant
     object2.hashCode(); // Noncompliant
     object3.hashCode(); // Noncompliant
+
+    while (object3 != null) {
+      object3.hashCode(); // Compliant
+    }
+    object3.hashCode();
+
+
+    Object pos = new Object();
+    while (null != pos) {
+      pos.hashCode();
+    }
+  }
+
+  class Node {
+    Node getFirstChild(){return null;}
+    Node getNextSibling(){return null;}
+    Node getParentNode(){return null;}
+  }
+  public void traverse(Node pos) {
+    Node top = pos;
+    while (null != pos) {
+      startNode(pos);
+      Node nextNode = pos.getFirstChild();
+      while (null == nextNode) {
+        endNode(pos);
+        if (top.equals(pos))
+          break;
+        nextNode = pos.getNextSibling();
+        if (null == nextNode) {
+          pos = pos.getParentNode();
+          if ((null == pos) || (top.equals(pos))) {
+            if (null != pos)
+              endNode(pos);
+            nextNode = null;
+            break;
+          }
+        }
+      }
+      pos = nextNode;
+    }
   }
 
   public void testHoistedLoop(boolean condition) {
@@ -509,4 +549,20 @@ class NullPointerTest {
     plopo.hashCode();
   }
 
+  void foo() {
+    Object context;
+    if(1 > 0 && context != null) context.hashCode();
+    if(1 > 0 && 1>2 && context != null) context.hashCode();
+    if(1 > 0 && context != null && 1>2 ) context.hashCode();
+    if(1 > 0 || context != null) context.hashCode();
+    if(context != null || 1 > 0) context.hashCode();
+    Object a;
+    if((a != null) && (1 > 2 || a.hashCode()>0)) a.hashCode();
+
+    if(context != null && 1 > 2) {
+
+    } else {
+      context.hashCode(); // Noncompliant
+    }
+  }
 }
