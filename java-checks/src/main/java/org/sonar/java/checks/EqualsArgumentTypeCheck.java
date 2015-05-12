@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -53,6 +54,10 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
+
+  private static final MethodInvocationMatcher EQUALS_MATCHER = MethodInvocationMatcher.create()
+    .name("equals")
+    .addParameter(TypeCriteria.anyType());
 
   private static final MethodInvocationMatcher GETCLASS_MATCHER = MethodInvocationMatcher.create()
     .name("getClass");
@@ -180,6 +185,14 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
+      if (EQUALS_MATCHER.matches(tree)) {
+        ExpressionTree methodSelect = tree.methodSelect();
+        if ((methodSelect.is(Tree.Kind.MEMBER_SELECT) && isGetClassOnArgument(((MemberSelectExpressionTree) methodSelect).expression()))
+          || isGetClassOnArgument(tree.arguments().get(0))) {
+          typeChecked = true;
+          return;
+        }
+      }
       for (ExpressionTree argument : tree.arguments()) {
         if (isArgument(argument, parameterSymbol)) {
           typeChecked = true;
