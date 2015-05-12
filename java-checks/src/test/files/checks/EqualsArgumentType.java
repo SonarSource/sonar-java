@@ -116,6 +116,24 @@ public class TestClassGetClassEqual5 {
   }
 }
 
+public class TestClassGetClassEquals6 {
+  @Override
+  public boolean equals(Object that) { // Compliant
+    if(that.getClass().equals(Object.class)) {
+    }
+    (Object) that;
+  }
+}
+
+public class TestClassGetClassEquals7 {
+  @Override
+  public boolean equals(Object that) { // Compliant
+    if(Object.class.equals(that.getClass())) {
+    }
+    (Object) that;
+  }
+}
+
 public class TestMethodCall1 {
   public boolean method(Object that) {
     return that instanceof TestMethodCall;
