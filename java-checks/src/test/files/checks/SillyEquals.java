@@ -1,14 +1,16 @@
+import java.util.List;
+
 public class MyClass {
 
   public interface Interface {
   }
 
   Object object;
-  Object[] objects;
+  Object[] arrayOfObjects;
   Integer integer;
-  Integer[] integers;
+  Integer[] arrayOfIntegers;
   String string;
-  String[] strings;
+  String[] arrayOfStrings;
   Comparable comparable;
   java.io.File file;
   java.io.Serializable serializable;
@@ -17,19 +19,19 @@ public class MyClass {
 
   public void method() {
     // class vs array
-    object.equals(objects); // Compliant
-    objects.equals(object); // Compliant
-    integer.equals(objects); // Noncompliant {{Remove this call to "equals"; comparisons between a type and an array always return false.}}
-    objects.equals(integer); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
-    integers.equals(strings); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated arrays always return false.}}
+    object.equals(arrayOfObjects); // Compliant
+    arrayOfObjects.equals(object); // Compliant
+    integer.equals(arrayOfObjects); // Noncompliant {{Remove this call to "equals"; comparisons between a type and an array always return false.}}
+    arrayOfObjects.equals(integer); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
+    arrayOfIntegers.equals(arrayOfStrings); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated arrays always return false.}}
     object.equals(1); // Compliant
-    objects.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
+    arrayOfObjects.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
 
     // arrays vs arrays
-    objects = integers;
-    objects.equals(integers); // Noncompliant {{Use "Arrays.equals(array1, array2)" or the "==" operator instead of using the "Object.equals(Object obj)" method.}}
-    integers.equals(objects); // Noncompliant {{Use "Arrays.equals(array1, array2)" or the "==" operator instead of using the "Object.equals(Object obj)" method.}}
-    integers.equals(strings); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated arrays always return false.}}
+    arrayOfObjects = arrayOfIntegers;
+    arrayOfObjects.equals(arrayOfIntegers); // Noncompliant {{Use "Arrays.equals(array1, array2)" or the "==" operator instead of using the "Object.equals(Object obj)" method.}}
+    arrayOfIntegers.equals(arrayOfObjects); // Noncompliant {{Use "Arrays.equals(array1, array2)" or the "==" operator instead of using the "Object.equals(Object obj)" method.}}
+    arrayOfIntegers.equals(arrayOfStrings); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated arrays always return false.}}
 
     // class vs class
     object.equals(my); // Compliant, related
@@ -55,12 +57,26 @@ public class MyClass {
 
     equals(this); // Compliant
     equals(object); // Compliant
-    equals(objects); // False negative, method equals is not overriden
+    equals(arrayOfObjects); // False negative, method equals is not overriden
 
     object.equals(null); // Noncompliant {{Remove this call to "equals"; comparisons against null always return false; consider using '== null' to check for nullity.}}
 
     Class<?> that = Object.class;
-    ((Class<?>) getClass()).equals(that);
+    ((Class<?>) getClass()).equals(that); // Compliant
+
+    Class<Object> that = Object.class;
+    getClass().equals(that); // False negative, if it is a Class<Object> then it cannot be a Class<MyClass>
+
+    List<String> listOfStrings;
+    List<java.io.File> listOfFiles;
+    listOfStrings.equals(listOfFiles); // False negative, since String and File are not related
+
+    List<Object> listOfObjects;
+    listOfObjects.equals(listOfStrings); // False negative, compliant if listOfObjects only contains strings, but it is not type-safe
+    listOfStrings.equals(listOfObjects); // False negative, compliant if listOfObjects only contains strings, but it is not type-safe
+
+    List<?> listOfObjectsExtended = listOfStrings;
+    listOfObjectsExtended.equals(listOfStrings); // Compliant
 
     // Compliant
     object.equals();

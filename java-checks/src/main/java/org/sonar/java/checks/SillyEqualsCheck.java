@@ -24,13 +24,13 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -45,64 +45,60 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class SillyEqualsCheck extends SubscriptionBaseVisitor {
+public class SillyEqualsCheck extends AbstractMethodDetection {
 
   private static final String JAVA_LANG_OBJECT = "java.lang.Object";
 
   private static final String MESSAGE = "Remove this call to \"equals\"; comparisons between unrelated types always return false.";
 
-  private static final MethodInvocationMatcher EQUALS_METHOD = MethodInvocationMatcher.create()
-    .name("equals")
-    .addParameter(JAVA_LANG_OBJECT);
-
   @Override
-  public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodInvocationMatcher.create()
+      .name("equals")
+      .addParameter(JAVA_LANG_OBJECT));
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-    if (EQUALS_METHOD.matches(methodTree)) {
-      ExpressionTree firstArgument = Iterables.getOnlyElement(methodTree.arguments());
-      Type argumentType = firstArgument.symbolType().erasure();
-      Type ownerType = getMethodOwnerType(methodTree).erasure();
-      if (isLiteralNull(firstArgument)) {
-        addIssue(tree, "Remove this call to \"equals\"; comparisons against null always return false; consider using '== null' to check for nullity.");
-      } else if (ownerType.isArray()) {
-        checkWhenOwnerIsArray(tree, ownerType, argumentType);
-      } else {
-        checkWhenOwnerIsNotArray(tree, ownerType, argumentType);
-      }
+  protected void onMethodFound(MethodInvocationTree tree) {
+    ExpressionTree firstArgument = Iterables.getOnlyElement(tree.arguments());
+    Type argumentType = firstArgument.symbolType().erasure();
+    Type ownerType = getMethodOwnerType(tree).erasure();
+    if (isLiteralNull(firstArgument)) {
+      addIssue(tree, "Remove this call to \"equals\"; comparisons against null always return false; consider using '== null' to check for nullity.");
+    } else if (ownerType.isArray()) {
+      checkWhenOwnerIsArray(tree, (Type.ArrayType) ownerType, argumentType);
+    } else {
+      checkWhenOwnerIsNotArray(tree, ownerType, argumentType);
     }
   }
 
-  private void checkWhenOwnerIsArray(Tree tree, Type ownerType, Type argumentType) {
-    if (!argumentType.isArray()) {
-      if (!argumentType.is(JAVA_LANG_OBJECT)) {
-        addIssue(tree, "Remove this call to \"equals\"; comparisons between an array and a type always return false.");
+  private void checkWhenOwnerIsArray(Tree tree, Type.ArrayType ownerType, Type argumentType) {
+    if (argumentType.isArray()) {
+      if (areNotRelated(((Type.ArrayType) ownerType).elementType(), ((Type.ArrayType) argumentType).elementType())) {
+        addIssue(tree, "Remove this call to \"equals\"; comparisons between unrelated arrays always return false.");
+      } else {
+        addIssue(tree, "Use \"Arrays.equals(array1, array2)\" or the \"==\" operator instead of using the \"Object.equals(Object obj)\" method.");
       }
-    } else if (!areRelated(((Type.ArrayType) ownerType).elementType(), ((Type.ArrayType) argumentType).elementType())) {
-      addIssue(tree, "Remove this call to \"equals\"; comparisons between unrelated arrays always return false.");
-    } else {
-      addIssue(tree, "Use \"Arrays.equals(array1, array2)\" or the \"==\" operator instead of using the \"Object.equals(Object obj)\" method.");
+    } else if (!argumentType.is(JAVA_LANG_OBJECT)) {
+      addIssue(tree, "Remove this call to \"equals\"; comparisons between an array and a type always return false.");
     }
   }
 
   private void checkWhenOwnerIsNotArray(Tree tree, Type ownerType, Type argumentType) {
     if (argumentType.isArray() && !ownerType.is(JAVA_LANG_OBJECT)) {
       addIssue(tree, "Remove this call to \"equals\"; comparisons between a type and an array always return false.");
-    } else if (argumentType.isClass() && !areRelated(ownerType, argumentType)) {
-      if (isFinalClassWithInterface(ownerType, argumentType)) {
-        addIssue(tree, MESSAGE);
-      } else if (!ownerType.symbol().isInterface() && !argumentType.symbol().isInterface()) {
-        addIssue(tree, MESSAGE);
-      }
+    } else if (argumentType.isClass() && areNotRelated(ownerType, argumentType)
+      && (areTypesFinalClassAndInterface(ownerType, argumentType) || areNeitherInterfaces(ownerType, argumentType))) {
+      addIssue(tree, MESSAGE);
     }
   }
 
-  private boolean isFinalClassWithInterface(Type type1, Type type2) {
-    return (type1.symbol().isInterface() && type2.symbol().isFinal()) || (type2.symbol().isInterface() && type1.symbol().isFinal());
+  private boolean areNeitherInterfaces(Type ownerType, Type argumentType) {
+    return !ownerType.symbol().isInterface() && !argumentType.symbol().isInterface();
+  }
+
+  private boolean areTypesFinalClassAndInterface(Type ownerType, Type argumentType) {
+    return (ownerType.symbol().isInterface() && argumentType.symbol().isFinal()) || (argumentType.symbol().isInterface() && ownerType.symbol().isFinal());
   }
 
   private boolean isLiteralNull(Tree tree) {
@@ -117,8 +113,8 @@ public class SillyEqualsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean areRelated(Type type1, Type type2) {
-    return type1.isSubtypeOf(type2) || type2.isSubtypeOf(type1);
+  private boolean areNotRelated(Type type1, Type type2) {
+    return !type1.isSubtypeOf(type2) && !type2.isSubtypeOf(type1);
   }
 
 }
