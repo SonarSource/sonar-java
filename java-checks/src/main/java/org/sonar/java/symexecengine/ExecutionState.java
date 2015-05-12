@@ -79,12 +79,6 @@ public class ExecutionState {
       }
     }
 
-    for (Symbol symbol : unreachableValues.keys()) {
-      // cleanup after merge of reachable/unreachable values
-      for (Value value : unreachableValues.get(symbol)) {
-        reachableValues.remove(symbol, value);
-      }
-    }
     // Merge states of values
     for (Map.Entry<Value, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
       Value value = valueStateEntry.getKey();

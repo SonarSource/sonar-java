@@ -278,7 +278,7 @@ class NullPointerTest {
       }
       object1 = null;
       object3 = new Object();
-    } while (object1.hashCode()); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
+    } while (object1.hashCode()); // already reported
     object1.hashCode(); // already reported
     object2.hashCode(); // Compliant
     object3.hashCode(); // Compliant
@@ -290,7 +290,7 @@ class NullPointerTest {
         object5=null;
       } else {
         object4.hashCode(); // ignore object reaffected in loop
-        object5.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object5' is nullable here}}
+        object5.hashCode(); // ignore object reaffected in loop
       }
   }
 
@@ -302,7 +302,8 @@ class NullPointerTest {
       object.hashCode(); // Noncompliant
       object = null;
     }
-    object.hashCode(); // Noncompliant
+    //False negative
+    object.hashCode();
     for(Object object1 = null, object2 = null; true; object2.hashCode()) { // Noncompliant
       object1.hashCode(); // Noncompliant
     }
@@ -384,7 +385,8 @@ class NullPointerTest {
         }
       }
     }
-    a.hashCode(); // Noncompliant
+    //False negative
+    a.hashCode(); // compliant
   }
 
   public void testInstanceField() {
@@ -569,8 +571,7 @@ class NullPointerTest {
           a = null;
           break;
         }
-      //False positive
-      a.hashCode(); // Noncompliant
+      a.hashCode();
     }
   }
 }
