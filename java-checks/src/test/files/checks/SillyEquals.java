@@ -2,6 +2,14 @@ import java.util.List;
 
 public class MyClass {
 
+  public enum MyEnum1 {
+    VALUE;
+  }
+
+  public enum MyEnum2 {
+    VALUE;
+  }
+
   public interface Interface {
   }
 
@@ -16,6 +24,8 @@ public class MyClass {
   java.io.Serializable serializable;
   Interface intf;
   MyClass my;
+  MyEnum1 myEnum1;
+  MyEnum2 myEnum2;
 
   public void method() {
     // class vs array
@@ -40,6 +50,7 @@ public class MyClass {
     string.equals(my); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
     my.equals(file); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
     file.equals(my); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
+    myEnum1.equals(myEnum2); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
 
     // class vs interface
     my.equals(serializable); // Compliant, "MyClass" is not final
@@ -81,6 +92,14 @@ public class MyClass {
     // Compliant
     object.equals();
     object.hashCode();
+  }
+
+  public <T> void parameterizedMethod1(T o) {
+    equals(o); // Compliant
+  }
+
+  public <T extends String> void parameterizedMethod2(T o) {
+    equals(o); // False negative, String and MyClass are unrelated
   }
 
 }
