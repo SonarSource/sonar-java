@@ -23,8 +23,11 @@ import com.google.common.collect.Iterables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -604,6 +607,20 @@ public class SymbolTableTest {
     assertThat(result.reference(12, 25).owner).isSameAs(result.symbol("A"));
     assertThat(result.reference(13, 21)).isSameAs(result.symbol("A"));
 
+  }
+
+  @Test
+  public void symbolNotFound() throws Exception {
+    Result result = Result.createFor("SymbolsNotFound");
+
+    MethodTree methodDeclaration = (MethodTree) result.symbol("method").declaration();
+    ExpressionStatementTree expression = (ExpressionStatementTree) methodDeclaration.block().body().get(0);
+    MethodInvocationTree methodInvocation = (MethodInvocationTree) expression.expression();
+
+    Symbol symbolNotFound = methodInvocation.symbol();
+    assertThat(symbolNotFound).isNotNull();
+    assertThat(symbolNotFound.name()).isNull();
+    assertThat(symbolNotFound.owner()).isSameAs(Symbols.unknownSymbol);
   }
 
   public void assertThatReferenceNotFound(Result result, int line, int column){

@@ -770,7 +770,7 @@ public class Resolve {
 
   public static class JavaSymbolNotFound extends JavaSymbol {
     public JavaSymbolNotFound() {
-      super(JavaSymbol.ABSENT, 0, null, null);
+      super(JavaSymbol.ABSENT, 0, null, Symbols.unknownSymbol);
     }
   }
 
