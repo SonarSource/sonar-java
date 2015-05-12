@@ -289,8 +289,7 @@ class NullPointerTest {
         object4 = new Object();
         object5=null;
       } else {
-        //False positive
-        object4.hashCode(); // Noncompliant
+        object4.hashCode(); // ignore object reaffected in loop
         object5.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object5' is nullable here}}
       }
   }
@@ -298,8 +297,8 @@ class NullPointerTest {
 
   public void testForLoop() {
     Object object = null;
-    for(; object.hashCode() != 0; // Noncompliant
-        object.hashCode()) { // issue already reported
+    for(; object.hashCode() != 0; // ignore object reaffected in loop
+        object.hashCode()) { // ignore object reaffected in loop
       object.hashCode(); // Noncompliant
       object = null;
     }
@@ -326,7 +325,7 @@ class NullPointerTest {
   public void testWhileLoop() {
     Object object1 = null, object2 = null, object3 = null;
     while(object1.hashCode()) { // Noncompliant
-      object2.hashCode(); // Noncompliant
+      object2.hashCode(); // Compliant, false negative ignore object reaffected in loop
       object2 = null;
       object2.hashCode(); // Noncompliant
      }
@@ -427,8 +426,7 @@ class NullPointerTest {
       object12.hashCode(); // Noncompliant
       nullableObject.hashCode(); // Noncompliant
       if(i == 1) {
-        //False Positive
-        object1.hashCode(); // Noncompliant
+        object1.hashCode(); // ignore object reaffected in loop
       } else if(i == 0) {
         object1 = new Object();
       }
@@ -443,8 +441,7 @@ class NullPointerTest {
       object22.hashCode(); // Noncompliant
       nullableObject.hashCode(); // issue already reported
       if(i == 1) {
-        //False Positive
-        object2.hashCode(); // Noncompliant
+        object2.hashCode(); // ignore object reaffected in loop
       } else if(i == 0) {
         object2 = new Object();
       }
@@ -456,8 +453,7 @@ class NullPointerTest {
     int i = 0;
     do {
       if(i == 1) {
-        //False Positive
-        object3.hashCode(); // Noncompliant
+        object3.hashCode(); // ignore object reaffected in loop
       } else if(i == 0) {
         object3 = new Object();
       }
@@ -563,6 +559,18 @@ class NullPointerTest {
 
     } else {
       context.hashCode(); // Noncompliant
+    }
+  }
+
+  void break_in_loop() {
+    Object a = new Object();
+    for (;;) {
+        if(foo) {
+          a = null;
+          break;
+        }
+      //False positive
+      a.hashCode(); // Noncompliant
     }
   }
 }

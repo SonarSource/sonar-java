@@ -29,15 +29,19 @@ import org.sonar.java.symexecengine.State;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -145,8 +149,26 @@ public class NpeVisitor extends DataFlowVisitor {
     super.visitSwitchStatement(tree);
   }
 
+  private class AssignmentInLoopsVisitor extends BaseTreeVisitor {
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      Symbol symbol = getSymbol(tree.variable());
+      if (symbol != null && symbol.owner().isMethodSymbol()) {
+        executionState.markValueAs(symbol, new NPEState.Unknown(Lists.<Tree>newArrayList(tree)));
+      }
+    }
+  }
+
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    tree.statement().accept(new AssignmentInLoopsVisitor());
+    super.visitWhileStatement(tree);
+  }
+
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
+    tree.statement().accept(new AssignmentInLoopsVisitor());
     scan(tree.expression());
     executionState = new ExecutionState(executionState);
     //Scan twice the tree in loop to create multiple value if required
@@ -158,6 +180,18 @@ public class NpeVisitor extends DataFlowVisitor {
     executionState.markValueAs(variable.symbol(), new NPEState.NotNull(variable));
     scan(tree.statement());
     executionState = executionState.restoreParent();
+  }
+
+  @Override
+  public void visitForStatement(ForStatementTree tree) {
+    tree.statement().accept(new AssignmentInLoopsVisitor());
+    super.visitForStatement(tree);
+  }
+
+  @Override
+  public void visitDoWhileStatement(DoWhileStatementTree tree) {
+    tree.statement().accept(new AssignmentInLoopsVisitor());
+    super.visitDoWhileStatement(tree);
   }
 
   @Override
