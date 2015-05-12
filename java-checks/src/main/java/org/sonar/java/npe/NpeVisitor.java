@@ -86,7 +86,7 @@ public class NpeVisitor extends DataFlowVisitor {
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
     super.visitArrayAccessExpression(tree);
     if (!tree.expression().is(Tree.Kind.MEMBER_SELECT) && isNullTree(tree.expression())) {
-      executionState.reportIssue(tree);
+      reportIssue(tree);
     }
   }
 
@@ -109,7 +109,7 @@ public class NpeVisitor extends DataFlowVisitor {
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     super.visitMemberSelectExpression(tree);
     if (isNullTree(tree.expression())) {
-      executionState.reportIssue(tree.expression());
+      reportIssue(tree.expression());
     }
   }
 
@@ -123,7 +123,7 @@ public class NpeVisitor extends DataFlowVisitor {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           if (parameters.get(i < parameters.size() ? i : parameters.size() - 1).metadata().isAnnotatedWith("javax.annotation.Nonnull")
             && isNullTree(tree.arguments().get(i))) {
-            executionState.reportIssue(tree.arguments().get(i));
+            reportIssue(tree.arguments().get(i));
             parameterErrorsByMethodName.put(tree.arguments().get(i), methodSymbol.name());
           }
         }
@@ -131,10 +131,16 @@ public class NpeVisitor extends DataFlowVisitor {
     }
   }
 
+  private void reportIssue(ExpressionTree tree) {
+    executionState.reportIssue(tree);
+    //Set value to not null to do not report multiple times
+    executionState.markValueAs(getSymbol(tree) , new NPEState.NotNull(tree));
+  }
+
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
     if (isNullTree(tree.expression())) {
-      executionState.reportIssue(tree.expression());
+      reportIssue(tree.expression());
     }
     super.visitSwitchStatement(tree);
   }

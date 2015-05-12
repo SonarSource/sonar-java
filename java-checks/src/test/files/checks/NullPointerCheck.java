@@ -279,7 +279,7 @@ class NullPointerTest {
       object1 = null;
       object3 = new Object();
     } while (object1.hashCode()); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
-    object1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
+    object1.hashCode(); // already reported
     object2.hashCode(); // Compliant
     object3.hashCode(); // Compliant
 
@@ -299,7 +299,7 @@ class NullPointerTest {
   public void testForLoop() {
     Object object = null;
     for(; object.hashCode() != 0; // Noncompliant
-        object.hashCode()) { // Noncompliant
+        object.hashCode()) { // issue already reported
       object.hashCode(); // Noncompliant
       object = null;
     }
@@ -319,8 +319,8 @@ class NullPointerTest {
       value.hashCode(); // Noncompliant
       entry.hashCode();
     }
-    head.hashCode(); // Noncompliant
-    value.hashCode(); // Noncompliant
+    head.hashCode(); // issue already reported
+    value.hashCode(); // issue already reported
   }
 
   public void testWhileLoop() {
@@ -330,8 +330,8 @@ class NullPointerTest {
       object2 = null;
       object2.hashCode(); // Noncompliant
      }
-    object1.hashCode(); // Noncompliant
-    object2.hashCode(); // Noncompliant
+    object1.hashCode(); // issue already reported
+    object2.hashCode(); // issue already reported
     object3.hashCode(); // Noncompliant
 
     while (object3 != null) {
@@ -409,7 +409,7 @@ class NullPointerTest {
     //False positive constraint is lost and here o is necessarily not null.
     o.hashCode(); // Noncompliant
     Object a = o;
-    a.hashCode(); // Noncompliant
+    a.hashCode(); // issue already reported, o is not null anymore
   }
 
   public void testAssignNullableMethod() {
@@ -441,7 +441,7 @@ class NullPointerTest {
     while(object21 == null) {
       object21.hashCode(); // Noncompliant
       object22.hashCode(); // Noncompliant
-      nullableObject.hashCode(); // Noncompliant
+      nullableObject.hashCode(); // issue already reported
       if(i == 1) {
         //False Positive
         object2.hashCode(); // Noncompliant
