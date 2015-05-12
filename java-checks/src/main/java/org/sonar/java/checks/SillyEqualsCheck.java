@@ -74,7 +74,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
 
   private void checkWhenOwnerIsArray(Tree tree, Type.ArrayType ownerType, Type argumentType) {
     if (argumentType.isArray()) {
-      if (areNotRelated(((Type.ArrayType) ownerType).elementType(), ((Type.ArrayType) argumentType).elementType())) {
+      if (areNotRelated(ownerType.elementType(), ((Type.ArrayType) argumentType).elementType())) {
         addIssue(tree, "Remove this call to \"equals\"; comparisons between unrelated arrays always return false.");
       } else {
         addIssue(tree, "Use \"Arrays.equals(array1, array2)\" or the \"==\" operator instead of using the \"Object.equals(Object obj)\" method.");
