@@ -127,7 +127,10 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
     if (libraryProperty) {
       if (pattern.endsWith("*")) {
         fileFilter = new AndFileFilter((IOFileFilter) fileFilter,
-            new OrFileFilter(Lists.newArrayList(suffixFileFilter(".jar", IOCase.INSENSITIVE), suffixFileFilter(".zip", IOCase.INSENSITIVE))));
+            new OrFileFilter(Lists.newArrayList(
+                suffixFileFilter(".jar", IOCase.INSENSITIVE),
+                suffixFileFilter(".zip", IOCase.INSENSITIVE),
+                suffixFileFilter(".aar", IOCase.INSENSITIVE))));
       }
       //find jar and zip files
       files.addAll(Lists.newArrayList(FileUtils.listFiles(dir, (IOFileFilter) fileFilter, TrueFileFilter.TRUE)));
