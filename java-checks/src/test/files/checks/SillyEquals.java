@@ -35,6 +35,8 @@ public class MyClass {
     arrayOfObjects.equals(integer); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
     arrayOfIntegers.equals(arrayOfStrings); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated arrays always return false.}}
     object.equals(1); // Compliant
+    integer.equals(1); // Compliant
+    string.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between unrelated types always return false.}}
     arrayOfObjects.equals(1); // Noncompliant {{Remove this call to "equals"; comparisons between an array and a type always return false.}}
 
     // arrays vs arrays
