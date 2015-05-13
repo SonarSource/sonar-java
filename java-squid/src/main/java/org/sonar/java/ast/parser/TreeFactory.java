@@ -893,6 +893,9 @@ public class TreeFactory {
       partial.add(0, variable);
       partial.prependChildren(variable, comma);
 
+      // store the comma as endToken for the variable
+      variable.setEndToken(InternalSyntaxToken.create(comma));
+
       return partial;
     } else {
       return new FormalParametersListTreeImpl(variable);
@@ -940,6 +943,9 @@ public class TreeFactory {
       variable.completeModifiersAndType(modifiers, type);
     }
 
+    // store the semicolon as endToken for the last variable
+    variables.get(variables.size() - 1).setEndToken(InternalSyntaxToken.create(semicolonTokenAstNode));
+
     return variables;
   }
 
@@ -951,10 +957,18 @@ public class TreeFactory {
     children.add(variable);
 
     if (rests.isPresent()) {
+      VariableTreeImpl previousVariable = variable;
       for (Tuple<AstNode, VariableTreeImpl> rest : rests.get()) {
-        variables.add(rest.second());
-        children.add(rest.first());
-        children.add(rest.second());
+        VariableTreeImpl newVariable = rest.second();
+        InternalSyntaxToken separator = InternalSyntaxToken.create(rest.first());
+
+        variables.add(newVariable);
+        children.add(separator);
+        children.add(newVariable);
+
+        // store the separator
+        previousVariable.setEndToken(separator);
+        previousVariable = newVariable;
       }
     }
 
@@ -2009,7 +2023,15 @@ public class TreeFactory {
     ExpressionTree result = identifier;
 
     if (arguments.isPresent()) {
-      result = new MethodInvocationTreeImpl(identifier, typeArguments.orNull(), arguments.get(), identifier, arguments.get());
+      ArgumentListTreeImpl argumentListTree = arguments.get();
+      result = new MethodInvocationTreeImpl(
+        identifier,
+        argumentListTree.openParenToken(),
+        argumentListTree.closeParenToken(),
+        typeArguments.orNull(),
+        argumentListTree,
+        identifier,
+        argumentListTree);
     }
 
     return result;
@@ -2064,9 +2086,16 @@ public class TreeFactory {
 
           List<AstNode> children = Lists.newArrayList();
           children.add(memberSelect);
-          children.add((ArgumentListTreeImpl) methodInvocation.arguments());
+          ArgumentListTreeImpl argumentListTree = (ArgumentListTreeImpl) methodInvocation.arguments();
+          children.add(argumentListTree);
 
-          result = new MethodInvocationTreeImpl(memberSelect, methodInvocation.typeArguments(), methodInvocation.arguments(), children.toArray(new AstNode[0]));
+          result = new MethodInvocationTreeImpl(
+            memberSelect,
+            argumentListTree.openParenToken(),
+            argumentListTree.closeParenToken(),
+            methodInvocation.typeArguments(),
+            methodInvocation.arguments(),
+            children.toArray(new AstNode[0]));
         } else if (selector.is(Kind.NEW_CLASS)) {
           NewClassTreeImpl newClass = (NewClassTreeImpl) selector;
           newClass.prependChildren((AstNode) result);

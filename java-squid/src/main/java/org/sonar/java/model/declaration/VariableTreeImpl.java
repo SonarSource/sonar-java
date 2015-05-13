@@ -31,11 +31,13 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
@@ -47,6 +49,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private IdentifierTree simpleName;
   @Nullable
   private ExpressionTree initializer;
+  @Nullable
+  private SyntaxToken endToken;
 
   // FIXME(Godin): never should be null, i.e. should have default value
   private JavaSymbol.VariableJavaSymbol symbol;
@@ -209,5 +213,15 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
       simpleName,
       initializer
       );
+  }
+
+  @CheckForNull
+  @Override
+  public SyntaxToken endToken() {
+    return endToken;
+  }
+
+  public void setEndToken(SyntaxToken endToken) {
+    this.endToken = endToken;
   }
 }
