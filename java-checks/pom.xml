@@ -79,6 +79,12 @@
                   <version>1.4</version>
                   <type>jar</type>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-context</artifactId>
+                  <version>4.1.6.RELEASE</version>
+                  <type>jar</type>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>

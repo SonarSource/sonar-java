@@ -1,3 +1,5 @@
+import org.springframework.context.support.AbstractApplicationContext;
+
 import com.sun.org.apache.bcel.internal.util.ByteSequence;
 import com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream;
 
@@ -564,6 +566,14 @@ class MyCloseable implements Closeable {
 
       }
   }
+}
 
-
+class Spring {
+  void foo() {
+    AbstractApplicationContext myAppContext = new MyContext(); // Compliant
+    myAppContext.registerShutdownHook(); // will be closed on JVM shutdown unless it has already been closed at that time.
+  }
+  
+  class MyContext extends AbstractApplicationContext {
+  }
 }
