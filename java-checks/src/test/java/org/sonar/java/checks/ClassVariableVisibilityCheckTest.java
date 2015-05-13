@@ -19,34 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ClassVariableVisibilityCheckTest {
 
-  private final ClassVariableVisibilityCheck check = new ClassVariableVisibilityCheck();
-
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassVariableVisibilityCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("Make foo4 a static final constant or non-public and provide accessors if needed.")
-        .next().atLine(9).withMessage("Make foo5 a static final constant or non-public and provide accessors if needed.")
-        .next().atLine(10).withMessage("Make foo6 a static final constant or non-public and provide accessors if needed.")
-        .next().atLine(24).withMessage("Make l1 a static final constant or non-public and provide accessors if needed.");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ClassVariableVisibilityCheck.java", new ClassVariableVisibilityCheck());
   }
 
 }
