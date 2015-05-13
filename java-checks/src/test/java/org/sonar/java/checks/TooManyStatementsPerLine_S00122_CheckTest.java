@@ -19,29 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TooManyStatementsPerLine_S00122_CheckTest {
 
-  private TooManyStatementsPerLine_S00122_Check check = new TooManyStatementsPerLine_S00122_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyStatementsPerLine.java"), check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
-        .next().atLine(9)
-        .next().atLine(17)
-        .next().atLine(19).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
-        .next().atLine(37).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
-        .next().atLine(38).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
-        .next().atLine(42).withMessage("At most one statement is allowed per line, but 2 statements were found on this line.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/TooManyStatementsPerLine.java", new TooManyStatementsPerLine_S00122_Check());
   }
-
 }
