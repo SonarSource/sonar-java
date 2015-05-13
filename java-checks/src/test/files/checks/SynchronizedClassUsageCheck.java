@@ -13,6 +13,7 @@ class A {
   StringBuffer a = new StringBuffer(); // Noncompliant {{Replace the synchronized class "StringBuffer" by an unsynchronized one such as "StringBuilder".}}
   java.util.Stack a = new java.util.Stack();         // Noncompliant {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
   List l = null; // Compliant
+  List<Object> listeners = getVector(); // Compliant
   
   A(Vector v) { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
     a = v;
@@ -23,6 +24,10 @@ class A {
     a.call(new java.util.Vector()); // Compliant
     java.util.Vector<Integer> result = null; // Noncompliant
     List result = new java.util.Vector<Integer>(); // Noncompliant
+  }
+  
+  private Vector getVector() { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+    return new Vector();
   }
 
   public Vector a; // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}

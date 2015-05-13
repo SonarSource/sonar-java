@@ -113,7 +113,7 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitVariable(VariableTree tree) {
       ExpressionTree initializer = tree.initializer();
-      if (!reportIssueOnDeprecatedType(tree.type(), tree.symbol().type()) && initializer != null) {
+      if (!reportIssueOnDeprecatedType(tree.type(), tree.symbol().type()) && initializer != null && !initializer.is(Tree.Kind.METHOD_INVOCATION)) {
         reportIssueOnDeprecatedType(initializer, initializer.symbolType());
       }
     }
