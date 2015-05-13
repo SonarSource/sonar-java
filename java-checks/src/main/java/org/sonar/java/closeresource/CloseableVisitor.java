@@ -81,6 +81,10 @@ public class CloseableVisitor extends DataFlowVisitor {
       MethodInvocationMatcher.create()
         .typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_AUTOCLOSEABLE))
         .name(CLOSE_METHOD_NAME)
+        .withNoParameterConstraint(),
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf("org.springframework.context.support.AbstractApplicationContext"))
+        .name("registerShutdownHook")
         .withNoParameterConstraint());
   }
 
