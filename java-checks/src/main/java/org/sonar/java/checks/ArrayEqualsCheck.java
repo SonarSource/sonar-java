@@ -34,6 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1294",
   name = "The Array.equals(Object obj) method should not be used",
+  status = "DEPRECATED",
   tags = {},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
