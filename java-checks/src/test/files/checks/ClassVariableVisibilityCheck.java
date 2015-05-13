@@ -7,7 +7,7 @@ class Foo {
   public int foo4; // Noncompliant {{Make foo4 a static final constant or non-public and provide accessors if needed.}}
 
   public static int foo5; // Noncompliant {{Make foo5 a static final constant or non-public and provide accessors if needed.}}
-  public final int foo6; // Noncompliant {{Make foo6 a static final constant or non-public and provide accessors if needed.}}
+  public final int foo6; // Compliant
 
   private static final int bar1;
   static final int bar2;
