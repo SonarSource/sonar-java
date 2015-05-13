@@ -34,6 +34,15 @@ public class MyClass {
     releaseLock();
   }
 
+  public void multipleLockState() {
+    Lock lock = new ReentrantLock();
+    if(foo) {
+      lock.lock();// Noncompliant
+    } else {
+      lock.lock();// Noncompliant
+    }
+  }
+
   public void doTheOtherThing() {
     Lock lock = new ReentrantLock();
     try {
