@@ -262,8 +262,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         }
 
         identifierTree = mse.identifier();
-        resolvedSymbol = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
-        JavaType resolvedType = getTypeOfSymbol(resolvedSymbol, getType(mse.expression()));
+        Resolve.Resolution res = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
+        resolvedSymbol = res.symbol();
+        JavaType resolvedType = resolve.resolveTypeSubstitution(res.type(), getType(mse.expression()));
         registerType(identifierTree, resolvedType);
         registerType(tree, resolvedType);
       } else {
@@ -289,7 +290,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     return type.symbol;
   }
 
-  private JavaSymbol getSymbolOfMemberSelectExpression(MemberSelectExpressionTree mse, int kind, Resolve.Env resolveEnv) {
+  private Resolve.Resolution getSymbolOfMemberSelectExpression(MemberSelectExpressionTree mse, int kind, Resolve.Env resolveEnv) {
     int expressionKind = JavaSymbol.TYP;
     if ((kind & JavaSymbol.VAR) != 0) {
       expressionKind |= JavaSymbol.VAR;
@@ -306,9 +307,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       return resolve.findIdentInType(resolveEnv, (JavaSymbol.TypeJavaSymbol) site, mse.identifier().name(), kind);
     }
     if (site.kind == JavaSymbol.PCK) {
-      return resolve.findIdentInPackage(site, mse.identifier().name(), kind);
+      return Resolve.Resolution.resolution(resolve.findIdentInPackage(site, mse.identifier().name(), kind));
     }
-    return Symbols.unknownSymbol;
+    return resolve.unresolved();
   }
 
   private void resolveAs(List<? extends Tree> trees, int kind) {

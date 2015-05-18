@@ -198,7 +198,7 @@ public class FirstPass extends BaseTreeVisitor {
           resolved = Collections.emptyList();
         } else if (currentSymbol.kind == JavaSymbol.TYP) {
           resolved = ((JavaSymbol.TypeJavaSymbol) currentSymbol).members().lookup(tree.name());
-          currentSymbol = resolve.findIdentInType(env, (JavaSymbol.TypeJavaSymbol) currentSymbol, tree.name(), JavaSymbol.TYP | JavaSymbol.VAR);
+          currentSymbol = resolve.findIdentInType(env, (JavaSymbol.TypeJavaSymbol) currentSymbol, tree.name(), JavaSymbol.TYP | JavaSymbol.VAR).symbol();
         } else {
           //Site symbol is not found so we won't be able to resolve the import.
           currentSymbol = new Resolve.JavaSymbolNotFound();
