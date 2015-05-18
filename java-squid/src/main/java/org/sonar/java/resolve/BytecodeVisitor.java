@@ -325,11 +325,6 @@ public class BytecodeVisitor extends ClassVisitor {
       Preconditions.checkState(lookup.size() == 1, "found "+lookup.size());
       typeVariableSymbol = (JavaSymbol.TypeVariableJavaSymbol) lookup.iterator().next();
       bounds = ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds;
-//      typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, classSymbol);
-//      classSymbol.typeParameters.enter(typeVariableSymbol);
-//      classSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
-//      bounds = Lists.newArrayList();
-//      ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = bounds;
     }
 
     @Override
@@ -419,9 +414,9 @@ public class BytecodeVisitor extends ClassVisitor {
     public void visitFormalTypeParameter(String name) {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, symbol);
       if(symbol.isTypeSymbol()) {
-        JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) symbol;
-        classSymbol.typeParameters.enter(typeVariableSymbol);
-        classSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
+        JavaSymbol.TypeJavaSymbol typeJavaSymbol = (JavaSymbol.TypeJavaSymbol) symbol;
+        typeJavaSymbol.typeParameters.enter(typeVariableSymbol);
+        typeJavaSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
         ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = Lists.newArrayList();
       } else if (symbol.isMethodSymbol()) {
         JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
