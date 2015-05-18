@@ -323,25 +323,26 @@ public class Resolve {
   /**
    * @param kind subset of {@link JavaSymbol#VAR}, {@link JavaSymbol#TYP}
    */
-  public JavaSymbol findIdentInType(Env env, JavaSymbol.TypeJavaSymbol site, String name, int kind) {
-    JavaSymbol bestSoFar = symbolNotFound;
+  public Resolution findIdentInType(Env env, JavaSymbol.TypeJavaSymbol site, String name, int kind) {
+    Resolution bestSoFar = unresolved();
+    Resolution resolution;
     JavaSymbol symbol;
     if ((kind & JavaSymbol.VAR) != 0) {
-      symbol = findField(env, site, name, site).symbol;
-      if (symbol.kind < JavaSymbol.ERRONEOUS) {
+      resolution = findField(env, site, name, site);
+      if (resolution.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return resolution;
+      } else if (resolution.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = resolution;
       }
     }
     if ((kind & JavaSymbol.TYP) != 0) {
       symbol = findMemberType(env, site, name, site);
       if (symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return Resolution.resolution(symbol);
+      } else if (symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = Resolution.resolution(symbol);
       }
     }
     return bestSoFar;
@@ -663,7 +664,7 @@ public class Resolve {
     return true;
   }
 
-  private Resolution unresolved() {
+  Resolution unresolved() {
     Resolution resolution = new Resolution(symbolNotFound);
     resolution.type = symbols.unknownType;
     return resolution;
@@ -697,6 +698,9 @@ public class Resolve {
       if (type == null) {
         if(symbol.isKind(JavaSymbol.MTH)) {
           return ((JavaType.MethodJavaType)symbol.type).resultType;
+        }
+        if(symbol.isUnknown() || symbol.isKind(JavaSymbol.PCK)) {
+          return Symbols.unknownType;
         }
         return symbol.type;
       }
@@ -771,6 +775,11 @@ public class Resolve {
   public static class JavaSymbolNotFound extends JavaSymbol {
     public JavaSymbolNotFound() {
       super(JavaSymbol.ABSENT, 0, null, Symbols.unknownSymbol);
+    }
+
+    @Override
+    public boolean isUnknown() {
+      return true;
     }
   }
 
