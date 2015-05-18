@@ -44,3 +44,13 @@ class ParametrizedExtend<S> {
 
 interface ParametrizedInterface1<U> {}
 interface ParametrizedInterface2<V> {}
+
+class ForwardParameterInMethod {
+  public <X extends List<Y>, Y> List<X> bar(X x, Y y) {
+    return null;
+  }
+}
+
+class ForwardParameterInClass<X extends List<Y>, Y> {
+  int bar;
+}
