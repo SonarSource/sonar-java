@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.symexecengine.State;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -58,6 +59,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -81,7 +83,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Nullable
   private ConditionalState currentConditionalState;
   private JavaFileScannerContext context;
-  private State currentState;
+  private ExecutionState currentState;
   private SemanticModel semanticModel;
 
   @Override
@@ -105,7 +107,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       Symbol identifierSymbol = ((IdentifierTree) tree.variable()).symbol();
       if (identifierSymbol.isVariableSymbol()) {
-        currentState.setVariableValue((VariableSymbol) identifierSymbol, checkNullity(tree.expression()));
+        currentState.setVariableState((VariableSymbol) identifierSymbol, checkNullity(tree.expression()));
       }
     }
   }
@@ -131,8 +133,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitClass(ClassTree tree) {
     // state required for assignments in class body (e.g. static initializers, and int a, b, c = b = 0;)
-    State oldState = currentState;
-    currentState = new State();
+    ExecutionState oldState = currentState;
+    currentState = new ExecutionState();
     // skips modifiers, type parameters, super class and interfaces
     scan(tree.members());
     currentState = oldState;
@@ -151,13 +153,13 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     tree.trueExpression().accept(this);
     currentState = conditionalState.falseState;
     tree.falseExpression().accept(this);
-    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
+    currentState = currentState.parentState.mergeStates(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
     currentState.invalidateVariables(new AssignmentVisitor().findAssignedVariables(tree.statement()));
-    currentState = new State(currentState);
+    currentState = new ExecutionState(currentState);
     scan(tree.statement());
     scan(tree.condition());
     restorePreviousState();
@@ -181,7 +183,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitForEachStatement(ForEachStatement tree) {
     scan(tree.expression());
     currentState.invalidateVariables(new AssignmentVisitor().findAssignedVariables(tree.statement()));
-    currentState = new State(currentState);
+    currentState = new ExecutionState(currentState);
     scan(tree.statement());
     restorePreviousState();
   }
@@ -195,7 +197,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       currentState = conditionalState.falseState;
       tree.elseStatement().accept(this);
     }
-    currentState = currentState.parentState.mergeValues(conditionalState.trueState, conditionalState.falseState);
+    currentState = currentState.parentState.mergeStates(conditionalState.trueState, conditionalState.falseState);
   }
 
   @Override
@@ -206,11 +208,11 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMethod(MethodTree tree) {
-    State oldState = currentState;
-    currentState = new State();
+    ExecutionState oldState = currentState;
+    currentState = new ExecutionState();
     for (VariableTree parameter : tree.parameters()) {
       Symbol symbol = parameter.symbol();
-      currentState.setVariableValue(symbol, checkNullity(symbol));
+      currentState.setVariableState(symbol, checkNullity(symbol));
     }
     scan(tree.block());
     currentState = oldState;
@@ -225,7 +227,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (!parameters.isEmpty()) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
-          if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)) == AbstractValue.NOTNULL) {
+          if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)).equals(NullableState.NOTNULL)) {
             this.checkForIssue(tree.arguments().get(i),
               String.format("'%%s' is nullable here and method '%s' does not accept nullable argument", methodSymbol.name()),
               String.format("method '%s' does not accept nullable argument", methodSymbol.name()));
@@ -243,7 +245,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     Set<VariableSymbol> variables = new AssignmentVisitor().findAssignedVariables(tree.cases());
     currentState.invalidateVariables(variables);
     for (CaseGroupTree caseTree : tree.cases()) {
-      currentState = new State(currentState);
+      currentState = new ExecutionState(currentState);
       scan(caseTree);
       restorePreviousState();
     }
@@ -252,20 +254,20 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitTryStatement(TryStatementTree tree) {
     scan(tree.resources());
-    State blockState = new State(currentState);
+    ExecutionState blockState = new ExecutionState(currentState);
     currentState = blockState;
     scan(tree.block());
     for (CatchTree catchTree : tree.catches()) {
-      currentState = new State(blockState.parentState);
+      currentState = new ExecutionState(blockState.parentState);
       scan(catchTree);
-      blockState.mergeValues(currentState, null);
+      blockState.mergeStates(currentState, null);
     }
     if (tree.finallyBlock() != null) {
-      currentState = new State(blockState.parentState);
+      currentState = new ExecutionState(blockState.parentState);
       scan(tree.finallyBlock());
-      blockState.mergeValues(currentState, null);
+      blockState.mergeStates(currentState, null);
     }
-    currentState = blockState.parentState.mergeValues(blockState, null);
+    currentState = blockState.parentState.mergeStates(blockState, null);
   }
 
   @Override
@@ -273,7 +275,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // skips modifiers (annotations) and type.
     if (tree.initializer() != null) {
       scan(tree.initializer());
-      currentState.setVariableValue((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
+      currentState.setVariableState((VariableSymbol) tree.symbol(), checkNullity(tree.initializer()));
     }
   }
 
@@ -288,16 +290,16 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     currentState.invalidateVariables(assignedVariables);
   }
 
-  private AbstractValue checkNullity(Symbol symbol) {
+  private NullableState checkNullity(Symbol symbol) {
     if (symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull")) {
-      return AbstractValue.NOTNULL;
+      return NullableState.NOTNULL;
     } else if (symbol.metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-      return AbstractValue.NULL;
+      return NullableState.NULL;
     }
-    return AbstractValue.UNKNOWN;
+    return NullableState.UNKNOWN;
   }
 
-  public AbstractValue checkNullity(Tree tree) {
+  public NullableState checkNullity(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       return checkNullity((IdentifierTree) tree);
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -306,17 +308,17 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
         return checkNullity(symbol);
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
-      return AbstractValue.NULL;
+      return NullableState.NULL;
     }
-    return AbstractValue.UNKNOWN;
+    return NullableState.UNKNOWN;
   }
 
-  public AbstractValue checkNullity(IdentifierTree tree) {
+  public NullableState checkNullity(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
     if (isSymbolLocalVariableOrMethodParameter(symbol)) {
-      return currentState.getVariableValue((VariableSymbol) symbol);
+      return currentState.getVariableState((VariableSymbol) symbol);
     }
-    return AbstractValue.UNKNOWN;
+    return NullableState.UNKNOWN;
   }
 
   /**
@@ -329,14 +331,14 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void checkForIssue(Tree tree, String nullableMessage, String nullMessage) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (checkNullity(tree) == AbstractValue.NULL) {
+      if (checkNullity(tree).equals(NullableState.NULL)) {
         // prevents reporting issue multiple times
-        currentState.setVariableValue((VariableSymbol) symbol, AbstractValue.UNKNOWN);
+        currentState.setVariableState((VariableSymbol) symbol, NullableState.UNKNOWN);
         context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       Symbol symbol = ((MethodInvocationTree) tree).symbol();
-      if (checkNullity(symbol) == AbstractValue.NULL) {
+      if (checkNullity(symbol).equals(NullableState.NULL)) {
         context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
@@ -361,8 +363,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     return conditionalState;
   }
 
-  private ConditionalState visitCondition(ExpressionTree tree, State newState) {
-    State oldState = currentState;
+  private ConditionalState visitCondition(ExpressionTree tree, ExecutionState newState) {
+    ExecutionState oldState = currentState;
     currentState = newState;
     ConditionalState result = visitCondition(tree);
     currentState = oldState;
@@ -407,16 +409,16 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void visitRelationalEqualTo(BinaryExpressionTree tree) {
     VariableSymbol symbol = extractRelationalSymbol(tree);
     if (symbol != null && currentConditionalState != null) {
-      currentConditionalState.trueState.setVariableValue(symbol, AbstractValue.NULL);
-      currentConditionalState.falseState.setVariableValue(symbol, AbstractValue.NOTNULL);
+      currentConditionalState.trueState.setVariableState(symbol, NullableState.NULL);
+      currentConditionalState.falseState.setVariableState(symbol, NullableState.NOTNULL);
     }
   }
 
   private void visitRelationalNotEqualTo(BinaryExpressionTree tree) {
     VariableSymbol symbol = extractRelationalSymbol(tree);
     if (symbol != null && currentConditionalState != null) {
-      currentConditionalState.trueState.setVariableValue(symbol, AbstractValue.NOTNULL);
-      currentConditionalState.falseState.setVariableValue(symbol, AbstractValue.NULL);
+      currentConditionalState.trueState.setVariableState(symbol, NullableState.NOTNULL);
+      currentConditionalState.falseState.setVariableState(symbol, NullableState.NULL);
     }
   }
 
@@ -453,84 +455,89 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
-  public enum AbstractValue {
+  public static class NullableState extends State {
     // value is known to be not null.
-    NOTNULL,
+    public static final NullableState NOTNULL = new NullableState();
     // value is known to be null.
-    NULL,
+    public static final NullableState NULL = new NullableState();
     // value is unknown (could be null or not null).
-    UNKNOWN
+    public static final NullableState UNKNOWN = new NullableState();
+
+    @Override
+    public State merge(State s) {
+      return this.equals(s) ? this : UNKNOWN;
+    }
   }
 
   @VisibleForTesting
   static class ConditionalState {
-    final State falseState;
-    final State trueState;
+    final ExecutionState falseState;
+    final ExecutionState trueState;
 
-    ConditionalState(State currentState) {
-      falseState = new State(currentState);
-      trueState = new State(currentState);
+    ConditionalState(ExecutionState currentState) {
+      falseState = new ExecutionState(currentState);
+      trueState = new ExecutionState(currentState);
     }
 
     void mergeConditionalAnd(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
       // copies the learned values to the parent.
-      trueState.copyValuesFrom(leftConditionalState.trueState);
-      trueState.copyValuesFrom(rightConditionalState.trueState);
+      trueState.copyStatesFrom(leftConditionalState.trueState);
+      trueState.copyStatesFrom(rightConditionalState.trueState);
       // invalidates both false states and copies values to the parent
-      falseState.copyValuesFrom(leftConditionalState.falseState.invalidateValues());
-      falseState.copyValuesFrom(rightConditionalState.falseState.invalidateValues());
+      falseState.copyStatesFrom(leftConditionalState.falseState.invalidateValues());
+      falseState.copyStatesFrom(rightConditionalState.falseState.invalidateValues());
     }
 
     void mergeConditionalOr(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
       // invalidates both true states and copies value to the parent.
-      trueState.copyValuesFrom(leftConditionalState.trueState.invalidateValues());
-      trueState.copyValuesFrom(rightConditionalState.trueState.invalidateValues());
+      trueState.copyStatesFrom(leftConditionalState.trueState.invalidateValues());
+      trueState.copyStatesFrom(rightConditionalState.trueState.invalidateValues());
       // copies the learned values to the parent.
-      falseState.copyValuesFrom(leftConditionalState.falseState);
-      falseState.copyValuesFrom(rightConditionalState.falseState);
+      falseState.copyStatesFrom(leftConditionalState.falseState);
+      falseState.copyStatesFrom(rightConditionalState.falseState);
     }
   }
 
   @VisibleForTesting
-  static class State {
+  static class ExecutionState {
     @Nullable
-    final State parentState;
-    final Map<Symbol, AbstractValue> variables;
+    final ExecutionState parentState;
+    final Map<Symbol, NullableState> variables;
 
-    public State() {
+    public ExecutionState() {
       this.parentState = null;
       this.variables = new HashMap<>();
     }
 
-    public State(State parentState) {
+    public ExecutionState(ExecutionState parentState) {
       this.parentState = parentState;
       this.variables = new HashMap<>();
     }
 
     // returns the value of the variable in the current state.
-    public AbstractValue getVariableValue(Symbol variable) {
-      for (State state = this; state != null; state = state.parentState) {
-        AbstractValue result = state.variables.get(variable);
+    public NullableState getVariableState(Symbol variable) {
+      for (ExecutionState currentState = this; currentState != null; currentState = currentState.parentState) {
+        NullableState result = currentState.variables.get(variable);
         if (result != null) {
           return result;
         }
       }
-      return AbstractValue.UNKNOWN;
+      return NullableState.UNKNOWN;
     }
 
     // sets the value of the variable in the current state.
-    public void setVariableValue(Symbol variable, AbstractValue value) {
-      variables.put(variable, value);
+    public void setVariableState(Symbol variable, NullableState state) {
+      variables.put(variable, state);
     }
 
     /**
-     * copies the value of each variables in fromState to this
+     * copies the states of each variables in fromState to this
      *
-     * @param fromState state from which the values must be copied.
+     * @param fromExecutionState state from which the values must be copied.
      */
-    public void copyValuesFrom(State fromState) {
-      for (Symbol variable : fromState.variables.keySet()) {
-        this.setVariableValue(variable, fromState.getVariableValue(variable));
+    public void copyStatesFrom(ExecutionState fromExecutionState) {
+      for (Symbol variable : fromExecutionState.variables.keySet()) {
+        this.setVariableState(variable, fromExecutionState.getVariableState(variable));
       }
     }
 
@@ -539,49 +546,49 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
      *
      * @return this
      */
-    public State invalidateValues() {
+    public ExecutionState invalidateValues() {
       for (Symbol variable : variables.keySet()) {
-        setVariableValue(variable, AbstractValue.UNKNOWN);
+        setVariableState(variable, NullableState.UNKNOWN);
       }
       return this;
     }
 
-    public State invalidateVariables(Set<VariableSymbol> variables) {
+    public ExecutionState invalidateVariables(Set<VariableSymbol> variables) {
       for (VariableSymbol variable : variables) {
-        setVariableValue(variable, AbstractValue.UNKNOWN);
+        setVariableState(variable, NullableState.UNKNOWN);
       }
       return this;
     }
 
     /**
-     * merges the values of the variables from state1 and state2 into this.
+     * merges the states of the variables from state1 and state2 into this.
      *
      * the set of all variables in state1 union state2 is first built,
      * then the variables in this set are queried in both states (their values fall back to the parent state if they are not found).
      * their value are then set in the parent state (either to the corresponding value if they are equal, or to UNKNOWN).
      *
-     * @param state1 first state to merge
-     * @param state2 second state to merge or null
+     * @param executionState1 first state to merge
+     * @param executionState2 second state to merge or null
      * @return this
      */
-    public State mergeValues(State state1, @Nullable State state2) {
+    public ExecutionState mergeStates(ExecutionState executionState1, @Nullable ExecutionState executionState2) {
       Set<Symbol> mergeVariables = new HashSet<>();
-      mergeVariables.addAll(state1.variables.keySet());
-      if (state2 != null) {
-        mergeVariables.addAll(state2.variables.keySet());
+      mergeVariables.addAll(executionState1.variables.keySet());
+      if (executionState2 != null) {
+        mergeVariables.addAll(executionState2.variables.keySet());
       }
       for (Symbol variable : mergeVariables) {
-        AbstractValue currentValue = getVariableValue(variable);
-        AbstractValue trueValue = state1.variables.get(variable);
-        if (trueValue == null) {
-          trueValue = currentValue;
+        NullableState currentState = getVariableState(variable);
+        NullableState trueState = executionState1.variables.get(variable);
+        if (trueState == null) {
+          trueState = currentState;
         }
-        AbstractValue falseValue = state2 != null ? state2.variables.get(variable) : currentValue;
+        NullableState falseValue = executionState2 != null ? executionState2.variables.get(variable) : currentState;
         if (falseValue == null) {
-          falseValue = currentValue;
+          falseValue = currentState;
         }
         // both null -> null; both notnull -> notnull; else unknown
-        setVariableValue(variable, trueValue == falseValue ? trueValue : AbstractValue.UNKNOWN);
+        setVariableState(variable, trueState == falseValue ? trueState : NullableState.UNKNOWN);
       }
       return this;
     }
