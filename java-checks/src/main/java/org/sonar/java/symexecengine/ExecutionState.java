@@ -36,14 +36,14 @@ import java.util.Set;
 
 public class ExecutionState {
 
-  ExecutionState parent;
-  private SetMultimap<Symbol, Value> reachableValues = HashMultimap.create();
-  private SetMultimap<Symbol, Value> unreachableValues = HashMultimap.create();
+  final ExecutionState parent;
+  private SetMultimap<Symbol, SymbolicValue> reachableValues = HashMultimap.create();
+  private SetMultimap<Symbol, SymbolicValue> unreachableValues = HashMultimap.create();
   /**
    * List of symbol that were declared within this execution state.
    */
   private List<Symbol> definedInState = Lists.newArrayList();
-  private Map<Value, State> stateOfValue = Maps.newHashMap();
+  private Map<SymbolicValue, State> stateOfValue = Maps.newHashMap();
   private final Set<Tree> issueTrees;
 
   public ExecutionState(ExecutionState executionState) {
@@ -57,6 +57,7 @@ public class ExecutionState {
    * ParentState constructor.
    */
   public ExecutionState() {
+    this.parent = null;
     issueTrees = Sets.newHashSet();
   }
 
@@ -78,13 +79,13 @@ public class ExecutionState {
 
     for (Symbol symbol : unreachableValues.keys()) {
       // cleanup after merge of reachable/unreachable values
-      for (Value value : unreachableValues.get(symbol)) {
+      for (SymbolicValue value : unreachableValues.get(symbol)) {
         reachableValues.remove(symbol, value);
       }
     }
     // Merge states of values
-    for (Map.Entry<Value, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
-      Value value = valueStateEntry.getKey();
+    for (Map.Entry<SymbolicValue, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
+      SymbolicValue value = valueStateEntry.getKey();
       State state = valueStateEntry.getValue();
       State valueState = getStateOfValue(value);
       if (valueState == null) {
@@ -132,7 +133,7 @@ public class ExecutionState {
   private Set<Tree> getIssuableTreesOfCurrentState() {
     Set<Tree> results = Sets.newHashSet();
     for (Symbol symbol : definedInState) {
-      for (Value value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
+      for (SymbolicValue value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
         State state = stateOfValue.get(value);
         if (state.shouldRaiseIssue()) {
           results.addAll(state.reportingTrees());
@@ -145,7 +146,7 @@ public class ExecutionState {
   // FIXME : Hideous hack for closeable to get "Ignored" variables
   public List<State> getStatesOf(Symbol symbol) {
     List<State> states = Lists.newArrayList();
-    for (Value value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
+    for (SymbolicValue value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
       State state = stateOfValue.get(value);
       if (state != null) {
         states.add(state);
@@ -155,7 +156,7 @@ public class ExecutionState {
   }
 
   @CheckForNull
-  private State getStateOfValue(Value value) {
+  private State getStateOfValue(SymbolicValue value) {
     ExecutionState currentState = this;
     while (currentState != null) {
       State state = currentState.stateOfValue.get(value);
@@ -167,32 +168,29 @@ public class ExecutionState {
     return null;
   }
 
-  private Iterable<Value> getValues(Symbol symbol) {
+  Iterable<SymbolicValue> getValues(Symbol symbol) {
     return reachableValues.get(symbol);
   }
 
-  public void createValueForSymbol(Symbol symbol, Tree tree) {
+  public SymbolicValue createValueForSymbol(Symbol symbol, Tree tree) {
     // When creating a new value, all reachable values are now unreachable.
-    Set<Value> values = this.reachableValues.get(symbol);
+    Set<SymbolicValue> values = this.reachableValues.get(symbol);
     unreachableValues.putAll(symbol, values);
     values.clear();
-    Value value = new Value(tree);
+    SymbolicValue value = new SymbolicValue(tree);
     reachableValues.put(symbol, value);
     stateOfValue.put(value, State.UNSET);
+    return value;
   }
 
   public void markValueAs(Symbol symbol, State state) {
-    for (Value value : getValues(symbol)) {
+    for (SymbolicValue value : getValues(symbol)) {
       stateOfValue.put(value, state);
     }
   }
 
-  private static class Value {
-    final Tree treeNode;
-
-    public Value(Tree treeNode) {
-      this.treeNode = treeNode;
-    }
+  public void markValueAs(SymbolicValue value, State state) {
+    stateOfValue.put(value, state);
   }
 
 }

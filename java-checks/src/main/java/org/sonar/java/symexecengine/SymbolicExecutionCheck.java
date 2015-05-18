@@ -20,8 +20,12 @@
 package org.sonar.java.symexecengine;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.util.List;
 
 public abstract class SymbolicExecutionCheck {
 
@@ -32,17 +36,47 @@ public abstract class SymbolicExecutionCheck {
    *
    * @param executionState execution state
    * @param tree method to be analyzed
+   * @param arguments value of the arguments
    */
-  protected void initialize(ExecutionState executionState, MethodTree tree) {
+  protected void initialize(ExecutionState executionState, MethodTree tree, List<SymbolicValue> arguments) {
+  }
+
+  /**
+  * @deprecated Required by CloseableVisitor. Should be properly documented if real needs arise.
+  */
+  @Deprecated
+  protected void onAssignment(ExecutionState executionState, Tree tree, Symbol variable, ExpressionTree expression) {
   }
 
   /**
    * called when a constructor or method is invoked.
    *
    * @param executionState execution state
-   * @param tree method invocation or constructor tree
+   * @param tree method invocation, constructor tree or new class tree
    */
-  protected void onExecutableElementInvocation(ExecutionState executionState, MethodInvocationTree tree) {
+  protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<ExpressionTree> arguments) {
+  }
+
+  /**
+   * called when a AutoCloseable resource of a try block is closed.
+   *
+   * @param executionState current execution state
+   * @param tree declaration tree
+   * @param resource value representing the autoclosed resource
+   */
+  // FIXME(merciesa): should probably be replaced by a call to close on the resource.
+  @Deprecated
+  protected void onTryResourceClosed(ExecutionState executionState, SymbolicValue resource) {
+  }
+
+  /**
+   * called when a value is returned through a return statement.
+   *
+   * @param executionState execution state
+   * @param tree tree
+   * @param expression returned expression
+   */
+  protected void onValueReturned(ExecutionState executionState, ReturnStatementTree tree, ExpressionTree expression) {
   }
 
 }

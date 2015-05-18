@@ -25,6 +25,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.symexecengine.ExecutionState;
 import org.sonar.java.symexecengine.SymbolicExecutionCheck;
+import org.sonar.java.symexecengine.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -57,7 +58,7 @@ public class LockedVisitor extends SymbolicExecutionCheck {
   }
 
   @Override
-  public void initialize(ExecutionState executionState, MethodTree analyzedMethod) {
+  public void initialize(ExecutionState executionState, MethodTree analyzedMethod, List<SymbolicValue> arguments) {
     for (Symbol field : getAccessibleLockFields(analyzedMethod.symbol())) {
       executionState.defineSymbol(field);
       executionState.createValueForSymbol(field, field.declaration());
@@ -79,23 +80,25 @@ public class LockedVisitor extends SymbolicExecutionCheck {
     return symbols;
   }
 
-
   @Override
   protected boolean isSymbolRelevant(Symbol symbol) {
     return symbol.type().isSubtypeOf(JAVA_LOCK);
   }
 
   @Override
-  protected void onExecutableElementInvocation(ExecutionState executionState, MethodInvocationTree tree) {
-    ExpressionTree methodSelect = tree.methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-      if (expression.is(Tree.Kind.IDENTIFIER)) {
-        Symbol symbol = ((IdentifierTree) expression).symbol();
-        if (LOCK_INVOCATIONS.anyMatch(tree)) {
-          executionState.markValueAs(symbol, new LockState.Locked(tree));
-        } else if (UNLOCK_INVOCATION.matches(tree)) {
-          executionState.markValueAs(symbol, new LockState.Unlocked(tree));
+  protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<ExpressionTree> arguments) {
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
+      ExpressionTree methodSelect = methodInvocation.methodSelect();
+      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+        ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+        if (expression.is(Tree.Kind.IDENTIFIER)) {
+          Symbol symbol = ((IdentifierTree) expression).symbol();
+          if (LOCK_INVOCATIONS.anyMatch(methodInvocation)) {
+            executionState.markValueAs(symbol, new LockState.Locked(methodInvocation));
+          } else if (UNLOCK_INVOCATION.matches(methodInvocation)) {
+            executionState.markValueAs(symbol, new LockState.Unlocked(methodInvocation));
+          }
         }
       }
     }

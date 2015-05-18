@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.closeresource.CloseableVisitor;
+import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -59,14 +60,14 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      CloseableVisitor visitor = new CloseableVisitor(methodTree);
+      DataFlowVisitor visitor = new DataFlowVisitor(methodTree, new CloseableVisitor());
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
         Type reportedType = null;
-        if(issueTree.is(Tree.Kind.NEW_CLASS)) {
+        if (issueTree.is(Tree.Kind.NEW_CLASS)) {
           reportedType = ((NewClassTree) issueTree).symbolType();
         }
-        if(reportedType != null) {
+        if (reportedType != null) {
           addIssue(issueTree, String.format("Close this \"%s\".", reportedType.name()));
         }
       }

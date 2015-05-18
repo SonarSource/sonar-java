@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,6 +47,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -56,12 +58,19 @@ public class DataFlowVisitor extends BaseTreeVisitor {
   public DataFlowVisitor(MethodTree analyzedMethod, SymbolicExecutionCheck check) {
     this.check = check;
     executionState = new ExecutionState();
-    check.initialize(executionState, analyzedMethod);
+    List<SymbolicValue> arguments = new ArrayList<>();
+    for (VariableTree methodParameter : analyzedMethod.parameters()) {
+      if (isSymbolRelevant(methodParameter.symbol())) {
+        executionState.defineSymbol(methodParameter.symbol());
+        arguments.add(executionState.createValueForSymbol(methodParameter.symbol(), methodParameter));
+      }
+    }
+    check.initialize(executionState, analyzedMethod, arguments);
   }
 
-  protected ExecutionState executionState;
+  private ExecutionState executionState;
 
-  protected boolean isSymbolRelevant(Symbol symbol) {
+  protected final boolean isSymbolRelevant(Symbol symbol) {
     return check.isSymbolRelevant(symbol);
   }
 
@@ -71,6 +80,9 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     if (isSymbolRelevant(tree.symbol())) {
       executionState.defineSymbol(tree.symbol());
       executionState.createValueForSymbol(tree.symbol(), tree);
+      if (tree.initializer() != null) {
+        check.onAssignment(executionState, tree, tree.symbol(), tree.initializer());
+      }
     }
   }
 
@@ -80,6 +92,7 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     Symbol symbol = getSymbol(tree.variable());
     if (symbol != null && isSymbolRelevant(symbol)) {
       executionState.createValueForSymbol(symbol, tree.expression());
+      check.onAssignment(executionState, tree, symbol, tree.expression());
     }
   }
 
@@ -100,6 +113,7 @@ public class DataFlowVisitor extends BaseTreeVisitor {
   @Override
   public void visitNewClass(NewClassTree tree) {
     // do nothing, inner methods will be visited later
+    check.onExecutableElementInvocation(executionState, tree, tree.arguments());
   }
 
   @Override
@@ -113,7 +127,11 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     executionState = blockES;
     scan(tree.block());
     scan(tree.resources());
-    handleResources(tree.resources());
+    for (VariableTree resource : tree.resources()) {
+      for (SymbolicValue value : executionState.getValues(resource.symbol())) {
+        check.onTryResourceClosed(executionState, value);
+      }
+    }
     for (CatchTree catchTree : tree.catches()) {
       executionState = new ExecutionState(blockES.parent);
       scan(catchTree.block());
@@ -128,13 +146,6 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     } else {
       executionState = blockES.restoreParent();
     }
-  }
-
-  /**
-   * Allow some treatment on resources by implementors.
-   * @param resources
-   */
-  protected void handleResources(List<VariableTree> resources) {
   }
 
   @Override
@@ -236,7 +247,16 @@ public class DataFlowVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    check.onExecutableElementInvocation(executionState, tree);
+    check.onExecutableElementInvocation(executionState, tree, tree.arguments());
+  }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    super.visitReturnStatement(tree);
+    ExpressionTree expression = tree.expression();
+    if (expression != null) {
+      check.onValueReturned(executionState, tree, expression);
+    }
   }
 
   private void visitLoopStatement(StatementTree tree) {

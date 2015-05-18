@@ -22,8 +22,10 @@ package org.sonar.java.closeresource;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.symexecengine.DataFlowVisitor;
+import org.sonar.java.symexecengine.ExecutionState;
 import org.sonar.java.symexecengine.State;
+import org.sonar.java.symexecengine.SymbolicExecutionCheck;
+import org.sonar.java.symexecengine.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -36,15 +38,30 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
 
 import java.util.List;
 
-public class CloseableVisitor extends DataFlowVisitor {
+public class CloseableVisitor extends SymbolicExecutionCheck {
 
-  private static final MethodInvocationMatcherCollection CLOSE_INVOCATIONS = closeMethodInvocationMatcher();
+  private static final String CLOSE_METHOD_NAME = "close";
+  private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
+  private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
+
+  private static final MethodInvocationMatcherCollection CLOSE_INVOCATIONS = MethodInvocationMatcherCollection.create(
+    MethodInvocationMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_CLOSEABLE))
+      .name(CLOSE_METHOD_NAME)
+      .withNoParameterConstraint(),
+    MethodInvocationMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_AUTOCLOSEABLE))
+      .name(CLOSE_METHOD_NAME)
+      .withNoParameterConstraint(),
+    MethodInvocationMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf("org.springframework.context.support.AbstractApplicationContext"))
+      .name("registerShutdownHook")
+      .withNoParameterConstraint());
 
   private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
     "java.io.ByteArrayOutputStream",
@@ -55,40 +72,15 @@ public class CloseableVisitor extends DataFlowVisitor {
     "java.io.CharArrayWriter"
   };
 
-  private static final String CLOSE_METHOD_NAME = "close";
-  private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
-  private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
-
-  public CloseableVisitor(MethodTree analyzedMethod) {
-    super(analyzedMethod);
-    ignoreVariables(analyzedMethod.parameters());
-  }
-
-  private void ignoreVariables(List<VariableTree> variables) {
-    for (VariableTree methodParameter : variables) {
-      super.visitVariable(methodParameter);
-      ignoreVariable(methodParameter);
+  @Override
+  protected void initialize(ExecutionState executionState, MethodTree tree, List<SymbolicValue> arguments) {
+    for (SymbolicValue argument : arguments) {
+      ignoreValue(executionState, argument);
     }
   }
 
-  private void ignoreVariable(VariableTree variableTree) {
-    executionState.markValueAs(variableTree.symbol(), new CloseableState.Ignored(variableTree));
-  }
-
-  private static MethodInvocationMatcherCollection closeMethodInvocationMatcher() {
-    return MethodInvocationMatcherCollection.create(
-      MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_CLOSEABLE))
-        .name(CLOSE_METHOD_NAME)
-        .withNoParameterConstraint(),
-      MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_AUTOCLOSEABLE))
-        .name(CLOSE_METHOD_NAME)
-        .withNoParameterConstraint(),
-      MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf("org.springframework.context.support.AbstractApplicationContext"))
-        .name("registerShutdownHook")
-        .withNoParameterConstraint());
+  private void ignoreValue(ExecutionState executionState, SymbolicValue value) {
+    executionState.markValueAs(value, new CloseableState.Ignored(value.getTree()));
   }
 
   private static boolean isCloseableOrAutoCloseableSubtype(Type type) {
@@ -119,26 +111,25 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   @Override
-  public void visitVariable(VariableTree tree) {
-    super.visitVariable(tree);
-    ExpressionTree initializer = tree.initializer();
-
+  protected void onAssignment(ExecutionState executionState, Tree tree, Symbol variable, ExpressionTree expression) {
     // check first usage of closeables in order to manage use of same symbol
-    ignoreClosableSymbols(initializer);
-
-    Symbol symbol = tree.symbol();
-    if (isCloseableOrAutoCloseableSubtype(symbol.type())) {
-      executionState.markValueAs(symbol, getCloseableStateFromExpression(symbol, initializer));
+    ignoreClosableSymbols(executionState, expression);
+    if ((tree.is(Tree.Kind.VARIABLE) || isVariableIdentifierOrMemberSelect((AssignmentExpressionTree) tree)) && isCloseableOrAutoCloseableSubtype(variable.type())) {
+      executionState.markValueAs(variable, getCloseableStateFromExpression(executionState, variable, expression));
     }
   }
 
-  private State getCloseableStateFromExpression(Symbol symbol, @Nullable ExpressionTree expression) {
-    if (shouldBeIgnored(symbol, expression)) {
+  private boolean isVariableIdentifierOrMemberSelect(AssignmentExpressionTree tree) {
+    return tree.variable().is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
+  }
+
+  private State getCloseableStateFromExpression(ExecutionState executionState, Symbol symbol, @Nullable ExpressionTree expression) {
+    if (shouldBeIgnored(executionState, symbol, expression)) {
       return new CloseableState.Ignored(expression);
     } else if (isNull(expression)) {
       return State.UNSET;
     } else if (expression.is(Tree.Kind.NEW_CLASS)) {
-      if (usesIgnoredCloseableAsArgument(((NewClassTree) expression).arguments())) {
+      if (usesIgnoredCloseableAsArgument(executionState, ((NewClassTree) expression).arguments())) {
         return new CloseableState.Ignored(expression);
       }
       return new CloseableState.Open(expression);
@@ -151,12 +142,12 @@ public class CloseableVisitor extends DataFlowVisitor {
     return expression == null || expression.is(Tree.Kind.NULL_LITERAL);
   }
 
-  private boolean shouldBeIgnored(Symbol symbol, @Nullable ExpressionTree expression) {
-    return shouldBeIgnored(symbol) || shouldBeIgnored(expression);
+  private boolean shouldBeIgnored(ExecutionState executionState, Symbol symbol, @Nullable ExpressionTree expression) {
+    return shouldBeIgnored(executionState, symbol) || shouldBeIgnored(expression);
   }
 
-  private boolean shouldBeIgnored(Symbol symbol) {
-    return isSymbolIgnored(symbol) || symbol.isFinal()
+  private boolean shouldBeIgnored(ExecutionState executionState, Symbol symbol) {
+    return isSymbolIgnored(executionState, symbol) || symbol.isFinal()
       || isIgnoredCloseableSubtype(symbol.type())
       || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
   }
@@ -165,28 +156,28 @@ public class CloseableVisitor extends DataFlowVisitor {
     return expression != null && (isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()) || isIgnoredCloseableSubtype(expression.symbolType()));
   }
 
-  private boolean usesIgnoredCloseableAsArgument(List<ExpressionTree> arguments) {
+  private boolean usesIgnoredCloseableAsArgument(ExecutionState executionState, List<ExpressionTree> arguments) {
     for (ExpressionTree argument : arguments) {
-      if (isNewClassWithIgnoredArguments(argument)) {
+      if (isNewClassWithIgnoredArguments(executionState, argument)) {
         return true;
-      } else if (isMethodInvocationWithIgnoredArguments(argument)) {
+      } else if (isMethodInvocationWithIgnoredArguments(executionState, argument)) {
         return true;
-      } else if (useIgnoredCloseable(argument) || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType())) {
+      } else if (useIgnoredCloseable(executionState, argument) || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType())) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean isNewClassWithIgnoredArguments(ExpressionTree argument) {
-    return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(((NewClassTree) argument).arguments());
+  private boolean isNewClassWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
+    return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(executionState, ((NewClassTree) argument).arguments());
   }
 
-  private boolean isMethodInvocationWithIgnoredArguments(ExpressionTree argument) {
-    return argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(((MethodInvocationTree) argument).arguments());
+  private boolean isMethodInvocationWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
+    return argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(executionState, ((MethodInvocationTree) argument).arguments());
   }
 
-  private boolean useIgnoredCloseable(ExpressionTree expression) {
+  private boolean useIgnoredCloseable(ExecutionState executionState, ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       IdentifierTree identifier;
       if (expression.is(Tree.Kind.MEMBER_SELECT)) {
@@ -194,22 +185,22 @@ public class CloseableVisitor extends DataFlowVisitor {
       } else {
         identifier = (IdentifierTree) expression;
       }
-      if (isIgnoredCloseable(identifier.symbol())) {
+      if (isIgnoredCloseable(executionState, identifier.symbol())) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean isIgnoredCloseable(Symbol symbol) {
+  private boolean isIgnoredCloseable(ExecutionState executionState, Symbol symbol) {
     if (CloseableVisitor.isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
       return true;
     } else {
-      return isSymbolIgnored(symbol);
+      return isSymbolIgnored(executionState, symbol);
     }
   }
 
-  private boolean isSymbolIgnored(Symbol symbol) {
+  private boolean isSymbolIgnored(ExecutionState executionState, Symbol symbol) {
     List<State> statesOf = executionState.getStatesOf(symbol);
     for (State state : statesOf) {
       if ((state instanceof CloseableState) && ((CloseableState) state).isIgnored()) {
@@ -221,78 +212,53 @@ public class CloseableVisitor extends DataFlowVisitor {
   }
 
   @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    super.visitAssignmentExpression(tree);
-    ExpressionTree variable = tree.variable();
-    if (variable.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
-      ExpressionTree expression = tree.expression();
-
-      // check first usage of closeables in order to manage use of same symbol
-      ignoreClosableSymbols(expression);
-
-      IdentifierTree identifier;
-      if (variable.is(Tree.Kind.IDENTIFIER)) {
-        identifier = (IdentifierTree) variable;
-      } else {
-        identifier = ((MemberSelectExpressionTree) variable).identifier();
-      }
-      Symbol symbol = identifier.symbol();
-      if (isCloseableOrAutoCloseableSubtype(identifier.symbolType()) && symbol.owner().isMethodSymbol()) {
-        executionState.markValueAs(symbol, getCloseableStateFromExpression(symbol, expression));
-      }
-    }
+  protected void onTryResourceClosed(ExecutionState executionState, SymbolicValue resource) {
+    ignoreValue(executionState, resource);
   }
 
   @Override
-  protected void handleResources(List<VariableTree> resources) {
-    for (VariableTree resource : resources) {
-      ignoreVariable(resource);
-    }
+  protected void onValueReturned(ExecutionState executionState, ReturnStatementTree tree, ExpressionTree expression) {
+    ignoreClosableSymbols(executionState, expression);
   }
 
   @Override
-  public void visitNewClass(NewClassTree tree) {
-    ignoreClosableSymbols(tree.arguments());
-  }
-
-  @Override
-  public void visitReturnStatement(ReturnStatementTree tree) {
-    ignoreClosableSymbols(tree.expression());
-  }
-
-  @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
-    if (CLOSE_INVOCATIONS.anyMatch(tree)) {
-      ExpressionTree methodSelect = tree.methodSelect();
-      if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-        ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
-        if (expression.is(Tree.Kind.IDENTIFIER)) {
-          executionState.markValueAs(((IdentifierTree) expression).symbol(), new CloseableState.Closed(expression));
-        }
-      }
+  protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<ExpressionTree> arguments) {
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      ignoreClosableSymbols(executionState, ((NewClassTree) tree).arguments());
     } else {
-      ignoreClosableSymbols(tree.arguments());
+      MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
+      if (CLOSE_INVOCATIONS.anyMatch(methodInvocation)) {
+        ExpressionTree methodSelect = methodInvocation.methodSelect();
+        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+          ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
+          if (expression.is(Tree.Kind.IDENTIFIER)) {
+            executionState.markValueAs(((IdentifierTree) expression).symbol(), new CloseableState.Closed(expression));
+          }
+        }
+      } else {
+        ignoreClosableSymbols(executionState, methodInvocation.arguments());
+      }
     }
   }
 
-  private void ignoreClosableSymbols(List<ExpressionTree> expressions) {
+  private void ignoreClosableSymbols(ExecutionState executionState, List<ExpressionTree> expressions) {
     for (ExpressionTree expression : expressions) {
-      ignoreClosableSymbols(expression);
+      ignoreClosableSymbols(executionState, expression);
     }
   }
 
-  private void ignoreClosableSymbols(@Nullable ExpressionTree expression) {
+  private void ignoreClosableSymbols(ExecutionState executionState, @Nullable ExpressionTree expression) {
     if (expression != null) {
       if (expression.is(Tree.Kind.IDENTIFIER) && CloseableVisitor.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
         executionState.markValueAs(((IdentifierTree) expression).symbol(), new CloseableState.Ignored(expression));
       } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
-        ignoreClosableSymbols(((MemberSelectExpressionTree) expression).identifier());
+        ignoreClosableSymbols(executionState, ((MemberSelectExpressionTree) expression).identifier());
       } else if (expression.is(Tree.Kind.TYPE_CAST)) {
-        ignoreClosableSymbols(((TypeCastTree) expression).expression());
+        ignoreClosableSymbols(executionState, ((TypeCastTree) expression).expression());
       } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        ignoreClosableSymbols(((MethodInvocationTree) expression).arguments());
+        ignoreClosableSymbols(executionState, ((MethodInvocationTree) expression).arguments());
       } else if (expression.is(Tree.Kind.NEW_CLASS)) {
-        ignoreClosableSymbols(((NewClassTree) expression).arguments());
+        ignoreClosableSymbols(executionState, ((NewClassTree) expression).arguments());
       }
     }
   }
