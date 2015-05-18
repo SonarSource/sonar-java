@@ -23,17 +23,19 @@ import com.google.common.collect.Lists;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.symexecengine.DataFlowVisitor;
+import org.sonar.java.symexecengine.ExecutionState;
+import org.sonar.java.symexecengine.SymbolicExecutionCheck;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public class LockedVisitor extends DataFlowVisitor {
+public class LockedVisitor extends SymbolicExecutionCheck {
 
   private static final String JAVA_LOCK = "java.util.concurrent.locks.Lock";
 
@@ -54,9 +56,9 @@ public class LockedVisitor extends DataFlowVisitor {
         .withNoParameterConstraint());
   }
 
-  public LockedVisitor(Symbol.MethodSymbol analyzedMethod) {
-    super();
-    for (Symbol field : getAccessibleLockFields(analyzedMethod)) {
+  @Override
+  public void initialize(ExecutionState executionState, MethodTree analyzedMethod) {
+    for (Symbol field : getAccessibleLockFields(analyzedMethod.symbol())) {
       executionState.defineSymbol(field);
       executionState.createValueForSymbol(field, field.declaration());
     }
@@ -64,11 +66,11 @@ public class LockedVisitor extends DataFlowVisitor {
 
   private List<Symbol> getAccessibleLockFields(Symbol.MethodSymbol symbol) {
     List<Symbol> symbols = Lists.newArrayList();
-    Symbol owner =  symbol.owner();
+    Symbol owner = symbol.owner();
     while (owner.isTypeSymbol()) {
       Symbol.TypeSymbol typeSymbol = (Symbol.TypeSymbol) owner;
       for (Symbol member : typeSymbol.memberSymbols()) {
-        if(member.isVariableSymbol() && member.type().isSubtypeOf(JAVA_LOCK)) {
+        if (member.isVariableSymbol() && member.type().isSubtypeOf(JAVA_LOCK)) {
           symbols.add(member);
         }
       }
@@ -84,7 +86,7 @@ public class LockedVisitor extends DataFlowVisitor {
   }
 
   @Override
-  public void visitMethodInvocation(MethodInvocationTree tree) {
+  protected void onExecutableElementInvocation(ExecutionState executionState, MethodInvocationTree tree) {
     ExpressionTree methodSelect = tree.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
@@ -98,4 +100,5 @@ public class LockedVisitor extends DataFlowVisitor {
       }
     }
   }
+
 }

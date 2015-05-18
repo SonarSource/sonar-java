@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,6 +39,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class CloseableVisitor extends DataFlowVisitor {
@@ -57,8 +59,9 @@ public class CloseableVisitor extends DataFlowVisitor {
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
 
-  public CloseableVisitor(List<VariableTree> methodParameters) {
-    ignoreVariables(methodParameters);
+  public CloseableVisitor(MethodTree analyzedMethod) {
+    super(analyzedMethod);
+    ignoreVariables(analyzedMethod.parameters());
   }
 
   private void ignoreVariables(List<VariableTree> variables) {

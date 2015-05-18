@@ -34,6 +34,8 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -43,18 +45,25 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Set;
 
-public abstract class DataFlowVisitor extends BaseTreeVisitor {
+public class DataFlowVisitor extends BaseTreeVisitor {
 
-  public DataFlowVisitor() {
+  private final SymbolicExecutionCheck check;
+
+  public DataFlowVisitor(MethodTree analyzedMethod, SymbolicExecutionCheck check) {
+    this.check = check;
     executionState = new ExecutionState();
+    check.initialize(executionState, analyzedMethod);
   }
 
   protected ExecutionState executionState;
 
-  protected abstract boolean isSymbolRelevant(Symbol symbol);
+  protected boolean isSymbolRelevant(Symbol symbol) {
+    return check.isSymbolRelevant(symbol);
+  }
 
   @Override
   public void visitVariable(VariableTree tree) {
@@ -69,7 +78,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
     Symbol symbol = getSymbol(tree.variable());
-    if(symbol != null && isSymbolRelevant(symbol)) {
+    if (symbol != null && isSymbolRelevant(symbol)) {
       executionState.createValueForSymbol(symbol, tree.expression());
     }
   }
@@ -225,9 +234,14 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     visitLoopStatement(tree.statement());
   }
 
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    check.onExecutableElementInvocation(executionState, tree);
+  }
+
   private void visitLoopStatement(StatementTree tree) {
     executionState = new ExecutionState(executionState);
-    //Scan twice the tree in loop to create multiple value if required
+    // Scan twice the tree in loop to create multiple value if required
     scan(tree);
     scan(tree);
     executionState = executionState.restoreParent();

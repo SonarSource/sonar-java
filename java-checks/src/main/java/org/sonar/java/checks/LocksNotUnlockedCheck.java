@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.locks.LockedVisitor;
+import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -57,7 +58,7 @@ public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     BlockTree block = methodTree.block();
     if (block != null) {
-      LockedVisitor visitor = new LockedVisitor(methodTree.symbol());
+      DataFlowVisitor visitor = new DataFlowVisitor(methodTree, new LockedVisitor());
       block.accept(visitor);
       for (Tree issueTree : visitor.getIssueTrees()) {
         addIssue(issueTree, "Unlock this lock.");
