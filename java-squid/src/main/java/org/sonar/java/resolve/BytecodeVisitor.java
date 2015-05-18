@@ -71,6 +71,7 @@ public class BytecodeVisitor extends ClassVisitor {
     className = name;
     if (signature != null) {
       SignatureReader signatureReader = new SignatureReader(signature);
+      signatureReader.accept(new TypeParameterDeclaration(classSymbol));
       ReadGenericSignature readGenericSignature = new ReadGenericSignature();
       signatureReader.accept(readGenericSignature);
       ((JavaType.ClassJavaType) classSymbol.type).interfaces = readGenericSignature.interfaces();
@@ -212,7 +213,9 @@ public class BytecodeVisitor extends ClassVisitor {
       final JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(bytecodeCompleter.filterBytecodeFlags(flags), name, type, classSymbol);
       classSymbol.members.enter(methodSymbol);
       if (signature != null) {
-        new SignatureReader(signature).accept(new ReadMethodSignature(methodSymbol));
+        SignatureReader signatureReader = new SignatureReader(signature);
+        signatureReader.accept(new TypeParameterDeclaration(methodSymbol));
+        signatureReader.accept(new ReadMethodSignature(methodSymbol));
       }
       methodSymbol.parameters = new OrderedScope(methodSymbol);
       for (int i = 0; i < type.argTypes.size(); i += 1) {
@@ -318,11 +321,10 @@ public class BytecodeVisitor extends ClassVisitor {
 
     @Override
     public void visitFormalTypeParameter(String name) {
-      typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, classSymbol);
-      classSymbol.typeParameters.enter(typeVariableSymbol);
-      classSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
-      bounds = Lists.newArrayList();
-      ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = bounds;
+      List<JavaSymbol> lookup = classSymbol.typeParameters.lookup(name);
+      Preconditions.checkState(lookup.size() == 1, "found "+lookup.size());
+      typeVariableSymbol = (JavaSymbol.TypeVariableJavaSymbol) lookup.iterator().next();
+      bounds = ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds;
     }
 
     @Override
@@ -343,6 +345,28 @@ public class BytecodeVisitor extends ClassVisitor {
         public void visitEnd() {
           super.visitEnd();
           interfaces.add(typeRead);
+        }
+      };
+    }
+
+    @Override
+    public SignatureVisitor visitInterfaceBound() {
+      return boundVisitor();
+    }
+
+    @Override
+    public SignatureVisitor visitClassBound() {
+      return boundVisitor();
+    }
+
+    private ReadType boundVisitor() {
+      return new ReadType() {
+        @Override
+        public void visitEnd() {
+          super.visitEnd();
+          if (bounds != null) {
+            bounds.add(typeRead);
+          }
         }
       };
     }
@@ -370,6 +394,39 @@ public class BytecodeVisitor extends ClassVisitor {
     }
   }
 
+
+
+  private static class TypeParameterDeclaration extends SignatureVisitor {
+
+    private final JavaSymbol symbol;
+
+    public TypeParameterDeclaration(JavaSymbol symbol) {
+      super(Opcodes.ASM5);
+      this.symbol = symbol;
+      if(symbol.isTypeSymbol()) {
+        ((JavaSymbol.TypeJavaSymbol) symbol).typeParameters = new Scope(symbol);
+      }else if (symbol.isMethodSymbol()) {
+        ((JavaSymbol.MethodJavaSymbol) symbol).typeParameters = new Scope(symbol);
+      }
+    }
+
+    @Override
+    public void visitFormalTypeParameter(String name) {
+      JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, symbol);
+      if(symbol.isTypeSymbol()) {
+        JavaSymbol.TypeJavaSymbol typeJavaSymbol = (JavaSymbol.TypeJavaSymbol) symbol;
+        typeJavaSymbol.typeParameters.enter(typeVariableSymbol);
+        typeJavaSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
+        ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = Lists.newArrayList();
+      } else if (symbol.isMethodSymbol()) {
+        JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) symbol;
+        methodSymbol.typeParameters.enter(typeVariableSymbol);
+        methodSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
+        ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = Lists.newArrayList();
+      }
+    }
+  }
+
   private class ReadMethodSignature extends SignatureVisitor {
 
     private final JavaSymbol.MethodJavaSymbol methodSymbol;
@@ -382,16 +439,15 @@ public class BytecodeVisitor extends ClassVisitor {
       this.methodSymbol = methodSymbol;
       ((JavaType.MethodJavaType) methodSymbol.type).argTypes = Lists.newArrayList();
       ((JavaType.MethodJavaType) methodSymbol.type).thrown = Lists.newArrayList();
-      methodSymbol.typeParameters = new Scope(methodSymbol);
+
     }
 
     @Override
     public void visitFormalTypeParameter(String name) {
-      typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(name, methodSymbol);
-      methodSymbol.typeParameters.enter(typeVariableSymbol);
-      methodSymbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
-      bounds = Lists.newArrayList();
-      ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds = bounds;
+      List<JavaSymbol> lookup = methodSymbol.typeParameters.lookup(name);
+      Preconditions.checkState(lookup.size() == 1, "found "+lookup.size());
+      typeVariableSymbol = (JavaSymbol.TypeVariableJavaSymbol) lookup.iterator().next();
+      bounds = ((JavaType.TypeVariableJavaType) typeVariableSymbol.type).bounds;
     }
 
     @Override
