@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -301,5 +302,39 @@ public class BytecodeCompleterTest {
     List<Type> interfaces = clazz.interfaces();
     assertThat(interfaces).isNotNull();
     assertThat(interfaces).isEmpty();
+  }
+
+  @Test
+  public void forward_type_parameter_in_methods() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ForwardParameterInMethod");
+    assertThat(clazz.type()).isNotNull();
+    Collection<Symbol> symbols = clazz.lookupSymbols("bar");
+    assertThat(symbols).hasSize(1);
+    Symbol method = symbols.iterator().next();
+    Collection<JavaSymbol> typeParameters = ((JavaSymbol.MethodJavaSymbol) method).typeParameters().scopeSymbols();
+    assertThat(typeParameters).hasSize(2);
+    JavaSymbol xSymbol = ((JavaSymbol.MethodJavaSymbol) method).typeParameters().lookup("X").iterator().next();
+    JavaSymbol ySymbol = ((JavaSymbol.MethodJavaSymbol) method).typeParameters().lookup("Y").iterator().next();
+    assertThat(((JavaType.TypeVariableJavaType) xSymbol.type).bounds).hasSize(1);
+    JavaType bound = ((JavaType.TypeVariableJavaType) xSymbol.type).bounds.get(0);
+    assertThat(((JavaType.ParametrizedTypeJavaType)bound).typeParameters()).hasSize(1);
+    assertThat(((JavaType.ParametrizedTypeJavaType)bound).substitution(((JavaType.ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
+  }
+
+  @Test
+  public void forward_type_parameter_in_classes() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ForwardParameterInClass");
+    assertThat(clazz.type()).isNotNull();
+    Collection<Symbol> symbols = clazz.lookupSymbols("bar");
+    assertThat(symbols).hasSize(1);
+    Collection<JavaSymbol> typeParameters = ((JavaSymbol.TypeJavaSymbol) clazz).typeParameters().scopeSymbols();
+    assertThat(typeParameters).hasSize(2);
+    JavaSymbol xSymbol = ((JavaSymbol.TypeJavaSymbol) clazz).typeParameters().lookup("X").iterator().next();
+    JavaSymbol ySymbol = ((JavaSymbol.TypeJavaSymbol) clazz).typeParameters().lookup("Y").iterator().next();
+    assertThat(((JavaType.TypeVariableJavaType) xSymbol.type).bounds).hasSize(1);
+    JavaType bound = ((JavaType.TypeVariableJavaType) xSymbol.type).bounds.get(0);
+    assertThat(((JavaType.ParametrizedTypeJavaType)bound).typeParameters()).hasSize(1);
+    assertThat(((JavaType.ParametrizedTypeJavaType)bound).substitution(((JavaType.ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
+
   }
 }
