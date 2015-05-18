@@ -34,7 +34,6 @@ import static org.mockito.Mockito.when;
 import static org.sonar.java.checks.NullPointerCheck.AbstractValue.NOTNULL;
 import static org.sonar.java.checks.NullPointerCheck.AbstractValue.NULL;
 import static org.sonar.java.checks.NullPointerCheck.AbstractValue.UNKNOWN;
-import static org.sonar.java.checks.NullPointerCheck.AbstractValue.UNSET;
 
 public class NullPointerCheckTest {
 
@@ -58,8 +57,8 @@ public class NullPointerCheckTest {
     State parentState = new State();
     State currentState = new State(parentState);
 
-    // undefined variable must be unset
-    assertThat(parentState.getVariableValue(variable)).isSameAs(UNSET);
+    // undefined variable must be unknown
+    assertThat(parentState.getVariableValue(variable)).isSameAs(UNKNOWN);
 
     // variable defined in parent must be visible in current.
     parentState.setVariableValue(variable, NOTNULL);

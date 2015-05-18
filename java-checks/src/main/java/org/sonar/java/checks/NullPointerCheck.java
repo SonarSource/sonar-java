@@ -208,6 +208,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitMethod(MethodTree tree) {
     State oldState = currentState;
     currentState = new State();
+    for (VariableTree parameter : tree.parameters()) {
+      Symbol symbol = parameter.symbol();
+      currentState.setVariableValue(symbol, checkNullity(symbol));
+    }
     scan(tree.block());
     currentState = oldState;
   }
@@ -310,11 +314,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public AbstractValue checkNullity(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
     if (isSymbolLocalVariableOrMethodParameter(symbol)) {
-      AbstractValue value = currentState.getVariableValue((VariableSymbol) symbol);
-      if (value != AbstractValue.UNSET) {
-        return value;
-      }
-      return checkNullity(symbol);
+      return currentState.getVariableValue((VariableSymbol) symbol);
     }
     return AbstractValue.UNKNOWN;
   }
@@ -454,7 +454,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   public enum AbstractValue {
-    UNSET,
     // value is known to be not null.
     NOTNULL,
     // value is known to be null.
@@ -496,7 +495,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   static class State {
     @Nullable
     final State parentState;
-    final Map<VariableSymbol, AbstractValue> variables;
+    final Map<Symbol, AbstractValue> variables;
 
     public State() {
       this.parentState = null;
@@ -509,18 +508,18 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
 
     // returns the value of the variable in the current state.
-    public AbstractValue getVariableValue(VariableSymbol variable) {
+    public AbstractValue getVariableValue(Symbol variable) {
       for (State state = this; state != null; state = state.parentState) {
         AbstractValue result = state.variables.get(variable);
         if (result != null) {
           return result;
         }
       }
-      return AbstractValue.UNSET;
+      return AbstractValue.UNKNOWN;
     }
 
     // sets the value of the variable in the current state.
-    public void setVariableValue(VariableSymbol variable, AbstractValue value) {
+    public void setVariableValue(Symbol variable, AbstractValue value) {
       variables.put(variable, value);
     }
 
@@ -530,7 +529,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
      * @param fromState state from which the values must be copied.
      */
     public void copyValuesFrom(State fromState) {
-      for (VariableSymbol variable : fromState.variables.keySet()) {
+      for (Symbol variable : fromState.variables.keySet()) {
         this.setVariableValue(variable, fromState.getVariableValue(variable));
       }
     }
@@ -541,7 +540,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
      * @return this
      */
     public State invalidateValues() {
-      for (VariableSymbol variable : variables.keySet()) {
+      for (Symbol variable : variables.keySet()) {
         setVariableValue(variable, AbstractValue.UNKNOWN);
       }
       return this;
@@ -566,12 +565,12 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
      * @return this
      */
     public State mergeValues(State state1, @Nullable State state2) {
-      Set<VariableSymbol> mergeVariables = new HashSet<>();
+      Set<Symbol> mergeVariables = new HashSet<>();
       mergeVariables.addAll(state1.variables.keySet());
       if (state2 != null) {
         mergeVariables.addAll(state2.variables.keySet());
       }
-      for (VariableSymbol variable : mergeVariables) {
+      for (Symbol variable : mergeVariables) {
         AbstractValue currentValue = getVariableValue(variable);
         AbstractValue trueValue = state1.variables.get(variable);
         if (trueValue == null) {
