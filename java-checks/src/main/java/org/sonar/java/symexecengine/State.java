@@ -49,10 +49,6 @@ public abstract class State {
 
   public abstract State merge(State s);
 
-  public boolean shouldRaiseIssue() {
-    return false;
-  }
-
   public List<Tree> reportingTrees() {
     return changingStateTrees;
   }

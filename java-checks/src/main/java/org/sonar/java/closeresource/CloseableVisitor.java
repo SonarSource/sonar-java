@@ -41,7 +41,9 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 
 import javax.annotation.Nullable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CloseableVisitor extends SymbolicExecutionCheck {
 
@@ -103,11 +105,6 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
       return typeSymbol.lookupSymbols(CLOSE_METHOD_NAME).isEmpty();
     }
     return false;
-  }
-
-  @Override
-  protected boolean isSymbolRelevant(Symbol symbol) {
-    return isCloseableOrAutoCloseableSubtype(symbol.type());
   }
 
   @Override
@@ -261,6 +258,19 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
         ignoreClosableSymbols(executionState, ((NewClassTree) expression).arguments());
       }
     }
+  }
+
+  private final Set<Tree> issueTree = new HashSet<>();
+
+  @Override
+  protected void onValueUnreachable(ExecutionState executionState, State state) {
+    if (state instanceof CloseableState.Open) {
+      issueTree.addAll(state.reportingTrees());
+    }
+  }
+
+  public Set<Tree> getIssueTrees() {
+    return issueTree;
   }
 
 }

@@ -26,7 +26,6 @@ import org.sonar.check.Rule;
 import org.sonar.java.closeresource.CloseableVisitor;
 import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,20 +55,15 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     if (!hasSemantic()) {
       return;
     }
-
-    MethodTree methodTree = (MethodTree) tree;
-    BlockTree block = methodTree.block();
-    if (block != null) {
-      DataFlowVisitor visitor = new DataFlowVisitor(methodTree, new CloseableVisitor());
-      block.accept(visitor);
-      for (Tree issueTree : visitor.getIssueTrees()) {
-        Type reportedType = null;
-        if (issueTree.is(Tree.Kind.NEW_CLASS)) {
-          reportedType = ((NewClassTree) issueTree).symbolType();
-        }
-        if (reportedType != null) {
-          addIssue(issueTree, String.format("Close this \"%s\".", reportedType.name()));
-        }
+    CloseableVisitor visitor = new CloseableVisitor();
+    DataFlowVisitor.analyze((MethodTree) tree, visitor);
+    for (Tree issueTree : visitor.getIssueTrees()) {
+      Type reportedType = null;
+      if (issueTree.is(Tree.Kind.NEW_CLASS)) {
+        reportedType = ((NewClassTree) issueTree).symbolType();
+      }
+      if (reportedType != null) {
+        addIssue(issueTree, String.format("Close this \"%s\".", reportedType.name()));
       }
     }
   }

@@ -19,10 +19,10 @@
  */
 package org.sonar.java.symexecengine;
 
-import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -55,34 +55,37 @@ public class DataFlowVisitor extends BaseTreeVisitor {
 
   private final SymbolicExecutionCheck check;
 
-  public DataFlowVisitor(MethodTree analyzedMethod, SymbolicExecutionCheck check) {
-    this.check = check;
-    executionState = new ExecutionState();
-    List<SymbolicValue> arguments = new ArrayList<>();
-    for (VariableTree methodParameter : analyzedMethod.parameters()) {
-      if (isSymbolRelevant(methodParameter.symbol())) {
+  public static void analyze(MethodTree method, SymbolicExecutionCheck check) {
+    BlockTree block = method.block();
+    if (block != null) {
+      ExecutionState executionState = new ExecutionState();
+      List<SymbolicValue> arguments = new ArrayList<>();
+      for (VariableTree methodParameter : method.parameters()) {
         executionState.defineSymbol(methodParameter.symbol());
         arguments.add(executionState.createValueForSymbol(methodParameter.symbol(), methodParameter));
       }
+      check.initialize(executionState, method, arguments);
+      block.accept(new DataFlowVisitor(executionState, method, check));
+      for (State state : executionState.getStatesOfCurrentExecutionState()) {
+        check.onValueUnreachable(executionState, state);
+      }
     }
-    check.initialize(executionState, analyzedMethod, arguments);
+  }
+
+  private DataFlowVisitor(ExecutionState executionState, MethodTree analyzedMethod, SymbolicExecutionCheck check) {
+    this.check = check;
+    this.executionState = executionState;
   }
 
   private ExecutionState executionState;
 
-  protected final boolean isSymbolRelevant(Symbol symbol) {
-    return check.isSymbolRelevant(symbol);
-  }
-
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-    if (isSymbolRelevant(tree.symbol())) {
-      executionState.defineSymbol(tree.symbol());
-      executionState.createValueForSymbol(tree.symbol(), tree);
-      if (tree.initializer() != null) {
-        check.onAssignment(executionState, tree, tree.symbol(), tree.initializer());
-      }
+    executionState.defineSymbol(tree.symbol());
+    executionState.createValueForSymbol(tree.symbol(), tree);
+    if (tree.initializer() != null) {
+      check.onAssignment(executionState, tree, tree.symbol(), tree.initializer());
     }
   }
 
@@ -90,7 +93,7 @@ public class DataFlowVisitor extends BaseTreeVisitor {
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
     Symbol symbol = getSymbol(tree.variable());
-    if (symbol != null && isSymbolRelevant(symbol)) {
+    if (symbol != null) {
       executionState.createValueForSymbol(symbol, tree.expression());
       check.onAssignment(executionState, tree, symbol, tree.expression());
     }
@@ -141,9 +144,10 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     if (tree.finallyBlock() != null) {
       executionState = new ExecutionState(blockES.parent);
       scan(tree.finallyBlock());
-      executionState.reportIssues();
+      reportUnreachable(executionState.getStatesOfCurrentExecutionState());
       executionState = blockES.parent.overrideBy(blockES.overrideBy(executionState));
     } else {
+      reportUnreachable(blockES.getStatesOfCurrentExecutionState());
       executionState = blockES.restoreParent();
     }
   }
@@ -156,12 +160,13 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.thenStatement());
 
     if (tree.elseStatement() == null) {
+      reportUnreachable(thenES.getStatesOfCurrentExecutionState());
       executionState = thenES.restoreParent();
     } else {
       ExecutionState elseES = new ExecutionState(thenES.parent);
       executionState = elseES;
       scan(tree.elseStatement());
-      elseES.reportIssues();
+      reportUnreachable(elseES.getStatesOfCurrentExecutionState());
       executionState = thenES.parent.overrideBy(thenES.merge(elseES));
     }
   }
@@ -267,9 +272,10 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     executionState = executionState.restoreParent();
   }
 
-  public Set<Tree> getIssueTrees() {
-    Preconditions.checkState(executionState.parent == null);
-    return executionState.getIssueTrees();
+  private void reportUnreachable(Set<State> states) {
+    for (State state : states) {
+      check.onValueUnreachable(executionState, state);
+    }
   }
 
 }

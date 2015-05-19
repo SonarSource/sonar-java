@@ -27,15 +27,15 @@ import java.util.List;
 
 public abstract class CloseableState extends State {
 
-
   public CloseableState(Tree tree) {
     super(tree);
   }
+
   public CloseableState(List<Tree> trees) {
     super(trees);
   }
 
-  public static class Closed extends CloseableState  {
+  public static class Closed extends CloseableState {
     public Closed(Tree tree) {
       super(tree);
     }
@@ -45,7 +45,8 @@ public abstract class CloseableState extends State {
       return s;
     }
   }
-  public static class Open extends CloseableState  {
+
+  public static class Open extends CloseableState {
     public Open(Tree tree) {
       super(tree);
     }
@@ -56,22 +57,18 @@ public abstract class CloseableState extends State {
 
     @Override
     public State merge(State s) {
-      if(s instanceof Open) {
+      if (s instanceof Open) {
         List<Tree> trees = Lists.newArrayList(s.reportingTrees());
         trees.addAll(reportingTrees());
         return new Open(trees);
-      } else if(s instanceof Ignored) {
+      } else if (s instanceof Ignored) {
         return s;
       }
-
       return this;
     }
-    @Override
-    public boolean shouldRaiseIssue() {
-      return true;
-    }
   }
-  public static class Ignored extends CloseableState  {
+
+  public static class Ignored extends CloseableState {
     public Ignored(Tree tree) {
       super(tree);
     }

@@ -29,8 +29,6 @@ import java.util.List;
 
 public abstract class SymbolicExecutionCheck {
 
-  protected abstract boolean isSymbolRelevant(Symbol symbol);
-
   /**
    * called prior analysis of the given method.
    *
@@ -58,7 +56,7 @@ public abstract class SymbolicExecutionCheck {
   }
 
   /**
-   * called when a AutoCloseable resource of a try block is closed.
+   * @deprecated called when a AutoCloseable resource of a try block is closed.
    *
    * @param executionState current execution state
    * @param tree declaration tree
@@ -77,6 +75,15 @@ public abstract class SymbolicExecutionCheck {
    * @param expression returned expression
    */
   protected void onValueReturned(ExecutionState executionState, ReturnStatementTree tree, ExpressionTree expression) {
+  }
+
+  /**
+  * called when a value becomes unreachable.
+   *
+   * @param executionState execution state
+   * @param state of the value when it became unreachable
+   */
+  protected void onValueUnreachable(ExecutionState executionState, State state) {
   }
 
 }

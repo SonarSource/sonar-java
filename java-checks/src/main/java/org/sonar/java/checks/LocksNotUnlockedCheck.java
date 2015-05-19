@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.locks.LockedVisitor;
 import org.sonar.java.symexecengine.DataFlowVisitor;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -54,15 +53,11 @@ public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
     if (!hasSemantic()) {
       return;
     }
-
-    MethodTree methodTree = (MethodTree) tree;
-    BlockTree block = methodTree.block();
-    if (block != null) {
-      DataFlowVisitor visitor = new DataFlowVisitor(methodTree, new LockedVisitor());
-      block.accept(visitor);
-      for (Tree issueTree : visitor.getIssueTrees()) {
-        addIssue(issueTree, "Unlock this lock.");
-      }
+    LockedVisitor visitor = new LockedVisitor();
+    DataFlowVisitor.analyze((MethodTree) tree, visitor);
+    for (Tree issueTree : visitor.getIssueTrees()) {
+      addIssue(issueTree, "Unlock this lock.");
     }
   }
+
 }

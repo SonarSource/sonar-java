@@ -24,6 +24,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.symexecengine.ExecutionState;
+import org.sonar.java.symexecengine.State;
 import org.sonar.java.symexecengine.SymbolicExecutionCheck;
 import org.sonar.java.symexecengine.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,7 +35,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class LockedVisitor extends SymbolicExecutionCheck {
 
@@ -81,11 +84,6 @@ public class LockedVisitor extends SymbolicExecutionCheck {
   }
 
   @Override
-  protected boolean isSymbolRelevant(Symbol symbol) {
-    return symbol.type().isSubtypeOf(JAVA_LOCK);
-  }
-
-  @Override
   protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<ExpressionTree> arguments) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
@@ -102,6 +100,19 @@ public class LockedVisitor extends SymbolicExecutionCheck {
         }
       }
     }
+  }
+
+  private final Set<Tree> issueTree = new HashSet<>();
+
+  @Override
+  protected void onValueUnreachable(ExecutionState executionState, State state) {
+    if (state instanceof LockState.Locked) {
+      issueTree.addAll(state.reportingTrees());
+    }
+  }
+
+  public Set<Tree> getIssueTrees() {
+    return issueTree;
   }
 
 }

@@ -44,13 +44,11 @@ public class ExecutionState {
    */
   private List<Symbol> definedInState = Lists.newArrayList();
   private Map<SymbolicValue, State> stateOfValue = Maps.newHashMap();
-  private final Set<Tree> issueTrees;
 
   public ExecutionState(ExecutionState executionState) {
     this.parent = executionState;
     this.reachableValues = HashMultimap.create(executionState.reachableValues);
     this.unreachableValues = HashMultimap.create(executionState.unreachableValues);
-    issueTrees = null;
   }
 
   /**
@@ -58,7 +56,6 @@ public class ExecutionState {
    */
   public ExecutionState() {
     this.parent = null;
-    issueTrees = Sets.newHashSet();
   }
 
   public void defineSymbol(Symbol symbol) {
@@ -106,37 +103,16 @@ public class ExecutionState {
   }
 
   public ExecutionState restoreParent() {
-    if (parent != null) {
-      reportIssues();
-      return parent.merge(this);
-    }
-    return this;
+    return parent.merge(this);
   }
 
-  public void reportIssues() {
-    reportIssuesToTopState(getIssuableTreesOfCurrentState());
-  }
-
-  private void reportIssuesToTopState(Set<Tree> trees) {
-    if (parent == null) {
-      issueTrees.addAll(trees);
-    } else {
-      parent.reportIssuesToTopState(trees);
-    }
-  }
-
-  public Set<Tree> getIssueTrees() {
-    issueTrees.addAll(getIssuableTreesOfCurrentState());
-    return issueTrees;
-  }
-
-  private Set<Tree> getIssuableTreesOfCurrentState() {
-    Set<Tree> results = Sets.newHashSet();
+  Set<State> getStatesOfCurrentExecutionState() {
+    Set<State> results = Sets.newHashSet();
     for (Symbol symbol : definedInState) {
       for (SymbolicValue value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
         State state = stateOfValue.get(value);
-        if (state.shouldRaiseIssue()) {
-          results.addAll(state.reportingTrees());
+        if (state != null) {
+          results.add(state);
         }
       }
     }

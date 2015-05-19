@@ -30,11 +30,12 @@ public abstract class LockState extends State {
   public LockState(Tree tree) {
     super(tree);
   }
+
   public LockState(List<Tree> trees) {
     super(trees);
   }
 
-  public static class Unlocked extends LockState{
+  public static class Unlocked extends LockState {
     public Unlocked(Tree tree) {
       super(tree);
     }
@@ -47,8 +48,8 @@ public abstract class LockState extends State {
       return s;
     }
   }
-  public static class Locked extends LockState{
 
+  public static class Locked extends LockState {
     public Locked(Tree tree) {
       super(tree);
     }
@@ -59,23 +60,13 @@ public abstract class LockState extends State {
 
     @Override
     public State merge(State s) {
-      if(s instanceof Locked) {
+      if (s instanceof Locked) {
         List<Tree> trees = Lists.newArrayList(s.reportingTrees());
         trees.addAll(reportingTrees());
         return new Locked(trees);
       }
       return this;
     }
-
-    @Override
-    public boolean shouldRaiseIssue() {
-      return true;
-    }
   }
-
-
-
-
-
 
 }
