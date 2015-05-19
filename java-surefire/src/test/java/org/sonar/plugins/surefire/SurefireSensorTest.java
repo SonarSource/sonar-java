@@ -236,4 +236,17 @@ public class SurefireSensorTest {
     verify(context).saveMeasure(eq(resource("org.apache.shindig.protocol.TestHandler")), eq(CoreMetrics.TESTS), eq(0.0));
     verify(context).saveMeasure(eq(resource("org.apache.shindig.protocol.TestHandler")), eq(CoreMetrics.SKIPPED_TESTS), eq(1.0));
   }
+
+  @Test
+  public void should_support_reportNameSuffix() throws URISyntaxException {
+    SensorContext context = mockContext();
+    surefireSensor.collect(context, new File(getClass().getResource(
+        "/org/sonar/plugins/surefire/SurefireSensorTest/should_support_reportNameSuffix/").toURI()));
+
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TESTS), eq(4d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_FAILURES), eq(2d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_ERRORS), eq(0d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.SKIPPED_TESTS), eq(2d));
+    verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_SUCCESS_DENSITY), eq(50d));
+  }
 }
