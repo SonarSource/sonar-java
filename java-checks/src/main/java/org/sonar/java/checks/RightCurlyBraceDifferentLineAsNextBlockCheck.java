@@ -19,20 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
-import java.util.Set;
+import java.util.List;
 
 @Rule(
   key = "RightCurlyBraceDifferentLineAsNextBlockCheck",
@@ -41,30 +42,38 @@ import java.util.Set;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor, JavaCheck {
-
-  private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(
-      "else",
-      "catch",
-      "finally");
-
-  private boolean lastTokenIsRightCurlyBrace;
-  private int lastTokenLine;
+public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void visitFile(AstNode astNode) {
-    lastTokenIsRightCurlyBrace = false;
-    lastTokenLine = -1;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.IF_STATEMENT, Tree.Kind.TRY_STATEMENT);
   }
 
   @Override
-  public void visitToken(Token token) {
-    if (lastTokenIsRightCurlyBrace && lastTokenLine == token.getLine() && NEXT_BLOCKS.contains(token.getValue())) {
-      getContext().createLineViolation(this, "Move this \"" + token.getValue() + "\" keyword to a new dedicated line.", token);
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.IF_STATEMENT)) {
+      IfStatementTree ifStatementTree = (IfStatementTree) tree;
+      StatementTree thenStatement = ifStatementTree.thenStatement();
+      if (ifStatementTree.elseKeyword() != null && thenStatement.is(Tree.Kind.BLOCK)) {
+        checkBlock(ifStatementTree.elseKeyword(), (BlockTree) thenStatement);
+      }
+    } else {
+      TryStatementTree tryStatementTree = (TryStatementTree) tree;
+      BlockTree block = tryStatementTree.block();
+      for (CatchTree catchTree : tryStatementTree.catches()) {
+        checkBlock(catchTree.catchKeyword(), block);
+        block = catchTree.block();
+      }
+      SyntaxToken finallyKeyword = tryStatementTree.finallyKeyword();
+      if (finallyKeyword != null) {
+        checkBlock(finallyKeyword, block);
+      }
     }
-
-    lastTokenIsRightCurlyBrace = "}".equals(token.getValue());
-    lastTokenLine = token.getLine();
   }
 
+  private void checkBlock(SyntaxToken keyword, BlockTree previousBlock) {
+    if (keyword.line() == previousBlock.closeBraceToken().line()) {
+      addIssue(keyword, "Move this \"" + keyword.text() + "\" keyword to a new dedicated line.");
+    }
+  }
 }
