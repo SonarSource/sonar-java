@@ -68,7 +68,7 @@ public final class SyntacticEquivalence {
       return false;
     } else if (leftNode.isLeaf()) {
       return areLeafsEquivalent(leftNode, rightNode);
-    } else if (leftNode.getKind() == Tree.Kind.OTHER) {
+    } else if (leftNode.is(Tree.Kind.OTHER)) {
       return false;
     }
 
@@ -94,6 +94,8 @@ public final class SyntacticEquivalence {
       return Objects.equal(((PrimitiveTypeTree) leftNode).keyword().text(), ((PrimitiveTypeTree) rightNode).keyword().text());
     } else if (leftNode instanceof SyntaxToken) {
       return Objects.equal(((SyntaxToken) leftNode).text(), ((SyntaxToken) rightNode).text());
+    } else if (leftNode.is(Tree.Kind.INFERED_TYPE)){
+      return rightNode.is(Tree.Kind.INFERED_TYPE);
     } else {
       throw new IllegalArgumentException();
     }
