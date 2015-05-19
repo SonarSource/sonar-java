@@ -19,17 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -37,7 +36,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 
 @Rule(
@@ -56,7 +54,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     .typeDefinition(GENERIC_ASSERT).name("describedAs").withNoParameterConstraint();
   private static final MethodInvocationMatcher FEST_OVERRIDE_ERROR_METHOD = MethodInvocationMatcher.create()
     .typeDefinition(GENERIC_ASSERT).name("overridingErrorMessage").withNoParameterConstraint();
-  private static final ArrayList<MethodInvocationMatcher> ASSERTION_INVOCATION_MATCHERS = Lists.newArrayList(
+  private static final MethodInvocationMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodInvocationMatcherCollection.create(
     MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
     MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
     MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
@@ -79,7 +77,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   public void visitMethod(MethodTree tree) {
     boolean isUnitTest = isUnitTest(tree);
     inUnitTest.push(isUnitTest);
-    methodContainsAssertion.push(Boolean.FALSE);
+    methodContainsAssertion.push(false);
     super.visitMethod(tree);
     inUnitTest.pop();
     if (isUnitTest && !methodContainsAssertion.pop()) {
@@ -97,22 +95,18 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private boolean isAssertion(MethodInvocationTree mit) {
-    for (MethodInvocationMatcher methodInvocationMatcher : ASSERTION_INVOCATION_MATCHERS) {
-      if (methodInvocationMatcher.matches(mit) &&
-          !FEST_AS_METHOD.matches(mit) &&
-          !FEST_OVERRIDE_ERROR_METHOD.matches(mit) &&
-          !FEST_DESCRIBED_AS_METHOD.matches(mit)) {
-        return true;
-      }
+    if (ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) &&
+        !FEST_AS_METHOD.matches(mit) &&
+        !FEST_OVERRIDE_ERROR_METHOD.matches(mit) &&
+        !FEST_DESCRIBED_AS_METHOD.matches(mit)) {
+      return true;
     }
     return false;
   }
 
   private boolean isUnitTest(MethodTree tree) {
-    for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
-      if (annotationTree.symbolType().is("org.junit.Test")) {
-        return true;
-      }
+    if (tree.symbol().metadata().isAnnotatedWith("org.junit.Test")) {
+      return true;
     }
     Symbol.TypeSymbol enclosingClass = tree.symbol().enclosingClass();
     return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && tree.simpleName().name().startsWith("test");
