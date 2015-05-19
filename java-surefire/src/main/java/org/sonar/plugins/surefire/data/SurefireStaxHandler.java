@@ -65,6 +65,9 @@ public class SurefireStaxHandler implements XmlStreamHandler {
 
   private String getClassname(SMInputCursor testCaseCursor, String defaultClassname) throws XMLStreamException {
     String testClassName = testCaseCursor.getAttrValue("classname");
+    if(StringUtils.isNotBlank(testClassName) && testClassName.endsWith(")")) {
+      testClassName = testClassName.substring(0, testClassName.indexOf("("));
+    }
     return StringUtils.defaultIfBlank(testClassName, defaultClassname);
   }
 
