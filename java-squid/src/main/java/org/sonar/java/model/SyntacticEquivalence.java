@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,21 +39,22 @@ public final class SyntacticEquivalence {
    * @return true, if nodes are syntactically equivalent
    */
   public static boolean areEquivalent(List<? extends Tree> leftList, List<? extends Tree> rightList) {
-    if(leftList.size()!= rightList.size()) {
+    if (leftList.size() != rightList.size()) {
       return false;
     }
-    for(int i =0; i<leftList.size();i++) {
+    for (int i = 0; i < leftList.size(); i++) {
       Tree left = leftList.get(i);
       Tree right = rightList.get(i);
-      if(!areEquivalent(left, right)) {
+      if (!areEquivalent(left, right)) {
         return false;
       }
     }
     return true;
   }
- /**
- * @return true, if nodes are syntactically equivalent
- */
+
+  /**
+  * @return true, if nodes are syntactically equivalent
+  */
   public static boolean areEquivalent(@Nullable Tree leftNode, @Nullable Tree rightNode) {
     return areEquivalent((JavaTree) leftNode, (JavaTree) rightNode);
   }
@@ -68,7 +70,7 @@ public final class SyntacticEquivalence {
       return false;
     } else if (leftNode.isLeaf()) {
       return areLeafsEquivalent(leftNode, rightNode);
-    } else if (leftNode.getKind() == Tree.Kind.OTHER) {
+    } else if (leftNode.is(Tree.Kind.OTHER)) {
       return false;
     }
 
@@ -94,6 +96,8 @@ public final class SyntacticEquivalence {
       return Objects.equal(((PrimitiveTypeTree) leftNode).keyword().text(), ((PrimitiveTypeTree) rightNode).keyword().text());
     } else if (leftNode instanceof SyntaxToken) {
       return Objects.equal(((SyntaxToken) leftNode).text(), ((SyntaxToken) rightNode).text());
+    } else if (leftNode.is(Tree.Kind.INFERED_TYPE)) {
+      return rightNode.is(Tree.Kind.INFERED_TYPE);
     } else {
       throw new IllegalArgumentException();
     }
