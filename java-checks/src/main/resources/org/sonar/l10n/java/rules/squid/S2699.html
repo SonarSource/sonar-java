@@ -1,0 +1,26 @@
+<p>
+  A test case without assertions ensures only that no exceptions are thrown. Beyond basic runnability, it ensures nothing about the behavior of the code under test.
+</p>
+<p>
+  This rule raises an exception when no assertions are found in a JUnit test.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void testDoSomething() {  // Noncompliant
+  MyClass myClass = new MyClass();
+  myClass.doSomething();
+  assertThat(myClass.doSomething());  // Fest assertion stub with no checks
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+@Test
+public void testDoSomething() {
+  MyClass myClass = new MyClass();
+  assertNull(myClass.doSomething());  // JUnit assertion
+  assertThat(myClass.doSomething()).isNull();  // Fest assertion
+}
+</pre>
