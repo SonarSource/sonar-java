@@ -37,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 public class RightCurlyBraceDifferentLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {
 
   @Override
-  void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
+  protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
     if (syntaxToken.line() == previousBlock.closeBraceToken().line()) {
       addIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" keyword to a new dedicated line.");
     }

@@ -59,6 +59,6 @@ public abstract class RightCurlyBraceToNextBlockAbstractVisitor extends Subscrip
     }
   }
 
-  abstract void checkTokenPosition(SyntaxToken syntaxToken, BlockTree nextBlock);
+  protected abstract void checkTokenPosition(SyntaxToken syntaxToken, BlockTree nextBlock);
 
 }
