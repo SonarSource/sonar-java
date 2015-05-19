@@ -19,21 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.BlockTree;
-import org.sonar.plugins.java.api.tree.CatchTree;
-import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import java.util.List;
 
 @Rule(
   key = "RightCurlyBraceSameLineAsNextBlockCheck",
@@ -42,38 +34,12 @@ import java.util.List;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class RightCurlyBraceSameLineAsNextBlockCheck extends SubscriptionBaseVisitor {
+public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.IF_STATEMENT, Tree.Kind.TRY_STATEMENT);
-  }
-
-  @Override
-  public void visitNode(Tree tree) {
-    if (tree.is(Tree.Kind.IF_STATEMENT)) {
-      IfStatementTree ifStatementTree = (IfStatementTree) tree;
-      StatementTree thenStatement = ifStatementTree.thenStatement();
-      if (ifStatementTree.elseKeyword() != null && thenStatement.is(Tree.Kind.BLOCK)) {
-        checkBlock(ifStatementTree.elseKeyword(), (BlockTree) thenStatement);
-      }
-    } else {
-      TryStatementTree tryStatementTree = (TryStatementTree) tree;
-      BlockTree block = tryStatementTree.block();
-      for (CatchTree catchTree : tryStatementTree.catches()) {
-        checkBlock(catchTree.catchKeyword(), block);
-        block = catchTree.block();
-      }
-      SyntaxToken finallyKeyword = tryStatementTree.finallyKeyword();
-      if (finallyKeyword != null) {
-        checkBlock(finallyKeyword, block);
-      }
-    }
-  }
-
-  private void checkBlock(SyntaxToken keyword, BlockTree previousBlock) {
-    if (keyword.line() != previousBlock.closeBraceToken().line()) {
-      addIssue(keyword, "Move this \"" + keyword.text() + "\" on the same line that the previous closing curly brace.");
+  void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
+    if (syntaxToken.line() != previousBlock.closeBraceToken().line()) {
+      addIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" on the same line that the previous closing curly brace.");
     }
   }
 }
