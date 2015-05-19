@@ -337,6 +337,7 @@ public final class CheckList {
         .add(CallSuperInTestCaseCheck.class)
         .add(AssertionInThreadRunCheck.class)
         .add(NoTestInTestClassCheck.class)
+        .add(AssertionsInTestsCheck.class)
         .build();
   }
 }
