@@ -606,18 +606,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(tree, Symbols.unknownType);
   }
 
-  private JavaType getTypeOfSymbol(JavaSymbol symbol, JavaType callSite) {
-    return resolve.resolveTypeSubstitution(getTypeOfSymbol(symbol), callSite);
-  }
-  
-  private JavaType getTypeOfSymbol(JavaSymbol symbol) {
-    if (symbol.kind < JavaSymbol.ERRONEOUS) {
-      return symbol.type;
-    } else {
-      return Symbols.unknownType;
-    }
-  }
-
   @VisibleForTesting
   JavaType getType(Tree tree) {
     return types.get(tree);
