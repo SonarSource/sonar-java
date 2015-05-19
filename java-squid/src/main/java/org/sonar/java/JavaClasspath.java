@@ -20,34 +20,22 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.utils.SonarException;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
 
 public class JavaClasspath extends AbstractJavaClasspath {
 
-
-  @Nullable
-  private final MavenProject pom;
   private static final Logger LOG = LoggerFactory.getLogger(JavaClasspath.class);
 
   public JavaClasspath(Project project, Settings settings, FileSystem fs) {
-    this(project, settings, fs, null);
-  }
-
-  public JavaClasspath(Project project, Settings settings, FileSystem fs, @Nullable MavenProject pom) {
     super(project, settings, fs, InputFile.Type.MAIN);
-    this.pom = pom;
   }
 
   @Override
@@ -62,36 +50,11 @@ public class JavaClasspath extends AbstractJavaClasspath {
         binaries = getFilesFromProperty("sonar.binaries");
         libraries = getFilesFromProperty("sonar.libraries");
       }
-      if (pom != null && libraries.isEmpty()) {
-        //check mojo
-        elements = getLibrariesFromMaven(pom);
-      } else {
-        elements = Lists.newArrayList(binaries);
-        elements.addAll(libraries);
-        if (useDeprecatedProperties && !elements.isEmpty()) {
-          LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
-        }
+      elements = Lists.newArrayList(binaries);
+      elements.addAll(libraries);
+      if (useDeprecatedProperties && !elements.isEmpty()) {
+        LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
       }
-    }
-  }
-
-  private List<File> getLibrariesFromMaven(MavenProject pom) {
-    try {
-      List<File> files = Lists.newArrayList();
-      if (pom.getCompileClasspathElements() != null) {
-        for (String classPathString : (List<String>) pom.getCompileClasspathElements()) {
-          files.add(new File(classPathString));
-        }
-      }
-      if (pom.getBuild().getOutputDirectory() != null) {
-        File outputDirectoryFile = new File(pom.getBuild().getOutputDirectory());
-        if (outputDirectoryFile.exists()) {
-          files.add(outputDirectoryFile);
-        }
-      }
-      return files;
-    } catch (DependencyResolutionRequiredException e) {
-      throw new SonarException("Fail to create the project classloader", e);
     }
   }
 

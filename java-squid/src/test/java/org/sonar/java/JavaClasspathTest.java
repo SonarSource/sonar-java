@@ -20,8 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-import org.apache.maven.model.Build;
-import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -72,21 +70,7 @@ public class JavaClasspathTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "lib/hello.jar");
 
-    javaClasspath = new JavaClasspath(project, settings, fs, mock(MavenProject.class));
-    assertThat(javaClasspath.getElements()).hasSize(2);
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
-    assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
-  }
-
-  @Test
-  public void old_maven_mojo_binaries_filled_but_not_libraries() throws Exception {
-    settings.setProperty("sonar.binaries", "bin");
-    MavenProject pom = mock(MavenProject.class);
-    when(pom.getCompileClasspathElements()).thenReturn(Lists.newArrayList("hello.jar"));
-    Build build = mock(Build.class);
-    when(build.getOutputDirectory()).thenReturn("src/test/files/classpath/bin");
-    when(pom.getBuild()).thenReturn(build);
-    javaClasspath = new JavaClasspath(project, settings, fs, pom);
+    javaClasspath = new JavaClasspath(project, settings, fs);
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
