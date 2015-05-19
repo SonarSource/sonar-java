@@ -668,6 +668,10 @@ public class TreeFactory {
     for (VariableTreeImpl variable : partial) {
       variable.completeType(type);
     }
+
+    // store the semicolon as endToken for the last variable
+    partial.get(partial.size() - 1).setEndToken(InternalSyntaxToken.create(semicolonTokenAstNode));
+
     partial.addChild(semicolonTokenAstNode);
     return partial;
   }
