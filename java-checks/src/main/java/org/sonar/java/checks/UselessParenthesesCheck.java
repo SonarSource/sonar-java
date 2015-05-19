@@ -24,7 +24,8 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -81,18 +82,16 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression(tree)) {
+    if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression((ParenthesizedTree) tree)) {
       addIssue(tree, "Remove those useless parentheses.");
     }
     parent.push(tree);
   }
 
-  private boolean hasParentExpression(Tree tree) {
+  private boolean hasParentExpression(ParenthesizedTree tree) {
     Tree parentTree = this.parent.peek();
-    //Exclude condition of conditional expression
     if(parentTree.is(Kind.CONDITIONAL_EXPRESSION)) {
-      ConditionalExpressionTree conditionalExpressionTree = (ConditionalExpressionTree) parentTree;
-      return !(tree.equals(conditionalExpressionTree.condition()) || tree.equals(conditionalExpressionTree.falseExpression()));
+      return tree.expression().is(Kind.METHOD_INVOCATION, Kind.IDENTIFIER, Kind.MEMBER_SELECT) || tree.expression() instanceof LiteralTree;
     }
     //Exclude expression of array access expression
     if(parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression()) ) {

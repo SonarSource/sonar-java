@@ -8,13 +8,16 @@ class Foo {
 
     if (0) {              // Compliant
     }
-    // Was previously noncompliant
-    System.out.println(false ? (true ? 1 : 2) : 2); // Noncompliant
-    // Was previously compliant
+
+    System.out.println(false ? (true ? 1 : 2) : 2); // compliant
     System.out.println(false ? 0 : (true ? 1 : 2)); // compliant
-    invoke(((Cast)plop)); // Noncompliant
+    System.out.println(false ? 0 : (1)); // Noncompliant
     //Do not check for useless parenthesis on condition
-    System.out.println((false) ? 0 : 1); // compliant
+    System.out.println((false) ? 0 : 1); // Noncompliant
+    System.out.println((false ? false:true) ? 0 : 1); // compliant
+    System.out.println((foo()) ? 0 : 1); // Noncompliant
+    System.out.println((foo) ? 0 : 1); // Noncompliant
+    invoke(((Cast)plop)); // Noncompliant
     int[] tab;
     tab[(1+2)]; // Noncompliant
     tab[(1+2)/2];
