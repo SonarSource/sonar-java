@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -30,15 +31,15 @@ import java.util.List;
  * <p>
  * JLS 8.8. Constructor ({@link Tree.Kind#CONSTRUCTOR}):
  * <pre>
- *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
+ *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
  * JLS 8.4, 9.4. Method ({@link Tree.Kind#METHOD}):
  * <pre>
- *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
+ *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
  * JLS 9.6.1, 9.6.2. Annotation type element ({@link Tree.Kind#METHOD}):
  * <pre>
- *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} ()} default {@link #defaultValue()} ;
+ *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} default {@link #defaultValue()} ;
  * </pre>
  * </p>
  *
