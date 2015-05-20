@@ -60,12 +60,19 @@ public interface MethodTree extends Tree {
 
   IdentifierTree simpleName();
 
+  SyntaxToken openParenToken();
+
   List<VariableTree> parameters();
+
+  SyntaxToken closeParenToken();
 
   List<TypeTree> throwsClauses();
 
   @Nullable
   BlockTree block();
+
+  @Nullable
+  SyntaxToken semicolonToken();
 
   /**
    * @since Java 1.5

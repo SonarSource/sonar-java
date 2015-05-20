@@ -56,9 +56,13 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Nullable
   private TypeTree returnType;
   private IdentifierTree simpleName;
+  private final SyntaxToken openParenToken;
   private final FormalParametersListTreeImpl parameters;
+  private final SyntaxToken closeParenToken;
   @Nullable
   private final BlockTree block;
+  @Nullable
+  private SyntaxToken semicolonToken;
   private final List<TypeTree> throwsClauses;
   private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
@@ -71,6 +75,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     super(Kind.METHOD);
     this.typeParameters = new TypeParameterListTreeImpl();
     this.parameters = parameters;
+    this.openParenToken = parameters.openParenToken();
+    this.closeParenToken = parameters.closeParenToken();
     this.block = null;
     this.throwsClauses = ImmutableList.of();
     this.defaultToken = defaultToken;
@@ -90,7 +96,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
       IdentifierTree simpleName,
       FormalParametersListTreeImpl parameters,
       List<TypeTree> throwsClauses,
-      @Nullable BlockTree block) {
+      @Nullable BlockTree block,
+      @Nullable SyntaxToken semicolonToken) {
 
     super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
 
@@ -99,18 +106,23 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.returnType = returnType;
     this.simpleName = Preconditions.checkNotNull(simpleName);
     this.parameters = Preconditions.checkNotNull(parameters);
+    this.openParenToken = parameters.openParenToken();
+    this.closeParenToken = parameters.closeParenToken();
     this.block = block;
+    this.semicolonToken = semicolonToken;
     this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
     this.defaultToken = null;
     this.defaultValue = null;
   }
 
-  public MethodTreeImpl complete(TypeTree returnType, IdentifierTree simpleName) {
+  public MethodTreeImpl complete(TypeTree returnType, IdentifierTree simpleName, SyntaxToken semicolonToken) {
     Preconditions.checkState(this.simpleName == null);
     this.returnType = returnType;
     this.simpleName = simpleName;
+    this.semicolonToken = semicolonToken;
 
     prependChildren((AstNode) returnType, (AstNode) simpleName);
+    addChild((AstNode) semicolonToken);
 
     return this;
   }
@@ -156,8 +168,18 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
+  public SyntaxToken openParenToken() {
+    return openParenToken;
+  }
+
+  @Override
   public List<VariableTree> parameters() {
     return (List) parameters;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return closeParenToken;
   }
 
   @Override
@@ -169,6 +191,12 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   @Override
   public BlockTree block() {
     return block;
+  }
+
+  @Override
+  @Nullable
+  public SyntaxToken semicolonToken() {
+    return semicolonToken;
   }
 
   @Nullable
