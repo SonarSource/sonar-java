@@ -326,6 +326,7 @@ public final class CheckList {
       .add(EqualsArgumentTypeCheck.class)
       .add(ConstantMathCheck.class)
       .add(SillyEqualsCheck.class)
+      .add(IndexOfStartPositionCheck.class)
       .build();
   }
 
