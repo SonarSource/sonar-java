@@ -31,7 +31,17 @@ public class Class {
       }
     }.hashCode();
 
-    b = 1 == 2 ? 1 + 1 : 1 - 1; // Compliant
+    b = 1 == 2 ? 1 + 1 : 1 - 1; // Noncompliant
+    b = 1 == 2 ? (1 + 1) : (1 - 1); // compliant
+    a ? a ? b : c : c; // Noncompliant
+    a ? foo(): bar(); // Compliant
+    a ? foo(): new bar(); // Compliant
+    a ? foo(): (Type) casted; // Compliant
+    a ? foo[1]: b; // Compliant
+    a ? -1: b; // Compliant
+    a ? +1: b; // Compliant
+    a ? ++i: b; // Compliant
+    a ? i: i++; // Compliant
 
     b = b = 1; // Compliant
 
@@ -92,5 +102,6 @@ public class Class {
     }
     if ( a = b == c) { // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
     }
+
   }
 }

@@ -35,13 +35,16 @@ import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -82,6 +85,12 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     Tree.Kind.RIGHT_SHIFT,
     Tree.Kind.UNSIGNED_RIGHT_SHIFT
     );
+
+  private static final Tree.Kind[] CONDITIONAL_EXCLUSIONS = new Tree.Kind[]{
+      Tree.Kind.METHOD_INVOCATION, Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT,
+      Tree.Kind.PARENTHESIZED_EXPRESSION, Tree.Kind.TYPE_CAST, Tree.Kind.NEW_CLASS,
+      Tree.Kind.ARRAY_ACCESS_EXPRESSION
+  };
 
   private static void put(Iterable<Tree.Kind> firstSet, Iterable<Tree.Kind> secondSet) {
     for (Tree.Kind first : firstSet) {
@@ -190,6 +199,19 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.push(null);
     super.visitParenthesized(tree);
     stack.pop();
+  }
+
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    checkConditionalOperand(tree.trueExpression());
+    checkConditionalOperand(tree.falseExpression());
+    super.visitConditionalExpression(tree);
+  }
+
+  private void checkConditionalOperand(ExpressionTree tree) {
+    if(!(tree.is(CONDITIONAL_EXCLUSIONS) || tree instanceof LiteralTree || tree instanceof UnaryExpressionTree)) {
+      raiseIssue(((JavaTree) tree).getLine(), tree);
+    }
   }
 
   private void raiseIssue(int line, Tree tree) {
