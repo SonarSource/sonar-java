@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -51,10 +50,6 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
   private static final MethodInvocationMatcher INDEX_OF_METHOD = MethodInvocationMatcher.create()
     .typeDefinition(JAVA_LANG_STRING).name("indexOf").addParameter(JAVA_LANG_STRING);
 
-  public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
-  }
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(
@@ -65,18 +60,12 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    checkBinaryExpression(((BinaryExpressionTree) tree));
-  }
-
-  private void checkBinaryExpression(BinaryExpressionTree expressionTree) {
-    ExpressionTree leftOperand = removeParenthesis(expressionTree.leftOperand());
-    ExpressionTree rightOperand = removeParenthesis(expressionTree.rightOperand());
+    ExpressionTree leftOperand = removeParenthesis(((BinaryExpressionTree) tree).leftOperand());
+    ExpressionTree rightOperand = removeParenthesis(((BinaryExpressionTree) tree).rightOperand());
     if (leftOperand.is(Tree.Kind.METHOD_INVOCATION)) {
       checkIndexOfInvocation((MethodInvocationTree) leftOperand, rightOperand);
     } else if (rightOperand.is(Tree.Kind.METHOD_INVOCATION)) {
       checkIndexOfInvocation((MethodInvocationTree) rightOperand, leftOperand);
-    } else {
-      // ignore
     }
   }
 
