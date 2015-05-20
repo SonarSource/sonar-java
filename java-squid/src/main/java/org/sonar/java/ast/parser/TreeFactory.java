@@ -90,6 +90,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeArguments;
@@ -610,13 +611,21 @@ public class TreeFactory {
     } else {
       actualType = null;
     }
+    BlockTreeImpl block = null;
+    SyntaxToken semicolonToken = null;
+    if (blockOrSemicolon.is(Tree.Kind.BLOCK)) {
+      block = (BlockTreeImpl) blockOrSemicolon;
+    } else {
+      semicolonToken = InternalSyntaxToken.create(blockOrSemicolon);
+    }
 
     MethodTreeImpl result = new MethodTreeImpl(
       actualType,
       identifier,
       parameters,
       throwsClause.isPresent() ? (List<TypeTree>) throwsClause.get().second() : ImmutableList.<TypeTree>of(),
-      blockOrSemicolon.is(Kind.BLOCK) ? (BlockTreeImpl) blockOrSemicolon : null);
+      block,
+      semicolonToken);
 
     List<AstNode> children = Lists.newArrayList();
     if (type.isPresent()) {
@@ -737,8 +746,7 @@ public class TreeFactory {
   }
 
   public AstNode completeAnnotationMethod(TypeTree type, AstNode identifierAstNode, MethodTreeImpl partial, AstNode semiTokenAstNode) {
-    partial.complete(type, new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)));
-    partial.addChild(semiTokenAstNode);
+    partial.complete(type, new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode)), InternalSyntaxToken.create(semiTokenAstNode));
 
     return partial;
   }
