@@ -80,7 +80,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     methodContainsAssertion.push(false);
     super.visitMethod(methodTree);
     inUnitTest.pop();
-    if (isUnitTest && !methodContainsAssertion.pop()) {
+    Boolean methodContainsAssertion = this.methodContainsAssertion.pop();
+    if (isUnitTest && !methodContainsAssertion) {
       context.addIssue(methodTree, this, "Add at least one assertion to this test case.");
     }
   }
@@ -88,7 +89,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
     super.visitMethodInvocation(mit);
-    if (inUnitTest.peek() && !methodContainsAssertion.peek() && isAssertion(mit)) {
+    if (!inUnitTest.isEmpty() && inUnitTest.peek() && !methodContainsAssertion.peek() && isAssertion(mit)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(Boolean.TRUE);
     }

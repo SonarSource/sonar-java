@@ -3,6 +3,10 @@ import org.junit.Test;
 
 public class AssertionsInTestsCheckTest {
 
+  private static int staticMethod() {}
+
+  private static int VAL = staticMethod();
+
   @Test
   public void compliant1() {
     org.fest.assertions.Fail.fail("foo");
