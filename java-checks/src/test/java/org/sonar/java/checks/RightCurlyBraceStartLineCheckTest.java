@@ -19,26 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import java.io.File;
+import java.io.IOException;
 
 public class RightCurlyBraceStartLineCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RightCurlyBraceStartLineCheck.java"), new RightCurlyBraceStartLineCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Move this closing curly brace to the next line.")
-        .next().atLine(10)
-        .next().atLine(17);
+  public void detected() throws IOException {
+    JavaCheckVerifier.verify("src/test/files/checks/RightCurlyBraceStartLineCheck.java", new RightCurlyBraceStartLineCheck());
   }
-
 }

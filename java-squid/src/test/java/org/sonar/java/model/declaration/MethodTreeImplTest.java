@@ -100,6 +100,18 @@ public class MethodTreeImplTest {
     assertThat(methodTree.isOverriding()).isNull();
   }
 
+  @Test
+  public void has_all_syntax_token() {
+    MethodTreeImpl method = getUniqueMethod("class A { public void foo(int arg){} }");
+    assertThat(method.openParenToken()).isNotNull();
+    assertThat(method.closeParenToken()).isNotNull();
+    assertThat(method.semicolonToken()).isNull();
+
+    method = getUniqueMethod("abstract class A { public abstract void foo(int arg); }");
+    assertThat(method.openParenToken()).isNotNull();
+    assertThat(method.closeParenToken()).isNotNull();
+    assertThat(method.semicolonToken()).isNotNull();
+  }
 
   @Test
   public void is_main_method() throws Exception {

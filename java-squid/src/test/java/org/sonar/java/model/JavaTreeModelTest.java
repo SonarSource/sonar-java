@@ -383,6 +383,8 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
+    assertThat(tree.endToken()).isNotNull();
+    assertThat(tree.endToken().text()).isEqualTo(",");
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -390,6 +392,8 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f2");
     assertThat(tree.initializer()).isNull();
+    assertThat(tree.endToken()).isNotNull();
+    assertThat(tree.endToken().text()).isEqualTo(";");
   }
 
   @Test
