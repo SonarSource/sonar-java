@@ -47,7 +47,7 @@ public class NullPointerCheckTest {
     ExecutionState parentState = new ExecutionState();
     ExecutionState currentState = new ExecutionState(parentState);
 
-    assertThat(currentState.parentState).isSameAs(parentState);
+    assertThat(currentState.parent).isSameAs(parentState);
   }
 
   @Test
@@ -82,17 +82,17 @@ public class NullPointerCheckTest {
       trueState.setVariableState(variable, trueValue);
     }
     if (falseValue == null) {
-      return parentState.mergeStates(trueState, null).getVariableState(variable);
+      return parentState.merge(trueState).getVariableState(variable);
     }
     ExecutionState falseState = new ExecutionState(parentState);
     falseState.setVariableState(variable, falseValue);
-    return parentState.mergeStates(trueState, falseState).getVariableState(variable);
+    return parentState.overrideBy(trueState.merge(falseState)).getVariableState(variable);
   }
 
   @Test
   public void test_state_merge_values() {
     ExecutionState state = new ExecutionState();
-    assertThat(state.mergeStates(new ExecutionState(), new ExecutionState())).isSameAs(state);
+    assertThat(state.overrideBy(new ExecutionState())).isSameAs(state);
     // variable defined in parentState only should not change
     assertThat(testMerge(NOTNULL, null, null)).isSameAs(NOTNULL);
     // variable defined in parentState and trueState, must match
@@ -117,21 +117,6 @@ public class NullPointerCheckTest {
   }
 
   @Test
-  public void test_state_invalidate_values() {
-    ExecutionState parentState = new ExecutionState();
-    ExecutionState currentState = new ExecutionState(parentState);
-    VariableJavaSymbol parentVariable = mock(VariableJavaSymbol.class);
-    VariableJavaSymbol childVariable = mock(VariableJavaSymbol.class);
-    parentState.setVariableState(parentVariable, NULL);
-    currentState.setVariableState(childVariable, NULL);
-
-    assertThat(currentState.invalidateValues()).isSameAs(currentState);
-
-    assertThat(currentState.getVariableState(childVariable)).isSameAs(UNKNOWN);
-    assertThat(currentState.getVariableState(parentVariable)).isSameAs(NULL);
-  }
-
-  @Test
   public void test_state_copy_values_from() {
     VariableJavaSymbol parentVariable = mock(VariableJavaSymbol.class);
     VariableJavaSymbol childVariable = mock(VariableJavaSymbol.class);
@@ -143,7 +128,7 @@ public class NullPointerCheckTest {
     childState.setVariableState(childVariable, NOTNULL);
     childState.setVariableState(bothVariable, NOTNULL);
 
-    parentState.copyStatesFrom(childState);
+    parentState.overrideBy(childState);
 
     assertThat(parentState.getVariableState(parentVariable)).isSameAs(NULL);
     assertThat(parentState.getVariableState(childVariable)).isSameAs(NOTNULL);
@@ -156,9 +141,8 @@ public class NullPointerCheckTest {
     VariableJavaSymbol variable2 = mock(VariableJavaSymbol.class);
     VariableJavaSymbol variable3 = mock(VariableJavaSymbol.class);
 
-    // initial state with variables set to null.
     ExecutionState currentState = new ExecutionState();
-    currentState.setVariableState(variable1, NULL);
+    currentState.setVariableState(variable1, NOTNULL);
     currentState.setVariableState(variable2, NULL);
     currentState.setVariableState(variable3, NULL);
 
@@ -180,7 +164,7 @@ public class NullPointerCheckTest {
     // in the resulting falesState variable1 is unknown, since its condition was both true and false,
     // and variable2 is unknown, since its condition was either false or not tested.
     assertThat(conditionalState.falseState.getVariableState(variable1)).isSameAs(UNKNOWN);
-    assertThat(conditionalState.falseState.getVariableState(variable2)).isSameAs(UNKNOWN);
+    assertThat(conditionalState.falseState.getVariableState(variable2)).isSameAs(NULL);
     // variables not checked in conditions must remain unchanged.
     assertThat(conditionalState.trueState.getVariableState(variable3)).isSameAs(NULL);
     assertThat(conditionalState.falseState.getVariableState(variable3)).isSameAs(NULL);
@@ -192,10 +176,9 @@ public class NullPointerCheckTest {
     VariableJavaSymbol variable2 = mock(VariableJavaSymbol.class);
     VariableJavaSymbol variable3 = mock(VariableJavaSymbol.class);
 
-    // initial state with variables set to not null.
     ExecutionState currentState = new ExecutionState();
     currentState.setVariableState(variable1, NOTNULL);
-    currentState.setVariableState(variable2, NOTNULL);
+    currentState.setVariableState(variable2, NULL);
     currentState.setVariableState(variable3, NOTNULL);
 
     ExecutionState conditionState = new ExecutionState(currentState);
@@ -212,7 +195,7 @@ public class NullPointerCheckTest {
 
     // in the resulting trueState variable1 is unknown, since its condition was both true and false,
     // and variable2 is unknown, since its conditiona was either true or not tested.
-    assertThat(conditionalState.trueState.getVariableState(variable1)).isSameAs(UNKNOWN);
+    assertThat(conditionalState.trueState.getVariableState(variable1)).isSameAs(NOTNULL);
     assertThat(conditionalState.trueState.getVariableState(variable2)).isSameAs(UNKNOWN);
     // in the resulting falseState both conditions are false
     assertThat(conditionalState.falseState.getVariableState(variable1)).isSameAs(NULL);
