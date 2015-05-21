@@ -47,25 +47,42 @@ import java.util.Deque;
 @SqaleConstantRemediation("10min")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
+  private static final MethodInvocationMatcher MOCKITO_VERIFY = MethodInvocationMatcher.create()
+    .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
+  private static final MethodInvocationMatcher ASSERT_THAT = MethodInvocationMatcher.create()
+    .typeDefinition(TypeCriteria.anyType()).name("assertThat").addParameter(TypeCriteria.anyType());
   private static final MethodInvocationMatcher FEST_AS_METHOD = MethodInvocationMatcher.create()
-    .typeDefinition(GENERIC_ASSERT).name("as").withNoParameterConstraint();
+    .typeDefinition(TypeCriteria.anyType()).name("as").withNoParameterConstraint();
   private static final MethodInvocationMatcher FEST_DESCRIBED_AS_METHOD = MethodInvocationMatcher.create()
-    .typeDefinition(GENERIC_ASSERT).name("describedAs").withNoParameterConstraint();
+    .typeDefinition(TypeCriteria.anyType()).name("describedAs").withNoParameterConstraint();
   private static final MethodInvocationMatcher FEST_OVERRIDE_ERROR_METHOD = MethodInvocationMatcher.create()
-    .typeDefinition(GENERIC_ASSERT).name("overridingErrorMessage").withNoParameterConstraint();
+    .typeDefinition(TypeCriteria.anyType()).name("overridingErrorMessage").withNoParameterConstraint();
   private static final MethodInvocationMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodInvocationMatcherCollection.create(
     MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
     MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
+    MethodInvocationMatcher.create().typeDefinition("org.junit.rules.ExpectedException").name(NameCriteria.startsWith("expect")).withNoParameterConstraint(),
     MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
     MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    // fest 1.x
+    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
     MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(GENERIC_ASSERT)).name(NameCriteria.any()).withNoParameterConstraint()
+    // fest 2.x
+    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
+    MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.api.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    // Mockito
+    MethodInvocationMatcher.create().typeDefinition("org.mockito.Mockito").name("verifyNoMoreInteractions").withNoParameterConstraint()
   );
 
-  private Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
-  private Deque<Boolean> inUnitTest = new ArrayDeque<>();
+  private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
+  private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
+  private final Deque<ChainedMethods> chainedTo = new ArrayDeque<>();
   private JavaFileScannerContext context;
+
+  private enum ChainedMethods {
+    NONE,
+    ASSERT_THAT,
+    MOCKITO_VERIFY
+  }
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -80,29 +97,44 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     methodContainsAssertion.push(false);
     super.visitMethod(methodTree);
     inUnitTest.pop();
-    Boolean methodContainsAssertion = this.methodContainsAssertion.pop();
-    if (isUnitTest && !methodContainsAssertion) {
+    Boolean containsAssertion = methodContainsAssertion.pop();
+    if (isUnitTest && !containsAssertion) {
       context.addIssue(methodTree, this, "Add at least one assertion to this test case.");
     }
   }
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
+    if (inUnitTest.isEmpty() || !inUnitTest.peek() || methodContainsAssertion.peek()) {
+      // if not in test case or assertion already found let's skip method
+      return;
+    }
+    chainedTo.push(ChainedMethods.NONE);
     super.visitMethodInvocation(mit);
-    if (!inUnitTest.isEmpty() && inUnitTest.peek() && !methodContainsAssertion.peek() && isAssertion(mit)) {
+    ChainedMethods chainedToResult = chainedTo.pop();
+    // ignore assertThat chained with bad resolution method invocations
+    boolean isChainedToAssertThatWithBadResolution = ChainedMethods.ASSERT_THAT.equals(chainedToResult) && mit.symbol().isUnknown();
+    boolean isChainedToVerify = ChainedMethods.MOCKITO_VERIFY.equals(chainedToResult);
+    if (isChainedToVerify || isChainedToAssertThatWithBadResolution || isAssertion(mit)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(Boolean.TRUE);
+    }
+    if (!chainedTo.isEmpty()) {
+      if (ChainedMethods.ASSERT_THAT.equals(chainedToResult) || ASSERT_THAT.matches(mit)) {
+        chainedTo.pop();
+        chainedTo.push(ChainedMethods.ASSERT_THAT);
+      } else if (MOCKITO_VERIFY.matches(mit)) {
+        chainedTo.pop();
+        chainedTo.push(ChainedMethods.MOCKITO_VERIFY);
+      }
     }
   }
 
   private boolean isAssertion(MethodInvocationTree mit) {
-    if (ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) &&
-        !FEST_AS_METHOD.matches(mit) &&
-        !FEST_OVERRIDE_ERROR_METHOD.matches(mit) &&
-        !FEST_DESCRIBED_AS_METHOD.matches(mit)) {
-      return true;
-    }
-    return false;
+    return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) &&
+      !FEST_AS_METHOD.matches(mit) &&
+      !FEST_OVERRIDE_ERROR_METHOD.matches(mit) &&
+      !FEST_DESCRIBED_AS_METHOD.matches(mit);
   }
 
   private boolean isUnitTest(MethodTree methodTree) {
