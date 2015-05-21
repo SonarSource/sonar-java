@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
@@ -510,7 +511,7 @@ public abstract class JavaTree extends AstNode implements Tree {
   public static class ParameterizedTypeTreeImpl extends AbstractTypedTree implements ParameterizedTypeTree, ExpressionTree {
 
     private final TypeTree type;
-    private final List<Tree> typeArguments;
+    private final TypeArguments typeArguments;
 
     public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
       super(Kind.PARAMETERIZED_TYPE);
@@ -532,7 +533,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     @Override
-    public List<Tree> typeArguments() {
+    public TypeArguments typeArguments() {
       return typeArguments;
     }
 

@@ -66,6 +66,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -77,6 +78,7 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -1681,6 +1683,25 @@ public class JavaTreeModelTest {
     ExpressionTree expressionTree = (ExpressionTree) p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(
         Kind.METHOD_INVOCATION);
     assertThat(expressionTree).isNotNull();
+  }
+
+  @Test
+  public void type_parameters_tokens() {
+    ParameterizedTypeTree tree = (ParameterizedTypeTree) p.parse("class Foo<E> extends List<E> {}").getFirstDescendant(getKindsAssociatedTo(ParameterizedTypeTree.class));
+    assertThat(tree).isNotNull();
+    TypeArguments typeArguments = tree.typeArguments();
+    assertThat(typeArguments).isNotNull();
+    assertThat(typeArguments).hasSize(1);
+    assertThat(typeArguments.openBracketToken()).isNotNull();
+    assertThat(typeArguments.closeBracketToken()).isNotNull();
+
+    tree = (ParameterizedTypeTree) p.parse("class Mop<K,V> implements Map<K,V> {}").getFirstDescendant(getKindsAssociatedTo(ParameterizedTypeTree.class));
+    assertThat(tree).isNotNull();
+    typeArguments = tree.typeArguments();
+    assertThat(typeArguments).isNotNull();
+    assertThat(typeArguments).hasSize(2);
+    assertThat(typeArguments.openBracketToken()).isNotNull();
+    assertThat(typeArguments.closeBracketToken()).isNotNull();
   }
 
   @Test

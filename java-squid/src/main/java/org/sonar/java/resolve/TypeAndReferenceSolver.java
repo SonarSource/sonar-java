@@ -339,7 +339,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     resolveAs(tree.type(), JavaSymbol.TYP);
-    resolveAs(tree.typeArguments(), JavaSymbol.TYP);
+    resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
 
     JavaType type = getType(tree.type());
     //Type substitution for parametrized type.
