@@ -500,20 +500,31 @@ public class TreeFactory {
     }
 
     List<AstNode> children = Lists.newArrayList();
+    SyntaxToken openParenToken = null;
+    SyntaxToken closeParenToken = null;
+    List argumentsList = Collections.emptyList();
     if (arguments.isPresent()) {
-      children.add(arguments.get());
+      ArgumentListTreeImpl argumentsListTreeImpl = arguments.get();
+      argumentsList = argumentsListTreeImpl;
+      openParenToken = argumentsListTreeImpl.openParenToken();
+      closeParenToken = argumentsListTreeImpl.closeParenToken();
+      children.add(argumentsListTreeImpl);
     }
+
     if (classBody.isPresent()) {
       children.add(classBody.get());
     }
+
     NewClassTreeImpl newClass = new NewClassTreeImpl(
-      arguments.isPresent() ? arguments.get() : Collections.emptyList(),
+      openParenToken,
+      argumentsList,
+      closeParenToken,
       classBody.isPresent() ? classBody.get() : null,
       children.toArray(new AstNode[0]));
     newClass.completeWithIdentifier(identifier);
 
     @SuppressWarnings("unchecked")
-    EnumConstantTreeImpl result = new EnumConstantTreeImpl(modifiers((Optional<List<ModifierTree>>)(Optional<?>)annotations), identifier, newClass);
+    EnumConstantTreeImpl result = new EnumConstantTreeImpl(modifiers((Optional<List<ModifierTree>>) (Optional<?>) annotations), identifier, newClass);
 
     result.addChild(identifier);
     result.addChild(newClass);
@@ -2028,7 +2039,7 @@ public class TreeFactory {
       children.add(classBody.get());
     }
 
-    return new NewClassTreeImpl(arguments, classBody.isPresent() ? classBody.get() : null,
+    return new NewClassTreeImpl(arguments.openParenToken(), arguments, arguments.closeParenToken(), classBody.isPresent() ? classBody.get() : null,
       children.toArray(new AstNode[0]));
   }
 

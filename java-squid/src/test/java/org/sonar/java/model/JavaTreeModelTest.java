@@ -498,14 +498,18 @@ public class JavaTreeModelTest {
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("C1");
     NewClassTree newClassTree = (NewClassTree) tree.initializer();
+    assertThat(newClassTree.openParenToken()).isNull();
     assertThat(newClassTree.arguments()).isEmpty();
+    assertThat(newClassTree.closeParenToken()).isNull();
     assertThat(newClassTree.classBody()).isNull();
 
     tree = (EnumConstantTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("C2");
     newClassTree = (NewClassTree) tree.initializer();
+    assertThat(newClassTree.openParenToken()).isNotNull();
     assertThat(newClassTree.arguments()).hasSize(1);
+    assertThat(newClassTree.closeParenToken()).isNotNull();
     assertThat(newClassTree.classBody()).isNotNull();
     assertThat(newClassTree.classBody().openBraceToken().text()).isEqualTo("{");
 
@@ -1205,7 +1209,9 @@ public class JavaTreeModelTest {
     NewClassTree tree = (NewClassTree) p.parse("class T { T m() { return new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNull();
+    assertThat(tree.openParenToken()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
+    assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
@@ -1214,14 +1220,18 @@ public class JavaTreeModelTest {
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
+    assertThat(tree.openParenToken()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
+    assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
 
     tree = (NewClassTree) p.parse("class T { T m() { return this.new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
     assertThat(tree.enclosingExpression()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
+    assertThat(tree.openParenToken()).isNotNull();
     assertThat(tree.arguments()).hasSize(2);
+    assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
   }

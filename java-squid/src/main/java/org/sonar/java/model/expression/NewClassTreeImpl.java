@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -43,14 +44,20 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   private ExpressionTree enclosingExpression;
   private TypeTree identifier;
+  @Nullable
+  private final SyntaxToken openParenToken;
   private final List<ExpressionTree> arguments;
+  @Nullable
+  private final SyntaxToken closeParenToken;
   @Nullable
   private final ClassTree classBody;
 
-  public NewClassTreeImpl(List arguments, @Nullable ClassTreeImpl classBody, AstNode... children) {
+  public NewClassTreeImpl(@Nullable SyntaxToken openParenToken, List arguments, @Nullable SyntaxToken closeParenToken, @Nullable ClassTreeImpl classBody, AstNode... children) {
     super(Kind.NEW_CLASS);
     this.enclosingExpression = null;
+    this.openParenToken = openParenToken;
     this.arguments = Preconditions.checkNotNull(arguments);
+    this.closeParenToken = closeParenToken;
     this.classBody = classBody;
 
     for (AstNode child : children) {
@@ -135,5 +142,17 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
       throw new IllegalStateException("Constructor select is not of the expected type " + constructorSelect);
     }
     return constructorIdentifier;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken openParenToken() {
+    return openParenToken;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken closeParenToken() {
+    return closeParenToken;
   }
 }

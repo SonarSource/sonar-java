@@ -51,7 +51,13 @@ public interface NewClassTree extends ExpressionTree {
 
   TypeTree identifier();
 
+  @Nullable
+  SyntaxToken openParenToken();
+
   List<ExpressionTree> arguments();
+
+  @Nullable
+  SyntaxToken closeParenToken();
 
   @Nullable
   ClassTree classBody();
