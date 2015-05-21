@@ -70,13 +70,16 @@ public class SurefireJavaParser implements BatchExtension {
     if (dir == null) {
       return new File[0];
     } else if (!dir.isDirectory()) {
-      LOGGER.warn("Reports path not found: " + dir.getAbsolutePath());
+      LOGGER.error("Reports path not found or is not a directory: " + dir.getAbsolutePath());
       return new File[0];
     }
     File[] unitTestResultFiles = findXMLFilesStartingWith(dir, "TEST-");
     if (unitTestResultFiles.length == 0) {
       // maybe there's only a test suite result file
       unitTestResultFiles = findXMLFilesStartingWith(dir, "TESTS-");
+    }
+    if(unitTestResultFiles.length == 0) {
+      LOGGER.warn("Reports path contains no files matching TEST-.*.xml : "+dir.getAbsolutePath());
     }
     return unitTestResultFiles;
   }
