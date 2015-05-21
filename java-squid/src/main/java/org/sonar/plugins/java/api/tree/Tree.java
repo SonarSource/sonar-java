@@ -79,7 +79,7 @@ public interface Tree {
     /**
      * {@link BlockTree}
      */
-    STATIC_INITIALIZER(BlockTree.class),
+    STATIC_INITIALIZER(StaticInitializerTree.class),
 
     /**
      * {@link MethodTree}

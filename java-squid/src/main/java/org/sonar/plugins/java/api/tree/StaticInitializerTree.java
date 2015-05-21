@@ -21,30 +21,19 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import java.util.List;
-
 /**
- * Block.
- * <p>
- * JLS 8.6. Instance Initializer ({@link Tree.Kind#INITIALIZER}):
+ * Static Initializer. 
+ * 
+ * JLS 8.7
+ * 
  * <pre>
- *   { {@link #body()} }
+ *   static { {@link #body()} }
  * </pre>
- * JLS 14.2 Block ({@link Tree.Kind#BLOCK}):
- * <pre>
- *   { {@link #body()} }
- * </pre>
- * </p>
  *
- * @since Java 1.3
+ * @since Java 3.4
  */
 @Beta
-public interface BlockTree extends StatementTree {
+public interface StaticInitializerTree extends BlockTree {
 
-  SyntaxToken openBraceToken();
-
-  List<StatementTree> body();
-
-  SyntaxToken closeBraceToken();
-
+  SyntaxToken staticKeyword();
 }

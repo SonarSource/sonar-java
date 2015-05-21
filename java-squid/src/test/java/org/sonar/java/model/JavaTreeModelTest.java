@@ -70,6 +70,7 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -351,9 +352,11 @@ public class JavaTreeModelTest {
     astNode = p.parse("class T { static { ; ; } }");
     tree = (BlockTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.STATIC_INITIALIZER)).isTrue();
-    assertThat(tree.body()).hasSize(2);
-    assertThat(tree.openBraceToken().text()).isEqualTo("{");
-    assertThat(tree.closeBraceToken().text()).isEqualTo("}");
+    StaticInitializerTree staticInitializerTree = (StaticInitializerTree) tree;
+    assertThat(staticInitializerTree.body()).hasSize(2);
+    assertThat(staticInitializerTree.staticKeyword().text()).isEqualTo("static");
+    assertThat(staticInitializerTree.openBraceToken().text()).isEqualTo("{");
+    assertThat(staticInitializerTree.closeBraceToken().text()).isEqualTo("}");
   }
 
   @Test

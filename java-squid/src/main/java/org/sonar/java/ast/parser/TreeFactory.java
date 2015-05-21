@@ -78,6 +78,7 @@ import org.sonar.java.model.statement.ForStatementTreeImpl;
 import org.sonar.java.model.statement.IfStatementTreeImpl;
 import org.sonar.java.model.statement.LabeledStatementTreeImpl;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
+import org.sonar.java.model.statement.StaticInitializerTreeImpl;
 import org.sonar.java.model.statement.SwitchStatementTreeImpl;
 import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
@@ -575,16 +576,23 @@ public class TreeFactory {
   }
 
   public BlockTreeImpl newInitializerMember(Optional<AstNode> staticTokenAstNode, BlockTreeImpl block) {
-    Kind kind = staticTokenAstNode.isPresent() ? Kind.STATIC_INITIALIZER : Kind.INITIALIZER;
-
+    BlockTreeImpl blockTree;
     List<AstNode> children = Lists.newArrayList();
+
     if (staticTokenAstNode.isPresent()) {
       children.add(staticTokenAstNode.get());
+      children.addAll(block.getChildren());
+      InternalSyntaxToken staticKeyword = InternalSyntaxToken.create(staticTokenAstNode.get());
+      blockTree = new StaticInitializerTreeImpl(staticKeyword, (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken(),
+        children.toArray(new AstNode[0]));
+    } else {
+      children.addAll(block.getChildren());
+      blockTree = new BlockTreeImpl(Kind.INITIALIZER, (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken(),
+        children.toArray(new AstNode[0]));
     }
-    children.addAll(block.getChildren());
 
-    return new BlockTreeImpl(kind, (InternalSyntaxToken) block.openBraceToken(), block.body(), (InternalSyntaxToken) block.closeBraceToken(),
-      children.toArray(new AstNode[0]));
+    return blockTree;
+
   }
 
   public AstNode newEmptyMember(AstNode semicolonTokenAstNode) {
