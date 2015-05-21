@@ -28,6 +28,12 @@ public class MyClass {
     lock.unlock();
   }
 
+  public void unrelatedMethod() {
+    Lock lock = new ReentrantLock();
+    lock.lock(); // Noncompliant
+    lock.toString();
+  }
+
   public void doTheThing() {
     acquireLock();
     // do work...
