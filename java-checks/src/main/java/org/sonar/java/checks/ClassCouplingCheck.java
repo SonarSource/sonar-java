@@ -140,7 +140,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     checkTypes(tree.type());
-    checkTypes(tree.typeArguments());
+    checkTypes((List<Tree>) tree.typeArguments());
     super.visitParameterizedType(tree);
   }
 
@@ -149,7 +149,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
     checkTypes(tree.typeArguments());
     if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       scan(tree.enclosingExpression());
-      checkTypes(((ParameterizedTypeTree) tree.identifier()).typeArguments());
+      checkTypes((List<Tree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
       scan(tree.typeArguments());
       scan(tree.arguments());
       scan(tree.classBody());
