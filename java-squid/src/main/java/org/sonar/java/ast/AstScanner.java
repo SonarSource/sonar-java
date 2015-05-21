@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
@@ -28,10 +27,10 @@ import com.sonar.sslr.impl.Parser;
 import com.sonar.sslr.impl.ast.AstWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.java.ProgressReport;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.CommentAnalyser;
+import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -91,20 +90,14 @@ public class AstScanner {
     }
 
     AstWalker astWalker = new AstWalker(visitors);
-    int size = Iterables.size(files);
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
-    progressReport.start(size + " source files to be analyzed");
-    int count = 0;
+    progressReport.start(Lists.newArrayList(files));
     for (File file : files) {
-
-      progressReport.message(count + "/" + size + " files analyzed, current is " + file.getAbsolutePath());
-      count++;
-
       context.setFile(file);
-
       try {
         AstNode ast = parser.parse(file);
         astWalker.walkAndVisit(ast);
+        progressReport.nextFile();
       } catch (RecognitionException e) {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
         LOG.error(e.getMessage());
@@ -114,7 +107,7 @@ public class AstScanner {
         throw new AnalysisException(getAnalyisExceptionMessage(file), e);
       }
     }
-    progressReport.stop(size + "/" + size + " source files analyzed");
+    progressReport.stop();
 
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
       visitor.destroy();
