@@ -339,6 +339,7 @@ public final class CheckList {
         .add(AssertionInThreadRunCheck.class)
         .add(NoTestInTestClassCheck.class)
         .add(AssertionsInTestsCheck.class)
+        .add(JunitMethodDeclarationCheck.class)
         .build();
   }
 }
