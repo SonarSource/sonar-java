@@ -1,14 +1,119 @@
+import java.io.Closeable;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+
 class Foo {
+  
+  private static final int MY_CONST;
+  static
+  {                                    // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    MY_CONST = 0;
+  }
+  
+  public enum MyEnum {
+    A
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    },
+    B,
+    C(42) {                             // Compliant
+    };
+    
+    int value;
+    
+    MyEnum(int value) {
+      this.value = value;
+    }
+  }
+  
+  private Foo() {                       // Compliant
+  }
+  
+  public void bar() throws Exception
+  {                                     // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    class InnerClass
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+  }
+  
+  void doStuff(boolean test, MyEnum myEnum, List myList)
+  {                                     // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    if (test)
+      System.out.println();
+    
+    if (test) {                         // Compliant
+    } else
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+    
+    switch (myEnum)
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+      case A:
+        break;
+      default:
+        break;
+    }
+    
+    do {                                // Compliant
+    } while(test);
+    
+    while (test)
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+    
+    for (int i = 0; i < 10; i++)
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+    
+    for (Object object : myList) {      // Compliant
+    }
+    
+    synchronized (myList)
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+    
+    try
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    } catch(Exception e)
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+    
+    try (FileInputStream fis = new FileInputStream(""))
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    } finally
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+    }
+    
+    Closeable c = new Closeable()
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+      @Override
+      public void close() throws IOException {
+      }
+    };
+    
+    Closeable c2 = new Closeable() {    // Compliant
+      @Override
+      public void close() throws IOException {
+        
+      }
+    };
+    
+    LABEL:
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+      myMethod();
+    }
+  }
+  
   public void myMethod() {              // Compliant
     if(something)
-    {                                   // Non-Compliant
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       executeTask();
     } else {                            // Compliant
       doSomethingElse();
     }
     if( param1 && param2 && param3
       && something3 && something4)
-    {                                   // Non-Compliant
+    {                                   // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
       executeAnotherTask();
     }
   }
@@ -23,12 +128,30 @@ class Foo {
   }
 }
 
+class Bar extends Foo {                 // Compliant
+}
+
+class ReBar extends sonar.Foo {         // Compliant
+}
+
+abstract class Dul implements Closeable
+{                                       // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+}
+
+class Goo<T>
+{                                       // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+}
+
+abstract class MyList<E> implements List<E>
+{                                       // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+}
+
 @Properties(
-{ // Compliant
+{                                       // Compliant
 })
 class Exceptions {
   int[] numbers = new int[]
-{ 0, 1 }; // Compliant
+{ 0, 1 };                               // Compliant
 }
 
 /**
