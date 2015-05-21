@@ -623,6 +623,21 @@ public class SymbolTableTest {
     assertThat(symbolNotFound.owner()).isSameAs(Symbols.unknownSymbol);
   }
 
+  @Test
+  public void annotations_on_fields() throws Exception {
+    Result result = Result.createFor("AnnotationOnFields");
+
+    JavaSymbol.TypeSymbol app = (JavaSymbol.TypeSymbol) result.symbol("App");
+    for (Symbol sym : app.memberSymbols()) {
+      if(!sym.isMethodSymbol() && !(sym.name().equals("super") || sym.name().equals("this"))) {
+        assertThat(sym.metadata().isAnnotatedWith("java.lang.Deprecated")).isTrue();
+      }
+    }
+
+
+
+  }
+
   public void assertThatReferenceNotFound(Result result, int line, int column){
     try {
       JavaSymbol reference = result.reference(line, column);

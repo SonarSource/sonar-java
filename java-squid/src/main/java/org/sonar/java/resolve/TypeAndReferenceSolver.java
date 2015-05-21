@@ -70,6 +70,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -554,16 +555,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitAnnotation(AnnotationTree tree) {
+    if (((AbstractTypedTree) tree.annotationType()).isTypeSet()) {
+      //FIXME: annotation type is set, so we skip this annotation as it was already visited. This handle the case where type and its annotation is shared between two variables : @Deprecated int a, b;
+      return;
+    }
     resolveAs(tree.annotationType(), JavaSymbol.TYP);
-    if(tree.arguments().size()>1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
-      //resolve by identifying correct identifier in assignment.
+    if (tree.arguments().size() > 1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
+      // resolve by identifying correct identifier in assignment.
       for (ExpressionTree expressionTree : tree.arguments()) {
         AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
         IdentifierTree variable = (IdentifierTree) aet.variable();
         JavaSymbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()), variable.name(), ImmutableList.<JavaType>of()).symbol();
         associateReference(variable, identInType);
         JavaType type = identInType.type;
-        if(type == null) {
+        if (type == null) {
           type = Symbols.unknownType;
         }
         registerType(variable, type);
