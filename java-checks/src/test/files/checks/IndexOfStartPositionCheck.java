@@ -1,15 +1,20 @@
 
 class A {
+  String ae() {
+    return "ae";
+  }
+
   void nonCompliant() {
     String name = "ismael";
 
-    if (name.indexOf("ae") > 2) { // Noncompliant
+    if (name.indexOf(ae()) > 2) { // Noncompliant {{Use ".indexOf(xxx,n) > -1" instead.}}
       // ...
     }
-    if (name.indexOf("ae") > 1) { // Noncompliant
+    if (name.indexOf("ae") > 1) { // Noncompliant {{Use ".indexOf("ae",n) > -1" instead.}}
       // ...
     }
-    if (2 < (name.indexOf("ae"))) { // Noncompliant
+    String ae = "ae";
+    if (2 < (name.indexOf(ae))) { // Noncompliant {{Use ".indexOf(ae,n) > -1" instead.}}
       // ...
     }
   }

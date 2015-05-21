@@ -27,6 +27,8 @@ import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -71,9 +73,18 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
 
   private void checkIndexOfInvocation(MethodInvocationTree mit, ExpressionTree other) {
     if (INDEX_OF_METHOD.matches(mit)) {
+      String replaceMessage;
+      ExpressionTree firstPar = mit.arguments().get(0);
+      if (firstPar.is(Tree.Kind.STRING_LITERAL)) {
+         replaceMessage = ((LiteralTree) firstPar).value();
+      } else if (firstPar.is(Tree.Kind.IDENTIFIER)) {
+        replaceMessage = ((IdentifierTree) firstPar).name();
+      } else {
+        replaceMessage = "xxx";
+      }
       Long otherValue = LiteralUtils.longLiteralValue(other);
       if (otherValue != null && otherValue != -1 && otherValue != 0) {
-        addIssue(mit, "Use \".indexOf(xxx,n) > -1\" instead.");
+        addIssue(mit, "Use \".indexOf(" + replaceMessage + ",n) > -1\" instead.");
       }
     }
   }
