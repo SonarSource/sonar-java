@@ -20,14 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.symexecengine.ExecutionState;
 import org.sonar.java.symexecengine.State;
+import org.sonar.java.symexecengine.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -61,10 +62,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @Rule(
@@ -108,7 +107,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
       Symbol identifierSymbol = ((IdentifierTree) tree.variable()).symbol();
       if (identifierSymbol.isVariableSymbol()) {
-        currentState.setVariableState(identifierSymbol, checkNullity(tree.expression()));
+        SymbolicValue value = currentState.createValueForSymbol(identifierSymbol, tree);
+        currentState.markValueAs(value, checkNullity(tree.expression()));
       }
     }
   }
@@ -197,8 +197,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     if (tree.elseStatement() != null) {
       currentState = conditionalState.falseState;
       tree.elseStatement().accept(this);
+      currentState = currentState.parent.overrideBy(conditionalState.trueState.merge(conditionalState.falseState));
+    } else {
+      currentState = currentState.parent.merge(conditionalState.trueState);
     }
-    currentState = currentState.parent.overrideBy(conditionalState.trueState.merge(conditionalState.falseState));
   }
 
   @Override
@@ -213,7 +215,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     currentState = new ExecutionState();
     for (VariableTree parameter : tree.parameters()) {
       Symbol symbol = parameter.symbol();
-      currentState.setVariableState(symbol, checkNullity(symbol));
+      SymbolicValue value = currentState.createValueForSymbol(symbol, parameter);
+      currentState.markValueAs(value, checkNullity(symbol));
     }
     scan(tree.block());
     currentState = oldState;
@@ -276,7 +279,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     // skips modifiers (annotations) and type.
     if (tree.initializer() != null) {
       scan(tree.initializer());
-      currentState.setVariableState(tree.symbol(), checkNullity(tree.initializer()));
+      SymbolicValue value = currentState.createValueForSymbol(tree.symbol(), tree);
+      currentState.markValueAs(value, checkNullity(tree.initializer()));
     }
   }
 
@@ -317,7 +321,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   public NullableState checkNullity(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
     if (isSymbolLocalVariableOrMethodParameter(symbol)) {
-      return currentState.getVariableState((VariableSymbol) symbol);
+      State result = currentState.mergePotentiallyReachableStates(symbol);
+      return result instanceof NullableState ? (NullableState) result : NullableState.UNKNOWN;
     }
     return NullableState.UNKNOWN;
   }
@@ -334,7 +339,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       Symbol symbol = ((IdentifierTree) tree).symbol();
       if (checkNullity(tree).equals(NullableState.NULL)) {
         // prevents reporting issue multiple times
-        currentState.setVariableState(symbol, NullableState.UNKNOWN);
+        currentState.markPotentiallyReachableValues(symbol, NullableState.UNKNOWN);
         context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
       }
     } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -357,7 +362,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private ExecutionState invalidateVariables(ExecutionState executionState, Set<VariableSymbol> variables) {
     for (VariableSymbol variable : variables) {
-      executionState.setVariableState(variable, NullableState.UNKNOWN);
+      executionState.markPotentiallyReachableValues(variable, NullableState.UNKNOWN);
     }
     return executionState;
   }
@@ -417,16 +422,16 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   private void visitRelationalEqualTo(BinaryExpressionTree tree) {
     VariableSymbol symbol = extractRelationalSymbol(tree);
     if (symbol != null && currentConditionalState != null) {
-      currentConditionalState.trueState.setVariableState(symbol, NullableState.NULL);
-      currentConditionalState.falseState.setVariableState(symbol, NullableState.NOTNULL);
+      currentConditionalState.trueState.markPotentiallyReachableValues(symbol, NullableState.NULL);
+      currentConditionalState.falseState.markPotentiallyReachableValues(symbol, NullableState.NOTNULL);
     }
   }
 
   private void visitRelationalNotEqualTo(BinaryExpressionTree tree) {
     VariableSymbol symbol = extractRelationalSymbol(tree);
     if (symbol != null && currentConditionalState != null) {
-      currentConditionalState.trueState.setVariableState(symbol, NullableState.NOTNULL);
-      currentConditionalState.falseState.setVariableState(symbol, NullableState.NULL);
+      currentConditionalState.trueState.markPotentiallyReachableValues(symbol, NullableState.NOTNULL);
+      currentConditionalState.falseState.markPotentiallyReachableValues(symbol, NullableState.NULL);
     }
   }
 
@@ -495,55 +500,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     void mergeConditionalOr(ConditionalState leftConditionalState, ConditionalState rightConditionalState) {
       trueState.merge(leftConditionalState.trueState.merge(rightConditionalState.trueState));
       falseState.overrideBy(leftConditionalState.falseState.overrideBy(rightConditionalState.falseState));
-    }
-  }
-
-  @VisibleForTesting
-  static class ExecutionState {
-    @Nullable
-    final ExecutionState parent;
-    final Map<Symbol, NullableState> variables;
-
-    public ExecutionState() {
-      this.parent = null;
-      this.variables = new HashMap<>();
-    }
-
-    public ExecutionState(ExecutionState parentState) {
-      this.parent = parentState;
-      this.variables = new HashMap<>();
-    }
-
-    // returns the value of the variable in the current state.
-    public NullableState getVariableState(Symbol variable) {
-      for (ExecutionState currentState = this; currentState != null; currentState = currentState.parent) {
-        NullableState result = currentState.variables.get(variable);
-        if (result != null) {
-          return result;
-        }
-      }
-      return NullableState.UNKNOWN;
-    }
-
-    // sets the value of the variable in the current state.
-    public void setVariableState(Symbol variable, NullableState state) {
-      variables.put(variable, state);
-    }
-
-    ExecutionState merge(ExecutionState executionState) {
-      for (Symbol variable : Iterables.concat(variables.keySet(), executionState.variables.keySet())) {
-        NullableState state = executionState.getVariableState(variable);
-        NullableState currentState = getVariableState(variable);
-        setVariableState(variable, (NullableState) state.merge(currentState));
-      }
-      return this;
-    }
-
-    ExecutionState overrideBy(ExecutionState executionState) {
-      for (Map.Entry<Symbol, NullableState> entry : executionState.variables.entrySet()) {
-        variables.put(entry.getKey(), entry.getValue());
-      }
-      return this;
     }
   }
 

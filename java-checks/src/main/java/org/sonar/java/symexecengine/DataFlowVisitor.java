@@ -131,7 +131,7 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.block());
     scan(tree.resources());
     for (VariableTree resource : tree.resources()) {
-      for (SymbolicValue value : executionState.getValues(resource.symbol())) {
+      for (SymbolicValue value : executionState.getDefinitelyReachableValues(resource.symbol())) {
         check.onTryResourceClosed(executionState, value);
       }
     }

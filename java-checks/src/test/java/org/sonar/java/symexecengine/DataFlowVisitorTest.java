@@ -91,7 +91,7 @@ public class DataFlowVisitorTest {
       MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) methodInvocation.methodSelect();
       IdentifierTree expressionTree = (IdentifierTree) memberSelectTree.expression();
       int value = Integer.parseInt(((LiteralTree) methodInvocation.arguments().get(0)).value());
-      executionState.markValueAs(expressionTree.symbol(), new TestState(tree, ImmutableSet.of(value)));
+      executionState.markDefinitelyReachableValues(expressionTree.symbol(), new TestState(tree, ImmutableSet.of(value)));
     }
 
     @Override

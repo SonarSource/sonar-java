@@ -431,6 +431,59 @@ class NullPointerTest {
     entry2 = entry2.parent(); // Compliant
   }
 
+  public void testAssignInCondition() {
+    Object obj = new Object(), s = null;
+    while (obj != null && (s = new Object()) != null) {
+      obj = s.hashCode();
+    }
+  }
+
+  public void test(boolean condition) {
+    Object one = new Object(), two = null;
+    if (condition) {
+      one = null;
+      two = new Object();
+    }
+    one.hashCode();
+    two.hashCode();
+  }
+
+  public void test(boolean condition) {
+    Object one = new Object(), two = null;
+    if (condition) {
+      one = null;
+      two = new Object();
+    }
+    one.hashCode(); // Compliant
+    two.hashCode(); // Compliant
+  }
+
+  public void test(boolean condition) {
+    Object one = new Object(), two = null;
+    if (condition) {
+      one = null;
+      two = new Object();
+    } else {
+      one = null;
+      two = new Object();
+    }
+    one.hashCode(); // Noncompliant
+    two.hashCode(); // Compliant
+  }
+
+  public void test(boolean condition1, boolean condition2) {
+    Object s;
+    for (;;) {
+      if ((s = new Object()) != null) {
+        if (condition1) {
+          s = null;
+          break;
+        }
+        s.hashCode();
+      }
+    }
+  }
+
   @interface CoverageAnnotation {
   }
 

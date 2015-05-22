@@ -93,9 +93,9 @@ public class LockedVisitor extends SymbolicExecutionCheck {
         if (expression.is(Tree.Kind.IDENTIFIER)) {
           Symbol symbol = ((IdentifierTree) expression).symbol();
           if (LOCK_INVOCATIONS.anyMatch(methodInvocation)) {
-            executionState.markValueAs(symbol, new LockState.Locked(methodInvocation));
+            executionState.markDefinitelyReachableValues(symbol, new LockState.Locked(methodInvocation));
           } else if (UNLOCK_INVOCATION.matches(methodInvocation)) {
-            executionState.markValueAs(symbol, new LockState.Unlocked(methodInvocation));
+            executionState.markDefinitelyReachableValues(symbol, new LockState.Unlocked(methodInvocation));
           }
         }
       }
