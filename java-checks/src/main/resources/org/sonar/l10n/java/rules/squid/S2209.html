@@ -1,0 +1,39 @@
+<p>
+  While it is <em>possible</em> to access <code>static</code> members from a class instance, it's bad form,
+  and considered by most to be misleading because it implies to the readers of your code that
+  there's an instance of the member per class instance.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class A {
+  public static int counter = 0;
+}
+
+public class B {
+  private A first = new A();
+  private A second = new A();
+
+  public void runUpTheCount() {
+    first.counter ++;  // Noncompliant
+    second.counter ++;  // Noncompliant. A.counter is now 2, which is perhaps contrary to expectations
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class A {
+  public static int counter = 0;
+}
+
+public class B {
+  private A first = new A();
+  private A second = new A();
+
+  public void runUpTheCount() {
+    A.counter ++;  // Compliant
+    A.counter ++;  // Compliant
+  }
+}
+</pre>
