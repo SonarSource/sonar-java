@@ -303,7 +303,7 @@ public final class CheckList {
       .add(SelectorMethodArgumentCheck.class)
       .add(ThreadAsRunnableArgumentCheck.class)
       .add(SynchronizedFieldAssignmentCheck.class)
-      .add(NullPointerCheck.class)
+      .add(NullPointerDereferenceCheck.class)
       .add(UselessConditionCheck.class)
       .add(StaticFieldUpateCheck.class)
       .add(IgnoredStreamReturnValueCheck.class)

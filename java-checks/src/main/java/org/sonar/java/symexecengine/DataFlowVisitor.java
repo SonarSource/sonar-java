@@ -23,10 +23,12 @@ import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -43,6 +45,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 import java.util.Set;
 
@@ -98,6 +101,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     // do nothing, inner methods will be visited later
   }
 
+
   @Override
   public void visitTryStatement(TryStatementTree tree) {
     ExecutionState blockES = new ExecutionState(executionState);
@@ -133,6 +137,7 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.condition());
     ExecutionState thenES = new ExecutionState(executionState);
     executionState = thenES;
+    evaluateConditionToTrue(tree.condition());
     scan(tree.thenStatement());
 
     if (tree.elseStatement() == null) {
@@ -140,10 +145,44 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     } else {
       ExecutionState elseES = new ExecutionState(thenES.parent);
       executionState = elseES;
+      evaluateConditionToFalse(tree.condition());
       scan(tree.elseStatement());
       elseES.reportIssues();
       executionState = thenES.parent.overrideBy(thenES.merge(elseES));
     }
+  }
+
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    scan(tree.condition());
+    ExecutionState thenES = new ExecutionState(executionState);
+    executionState = thenES;
+    evaluateConditionToTrue(tree.condition());
+    scan(tree.trueExpression());
+    ExecutionState elseES = new ExecutionState(thenES.parent);
+    executionState = elseES;
+    evaluateConditionToFalse(tree.condition());
+    scan(tree.falseExpression());
+    elseES.reportIssues();
+    executionState = thenES.parent.overrideBy(thenES.merge(elseES));
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    scan(tree.leftOperand());
+    if(tree.is(Tree.Kind.CONDITIONAL_AND)) {
+      evaluateConditionToTrue(tree.leftOperand());
+    } else if(tree.is(Tree.Kind.CONDITIONAL_OR)) {
+      evaluateConditionToFalse(tree.leftOperand());
+    }
+    scan(tree.rightOperand());
+  }
+
+  protected void evaluateConditionToTrue(ExpressionTree condition) {
+
+  }
+  protected void evaluateConditionToFalse(ExpressionTree condition) {
+
   }
 
   @Override
@@ -201,7 +240,14 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     scan(tree.condition());
-    visitLoopStatement(tree.statement());
+    StatementTree statement = tree.statement();
+    executionState = new ExecutionState(executionState);
+    //Scan twice the tree in loop to create multiple value if required
+    evaluateConditionToTrue(tree.condition());
+    scan(statement);
+    evaluateConditionToTrue(tree.condition());
+    scan(statement);
+    executionState = executionState.restoreParent();
   }
 
   @Override
@@ -215,6 +261,9 @@ public abstract class DataFlowVisitor extends BaseTreeVisitor {
     scan(tree.initializer());
     scan(tree.condition());
     scan(tree.update());
+    if(tree.condition() != null) {
+      evaluateConditionToTrue(tree.condition());
+    }
     visitLoopStatement(tree.statement());
   }
 

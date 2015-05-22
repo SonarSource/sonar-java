@@ -1,6 +1,9 @@
 @SomeAnnotation(name = value)
 package javax.annotation;
 
+import java.lang.IllegalStateException;
+import java.lang.Object;
+
 @interface CheckForNull {}
 
 @interface Nonnull {}
@@ -73,9 +76,9 @@ class NullPointerTest {
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
-    i = array2.length; // Noncompliant
+    i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
 
-    i = checkForNullMethod().length; // Noncompliant
+    i = checkForNullMethod().length; // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
 
   public void testNullable(@Nullable Object parameter) {
@@ -83,7 +86,7 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = nullableField;
-    if (array1.length != 0) { } // False negative
+    if (array1.length != 0) { } // False negative, nullable constraint is not transmitted
 
     i = nullableField.length; // False negative, instance and static fields are not checked
 
@@ -104,8 +107,8 @@ class NullPointerTest {
 
   public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) {
     a1.hashCode(); // No issue
-    a2.hashCode(); // False negative
-    a3.hashCode(); // False negative
+    a2.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'a2' is nullable here}}
+    a3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'a3' is nullable here}}
 
     a1.a.hashCode(); // No issue
     a1.b.hashCode(); // False negative
@@ -139,39 +142,39 @@ class NullPointerTest {
       notnullableMethod(), // No issue
       notnullableMethod()); // No issue
     method1(checkForNullMethod(), // No issue
-      checkForNullMethod(), // No issue
-      checkForNullMethod()); // No issue
-    method2(checkForNullMethod(), // Not compliant
-      checkForNullMethod(), // Not compliant
-      checkForNullMethod()); // Not compliant
+        checkForNullMethod(), // No issue
+        checkForNullMethod()); // No issue
+    method2(checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+        checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+        checkForNullMethod()); // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
 
     method1(null, // No issue
-      null, // No issue
-      null); // No issue
-    method2(null, // Not compliant
-      null, // Not compliant
-      null); // Not compliant
+        null, // No issue
+        null); // No issue
+    method2(null, // Noncompliant {{method 'method2' does not accept nullable argument}}
+        null, // Noncompliant {{method 'method2' does not accept nullable argument}}
+        null); // Noncompliant {{method 'method2' does not accept nullable argument}}
   }
 
   public void testIf(Object argument1, Object argument2, Object argument3) {
     argument1.hashCode(); // Compliant
     if (argument1 == null) {
-      argument1.hashCode(); // Noncompliant
+      argument1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument1' is nullable here}}
       argument1 = argument3;
       argument1.hashCode(); // Compliant
     } else {
       argument1.hashCode(); // Compliant
       argument1 = null;
-      argument1.hashCode(); // Noncompliant
+      argument1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument1' is nullable here}}
     }
     argument1.hashCode(); // Compliant
     argument2.hashCode(); // Compliant
     if (null != argument2) {
       argument2.hashCode(); // Compliant
       argument2 = null;
-      argument2.hashCode(); // Noncompliant
+      argument2.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument2' is nullable here}}
     } else {
-      argument2.hashCode(); // Noncompliant
+      argument2.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument2' is nullable here}}
       argument2 = argument3;
       argument2.hashCode(); // Compliant
     }
@@ -206,15 +209,15 @@ class NullPointerTest {
     } else {
       argument4 = null;
     }
-    argument4.hashCode(); // Noncompliant
+    argument4.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument4' is nullable here}}
   }
 
   public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
     int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
     argument1.hashCode(); // Compliant
-    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant
+    int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant {{NullPointerException might be thrown as 'argument2' is nullable here}}
     argument2.hashCode(); // Compliant
-    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant
+    int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument3' is nullable here}}
     argument3.hashCode(); // Compliant
     int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
     argument4.hashCode(); // Compliant
@@ -222,7 +225,7 @@ class NullPointerTest {
 
   public void testCondition() {
     String var1 = null;
-    if (var1.equals("")) { } // Noncompliant
+    if (var1.equals("")) { } // Noncompliant {{NullPointerException might be thrown as 'var1' is nullable here}}
     String var2 = nullableMethod();
     if (var2.equals("")) { } // Compliant
   }
@@ -232,54 +235,75 @@ class NullPointerTest {
     try {
       object = new Object();
     } catch (Exception e) {
-      object.hashCode(); // Noncompliant
+      object.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
     } finally {
-      object.hashCode(); // Noncompliant
+      object.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
     }
   }
 
   public void testLogicalAnd(String str) {
     Object object = null;
-    if (object != null && object.hashCode() == 0); // Compliant
+    if (object != null
+        && object.hashCode() == 0); // Compliant
     if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
-    if (object == null && object.hashCode() == 0); // Noncompliant
-    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant
+    if (object == null && object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+    if (object == null && object.hashCode() == 0 // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+        && object.hashCode() == 0); // Noncompliant
     boolean b2 = str != null && str.length() == 0; // Compliant
-    boolean b1 = str == null && str.length() == 0; // Noncompliant
+    boolean b1 = str == null && str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
 
   public void testLogicalOr(String str) {
     Object object = null;
-    if (object == null || object.hashCode() == 0); // Compliant
-    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
-    if (object != null || object.hashCode() == 0); // Noncompliant
-    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant
+    if (object == null
+        || object.hashCode() == 0); // Compliant
+    if (object == null
+        || object.hashCode() != 0
+        || object.hashCode() != 0); // Compliant
+    if (object != null
+        || object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+    if (object != null
+        || object.hashCode() == 0 // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+        || object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
     boolean b1 = str == null || str.length() == 0; // Compliant
-    boolean b2 = str != null || str.length() == 0; // Noncompliant
+    boolean b2 = str != null || str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
 
   public void testDoWhileLoop(boolean condition) {
     Object object1 = null, object2 = null, object3 = null;
     do {
-      object1.hashCode(); // False negative
+      object1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
       if (condition) {
         object2 = new Object();
       }
       object1 = null;
       object3 = new Object();
-    } while (object1.hashCode()); // Noncompliant
-    object1.hashCode(); // False negative
+    } while (object1.hashCode()); // already reported
+    object1.hashCode(); // already reported
     object2.hashCode(); // Compliant
     object3.hashCode(); // Compliant
+
+    Object object4=null, object5=new Object();
+    for(int i=0; condition(); i++)
+      if (i == 0) {
+        object4 = new Object();
+        object5=null;
+      } else {
+        object4.hashCode(); // ignore object reaffected in loop
+        object5.hashCode(); // ignore object reaffected in loop
+      }
   }
+
 
   public void testForLoop() {
     Object object = null;
-    for(; object.hashCode() != 0; object.hashCode()) { // Noncompliant
-      object.hashCode(); // False negative
+    for(; object.hashCode() != 0; // ignore object reaffected in loop
+        object.hashCode()) { // ignore object reaffected in loop
+      object.hashCode(); // Noncompliant
       object = null;
     }
-    object.hashCode(); // False negative
+    //False negative
+    object.hashCode();
     for(Object object1 = null, object2 = null; true; object2.hashCode()) { // Noncompliant
       object1.hashCode(); // Noncompliant
     }
@@ -293,21 +317,62 @@ class NullPointerTest {
       head.hashCode(); // Noncompliant
       value = null;
       value.hashCode(); // Noncompliant
+      entry.hashCode();
     }
-    head.hashCode(); // Noncompliant
-    value.hashCode(); // False negative
+    head.hashCode(); // issue already reported
+    value.hashCode(); // issue already reported
   }
 
   public void testWhileLoop() {
     Object object1 = null, object2 = null, object3 = null;
     while(object1.hashCode()) { // Noncompliant
-      object2.hashCode(); // False negative, object2 is modified in the loop
+      object2.hashCode(); // Compliant, false negative ignore object reaffected in loop
       object2 = null;
       object2.hashCode(); // Noncompliant
      }
-    object1.hashCode(); // Compliant, issue already raised
-    object2.hashCode(); // Compliant
+    object1.hashCode(); // issue already reported
+    object2.hashCode(); // issue already reported
     object3.hashCode(); // Noncompliant
+
+    while (object3 != null) {
+      object3.hashCode(); // Compliant
+    }
+    object3.hashCode();
+
+
+    Object pos = new Object();
+    while (null != pos) {
+      pos.hashCode();
+    }
+  }
+
+  class Node {
+    Node getFirstChild(){return null;}
+    Node getNextSibling(){return null;}
+    Node getParentNode(){return null;}
+  }
+  public void traverse(Node pos) {
+    Node top = pos;
+    while (null != pos) {
+      startNode(pos);
+      Node nextNode = pos.getFirstChild();
+      while (null == nextNode) {
+        endNode(pos);
+        if (top.equals(pos))
+          break;
+        nextNode = pos.getNextSibling();
+        if (null == nextNode) {
+          pos = pos.getParentNode();
+          if ((null == pos) || (top.equals(pos))) {
+            if (null != pos)
+              endNode(pos);
+            nextNode = null;
+            break;
+          }
+        }
+      }
+      pos = nextNode;
+    }
   }
 
   public void testHoistedLoop(boolean condition) {
@@ -315,17 +380,18 @@ class NullPointerTest {
     if (condition) {
       if (condition) {
         while(condition) {
-          a.hashCode(); // False negative
+          a.hashCode(); // Noncompliant
           a = null;
         }
       }
     }
-    a.hashCode(); // False negative
+    //False negative
+    a.hashCode(); // compliant
   }
 
   public void testInstanceField() {
     nullableField = null;
-    nullableField.hashCode(); // False negative, instance fields are not checked
+    nullableField.hashCode(); // instance fields are not checked
   }
 
   public void testSwitch() {
@@ -341,9 +407,10 @@ class NullPointerTest {
     if(o == null) {
       return;
     }
-    o.hashCode(); // Compliant, constraint is lost
+    //False positive constraint is lost and here o is necessarily not null.
+    o.hashCode(); // Noncompliant
     Object a = o;
-    a.hashCode(); // Compliant
+    a.hashCode(); // issue already reported, o is not null anymore
   }
 
   public void testAssignNullableMethod() {
@@ -357,11 +424,11 @@ class NullPointerTest {
   public void testComplexLoop(@Nullable Object nullableObject) {
     Object object1 = null, object11 = null, object12 = null;
     for(int i = 0; object11 == null; i += 1) {
-      object11.hashCode(); // False negative
+      object11.hashCode(); // Noncompliant
       object12.hashCode(); // Noncompliant
       nullableObject.hashCode(); // Noncompliant
       if(i == 1) {
-        object1.hashCode(); // Compliant
+        object1.hashCode(); // ignore object reaffected in loop
       } else if(i == 0) {
         object1 = new Object();
       }
@@ -372,11 +439,11 @@ class NullPointerTest {
     Object object2 = null, object21 = null, object22 = null;
     int i = 0;
     while(object21 == null) {
-      object21.hashCode(); // False negative
+      object21.hashCode(); // Noncompliant
       object22.hashCode(); // Noncompliant
-      nullableObject.hashCode(); // Noncompliant
+      nullableObject.hashCode(); // issue already reported
       if(i == 1) {
-        object2.hashCode(); // Compliant
+        object2.hashCode(); // ignore object reaffected in loop
       } else if(i == 0) {
         object2 = new Object();
       }
@@ -388,7 +455,7 @@ class NullPointerTest {
     int i = 0;
     do {
       if(i == 1) {
-        object3.hashCode(); // False negative
+        object3.hashCode(); // ignore object reaffected in loop
       } else if(i == 0) {
         object3 = new Object();
       }
@@ -403,7 +470,7 @@ class NullPointerTest {
       object1 = new Object();
       break;
     case "TWO":
-      object1.hashCode(); // False negative
+      object1.hashCode(); // Noncompliant
       break;
     case "THREE":
       object2 = new Object();
@@ -414,7 +481,7 @@ class NullPointerTest {
       object3.hashCode(); // Noncompliant
       object4 = null;
     case "SIX":
-      object4.hashCode(); // False negative
+      object4.hashCode(); // Noncompliant
     }
   }
 
@@ -428,7 +495,7 @@ class NullPointerTest {
   public void testAssignSelfMember() {
     LinkedListEntry entry1 = entry1.parent(); // Compliant
     LinkedListEntry entry2;
-    entry2 = entry2.parent(); // Compliant
+    entry2 = entry2.parent(); // Noncompliant {{NullPointerException might be thrown as 'entry2' is nullable here}}
   }
 
   @interface CoverageAnnotation {
@@ -458,4 +525,53 @@ class NullPointerTest {
     a = 0;
   }
 
+  void local_var_in_finally_within_loop() {
+    while (true) {
+      try {
+
+      }finally {
+        Object a = new Object();
+      }
+    }
+  }
+  void throw_statement() {
+    Object a = new Object();
+    if(a == null)
+      throw new IllegalStateException("Error");
+    if(a.hashCode() > 0) {
+
+    }
+    //unknown symbol
+    if(plopo == null)
+      throw new IllegalStateException("Error");
+    plopo.hashCode();
+  }
+
+  void foo() {
+    Object context;
+    if(1 > 0 && context != null) context.hashCode();
+    if(1 > 0 && 1>2 && context != null) context.hashCode();
+    if(1 > 0 && context != null && 1>2 ) context.hashCode();
+    if(1 > 0 || context != null) context.hashCode();
+    if(context != null || 1 > 0) context.hashCode();
+    Object a;
+    if((a != null) && (1 > 2 || a.hashCode()>0)) a.hashCode();
+
+    if(context != null && 1 > 2) {
+
+    } else {
+      context.hashCode(); // Noncompliant
+    }
+  }
+
+  void break_in_loop() {
+    Object a = new Object();
+    for (;;) {
+        if(foo) {
+          a = null;
+          break;
+        }
+      a.hashCode();
+    }
+  }
 }

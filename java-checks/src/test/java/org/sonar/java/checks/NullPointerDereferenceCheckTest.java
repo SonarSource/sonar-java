@@ -17,15 +17,16 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java;
+package org.sonar.java.checks;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.sonar.java.checks.CloseResourceCheckTest;
-import org.sonar.java.checks.LocksNotUnlockedCheckTest;
-import org.sonar.java.checks.NullPointerDereferenceCheckTest;
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({CloseResourceCheckTest.class, LocksNotUnlockedCheckTest.class, NullPointerDereferenceCheckTest.class})
-public class SymExecChecks {
+public class NullPointerDereferenceCheckTest {
+
+  @Test
+  public void testName() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/checks/NullPointerCheck.java", new NullPointerDereferenceCheck());
+  }
+
 }

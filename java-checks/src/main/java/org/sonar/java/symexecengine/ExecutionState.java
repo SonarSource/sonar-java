@@ -25,11 +25,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,6 +62,9 @@ public class ExecutionState {
 
   public void defineSymbol(Symbol symbol) {
     definedInState.add(symbol);
+    //Clear values (we are defining the same symbol a second time, (local variables in loops))
+    reachableValues.get(symbol).clear();
+    unreachableValues.get(symbol).clear();
   }
 
   public ExecutionState merge(ExecutionState executionState) {
@@ -76,12 +79,6 @@ public class ExecutionState {
       }
     }
 
-    for (Symbol symbol : unreachableValues.keys()) {
-      // cleanup after merge of reachable/unreachable values
-      for (Value value : unreachableValues.get(symbol)) {
-        reachableValues.remove(symbol, value);
-      }
-    }
     // Merge states of values
     for (Map.Entry<Value, State> valueStateEntry : executionState.stateOfValue.entrySet()) {
       Value value = valueStateEntry.getKey();
@@ -116,6 +113,10 @@ public class ExecutionState {
     reportIssuesToTopState(getIssuableTreesOfCurrentState());
   }
 
+  public void reportIssue(Tree tree) {
+    reportIssuesToTopState(Sets.newHashSet(tree));
+  }
+
   private void reportIssuesToTopState(Set<Tree> trees) {
     if (parent == null) {
       issueTrees.addAll(trees);
@@ -140,6 +141,20 @@ public class ExecutionState {
       }
     }
     return results;
+  }
+
+  public boolean hasState(Symbol symbol, Class<? extends State> stateClass) {
+    Set<Value> values = reachableValues.get(symbol);
+    if(values.isEmpty()) {
+      return false;
+    }
+    for (Value value : values) {
+      State state = getStateOfValue(value);
+      if(state!= null && !state.getClass().equals(stateClass)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   // FIXME : Hideous hack for closeable to get "Ignored" variables
@@ -187,11 +202,37 @@ public class ExecutionState {
     }
   }
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+
+    Set<Symbol> symbols = Sets.newHashSet(reachableValues.keySet());
+    symbols.addAll(unreachableValues.keySet());
+    for (Symbol symbol : symbols) {
+      sb.append(symbol.name()).append(" : ");
+      for (Value value : unreachableValues.get(symbol)) {
+        sb.append(stateOfValue.get(value)).append(value);
+      }
+      sb.append( " | ");
+      for (Value value : reachableValues.get(symbol)) {
+        State state = stateOfValue.get(value);
+        sb.append(state == null ? "":state).append(value);
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
+  }
+
   private static class Value {
     final Tree treeNode;
 
     public Value(Tree treeNode) {
       this.treeNode = treeNode;
+    }
+
+    @Override
+    public String toString() {
+      return "@"+((JavaTree) treeNode).getLine();
     }
   }
 
