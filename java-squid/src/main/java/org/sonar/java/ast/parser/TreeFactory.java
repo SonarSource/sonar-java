@@ -418,6 +418,7 @@ public class TreeFactory {
     List<AstNode> children = Lists.newArrayList();
     ImmutableList.Builder<Tree> builder = ImmutableList.builder();
 
+    InternalSyntaxToken openBraceSyntaxToken = InternalSyntaxToken.create(openBraceTokenAstNode);
     children.add(openBraceTokenAstNode);
     if (members.isPresent()) {
       for (AstNode member : members.get()) {
@@ -432,9 +433,10 @@ public class TreeFactory {
         }
       }
     }
+    InternalSyntaxToken closeBraceTokenSyntaxToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
     children.add(closeBraceTokenAstNode);
 
-    return new ClassTreeImpl(kind, builder.build(), children);
+    return new ClassTreeImpl(kind, openBraceSyntaxToken, builder.build(), closeBraceTokenSyntaxToken, children);
   }
 
   public ClassTreeImpl newClassBody(AstNode openBraceTokenAstNode, Optional<List<AstNode>> members, AstNode closeBraceTokenAstNode) {
@@ -742,7 +744,7 @@ public class TreeFactory {
 
     children.add(closeBraceToken);
 
-    return new ClassTreeImpl(emptyModifiers, members.build(), children);
+    return new ClassTreeImpl(emptyModifiers, openBraceToken, members.build(), closeBraceToken, children);
   }
 
   public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode partialAstNode) {

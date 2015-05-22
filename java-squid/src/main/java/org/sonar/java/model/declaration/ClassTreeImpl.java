@@ -23,8 +23,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -50,7 +48,11 @@ import java.util.List;
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
+  @Nullable
+  private final SyntaxToken openBraceToken;
   private final List<Tree> members;
+  @Nullable
+  private final SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
@@ -59,11 +61,13 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private List<TypeTree> superInterfaces;
   private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
 
-  public ClassTreeImpl(Kind kind, List<Tree> members, List<AstNode> children) {
+  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken, List<AstNode> children) {
     super(kind);
 
     this.kind = kind;
+    this.openBraceToken = openBraceToken;
     this.members = members;
+    this.closeBraceToken = closeBraceToken;
     this.modifiers = ModifiersTreeImpl.EMPTY;
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superInterfaces = ImmutableList.of();
@@ -73,14 +77,16 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     }
   }
 
-  public ClassTreeImpl(ModifiersTree modifiers, List<Tree> members, List<AstNode> children) {
+  public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken, List<AstNode> children) {
     super(Kind.ANNOTATION_TYPE);
     this.kind = Preconditions.checkNotNull(Kind.ANNOTATION_TYPE);
     this.modifiers = modifiers;
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superClass = null;
     this.superInterfaces = ImmutableList.of();
+    this.openBraceToken = openBraceToken;
     this.members = Preconditions.checkNotNull(members);
+    this.closeBraceToken = closeBraceToken;
 
     for (AstNode child : children) {
       addChild(child);
@@ -153,20 +159,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return superInterfaces;
   }
 
+  @Nullable
   @Override
   public SyntaxToken openBraceToken() {
-    return getBrace(JavaPunctuator.LWING);
-  }
-
-  @Nullable
-  private SyntaxToken getBrace(JavaPunctuator leftOrRightBrace) {
-    if (is(Kind.ANNOTATION_TYPE)) {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
-    } else if (getAstNode().is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
-    }
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaLexer.CLASS_BODY, JavaLexer.INTERFACE_BODY, JavaLexer.ENUM_BODY)
-      .getFirstChild(leftOrRightBrace).getToken());
+    return openBraceToken;
   }
 
   @Override
@@ -174,9 +170,10 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return members;
   }
 
+  @Nullable
   @Override
   public SyntaxToken closeBraceToken() {
-    return getBrace(JavaPunctuator.RWING);
+    return closeBraceToken;
   }
 
   @Override
