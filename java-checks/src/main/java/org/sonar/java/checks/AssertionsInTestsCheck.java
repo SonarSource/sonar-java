@@ -112,10 +112,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     chainedTo.push(ChainedMethods.NONE);
     super.visitMethodInvocation(mit);
     ChainedMethods chainedToResult = chainedTo.pop();
-    // ignore assertThat chained with bad resolution method invocations
-    boolean isChainedToAssertThatWithBadResolution = ChainedMethods.ASSERT_THAT.equals(chainedToResult) && mit.symbol().isUnknown();
-    boolean isChainedToVerify = ChainedMethods.MOCKITO_VERIFY.equals(chainedToResult);
-    if (isChainedToVerify || isChainedToAssertThatWithBadResolution || isAssertion(mit)) {
+    if (containsAssertion(mit, chainedToResult)) {
       methodContainsAssertion.pop();
       methodContainsAssertion.push(Boolean.TRUE);
     }
@@ -128,6 +125,13 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
         chainedTo.push(ChainedMethods.MOCKITO_VERIFY);
       }
     }
+  }
+
+  private boolean containsAssertion(MethodInvocationTree mit, ChainedMethods chainedToResult) {
+    // ignore assertThat chained with bad resolution method invocations
+    boolean isChainedToAssertThatWithBadResolution = ChainedMethods.ASSERT_THAT.equals(chainedToResult) && mit.symbol().isUnknown();
+    boolean isChainedToVerify = ChainedMethods.MOCKITO_VERIFY.equals(chainedToResult);
+    return isChainedToVerify || isChainedToAssertThatWithBadResolution || isAssertion(mit);
   }
 
   private boolean isAssertion(MethodInvocationTree mit) {

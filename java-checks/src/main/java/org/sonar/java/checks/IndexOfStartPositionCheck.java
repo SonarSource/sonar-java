@@ -76,7 +76,7 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
       String replaceMessage;
       ExpressionTree firstPar = mit.arguments().get(0);
       if (firstPar.is(Tree.Kind.STRING_LITERAL)) {
-         replaceMessage = ((LiteralTree) firstPar).value();
+        replaceMessage = ((LiteralTree) firstPar).value();
       } else if (firstPar.is(Tree.Kind.IDENTIFIER)) {
         replaceMessage = ((IdentifierTree) firstPar).name();
       } else {
