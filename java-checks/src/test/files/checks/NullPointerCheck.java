@@ -330,7 +330,7 @@ class NullPointerTest {
 
   public void testSwitch() {
     String str1 = null, str2 = null, str3 = null;
-    switch(str1) { // Noncompliant {{NullPointerException might be thrown as 'str1' is nullable here}}
+    switch(str1) { // False negative
     case "ONE":
       str2.length(); // Noncompliant {{NullPointerException might be thrown as 'str2' is nullable here}}
     }

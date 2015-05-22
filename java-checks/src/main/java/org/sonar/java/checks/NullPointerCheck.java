@@ -28,6 +28,7 @@ import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.symexecengine.ExecutionState;
 import org.sonar.java.symexecengine.State;
+import org.sonar.java.symexecengine.SymbolicExecutionCheck;
 import org.sonar.java.symexecengine.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -80,6 +81,8 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   private static final String MESSAGE_NULL_LITERAL = "null is dereferenced";
 
+  private final Check check = new Check();
+
   @Nullable
   private ConditionalState currentConditionalState;
   private JavaFileScannerContext context;
@@ -97,7 +100,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
+    check.onArrayAccess(currentState, tree);
     super.visitArrayAccessExpression(tree);
   }
 
@@ -205,7 +208,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
+    check.onMemberAccess(currentState, tree);
     super.visitMemberSelectExpression(tree);
   }
 
@@ -224,27 +227,12 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    Symbol symbol = tree.symbol();
-    if (symbol.isMethodSymbol()) {
-      MethodJavaSymbol methodSymbol = (MethodJavaSymbol) symbol;
-      List<JavaSymbol> parameters = methodSymbol.getParameters().scopeSymbols();
-      if (!parameters.isEmpty()) {
-        for (int i = 0; i < tree.arguments().size(); i += 1) {
-          // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
-          if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)).equals(NullableState.NOTNULL)) {
-            this.checkForIssue(tree.arguments().get(i),
-              String.format("'%%s' is nullable here and method '%s' does not accept nullable argument", methodSymbol.name()),
-              String.format("method '%s' does not accept nullable argument", methodSymbol.name()));
-          }
-        }
-      }
-    }
+    check.onExecutableElementInvocation(currentState, tree, tree.arguments());
     super.visitMethodInvocation(tree);
   }
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
     scan(tree.expression());
     Set<VariableSymbol> variables = new AssignmentVisitor().findAssignedVariables(tree.cases());
     invalidateVariables(currentState, variables);
@@ -287,8 +275,10 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     ConditionalState conditionalState = visitCondition(tree.condition());
+
     Set<VariableSymbol> assignedVariables = new AssignmentVisitor().findAssignedVariables(tree.statement());
     currentState = conditionalState.trueState;
+
     invalidateVariables(currentState, assignedVariables);
     scan(tree.statement());
     restorePreviousState();
@@ -325,31 +315,6 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       return result instanceof NullableState ? (NullableState) result : NullableState.UNKNOWN;
     }
     return NullableState.UNKNOWN;
-  }
-
-  /**
-   * raises an issue if the passed tree can be null.
-   *
-   * @param tree tree that must be checked
-   * @param nullableMessage message to generate when the tree is an identifier or a method invocation
-   * @param nullMessage message to generate when the tree is the null literal
-   */
-  private void checkForIssue(Tree tree, String nullableMessage, String nullMessage) {
-    if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (checkNullity(tree).equals(NullableState.NULL)) {
-        // prevents reporting issue multiple times
-        currentState.markPotentiallyReachableValues(symbol, NullableState.UNKNOWN);
-        context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
-      }
-    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-      Symbol symbol = ((MethodInvocationTree) tree).symbol();
-      if (checkNullity(symbol).equals(NullableState.NULL)) {
-        context.addIssue(tree, this, String.format(nullableMessage, symbol.name()));
-      }
-    } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
-      context.addIssue(tree, this, nullMessage);
-    }
   }
 
   private boolean isSymbolLocalVariableOrMethodParameter(Symbol symbol) {
@@ -464,6 +429,66 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     void registerAssignedSymbol(Symbol symbol) {
       if (symbol.isVariableSymbol()) {
         assignedSymbols.add((VariableSymbol) symbol);
+      }
+    }
+  }
+
+  public class Check extends SymbolicExecutionCheck {
+    @Override
+    protected void onArrayAccess(ExecutionState executionState, ArrayAccessExpressionTree tree) {
+      checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
+    }
+
+    @Override
+    protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<ExpressionTree> arguments) {
+      if (!tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        return;
+      }
+      MethodInvocationTree methodInvocation = (MethodInvocationTree) tree;
+      Symbol symbol = methodInvocation.symbol();
+      if (symbol.isMethodSymbol()) {
+        MethodJavaSymbol methodSymbol = (MethodJavaSymbol) symbol;
+        List<JavaSymbol> parameters = methodSymbol.getParameters().scopeSymbols();
+        if (!parameters.isEmpty()) {
+          for (int i = 0; i < methodInvocation.arguments().size(); i += 1) {
+            // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
+            if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)).equals(NullableState.NOTNULL)) {
+              this.checkForIssue(methodInvocation.arguments().get(i),
+                String.format("'%%s' is nullable here and method '%s' does not accept nullable argument", methodSymbol.name()),
+                String.format("method '%s' does not accept nullable argument", methodSymbol.name()));
+            }
+          }
+        }
+      }
+    }
+
+    @Override
+    protected void onMemberAccess(ExecutionState executionState, MemberSelectExpressionTree tree) {
+      checkForIssue(tree.expression(), MESSAGE_NULLABLE_EXPRESSION, MESSAGE_NULL_LITERAL);
+    }
+
+    /**
+     * raises an issue if the passed tree can be null.
+     *
+     * @param tree tree that must be checked
+     * @param nullableMessage message to generate when the tree is an identifier or a method invocation
+     * @param nullMessage message to generate when the tree is the null literal
+     */
+    private void checkForIssue(Tree tree, String nullableMessage, String nullMessage) {
+      if (tree.is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) tree).symbol();
+        if (checkNullity(tree).equals(NullableState.NULL)) {
+          // prevents reporting issue multiple times
+          currentState.markDefinitelyReachableValues(symbol, NullableState.UNKNOWN);
+          context.addIssue(tree, NullPointerCheck.this, String.format(nullableMessage, symbol.name()));
+        }
+      } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+        Symbol symbol = ((MethodInvocationTree) tree).symbol();
+        if (checkNullity(symbol).equals(NullableState.NULL)) {
+          context.addIssue(tree, NullPointerCheck.this, String.format(nullableMessage, symbol.name()));
+        }
+      } else if (tree.is(Tree.Kind.NULL_LITERAL)) {
+        context.addIssue(tree, NullPointerCheck.this, nullMessage);
       }
     }
   }

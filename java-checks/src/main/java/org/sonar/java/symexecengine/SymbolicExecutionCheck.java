@@ -20,7 +20,9 @@
 package org.sonar.java.symexecengine;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -47,12 +49,30 @@ public abstract class SymbolicExecutionCheck {
   }
 
   /**
+   * called when a element of an array is retrieved from an instance
+   *
+   * @param executionState execution state
+   * @param tree tree representing the array access
+   */
+  protected void onArrayAccess(ExecutionState executionState, ArrayAccessExpressionTree tree) {
+  }
+
+  /**
    * called when a constructor or method is invoked.
    *
    * @param executionState execution state
    * @param tree method invocation, constructor tree or new class tree
    */
   protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<ExpressionTree> arguments) {
+  }
+
+  /**
+   * called when a member is retrieved from an instance.
+   *
+   * @param executionState execution state
+   * @param tree tree representing the member access
+   */
+  protected void onMemberAccess(ExecutionState executionState, MemberSelectExpressionTree tree) {
   }
 
   /**

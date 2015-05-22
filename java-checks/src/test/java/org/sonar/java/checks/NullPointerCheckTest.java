@@ -132,7 +132,7 @@ public class NullPointerCheckTest {
     parentState.createValueForSymbol(bothVariable, mock(Tree.class));
     parentState.markPotentiallyReachableValues(parentVariable, NULL);
     parentState.markPotentiallyReachableValues(bothVariable, NULL);
-    
+
     ExecutionState childState = new ExecutionState(parentState);
     childState.createValueForSymbol(childVariable, mock(Tree.class));
     childState.markPotentiallyReachableValues(childVariable, NOTNULL);
