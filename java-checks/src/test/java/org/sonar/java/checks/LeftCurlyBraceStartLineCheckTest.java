@@ -19,26 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class LeftCurlyBraceStartLineCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LeftCurlyBraceStartLineCheck.java"), new LeftCurlyBraceStartLineCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Move this left curly brace to the beginning of next line of code.")
-        .next().atLine(9)
-        .next().atLine(14);
+    JavaCheckVerifier.verify("src/test/files/checks/LeftCurlyBraceStartLineCheck.java", new LeftCurlyBraceStartLineCheck());
   }
-
 }

@@ -1,4 +1,4 @@
-class Foo {    // Non-Compliant
+class Foo {    // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
 }
 
 class Foo
@@ -6,12 +6,12 @@ class Foo
 }
 
 class
-Foo {          // Non-Compliant
+Foo {          // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
 }
 
 class Foo
 {              // Compliant
-  void foo() { // Non-Compliant
+  void foo() { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
   }
 }
 
