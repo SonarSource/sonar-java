@@ -54,6 +54,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private final SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
+  private SyntaxToken declarationKeyowrd;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
   @Nullable
@@ -120,10 +121,16 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   public ClassTreeImpl complete(InternalSyntaxToken atToken, InternalSyntaxToken interfaceToken, IdentifierTree simpleName) {
     Preconditions.checkState(this.simpleName == null);
-    this.simpleName = simpleName;
+    completeIdentifier(simpleName);
+    completeDeclarationKeyword(atToken);
 
     prependChildren(atToken, interfaceToken, (AstNode) simpleName);
 
+    return this;
+  }
+
+  public ClassTreeImpl completeDeclarationKeyword(SyntaxToken declarationKeyword) {
+    this.declarationKeyowrd = declarationKeyword;
     return this;
   }
 
@@ -179,6 +186,11 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Override
   public Symbol.TypeSymbol symbol() {
     return symbol;
+  }
+
+  @Override
+  public SyntaxToken declarationKeyword() {
+    return declarationKeyowrd;
   }
 
   @Override

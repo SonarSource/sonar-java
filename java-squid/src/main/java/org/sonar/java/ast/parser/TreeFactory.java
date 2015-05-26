@@ -392,6 +392,7 @@ public class TreeFactory {
 
     List<AstNode> children = Lists.newArrayList();
     children.add(classTokenAstNode);
+    partial.completeDeclarationKeyword(InternalSyntaxToken.create(classTokenAstNode));
     children.add(identifier);
     partial.completeIdentifier(identifier);
     if (typeParameters.isPresent()) {
@@ -473,6 +474,7 @@ public class TreeFactory {
 
     List<AstNode> children = Lists.newArrayList();
     children.add(enumTokenAstNode);
+    result.completeDeclarationKeyword(InternalSyntaxToken.create(enumTokenAstNode));
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     result.completeIdentifier(identifier);
@@ -547,6 +549,8 @@ public class TreeFactory {
 
     List<AstNode> children = Lists.newArrayList();
     children.add(interfaceTokenAstNode);
+    partial.completeDeclarationKeyword(InternalSyntaxToken.create(interfaceTokenAstNode));
+
     children.add(identifier);
     partial.completeIdentifier(identifier);
     if (typeParameters.isPresent()) {

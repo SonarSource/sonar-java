@@ -59,6 +59,8 @@ import java.util.List;
 @Beta
 public interface ClassTree extends StatementTree {
 
+  SyntaxToken declarationKeyword();
+
   @Nullable
   IdentifierTree simpleName();
 

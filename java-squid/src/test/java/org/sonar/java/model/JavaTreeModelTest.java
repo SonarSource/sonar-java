@@ -278,6 +278,7 @@ public class JavaTreeModelTest {
     assertThat(tree.superClass()).isNotNull();
     assertThat(tree.superInterfaces()).hasSize(2);
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
+    assertThat(tree.declarationKeyword().text()).isEqualTo("class");
 
     astNode = p.parse("public class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
@@ -287,11 +288,13 @@ public class JavaTreeModelTest {
     assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
+    assertThat(tree.declarationKeyword().text()).isEqualTo("class");
 
     astNode = p.parse("@Deprecated class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.modifiers().annotations()).hasSize(1);
+    assertThat(tree.declarationKeyword().text()).isEqualTo("class");
   }
 
   @Test
@@ -476,6 +479,7 @@ public class JavaTreeModelTest {
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
+    assertThat(tree.declarationKeyword().text()).isEqualTo("enum");
 
     astNode = p.parse("public enum T { }");
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
@@ -486,6 +490,7 @@ public class JavaTreeModelTest {
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
+    assertThat(tree.declarationKeyword().text()).isEqualTo("enum");
   }
 
   @Test
@@ -591,6 +596,7 @@ public class JavaTreeModelTest {
     assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
+    assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
 
     astNode = p.parse("public interface T { }");
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
@@ -602,6 +608,7 @@ public class JavaTreeModelTest {
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
+    assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
   }
 
   @Test
@@ -667,6 +674,7 @@ public class JavaTreeModelTest {
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
+    assertThat(tree.declarationKeyword().text()).isEqualTo("@");
   }
 
   @Test
