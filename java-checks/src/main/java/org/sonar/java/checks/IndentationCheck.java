@@ -24,16 +24,16 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -49,25 +49,25 @@ import java.util.List;
 @SqaleConstantRemediation("1min")
 public class IndentationCheck extends SubscriptionBaseVisitor {
 
-  private static final Kind[] BLOCK_TYPES = new Kind[]{
-      Kind.CLASS,
-      Kind.INTERFACE,
-      Kind.ENUM,
-      Kind.ANNOTATION_TYPE,
-      Kind.CLASS,
-      Kind.BLOCK,
-      Kind.STATIC_INITIALIZER,
-      Kind.INITIALIZER,
-      Kind.SWITCH_STATEMENT,
-      Kind.CASE_GROUP
+  private static final Kind[] BLOCK_TYPES = new Kind[] {
+    Kind.CLASS,
+    Kind.INTERFACE,
+    Kind.ENUM,
+    Kind.ANNOTATION_TYPE,
+    Kind.CLASS,
+    Kind.BLOCK,
+    Kind.STATIC_INITIALIZER,
+    Kind.INITIALIZER,
+    Kind.SWITCH_STATEMENT,
+    Kind.CASE_GROUP
   };
 
   private static final int DEFAULT_INDENTATION_LEVEL = 2;
 
   @RuleProperty(
-      key = "indentationLevel",
-      description = "Number of white-spaces of an indent. If this property is not set, we just check that the code is indented.",
-      defaultValue = "" + DEFAULT_INDENTATION_LEVEL)
+    key = "indentationLevel",
+    description = "Number of white-spaces of an indent. If this property is not set, we just check that the code is indented.",
+    defaultValue = "" + DEFAULT_INDENTATION_LEVEL)
   public int indentationLevel = DEFAULT_INDENTATION_LEVEL;
 
   private int expectedLevel;
@@ -93,7 +93,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
-      //Exclude anonymous classes
+      // Exclude anonymous classes
       isInAnonymousClass.push(classTree.simpleName() == null);
       if (!isInAnonymousClass.peek()) {
         checkIndentation(Lists.newArrayList(classTree));
@@ -105,13 +105,14 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     if (tree.is(Kind.CASE_GROUP)) {
       List<CaseLabelTree> labels = ((CaseGroupTree) tree).labels();
       if (labels.size() >= 2) {
-        lastCheckedLine = ((JavaTree) labels.get(labels.size() - 2)).getAstNode().getLastToken().getLine();
+        CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
+        lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(previousCaseLabelTree).line();
       }
     }
 
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
-      //Exclude anonymous classes
+      // Exclude anonymous classes
       if (classTree.simpleName() != null) {
         checkIndentation(classTree.members());
       }
@@ -126,55 +127,27 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
 
   private void checkIndentation(List<? extends Tree> trees) {
     for (Tree tree : trees) {
-      int column = getColumn(tree);
-      if (column != expectedLevel && !isExcluded(tree)) {
+      SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+      if (firstSyntaxToken.column() != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
         addIssue(tree, "Make this line start at column " + (expectedLevel + 1) + ".");
         isBlockAlreadyReported = true;
       }
-      lastCheckedLine = ((JavaTree) tree).getLastToken().getLine();
+      lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
     }
-  }
-
-  private int getColumn(Tree tree) {
-    if (tree.is(Kind.VARIABLE)) {
-      VariableTree variableTree = (VariableTree) tree;
-      int typeColumn = getTypeColumn(variableTree.type());
-      if (variableTree.modifiers().isEmpty()) {
-        return typeColumn;
-      }
-      return Math.min(typeColumn, ((JavaTree) variableTree.modifiers()).getToken().getColumn());
-    } else if (isClassTree(tree)) {
-      ClassTree classTree = (ClassTree) tree;
-      if (!classTree.modifiers().isEmpty()) {
-        return ((JavaTree) classTree.modifiers()).getToken().getColumn();
-      }
-    }
-    return ((JavaTree) tree).getToken().getColumn();
-  }
-
-  private int getTypeColumn(Tree typeTree) {
-    if (typeTree.is(Kind.ARRAY_TYPE)) {
-      return getTypeColumn(((ArrayTypeTree) typeTree).type());
-    }
-    return ((JavaTree) typeTree).getToken().getColumn();
   }
 
   @Override
   public void leaveNode(Tree tree) {
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
-    lastCheckedLine = ((JavaTree) tree).getLastToken().getLine();
+    lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
     if (isClassTree(tree)) {
       isInAnonymousClass.pop();
     }
   }
 
-  private boolean isExcluded(Tree node) {
-    return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || !isLineFirstStatement((JavaTree) node) || isInAnonymousClass.peek();
-  }
-
-  private boolean isLineFirstStatement(JavaTree javaTree) {
-    return lastCheckedLine != javaTree.getTokenLine();
+  private boolean isExcluded(Tree node, int nodeLine) {
+    return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || lastCheckedLine == nodeLine || isInAnonymousClass.peek();
   }
 
   private boolean isClassTree(Tree tree) {

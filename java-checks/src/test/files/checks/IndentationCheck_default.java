@@ -1,27 +1,27 @@
 class Foo {
   int a;                          // Compliant
-   int b;                         // Non-Compliant
+   int b;                         // Noncompliant {{Make this line start at column 3.}}
  int c;                           // Compliant - already reported
 
   public void foo1() {            // Compliant
     System.out.println();         // Compliant
     }                             // Compliant
 
- public void foo2() {             // Non-Compliant
-   System.out.println("hehe");    // Non-Compliant
+ public void foo2() {             // Compliant
+   System.out.println("hehe");    // Noncompliant
     System.out.println();         // Compliant - already reported
   }
 
   public void foo3() {            // Compliant
-System.out.println();             // Non-Compliant
+System.out.println();             // Noncompliant
 System.out.println();             // Compliant - already reported
 System.out.println();             // Compliant - already reported
 
 if (0) {                          // Compliant - already reported
-  System.out.println();           // Non-Compliant
+  System.out.println();           // Noncompliant
   if (0) {                        // Compliant - already reported
         System.out.println();     // Compliant
-    System.out.println();         // Non-Compliant
+    System.out.println();         // Noncompliant {{Make this line start at column 9.}}
   }
 
       ; System.out.println();     // Compliant
@@ -32,7 +32,7 @@ if (0) {                          // Compliant - already reported
 
     int a;                        // Compliant
 
-  int b;                          // Non-Compliant
+  int b;                          // Noncompliant
 
   }
 }
@@ -45,13 +45,13 @@ enum Bar {
   public void foo1() {            // Compliant
   }
 
- public void foo2() {             // Non-Compliant
+ public void foo2() {             // Noncompliant
  }
 }
 
 interface Qix {
 
- void foo1();                     // Non-Compliant
+ void foo1();                     // Noncompliant
 
   void foo2();                    // Compliant
 
@@ -76,7 +76,7 @@ static class Baz {
 
 }
 
- static class Qiz {                      // Non-Compliant
+ static class Qiz {                      // Noncompliant
   public void foo() {
     switch (0) {
       case 0:
@@ -106,7 +106,7 @@ static class Baz {
   };
   static {
     try{
-       while (keys.hasMoreElements()) {
+       while (keys.hasMoreElements()) { // Noncompliant {{Make this line start at column 7.}}
         s = keys.nextElement();
         rId = (String) s;
         cName = (String) exceptionClassNames.get(rId);

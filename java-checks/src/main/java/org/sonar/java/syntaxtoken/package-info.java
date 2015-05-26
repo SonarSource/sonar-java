@@ -17,22 +17,8 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+@ParametersAreNonnullByDefault
+package org.sonar.java.syntaxtoken;
 
-import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class IndentationCheckTest {
-
-  @Test
-  public void detected_default_indentation_level() {
-    JavaCheckVerifier.verify("src/test/files/checks/IndentationCheck_default.java", new IndentationCheck());
-  }
-
-  @Test
-  public void detected_custom_level() {
-    IndentationCheck check = new IndentationCheck();
-    check.indentationLevel = 4;
-    JavaCheckVerifier.verify("src/test/files/checks/IndentationCheck_custom.java", check);
-  }
-}
