@@ -41,7 +41,7 @@ import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
@@ -333,8 +333,8 @@ public class FirstPass extends BaseTreeVisitor {
     if ((env.scope.owner.flags & Flags.INTERFACE) != 0) {
       result = Flags.PUBLIC;
     }
-    for (Modifier modifier : modifiers.modifiers()) {
-      result |= Flags.flagForModifier(modifier);
+    for (ModifierKeywordTree modifier : modifiers.modifiers()) {
+      result |= Flags.flagForModifier(modifier.modifier());
     }
     if(hasDeprecatedAnnotation(modifiers.annotations())) {
       result |= Flags.DEPRECATED;

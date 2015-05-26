@@ -17,30 +17,26 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.model.declaration;
+package org.sonar.java.model;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.model.InternalSyntaxToken;
+import com.google.common.base.Charsets;
+import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 
-public class ModifierKeywordTreeImpl extends InternalSyntaxToken implements ModifierKeywordTree {
+import java.io.File;
 
-  private final Modifier modifier;
+import static org.fest.assertions.Assertions.assertThat;
 
-  public ModifierKeywordTreeImpl(Modifier modifier, AstNode astNode) {
-    super(astNode.getType(), astNode.getToken(), astNode.getFromIndex(), astNode.getToIndex());
-    this.modifier = modifier;
-  }
-
-  @Override
-  public Modifier modifier() {
-    return modifier;
-  }
-
-  @Override
-  public SyntaxToken keyword() {
-    return this;
+public class ModifiersUtilsTest {
+  @Test
+  public void test_int_and_long_value() throws Exception {
+    File file = new File("src/test/files/model/ModifiersUtilsTest.java");
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(file);
+    ClassTree classTree = (ClassTree) tree.types().get(0);
+    assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PUBLIC)).isTrue();
+    assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)).isFalse();
   }
 }

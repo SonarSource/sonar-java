@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -267,15 +268,15 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   private boolean isStatic() {
-    return modifiers.modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC);
   }
 
   private boolean isPrivate() {
-    return modifiers.modifiers().contains(Modifier.PRIVATE);
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE);
   }
 
   private boolean isPublic() {
-    return modifiers.modifiers().contains(Modifier.PUBLIC);
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
   public boolean isAnnotatedOverride() {

@@ -64,6 +64,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -271,7 +272,10 @@ public class JavaTreeModelTest {
     AstNode astNode = p.parse("public class T<U> extends C implements I1, I2 { }");
     ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
-    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    List<ModifierKeywordTree> modifiers = tree.modifiers().modifiers();
+    assertThat(modifiers).hasSize(1);
+    assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
+    assertThat(modifiers.get(0).keyword().text()).isEqualTo("public");
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
@@ -283,7 +287,10 @@ public class JavaTreeModelTest {
     astNode = p.parse("public class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
-    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    modifiers = tree.modifiers().modifiers();
+    assertThat(modifiers).hasSize(1);
+    assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
+    assertThat(modifiers.get(0).keyword().text()).isEqualTo("public");
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.superClass()).isNull();
@@ -388,6 +395,7 @@ public class JavaTreeModelTest {
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
@@ -397,6 +405,7 @@ public class JavaTreeModelTest {
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f2");
     assertThat(tree.initializer()).isNull();
@@ -417,6 +426,7 @@ public class JavaTreeModelTest {
     tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -434,6 +444,7 @@ public class JavaTreeModelTest {
     tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -447,6 +458,7 @@ public class JavaTreeModelTest {
     tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.returnType().is(Tree.Kind.ARRAY_TYPE));
     assertThat(((ArrayTypeTree) tree.returnType()).type().is(Tree.Kind.INT_LITERAL));
@@ -476,6 +488,7 @@ public class JavaTreeModelTest {
     ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
@@ -485,6 +498,7 @@ public class JavaTreeModelTest {
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
@@ -529,6 +543,7 @@ public class JavaTreeModelTest {
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
@@ -536,6 +551,7 @@ public class JavaTreeModelTest {
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f2");
     assertThat(tree.initializer()).isNull();
@@ -592,6 +608,7 @@ public class JavaTreeModelTest {
     ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isNotEmpty();
     assertThat(tree.superClass()).isNull();
@@ -602,6 +619,7 @@ public class JavaTreeModelTest {
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.typeParameters()).isEmpty();
     assertThat(tree.superClass()).isNull();
@@ -620,6 +638,7 @@ public class JavaTreeModelTest {
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
@@ -627,6 +646,7 @@ public class JavaTreeModelTest {
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f2");
     assertThat(tree.initializer()).isNotNull();
@@ -669,6 +689,7 @@ public class JavaTreeModelTest {
     ClassTree tree = (ClassTree) ((CompilationUnitTree) p.parse("public @interface T { }")).types().get(0);
     assertThat(tree.is(Tree.Kind.ANNOTATION_TYPE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).keyword().text()).isEqualTo("public");
     assertThat(tree.simpleName().name()).isEqualTo("T");
     assertThat(tree.superClass()).isNull();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
@@ -689,6 +710,7 @@ public class JavaTreeModelTest {
     assertThat(tree.defaultValue()).isNotNull();
     tree = (MethodTree) p.parse("@interface plop{ public String method(); }").getFirstDescendant(Kind.METHOD);
     assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).keyword().text()).isEqualTo("public");
 
   }
 
@@ -735,13 +757,15 @@ public class JavaTreeModelTest {
     ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.simpleName().identifierToken().text()).isEqualTo("Local");
-    assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.ABSTRACT);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
 
     block = (BlockTree) p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(Kind.BLOCK);
     tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
-    assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.STATIC);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.STATIC);
     assertThat(tree).isNotNull();
   }
 
@@ -776,7 +800,8 @@ public class JavaTreeModelTest {
 
     tree = (VariableTree) declarations.get(2);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
-    assertThat(tree.modifiers().modifiers()).containsOnly(Modifier.FINAL);
+    assertThat(tree.modifiers().modifiers()).hasSize(1);
+    assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.FINAL);
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("c");
     assertThat(tree.initializer()).isNotNull();

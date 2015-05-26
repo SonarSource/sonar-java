@@ -25,7 +25,6 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -44,7 +43,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
     return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
   }
 
-  private final List<Modifier> modifiers;
+  private final List<ModifierKeywordTree> modifiers;
   private final List<AnnotationTree> annotations;
 
   private ModifiersTreeImpl() {
@@ -55,14 +54,13 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
 
   public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
     super(JavaLexer.MODIFIERS, javaTrees, ImmutableList.<AstNode>of());
-    ImmutableList.Builder<Modifier> modifierBuilder = ImmutableList.builder();
+    ImmutableList.Builder<ModifierKeywordTree> modifierBuilder = ImmutableList.builder();
     ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
     for (ModifierTree modifierTree : this) {
       if (modifierTree.is(Kind.ANNOTATION)) {
         annotationBuilder.add((AnnotationTree) modifierTree);
       } else {
-        ModifierKeywordTree modifierKeywordTree = (ModifierKeywordTree) modifierTree;
-        modifierBuilder.add(modifierKeywordTree.modifier());
+        modifierBuilder.add((ModifierKeywordTree) modifierTree);
       }
       addChild((AstNode) modifierTree);
     }
@@ -77,7 +75,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   }
 
   @Override
-  public List<Modifier> modifiers() {
+  public List<ModifierKeywordTree> modifiers() {
     return modifiers;
   }
 

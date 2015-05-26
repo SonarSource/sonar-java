@@ -20,6 +20,7 @@
 package org.sonar.java.ast.visitors;
 
 import org.apache.commons.lang.StringUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -49,7 +50,7 @@ public class AccessorVisitor extends SubscriptionVisitor {
   }
 
   private boolean isPublicMethod(MethodTree methodTree) {
-    return methodTree.is(Tree.Kind.METHOD) && methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
+    return methodTree.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
   private boolean isSetter(ClassTree classTree, MethodTree methodTree) {
@@ -110,7 +111,7 @@ public class AccessorVisitor extends SubscriptionVisitor {
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
-        if (variableTree.modifiers().modifiers().contains(Modifier.PRIVATE) && variableTree.simpleName().name().equals(variableName)) {
+        if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE) && variableTree.simpleName().name().equals(variableName)) {
           return true;
         }
       }

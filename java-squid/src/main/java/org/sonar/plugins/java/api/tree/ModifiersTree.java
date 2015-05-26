@@ -38,6 +38,6 @@ public interface ModifiersTree extends ListTree<ModifierTree> {
    */
   List<AnnotationTree> annotations();
 
-  List<Modifier> modifiers();
+  List<ModifierKeywordTree> modifiers();
 
 }

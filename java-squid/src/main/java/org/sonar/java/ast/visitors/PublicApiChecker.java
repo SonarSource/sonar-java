@@ -25,6 +25,7 @@ import org.sonar.api.utils.ParsingUtils;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -176,11 +177,11 @@ public class PublicApiChecker extends BaseTreeVisitor {
   }
 
   private boolean hasPublic(ModifiersTree modifiers) {
-    return hasModifier(modifiers, Modifier.PUBLIC);
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
   private boolean isPublicInterface(ClassTree currentClass) {
-    return currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !hasModifier(currentClass.modifiers(), Modifier.PRIVATE);
+    return currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !ModifiersUtils.hasModifier(currentClass.modifiers(), Modifier.PRIVATE);
   }
 
   public boolean isPublicApi(Tree currentParent, Tree tree) {
@@ -206,11 +207,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   private boolean isStaticFinal(VariableTree variableTree) {
     ModifiersTree modifiersTree = variableTree.modifiers();
-    return hasModifier(modifiersTree, Modifier.STATIC) && hasModifier(modifiersTree, Modifier.FINAL);
-  }
-
-  private boolean hasModifier(ModifiersTree modifiersTree, Modifier modifier) {
-    return modifiersTree.modifiers().contains(modifier);
+    return ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC) && ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
   }
 
   private boolean isEmptyDefaultConstructor(MethodTree constructor) {

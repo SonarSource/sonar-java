@@ -17,10 +17,24 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model;
 
-public interface ModifierKeywordTree extends ModifierTree {
-  Modifier modifier();
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 
-  SyntaxToken keyword();
+public class ModifiersUtils {
+
+  private ModifiersUtils() {
+    // This class only contains static methods
+  }
+
+  public static boolean hasModifier(ModifiersTree modifiers, Modifier expectedModifier) {
+    for (ModifierKeywordTree modifierKeywordTree : modifiers.modifiers()) {
+      if (expectedModifier.equals(modifierKeywordTree.modifier())) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
