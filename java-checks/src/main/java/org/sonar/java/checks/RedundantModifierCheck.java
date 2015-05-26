@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -59,7 +60,7 @@ public class RedundantModifierCheck extends SubscriptionBaseVisitor {
         if (isInterfaceOrAnnotation(tree)) {
           checkRedundantModifier(modifiers, Modifier.ABSTRACT);
           checkRedundantModifier(modifiers, Modifier.PUBLIC);
-        } else if (classTree.modifiers().modifiers().contains(Modifier.FINAL)) {
+        } else if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
           checkRedundantModifier(modifiers, Modifier.FINAL);
         }
       } else if (member.is(Tree.Kind.VARIABLE) && isInterfaceOrAnnotation(tree)) {
@@ -77,7 +78,7 @@ public class RedundantModifierCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkRedundantModifier(ModifiersTree modifiersTree, Modifier modifier) {
-    if (modifiersTree.modifiers().contains(modifier)) {
+    if (ModifiersUtils.hasModifier(modifiersTree, modifier)) {
       addIssue(modifiersTree, "\"" + modifier.toString().toLowerCase() + "\" is redundant in this context.");
     }
   }

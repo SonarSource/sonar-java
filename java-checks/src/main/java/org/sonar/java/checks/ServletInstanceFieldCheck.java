@@ -23,8 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -66,8 +68,8 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isStaticOrFinal(VariableTree variable) {
-    List<Modifier> modifiers = variable.modifiers().modifiers();
-    return modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.FINAL);
+    ModifiersTree modifiers = variable.modifiers();
+    return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) || ModifiersUtils.hasModifier(modifiers, Modifier.FINAL);
   }
 
 }

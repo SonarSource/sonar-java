@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -76,7 +77,7 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
   private boolean isTransient(Tree tree) {
     if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
-      return variable.modifiers().modifiers().contains(Modifier.TRANSIENT);
+      return ModifiersUtils.hasModifier(variable.modifiers(), Modifier.TRANSIENT);
     }
     return false;
   }

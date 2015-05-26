@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -104,7 +105,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   }
 
   private static boolean hasStaticModifier(ModifiersTree modifiers) {
-    return modifiers.modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC);
   }
 
   private static List<Tree> getExplicitConstructors(ClassTree classTree) {
@@ -126,7 +127,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   }
 
   private static boolean hasPublicModifier(MethodTree methodTree) {
-    return methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
 }

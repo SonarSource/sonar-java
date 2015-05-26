@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -100,7 +101,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       MethodTree methodTree = (MethodTree) tree;
       excludedVariables.peek().addAll(methodTree.parameters());
       flattenExcludedVariables.addAll(methodTree.parameters());
-      if (methodTree.modifiers().modifiers().contains(Modifier.STATIC)) {
+      if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.STATIC)) {
         excludeVariablesFromBlock(methodTree.block());
       }
     }

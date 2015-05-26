@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -71,21 +72,11 @@ public class BadFieldName_S00116_Check extends BaseTreeVisitor implements JavaFi
     for (Tree member : tree.members()) {
       if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) && member.is(Tree.Kind.VARIABLE)) {
         VariableTree field = (VariableTree) member;
-        if (isNotStatic(field) && !pattern.matcher(field.simpleName().name()).matches()) {
+        if (!ModifiersUtils.hasModifier(field.modifiers(), Modifier.STATIC) && !pattern.matcher(field.simpleName().name()).matches()) {
           context.addIssue(field, this, "Rename this field name to match the regular expression '" + format + "'.");
         }
       }
       scan(member);
     }
   }
-
-  private boolean isNotStatic(VariableTree field) {
-    for (Modifier modifier : field.modifiers().modifiers()) {
-      if (modifier == Modifier.STATIC) {
-        return false;
-      }
-    }
-    return true;
-  }
-
 }

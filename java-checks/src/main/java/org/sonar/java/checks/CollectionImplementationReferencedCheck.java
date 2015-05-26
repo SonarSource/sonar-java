@@ -23,12 +23,14 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -38,7 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-import java.util.List;
 import java.util.Map;
 
 @Rule(
@@ -107,7 +108,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-    if (isPublic(tree.modifiers().modifiers())) {
+    if (isPublic(tree.modifiers())) {
       checkIfAllowed(tree.type(), "The type of the \"" + tree.simpleName() + "\" object ");
     }
   }
@@ -115,7 +116,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (isPublic(tree.modifiers().modifiers())) {
+    if (isPublic(tree.modifiers())) {
       checkIfAllowed(tree.returnType(), "The return type of this method ");
       for (VariableTree variableTree : tree.parameters()) {
         checkIfAllowed(variableTree.type(), "The type of the \"" + variableTree.simpleName() + "\" object ");
@@ -138,8 +139,8 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     }
   }
 
-  private static boolean isPublic(List<Modifier> modifiers) {
-    return modifiers.contains(Modifier.PUBLIC);
+  private static boolean isPublic(ModifiersTree modifiers) {
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
   private static String getTypeIdentifier(Tree tree) {

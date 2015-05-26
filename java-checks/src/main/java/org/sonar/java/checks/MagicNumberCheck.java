@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -36,7 +38,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.List;
 
 @Rule(
   key = "S109",
@@ -95,8 +96,8 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitVariable(VariableTree tree) {
     //skip static final variables
-    List<Modifier> modifiers = tree.modifiers().modifiers();
-    if (!(modifiers.contains(Modifier.STATIC) && modifiers.contains(Modifier.FINAL))) {
+    ModifiersTree modifiers = tree.modifiers();
+    if (!(ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) && ModifiersUtils.hasModifier(modifiers, Modifier.FINAL))) {
       super.visitVariable(tree);
     }
   }

@@ -24,6 +24,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -61,7 +62,7 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isPrivate(MethodTree methodTree) {
-    return methodTree.modifiers().modifiers().contains(Modifier.PRIVATE);
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE);
   }
 
   private boolean isOverriding(MethodTree tree) {

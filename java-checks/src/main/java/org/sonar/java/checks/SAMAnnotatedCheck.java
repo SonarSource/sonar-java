@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -141,8 +143,8 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     boolean result = memberTree.is(Tree.Kind.METHOD);
     if (result) {
       MethodTree methodTree = (MethodTree) memberTree;
-      List<Modifier> modifiers = methodTree.modifiers().modifiers();
-      result = !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.DEFAULT);
+      ModifiersTree modifiers = methodTree.modifiers();
+      result = !ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) && !ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT);
     }
     return result;
   }

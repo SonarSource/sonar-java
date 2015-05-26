@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -59,8 +60,8 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor 
   }
 
   private boolean classHasProtectedMethod(ClassTree tree) {
-    for(Tree member : tree.members()) {
-      if(member.is(Tree.Kind.METHOD) && ((MethodTree) member).modifiers().modifiers().contains(Modifier.PROTECTED)) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PROTECTED)) {
         return true;
       }
     }
@@ -68,7 +69,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor 
   }
 
   private boolean classIsAbstract(ClassTree tree) {
-    return tree.modifiers().modifiers().contains(Modifier.ABSTRACT);
+    return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT);
   }
 
   private boolean classHasNoField(ClassTree tree) {

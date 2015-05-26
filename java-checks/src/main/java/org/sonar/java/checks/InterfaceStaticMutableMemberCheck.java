@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -64,7 +65,7 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isStaticMember(VariableTree variableTree) {
-    return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC);
   }
 
   private boolean isMutableMember(VariableTree variableTree) {

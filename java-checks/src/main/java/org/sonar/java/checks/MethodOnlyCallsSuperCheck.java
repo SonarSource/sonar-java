@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -70,7 +71,7 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   private boolean isFinalObjectMethod(MethodTree methodTree) {
     MethodTreeImpl methodTreeImpl = (MethodTreeImpl) methodTree;
-    return hasSemantic() && methodTree.modifiers().modifiers().contains(Modifier.FINAL) && isObjectMethod(methodTreeImpl);
+    return hasSemantic() && ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.FINAL) && isObjectMethod(methodTreeImpl);
   }
 
   private boolean isObjectMethod(MethodTreeImpl methodTreeImpl) {

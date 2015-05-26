@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -111,7 +112,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
   }
 
   private boolean isMethodStatic(MethodTree tree) {
-    return tree.modifiers().modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC);
   }
 
   @Override

@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -69,19 +70,9 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean isPrivateStaticFinal(ModifiersTree tree) {
-    return hasModifier(tree, Modifier.PRIVATE) &&
-      hasModifier(tree, Modifier.STATIC) &&
-      hasModifier(tree, Modifier.FINAL);
-  }
-
-  private static boolean hasModifier(ModifiersTree tree, Modifier expectedModifier) {
-    for (Modifier modifier : tree.modifiers()) {
-      if (modifier.equals(expectedModifier)) {
-        return true;
-      }
-    }
-
-    return false;
+    return ModifiersUtils.hasModifier(tree, Modifier.PRIVATE) &&
+      ModifiersUtils.hasModifier(tree, Modifier.STATIC) &&
+      ModifiersUtils.hasModifier(tree, Modifier.FINAL);
   }
 
   private boolean isValidLoggerName(String name) {

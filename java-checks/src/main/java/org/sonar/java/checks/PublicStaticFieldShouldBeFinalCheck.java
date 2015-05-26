@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -66,7 +67,8 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
   private boolean isPublicStaticNotFinal(VariableTree tree) {
     boolean isPublic = false, isStatic = false, isFinal = false;
 
-    for (Modifier modifier : tree.modifiers().modifiers()) {
+    for (ModifierKeywordTree modifierKeywordTree : tree.modifiers().modifiers()) {
+      Modifier modifier = modifierKeywordTree.modifier();
       if (modifier == Modifier.PUBLIC) {
         isPublic = true;
       } else if (modifier == Modifier.STATIC) {

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -54,7 +55,7 @@ public class StaticMultithreadedUnsafeFieldsCheck extends SubscriptionBaseVisito
   @Override
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
-    if (variableTree.modifiers().modifiers().contains(Modifier.STATIC) && isForbiddenType(variableTree.type().symbolType())) {
+    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(variableTree.type().symbolType())) {
       IdentifierTree identifierTree = variableTree.simpleName();
       addIssue(identifierTree, String.format("Make \"%s\" an instance variable.", identifierTree.name()));
     }

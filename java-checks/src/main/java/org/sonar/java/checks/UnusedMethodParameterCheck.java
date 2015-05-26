@@ -26,6 +26,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -76,7 +77,7 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isDesignedForExtension(MethodTree tree) {
-    return !tree.modifiers().modifiers().contains(Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block());
+    return !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block());
   }
 
   private boolean isEmptyOrThrowStatement(BlockTree block) {
@@ -86,7 +87,7 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
   private boolean isSerializableMethod(MethodTree methodTree) {
     boolean result = false;
     // FIXME detect methods based on type of arg and throws, not arity.
-    if (methodTree.modifiers().modifiers().contains(Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
+    if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
       result |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
       result |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
     }

@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -99,7 +100,8 @@ public class BadConstantName_S00115_Check extends SubscriptionBaseVisitor {
   private boolean isStaticFinal(VariableTree variableTree) {
     boolean isStatic = false;
     boolean isFinal = false;
-    for (Modifier modifier : variableTree.modifiers().modifiers()) {
+    for (ModifierKeywordTree modifierKeywordTree : variableTree.modifiers().modifiers()) {
+      Modifier modifier = modifierKeywordTree.modifier();
       if (modifier == Modifier.STATIC) {
         isStatic = true;
       }

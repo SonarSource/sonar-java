@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -81,7 +82,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
   }
 
   private boolean isStatic(VariableTree member) {
-    return member.modifiers().modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.STATIC);
   }
 
   private boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
@@ -91,7 +92,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
         // FIXME detect methods based on type of arg and throws, not arity.
-        if (methodTree.modifiers().modifiers().contains(Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
+        if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
           hasWriteObject |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
           hasReadObject |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
         }
@@ -101,7 +102,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
   }
 
   private boolean isTransientOrSerializable(VariableTree member) {
-    return member.modifiers().modifiers().contains(Modifier.TRANSIENT) || isSerializable(member.type());
+    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type());
   }
 
   private boolean isSerializable(Tree tree) {

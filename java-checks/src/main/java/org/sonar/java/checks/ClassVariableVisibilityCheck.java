@@ -22,12 +22,14 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -67,8 +69,8 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
 
   @Override
   public void visitVariable(VariableTree tree) {
-    List<Modifier> modifiers = tree.modifiers().modifiers();
-    List<AnnotationTree> annotations = tree.modifiers().annotations();
+    ModifiersTree modifiers = tree.modifiers();
+    List<AnnotationTree> annotations = modifiers.annotations();
 
     if (isClass() && isPublic(modifiers) && !(isFinal(modifiers) || !annotations.isEmpty())) {
       context.addIssue(tree, this, "Make " + tree.simpleName() + " a static final constant or non-public and provide accessors if needed.");
@@ -80,12 +82,12 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
     return !isClassStack.isEmpty() && isClassStack.peek();
   }
 
-  private static boolean isFinal(List<Modifier> modifiers) {
-    return modifiers.contains(Modifier.FINAL);
+  private static boolean isFinal(ModifiersTree modifiers) {
+    return ModifiersUtils.hasModifier(modifiers, Modifier.FINAL);
   }
 
-  private static boolean isPublic(List<Modifier> modifiers) {
-    return modifiers.contains(Modifier.PUBLIC);
+  private static boolean isPublic(ModifiersTree modifiers) {
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
   }
 
 }

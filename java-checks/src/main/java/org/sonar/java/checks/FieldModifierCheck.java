@@ -23,8 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -57,10 +59,9 @@ public class FieldModifierCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean hasNoVisibilityModifier(VariableTree member) {
-    return !(hasModifier(member, Modifier.PUBLIC) || hasModifier(member, Modifier.PRIVATE) || hasModifier(member, Modifier.PROTECTED));
-  }
-
-  private boolean hasModifier(VariableTree member, Modifier modifier) {
-    return member.modifiers().modifiers().contains(modifier);
+    ModifiersTree modifiers = member.modifiers();
+    return !(ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC)
+      || ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE)
+      || ModifiersUtils.hasModifier(modifiers, Modifier.PROTECTED));
   }
 }

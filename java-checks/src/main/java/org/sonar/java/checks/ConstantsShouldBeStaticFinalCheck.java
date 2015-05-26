@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -126,10 +127,10 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isFinal(VariableTree variableTree) {
-    return variableTree.modifiers().modifiers().contains(Modifier.FINAL);
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.FINAL);
   }
 
   private static boolean isStatic(VariableTree variableTree) {
-    return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC);
   }
 }

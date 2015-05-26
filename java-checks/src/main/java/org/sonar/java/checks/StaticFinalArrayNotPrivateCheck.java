@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -73,7 +74,7 @@ public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean hasModifier(VariableTree variableTree, Modifier modifier) {
-    return variableTree.modifiers().modifiers().contains(modifier);
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), modifier);
   }
 
 }

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -58,7 +59,7 @@ public class ExceptionsShouldBeImmutableCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isFinal(VariableTree member) {
-    return member.modifiers().modifiers().contains(Modifier.FINAL);
+    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.FINAL);
   }
 
   private boolean isException(ClassTree classTree) {
