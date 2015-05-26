@@ -35,6 +35,7 @@ import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
+import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
@@ -108,7 +109,7 @@ public class JaCoCoSensorTest {
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
-  @Test
+  @Test(expected = SonarException.class)
   public void test_read_execution_data() {
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
@@ -130,7 +131,7 @@ public class JaCoCoSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.COVERED_CONDITIONS_BY_LINE, "15=0")));
   }
 
-  @Test
+  @Test(expected = SonarException.class)
   public void test_read_execution_data_for_lines_covered_by_tests() throws IOException {
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/");
     jacocoExecutionData = new File(outputDir, "jacoco.exec");

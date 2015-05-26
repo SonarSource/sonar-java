@@ -33,6 +33,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
@@ -96,7 +97,7 @@ public class JaCoCoItSensorTest {
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
-  @Test
+  @Test(expected = SonarException.class)
   public void testReadExecutionData() {
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);

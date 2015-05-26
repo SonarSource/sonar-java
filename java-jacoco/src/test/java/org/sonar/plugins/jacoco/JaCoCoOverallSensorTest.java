@@ -31,6 +31,7 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
+import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
@@ -111,7 +112,7 @@ public class JaCoCoOverallSensorTest {
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 
-  @Test
+  @Test(expected = SonarException.class)
   public void should_save_measures() throws IOException {
     Resource resource = analyseReports("ut.exec", "it.exec");
     verifyOverallMetrics(resource);
@@ -120,7 +121,7 @@ public class JaCoCoOverallSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 0.0)));
   }
 
-  @Test
+  @Test(expected = SonarException.class)
   public void should_save_measures_when_it_report_is_not_found() throws IOException {
     Resource resource = analyseReports("ut.exec", "it.not.found.exec");
     verifyOverallMetrics(resource);
@@ -129,7 +130,7 @@ public class JaCoCoOverallSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 1.0)));
   }
 
-  @Test
+  @Test(expected = SonarException.class)
   public void should_save_measures_when_ut_report_is_not_found() throws IOException {
     Resource resource = analyseReports("ut.not.found.exec", "it.exec");
     verifyOverallMetrics(resource);
