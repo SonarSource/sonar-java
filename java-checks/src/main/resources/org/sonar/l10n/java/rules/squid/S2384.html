@@ -1,0 +1,75 @@
+<p>
+  Mutable objects are those whose state can be changed.
+  For instance, an array is mutable, but a String is not.
+  Mutable class members should never be returned to a caller or accepted and stored directly.
+  Doing so leaves you vulnerable to unexpected changes in your class state.
+</p>
+<p>
+  Instead, a copy of the mutable object should be made, and that copy should be stored or returned.
+</p>
+<p>
+  This rule checks that arrays, collections and Dates are not stored or returned directly.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class A {
+  private String [] strings;
+
+  public A () {
+    strings = new String[]{"first", "second"};
+  }
+
+  public String [] getStrings() {
+    return strings; // Noncompliant
+  }
+
+  public void setStrings(String [] strings) {
+    this.strings = strings;  // Noncompliant
+  }
+}
+
+public class B {
+
+  private A a = new A();  // At this point a.strings = {"first", "second"};
+
+  public void wreakHavoc() {
+    a.getStrings()[0] = "yellow";  // a.strings = {"yellow", "second"};
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class A {
+  private String [] strings;
+
+  public A () {
+    strings = new String[]{"first", "second"};
+  }
+
+  public String [] getStrings() {
+    return strings.clone();
+  }
+
+  public void setStrings(String [] strings) {
+    this.strings = strings.clone();
+  }
+}
+
+public class B {
+
+  private A a = new A();  // At this point a.strings = {"first", "second"};
+
+  public void wreakHavoc() {
+    a.getStrings()[0] = "yellow";  // a.strings = {"first", "second"};
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/374">MITRE, CWE-374 - Passing Mutable Objects to an Untrusted Method</a></li>
+  <li><a href="http://cwe.mitre.org/data/definitions/375">MITRE, CWE-375 - Returning a Mutable Object ot an Untrusted Caller</a></li>
+  <li><a href="https://www.securecoding.cert.org/confluence/x/zQCuAQ">CERT, OBJ05-J - Defensively copy private mutable class members before returning their references</a></li>
+</ul>
