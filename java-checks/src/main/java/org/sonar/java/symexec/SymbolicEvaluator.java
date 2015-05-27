@@ -128,6 +128,15 @@ public class SymbolicEvaluator {
 
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
 
+    final void visitMethodInvocation(ExecutionState executionState, MethodInvocationTree tree) {
+      scan(tree.methodSelect());
+      List<SymbolicBooleanConstraint> arguments = new ArrayList<>();
+      for (ExpressionTree argument : tree.arguments()) {
+        arguments.add(evaluateExpression(executionState, argument));
+      }
+      check.onExecutableElementInvocation(executionState, tree, arguments);
+    }
+
     @CheckForNull
     final SymbolicValue retrieveSymbolicValue(ExpressionTree tree) {
       ExpressionTree currentTree = tree;
@@ -257,6 +266,7 @@ public class SymbolicEvaluator {
 
     @Override
     public final void visitMethodInvocation(MethodInvocationTree tree) {
+      visitMethodInvocation(currentState, tree);
       currentState.invalidateFields();
       currentResult.unknownStates.add(currentState);
     }
@@ -377,7 +387,7 @@ public class SymbolicEvaluator {
 
     @Override
     public final void visitMethodInvocation(MethodInvocationTree tree) {
-      super.visitMethodInvocation(tree);
+      visitMethodInvocation(currentState, tree);
       currentState.invalidateFields();
       currentResult = SymbolicBooleanConstraint.UNKNOWN;
     }
