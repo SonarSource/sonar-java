@@ -88,7 +88,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
         Tree preparedStatementReference = getPreparedStatementReference(mit);
         Integer numberParameters = getNumberParametersFromPreparedStatement(preparedStatementReference);
         if (numberParameters != null && methodFirstArgumentValue > numberParameters.intValue()) {
-          addIssue(mit, "This \"PreparedStatement\" " + (numberParameters == 0 ? "has no" : "only has " + numberParameters) + " parameters.");
+          addIssue(mit, "This \"PreparedStatement\" " + (numberParameters == 0 ? "has no" : ("only has " + numberParameters)) + " parameters.");
         }
       }
     }
