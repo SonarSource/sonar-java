@@ -24,6 +24,7 @@ import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
@@ -49,6 +50,11 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   @Override
   public String value() {
     return token.text();
+  }
+
+  @Override
+  public SyntaxToken token() {
+    return token;
   }
 
   @Override

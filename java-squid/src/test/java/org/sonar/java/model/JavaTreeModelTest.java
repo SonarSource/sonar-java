@@ -75,6 +75,7 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -147,38 +148,74 @@ public class JavaTreeModelTest {
     LiteralTree tree = (LiteralTree) p.parse("class T { int m() { return 1; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.INT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1");
+    SyntaxToken token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(27);
 
     tree = (LiteralTree) p.parse("class T { long m() { return 1L; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.LONG_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1L");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(28);
 
     tree = (LiteralTree) p.parse("class T { float m() { return 1F; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.FLOAT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1F");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(29);
 
     tree = (LiteralTree) p.parse("class T { double m() { return 1d; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.DOUBLE_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1d");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(30);
 
     tree = (LiteralTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("true");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(31);
 
     tree = (LiteralTree) p.parse("class T { boolean m() { return false; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("false");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(31);
 
     tree = (LiteralTree) p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.CHAR_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("'c'");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(28);
 
     tree = (LiteralTree) p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.STRING_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("\"s\"");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(30);
 
     tree = (LiteralTree) p.parse("class T { Object m() { return null; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
     assertThat(tree.is(Tree.Kind.NULL_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("null");
+    token = tree.token();
+    assertThat(token).isNotNull();
+    assertThat(token.line()).isEqualTo(1);
+    assertThat(token.column()).isEqualTo(30);
   }
 
   @Test

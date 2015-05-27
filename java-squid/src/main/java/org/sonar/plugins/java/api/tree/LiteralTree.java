@@ -46,4 +46,5 @@ public interface LiteralTree extends ExpressionTree {
 
   String value();
 
+  SyntaxToken token();
 }
