@@ -38,6 +38,8 @@ import java.util.List;
 @Beta
 public interface AnnotationTree extends ExpressionTree, ModifierTree {
 
+  SyntaxToken atToken();
+
   TypeTree annotationType();
 
   List<ExpressionTree> arguments();

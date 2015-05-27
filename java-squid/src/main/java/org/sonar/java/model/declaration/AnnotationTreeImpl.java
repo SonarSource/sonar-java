@@ -26,6 +26,7 @@ import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -38,11 +39,13 @@ import java.util.List;
 
 public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
 
+  private final SyntaxToken atToken;
   private final TypeTree annotationType;
   private final List<ExpressionTree> arguments;
 
   public AnnotationTreeImpl(InternalSyntaxToken atToken, TypeTree annotationType, @Nullable ArgumentListTreeImpl arguments) {
     super(Kind.ANNOTATION);
+    this.atToken = atToken;
     this.annotationType = annotationType;
     this.arguments = arguments == null ? Collections.<ExpressionTree>emptyList() : arguments;
 
@@ -51,12 +54,6 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
     if (arguments != null) {
       addChild(arguments);
     }
-  }
-
-  public AnnotationTreeImpl(AstNode astNode, TypeTree annotationType, List<ExpressionTree> arguments) {
-    super(astNode);
-    this.annotationType = annotationType;
-    this.arguments = arguments;
   }
 
   @Override
@@ -84,6 +81,11 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
     return Iterators.concat(
       Iterators.singletonIterator(annotationType),
       arguments.iterator());
+  }
+
+  @Override
+  public SyntaxToken atToken() {
+    return atToken;
   }
 
 }

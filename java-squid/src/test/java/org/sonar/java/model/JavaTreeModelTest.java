@@ -351,6 +351,7 @@ public class JavaTreeModelTest {
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(annotation.arguments()).hasSize(1);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.STRING_LITERAL)).isTrue();
+    assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@Target( ) class U {}");
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
@@ -358,6 +359,7 @@ public class JavaTreeModelTest {
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
     assertThat(annotation.arguments()).hasSize(0);
+    assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@Target({ElementType.METHOD}) class U {}");
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
@@ -366,6 +368,7 @@ public class JavaTreeModelTest {
     annotation = annotations.get(0);
     assertThat(annotation.arguments()).hasSize(1);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.NEW_ARRAY)).isTrue();
+    assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@Target(value={ElementType.METHOD}, value2=\"toto\") class T { }");
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
@@ -375,6 +378,7 @@ public class JavaTreeModelTest {
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(annotation.arguments()).hasSize(2);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.ASSIGNMENT)).isTrue();
+    assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("class T { private void meth() { @NonNullable String str;}}");
     tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
@@ -383,10 +387,12 @@ public class JavaTreeModelTest {
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@PackageLevelAnnotation package blammy;");
     annotations = ((CompilationUnitTree) astNode).packageAnnotations();
     assertThat(annotations).hasSize(1);
+    assertThat(annotations.get(0).atToken()).isNotNull();
   }
 
   @Test
