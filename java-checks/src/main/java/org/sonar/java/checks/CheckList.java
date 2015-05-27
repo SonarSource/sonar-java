@@ -335,6 +335,7 @@ public final class CheckList {
       .add(EnumMapCheck.class)
       .add(FileCreateTempFileCheck.class)
       .add(BooleanInversionCheck.class)
+      .add(InnerStaticClassesCheck.class)
       .build();
   }
 
