@@ -77,7 +77,7 @@ public interface Tree {
     INITIALIZER(BlockTree.class),
 
     /**
-     * {@link BlockTree}
+     * {@link StaticInitializerTree}
      */
     STATIC_INITIALIZER(StaticInitializerTree.class),
 
