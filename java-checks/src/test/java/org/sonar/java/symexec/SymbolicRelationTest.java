@@ -22,6 +22,8 @@ package org.sonar.java.symexec;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
+import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
 import static org.sonar.java.symexec.SymbolicRelation.EQUAL_TO;
 import static org.sonar.java.symexec.SymbolicRelation.GREATER_EQUAL;
 import static org.sonar.java.symexec.SymbolicRelation.GREATER_THAN;
@@ -31,6 +33,65 @@ import static org.sonar.java.symexec.SymbolicRelation.NOT_EQUAL;
 import static org.sonar.java.symexec.SymbolicRelation.UNKNOWN;
 
 public class SymbolicRelationTest {
+
+  @Test
+  public void test_combine() {
+    assertThat(EQUAL_TO.combine(EQUAL_TO)).isSameAs(TRUE);
+    assertThat(EQUAL_TO.combine(GREATER_EQUAL)).isSameAs(TRUE);
+    assertThat(EQUAL_TO.combine(GREATER_THAN)).isSameAs(FALSE);
+    assertThat(EQUAL_TO.combine(LESS_EQUAL)).isSameAs(TRUE);
+    assertThat(EQUAL_TO.combine(LESS_THAN)).isSameAs(FALSE);
+    assertThat(EQUAL_TO.combine(NOT_EQUAL)).isSameAs(FALSE);
+    assertThat(EQUAL_TO.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+
+    assertThat(GREATER_EQUAL.combine(EQUAL_TO)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(GREATER_EQUAL.combine(GREATER_EQUAL)).isSameAs(TRUE);
+    assertThat(GREATER_EQUAL.combine(GREATER_THAN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(GREATER_EQUAL.combine(LESS_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(GREATER_EQUAL.combine(LESS_THAN)).isSameAs(FALSE);
+    assertThat(GREATER_EQUAL.combine(NOT_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(GREATER_EQUAL.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+
+    assertThat(GREATER_THAN.combine(EQUAL_TO)).isSameAs(FALSE);
+    assertThat(GREATER_THAN.combine(GREATER_EQUAL)).isSameAs(TRUE);
+    assertThat(GREATER_THAN.combine(GREATER_THAN)).isSameAs(TRUE);
+    assertThat(GREATER_THAN.combine(LESS_EQUAL)).isSameAs(FALSE);
+    assertThat(GREATER_THAN.combine(LESS_THAN)).isSameAs(FALSE);
+    assertThat(GREATER_THAN.combine(NOT_EQUAL)).isSameAs(TRUE);
+    assertThat(GREATER_THAN.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+
+    assertThat(LESS_EQUAL.combine(EQUAL_TO)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(LESS_EQUAL.combine(GREATER_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(LESS_EQUAL.combine(GREATER_THAN)).isSameAs(FALSE);
+    assertThat(LESS_EQUAL.combine(LESS_EQUAL)).isSameAs(TRUE);
+    assertThat(LESS_EQUAL.combine(LESS_THAN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(LESS_EQUAL.combine(NOT_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(LESS_EQUAL.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+
+    assertThat(LESS_THAN.combine(EQUAL_TO)).isSameAs(FALSE);
+    assertThat(LESS_THAN.combine(GREATER_EQUAL)).isSameAs(FALSE);
+    assertThat(LESS_THAN.combine(GREATER_THAN)).isSameAs(FALSE);
+    assertThat(LESS_THAN.combine(LESS_EQUAL)).isSameAs(TRUE);
+    assertThat(LESS_THAN.combine(LESS_THAN)).isSameAs(TRUE);
+    assertThat(LESS_THAN.combine(NOT_EQUAL)).isSameAs(TRUE);
+    assertThat(LESS_THAN.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+
+    assertThat(NOT_EQUAL.combine(EQUAL_TO)).isSameAs(FALSE);
+    assertThat(NOT_EQUAL.combine(GREATER_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(NOT_EQUAL.combine(GREATER_THAN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(NOT_EQUAL.combine(LESS_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(NOT_EQUAL.combine(LESS_THAN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(NOT_EQUAL.combine(NOT_EQUAL)).isSameAs(TRUE);
+    assertThat(NOT_EQUAL.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+
+    assertThat(UNKNOWN.combine(EQUAL_TO)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(UNKNOWN.combine(GREATER_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(UNKNOWN.combine(GREATER_THAN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(UNKNOWN.combine(LESS_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(UNKNOWN.combine(LESS_THAN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(UNKNOWN.combine(NOT_EQUAL)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+    assertThat(UNKNOWN.combine(UNKNOWN)).isSameAs(SymbolicBooleanConstraint.UNKNOWN);
+  }
 
   @Test
   public void test_negate() {

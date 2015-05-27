@@ -23,82 +23,14 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-import java.util.Map;
-
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.sonar.java.symexec.ExecutionState.RELATION_RELATION_MAP;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
-import static org.sonar.java.symexec.SymbolicRelation.EQUAL_TO;
-import static org.sonar.java.symexec.SymbolicRelation.GREATER_EQUAL;
-import static org.sonar.java.symexec.SymbolicRelation.GREATER_THAN;
-import static org.sonar.java.symexec.SymbolicRelation.LESS_EQUAL;
-import static org.sonar.java.symexec.SymbolicRelation.LESS_THAN;
-import static org.sonar.java.symexec.SymbolicRelation.NOT_EQUAL;
 
 public class ExecutionStateTest {
-
-  @Test
-  public void test_relation_mapping() {
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, EQUAL_TO)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, GREATER_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, GREATER_THAN)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, LESS_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, LESS_THAN)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, NOT_EQUAL)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(EQUAL_TO, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, EQUAL_TO)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, GREATER_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, GREATER_THAN)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, LESS_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, LESS_THAN)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, NOT_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_EQUAL, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, EQUAL_TO)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, GREATER_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, GREATER_THAN)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, LESS_EQUAL)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, LESS_THAN)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, NOT_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(GREATER_THAN, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, EQUAL_TO)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, GREATER_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, GREATER_THAN)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, LESS_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, LESS_THAN)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, NOT_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(LESS_EQUAL, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, EQUAL_TO)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, GREATER_EQUAL)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, GREATER_THAN)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, LESS_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, LESS_THAN)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, NOT_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(LESS_THAN, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, EQUAL_TO)).isSameAs(FALSE);
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, GREATER_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, GREATER_THAN)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, LESS_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, LESS_THAN)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, NOT_EQUAL)).isSameAs(TRUE);
-    assertThat(RELATION_RELATION_MAP.get(NOT_EQUAL, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, EQUAL_TO)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, GREATER_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, GREATER_THAN)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, LESS_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, LESS_THAN)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, NOT_EQUAL)).isSameAs(UNKNOWN);
-    assertThat(RELATION_RELATION_MAP.get(SymbolicRelation.UNKNOWN, SymbolicRelation.UNKNOWN)).isSameAs(UNKNOWN);
-  }
 
   @Test
   public void test_get_set_boolean_constraint() {
@@ -161,17 +93,6 @@ public class ExecutionStateTest {
 
     // state.setRelation must return state
     assertThat(state.setRelation(leftValue, SymbolicRelation.UNKNOWN, rightValue)).isSameAs(state);
-  }
-
-  @Test
-  public void test_evaluate_relation() {
-    // if one of the relation is unknown the result in unknown, regardless of the second relation.
-    for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.column(SymbolicRelation.UNKNOWN).entrySet()) {
-      assertThat(entry.getValue()).isSameAs(UNKNOWN);
-    }
-    for (Map.Entry<SymbolicRelation, SymbolicBooleanConstraint> entry : ExecutionState.RELATION_RELATION_MAP.row(SymbolicRelation.UNKNOWN).entrySet()) {
-      assertThat(entry.getValue()).isSameAs(UNKNOWN);
-    }
   }
 
   @Test
