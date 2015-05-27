@@ -37,12 +37,15 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
   private ExpressionTree enclosingExpression;
+  @Nullable
+  private SyntaxToken newKeyword;
   private TypeTree identifier;
   @Nullable
   private final SyntaxToken openParenToken;
@@ -72,6 +75,11 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   public NewClassTreeImpl completeWithEnclosingExpression(ExpressionTree enclosingExpression) {
     this.enclosingExpression = enclosingExpression;
+    return this;
+  }
+
+  public NewClassTreeImpl completeWithNewKeyword(SyntaxToken newKeyword) {
+    this.newKeyword = newKeyword;
     return this;
   }
 
@@ -154,5 +162,11 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   @Override
   public SyntaxToken closeParenToken() {
     return closeParenToken;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken newKeyword() {
+    return newKeyword;
   }
 }

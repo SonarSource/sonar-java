@@ -558,6 +558,7 @@ public class JavaTreeModelTest {
     assertThat(newClassTree.arguments()).isEmpty();
     assertThat(newClassTree.closeParenToken()).isNull();
     assertThat(newClassTree.classBody()).isNull();
+    assertThat(newClassTree.newKeyword()).isNull();
 
     tree = (EnumConstantTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
@@ -568,6 +569,7 @@ public class JavaTreeModelTest {
     assertThat(newClassTree.closeParenToken()).isNotNull();
     assertThat(newClassTree.classBody()).isNotNull();
     assertThat(newClassTree.classBody().openBraceToken().text()).isEqualTo("{");
+    assertThat(newClassTree.newKeyword()).isNull();
 
   }
 
@@ -1284,6 +1286,7 @@ public class JavaTreeModelTest {
     assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
+    assertThat(tree.newKeyword()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
 
     tree = (NewClassTree) p.parse("class T { T m() { return Enclosing.new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
@@ -1294,6 +1297,7 @@ public class JavaTreeModelTest {
     assertThat(tree.arguments()).hasSize(2);
     assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
+    assertThat(tree.newKeyword()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
 
     tree = (NewClassTree) p.parse("class T { T m() { return this.new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
@@ -1303,6 +1307,7 @@ public class JavaTreeModelTest {
     assertThat(tree.arguments()).hasSize(2);
     assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
+    assertThat(tree.newKeyword()).isNotNull();
     // assertThat(tree.typeArguments()).isEmpty();
   }
 
@@ -1316,6 +1321,7 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isNotNull();
     assertThat(tree.dimensions()).isEmpty();
     assertThat(tree.initializers()).hasSize(2);
+    assertThat(tree.newKeyword()).isNotNull();
     assertThat(((NewArrayTree) tree.initializers().get(0)).initializers()).hasSize(1);
     assertThat(((NewArrayTree) tree.initializers().get(1)).initializers()).hasSize(2);
 
@@ -1324,6 +1330,7 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isNotNull();
     assertThat(tree.dimensions()).hasSize(2);
     assertThat(tree.initializers()).isEmpty();
+    assertThat(tree.newKeyword()).isNotNull();
   }
 
   /**

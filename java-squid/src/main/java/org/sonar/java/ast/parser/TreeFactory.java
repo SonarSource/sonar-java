@@ -1759,6 +1759,12 @@ public class TreeFactory {
       ((JavaTree) partial).prependChildren(annotations.get());
     }
     ((JavaTree) partial).prependChildren(newToken);
+    InternalSyntaxToken newSyntaxToken = InternalSyntaxToken.create(newToken);
+    if (partial.is(Tree.Kind.NEW_CLASS)) {
+      ((NewClassTreeImpl) partial).completeWithNewKeyword(newSyntaxToken);
+    } else {
+      ((NewArrayTreeImpl) partial).completeWithNewKeyword(newSyntaxToken);
+    }
     return partial;
   }
 

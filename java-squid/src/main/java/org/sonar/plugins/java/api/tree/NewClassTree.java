@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -43,6 +44,12 @@ public interface NewClassTree extends ExpressionTree {
 
   @Nullable
   ExpressionTree enclosingExpression();
+
+  /**
+   * "new" keyword is null for {@link EnumConstantTree #initializer()}
+   */
+  @Nullable
+  SyntaxToken newKeyword();
 
   /**
    * @since Java 1.5

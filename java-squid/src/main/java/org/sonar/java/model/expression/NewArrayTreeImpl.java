@@ -25,6 +25,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
@@ -34,6 +35,7 @@ import java.util.List;
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
   private Tree type;
+  private SyntaxToken newKeyword;
   private final List<ExpressionTree> dimensions;
   private final List<ExpressionTree> initializers;
 
@@ -56,6 +58,11 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
     prependChildren(children);
 
+    return this;
+  }
+
+  public NewArrayTreeImpl completeWithNewKeyword(SyntaxToken newKeyword) {
+    this.newKeyword = newKeyword;
     return this;
   }
 
@@ -91,6 +98,11 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
       dimensions.iterator(),
       initializers.iterator()
       );
+  }
+
+  @Override
+  public SyntaxToken newKeyword() {
+    return newKeyword;
   }
 
 }
