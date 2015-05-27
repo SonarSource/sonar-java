@@ -60,25 +60,25 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.CheckForNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class SymbolicEvaluator {
 
-  private final AssignedSymbolExtractor extractor = new AssignedSymbolExtractor();
-
-  private final Map<Tree, SymbolicBooleanConstraint> result = new HashMap<>();
-
-  public Map<Tree, SymbolicBooleanConstraint> evaluateMethod(ExecutionState state, MethodTree tree) {
-    result.clear();
+  public static void evaluateMethod(ExecutionState state, MethodTree tree, SymbolicExecutionCheck check) {
     if (tree.block() != null) {
-      evaluateStatement(ImmutableList.of(state), tree.block());
+      new SymbolicEvaluator(check).evaluateStatement(ImmutableList.of(state), tree.block());
     }
-    return result;
   }
+
+  SymbolicEvaluator(SymbolicExecutionCheck check) {
+    this.check = check;
+  }
+
+  private final SymbolicExecutionCheck check;
+
+  private final AssignedSymbolExtractor extractor = new AssignedSymbolExtractor();
 
   PackedStates evaluateCondition(ExecutionState state, ExpressionTree tree) {
     return new ConditionVisitor().evaluate(state, tree).splitUnknowns();
@@ -527,7 +527,7 @@ public class SymbolicEvaluator {
       PackedStatementStates nextStates = PackedStatementStates.instantiate();
       for (ExecutionState state : currentStates) {
         PackedStates conditionStates = evaluateCondition(state, tree.condition());
-        result.put(tree, conditionStates.getBooleanConstraint().union(result.get(tree)));
+        onCondition(tree, conditionStates);
         PackedStatementStates trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
         PackedStatementStates falseStates;
         if (tree.elseStatement() == null) {
@@ -543,6 +543,18 @@ public class SymbolicEvaluator {
         nextStates.breakStates.addAll(trueStates.breakStates);
       }
       currentStates = nextStates;
+    }
+
+    private void onCondition(Tree tree, PackedStates conditionStates) {
+      for (ExecutionState executionState : conditionStates.falseStates) {
+        check.onCondition(executionState, tree, SymbolicBooleanConstraint.FALSE);
+      }
+      for (ExecutionState executionState : conditionStates.trueStates) {
+        check.onCondition(executionState, tree, SymbolicBooleanConstraint.TRUE);
+      }
+      for (ExecutionState executionState : conditionStates.unknownStates) {
+        check.onCondition(executionState, tree, SymbolicBooleanConstraint.UNKNOWN);
+      }
     }
 
     @Override

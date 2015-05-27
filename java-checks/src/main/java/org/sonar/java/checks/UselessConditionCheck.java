@@ -26,12 +26,14 @@ import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
 import org.sonar.java.symexec.SymbolicBooleanConstraint;
 import org.sonar.java.symexec.SymbolicEvaluator;
+import org.sonar.java.symexec.SymbolicExecutionCheck;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +47,6 @@ import java.util.Map;
 @SqaleConstantRemediation("15min")
 public class UselessConditionCheck extends SubscriptionBaseVisitor {
 
-  private SymbolicEvaluator engine = new SymbolicEvaluator();
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD);
@@ -54,7 +54,9 @@ public class UselessConditionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : engine.evaluateMethod(new ExecutionState(), (MethodTree) tree).entrySet()) {
+    Check check = new Check();
+    SymbolicEvaluator.evaluateMethod(new ExecutionState(), (MethodTree) tree, check);
+    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : check.result.entrySet()) {
       switch (entry.getValue()) {
         case FALSE:
           raiseIssue(entry.getKey(), "false");
@@ -70,6 +72,15 @@ public class UselessConditionCheck extends SubscriptionBaseVisitor {
 
   private void raiseIssue(Tree tree, String value) {
     addIssue(tree, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
+  }
+
+  private class Check extends SymbolicExecutionCheck {
+    private Map<Tree, SymbolicBooleanConstraint> result = new HashMap<>();
+
+    @Override
+    protected void onCondition(ExecutionState executionState, Tree tree, SymbolicBooleanConstraint constraint) {
+      result.put(tree, constraint.union(result.get(tree)));
+    }
   }
 
 }
