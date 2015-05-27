@@ -1,23 +1,23 @@
 class Foo {    // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
 }
 
-class Foo
+class Gul
 {              // Compliant
 }
 
 class
-Foo {          // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+Doo {          // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
 }
 
-class Foo
+class Koo
 {              // Compliant
-  void foo() { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+  void koo() { // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
   }
 }
 
-class Foo
+class Bar
 {              // Compliant
-  void foo()
+  void bar()
   {            // Compliant
   }
 }
