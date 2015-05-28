@@ -47,7 +47,11 @@
       <artifactId>java-squid</artifactId>
       <version>${project.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <artifactId>java-jacoco-previous</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Would be provided by environment -->
     <dependency>
       <groupId>org.apache.ant</groupId>

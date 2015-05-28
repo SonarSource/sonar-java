@@ -35,7 +35,6 @@ import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
-import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.test.TestUtils;
@@ -109,7 +108,7 @@ public class JaCoCoSensorTest {
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
   }
 
-  @Test(expected = SonarException.class)
+  @Test
   public void test_read_execution_data() {
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(javaResourceLocator.findResourceByClassName("org/sonar/plugins/jacoco/tests/Hello")).thenReturn(resource);
@@ -131,7 +130,7 @@ public class JaCoCoSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.COVERED_CONDITIONS_BY_LINE, "15=0")));
   }
 
-  @Test(expected = SonarException.class)
+  @Test
   public void test_read_execution_data_for_lines_covered_by_tests() throws IOException {
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/");
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
@@ -157,6 +156,59 @@ public class JaCoCoSensorTest {
 
     verify(testCase).setCoverageBlock(testAbleFile, newArrayList(3, 6));
   }
+
+  @Test
+  public void test_read_execution_data_for_lines_covered_by_tests_v0_7_5() throws IOException {
+    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCov0_7_5_coverage_per_test/");
+    jacocoExecutionData = new File(outputDir, "jacoco.exec");
+
+    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
+    when(context.getResource(any(Resource.class))).thenReturn(resource);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
+
+    MutableTestable testAbleFile = mock(MutableTestable.class);
+    when(perspectives.as(eq(MutableTestable.class), any(org.sonar.api.resources.File.class))).thenReturn(testAbleFile);
+
+    MutableTestCase testCase = mock(MutableTestCase.class);
+    when(testCase.name()).thenReturn("test");
+    MutableTestPlan testPlan = mock(MutableTestPlan.class);
+    when(testPlan.testCasesByName("testBoth")).thenReturn(newArrayList(testCase));
+    when(testPlan.testCasesByName("testFoo")).thenReturn(newArrayList(testCase));
+
+    when(perspectives.as(eq(MutableTestPlan.class), any(Resource.class))).thenReturn(testPlan);
+
+    sensor.analyse(project, context);
+
+    verify(testCase).setCoverageBlock(testAbleFile, newArrayList(3, 4, 5, 8, 12));
+  }
+
+  @Test
+  public void test_read_execution_data_for_lines_covered_by_tests_v0_7_4() throws IOException {
+    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCov0_7_4_coverage_per_test/");
+    jacocoExecutionData = new File(outputDir, "jacoco.exec");
+
+    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
+    when(context.getResource(any(Resource.class))).thenReturn(resource);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
+
+    MutableTestable testAbleFile = mock(MutableTestable.class);
+    when(perspectives.as(eq(MutableTestable.class), any(org.sonar.api.resources.File.class))).thenReturn(testAbleFile);
+
+    MutableTestCase testCase = mock(MutableTestCase.class);
+    when(testCase.name()).thenReturn("test");
+    MutableTestPlan testPlan = mock(MutableTestPlan.class);
+    when(testPlan.testCasesByName("testBoth")).thenReturn(newArrayList(testCase));
+    when(testPlan.testCasesByName("testFoo")).thenReturn(newArrayList(testCase));
+
+    when(perspectives.as(eq(MutableTestPlan.class), any(Resource.class))).thenReturn(testPlan);
+
+    sensor.analyse(project, context);
+
+    verify(testCase).setCoverageBlock(testAbleFile, newArrayList(3, 4, 5, 8, 12));
+  }
+
 
   @Test
   public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {
