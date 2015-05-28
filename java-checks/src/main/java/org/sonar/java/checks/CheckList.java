@@ -329,6 +329,7 @@ public final class CheckList {
       .add(IndexOfStartPositionCheck.class)
       .add(StaticMembersAccessCheck.class)
       .add(MutableMembersUsageCheck.class)
+      .add(StaticMethodCheck.class)
       .build();
   }
 

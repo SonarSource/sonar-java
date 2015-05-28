@@ -1,0 +1,36 @@
+<p>
+  <code>private</code> methods that don't access instance data can and should be <code>static</code>
+  for performance reasons and to prevent any misunderstanding about the contract of the method.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class Utilities {
+  private static String magicWord = "magic";
+
+  private String getMagicWord() { // Noncompliant
+    return magicWord;
+  }
+
+  private void setMagicWord(String value) { // Noncompliant
+    magicWord = value;
+  }
+
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class Utilities {
+  private static String magicWord = "magic";
+
+  private static String getMagicWord() {
+    return magicWord;
+  }
+
+  private static void setMagicWord(String value) {
+    magicWord = value;
+  }
+
+}
+</pre>
