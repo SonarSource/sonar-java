@@ -79,7 +79,7 @@ public class Input {
 
   private int lineAt(int index) {
     int i = Arrays.binarySearch(newLineIndexes, index);
-    return i >= 0 ? i + 2 : -i;
+    return i >= 0 ? (i + 2) : -i;
   }
 
   private int lineStartIndex(int line) {

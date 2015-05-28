@@ -110,7 +110,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     TypeTree actualType = type;
 
     // TODO Remove logic?
-    for (int i = isVararg() ? 1 + dims() : dims(); i > 0; i--) {
+    for (int i = isVararg() ? (1 + dims()) : dims(); i > 0; i--) {
       actualType = new ArrayTypeTreeImpl(null, actualType);
     }
 

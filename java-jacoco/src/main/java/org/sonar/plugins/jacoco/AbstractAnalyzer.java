@@ -84,7 +84,7 @@ public abstract class AbstractAnalyzer {
   }
 
   private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
-    return ("".equals(packageName) ? "" : packageName + "/") + StringUtils.substringBeforeLast(simpleClassName, ".");
+    return ("".equals(packageName) ? "" : (packageName + "/")) + StringUtils.substringBeforeLast(simpleClassName, ".");
   }
 
   private Resource getResource(ISourceFileCoverage coverage, SensorContext context) {
