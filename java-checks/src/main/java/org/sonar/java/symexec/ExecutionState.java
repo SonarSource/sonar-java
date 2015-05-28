@@ -21,13 +21,14 @@ package org.sonar.java.symexec;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Table;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,63 +42,88 @@ public class ExecutionState {
   @VisibleForTesting
   final Table<SymbolicValue, SymbolicValue, SymbolicRelation> relations;
 
+  private StackEntry stack;
+
   public ExecutionState() {
-    this.parentState = null;
-    this.relations = HashBasedTable.create();
+    parentState = null;
+    relations = HashBasedTable.create();
   }
 
   ExecutionState(ExecutionState parentState) {
     this.parentState = parentState;
     this.relations = HashBasedTable.create();
+    this.stack = parentState.stack;
   }
 
-  @VisibleForTesting
-  SymbolicRelation getRelation(SymbolicValue leftValue, SymbolicValue rightValue) {
-    SymbolicRelation result = relations.get(leftValue, rightValue);
-    return result != null ? result : parentState != null ? parentState.getRelation(leftValue, rightValue) : UNKNOWN;
+  SymbolicValue peek() {
+    return stack.value;
   }
 
-  SymbolicBooleanConstraint evaluateRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
-    return getRelation(leftValue, rightValue).combine(relation);
+  SymbolicValue pop() {
+    SymbolicValue result = stack.value;
+    stack = stack.parent;
+    return result;
   }
 
-  ExecutionState setRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
-    if (!leftValue.equals(rightValue)) {
-      relations.put(leftValue, rightValue, relation);
-      relations.put(rightValue, leftValue, relation.swap());
-    }
-    return this;
-  }
-
-  void mergeRelations(Iterable<ExecutionState> states) {
-    for (Map.Entry<SymbolicValue, SymbolicValue> entry : findRelatedValues(states).entries()) {
-      SymbolicRelation relation = null;
-      for (ExecutionState state : states) {
-        relation = state.getRelation(entry.getKey(), entry.getValue()).union(relation);
-      }
-      if (relation == null) {
-        relation = SymbolicRelation.UNKNOWN;
-      }
-      if (getRelation(entry.getKey(), entry.getValue()) != relation) {
-        relations.put(entry.getKey(), entry.getValue(), relation);
-        relations.put(entry.getValue(), entry.getKey(), relation.swap());
-      }
-    }
-  }
-
-  private Multimap<SymbolicValue, SymbolicValue> findRelatedValues(Iterable<ExecutionState> states) {
-    Multimap<SymbolicValue, SymbolicValue> result = HashMultimap.create();
-    for (ExecutionState state : states) {
-      for (ExecutionState current = state; !current.equals(this); current = current.parentState) {
-        for (Map.Entry<SymbolicValue, Map<SymbolicValue, SymbolicRelation>> leftEntry : current.relations.rowMap().entrySet()) {
-          result.putAll(leftEntry.getKey(), leftEntry.getValue().keySet());
-        }
-      }
+  SymbolicValue popLast() {
+    SymbolicValue result = stack.value;
+    stack = stack.parent;
+    if (stack != null) {
+      throw new IllegalStateException("stack is not empty");
     }
     return result;
   }
 
-  SymbolicBooleanConstraint getBooleanConstraint(SymbolicValue.SymbolicVariableValue variable) {
+  ExecutionState push(SymbolicValue value) {
+    stack = new StackEntry(stack, value);
+    return this;
+  }
+
+  @VisibleForTesting
+  SymbolicRelation getRelation(SymbolicValue leftValue, SymbolicValue rightValue) {
+    for (ExecutionState executionState = this; executionState != null; executionState = executionState.parentState) {
+      SymbolicRelation result = executionState.relations.get(leftValue, rightValue);
+      if (result != null) {
+        return result;
+      }
+    }
+    return UNKNOWN;
+  }
+
+  @CheckForNull
+  SymbolicValue evaluateRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
+    switch (getRelation(leftValue, rightValue).combine(relation)) {
+      case FALSE:
+        return SymbolicValue.BOOLEAN_FALSE;
+      case TRUE:
+        return SymbolicValue.BOOLEAN_TRUE;
+      default:
+        return null;
+    }
+  }
+
+  ExecutionState setRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
+    if (!leftValue.equals(rightValue)) {
+      if (leftValue.equals(SymbolicValue.BOOLEAN_FALSE)) {
+        relations.put(SymbolicValue.BOOLEAN_TRUE, rightValue, relation.negate());
+        relations.put(rightValue, SymbolicValue.BOOLEAN_TRUE, relation.negate().swap());
+      } else if (rightValue.equals(SymbolicValue.BOOLEAN_FALSE)) {
+        relations.put(leftValue, SymbolicValue.BOOLEAN_TRUE, relation.negate());
+        relations.put(SymbolicValue.BOOLEAN_TRUE, leftValue, relation.negate().swap());
+      } else {
+        relations.put(leftValue, rightValue, relation);
+        relations.put(rightValue, leftValue, relation.swap());
+      }
+    }
+    return this;
+  }
+
+  public SymbolicBooleanConstraint getBooleanConstraint(SymbolicValue variable) {
+    if (variable.equals(SymbolicValue.BOOLEAN_TRUE)) {
+      return SymbolicBooleanConstraint.TRUE;
+    } else if (variable.equals(SymbolicValue.BOOLEAN_FALSE)) {
+      return SymbolicBooleanConstraint.FALSE;
+    }
     switch (getRelation(variable, SymbolicValue.BOOLEAN_TRUE)) {
       case EQUAL_TO:
         return SymbolicBooleanConstraint.TRUE;
@@ -108,7 +134,7 @@ public class ExecutionState {
     }
   }
 
-  ExecutionState setBooleanConstraint(SymbolicValue.SymbolicVariableValue variable, SymbolicBooleanConstraint constraint) {
+  ExecutionState setBooleanConstraint(SymbolicValue variable, SymbolicBooleanConstraint constraint) {
     switch (constraint) {
       case FALSE:
         setRelation(variable, SymbolicRelation.NOT_EQUAL, SymbolicValue.BOOLEAN_TRUE);
@@ -123,35 +149,51 @@ public class ExecutionState {
     return this;
   }
 
-  void invalidateRelationsOnValue(SymbolicValue value) {
-    Multimap<SymbolicValue, SymbolicValue> pairs = HashMultimap.create();
-    for (ExecutionState current = this; current != null; current = current.parentState) {
-      pairs.putAll(value, current.findRelatedValues(value));
-    }
-    for (Map.Entry<SymbolicValue, SymbolicValue> entry : pairs.entries()) {
-      setRelation(entry.getKey(), SymbolicRelation.UNKNOWN, entry.getValue());
-    }
-  }
-
-  private Set<SymbolicValue> findRelatedValues(SymbolicValue value) {
-    Map<SymbolicValue, SymbolicRelation> map = relations.rowMap().get(value);
-    return map != null ? map.keySet() : ImmutableSet.<SymbolicValue>of();
-  }
-
-  void invalidateFields() {
+  void invalidateFields(SymbolicEvaluator evaluator) {
+    Set<Symbol> assignedVariables = new HashSet<>();
     for (ExecutionState state = this; state != null; state = state.parentState) {
-      for (Map.Entry<SymbolicValue, Map<SymbolicValue, SymbolicRelation>> entry : state.relations.rowMap().entrySet()) {
-        if (isField(entry.getKey())) {
-          for (SymbolicValue other : entry.getValue().keySet()) {
-            setRelation(entry.getKey(), SymbolicRelation.UNKNOWN, other);
-          }
-        }
+      assignedVariables.addAll(state.values.keySet());
+    }
+    for (Symbol variable : assignedVariables) {
+      if (isField(variable)) {
+        assignValue(variable, evaluator.createSymbolicInstanceValue());
       }
     }
   }
 
-  private boolean isField(SymbolicValue value) {
-    return value instanceof SymbolicValue.SymbolicVariableValue && ((SymbolicValue.SymbolicVariableValue) value).variable.owner().isTypeSymbol();
+  private boolean isField(Symbol symbol) {
+    return symbol.owner().isTypeSymbol();
+  }
+
+  private final Map<Symbol, SymbolicValue> values = new HashMap<>();
+
+  public void assignValue(Symbol variable, SymbolicValue value) {
+    values.put(variable, value);
+  }
+
+  @CheckForNull
+  public SymbolicValue getValue(Symbol variable) {
+    ExecutionState executionState = this;
+    while (true) {
+      SymbolicValue result = executionState.values.get(variable);
+      if (result != null) {
+        return result;
+      } else if (executionState.parentState == null) {
+        return null;
+      }
+      executionState = executionState.parentState;
+    }
+  }
+
+  static final class StackEntry {
+    @Nullable
+    final StackEntry parent;
+    final SymbolicValue value;
+
+    StackEntry(StackEntry parent, SymbolicValue value) {
+      this.parent = parent;
+      this.value = value;
+    }
   }
 
 }

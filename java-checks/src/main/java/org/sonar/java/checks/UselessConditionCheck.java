@@ -27,6 +27,7 @@ import org.sonar.java.symexec.ExecutionState;
 import org.sonar.java.symexec.SymbolicBooleanConstraint;
 import org.sonar.java.symexec.SymbolicEvaluator;
 import org.sonar.java.symexec.SymbolicExecutionCheck;
+import org.sonar.java.symexec.SymbolicValue;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -56,7 +57,7 @@ public class UselessConditionCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     Check check = new Check();
     SymbolicEvaluator.evaluateMethod(new ExecutionState(), (MethodTree) tree, check);
-    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : check.result.entrySet()) {
+    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : check.values.entrySet()) {
       switch (entry.getValue()) {
         case FALSE:
           raiseIssue(entry.getKey(), "false");
@@ -74,12 +75,12 @@ public class UselessConditionCheck extends SubscriptionBaseVisitor {
     addIssue(tree, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
   }
 
-  private class Check extends SymbolicExecutionCheck {
-    private Map<Tree, SymbolicBooleanConstraint> result = new HashMap<>();
+  private static class Check extends SymbolicExecutionCheck {
+    private Map<Tree, SymbolicBooleanConstraint> values = new HashMap<>();
 
     @Override
-    protected void onCondition(ExecutionState executionState, Tree tree, SymbolicBooleanConstraint constraint) {
-      result.put(tree, constraint.union(result.get(tree)));
+    protected void onCondition(ExecutionState executionState, Tree tree, SymbolicValue result) {
+      values.put(tree, executionState.getBooleanConstraint(result).union(values.get(tree)));
     }
   }
 

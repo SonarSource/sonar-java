@@ -19,13 +19,9 @@
  */
 package org.sonar.java.symexec;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.FALSE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.TRUE;
 import static org.sonar.java.symexec.SymbolicBooleanConstraint.UNKNOWN;
@@ -36,40 +32,39 @@ public class ExecutionStateTest {
   public void test_get_set_boolean_constraint() {
     ExecutionState state = new ExecutionState();
 
-    Symbol.VariableSymbol fieldSymbol = mock(Symbol.VariableSymbol.class);
-    when(fieldSymbol.isVariableSymbol()).thenReturn(true);
-    SymbolicValue.SymbolicVariableValue fieldValue = new SymbolicValue.SymbolicVariableValue(fieldSymbol);
+    SymbolicValue value = new SymbolicValue.SymbolicInstanceValue();
 
     // constraint for a variable is unknown by default and can be set.
-    assertThat(state.getBooleanConstraint(fieldValue)).isSameAs(UNKNOWN);
-    state.setBooleanConstraint(fieldValue, FALSE);
-    assertThat(state.getBooleanConstraint(fieldValue)).isSameAs(FALSE);
+    assertThat(state.getBooleanConstraint(value)).isSameAs(UNKNOWN);
+    state.setBooleanConstraint(value, FALSE);
+    assertThat(state.getBooleanConstraint(value)).isSameAs(FALSE);
 
     // constraint for a variable must be queried in the parent state.
     ExecutionState nestedState = new ExecutionState(state);
-    assertThat(nestedState.getBooleanConstraint(fieldValue)).isSameAs(FALSE);
+    assertThat(nestedState.getBooleanConstraint(value)).isSameAs(FALSE);
 
     // constraint for a variable must shadow constraint from the parent state.
-    nestedState.setBooleanConstraint(fieldValue, TRUE);
-    assertThat(state.getBooleanConstraint(fieldValue)).isSameAs(FALSE);
-    assertThat(nestedState.getBooleanConstraint(fieldValue)).isSameAs(TRUE);
+    nestedState.setBooleanConstraint(value, TRUE);
+    assertThat(state.getBooleanConstraint(value)).isSameAs(FALSE);
+    assertThat(nestedState.getBooleanConstraint(value)).isSameAs(TRUE);
 
     // state.setBooleanConstraint must return state
-    assertThat(state.setBooleanConstraint(fieldValue, UNKNOWN)).isSameAs(state);
+    assertThat(state.setBooleanConstraint(value, UNKNOWN)).isSameAs(state);
   }
 
   @Test
   public void test_get_set_relation() {
-    SymbolicValue leftValue = new SymbolicValue.SymbolicVariableValue(mock(Symbol.VariableSymbol.class));
-    SymbolicValue rightValue = new SymbolicValue.SymbolicVariableValue(mock(Symbol.VariableSymbol.class));
+    SymbolicValue leftValue = new SymbolicValue.SymbolicInstanceValue();
+    SymbolicValue rightValue = new SymbolicValue.SymbolicInstanceValue();
 
-    ExecutionState state = new ExecutionState();
+    ExecutionState state;
 
-    // unregistered relations should evaluate to UNKNOWN.
+    state = new ExecutionState();
     assertThat(state.getRelation(leftValue, rightValue)).isSameAs(SymbolicRelation.UNKNOWN);
-    assertThat(state.evaluateRelation(leftValue, SymbolicRelation.UNKNOWN, rightValue)).isSameAs(UNKNOWN);
+    assertThat(state.evaluateRelation(leftValue, SymbolicRelation.UNKNOWN, rightValue)).isSameAs(null);
 
     // relations cannot be set between the same symbol.
+    state = new ExecutionState();
     state.setRelation(leftValue, SymbolicRelation.GREATER_EQUAL, leftValue);
     assertThat(state.relations.size()).isEqualTo(0);
 
@@ -93,48 +88,6 @@ public class ExecutionStateTest {
 
     // state.setRelation must return state
     assertThat(state.setRelation(leftValue, SymbolicRelation.UNKNOWN, rightValue)).isSameAs(state);
-  }
-
-  @Test
-  public void test_merge_relations() {
-    SymbolicValue symbol11 = new SymbolicValue.SymbolicVariableValue(mockLocalVariable());
-    SymbolicValue symbol12 = new SymbolicValue.SymbolicVariableValue(mockLocalVariable());
-
-    ExecutionState parentState = new ExecutionState();
-    ExecutionState state = new ExecutionState(parentState);
-    ExecutionState childState1 = new ExecutionState(state);
-    ExecutionState childState21 = new ExecutionState(state);
-    ExecutionState childState22 = new ExecutionState(new ExecutionState(childState21));
-    ExecutionState childState31 = new ExecutionState(state);
-    ExecutionState childState32 = new ExecutionState(new ExecutionState(childState31));
-
-    parentState.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
-    childState1.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
-    childState21.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
-    childState32.setRelation(symbol11, SymbolicRelation.GREATER_THAN, symbol12);
-    state.mergeRelations(ImmutableList.of(childState1, childState22, childState32));
-    assertThat(state.relations.get(symbol11, symbol12)).isNull();
-    assertThat(state.getRelation(symbol11, symbol12)).isEqualTo(SymbolicRelation.GREATER_THAN);
-    assertThat(state.relations.get(symbol12, symbol11)).isNull();
-    assertThat(state.getRelation(symbol12, symbol11)).isEqualTo(SymbolicRelation.LESS_THAN);
-
-    parentState.setRelation(symbol11, SymbolicRelation.UNKNOWN, symbol12);
-    childState1.setRelation(symbol11, SymbolicRelation.LESS_THAN, symbol12);
-    childState21.setRelation(symbol11, SymbolicRelation.LESS_EQUAL, symbol12);
-    childState32.setRelation(symbol11, SymbolicRelation.LESS_EQUAL, symbol12);
-    state.mergeRelations(ImmutableList.of(childState1, childState22, childState32));
-    assertThat(state.getRelation(symbol11, symbol12)).isEqualTo(SymbolicRelation.LESS_EQUAL);
-    assertThat(state.getRelation(symbol12, symbol11)).isEqualTo(SymbolicRelation.GREATER_EQUAL);
-  }
-
-  private Symbol.VariableSymbol mockLocalVariable() {
-    Symbol.TypeSymbol methodSymbol = mock(Symbol.TypeSymbol.class);
-    when(methodSymbol.isMethodSymbol()).thenReturn(true);
-
-    Symbol.VariableSymbol variableSymbol = mock(Symbol.VariableSymbol.class);
-    when(variableSymbol.isVariableSymbol()).thenReturn(true);
-    when(variableSymbol.owner()).thenReturn(methodSymbol);
-    return variableSymbol;
   }
 
 }

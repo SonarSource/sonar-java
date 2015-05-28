@@ -19,19 +19,19 @@
  */
 package org.sonar.java.symexec;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import org.sonar.java.symexec.SymbolicValue.SymbolicInstanceValue;
+
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -46,13 +46,16 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
-import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
@@ -60,6 +63,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.CheckForNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -68,7 +72,7 @@ public class SymbolicEvaluator {
 
   public static void evaluateMethod(ExecutionState state, MethodTree tree, SymbolicExecutionCheck check) {
     if (tree.block() != null) {
-      new SymbolicEvaluator(check).evaluateStatement(ImmutableList.of(state), tree.block());
+      new SymbolicEvaluator(check).new SymbolicEvaluatorVisitor().evaluateWithState(state, tree.block());
     }
   }
 
@@ -80,27 +84,179 @@ public class SymbolicEvaluator {
 
   private final AssignedSymbolExtractor extractor = new AssignedSymbolExtractor();
 
-  PackedStates evaluateCondition(ExecutionState state, ExpressionTree tree) {
-    return new ConditionVisitor().evaluate(state, tree).splitUnknowns();
+  SymbolicInstanceValue createSymbolicInstanceValue() {
+    return new SymbolicInstanceValue();
   }
 
-  SymbolicBooleanConstraint evaluateExpression(ExecutionState state, ExpressionTree tree) {
-    return new ExpressionVisitor().evaluate(state, tree);
-  }
+  private class SymbolicEvaluatorVisitor extends BaseTreeVisitor {
+    private PackedStatementStates currentStates;
 
-  PackedStatementStates evaluateStatement(ExecutionState state, StatementTree tree) {
-    return new StatementVisitor().evaluate(PackedStatementStates.instantiateWithState(state), tree);
-  }
+    private PackedStatementStates evaluateWithState(ExecutionState executionState, Tree tree) {
+      currentStates = new PackedStatementStates();
+      currentStates.addState(executionState);
+      scan(tree);
+      return currentStates;
+    }
 
-  PackedStatementStates evaluateStatement(List<ExecutionState> states, StatementTree tree) {
-    return new StatementVisitor().evaluate(PackedStatementStates.instantiateWithStates(states), tree);
-  }
+    /**
+     * evaluates a condition.
+     *
+     * a condition is an expression (of type boolean), which can occur in the following places:
+     * - condition of an if statement
+     * - condition of a loop statement: do...while, for, while (but not foreach)
+     * - left operand of a logical and && and or || operators
+     * - first operand of a ternary operator
+     * conditions of switch statement are broader and not evaluated using this method.
+     *
+     * this method evaluates the given condition. if the result is either true or false,
+     * then the execution state is returned.
+     * otherwise, if the result is unknown, then the execution state is split in two branches
+     * with result TRUE and FALSE. whenever possible constraints are also set on the variables
+     * found in the condition.
+     *
+     * @param state execution state
+     * @param tree tree representing the condition
+     * @return output states
+     */
+    private List<ExecutionState> evaluateCondition(ExecutionState executionState, ExpressionTree tree) {
+      List<ExecutionState> result = new ArrayList<>();
+      ExpressionTree expressionTree = removeCastAndParenthesis(tree);
+      if (expressionTree.is(Tree.Kind.CONDITIONAL_AND)) {
+        evaluateConditionConditionalAnd(result, executionState, (BinaryExpressionTree) expressionTree);
+      } else if (expressionTree.is(Tree.Kind.CONDITIONAL_OR)) {
+        evaluateConditionConditionalOr(result, executionState, (BinaryExpressionTree) expressionTree);
+      } else if (expressionTree.is(Tree.Kind.EQUAL_TO)) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.EQUAL_TO);
+      } else if (expressionTree.is(Tree.Kind.GREATER_THAN)) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.GREATER_THAN);
+      } else if (expressionTree.is(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.GREATER_EQUAL);
+      } else if (expressionTree.is(Tree.Kind.LESS_THAN)) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.LESS_THAN);
+      } else if (expressionTree.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO)) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.LESS_EQUAL);
+      } else if (expressionTree.is(Tree.Kind.NOT_EQUAL_TO)) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.NOT_EQUAL);
+      } else if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
+        evaluateConditionIdentifier(result, executionState, ((IdentifierTree) expressionTree).symbol());
+      } else if (isSuperOrThisMemberSelect(expressionTree)) {
+        evaluateConditionIdentifier(result, executionState, ((MemberSelectExpressionTree) expressionTree).identifier().symbol());
+      } else {
+        evaluateConditionOther(result, executionState, expressionTree);
+      }
+      return result;
+    }
 
-  PackedStatementStates evaluateStatement(PackedStatementStates states, Tree tree) {
-    return new StatementVisitor().evaluate(states, tree);
-  }
+    private ExpressionTree removeCastAndParenthesis(ExpressionTree tree) {
+      ExpressionTree result = tree;
+      while (true) {
+        if (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+          result = ((ParenthesizedTree) result).expression();
+        } else if (result.is(Tree.Kind.TYPE_CAST)) {
+          result = ((TypeCastTree) result).expression();
+        } else {
+          return result;
+        }
+      }
+    }
 
-  abstract class BaseExpressionVisitor extends BaseTreeVisitor {
+    private void evaluateConditionConditionalAnd(List<ExecutionState> result, ExecutionState executionState, BinaryExpressionTree tree) {
+      for (ExecutionState conditionState : evaluateCondition(executionState, tree.leftOperand())) {
+        if (conditionState.peek().equals(SymbolicValue.BOOLEAN_FALSE)) {
+          result.add(conditionState);
+        } else {
+          conditionState.pop();
+          result.addAll(evaluateCondition(conditionState, tree.rightOperand()));
+        }
+      }
+    }
+
+    private void evaluateConditionConditionalOr(List<ExecutionState> result, ExecutionState executionState, BinaryExpressionTree tree) {
+      for (ExecutionState conditionState : evaluateCondition(executionState, tree.leftOperand())) {
+        if (conditionState.peek().equals(SymbolicValue.BOOLEAN_TRUE)) {
+          result.add(conditionState);
+        } else {
+          conditionState.pop();
+          result.addAll(evaluateCondition(conditionState, tree.rightOperand()));
+        }
+      }
+    }
+
+    private void evaluateConditionIdentifier(List<ExecutionState> result, ExecutionState executionState, Symbol symbol) {
+      SymbolicValue value = executionState.getValue(symbol);
+      if (value == null) {
+        value = createSymbolicInstanceValue();
+        executionState.assignValue(symbol, value);
+      }
+      switch (executionState.getBooleanConstraint(value)) {
+        case FALSE:
+          result.add(executionState.push(SymbolicValue.BOOLEAN_FALSE));
+          break;
+        case TRUE:
+          result.add(executionState.push(SymbolicValue.BOOLEAN_TRUE));
+          break;
+        default:
+          result.add(new ExecutionState(executionState).setBooleanConstraint(value, SymbolicBooleanConstraint.FALSE).push(SymbolicValue.BOOLEAN_FALSE));
+          result.add(new ExecutionState(executionState).setBooleanConstraint(value, SymbolicBooleanConstraint.TRUE).push(SymbolicValue.BOOLEAN_TRUE));
+      }
+    }
+
+    private void evaluateConditionOther(List<ExecutionState> result, ExecutionState executionState, ExpressionTree expressionTree) {
+      for (ExecutionState operatorState : evaluateWithState(executionState, expressionTree)) {
+        if (operatorState.peek().equals(SymbolicValue.BOOLEAN_FALSE) || operatorState.peek().equals(SymbolicValue.BOOLEAN_TRUE)) {
+          // condition is either true or false. nothing more needs to be done.
+          result.add(operatorState);
+        } else {
+          // condition is unknown. split without setting constraints.
+          operatorState.pop();
+          result.add(new ExecutionState(operatorState).push(SymbolicValue.BOOLEAN_FALSE));
+          result.add(new ExecutionState(operatorState).push(SymbolicValue.BOOLEAN_TRUE));
+        }
+      }
+    }
+
+    private void evaluateConditionRelationalOperator(List<ExecutionState> result, ExecutionState executionState, BinaryExpressionTree tree, SymbolicRelation operator) {
+      for (ExecutionState rightState : evaluateWithState(executionState, tree.leftOperand())) {
+        for (ExecutionState operatorState : evaluateWithState(rightState, tree.rightOperand())) {
+          SymbolicValue rightValue = operatorState.pop();
+          SymbolicValue leftValue = operatorState.pop();
+          SymbolicValue operatorResult = executionState.evaluateRelation(leftValue, operator, rightValue);
+          if (SymbolicValue.BOOLEAN_FALSE.equals(operatorResult) || SymbolicValue.BOOLEAN_TRUE.equals(operatorResult)) {
+            // condition is either true or false. nothing more needs to be done.
+            result.add(executionState.push(operatorResult));
+          } else {
+            // condition is unknown. split with constraints.
+            result.add(new ExecutionState(executionState).setRelation(leftValue, operator.negate(), rightValue).push(SymbolicValue.BOOLEAN_FALSE));
+            result.add(new ExecutionState(executionState).setRelation(leftValue, operator, rightValue).push(SymbolicValue.BOOLEAN_TRUE));
+          }
+        }
+      }
+    }
+
+    @Override
+    public final void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
+      super.visitArrayAccessExpression(tree);
+      for (ExecutionState executionState : currentStates) {
+        executionState.pop();
+        executionState.pop();
+        executionState.push(createSymbolicInstanceValue());
+      }
+    }
+
+    @Override
+    public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      super.visitAssignmentExpression(tree);
+      for (ExecutionState executionState : currentStates) {
+        SymbolicValue expression = executionState.pop();
+        executionState.pop();
+        Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
+        if (symbol != null) {
+          executionState.assignValue(symbol, expression);
+        }
+        executionState.push(expression);
+      }
+    }
+
     @Override
     public final void visitBinaryExpression(BinaryExpressionTree tree) {
       if (tree.is(Tree.Kind.CONDITIONAL_AND)) {
@@ -119,43 +275,457 @@ public class SymbolicEvaluator {
         evaluateRelationalOperator(tree, SymbolicRelation.LESS_EQUAL);
       } else if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
         evaluateRelationalOperator(tree, SymbolicRelation.NOT_EQUAL);
+      } else {
+        super.visitBinaryExpression(tree);
+        for (ExecutionState executionState : currentStates) {
+          executionState.pop();
+          executionState.pop();
+          executionState.push(createSymbolicInstanceValue());
+        }
       }
     }
 
-    abstract void evaluateConditionalAnd(BinaryExpressionTree tree);
-
-    abstract void evaluateConditionalOr(BinaryExpressionTree tree);
-
-    abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
-
-    final void visitMethodInvocation(ExecutionState executionState, MethodInvocationTree tree) {
-      scan(tree.methodSelect());
-      List<SymbolicBooleanConstraint> arguments = new ArrayList<>();
-      for (ExpressionTree argument : tree.arguments()) {
-        arguments.add(evaluateExpression(executionState, argument));
+    private void evaluateConditionalAnd(BinaryExpressionTree tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState conditionState : evaluateCondition(executionState, tree.leftOperand())) {
+          if (conditionState.getBooleanConstraint(conditionState.peek()).equals(SymbolicBooleanConstraint.FALSE)) {
+            nextStates.addState(conditionState);
+          } else {
+            conditionState.pop();
+            nextStates.addAll(evaluateWithState(conditionState, tree.rightOperand()));
+          }
+        }
       }
-      check.onExecutableElementInvocation(executionState, tree, arguments);
+      currentStates = nextStates;
     }
 
-    @CheckForNull
-    final SymbolicValue retrieveSymbolicValue(ExpressionTree tree) {
-      ExpressionTree currentTree = tree;
-      if (isSuperOrThisMemberSelect(tree)) {
-        currentTree = ((MemberSelectExpressionTree) currentTree).identifier();
+    private void evaluateConditionalOr(BinaryExpressionTree tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState conditionState : evaluateCondition(executionState, tree.leftOperand())) {
+          if (conditionState.getBooleanConstraint(conditionState.peek()).equals(SymbolicBooleanConstraint.TRUE)) {
+            nextStates.addState(conditionState);
+          } else {
+            conditionState.pop();
+            nextStates.addAll(evaluateWithState(conditionState, tree.rightOperand()));
+          }
+        }
       }
-      if (currentTree.is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifierTree = (IdentifierTree) currentTree;
-        Symbol symbol = identifierTree.symbol();
-        if (symbol.isVariableSymbol()) {
-          return new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) symbol);
+      currentStates = nextStates;
+    }
+
+    private void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
+      scan(tree.leftOperand());
+      scan(tree.rightOperand());
+      for (ExecutionState executionState : currentStates) {
+        SymbolicValue rightValue = executionState.pop();
+        SymbolicValue leftValue = executionState.pop();
+        SymbolicValue result = executionState.evaluateRelation(leftValue, operator, rightValue);
+        executionState.push(result != null ? result : createSymbolicInstanceValue());
+      }
+    }
+
+    @Override
+    public final void visitConditionalExpression(ConditionalExpressionTree tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState conditionState : evaluateCondition(executionState, tree.condition())) {
+          SymbolicValue result = conditionState.pop();
+          if (conditionState.getBooleanConstraint(result).equals(SymbolicBooleanConstraint.FALSE)) {
+            nextStates.addAll(evaluateWithState(conditionState, tree.falseExpression()));
+          } else {
+            nextStates.addAll(evaluateWithState(conditionState, tree.trueExpression()));
+          }
+        }
+      }
+      currentStates = nextStates;
+    }
+
+    @Override
+    public final void visitIdentifier(IdentifierTree tree) {
+      Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
+      if (symbol != null) {
+        for (ExecutionState executionState : currentStates) {
+          SymbolicValue value = executionState.getValue(symbol);
+          if (value == null) {
+            value = createSymbolicInstanceValue();
+            executionState.assignValue(symbol, value);
+          }
+          executionState.push(value);
         }
       } else {
-        Long value = LiteralUtils.longLiteralValue(currentTree);
-        if (value != null) {
-          return new SymbolicValue.SymbolicLongValue(value);
+        SymbolicValue value = createSymbolicInstanceValue();
+        for (ExecutionState executionState : currentStates) {
+          executionState.push(value);
         }
       }
-      return null;
+    }
+
+    @Override
+    public final void visitInstanceOf(InstanceOfTree tree) {
+      SymbolicValue result = createSymbolicInstanceValue();
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState operandState : evaluateWithState(executionState, tree.expression())) {
+          operandState.pop();
+          nextStates.addState(operandState.push(result));
+        }
+      }
+      currentStates = nextStates;
+    }
+
+    @Override
+    public final void visitLiteral(LiteralTree tree) {
+      SymbolicValue result;
+      if (tree.is(Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL)) {
+        Long value = LiteralUtils.longLiteralValue(tree);
+        result = value != null ? new SymbolicValue.SymbolicLongValue(value) : createSymbolicInstanceValue();
+      } else if ("false".equals(tree.value())) {
+        result = SymbolicValue.BOOLEAN_FALSE;
+      } else if ("true".equals(tree.value())) {
+        result = SymbolicValue.BOOLEAN_TRUE;
+      } else {
+        result = createSymbolicInstanceValue();
+      }
+      for (ExecutionState executionState : currentStates) {
+        executionState.push(result);
+      }
+    }
+
+    @Override
+    public final void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+      if (isSuperOrThisMemberSelect(tree)) {
+        scan(tree.identifier());
+      } else {
+        scan(tree.expression());
+        SymbolicValue value = createSymbolicInstanceValue();
+        for (ExecutionState executionState : currentStates) {
+          executionState.pop();
+          executionState.push(value);
+        }
+      }
+    }
+
+    @Override
+    public final void visitMethodInvocation(MethodInvocationTree tree) {
+      scan(tree.methodSelect());
+      scan(tree.arguments());
+      for (ExecutionState executionState : currentStates) {
+        SymbolicValue[] arguments = new SymbolicValue[tree.arguments().size()];
+        for (int i = arguments.length - 1; i >= 0; i -= 1) {
+          arguments[i] = executionState.pop();
+        }
+        check.onExecutableElementInvocation(executionState, tree, Arrays.asList(arguments));
+        executionState.invalidateFields(SymbolicEvaluator.this);
+      }
+    }
+
+    @Override
+    public final void visitNewArray(NewArrayTree tree) {
+      scan(tree.dimensions());
+      scan(tree.initializers());
+      SymbolicValue value = createSymbolicInstanceValue();
+      for (ExecutionState executionState : currentStates) {
+        for (int i = tree.dimensions().size() + tree.initializers().size() - 1; i >= 0; i -= 1) {
+          executionState.pop();
+        }
+        executionState.push(value);
+      }
+    }
+
+    @Override
+    public final void visitNewClass(NewClassTree tree) {
+      scan(tree.arguments());
+      SymbolicValue newValue = createSymbolicInstanceValue();
+      for (ExecutionState executionState : currentStates) {
+        SymbolicValue[] arguments = new SymbolicValue[tree.arguments().size()];
+        for (int i = arguments.length - 1; i >= 0; i -= 1) {
+          arguments[i] = executionState.pop();
+        }
+        executionState.push(newValue);
+        check.onExecutableElementInvocation(executionState, tree, Arrays.asList(arguments));
+      }
+    }
+
+    @Override
+    public final void visitUnaryExpression(UnaryExpressionTree tree) {
+      super.visitUnaryExpression(tree);
+      if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
+        evaluateLogicalNot();
+      } else if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
+        evaluateUnaryWithSizeEffect(tree);
+      }
+    }
+
+    private void evaluateLogicalNot() {
+      for (ExecutionState executionState : currentStates) {
+        SymbolicBooleanConstraint constraint = executionState.getBooleanConstraint(executionState.peek());
+        if (constraint.equals(SymbolicBooleanConstraint.FALSE)) {
+          executionState.pop();
+          executionState.push(SymbolicValue.BOOLEAN_TRUE);
+        } else if (constraint.equals(SymbolicBooleanConstraint.TRUE)) {
+          executionState.pop();
+          executionState.push(SymbolicValue.BOOLEAN_FALSE);
+        }
+      }
+    }
+
+    private void evaluateUnaryWithSizeEffect(UnaryExpressionTree tree) {
+      for (ExecutionState executionState : currentStates) {
+        Symbol.VariableSymbol symbol = extractVariableSymbol(tree.expression());
+        if (symbol != null) {
+          executionState.assignValue(symbol, createSymbolicInstanceValue());
+        }
+      }
+    }
+
+    @Override
+    public void visitBreakStatement(BreakStatementTree tree) {
+      currentStates.breakStates.addAll(currentStates.states);
+      currentStates.states.clear();
+    }
+
+    @Override
+    public void visitCaseGroup(CaseGroupTree tree) {
+      scan(tree.body());
+    }
+
+    @Override
+    public void visitContinueStatement(ContinueStatementTree tree) {
+      currentStates = new PackedStatementStates(currentStates);
+    }
+
+    @Override
+    public void visitDoWhileStatement(DoWhileStatementTree tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
+      invalidateAssignedVariables(assignedSymbols);
+      scan(tree.statement());
+      scan(tree.condition());
+      for (ExecutionState executionState : currentStates) {
+        if (!executionState.popLast().equals(SymbolicValue.BOOLEAN_TRUE)) {
+          nextStates.addState(executionState);
+        }
+      }
+      nextStates.addStates(currentStates.breakStates);
+      currentStates = nextStates;
+      invalidateAssignedVariables(assignedSymbols);
+    }
+
+    @Override
+    public void visitExpressionStatement(ExpressionStatementTree tree) {
+      scan(tree.expression());
+      for (ExecutionState executionState : currentStates) {
+        executionState.popLast();
+      }
+    }
+
+    @Override
+    public void visitForStatement(ForStatementTree tree) {
+      scan(tree.initializer());
+      if (tree.condition() != null) {
+        evaluateForStatement(tree);
+      } else {
+        evaluateForStatementWithoutCondition(tree);
+      }
+    }
+
+    private void evaluateForStatement(ForStatementTree tree) {
+      // FIXME: variables in initializer should not be invalidated.
+      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
+      invalidateAssignedVariables(assignedSymbols);
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState conditionState : evaluateCondition(executionState, tree.condition())) {
+          SymbolicValue condition = conditionState.popLast();
+          if (condition.equals(SymbolicValue.BOOLEAN_TRUE)) {
+            currentStates = evaluateWithState(conditionState, tree.statement());
+            scan(tree.update());
+            nextStates.addStates(currentStates.breakStates);
+          } else {
+            nextStates.addState(conditionState);
+          }
+        }
+      }
+      currentStates = nextStates;
+      invalidateAssignedVariables(assignedSymbols);
+    }
+
+    private void evaluateForStatementWithoutCondition(ForStatementTree tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      scan(tree.statement());
+      scan(tree.update());
+      nextStates.addStates(currentStates.breakStates);
+      currentStates = nextStates;
+    }
+
+    @Override
+    public void visitForEachStatement(ForEachStatement tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState expressionState : evaluateWithState(executionState, tree.expression())) {
+          expressionState.popLast();
+          nextStates.addState(new ExecutionState(expressionState));
+          nextStates.addAll(evaluateWithState(new ExecutionState(expressionState), tree.statement()));
+        }
+      }
+      currentStates = nextStates;
+      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
+    }
+
+    @Override
+    public void visitIfStatement(IfStatementTree tree) {
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState conditionState : evaluateCondition(executionState, tree.condition())) {
+          SymbolicValue condition = conditionState.popLast();
+          check.onCondition(conditionState, tree, condition);
+          if (conditionState.getBooleanConstraint(condition).equals(SymbolicBooleanConstraint.TRUE)) {
+            nextStates.addAll(evaluateWithState(conditionState, tree.thenStatement()));
+          } else if (tree.elseStatement() != null) {
+            nextStates.addAll(evaluateWithState(conditionState, tree.elseStatement()));
+          } else {
+            nextStates.addState(conditionState);
+          }
+        }
+      }
+      currentStates = nextStates;
+    }
+
+    @Override
+    public void visitLabeledStatement(LabeledStatementTree tree) {
+      scan(tree.statement());
+    }
+
+    @Override
+    public void visitReturnStatement(ReturnStatementTree tree) {
+      scan(tree.expression());
+      currentStates = new PackedStatementStates(currentStates);
+    }
+
+    @Override
+    public void visitSwitchStatement(SwitchStatementTree tree) {
+      boolean containsDefault = switchContainsDefault(tree);
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState expressionState : evaluateWithState(executionState, tree.expression())) {
+          expressionState.popLast();
+          for (int i = 0; i < tree.cases().size(); i += 1) {
+            processCase(tree, i, new ExecutionState(expressionState));
+            nextStates.addStates(currentStates.states);
+            nextStates.addStates(currentStates.breakStates);
+          }
+          if (!containsDefault) {
+            nextStates.addState(new ExecutionState(expressionState));
+          }
+        }
+      }
+      currentStates = nextStates;
+    }
+
+    private boolean switchContainsDefault(SwitchStatementTree tree) {
+      for (CaseGroupTree caseGroupTree : tree.cases()) {
+        for (CaseLabelTree label : caseGroupTree.labels()) {
+          if ("default".equals(label.caseOrDefaultKeyword().text())) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    private void processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
+      currentStates = new PackedStatementStates();
+      currentStates.addState(state);
+      for (int i = caseIndex; i < tree.cases().size(); i += 1) {
+        scan(tree.cases().get(i));
+      }
+    }
+
+    @Override
+    public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
+      scan(tree.expression());
+      for (ExecutionState executionState : currentStates) {
+        executionState.popLast();
+      }
+      scan(tree.block());
+    }
+
+    @Override
+    public void visitThrowStatement(ThrowStatementTree tree) {
+      scan(tree.expression());
+      for (ExecutionState executionState : currentStates) {
+        executionState.popLast();
+      }
+      currentStates.states.clear();
+    }
+
+    @Override
+    public void visitTryStatement(TryStatementTree tree) {
+      scan(tree.block());
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
+      for (ExecutionState state : currentStates) {
+        for (CatchTree catchTree : tree.catches()) {
+          nextStates.addAll(evaluateWithState(new ExecutionState(state), catchTree.block()));
+        }
+        nextStates.addState(state);
+      }
+      currentStates = nextStates;
+      scan(tree.finallyBlock());
+    }
+
+    @Override
+    public void visitVariable(VariableTree tree) {
+      if (tree.initializer() != null) {
+        scan(tree.initializer());
+        for (ExecutionState executionState : currentStates) {
+          executionState.assignValue(tree.symbol(), executionState.popLast());
+        }
+      }
+    }
+
+    @Override
+    public void visitWhileStatement(WhileStatementTree tree) {
+      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
+      invalidateAssignedVariables(assignedSymbols);
+      PackedStatementStates nextStates = new PackedStatementStates(currentStates);
+      for (ExecutionState executionState : currentStates) {
+        for (ExecutionState conditionState : evaluateCondition(executionState, tree.condition())) {
+          SymbolicValue condition = conditionState.popLast();
+          if (condition.equals(SymbolicValue.BOOLEAN_TRUE)) {
+            nextStates.addStates(evaluateWithState(conditionState, tree.statement()).breakStates);
+          } else {
+            nextStates.addState(conditionState);
+          }
+        }
+      }
+      currentStates = nextStates;
+      invalidateAssignedVariables(assignedSymbols);
+    }
+
+    void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
+      for (Symbol.VariableSymbol symbol : assignedVariables) {
+        SymbolicValue value = createSymbolicInstanceValue();
+        for (ExecutionState executionState : currentStates) {
+          executionState.assignValue(symbol, value);
+        }
+      }
+    }
+
+    private final boolean isSuperOrThisMemberSelect(ExpressionTree tree) {
+      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
+        if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {
+          IdentifierTree identifierExpression = (IdentifierTree) memberSelectTree.expression();
+          if ("super".equals(identifierExpression.name()) || "this".equals(identifierExpression.name())) {
+            return true;
+          }
+        }
+      }
+      return false;
     }
 
     @CheckForNull
@@ -173,601 +743,40 @@ public class SymbolicEvaluator {
       }
       return null;
     }
-
-    final boolean isSuperOrThisMemberSelect(ExpressionTree tree) {
-      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
-        if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {
-          IdentifierTree identifierExpression = (IdentifierTree) memberSelectTree.expression();
-          if ("super".equals(identifierExpression.name()) || "this".equals(identifierExpression.name())) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-  }
-
-  public class ConditionVisitor extends BaseExpressionVisitor {
-    ExecutionState currentState;
-    PackedStates currentResult;
-
-    public PackedStates evaluate(ExecutionState state, ExpressionTree tree) {
-      currentState = state;
-      currentResult = new PackedStates();
-      scan(tree);
-      return currentResult;
-    }
-
-    @Override
-    public final void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-      evaluateExpression(currentState, tree.expression());
-      evaluateExpression(currentState, tree.index());
-      currentResult.unknownStates.add(currentState);
-    }
-
-    @Override
-    public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      evaluateExpression(currentState, tree.variable());
-      evaluateExpression(currentState, tree.expression());
-      Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
-      if (symbol != null) {
-        currentState.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
-      }
-      currentResult.unknownStates.add(currentState);
-    }
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
-      if (symbol != null) {
-        SymbolicValue.SymbolicVariableValue value = new SymbolicValue.SymbolicVariableValue(symbol);
-        switch (currentState.getBooleanConstraint(value)) {
-          case FALSE:
-            currentResult.falseStates.add(currentState);
-            return;
-          case TRUE:
-            currentResult.trueStates.add(currentState);
-            return;
-          default:
-            currentResult.falseStates.add(new ExecutionState(currentState).setBooleanConstraint(value, SymbolicBooleanConstraint.FALSE));
-            currentResult.trueStates.add(new ExecutionState(currentState).setBooleanConstraint(value, SymbolicBooleanConstraint.TRUE));
-            return;
-        }
-      }
-      currentResult.unknownStates.add(currentState);
-    }
-
-    @Override
-    public final void visitInstanceOf(InstanceOfTree tree) {
-      currentResult.unknownStates.add(currentState);
-    }
-
-    @Override
-    public final void visitLiteral(LiteralTree tree) {
-      if ("false".equals(tree.value())) {
-        currentResult.falseStates.add(currentState);
-      } else if ("true".equals(tree.value())) {
-        currentResult.trueStates.add(currentState);
-      } else {
-        currentResult.unknownStates.add(currentState);
-      }
-    }
-
-    @Override
-    public final void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      if (isSuperOrThisMemberSelect(tree)) {
-        scan(tree.identifier());
-      } else {
-        currentResult.unknownStates.add(currentState);
-      }
-    }
-
-    @Override
-    public final void visitMethodInvocation(MethodInvocationTree tree) {
-      visitMethodInvocation(currentState, tree);
-      currentState.invalidateFields();
-      currentResult.unknownStates.add(currentState);
-    }
-
-    @Override
-    public final void visitUnaryExpression(UnaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
-        PackedStates unaryResult = evaluateCondition(currentState, tree.expression());
-        currentResult.falseStates.addAll(unaryResult.trueStates);
-        currentResult.trueStates.addAll(unaryResult.falseStates);
-        currentResult.unknownStates.addAll(unaryResult.unknownStates);
-      } else {
-        currentResult.unknownStates.add(currentState);
-      }
-    }
-
-    @Override
-    void evaluateConditionalAnd(BinaryExpressionTree tree) {
-      PackedStates leftResult = evaluateCondition(currentState, tree.leftOperand());
-      currentResult.falseStates.addAll(leftResult.falseStates);
-      for (ExecutionState state : leftResult.trueStates) {
-        PackedStates rightResult = evaluateCondition(state, tree.rightOperand());
-        currentResult.add(rightResult);
-      }
-    }
-
-    @Override
-    void evaluateConditionalOr(BinaryExpressionTree tree) {
-      PackedStates leftResult = evaluateCondition(currentState, tree.leftOperand());
-      currentResult.trueStates.addAll(leftResult.trueStates);
-      for (ExecutionState state : leftResult.falseStates) {
-        PackedStates rightResult = evaluateCondition(state, tree.rightOperand());
-        currentResult.add(rightResult);
-      }
-    }
-
-    @Override
-    void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
-      SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
-      if (leftValue != null && rightValue != null) {
-        switch (currentState.evaluateRelation(leftValue, operator, rightValue)) {
-          case FALSE:
-            currentResult.falseStates.add(currentState);
-            break;
-          case TRUE:
-            currentResult.trueStates.add(currentState);
-            break;
-          default:
-            currentResult.falseStates.add(new ExecutionState(currentState).setRelation(leftValue, operator.negate(), rightValue));
-            currentResult.trueStates.add(new ExecutionState(currentState).setRelation(leftValue, operator, rightValue));
-        }
-      } else {
-        currentResult.unknownStates.add(currentState);
-      }
-    }
-  }
-
-  public class ExpressionVisitor extends BaseExpressionVisitor {
-    ExecutionState currentState;
-    SymbolicBooleanConstraint currentResult;
-
-    public SymbolicBooleanConstraint evaluate(ExecutionState state, ExpressionTree tree) {
-      currentState = state;
-      currentResult = SymbolicBooleanConstraint.UNKNOWN;
-      scan(tree);
-      return currentResult;
-    }
-
-    @Override
-    public final void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-      super.visitArrayAccessExpression(tree);
-      currentResult = SymbolicBooleanConstraint.UNKNOWN;
-    }
-
-    @Override
-    public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      super.visitAssignmentExpression(tree);
-      Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
-      if (symbol != null) {
-        SymbolicValue.SymbolicVariableValue variable = new SymbolicValue.SymbolicVariableValue(symbol);
-        currentState.invalidateRelationsOnValue(variable);
-        currentState.setBooleanConstraint(variable, currentResult);
-      }
-    }
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      Symbol.VariableSymbol symbol = extractVariableSymbol(tree);
-      currentResult = symbol != null ? currentState.getBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol)) : SymbolicBooleanConstraint.UNKNOWN;
-    }
-
-    @Override
-    public final void visitInstanceOf(InstanceOfTree tree) {
-      currentResult = SymbolicBooleanConstraint.UNKNOWN;
-    }
-
-    @Override
-    public final void visitLiteral(LiteralTree tree) {
-      if ("false".equals(tree.value())) {
-        currentResult = SymbolicBooleanConstraint.FALSE;
-      } else if ("true".equals(tree.value())) {
-        currentResult = SymbolicBooleanConstraint.TRUE;
-      } else {
-        currentResult = SymbolicBooleanConstraint.UNKNOWN;
-      }
-    }
-
-    @Override
-    public final void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      if (isSuperOrThisMemberSelect(tree)) {
-        scan(tree.identifier());
-      } else {
-        super.visitMemberSelectExpression(tree);
-        currentResult = SymbolicBooleanConstraint.UNKNOWN;
-      }
-    }
-
-    @Override
-    public final void visitMethodInvocation(MethodInvocationTree tree) {
-      visitMethodInvocation(currentState, tree);
-      currentState.invalidateFields();
-      currentResult = SymbolicBooleanConstraint.UNKNOWN;
-    }
-
-    @Override
-    public final void visitUnaryExpression(UnaryExpressionTree tree) {
-      super.visitUnaryExpression(tree);
-      if (tree.is(Tree.Kind.LOGICAL_COMPLEMENT)) {
-        currentResult = currentResult.negate();
-      } else {
-        if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)) {
-          Symbol.VariableSymbol symbol = extractVariableSymbol(tree.expression());
-          if (symbol != null) {
-            currentState.invalidateRelationsOnValue(new SymbolicValue.SymbolicVariableValue(symbol));
-          }
-        }
-        currentResult = SymbolicBooleanConstraint.UNKNOWN;
-      }
-    }
-
-    @Override
-    void evaluateConditionalAnd(BinaryExpressionTree tree) {
-      PackedStates leftStates = evaluateCondition(currentState, tree.leftOperand());
-      currentResult = leftStates.getBooleanConstraint();
-      if (currentResult != SymbolicBooleanConstraint.FALSE) {
-        currentResult = null;
-        for (ExecutionState state : leftStates.trueStates) {
-          currentResult = evaluateExpression(state, tree.rightOperand()).union(currentResult);
-        }
-        if (currentResult != SymbolicBooleanConstraint.FALSE) {
-          currentResult = leftStates.getBooleanConstraint().union(currentResult);
-        }
-      }
-      currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
-    }
-
-    @Override
-    void evaluateConditionalOr(BinaryExpressionTree tree) {
-      PackedStates leftStates = evaluateCondition(currentState, tree.leftOperand());
-      currentResult = leftStates.getBooleanConstraint();
-      if (currentResult != SymbolicBooleanConstraint.TRUE) {
-        currentResult = null;
-        for (ExecutionState state : leftStates.falseStates) {
-          currentResult = evaluateExpression(state, tree.rightOperand()).union(currentResult);
-        }
-        if (currentResult != SymbolicBooleanConstraint.TRUE) {
-          currentResult = leftStates.getBooleanConstraint().union(currentResult);
-        }
-      }
-      currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
-    }
-
-    @Override
-    void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
-      SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
-      SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
-      if (leftValue != null && rightValue != null) {
-        currentResult = currentState.evaluateRelation(leftValue, operator, rightValue);
-      } else {
-        currentResult = SymbolicBooleanConstraint.UNKNOWN;
-      }
-    }
-  }
-
-  public class StatementVisitor extends BaseTreeVisitor {
-    private PackedStatementStates currentStates;
-
-    private PackedStatementStates evaluate(PackedStatementStates states, Tree tree) {
-      currentStates = states;
-      scan(tree);
-      return currentStates;
-    }
-
-    @Override
-    public void visitBlock(BlockTree tree) {
-      for (StatementTree statement : tree.body()) {
-        currentStates = evaluateStatement(currentStates, statement);
-      }
-    }
-
-    @Override
-    public void visitBreakStatement(BreakStatementTree tree) {
-      currentStates = PackedStatementStates.instantiateWithBreakStates(currentStates.states);
-    }
-
-    @Override
-    public void visitContinueStatement(ContinueStatementTree tree) {
-      currentStates = PackedStatementStates.instantiate();
-    }
-
-    @Override
-    public void visitDoWhileStatement(DoWhileStatementTree tree) {
-      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
-      invalidateAssignedVariables(assignedSymbols);
-      currentStates = evaluateStatement(currentStates, tree.statement());
-      PackedStatementStates nextStates = PackedStatementStates.instantiate();
-      for (ExecutionState state : currentStates) {
-        if (evaluateExpression(state, tree.condition()) != SymbolicBooleanConstraint.TRUE) {
-          nextStates.addState(state);
-        }
-      }
-      currentStates = nextStates;
-      invalidateAssignedVariables(assignedSymbols);
-    }
-
-    @Override
-    public void visitExpressionStatement(ExpressionStatementTree tree) {
-      for (ExecutionState state : currentStates) {
-        evaluateExpression(state, tree.expression());
-      }
-    }
-
-    @Override
-    public void visitForStatement(ForStatementTree tree) {
-      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
-      invalidateAssignedVariables(assignedSymbols);
-      if (tree.condition() != null) {
-        PackedStatementStates nextStates = PackedStatementStates.instantiate();
-        for (ExecutionState state : currentStates) {
-          PackedStates conditionStates = evaluateCondition(state, tree.condition());
-          PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
-          if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-            state.mergeRelations(Iterables.concat(conditionStates.falseStates, loopStates));
-            nextStates.addState(state);
-          }
-        }
-        currentStates = nextStates;
-        invalidateAssignedVariables(assignedSymbols);
-      } else {
-        evaluateStatement(currentStates, tree.statement());
-        currentStates = PackedStatementStates.instantiate();
-      }
-    }
-
-    @Override
-    public void visitForEachStatement(ForEachStatement tree) {
-      for (ExecutionState state : currentStates) {
-        evaluateExpression(state, tree.expression());
-      }
-      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
-      currentStates = evaluateStatement(currentStates, tree.statement());
-      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
-    }
-
-    @Override
-    public void visitIfStatement(IfStatementTree tree) {
-      PackedStatementStates nextStates = PackedStatementStates.instantiate();
-      for (ExecutionState state : currentStates) {
-        PackedStates conditionStates = evaluateCondition(state, tree.condition());
-        onCondition(tree, conditionStates);
-        PackedStatementStates trueStates = evaluateStatement(conditionStates.trueStates, tree.thenStatement());
-        PackedStatementStates falseStates;
-        if (tree.elseStatement() == null) {
-          falseStates = PackedStatementStates.instantiateWithStates(conditionStates.falseStates);
-        } else {
-          falseStates = evaluateStatement(conditionStates.falseStates, tree.elseStatement());
-        }
-        if (!falseStates.isEmpty() || !trueStates.isEmpty()) {
-          state.mergeRelations(Iterables.concat(falseStates, trueStates));
-          nextStates.addState(state);
-        }
-        nextStates.breakStates.addAll(falseStates.breakStates);
-        nextStates.breakStates.addAll(trueStates.breakStates);
-      }
-      currentStates = nextStates;
-    }
-
-    private void onCondition(Tree tree, PackedStates conditionStates) {
-      for (ExecutionState executionState : conditionStates.falseStates) {
-        check.onCondition(executionState, tree, SymbolicBooleanConstraint.FALSE);
-      }
-      for (ExecutionState executionState : conditionStates.trueStates) {
-        check.onCondition(executionState, tree, SymbolicBooleanConstraint.TRUE);
-      }
-      for (ExecutionState executionState : conditionStates.unknownStates) {
-        check.onCondition(executionState, tree, SymbolicBooleanConstraint.UNKNOWN);
-      }
-    }
-
-    @Override
-    public void visitLabeledStatement(LabeledStatementTree tree) {
-      scan(tree.statement());
-    }
-
-    @Override
-    public void visitReturnStatement(ReturnStatementTree tree) {
-      if (tree.expression() != null) {
-        for (ExecutionState state : currentStates) {
-          evaluateExpression(state, tree.expression());
-        }
-      }
-      currentStates = PackedStatementStates.instantiate();
-    }
-
-    @Override
-    public void visitSwitchStatement(SwitchStatementTree tree) {
-      PackedStatementStates nextStates = PackedStatementStates.instantiate();
-      for (ExecutionState state : currentStates) {
-        evaluateExpression(state, tree.expression());
-        List<ExecutionState> endStates = new ArrayList<>();
-        for (int i = 0; i < tree.cases().size(); i += 1) {
-          PackedStatementStates caseStates = processCase(tree, i, new ExecutionState(state));
-          endStates.addAll(caseStates.states);
-          endStates.addAll(caseStates.breakStates);
-        }
-        if (!switchContainsDefault(tree)) {
-          endStates.add(state);
-        }
-        if (!endStates.isEmpty()) {
-          state.mergeRelations(endStates);
-          nextStates.addState(state);
-        }
-      }
-      currentStates = nextStates;
-    }
-
-    private boolean switchContainsDefault(SwitchStatementTree tree) {
-      for (CaseGroupTree caseGroupTree : tree.cases()) {
-        for (CaseLabelTree label : caseGroupTree.labels()) {
-          if ("default".equals(label.caseOrDefaultKeyword().text())) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    private PackedStatementStates processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
-      PackedStatementStates caseStates = PackedStatementStates.instantiate();
-      caseStates.addState(state);
-      for (int i = caseIndex; i < tree.cases().size() && !caseStates.isEmpty(); i += 1) {
-        caseStates = evaluateStatement(caseStates, tree.cases().get(i));
-      }
-      return caseStates;
-    }
-
-    @Override
-    public void visitSynchronizedStatement(SynchronizedStatementTree tree) {
-      for (ExecutionState state : currentStates) {
-        evaluateExpression(state, tree.expression());
-      }
-      currentStates = evaluateStatement(currentStates, tree.block());
-    }
-
-    @Override
-    public void visitThrowStatement(ThrowStatementTree tree) {
-      for (ExecutionState state : currentStates) {
-        evaluateExpression(state, tree.expression());
-      }
-      currentStates = PackedStatementStates.instantiate();
-    }
-
-    @Override
-    public void visitTryStatement(TryStatementTree tree) {
-      currentStates = evaluateStatement(currentStates, tree.block());
-      invalidateAssignedVariables(extractor.findAssignedVariables(tree));
-      for (ExecutionState state : currentStates) {
-        List<ExecutionState> catchStates = new ArrayList<>();
-        for (CatchTree catchTree : tree.catches()) {
-          catchStates.addAll(evaluateStatement(new ExecutionState(state), catchTree.block()).states);
-        }
-        catchStates.add(state);
-        state.mergeRelations(catchStates);
-      }
-      currentStates = evaluateStatement(currentStates, tree.finallyBlock());
-    }
-
-    @Override
-    public void visitVariable(VariableTree tree) {
-      if (tree.initializer() != null) {
-        for (ExecutionState state : currentStates) {
-          state.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue((Symbol.VariableSymbol) tree.symbol()), evaluateExpression(state, tree.initializer()));
-        }
-      }
-    }
-
-    @Override
-    public void visitWhileStatement(WhileStatementTree tree) {
-      Set<Symbol.VariableSymbol> assignedSymbols = extractor.findAssignedVariables(tree);
-      invalidateAssignedVariables(assignedSymbols);
-      PackedStatementStates nextStates = PackedStatementStates.instantiate();
-      for (ExecutionState state : currentStates) {
-        PackedStates conditionStates = evaluateCondition(state, tree.condition());
-        PackedStatementStates loopStates = evaluateStatement(conditionStates.trueStates, tree.statement());
-        if (!conditionStates.falseStates.isEmpty() || !loopStates.isEmpty()) {
-          state.mergeRelations(Iterables.concat(conditionStates.falseStates, loopStates));
-          nextStates.addState(state);
-        }
-      }
-      currentStates = nextStates;
-      invalidateAssignedVariables(assignedSymbols);
-    }
-
-    void invalidateAssignedVariables(Set<Symbol.VariableSymbol> assignedVariables) {
-      for (Symbol.VariableSymbol symbol : assignedVariables) {
-        for (ExecutionState state : currentStates) {
-          state.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
-        }
-      }
-    }
-  }
-
-  public static class PackedStates {
-    final List<ExecutionState> falseStates = new ArrayList<>();
-    final List<ExecutionState> trueStates = new ArrayList<>();
-    final List<ExecutionState> unknownStates = new ArrayList<>();
-
-    public void add(PackedStates that) {
-      falseStates.addAll(that.falseStates);
-      trueStates.addAll(that.trueStates);
-      unknownStates.addAll(that.unknownStates);
-    }
-
-    PackedStates splitUnknowns() {
-      for (ExecutionState state : unknownStates) {
-        falseStates.add(new ExecutionState(state));
-        trueStates.add(new ExecutionState(state));
-      }
-      unknownStates.clear();
-      return this;
-    }
-
-    public boolean isAlwaysFalse() {
-      return !falseStates.isEmpty() && trueStates.isEmpty() && unknownStates.isEmpty();
-    }
-
-    public boolean isAlwaysTrue() {
-      return !trueStates.isEmpty() && falseStates.isEmpty() && unknownStates.isEmpty();
-    }
-
-    public boolean isUnknown() {
-      return !unknownStates.isEmpty() || (!trueStates.isEmpty() && !falseStates.isEmpty());
-    }
-
-    public SymbolicBooleanConstraint getBooleanConstraint() {
-      if (isAlwaysFalse()) {
-        return SymbolicBooleanConstraint.FALSE;
-      } else if (isAlwaysTrue()) {
-        return SymbolicBooleanConstraint.TRUE;
-      } else {
-        return SymbolicBooleanConstraint.UNKNOWN;
-      }
-    }
   }
 
   static class PackedStatementStates implements Iterable<ExecutionState> {
     final List<ExecutionState> breakStates = new ArrayList<>();
     final List<ExecutionState> states = new ArrayList<>();
 
-    static PackedStatementStates instantiate() {
-      return new PackedStatementStates();
+    PackedStatementStates() {
     }
 
-    static PackedStatementStates instantiateWithState(ExecutionState state) {
-      return instantiateWithStates(ImmutableList.of(state));
+    PackedStatementStates(PackedStatementStates previousResult) {
+      breakStates.addAll(previousResult.breakStates);
+      previousResult.breakStates.clear();
     }
 
-    static PackedStatementStates instantiateWithStates(List<ExecutionState> states) {
-      PackedStatementStates result = new PackedStatementStates();
-      result.states.addAll(states);
-      return result;
-    }
-
-    static PackedStatementStates instantiateWithBreakStates(List<ExecutionState> breakStates) {
-      PackedStatementStates result = new PackedStatementStates();
-      result.breakStates.addAll(breakStates);
-      return result;
+    public void addAll(PackedStatementStates packedStates) {
+      breakStates.addAll(packedStates.breakStates);
+      states.addAll(packedStates.states);
     }
 
     public void addState(ExecutionState state) {
       states.add(state);
     }
 
-    @Override
-    public Iterator<ExecutionState> iterator() {
-      return states.iterator();
+    public void addStates(List<ExecutionState> state) {
+      states.addAll(state);
     }
 
     public boolean isEmpty() {
       return states.isEmpty();
+    }
+
+    @Override
+    public Iterator<ExecutionState> iterator() {
+      return states.iterator();
     }
   }
 

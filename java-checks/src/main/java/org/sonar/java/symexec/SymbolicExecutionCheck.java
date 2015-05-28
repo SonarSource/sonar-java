@@ -30,9 +30,9 @@ public class SymbolicExecutionCheck {
    *
    * @param executionState execution state
    * @param tree parent tree (if, do...while, for, switch)
-   * @param value TODO:
+   * @param result result of the computation
    */
-  protected void onCondition(ExecutionState executionState, Tree tree, SymbolicBooleanConstraint constraint) {
+  protected void onCondition(ExecutionState executionState, Tree tree, SymbolicValue result) {
   }
 
   /**
@@ -40,9 +40,9 @@ public class SymbolicExecutionCheck {
    *
    * @param executionState execution state
    * @param tree method invocation, constructor tree or new class tree
-   * @param arguments TODO:
+   * @param arguments symbolic values of the arguments
    */
-  protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<SymbolicBooleanConstraint> arguments) {
+  protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<SymbolicValue> arguments) {
   }
 
 }

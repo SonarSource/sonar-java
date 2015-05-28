@@ -66,9 +66,9 @@ public static class Class extends SuperClass {
   }
 
   public void identifier_field() {
-    if (field == false && field == true) { // Compliant
+    if (field == false && field == true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (field == false || field == true) { // Compliant
+    if (field == false || field == true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -277,7 +277,7 @@ public static class Class extends SuperClass {
       if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
-    if (parameter1 == parameter2) { // False negative
+    if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
 
@@ -314,7 +314,7 @@ public static class Class extends SuperClass {
       if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
-    if (parameter1 == parameter2) { // False negative
+    if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
 
@@ -613,9 +613,8 @@ public static class Class extends SuperClass {
           var6 = false;
           break;
         }
-        var5 = false;
     }
-    if (var5) { // Noncompliant
+    if (var5) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (var6) { // Compliant
     }
@@ -793,18 +792,9 @@ public static class Class extends SuperClass {
   }
 
   public void test_condition_assignment(boolean local1, boolean local2) {
-    if (local1 = false) {
-      if (!local1) { // False negative, assignement is not taken into consideration
-      }
-      // False positive
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
-      }
-    } else {
-      if (local1) { // False negative, assignment is not taken into consideration
-      }
-      // False positive
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
-      }
+    if (local1 = false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      probe(); // Compliant, unreachable
+    } else if (local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
 
