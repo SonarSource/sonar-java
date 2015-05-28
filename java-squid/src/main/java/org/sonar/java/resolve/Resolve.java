@@ -107,7 +107,7 @@ public class Resolve {
           resolution.type = resolveTypeSubstitution(symbol.type, c.type);
           return resolution;
         } else {
-          return Resolution.resolution(new AccessErrorJavaSymbol(symbol, symbols.unknownType));
+          return Resolution.resolution(new AccessErrorJavaSymbol(symbol, Symbols.unknownType));
         }
       }
     }
@@ -189,7 +189,7 @@ public class Resolve {
       if (symbol.kind == JavaSymbol.TYP) {
         return isAccessible(env, site, symbol)
             ? symbol
-            : new AccessErrorJavaSymbol(symbol, symbols.unknownType);
+            : new AccessErrorJavaSymbol(symbol, Symbols.unknownType);
       }
     }
     if (c.getSuperclass() != null) {
@@ -443,7 +443,7 @@ public class Resolve {
     }
     // TODO ambiguity, errors, ...
     if (!isAccessible(env, site, symbol)) {
-      return new AccessErrorJavaSymbol(symbol, symbols.unknownType);
+      return new AccessErrorJavaSymbol(symbol, Symbols.unknownType);
     }
     JavaSymbol mostSpecific = selectMostSpecific(symbol, bestSoFar, argTypes);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
@@ -666,7 +666,7 @@ public class Resolve {
 
   Resolution unresolved() {
     Resolution resolution = new Resolution(symbolNotFound);
-    resolution.type = symbols.unknownType;
+    resolution.type = Symbols.unknownType;
     return resolution;
   }
 

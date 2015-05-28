@@ -332,7 +332,7 @@ public class JavaType implements Type {
 
     @Override
     public String toString() {
-      return resultType == null ? "constructor" : "returns " + resultType.toString();
+      return resultType == null ? "constructor" : ("returns " + resultType.toString());
     }
   }
 

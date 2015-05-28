@@ -355,7 +355,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitWildcard(WildcardTree tree) {
     if (tree.bound() == null) {
-      registerType(tree, symbols.unknownType);
+      registerType(tree, Symbols.unknownType);
     } else {
       resolveAs(tree.bound(), JavaSymbol.TYP);
       registerType(tree, getType(tree.bound()));
@@ -367,7 +367,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     resolveAs(tree.condition(), JavaSymbol.VAR);
     resolveAs(tree.trueExpression(), JavaSymbol.VAR);
     resolveAs(tree.falseExpression(), JavaSymbol.VAR);
-    registerType(tree, symbols.unknownType);
+    registerType(tree, Symbols.unknownType);
   }
 
   @Override
@@ -379,7 +379,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     //TODO resolve variables
     super.visitLambdaExpression(tree);
-    registerType(tree, symbols.unknownType);
+    registerType(tree, Symbols.unknownType);
   }
 
   @Override
@@ -411,7 +411,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (type != null && type.tag == JavaType.ARRAY) {
       registerType(tree, ((JavaType.ArrayJavaType) type).elementType);
     } else {
-      registerType(tree, symbols.unknownType);
+      registerType(tree, Symbols.unknownType);
     }
   }
 
@@ -423,13 +423,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaType right = getType(tree.rightOperand());
     // TODO avoid nulls
     if (left == null || right == null) {
-      registerType(tree, symbols.unknownType);
+      registerType(tree, Symbols.unknownType);
       return;
     }
     JavaSymbol symbol = resolve.findMethod(semanticModel.getEnv(tree), symbols.predefClass.type, tree.operatorToken().text(), ImmutableList.of(left, right)).symbol();
     if (symbol.kind != JavaSymbol.MTH) {
       // not found
-      registerType(tree, symbols.unknownType);
+      registerType(tree, Symbols.unknownType);
       return;
     }
     registerType(tree, ((JavaType.MethodJavaType) symbol.type).resultType);
@@ -556,7 +556,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitAnnotation(AnnotationTree tree) {
     if (((AbstractTypedTree) tree.annotationType()).isTypeSet()) {
-      //FIXME: annotation type is set, so we skip this annotation as it was already visited. This handle the case where type and its annotation is shared between two variables : @Deprecated int a, b;
+      //FIXME: annotation type is set, so we skip this annotation as it was already visited.
+      // This handle the case where type and its annotation is shared between two variables.
       return;
     }
     resolveAs(tree.annotationType(), JavaSymbol.TYP);
