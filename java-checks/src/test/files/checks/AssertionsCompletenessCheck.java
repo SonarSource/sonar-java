@@ -29,6 +29,7 @@ class AssertionsCompleteness {
   public void compliant() {
     org.fest.assertions.Assertions.assertThat(true).isTrue(); // Compliant
     assertThat(AssertionsCompleteness.toString()).hasSize(0); // Compliant
+    assertThat(AssertionsCompleteness.toString()).as("aa").hasSize(0); // Compliant
 
     // junit
     assertThat(3, is(3));
