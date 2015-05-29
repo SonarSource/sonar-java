@@ -70,7 +70,7 @@ public class JaCoCoReportMerger {
     for (File report : reports) {
       if (report.isFile()) {
         try {
-          isCurrentVersionFormat = AbstractAnalyzer.readJacocoReport(report, dataStore, infoStore);
+          isCurrentVersionFormat = JacocoBinaryReader.readJacocoReport(report, dataStore, infoStore);
         } catch (IOException e) {
           throw new SonarException(String.format("Unable to read %s", report.getAbsolutePath()), e);
         }

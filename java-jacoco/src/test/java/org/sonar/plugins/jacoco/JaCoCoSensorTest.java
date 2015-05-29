@@ -41,6 +41,7 @@ import org.sonar.test.TestUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.fest.assertions.Assertions.assertThat;
@@ -123,7 +124,7 @@ public class JaCoCoSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 7.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 3.0)));
     verify(context).saveMeasure(eq(resource),
-        argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "6=1;7=1;8=1;11=1;15=0;16=0;18=0")));
+      argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "6=1;7=1;8=1;11=1;15=0;16=0;18=0")));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.CONDITIONS_TO_COVER, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.UNCOVERED_CONDITIONS, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.CONDITIONS_BY_LINE, "15=2")));
@@ -135,7 +136,7 @@ public class JaCoCoSensorTest {
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/");
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
     Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/org/example/App.class.toCopy"),
-        new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
+      new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
 
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
@@ -159,33 +160,26 @@ public class JaCoCoSensorTest {
 
   @Test
   public void test_read_execution_data_for_lines_covered_by_tests_v0_7_5() throws IOException {
-    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCov0_7_5_coverage_per_test/");
-    jacocoExecutionData = new File(outputDir, "jacoco.exec");
-
-    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
-    when(context.getResource(any(Resource.class))).thenReturn(resource);
-    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
-    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(jacocoExecutionData);
-
-    MutableTestable testAbleFile = mock(MutableTestable.class);
-    when(perspectives.as(eq(MutableTestable.class), any(org.sonar.api.resources.File.class))).thenReturn(testAbleFile);
-
-    MutableTestCase testCase = mock(MutableTestCase.class);
-    when(testCase.name()).thenReturn("test");
-    MutableTestPlan testPlan = mock(MutableTestPlan.class);
-    when(testPlan.testCasesByName("testBoth")).thenReturn(newArrayList(testCase));
-    when(testPlan.testCasesByName("testFoo")).thenReturn(newArrayList(testCase));
-
-    when(perspectives.as(eq(MutableTestPlan.class), any(Resource.class))).thenReturn(testPlan);
-
-    sensor.analyse(project, context);
-
-    verify(testCase).setCoverageBlock(testAbleFile, newArrayList(3, 4, 5, 8, 12));
+    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_5_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
   }
 
   @Test
   public void test_read_execution_data_for_lines_covered_by_tests_v0_7_4() throws IOException {
-    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCov0_7_4_coverage_per_test/");
+    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_4_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
+  }
+
+  @Test
+  public void test_read_execution_data_for_lines_covered_by_tests_v0_7_4_incompatible() throws IOException {
+    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_4_incompatible_coverage_per_test/", newArrayList(3, 4, 5, 8, 12));
+  }
+
+  @Test
+  public void test_read_execution_data_for_lines_covered_by_tests_v0_7_5_incompatible() throws IOException {
+    testExecutionDataForLinesCoveredByTest("/org/sonar/plugins/jacoco/JaCoCov0_7_5_incompatible_coverage_per_test/", newArrayList(3, 4, 5, 8, 9, 10, 13, 16));
+  }
+
+  private void testExecutionDataForLinesCoveredByTest(String path, List<Integer> linesExpected) {
+    outputDir = TestUtils.getResource(path);
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
 
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
@@ -205,10 +199,8 @@ public class JaCoCoSensorTest {
     when(perspectives.as(eq(MutableTestPlan.class), any(Resource.class))).thenReturn(testPlan);
 
     sensor.analyse(project, context);
-
-    verify(testCase).setCoverageBlock(testAbleFile, newArrayList(3, 4, 5, 8, 12));
+    verify(testCase).setCoverageBlock(testAbleFile, linesExpected);
   }
-
 
   @Test
   public void do_not_save_measure_on_resource_which_doesnt_exist_in_the_context() {

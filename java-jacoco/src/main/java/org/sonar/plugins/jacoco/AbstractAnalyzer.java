@@ -19,20 +19,15 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang.StringUtils;
-import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
-import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.core.data.ExecutionDataWriter;
-import org.jacoco.core.data.IExecutionDataVisitor;
-import org.jacoco.core.data.ISessionInfoVisitor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoverageMeasuresBuilder;
@@ -50,12 +45,8 @@ import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -149,15 +140,16 @@ public abstract class AbstractAnalyzer {
       jacocoExecutionData = null;
     } else {
       try {
-        useCurrentFormat = readJacocoReport(jacocoExecutionData, executionDataVisitor);
+        useCurrentFormat = JacocoBinaryReader.readJacocoReport(jacocoExecutionData, executionDataVisitor, executionDataVisitor);
       } catch (IOException e) {
         throw new SonarException(e);
       }
     }
 
-    boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor);
+    boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor, !useCurrentFormat);
 
-    CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged(), !useCurrentFormat);
+    boolean previousReportFormat = !useCurrentFormat;
+    CoverageBuilder coverageBuilder = JacocoBinaryReader.analyzeFiles(executionDataVisitor.getMerged(), classFilesCache.values(), previousReportFormat);
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
@@ -176,57 +168,12 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  public static boolean isCurrentReportFormat(File jacocoExecutionData) throws IOException {
-    try (DataInputStream dis = new DataInputStream(new FileInputStream(jacocoExecutionData))) {
-      byte firstByte = dis.readByte();
-      Preconditions.checkState(firstByte == ExecutionDataWriter.BLOCK_HEADER);
-      Preconditions.checkState(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
-      char version = dis.readChar();
-      boolean isCurrentFormat = version == ExecutionDataWriter.FORMAT_VERSION;
-      if (!isCurrentFormat) {
-        JaCoCoExtensions.LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
-      }
-      return isCurrentFormat;
-    }
-  }
 
-  private boolean readJacocoReport(File jacocoExecutionData, ExecutionDataVisitor executionDataVisitor) throws IOException {
-    return readJacocoReport(jacocoExecutionData, executionDataVisitor, executionDataVisitor);
-  }
-
-  /**
-   * Read JaCoCo report determining the format to be used.
-   * @param jacocoExecutionData binary report file.
-   * @param executionDataVisitor visitor to store execution data.
-   * @param sessionInfoStore visitor to store info session.
-   * @return true if binary format is the latest one.
-   * @throws IOException in case of error or binary format not supported.
-   */
-  public static boolean readJacocoReport(File jacocoExecutionData, IExecutionDataVisitor executionDataVisitor, ISessionInfoVisitor sessionInfoStore) throws IOException {
-    JaCoCoExtensions.LOG.info("Analysing {}", jacocoExecutionData);
-    boolean currentReportFormat;
-    try (InputStream inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData))) {
-      currentReportFormat = isCurrentReportFormat(jacocoExecutionData);
-      if (currentReportFormat) {
-        ExecutionDataReader reader = new ExecutionDataReader(inputStream);
-        reader.setSessionInfoVisitor(sessionInfoStore);
-        reader.setExecutionDataVisitor(executionDataVisitor);
-        reader.read();
-      } else {
-        org.jacoco.previous.core.data.ExecutionDataReader reader = new org.jacoco.previous.core.data.ExecutionDataReader(inputStream);
-        reader.setSessionInfoVisitor(sessionInfoStore);
-        reader.setExecutionDataVisitor(executionDataVisitor);
-        reader.read();
-      }
-    }
-    return currentReportFormat;
-  }
-
-  private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor) {
+  private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor, boolean previousReportFormat) {
     boolean collectedCoveragePerTest = false;
     if (readCoveragePerTests) {
       for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
+        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context, previousReportFormat)) {
           collectedCoveragePerTest = true;
         }
       }
@@ -234,7 +181,7 @@ public abstract class AbstractAnalyzer {
     return collectedCoveragePerTest;
   }
 
-  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context) {
+  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context, boolean previousReportFormat) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
       return false;
@@ -248,7 +195,7 @@ public abstract class AbstractAnalyzer {
     }
 
     boolean result = false;
-    CoverageBuilder coverageBuilder = analyze2(executionDataStore);
+    CoverageBuilder coverageBuilder = JacocoBinaryReader.analyzeFiles(executionDataStore, classFilesOfStore(executionDataStore), previousReportFormat);
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
       if (resource != null) {
@@ -262,17 +209,16 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageBuilder analyze2(ExecutionDataStore executionDataStore) {
-    CoverageBuilder coverageBuilder = new CoverageBuilder();
-    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
+  private Collection<File> classFilesOfStore(ExecutionDataStore executionDataStore) {
+    Collection<File> result = Lists.newArrayList();
     for (ExecutionData data : executionDataStore.getContents()) {
       String vmClassName = data.getName();
       File classFile = classFilesCache.get(vmClassName);
       if (classFile != null) {
-        analyzeClassFile(analyzer, classFile);
+        result.add(classFile);
       }
     }
-    return coverageBuilder;
+    return result;
   }
 
   private List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
@@ -300,42 +246,7 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageBuilder analyze(ExecutionDataStore executionDataStore, boolean previousReport) {
-    CoverageBuilder coverageBuilder = new CoverageBuilder();
-    if (previousReport) {
-      org.jacoco.previous.core.analysis.Analyzer analyzer = new org.jacoco.previous.core.analysis.Analyzer(executionDataStore, coverageBuilder);
-      for (File classFile : classFilesCache.values()) {
-        analyzeClassFile(analyzer, classFile);
-      }
-    } else {
-      Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-      for (File classFile : classFilesCache.values()) {
-        analyzeClassFile(analyzer, classFile);
-      }
-    }
-    return coverageBuilder;
-  }
 
-  /**
-   * Caller must guarantee that {@code classFile} is actually class file.
-   */
-  private void analyzeClassFile(org.jacoco.previous.core.analysis.Analyzer analyzer, File classFile) {
-    try (InputStream inputStream = new FileInputStream(classFile)) {
-      analyzer.analyzeClass(inputStream, classFile.getPath());
-    } catch (IOException e) {
-      // (Godin): in fact JaCoCo includes name into exception
-      JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-    }
-  }
-
-  private void analyzeClassFile(Analyzer analyzer, File classFile) {
-    try (InputStream inputStream = new FileInputStream(classFile)) {
-      analyzer.analyzeClass(inputStream, classFile.getPath());
-    } catch (IOException e) {
-      // (Godin): in fact JaCoCo includes name into exception
-      JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-    }
-  }
 
   private CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
