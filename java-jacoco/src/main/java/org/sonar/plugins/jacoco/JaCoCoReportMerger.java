@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.jacoco;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.IExecutionDataVisitor;
@@ -66,17 +67,18 @@ public class JaCoCoReportMerger {
   }
 
   private static boolean loadSourceFiles(ISessionInfoVisitor infoStore, IExecutionDataVisitor dataStore, File... reports) {
-    boolean isCurrentVersionFormat = true;
+    Boolean isCurrentVersionFormat = null;
     for (File report : reports) {
       if (report.isFile()) {
         try {
-          isCurrentVersionFormat = JacocoBinaryReader.readJacocoReport(report, dataStore, infoStore);
+          JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(dataStore, infoStore);
+          isCurrentVersionFormat = jacocoReportReader.useCurrentBinaryFormat();
         } catch (IOException e) {
           throw new SonarException(String.format("Unable to read %s", report.getAbsolutePath()), e);
         }
       }
     }
-    return isCurrentVersionFormat;
+    return BooleanUtils.isNotFalse(isCurrentVersionFormat);
   }
 
 }

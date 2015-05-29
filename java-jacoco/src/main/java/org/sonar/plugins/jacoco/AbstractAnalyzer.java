@@ -63,6 +63,7 @@ public abstract class AbstractAnalyzer {
 
   private Map<String, File> classFilesCache;
   private JavaClasspath javaClasspath;
+  private JacocoReportReader jacocoReportReader;
 
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
     JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
@@ -133,23 +134,20 @@ public abstract class AbstractAnalyzer {
   }
 
   private void readExecutionData(File jacocoExecutionData, SensorContext context) {
-    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
-    boolean useCurrentFormat = false;
     if (jacocoExecutionData == null || !jacocoExecutionData.isFile()) {
       JaCoCoExtensions.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
       jacocoExecutionData = null;
-    } else {
-      try {
-        useCurrentFormat = JacocoBinaryReader.readJacocoReport(jacocoExecutionData, executionDataVisitor, executionDataVisitor);
-      } catch (IOException e) {
-        throw new SonarException(e);
-      }
+    }
+    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
+    try {
+      jacocoReportReader = new JacocoReportReader(jacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
+    } catch (IOException e) {
+      throw new SonarException("An error occured while reading JaCoCo report", e);
     }
 
-    boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor, !useCurrentFormat);
+    boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor);
 
-    boolean previousReportFormat = !useCurrentFormat;
-    CoverageBuilder coverageBuilder = JacocoBinaryReader.analyzeFiles(executionDataVisitor.getMerged(), classFilesCache.values(), previousReportFormat);
+    CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataVisitor.getMerged(), classFilesCache.values());
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
@@ -168,12 +166,11 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-
-  private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor, boolean previousReportFormat) {
+  private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor) {
     boolean collectedCoveragePerTest = false;
     if (readCoveragePerTests) {
       for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
-        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context, previousReportFormat)) {
+        if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
           collectedCoveragePerTest = true;
         }
       }
@@ -181,7 +178,7 @@ public abstract class AbstractAnalyzer {
     return collectedCoveragePerTest;
   }
 
-  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context, boolean previousReportFormat) {
+  private boolean analyzeLinesCoveredByTests(String sessionId, ExecutionDataStore executionDataStore, SensorContext context) {
     int i = sessionId.indexOf(' ');
     if (i < 0) {
       return false;
@@ -195,7 +192,7 @@ public abstract class AbstractAnalyzer {
     }
 
     boolean result = false;
-    CoverageBuilder coverageBuilder = JacocoBinaryReader.analyzeFiles(executionDataStore, classFilesOfStore(executionDataStore), previousReportFormat);
+    CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataStore, classFilesOfStore(executionDataStore));
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
       if (resource != null) {
@@ -245,8 +242,6 @@ public abstract class AbstractAnalyzer {
     }
     return result;
   }
-
-
 
   private CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
