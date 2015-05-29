@@ -331,6 +331,7 @@ public final class CheckList {
       .add(MutableMembersUsageCheck.class)
       .add(StaticMethodCheck.class)
       .add(ForLoopUsedAsWhileLoopCheck.class)
+      .add(MultilineBlocksCurlyBracesCheck.class)
       .build();
   }
 
