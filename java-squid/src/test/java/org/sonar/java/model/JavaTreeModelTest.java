@@ -288,14 +288,25 @@ public class JavaTreeModelTest {
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
     assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
     assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+    assertThat(wildcard.queryToken()).isNotNull();
+    assertThat(wildcard.queryToken().text()).isEqualTo("?");
+    assertThat(wildcard.extendsOrSuperToken()).isNotNull();
+    assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("extends");
 
     wildcard = (WildcardTree) typeArguments.get(1);
     assertThat(wildcard.is(Tree.Kind.SUPER_WILDCARD)).isTrue();
     assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+    assertThat(wildcard.queryToken()).isNotNull();
+    assertThat(wildcard.queryToken().text()).isEqualTo("?");
+    assertThat(wildcard.extendsOrSuperToken()).isNotNull();
+    assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("super");
 
     wildcard = (WildcardTree) typeArguments.get(2);
     assertThat(wildcard.is(Tree.Kind.UNBOUNDED_WILDCARD)).isTrue();
     assertThat(wildcard.bound()).isNull();
+    assertThat(wildcard.queryToken().text()).isEqualTo("?");
+    assertThat(wildcard.queryToken()).isNotNull();
+    assertThat(wildcard.extendsOrSuperToken()).isNull();
 
     assertThat(typeArguments.get(3)).isInstanceOf(IdentifierTree.class);
   }
