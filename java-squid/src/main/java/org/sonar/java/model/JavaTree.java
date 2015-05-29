@@ -312,6 +312,9 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public static class WildcardTreeImpl extends JavaTree implements WildcardTree {
 
+    private SyntaxToken queryToken;
+    @Nullable
+    private final SyntaxToken extendsOrSuperToken;
     private final Kind kind;
     @Nullable
     private final TypeTree bound;
@@ -322,6 +325,8 @@ public abstract class JavaTree extends AstNode implements Tree {
       Preconditions.checkArgument(kind == Kind.UNBOUNDED_WILDCARD);
 
       this.kind = Preconditions.checkNotNull(kind);
+      this.queryToken = queryToken;
+      this.extendsOrSuperToken = null;
       this.bound = null;
 
       addChild(queryToken);
@@ -333,6 +338,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       Preconditions.checkArgument(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
 
       this.kind = Preconditions.checkNotNull(kind);
+      this.extendsOrSuperToken = extendsOrSuperToken;
       this.bound = bound;
 
       addChild(extendsOrSuperToken);
@@ -344,6 +350,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     public WildcardTreeImpl complete(InternalSyntaxToken queryToken) {
       Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
+      this.queryToken = queryToken;
       prependChildren(queryToken);
 
       return this;
@@ -370,6 +377,17 @@ public abstract class JavaTree extends AstNode implements Tree {
       return Iterators.<Tree>singletonIterator(
         bound
         );
+    }
+
+    @Override
+    public SyntaxToken queryToken() {
+      return queryToken;
+    }
+
+    @Nullable
+    @Override
+    public SyntaxToken extendsOrSuperToken() {
+      return extendsOrSuperToken;
     }
   }
 
