@@ -185,7 +185,11 @@ public abstract class AbstractAnalyzer {
       Preconditions.checkState(firstByte == ExecutionDataWriter.BLOCK_HEADER);
       Preconditions.checkState(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
       char version = dis.readChar();
-      return version == ExecutionDataWriter.FORMAT_VERSION;
+      boolean isCurrentFormat = version == ExecutionDataWriter.FORMAT_VERSION;
+      if(!isCurrentFormat) {
+        JaCoCoExtensions.LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
+      }
+      return isCurrentFormat;
     } finally {
       if (dis != null) {
         dis.close();
