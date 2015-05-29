@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.io.Closeables;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.IExecutionDataVisitor;
@@ -39,7 +38,7 @@ import java.io.IOException;
  */
 public class JaCoCoReportMerger {
 
-  private JaCoCoReportMerger(){
+  private JaCoCoReportMerger() {
   }
 
   /**
@@ -51,9 +50,8 @@ public class JaCoCoReportMerger {
     SessionInfoStore infoStore = new SessionInfoStore();
     ExecutionDataStore dataStore = new ExecutionDataStore();
     boolean isCurrentVersionFormat = loadSourceFiles(infoStore, dataStore, reports);
-    BufferedOutputStream outputStream = null;
-    try {
-      outputStream = new BufferedOutputStream(new FileOutputStream(reportOverall));
+
+    try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream(reportOverall))) {
       Object visitor;
       if (isCurrentVersionFormat) {
         visitor = new ExecutionDataWriter(outputStream);
@@ -64,8 +62,6 @@ public class JaCoCoReportMerger {
       dataStore.accept((IExecutionDataVisitor) visitor);
     } catch (IOException e) {
       throw new SonarException(String.format("Unable to write overall coverage report %s", reportOverall.getAbsolutePath()), e);
-    } finally {
-      Closeables.closeQuietly(outputStream);
     }
   }
 

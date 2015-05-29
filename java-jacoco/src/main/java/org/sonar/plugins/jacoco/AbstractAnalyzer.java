@@ -21,7 +21,6 @@ package org.sonar.plugins.jacoco;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
 import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
@@ -178,22 +177,16 @@ public abstract class AbstractAnalyzer {
   }
 
   public static boolean isCurrentReportFormat(File jacocoExecutionData) throws IOException {
-    DataInputStream dis = null;
-    try {
-      dis = new DataInputStream(new FileInputStream(jacocoExecutionData));
+    try (DataInputStream dis = new DataInputStream(new FileInputStream(jacocoExecutionData))) {
       byte firstByte = dis.readByte();
       Preconditions.checkState(firstByte == ExecutionDataWriter.BLOCK_HEADER);
       Preconditions.checkState(dis.readChar() == ExecutionDataWriter.MAGIC_NUMBER);
       char version = dis.readChar();
       boolean isCurrentFormat = version == ExecutionDataWriter.FORMAT_VERSION;
-      if(!isCurrentFormat) {
+      if (!isCurrentFormat) {
         JaCoCoExtensions.LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
       }
       return isCurrentFormat;
-    } finally {
-      if (dis != null) {
-        dis.close();
-      }
     }
   }
 
@@ -211,25 +204,20 @@ public abstract class AbstractAnalyzer {
    */
   public static boolean readJacocoReport(File jacocoExecutionData, IExecutionDataVisitor executionDataVisitor, ISessionInfoVisitor sessionInfoStore) throws IOException {
     JaCoCoExtensions.LOG.info("Analysing {}", jacocoExecutionData);
-    InputStream inputStream = null;
-    boolean currentReportFormat = true;
-    try {
-      inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData));
+    boolean currentReportFormat;
+    try (InputStream inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData))) {
       currentReportFormat = isCurrentReportFormat(jacocoExecutionData);
-      if(currentReportFormat) {
+      if (currentReportFormat) {
         ExecutionDataReader reader = new ExecutionDataReader(inputStream);
         reader.setSessionInfoVisitor(sessionInfoStore);
         reader.setExecutionDataVisitor(executionDataVisitor);
         reader.read();
-      }else {
-        inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData));
+      } else {
         org.jacoco.previous.core.data.ExecutionDataReader reader = new org.jacoco.previous.core.data.ExecutionDataReader(inputStream);
         reader.setSessionInfoVisitor(sessionInfoStore);
         reader.setExecutionDataVisitor(executionDataVisitor);
         reader.read();
       }
-    } finally {
-      Closeables.closeQuietly(inputStream);
     }
     return currentReportFormat;
   }
@@ -332,28 +320,20 @@ public abstract class AbstractAnalyzer {
    * Caller must guarantee that {@code classFile} is actually class file.
    */
   private void analyzeClassFile(org.jacoco.previous.core.analysis.Analyzer analyzer, File classFile) {
-    InputStream inputStream = null;
-    try {
-      inputStream = new FileInputStream(classFile);
+    try (InputStream inputStream = new FileInputStream(classFile)) {
       analyzer.analyzeClass(inputStream, classFile.getPath());
     } catch (IOException e) {
       // (Godin): in fact JaCoCo includes name into exception
       JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-    } finally {
-      Closeables.closeQuietly(inputStream);
     }
   }
 
   private void analyzeClassFile(Analyzer analyzer, File classFile) {
-    InputStream inputStream = null;
-    try {
-      inputStream = new FileInputStream(classFile);
+    try (InputStream inputStream = new FileInputStream(classFile)) {
       analyzer.analyzeClass(inputStream, classFile.getPath());
     } catch (IOException e) {
       // (Godin): in fact JaCoCo includes name into exception
       JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-    } finally {
-      Closeables.closeQuietly(inputStream);
     }
   }
 
