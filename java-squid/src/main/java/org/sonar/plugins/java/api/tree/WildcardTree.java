@@ -47,6 +47,11 @@ import javax.annotation.Nullable;
 @Beta
 public interface WildcardTree extends Tree {
 
+  SyntaxToken queryToken();
+
+  @Nullable
+  SyntaxToken extendsOrSuperToken();
+
   @Nullable
   TypeTree bound();
 
