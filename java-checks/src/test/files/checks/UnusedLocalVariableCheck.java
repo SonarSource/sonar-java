@@ -1,3 +1,5 @@
+import java.nio.channels.FileLock;
+
 class Foo {
 
   int unusedField;
@@ -40,6 +42,12 @@ class Foo {
     this.unknown++;
     java.util.Stream<Object> s;
     s.map(v -> "");
+    
+    java.io.FileOutputStream fileOutputStream = new java.io.FileOutputStream();
+    try (FileLock fileLock = fileOutputStream.getChannel().lock()) {
+      // write content to fileOutputStream
+      fileOutputStream.flush();
+    }
   }
 
 }

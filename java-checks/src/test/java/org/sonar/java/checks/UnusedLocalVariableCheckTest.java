@@ -34,14 +34,28 @@ public class UnusedLocalVariableCheckTest {
   public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void test() {
+  public void testDefault() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedLocalVariableCheck.java"), new VisitorsBridge(new UnusedLocalVariableCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Remove this unused \"unusedLocalVariable\" local variable.")
-      .next().atLine(15).withMessage("Remove this unused \"foo\" local variable.")
-      .next().atLine(18)
-      .next().atLine(21)
-      .next().atLine(31);
+      .next().atLine(8).withMessage("Remove this unused \"unusedLocalVariable\" local variable.")
+      .next().atLine(17).withMessage("Remove this unused \"foo\" local variable.")
+      .next().atLine(20)
+      .next().atLine(23)
+      .next().atLine(33);
   }
 
+  @Test
+  public void testDifferentExcludeFilter() {
+    UnusedLocalVariableCheck check = new UnusedLocalVariableCheck();
+    check.excludeTryWithResourceVariableTypes = "";
+
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedLocalVariableCheck.java"), new VisitorsBridge(check));
+    checkMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(8).withMessage("Remove this unused \"unusedLocalVariable\" local variable.")
+      .next().atLine(17).withMessage("Remove this unused \"foo\" local variable.")
+      .next().atLine(20)
+      .next().atLine(23)
+      .next().atLine(33)
+      .next().atLine(47);
+  }
 }

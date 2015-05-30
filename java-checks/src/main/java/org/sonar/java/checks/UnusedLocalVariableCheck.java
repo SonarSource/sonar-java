@@ -26,6 +26,8 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -44,6 +46,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Rule(
@@ -78,9 +81,23 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
     Tree.Kind.PREFIX_INCREMENT
   };
 
+  private static final String DEFAULT_EXCLUDE_TRY_WITH_RESOURCE_VARIABLE_TYPES = "java.nio.channels.FileLock";
+  @RuleProperty(
+      key = "excludeTryWithResourceVariableTypes",
+      description = "Comma separated list of classes to be ignored by this rule. Example: java.nio.channels.FileLock,java.io.StringReader",
+      defaultValue = DEFAULT_EXCLUDE_TRY_WITH_RESOURCE_VARIABLE_TYPES)
+  public String excludeTryWithResourceVariableTypes = DEFAULT_EXCLUDE_TRY_WITH_RESOURCE_VARIABLE_TYPES;
+  private List<String> excludeTryWithResourceVariableTypesList = null;
+
   private List<VariableTree> variables = Lists.newArrayList();
   private ListMultimap<Symbol, IdentifierTree> assignments = ArrayListMultimap.create();
 
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    excludeTryWithResourceVariableTypesList = Arrays.asList(excludeTryWithResourceVariableTypes.split(","));
+    super.scanFile(context);
+  }
+  
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(
@@ -104,7 +121,9 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
       } else if (tree.is(Tree.Kind.TRY_STATEMENT)) {
         TryStatementTree tryStatementTree = (TryStatementTree) tree;
         for (VariableTree resource : tryStatementTree.resources()) {
-          addVariable(resource);
+          if (isTryWithResourceVariableApplicable(resource)) {
+            addVariable(resource);
+          }
         }
       } else if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
         leaveExpressionStatement((ExpressionStatementTree) tree);
@@ -116,6 +135,13 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
     }
   }
 
+  private boolean isTryWithResourceVariableApplicable(VariableTree resourceVariable) {
+    String fullQualifiedTypeName = resourceVariable.type().symbolType().fullyQualifiedName();
+    // validate variable usage when the type is unknown or when its type is not defined as excluded
+    return resourceVariable.type().symbolType().isUnknown()
+        || !excludeTryWithResourceVariableTypesList.contains(fullQualifiedTypeName);
+  }
+  
   private void leaveExpressionStatement(ExpressionStatementTree expressionStatement) {
     ExpressionTree expression = expressionStatement.expression();
     if (expression.is(ASSIGNMENT_KINDS)) {
