@@ -11,6 +11,8 @@ String.format("Not enough arguments %d and %d", 1);  //Noncompliant; the second 
 String.format("First Line\n");   //Noncompliant; %n should be used in place of \n to produce the platform-specific line separator
 String.format("%&lt; is equals to %d", 2);   //Noncompliant; the argument index '&lt;' refers to the previous format specifier but there isn't one
 String.format("Is myObject null ? %b", myObject);   //Noncompliant; when a non-boolean argument is formatted with %b, it prints true for any nonnull value, and false for null. Even if intended, this is misleading. It's better to directly inject the boolean value (myObject == null in this case)
+String.format("value is " + value); // Noncompliant
+String s = String.format("string without arguments"); // Noncompliant
 </pre>
 <h2>Compliant Solution</h2>
 
@@ -24,5 +26,7 @@ String.format("Not enough arguments %d and %d", 1, 2);
 String.format("First Line%n");
 String.format("%d is equals to %&lt;", 2);
 String.format("Is myObject null ? %b", myObject == null);
+String.format("value is %d", value);
+String s = "string without arguments"; 
 </pre>
 

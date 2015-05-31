@@ -96,12 +96,18 @@ public class PrintfCheck extends AbstractMethodDetection {
         addIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
         return;
       }
+      if (params.isEmpty()) {
+        addIssue(mit, "String contains no format specifiers.");
+        return;
+      }
       cleanupLineSeparator(params);
       if (params.size() > args.size()) {
         addIssue(mit, "Not enough arguments.");
         return;
       }
       verifyParameters(mit, args, params);
+    } else if (formatStringTree.is(Tree.Kind.PLUS)) {
+      addIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
   }
 
