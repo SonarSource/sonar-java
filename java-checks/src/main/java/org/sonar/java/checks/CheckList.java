@@ -330,6 +330,7 @@ public final class CheckList {
       .add(StaticMembersAccessCheck.class)
       .add(MutableMembersUsageCheck.class)
       .add(StaticMethodCheck.class)
+      .add(ForLoopUsedAsWhileLoopCheck.class)
       .build();
   }
 
