@@ -332,6 +332,7 @@ public final class CheckList {
       .add(StaticMethodCheck.class)
       .add(ForLoopUsedAsWhileLoopCheck.class)
       .add(MultilineBlocksCurlyBracesCheck.class)
+      .add(EnumMapCheck.class)
       .build();
   }
 
