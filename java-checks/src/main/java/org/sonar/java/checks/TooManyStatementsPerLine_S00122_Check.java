@@ -26,10 +26,8 @@ import com.google.common.collect.Multiset.Entry;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
-import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
@@ -39,13 +37,8 @@ import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -55,14 +48,11 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.CheckForNull;
 
 import java.util.List;
 
@@ -136,19 +126,12 @@ public class TooManyStatementsPerLine_S00122_Check extends SubscriptionBaseVisit
 
     @Override
     public void visitExpressionStatement(ExpressionStatementTree tree) {
-      SyntaxToken firstToken = getFirstToken(tree.expression());
+      SyntaxToken firstToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
       if (firstToken != null) {
         addLines(firstToken, tree.semicolonToken());
       } else {
         addLine(tree.semicolonToken());
       }
-    }
-
-    @CheckForNull
-    private SyntaxToken getFirstToken(Tree expression) {
-      ExpressionVisitor visitor = new ExpressionVisitor();
-      expression.accept(visitor);
-      return visitor.firstToken;
     }
 
     @Override
@@ -255,70 +238,6 @@ public class TooManyStatementsPerLine_S00122_Check extends SubscriptionBaseVisit
       if (startToken.line() != endToken.line()) {
         addLine(endToken);
       }
-    }
-  }
-
-  private static class ExpressionVisitor extends BaseTreeVisitor {
-
-    private SyntaxToken firstToken;
-
-    @Override
-    public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-      scan(tree.expression());
-    }
-
-    @Override
-    public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-      scan(tree.expression());
-    }
-
-    @Override
-    public void visitNewClass(NewClassTree tree) {
-      if (tree.enclosingExpression() != null) {
-        scan(tree.enclosingExpression());
-      } else if (!tree.typeArguments().isEmpty()) {
-        scan(tree.typeArguments());
-      } else {
-        scan(tree.identifier());
-      }
-    }
-
-    @Override
-    public void visitMethodInvocation(MethodInvocationTree tree) {
-      if (tree.typeArguments() != null) {
-        scan(tree.typeArguments());
-      } else {
-        scan(tree.methodSelect());
-      }
-    }
-
-    @Override
-    public void visitParenthesized(ParenthesizedTree tree) {
-      firstToken = tree.openParenToken();
-    }
-
-    @Override
-    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      scan(tree.variable());
-    }
-
-    @Override
-    public void visitUnaryExpression(UnaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
-        scan(tree.expression());
-      } else {
-        firstToken = tree.operatorToken();
-      }
-    }
-
-    @Override
-    public void visitIdentifier(IdentifierTree tree) {
-      firstToken = tree.identifierToken();
-    }
-
-    @Override
-    public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
-      firstToken = trees.openBracketToken();
     }
   }
 }

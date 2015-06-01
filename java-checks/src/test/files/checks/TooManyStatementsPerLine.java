@@ -141,7 +141,7 @@ abstract class TooManyStatementsPerLine {
     elementData[2] = 4;
     assert true;
     "1".length(); // literals does not have associated syntax token...
-    assert true; "1" // False nagative, as literals does not have associated syntax token...
+    assert true; "1" // Noncompliant {{At most one statement is allowed per line, but 2 statements were found on this line.}}
       .length();
   }
 
