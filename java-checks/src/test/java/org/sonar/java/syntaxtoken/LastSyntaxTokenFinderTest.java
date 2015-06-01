@@ -22,8 +22,10 @@ package org.sonar.java.syntaxtoken;
 import com.google.common.base.Charsets;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -35,124 +37,96 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class FirstSyntaxTokenFinderTest {
+public class LastSyntaxTokenFinderTest {
 
   @Test
   public void compilationUnit() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test {}");
-    SyntaxToken firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken.text()).isEqualTo("class");
+    SyntaxToken lastToken = getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.text()).isEqualTo("}");
 
-    compilationUnit = getCompilationUnit("import A; class Test {}");
-    firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken.text()).isEqualTo("import");
+    compilationUnit = getCompilationUnit("package myPackage; import A;");
+    lastToken = getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.text()).isEqualTo(";");
 
-    compilationUnit = getCompilationUnit("package myPackage; import A; class Test {}");
-    firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken.text()).isEqualTo("myPackage");
+    compilationUnit = getCompilationUnit("package myPackage;");
+    lastToken = getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.text()).isEqualTo("myPackage");
 
     compilationUnit = getCompilationUnit("");
-    firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken).isNull();
+    lastToken = getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken).isNull();
   }
 
   @Test
   public void classes() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test {}");
-    SyntaxToken firstToken = getFirstSyntaxToken(getFirstClass(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("class");
-
-    compilationUnit = getCompilationUnit("public class Test {}");
-    firstToken = getFirstSyntaxToken(getFirstClass(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("public");
-
-    compilationUnit = getCompilationUnit("public abstract class Test {}");
-    firstToken = getFirstSyntaxToken(getFirstClass(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("public");
-
-    compilationUnit = getCompilationUnit("public abstract class Test {}");
-    firstToken = getFirstSyntaxToken(getFirstClass(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("public");
-
-    compilationUnit = getCompilationUnit("@Deprecated public abstract class Test {}");
-    ClassTree firstClass = getFirstClass(compilationUnit);
-    firstToken = getFirstSyntaxToken(firstClass.modifiers().get(0));
-    assertThat(firstToken.text()).isEqualTo("@");
+    SyntaxToken lastToken = getLastSyntaxToken(getFirstClass(compilationUnit));
+    assertThat(lastToken.text()).isEqualTo("}");
   }
 
   @Test
   public void variable() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test { Integer i; }");
-    SyntaxToken firstToken = getFirstSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)));
-    assertThat(firstToken.text()).isEqualTo("Integer");
-
-    compilationUnit = getCompilationUnit("class Test { Integer[] i; }");
-    firstToken = getFirstSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)));
-    assertThat(firstToken.text()).isEqualTo("Integer");
-
-    compilationUnit = getCompilationUnit("class Test { private Integer i; }");
-    firstToken = getFirstSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)));
-    assertThat(firstToken.text()).isEqualTo("private");
-
-    compilationUnit = getCompilationUnit("class Test { Java.lang.List l; }");
-    firstToken = getFirstSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)));
-    assertThat(firstToken.text()).isEqualTo("Java");
+    SyntaxToken lastToken = getLastSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)));
+    assertThat(lastToken.text()).isEqualTo(";");
   }
 
   @Test
   public void method() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test { void foo() {} }");
-    SyntaxToken firstToken = getFirstSyntaxToken(getFirstMethod(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("void");
+    SyntaxToken lastToken = getLastSyntaxToken(getFirstMethod(compilationUnit));
+    assertThat(lastToken.text()).isEqualTo("}");
 
-    compilationUnit = getCompilationUnit("class Test { private void foo() {} }");
-    firstToken = getFirstSyntaxToken(getFirstMethod(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("private");
+    compilationUnit = getCompilationUnit("class Test { abstract void foo(); }");
+    lastToken = getLastSyntaxToken(getFirstMethod(compilationUnit));
+    assertThat(lastToken.text()).isEqualTo(";");
 
-    compilationUnit = getCompilationUnit("class Test { Test() {} }");
-    firstToken = getFirstSyntaxToken(getFirstMethod(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("Test");
-
-    compilationUnit = getCompilationUnit("class Test { <T> void Test(T t) {} }");
-    firstToken = getFirstSyntaxToken(getFirstMethod(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("<");
-
-    compilationUnit = getCompilationUnit("class Test<T> { T Test() {} }");
-    firstToken = getFirstSyntaxToken(getFirstMethod(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("T");
-
-    compilationUnit = getCompilationUnit("class Test<T> { T Test() {} }");
-    firstToken = getFirstSyntaxToken(getFirstMethod(compilationUnit).block());
-    assertThat(firstToken.text()).isEqualTo("{");
+    compilationUnit = getCompilationUnit("class Test { abstract int foo(); }");
+    lastToken = getLastSyntaxToken(getFirstMethod(compilationUnit).returnType());
+    assertThat(lastToken.text()).isEqualTo("int");
   }
 
   @Test
   public void enumeration() {
     CompilationUnitTree compilationUnit = getCompilationUnit("enum Test { }");
-    SyntaxToken firstToken = getFirstSyntaxToken(getFirstClass(compilationUnit));
-    assertThat(firstToken.text()).isEqualTo("enum");
+    SyntaxToken lastToken = getLastSyntaxToken(getFirstClass(compilationUnit));
+    assertThat(lastToken.text()).isEqualTo("}");
 
     compilationUnit = getCompilationUnit("enum Test { A; }");
-    firstToken = getFirstSyntaxToken(getFirstClass(compilationUnit).members().get(0));
-    assertThat(firstToken.text()).isEqualTo("A");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo("A");
+
+    compilationUnit = getCompilationUnit("enum Test { A (4); }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(")");
+
+    compilationUnit = getCompilationUnit("enum Test { A (4) { }; }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo("}");
   }
 
   @Test
   public void modifiers() {
     String p = "class Foo {}";
     ClassTree c = getFirstClass(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(c.modifiers());
-    assertThat(firstToken).isNull();
+    SyntaxToken lastToken = getLastSyntaxToken(c.modifiers());
+    assertThat(lastToken).isNull();
 
     p = "public @Deprecated class Foo {}";
     c = getFirstClass(getCompilationUnit(p));
-    firstToken = getFirstSyntaxToken(c.modifiers());
-    assertThat(firstToken.text()).isEqualTo("public");
+    lastToken = getLastSyntaxToken(c.modifiers());
+    assertThat(lastToken.text()).isEqualTo("Deprecated");
+
+    p = "public @MyAnnotation(42) class Foo {}";
+    c = getFirstClass(getCompilationUnit(p));
+    lastToken = getLastSyntaxToken(c.modifiers());
+    assertThat(lastToken.text()).isEqualTo("42");
 
     p = "@Deprecated public class Foo {}";
     c = getFirstClass(getCompilationUnit(p));
-    firstToken = getFirstSyntaxToken(c.modifiers());
-    assertThat(firstToken.text()).isEqualTo("@");
+    lastToken = getLastSyntaxToken(c.modifiers());
+    assertThat(lastToken.text()).isEqualTo("public");
   }
 
   @Test
@@ -163,19 +137,42 @@ public class FirstSyntaxTokenFinderTest {
         + "  }"
         + "}";
     MethodTree m = getFirstMethod(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments().get(0));
-    assertThat(firstToken.text()).isEqualTo("?");
+    SyntaxToken lastToken = getLastSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments().get(0));
+    assertThat(lastToken.text()).isEqualTo("?");
+
+    p =
+      "class Foo {"
+        + "  void foo(Collection<? extends Closeable> c) {"
+        + "  }"
+        + "}";
+    m = getFirstMethod(getCompilationUnit(p));
+    lastToken = getLastSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments().get(0));
+    assertThat(lastToken.text()).isEqualTo("Closeable");
   }
 
   @Test
   public void type_parameters() {
-    String p = "class Foo<T> {}";
+    String p = "class Foo<T, S extends Closeable> {}";
     ClassTree c = getFirstClass(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(c.typeParameters());
-    assertThat(firstToken.text()).isEqualTo("<");
+    SyntaxToken lastToken = getLastSyntaxToken(c.typeParameters());
+    assertThat(lastToken.text()).isEqualTo(">");
 
-    firstToken = getFirstSyntaxToken(c.typeParameters().get(0));
-    assertThat(firstToken.text()).isEqualTo("T");
+    lastToken = getLastSyntaxToken(c.typeParameters().get(0));
+    assertThat(lastToken.text()).isEqualTo("T");
+
+    lastToken = getLastSyntaxToken(c.typeParameters().get(1));
+    assertThat(lastToken.text()).isEqualTo("Closeable");
+  }
+
+  @Test
+  public void parameterized_type() {
+    String p = "class Foo {"
+      + "  Collection<T> foo(T t) {"
+      + "  }"
+      + "}";
+    MethodTree m = getFirstMethod(getCompilationUnit(p));
+    SyntaxToken lastToken = getLastSyntaxToken(m.returnType());
+    assertThat(lastToken.text()).isEqualTo(">");
   }
 
   @Test
@@ -185,8 +182,15 @@ public class FirstSyntaxTokenFinderTest {
       + "  }"
       + "}";
     MethodTree m = getFirstMethod(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments());
-    assertThat(firstToken.text()).isEqualTo("<");
+    SyntaxToken lastToken = getLastSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments());
+    assertThat(lastToken.text()).isEqualTo(">");
+  }
+
+  @Test
+  public void array_type() {
+    CompilationUnitTree compilationUnit = getCompilationUnit("class Test { int[][] i; }");
+    SyntaxToken lastToken = getLastSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)).type());
+    assertThat(lastToken.text()).isEqualTo("int");
   }
 
   @Test
@@ -197,26 +201,50 @@ public class FirstSyntaxTokenFinderTest {
         + "  }"
         + "}";
     ClassTree classTree = getFirstClass(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(classTree.members().get(0));
-    assertThat(firstToken.text()).isEqualTo("static");
+    SyntaxToken lastToken = getLastSyntaxToken(classTree.members().get(0));
+    assertThat(lastToken.text()).isEqualTo("}");
   }
 
   @Test
   public void try_catch() {
-    CompilationUnitTree compilationUnit = getCompilationUnit(
+    String p =
       "class Foo {"
         + "  void foo() {"
         + "    try { }"
         + "    catch(Exception e) { }"
         + "  }"
-        + "}");
+        + "}";
 
+    CompilationUnitTree compilationUnit = getCompilationUnit(p);
     TryStatementTree tryStatementTree = (TryStatementTree) getFirstMethod(compilationUnit).block().body().get(0);
-    SyntaxToken firstToken = getFirstSyntaxToken(tryStatementTree);
-    assertThat(firstToken.text()).isEqualTo("try");
+    SyntaxToken lastToken = getLastSyntaxToken(tryStatementTree);
+    assertThat(lastToken.text()).isEqualTo("}");
 
-    firstToken = getFirstSyntaxToken(tryStatementTree.catches().get(0));
-    assertThat(firstToken.text()).isEqualTo("catch");
+    lastToken = getLastSyntaxToken(tryStatementTree.catches().get(0));
+    assertThat(lastToken.text()).isEqualTo("}");
+
+    p =
+      "class Foo {"
+        + "  void foo() {"
+        + "    try { }"
+        + "    finally { }"
+        + "  }"
+        + "}";
+    compilationUnit = getCompilationUnit(p);
+    tryStatementTree = (TryStatementTree) getFirstMethod(compilationUnit).block().body().get(0);
+    lastToken = getLastSyntaxToken(tryStatementTree);
+    assertThat(lastToken.text()).isEqualTo("}");
+
+    p =
+      "class Foo {"
+        + "  void foo() {"
+        + "    try (Closeable c = new Closeable()) { }"
+        + "  }"
+        + "}";
+    compilationUnit = getCompilationUnit(p);
+    tryStatementTree = (TryStatementTree) getFirstMethod(compilationUnit).block().body().get(0);
+    lastToken = getLastSyntaxToken(tryStatementTree);
+    assertThat(lastToken.text()).isEqualTo("}");
   }
 
   @Test
@@ -230,8 +258,8 @@ public class FirstSyntaxTokenFinderTest {
         + "  }"
         + "}";
     TryStatementTree t = (TryStatementTree) getFirstStatement(p);
-    SyntaxToken firstToken = getFirstSyntaxToken(t.catches().get(0).parameter());
-    assertThat(firstToken.text()).isEqualTo("IOException");
+    SyntaxToken lastToken = getLastSyntaxToken(t.catches().get(0).parameter().type());
+    assertThat(lastToken.text()).isEqualTo("SQLException");
   }
 
   @Test
@@ -242,7 +270,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    ;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, ";");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -253,7 +281,18 @@ public class FirstSyntaxTokenFinderTest {
         + "    bar();"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "bar");
+    assertFirstStatementlastTokenValue(p, ")");
+  }
+
+  @Test
+  public void member_select() {
+    String p =
+      "class Foo {"
+        + "  void foo() {"
+        + "    A.b.c;"
+        + "  }"
+        + "}";
+    assertFirstStatementlastTokenValue(p, "c");
   }
 
   @Test
@@ -264,7 +303,16 @@ public class FirstSyntaxTokenFinderTest {
         + "    if (test) { }"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "if");
+    assertFirstStatementlastTokenValue(p, "}");
+
+    p =
+      "class Foo {"
+        + "  void foo(boolean test) {"
+        + "    if (test) { }"
+        + "    else { }"
+        + "  }"
+        + "}";
+    assertFirstStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -275,7 +323,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    assert true;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "assert");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -285,14 +333,36 @@ public class FirstSyntaxTokenFinderTest {
         + "  void foo(MyEnum myEnum) {"
         + "    switch(myEnum) {"
         + "      case A:"
+        + "        bar();"
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "switch");
+    assertFirstStatementlastTokenValue(p, "}");
 
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) getFirstStatement(p);
-    SyntaxToken firstToken = getFirstSyntaxToken(switchStatementTree.cases().get(0));
-    assertThat(firstToken.text()).isEqualTo("case");
+    CaseGroupTree firstCaseGroup = switchStatementTree.cases().get(0);
+    SyntaxToken lastToken = getLastSyntaxToken(firstCaseGroup);
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    lastToken = getLastSyntaxToken(firstCaseGroup.labels().get(0));
+    assertThat(lastToken.text()).isEqualTo(":");
+
+    p =
+      "class Foo {"
+        + "  void foo(MyEnum myEnum) {"
+        + "    switch(myEnum) {"
+        + "      case A:"
+        + "        bar();"
+        + "      default:"
+        + "    }"
+        + "  }"
+        + "}";
+    assertFirstStatementlastTokenValue(p, "}");
+
+    switchStatementTree = (SwitchStatementTree) getFirstStatement(p);
+    CaseGroupTree lastCaseGroup = switchStatementTree.cases().get(1);
+    lastToken = getLastSyntaxToken(lastCaseGroup);
+    assertThat(lastToken.text()).isEqualTo(":");
   }
 
   @Test
@@ -304,7 +374,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "while");
+    assertFirstStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -316,7 +386,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    } while (true);"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "do");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -328,7 +398,16 @@ public class FirstSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "for");
+    assertFirstStatementlastTokenValue(p, "}");
+
+    p =
+      "class Foo {"
+        + "  void foo() {"
+        + "    for( ; ; )"
+        + "      doStuff();"
+        + "  }"
+        + "}";
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -340,7 +419,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "for");
+    assertFirstStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -351,7 +430,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    break;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "break");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -362,7 +441,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    continue;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "continue");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -373,7 +452,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    return;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "return");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -384,7 +463,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    throw new Exception();"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "throw");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -395,7 +474,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    synchronized (new Object()) {}"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "synchronized");
+    assertFirstStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -403,10 +482,10 @@ public class FirstSyntaxTokenFinderTest {
     String p =
       "class Foo {"
         + "  void foo(List list) {"
-        + "    new Foo().toString();"
+        + "    new Foo();"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "new");
+    assertFirstStatementlastTokenValue(p, ")");
 
     p =
       "class T {"
@@ -414,7 +493,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    this.new T(true, false) {};"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "this");
+    assertFirstStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -422,21 +501,10 @@ public class FirstSyntaxTokenFinderTest {
     String p =
       "class Foo {"
         + "  void foo(List list) {"
-        + "    \"test\".length();"
+        + "    \"test\";"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "\"test\"");
-  }
-
-  @Test
-  public void parameterizedType() {
-    String p =
-      "class Foo {"
-        + "  void foo() {"
-        + "    Set<Class<?>> set = newSet();"
-        + "  }"
-        + "}";
-    assertFirstStatementFirstTokenValue(p, "Set");
+    assertFirstStatementlastTokenValue(p, "\"test\"");
   }
 
   @Test
@@ -448,7 +516,7 @@ public class FirstSyntaxTokenFinderTest {
         + "      return;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "FOO");
+    assertFirstStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -459,7 +527,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    ++i;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "++");
+    assertFirstStatementlastTokenValue(p, "i");
 
     p =
       "class Foo {"
@@ -467,7 +535,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    i++;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "i");
+    assertFirstStatementlastTokenValue(p, "++");
   }
 
   @Test
@@ -475,10 +543,10 @@ public class FirstSyntaxTokenFinderTest {
     String p =
       "class Foo {"
         + "  void foo(List list) {"
-        + "    ((Object) list).toString();"
+        + "    ((Object) list);"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "(");
+    assertFirstStatementlastTokenValue(p, ")");
   }
 
   @Test
@@ -489,7 +557,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    a + b;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "a");
+    assertFirstStatementlastTokenValue(p, "b");
   }
 
   @Test
@@ -497,10 +565,10 @@ public class FirstSyntaxTokenFinderTest {
     String p =
       "class Foo {"
         + "  void foo(int[] array) {"
-        + "    array[4] = 2;"
+        + "    array[4];"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "array");
+    assertFirstStatementlastTokenValue(p, "]");
   }
 
   @Test
@@ -511,7 +579,18 @@ public class FirstSyntaxTokenFinderTest {
         + "    test ? 1 : 2;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "test");
+    assertFirstStatementlastTokenValue(p, "2");
+  }
+
+  @Test
+  public void assignment() {
+    String p =
+      "class Foo {"
+        + "  void foo(boolean test) {"
+        + "    test = false;"
+        + "  }"
+        + "}";
+    assertFirstStatementlastTokenValue(p, "false");
   }
 
   @Test
@@ -522,7 +601,15 @@ public class FirstSyntaxTokenFinderTest {
         + "    new int[3];"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "new");
+    assertFirstStatementlastTokenValue(p, "3");
+
+    p =
+      "class Foo {"
+        + "  void foo() {"
+        + "    new int[] {1, 2, 3};"
+        + "  }"
+        + "}";
+    assertFirstStatementlastTokenValue(p, "3");
   }
 
   @Test
@@ -533,7 +620,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    (Object) f;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "(");
+    assertFirstStatementlastTokenValue(p, "f");
   }
 
   @Test
@@ -544,7 +631,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    f instanceof Object;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "f");
+    assertFirstStatementlastTokenValue(p, "Object");
   }
 
   @Test
@@ -555,15 +642,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    p -> p.printPerson();"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "p");
-
-    p =
-      "class Foo {"
-        + "  void foo(Person p1, Person p2) {"
-        + "    (p1, p2) -> p1.isTallerThan(p2);"
-        + "  }"
-        + "}";
-    assertFirstStatementFirstTokenValue(p, "(");
+    assertFirstStatementlastTokenValue(p, ")");
   }
 
   @Test
@@ -574,15 +653,15 @@ public class FirstSyntaxTokenFinderTest {
         + "    HashSet::new;"
         + "  }"
         + "}";
-    assertFirstStatementFirstTokenValue(p, "HashSet");
+    assertFirstStatementlastTokenValue(p, "new");
   }
 
-  private void assertFirstStatementFirstTokenValue(String p, String expected) {
-    assertThat(getFirstSyntaxToken(getFirstStatement(p)).text()).isEqualTo(expected);
+  private void assertFirstStatementlastTokenValue(String p, String expected) {
+    assertThat(getLastSyntaxToken(getFirstStatement(p)).text()).isEqualTo(expected);
   }
 
-  private SyntaxToken getFirstSyntaxToken(Tree tree) {
-    return FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+  private SyntaxToken getLastSyntaxToken(Tree tree) {
+    return LastSyntaxTokenFinder.lastSyntaxToken(tree);
   }
 
   private CompilationUnitTree getCompilationUnit(String p) {
@@ -605,8 +684,12 @@ public class FirstSyntaxTokenFinderTest {
     return (VariableTree) classTree.members().get(0);
   }
 
-  private StatementTree getFirstStatement(String p) {
+  private Tree getFirstStatement(String p) {
     CompilationUnitTree compilationUnit = getCompilationUnit(p);
-    return getFirstMethod(getFirstClass(compilationUnit)).block().body().get(0);
+    StatementTree statementTree = getFirstMethod(getFirstClass(compilationUnit)).block().body().get(0);
+    if (statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      return ((ExpressionStatementTree) statementTree).expression();
+    }
+    return statementTree;
   }
 }

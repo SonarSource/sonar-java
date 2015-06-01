@@ -19,16 +19,22 @@
  */
 package org.sonar.java.syntaxtoken;
 
+import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
@@ -38,14 +44,19 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
@@ -58,10 +69,14 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
+import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.CheckForNull;
 
@@ -72,6 +87,16 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   private SyntaxToken firstSyntaxToken;
 
+  /**
+   * @param tree the tree to visit to get the first syntax token
+   * @return null only if the provided tree is:
+   * <ul>
+   *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
+   *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
+   *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
+   * </ul>
+   */
+  @CheckForNull
   public static SyntaxToken firstSyntaxToken(Tree tree) {
     FirstSyntaxTokenFinder visitor = new FirstSyntaxTokenFinder();
     tree.accept(visitor);
@@ -232,8 +257,10 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
     SyntaxToken firstModifierToken = getFirstModifierToken(tree.modifiers());
     if (firstModifierToken != null) {
       firstSyntaxToken = firstModifierToken;
-    } else {
+    } else if (!tree.type().is(Tree.Kind.INFERED_TYPE)) {
       scan(tree.type());
+    } else {
+      scan(tree.simpleName());
     }
   }
 
@@ -293,5 +320,113 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitParenthesized(ParenthesizedTree tree) {
     firstSyntaxToken = tree.openParenToken();
+  }
+
+  @Override
+  public void visitBinaryExpression(BinaryExpressionTree tree) {
+    scan(tree.leftOperand());
+  }
+
+  @Override
+  public void visitCompilationUnit(CompilationUnitTree tree) {
+    if (tree.packageName() != null) {
+      // TODO(SONARJAVA-547) Should be the package token
+      scan(tree.packageName());
+    } else if (!tree.imports().isEmpty()) {
+      scan(tree.imports().get(0));
+    } else if (!tree.types().isEmpty()) {
+      scan(tree.types().get(0));
+    }
+    // with empty files firstSyntaxToken will be null
+  }
+
+  @Override
+  public void visitImport(ImportTree tree) {
+    firstSyntaxToken = tree.importKeyword();
+  }
+
+  @Override
+  public void visitCaseGroup(CaseGroupTree tree) {
+    scan(tree.labels().get(0));
+  }
+
+  @Override
+  public void visitConditionalExpression(ConditionalExpressionTree tree) {
+    scan(tree.condition());
+  }
+
+  @Override
+  public void visitNewArray(NewArrayTree tree) {
+    firstSyntaxToken = tree.newKeyword();
+  }
+
+  @Override
+  public void visitTypeCast(TypeCastTree tree) {
+    firstSyntaxToken = tree.openParenToken();
+  }
+
+  @Override
+  public void visitInstanceOf(InstanceOfTree tree) {
+    scan(tree.expression());
+  }
+
+  @Override
+  public void visitArrayType(ArrayTypeTree tree) {
+    scan(tree.type());
+  }
+
+  @Override
+  public void visitWildcard(WildcardTree tree) {
+    firstSyntaxToken = tree.queryToken();
+  }
+
+  @Override
+  public void visitUnionType(UnionTypeTree tree) {
+    scan(tree.typeAlternatives().get(0));
+  }
+
+  @Override
+  public void visitModifier(ModifiersTree modifiersTree) {
+    // if no modifier, firstSyntaxToken will be null
+    firstSyntaxToken = getFirstModifierToken(modifiersTree);
+  }
+
+  @Override
+  public void visitAnnotation(AnnotationTree annotationTree) {
+    firstSyntaxToken = annotationTree.atToken();
+  }
+
+  @Override
+  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+    if (lambdaExpressionTree.openParenToken() != null) {
+      firstSyntaxToken = lambdaExpressionTree.openParenToken();
+    } else {
+      scan(lambdaExpressionTree.parameters().get(0));
+    }
+  }
+
+  @Override
+  public void visitTypeParameter(TypeParameterTree typeParameter) {
+    scan(typeParameter.identifier());
+  }
+
+  @Override
+  public void visitTypeArguments(TypeArgumentListTreeImpl trees) {
+    firstSyntaxToken = trees.openBracketToken();
+  }
+
+  @Override
+  public void visitTypeParameters(TypeParameters trees) {
+    firstSyntaxToken = trees.openBracketToken();
+  }
+
+  @Override
+  public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
+    scan(methodReferenceTree.expression());
+  }
+
+  @Override
+  public void visitOther(Tree tree) {
+    // firstSyntaxToken will be null
   }
 }
