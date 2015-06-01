@@ -60,9 +60,19 @@ class A {
         1+
         1;
 
-
-
-
+    Runnable r2 = () -> System.out.println("Hello world two!");
+    
+    Predicate<Person> allDraftees = 
+      p -> 
+        p.getAge() >= 18 
+        && p.getAge() <= 25 
+        && p.getGender() == Gender.MALE;
+    
+    List<Person> pl = Person.createShortList();
+    pl.forEach(p -> { 
+      System.out.println(p.printCustom(r -> 
+        "Name: " + r.getGivenName() + " EMail: " + r.getEmail())); 
+      });
   }
 }
 

@@ -19,12 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -32,6 +32,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -49,8 +51,8 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(key = "Max",
-      defaultValue = "" + DEFAULT_MAX,
-      description = "Maximum allowed lines in an anonymous class/lambda")
+    defaultValue = "" + DEFAULT_MAX,
+    description = "Maximum allowed lines in an anonymous class/lambda")
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;
@@ -86,7 +88,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    int lines = getNumberOfLines(((JavaTree) lambdaExpressionTree.body()).getAstNode());
+    int lines = getNumberOfLines(lambdaExpressionTree);
     if (lines > max) {
       context.addIssue(lambdaExpressionTree, this, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
     }
@@ -99,8 +101,15 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     return endline - startLine + 1;
   }
 
-  private int getNumberOfLines(AstNode node) {
-    return node.getLastToken().getLine() - node.getTokenLine() + 1;
+  private int getNumberOfLines(LambdaExpressionTree lambdaExpressionTree) {
+    Tree body = lambdaExpressionTree.body();
+    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(body);
+    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(body);
+    if (firstSyntaxToken == null || lastSyntaxToken == null) {
+      // Should not happen, but FirstSyntaxTokenFinder and LastSyntaxTokenFinder do not provides tokens for Tree.Kind.OTHER
+      return 0;
+    }
+    return lastSyntaxToken.line() - firstSyntaxToken.line() + 1;
   }
 
 }
