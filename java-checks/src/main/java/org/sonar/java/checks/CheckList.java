@@ -333,6 +333,7 @@ public final class CheckList {
       .add(ForLoopUsedAsWhileLoopCheck.class)
       .add(MultilineBlocksCurlyBracesCheck.class)
       .add(EnumMapCheck.class)
+      .add(FileCreateTempFileCheck.class)
       .build();
   }
 
