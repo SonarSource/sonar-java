@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.locks.LockedVisitor;
+import org.sonar.java.locks.LockedCheck;
 import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,7 +53,7 @@ public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
     if (!hasSemantic()) {
       return;
     }
-    LockedVisitor visitor = new LockedVisitor();
+    LockedCheck visitor = new LockedCheck();
     DataFlowVisitor.analyze((MethodTree) tree, visitor);
     for (Tree issueTree : visitor.getIssueTrees()) {
       addIssue(issueTree, "Unlock this lock.");

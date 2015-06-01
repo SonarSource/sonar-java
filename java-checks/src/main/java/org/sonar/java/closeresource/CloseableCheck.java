@@ -45,7 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class CloseableVisitor extends SymbolicExecutionCheck {
+public class CloseableCheck extends SymbolicExecutionCheck {
 
   private static final String CLOSE_METHOD_NAME = "close";
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
@@ -190,7 +190,7 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
   }
 
   private boolean isIgnoredCloseable(ExecutionState executionState, Symbol symbol) {
-    if (CloseableVisitor.isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
+    if (CloseableCheck.isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
       return true;
     } else {
       return isSymbolIgnored(executionState, symbol);
@@ -246,7 +246,7 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
 
   private void ignoreClosableSymbols(ExecutionState executionState, @Nullable ExpressionTree expression) {
     if (expression != null) {
-      if (expression.is(Tree.Kind.IDENTIFIER) && CloseableVisitor.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
+      if (expression.is(Tree.Kind.IDENTIFIER) && CloseableCheck.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
         executionState.markDefinitelyReachableValues(((IdentifierTree) expression).symbol(), new CloseableState.Ignored(expression));
       } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
         ignoreClosableSymbols(executionState, ((MemberSelectExpressionTree) expression).identifier());

@@ -39,7 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LockedVisitor extends SymbolicExecutionCheck {
+public class LockedCheck extends SymbolicExecutionCheck {
 
   private static final String JAVA_LOCK = "java.util.concurrent.locks.Lock";
 
