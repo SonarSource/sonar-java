@@ -38,10 +38,25 @@ public class JaCoCoReportMergerTest {
   @Test
   public void merge_different_format_should_fail() {
     exception.expect(IllegalStateException.class);
-    exception.expectMessage("Incompatible execution data");
-    File current = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCov0_7_5_incompatible_coverage_per_test/jacoco.exec");
-    File previous = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCov0_7_4_incompatible_coverage_per_test/jacoco.exec");
-    JaCoCoReportMerger.mergeReports(new File(testFolder.getRoot(), "dummy"), current, previous);
+    exception.expectMessage("You are trying to merge two different JaCoCo binary format, please use only one version of JaCoCo.");
+    merge("jacoco-0.7.5.exec", "jacoco-it-0.7.4.exec");
   }
 
+  @Test
+  public void merge_different_format_should_fail_() {
+    exception.expect(IllegalStateException.class);
+    exception.expectMessage("You are trying to merge two different JaCoCo binary format, please use only one version of JaCoCo.");
+    merge("jacoco-0.7.4.exec", "jacoco-it-0.7.5.exec");
+  }
+
+  @Test
+  public void merge_same_format_should_not_fail() throws Exception {
+    merge("jacoco-0.7.5.exec", "jacoco-it-0.7.5.exec");
+  }
+
+  private void merge(String file1, String file2) {
+    File current = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/" + file1);
+    File previous = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/" + file2);
+    JaCoCoReportMerger.mergeReports(new File(testFolder.getRoot(), "dummy"), current, previous);
+  }
 }

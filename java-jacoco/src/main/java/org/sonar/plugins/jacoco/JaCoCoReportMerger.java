@@ -72,7 +72,12 @@ public class JaCoCoReportMerger {
       if (report.isFile()) {
         try {
           JacocoReportReader jacocoReportReader = new JacocoReportReader(report).readJacocoReport(dataStore, infoStore);
-          isCurrentVersionFormat = jacocoReportReader.useCurrentBinaryFormat();
+          boolean reportFormatIsCurrent = jacocoReportReader.useCurrentBinaryFormat();
+          if (isCurrentVersionFormat == null) {
+            isCurrentVersionFormat = reportFormatIsCurrent;
+          } else if (isCurrentVersionFormat != reportFormatIsCurrent) {
+            throw new IllegalStateException("You are trying to merge two different JaCoCo binary format, please use only one version of JaCoCo.");
+          }
         } catch (IOException e) {
           throw new SonarException(String.format("Unable to read %s", report.getAbsolutePath()), e);
         }
