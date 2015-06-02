@@ -19,87 +19,97 @@
  */
 package org.sonar.java.checks;
 
+import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.junit.rules.ExpectedException;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
-import java.io.File;
+import static org.mockito.Mockito.mock;
 
 public class FileHeaderCheckTest {
+
+  @Rule
+  public ExpectedException thrown = ExpectedException.none();
 
   @Test
   public void test() {
     FileHeaderCheck check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class1.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Class1.java", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 20\\d\\d";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class1.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(null);
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Class1.java", "Add or update the header of this file.", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2005";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(null).withMessage("Add or update the header of this file.");
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Class2.java", "Add or update the header of this file.", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Class2.java", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\n// foo";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Class2.java", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r\n// foo";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Class2.java", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r// foo";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Class2.java", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\r\r// foo";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(null);
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Class2.java", "Add or update the header of this file.", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "// copyright 2012\n// foo\n\n\n\n\n\n\n\n\n\ngfoo";
-
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class2.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(null);
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Class2.java", "Add or update the header of this file.", check);
 
     check = new FileHeaderCheck();
     check.headerFormat = "/*foo http://www.example.org*/";
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Class3.java", check);
+  }
 
-    file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FileHeaderCheck/Class3.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+  @Test
+  public void regex() {
+    FileHeaderCheck check = new FileHeaderCheck();
+    check.headerFormat = "// copyright \\d\\d\\d";
+    check.isRegularExpression = true;
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Regex1.java", "Add or update the header of this file.", check);
+    // Check that the regular expression is compiled once
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Regex1.java", "Add or update the header of this file.", check);
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "// copyright \\d{4}\\n// mycompany";
+    check.isRegularExpression = true;
+
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Regex2.java", "Add or update the header of this file.", check);
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "// copyright \\d{4}\\n// mycompany";
+    check.isRegularExpression = true;
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Regex3.java", check);
+
+    check = new FileHeaderCheck();
+    check.headerFormat = "// copyright \\d{4}\\n// mycompany";
+    check.isRegularExpression = true;
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Regex4.java", "Add or update the header of this file.", check);
+  }
+
+  @Test
+  public void should_fail_with_bad_regular_expression() {
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage("[" + FileHeaderCheck.class.getSimpleName() + "] Unable to compile the regular expression: *");
+
+    FileHeaderCheck check = new FileHeaderCheck();
+    check.headerFormat = "*";
+    check.isRegularExpression = true;
+    check.scanFile(mock(JavaFileScannerContext.class));
   }
 
 }
