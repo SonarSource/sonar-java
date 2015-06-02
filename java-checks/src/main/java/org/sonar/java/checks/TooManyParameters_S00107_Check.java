@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -49,6 +50,12 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;
 
+  @RuleProperty(
+    key = "constructorMax",
+    description = "Maximum authorized number of parameters for a constructor",
+    defaultValue = "" + DEFAULT_MAXIMUM)
+  public int constructorMax = DEFAULT_MAXIMUM;
+
   private JavaFileScannerContext context;
 
   @Override
@@ -59,11 +66,19 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
 
   @Override
   public void visitMethod(MethodTree tree) {
-    int count = tree.parameters().size();
-    if (count > maximum) {
-      context.addIssue(tree, this, "Method has " + count + " parameters, which is greater than " + maximum + " authorized.");
+    int max;
+    String partialMessage;
+    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+      max = constructorMax;
+      partialMessage = "Constructor";
+    } else {
+      max = maximum;
+      partialMessage = "Method";
     }
-
+    int size = tree.parameters().size();
+    if (size > max) {
+      context.addIssue(tree, this, partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
+    }
     super.visitMethod(tree);
   }
 
