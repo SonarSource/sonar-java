@@ -23,7 +23,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public class SymbolicExecutionCheck {
+public abstract class SymbolicExecutionCheck {
 
   /**
    * called when a condition is evaluated.

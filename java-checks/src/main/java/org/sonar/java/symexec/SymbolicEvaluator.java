@@ -19,9 +19,10 @@
  */
 package org.sonar.java.symexec;
 
-import org.sonar.java.symexec.SymbolicValue.SymbolicInstanceValue;
-
+import com.google.common.collect.ImmutableMap;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.symexec.SymbolicValue.SymbolicInstanceValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -66,9 +67,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class SymbolicEvaluator {
+
+  private static final Map<Tree.Kind, SymbolicRelation> OPERATOR_TO_RELATION = ImmutableMap.<Tree.Kind, SymbolicRelation>builder()
+    .put(Tree.Kind.EQUAL_TO, SymbolicRelation.EQUAL_TO)
+    .put(Tree.Kind.GREATER_THAN, SymbolicRelation.GREATER_THAN)
+    .put(Tree.Kind.GREATER_THAN_OR_EQUAL_TO, SymbolicRelation.GREATER_EQUAL)
+    .put(Tree.Kind.LESS_THAN, SymbolicRelation.LESS_THAN)
+    .put(Tree.Kind.LESS_THAN_OR_EQUAL_TO, SymbolicRelation.LESS_EQUAL)
+    .put(Tree.Kind.NOT_EQUAL_TO, SymbolicRelation.NOT_EQUAL)
+    .build();
 
   public static void evaluateMethod(ExecutionState state, MethodTree tree, SymbolicExecutionCheck check) {
     if (tree.block() != null) {
@@ -121,28 +132,25 @@ public class SymbolicEvaluator {
     private List<ExecutionState> evaluateCondition(ExecutionState executionState, ExpressionTree tree) {
       List<ExecutionState> result = new ArrayList<>();
       ExpressionTree expressionTree = removeCastAndParenthesis(tree);
-      if (expressionTree.is(Tree.Kind.CONDITIONAL_AND)) {
-        evaluateConditionConditionalAnd(result, executionState, (BinaryExpressionTree) expressionTree);
-      } else if (expressionTree.is(Tree.Kind.CONDITIONAL_OR)) {
-        evaluateConditionConditionalOr(result, executionState, (BinaryExpressionTree) expressionTree);
-      } else if (expressionTree.is(Tree.Kind.EQUAL_TO)) {
-        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.EQUAL_TO);
-      } else if (expressionTree.is(Tree.Kind.GREATER_THAN)) {
-        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.GREATER_THAN);
-      } else if (expressionTree.is(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
-        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.GREATER_EQUAL);
-      } else if (expressionTree.is(Tree.Kind.LESS_THAN)) {
-        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.LESS_THAN);
-      } else if (expressionTree.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO)) {
-        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.LESS_EQUAL);
-      } else if (expressionTree.is(Tree.Kind.NOT_EQUAL_TO)) {
-        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, SymbolicRelation.NOT_EQUAL);
-      } else if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        evaluateConditionIdentifier(result, executionState, ((IdentifierTree) expressionTree).symbol());
-      } else if (isSuperOrThisMemberSelect(expressionTree)) {
-        evaluateConditionIdentifier(result, executionState, ((MemberSelectExpressionTree) expressionTree).identifier().symbol());
+      Tree.Kind kind = ((JavaTree) expressionTree).getKind();
+      SymbolicRelation relation = OPERATOR_TO_RELATION.get(kind);
+      if (relation != null) {
+        evaluateConditionRelationalOperator(result, executionState, (BinaryExpressionTree) expressionTree, relation);
       } else {
-        evaluateConditionOther(result, executionState, expressionTree);
+        switch (kind) {
+          case CONDITIONAL_AND:
+            evaluateConditionConditionalAnd(result, executionState, (BinaryExpressionTree) expressionTree);
+            break;
+          case CONDITIONAL_OR:
+            evaluateConditionConditionalOr(result, executionState, (BinaryExpressionTree) expressionTree);
+            break;
+          case IDENTIFIER:
+            evaluateConditionIdentifier(result, executionState, ((IdentifierTree) expressionTree).symbol());
+            break;
+          default:
+            evaluateConditionOther(result, executionState, expressionTree);
+            break;
+        }
       }
       return result;
     }
@@ -202,15 +210,19 @@ public class SymbolicEvaluator {
     }
 
     private void evaluateConditionOther(List<ExecutionState> result, ExecutionState executionState, ExpressionTree expressionTree) {
-      for (ExecutionState operatorState : evaluateWithState(executionState, expressionTree)) {
-        if (operatorState.peek().equals(SymbolicValue.BOOLEAN_FALSE) || operatorState.peek().equals(SymbolicValue.BOOLEAN_TRUE)) {
-          // condition is either true or false. nothing more needs to be done.
-          result.add(operatorState);
-        } else {
-          // condition is unknown. split without setting constraints.
-          operatorState.pop();
-          result.add(new ExecutionState(operatorState).push(SymbolicValue.BOOLEAN_FALSE));
-          result.add(new ExecutionState(operatorState).push(SymbolicValue.BOOLEAN_TRUE));
+      if (isSuperOrThisMemberSelect(expressionTree)) {
+        evaluateConditionIdentifier(result, executionState, ((MemberSelectExpressionTree) expressionTree).identifier().symbol());
+      } else {
+        for (ExecutionState operatorState : evaluateWithState(executionState, expressionTree)) {
+          if (operatorState.peek().equals(SymbolicValue.BOOLEAN_FALSE) || operatorState.peek().equals(SymbolicValue.BOOLEAN_TRUE)) {
+            // condition is either true or false. nothing more needs to be done.
+            result.add(operatorState);
+          } else {
+            // condition is unknown. split without setting constraints.
+            operatorState.pop();
+            result.add(new ExecutionState(operatorState).push(SymbolicValue.BOOLEAN_FALSE));
+            result.add(new ExecutionState(operatorState).push(SymbolicValue.BOOLEAN_TRUE));
+          }
         }
       }
     }
@@ -259,29 +271,31 @@ public class SymbolicEvaluator {
 
     @Override
     public final void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.CONDITIONAL_AND)) {
-        evaluateConditionalAnd(tree);
-      } else if (tree.is(Tree.Kind.CONDITIONAL_OR)) {
-        evaluateConditionalOr(tree);
-      } else if (tree.is(Tree.Kind.EQUAL_TO)) {
-        evaluateRelationalOperator(tree, SymbolicRelation.EQUAL_TO);
-      } else if (tree.is(Tree.Kind.GREATER_THAN)) {
-        evaluateRelationalOperator(tree, SymbolicRelation.GREATER_THAN);
-      } else if (tree.is(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
-        evaluateRelationalOperator(tree, SymbolicRelation.GREATER_EQUAL);
-      } else if (tree.is(Tree.Kind.LESS_THAN)) {
-        evaluateRelationalOperator(tree, SymbolicRelation.LESS_THAN);
-      } else if (tree.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO)) {
-        evaluateRelationalOperator(tree, SymbolicRelation.LESS_EQUAL);
-      } else if (tree.is(Tree.Kind.NOT_EQUAL_TO)) {
-        evaluateRelationalOperator(tree, SymbolicRelation.NOT_EQUAL);
+      Tree.Kind kind = ((JavaTree) tree).getKind();
+      SymbolicRelation relation = OPERATOR_TO_RELATION.get(kind);
+      if (relation != null) {
+        evaluateRelationalOperator(tree, relation);
       } else {
-        super.visitBinaryExpression(tree);
-        for (ExecutionState executionState : currentStates) {
-          executionState.pop();
-          executionState.pop();
-          executionState.push(createSymbolicInstanceValue());
+        switch (kind) {
+          case CONDITIONAL_AND:
+            evaluateConditionalAnd(tree);
+            break;
+          case CONDITIONAL_OR:
+            evaluateConditionalOr(tree);
+            break;
+          default:
+            evaluateBinaryExpressionOther(tree);
+            break;
         }
+      }
+    }
+
+    private void evaluateBinaryExpressionOther(BinaryExpressionTree tree) {
+      super.visitBinaryExpression(tree);
+      for (ExecutionState executionState : currentStates) {
+        executionState.pop();
+        executionState.pop();
+        executionState.push(createSymbolicInstanceValue());
       }
     }
 
@@ -413,7 +427,7 @@ public class SymbolicEvaluator {
       scan(tree.arguments());
       for (ExecutionState executionState : currentStates) {
         SymbolicValue[] arguments = new SymbolicValue[tree.arguments().size()];
-        for (int i = arguments.length - 1; i >= 0; i -= 1) {
+        for (int i = arguments.length - 1; i >= 0; i--) {
           arguments[i] = executionState.pop();
         }
         check.onExecutableElementInvocation(executionState, tree, Arrays.asList(arguments));
@@ -427,7 +441,7 @@ public class SymbolicEvaluator {
       scan(tree.initializers());
       SymbolicValue value = createSymbolicInstanceValue();
       for (ExecutionState executionState : currentStates) {
-        for (int i = tree.dimensions().size() + tree.initializers().size() - 1; i >= 0; i -= 1) {
+        for (int i = tree.dimensions().size() + tree.initializers().size() - 1; i >= 0; i--) {
           executionState.pop();
         }
         executionState.push(value);
@@ -440,7 +454,7 @@ public class SymbolicEvaluator {
       SymbolicValue newValue = createSymbolicInstanceValue();
       for (ExecutionState executionState : currentStates) {
         SymbolicValue[] arguments = new SymbolicValue[tree.arguments().size()];
-        for (int i = arguments.length - 1; i >= 0; i -= 1) {
+        for (int i = arguments.length - 1; i >= 0; i--) {
           arguments[i] = executionState.pop();
         }
         executionState.push(newValue);
@@ -612,7 +626,7 @@ public class SymbolicEvaluator {
       for (ExecutionState executionState : currentStates) {
         for (ExecutionState expressionState : evaluateWithState(executionState, tree.expression())) {
           expressionState.popLast();
-          for (int i = 0; i < tree.cases().size(); i += 1) {
+          for (int i = 0; i < tree.cases().size(); i++) {
             processCase(tree, i, new ExecutionState(expressionState));
             nextStates.addStates(currentStates.states);
             nextStates.addStates(currentStates.breakStates);
@@ -639,7 +653,7 @@ public class SymbolicEvaluator {
     private void processCase(SwitchStatementTree tree, int caseIndex, ExecutionState state) {
       currentStates = new PackedStatementStates();
       currentStates.addState(state);
-      for (int i = caseIndex; i < tree.cases().size(); i += 1) {
+      for (int i = caseIndex; i < tree.cases().size(); i++) {
         scan(tree.cases().get(i));
       }
     }
