@@ -79,7 +79,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
-import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -92,14 +92,14 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   /**
    * @param tree the tree to visit to get its last syntax token
-   * @return null only if the provided tree is:
+   * @return the last syntax token of the tree, or null if the provided tree is:
    * <ul>
    *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
    *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
    *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
    * </ul>
    */
-  @CheckForNull
+  @Nullable
   public static SyntaxToken lastSyntaxToken(Tree tree) {
     LastSyntaxTokenFinder visitor = new LastSyntaxTokenFinder();
     tree.accept(visitor);
@@ -324,7 +324,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitNewArray(NewArrayTree tree) {
     if (!tree.initializers().isEmpty()) {
-      // FIXME should be the close brace
+      // TODO(SONARJAVA-547) should be the close brace
       scan(Iterables.getLast(tree.initializers()));
     } else {
       scan(Iterables.getLast(tree.dimensions()));
@@ -363,7 +363,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-    // FIXME should be the last dimension
+    // FIXME should be the close bracket of the last dimension
     scan(tree.type());
   }
 
@@ -402,7 +402,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
     if (!annotationTree.arguments().isEmpty()) {
-      // FIXME should be the close parenthesis
+      // TODO(SONARJAVA-547) should be the close parenthesis token
       scan(Iterables.getLast(annotationTree.arguments()));
     } else {
       scan(annotationTree.annotationType());

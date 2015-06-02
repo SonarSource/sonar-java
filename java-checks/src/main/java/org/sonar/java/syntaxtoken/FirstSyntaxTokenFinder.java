@@ -79,6 +79,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
@@ -89,14 +90,14 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   /**
    * @param tree the tree to visit to get the first syntax token
-   * @return null only if the provided tree is:
+   * @return the first syntax token of the tree, or null if the provided tree is:
    * <ul>
    *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
    *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
    *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
    * </ul>
    */
-  @CheckForNull
+  @Nullable
   public static SyntaxToken firstSyntaxToken(Tree tree) {
     FirstSyntaxTokenFinder visitor = new FirstSyntaxTokenFinder();
     tree.accept(visitor);

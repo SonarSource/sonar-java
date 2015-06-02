@@ -106,7 +106,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(body);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(body);
     if (firstSyntaxToken == null || lastSyntaxToken == null) {
-      // Should not happen, but FirstSyntaxTokenFinder and LastSyntaxTokenFinder do not provides tokens for Tree.Kind.OTHER
+      // Only happen if the body of the lambda expression is a Tree.Kind.OTHER
       return 0;
     }
     return lastSyntaxToken.line() - firstSyntaxToken.line() + 1;
