@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -52,7 +53,7 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
   private static final MethodInvocationMatcher NEXT_INVOCATION_MATCHER =
     MethodInvocationMatcher.create()
-      .typeDefinition("java.util.Iterator")
+      .typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator"))
       .name("next");
 
   @Override

@@ -3,7 +3,7 @@ import java.util.NoSuchElementException;
 
 class A implements Iterator<String> {
   
-  public String next() { // Noncompliant
+  public String next() { // Noncompliant {{Add a "NoSuchElementException" for iteration beyond the end of the collection.}}
     if (!hasNext()){
       return null;
     }
@@ -102,4 +102,19 @@ class I implements Iterator<String> {
     throw new IndexOutOfBoundsException();
   }
   
+}
+
+class J implements Iterator<String> {
+  public String next() {
+    if (!hasNext()){
+      throw new NoSuchElementException();
+    }
+    return "x";
+  }
+}
+class K implements Iterator<String> {
+  J a;
+  public String next() {
+    return a.next(); // Compliant
+  }
 }
