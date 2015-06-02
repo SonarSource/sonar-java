@@ -70,6 +70,7 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
       .add("lombok.Data")
       .add("lombok.Builder")
       .add("lombok.ToString")
+      .add("lombok.EqualsAndHashCode")
       .add("lombok.AllArgsConstructor")
       .add("lombok.NoArgsConstructor")
       .add("lombok.RequiredArgsConstructor")

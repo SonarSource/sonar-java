@@ -109,6 +109,10 @@ class ClassLevelAnnotations8 {
 class ClassLevelAnnotations9 {
   private int foo; // Compliant
 }
+@lombok.EqualsAndHashCode
+class ClassLevelAnnotations10 {
+  private int foo; // Compliant
+}
 
 class TestSonar {
   private static Transformer TRANSFORMER = new Transformer();
