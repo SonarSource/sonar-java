@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 @SqaleConstantRemediation("10min")
 public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
-  private static final String DEFAULT_FORMAT = "^[A-Z]$";
+  private static final String DEFAULT_FORMAT = "^[A-Z][1-9]?$";
 
   @RuleProperty(
       key = "format",
