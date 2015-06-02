@@ -95,7 +95,7 @@ public class JacocoReportReader {
         JaCoCoExtensions.LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
       }
       return isCurrentFormat;
-    } catch (IOException e) {
+    } catch (IOException | IllegalStateException e) {
       throw new SonarException(String.format("Unable to read %s to determine JaCoCo binary format.", jacocoExecutionData.getAbsolutePath()), e);
     }
   }
