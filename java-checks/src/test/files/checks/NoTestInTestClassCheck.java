@@ -25,3 +25,7 @@ enum MyTest {}
 class AnonymousClass extends junit.framework.TestCase{
   void testfoo(){}
 }
+
+public abstract class AbstractIntegrationTest { //designed for extension should not raise issue.
+
+}

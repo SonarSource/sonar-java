@@ -23,10 +23,12 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -56,8 +58,10 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
     for (Tree typeTree : cut.types()) {
       if (typeTree.is(Kind.CLASS)) {
         ClassTree classTree = (ClassTree) typeTree;
-        checkJunit3TestClass(classTree);
-        checkJunit4TestClass(classTree);
+        if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
+          checkJunit3TestClass(classTree);
+          checkJunit4TestClass(classTree);
+        }
       }
     }
   }
