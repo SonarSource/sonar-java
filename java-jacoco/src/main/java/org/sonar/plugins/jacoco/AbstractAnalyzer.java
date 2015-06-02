@@ -41,12 +41,10 @@ import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
 import org.sonar.api.test.Testable;
-import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -139,11 +137,7 @@ public abstract class AbstractAnalyzer {
       jacocoExecutionData = null;
     }
     ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
-    try {
-      jacocoReportReader = new JacocoReportReader(jacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
-    } catch (IOException e) {
-      throw new SonarException("An error occured while reading JaCoCo report", e);
-    }
+    jacocoReportReader = new JacocoReportReader(jacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
 
     boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor);
 

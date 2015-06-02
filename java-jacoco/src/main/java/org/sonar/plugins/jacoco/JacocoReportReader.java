@@ -27,8 +27,10 @@ import org.jacoco.core.data.ExecutionDataStore;
 import org.jacoco.core.data.ExecutionDataWriter;
 import org.jacoco.core.data.IExecutionDataVisitor;
 import org.jacoco.core.data.ISessionInfoVisitor;
+import org.sonar.api.utils.SonarException;
 
 import javax.annotation.Nullable;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -43,7 +45,7 @@ public class JacocoReportReader {
   private final File jacocoExecutionData;
   private final boolean useCurrentBinaryFormat;
 
-  public JacocoReportReader(@Nullable File jacocoExecutionData) throws IOException {
+  public JacocoReportReader(@Nullable File jacocoExecutionData) {
     this.jacocoExecutionData = jacocoExecutionData;
     this.useCurrentBinaryFormat = isCurrentReportFormat(jacocoExecutionData);
   }
@@ -55,10 +57,11 @@ public class JacocoReportReader {
    * @return true if binary format is the latest one.
    * @throws IOException in case of error or binary format not supported.
    */
-  public JacocoReportReader readJacocoReport(IExecutionDataVisitor executionDataVisitor, ISessionInfoVisitor sessionInfoStore) throws IOException {
-    if(jacocoExecutionData == null) {
+  public JacocoReportReader readJacocoReport(IExecutionDataVisitor executionDataVisitor, ISessionInfoVisitor sessionInfoStore) {
+    if (jacocoExecutionData == null) {
       return this;
     }
+
     JaCoCoExtensions.LOG.info("Analysing {}", jacocoExecutionData);
     try (InputStream inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData))) {
       if (useCurrentBinaryFormat) {
@@ -72,12 +75,14 @@ public class JacocoReportReader {
         reader.setExecutionDataVisitor(executionDataVisitor);
         reader.read();
       }
+    } catch (IOException e) {
+      throw new SonarException(String.format("Unable to read %s", jacocoExecutionData.getAbsolutePath()), e);
     }
     return this;
   }
 
-  private static boolean isCurrentReportFormat(@Nullable File jacocoExecutionData) throws IOException {
-    if(jacocoExecutionData == null) {
+  private static boolean isCurrentReportFormat(@Nullable File jacocoExecutionData) {
+    if (jacocoExecutionData == null) {
       return true;
     }
     try (DataInputStream dis = new DataInputStream(new FileInputStream(jacocoExecutionData))) {
@@ -90,6 +95,8 @@ public class JacocoReportReader {
         JaCoCoExtensions.LOG.warn("You are not using the latest JaCoCo binary format version, please consider upgrading to latest JaCoCo version.");
       }
       return isCurrentFormat;
+    } catch (IOException e) {
+      throw new SonarException(String.format("Unable to read %s to determine JaCoCo binary format.", jacocoExecutionData.getAbsolutePath()), e);
     }
   }
 
@@ -136,6 +143,5 @@ public class JacocoReportReader {
       JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
     }
   }
-
 
 }
