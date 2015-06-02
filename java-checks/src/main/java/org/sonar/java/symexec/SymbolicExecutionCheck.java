@@ -17,16 +17,32 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.symexec;
 
-import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class UselessConditionCheckTest {
+import java.util.List;
 
-  @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
+public abstract class SymbolicExecutionCheck {
+
+  /**
+   * called when a condition is evaluated.
+   *
+   * @param executionState execution state
+   * @param tree parent tree (if, do...while, for, switch)
+   * @param result result of the computation
+   */
+  protected void onCondition(ExecutionState executionState, Tree tree, SymbolicValue result) {
+  }
+
+  /**
+   * called when a constructor or method is invoked.
+   *
+   * @param executionState execution state
+   * @param tree method invocation, constructor tree or new class tree
+   * @param arguments symbolic values of the arguments
+   */
+  protected void onExecutableElementInvocation(ExecutionState executionState, Tree tree, List<SymbolicValue> arguments) {
   }
 
 }

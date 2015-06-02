@@ -19,17 +19,29 @@
  */
 package org.sonar.java.symexec;
 
-import com.google.common.base.Preconditions;
-import org.sonar.plugins.java.api.semantic.Symbol;
+public abstract class SymbolicValue {
 
-abstract class SymbolicValue {
-
-  private SymbolicValue() {
+  SymbolicValue() {
   }
 
-  static final SymbolicBooleanValue BOOLEAN_TRUE = new SymbolicBooleanValue();
+  static final SymbolicBooleanValue BOOLEAN_FALSE = new SymbolicBooleanValue("false");
+
+  static final SymbolicBooleanValue BOOLEAN_TRUE = new SymbolicBooleanValue("true");
 
   static final class SymbolicBooleanValue extends SymbolicValue {
+    private final String value;
+
+    public SymbolicBooleanValue(String value) {
+      this.value = value;
+    }
+
+    @Override
+    public String toString() {
+      return this.value;
+    }
+  }
+
+  public static final class SymbolicInstanceValue extends SymbolicValue {
   }
 
   static final class SymbolicLongValue extends SymbolicValue {
@@ -48,24 +60,10 @@ abstract class SymbolicValue {
     public int hashCode() {
       return (int) (value ^ (value >>> 32));
     }
-  }
-
-  static final class SymbolicVariableValue extends SymbolicValue {
-    final Symbol.VariableSymbol variable;
-
-    SymbolicVariableValue(Symbol.VariableSymbol variable) {
-      Preconditions.checkNotNull(variable);
-      this.variable = variable;
-    }
 
     @Override
-    public boolean equals(Object that) {
-      return that instanceof SymbolicVariableValue && variable.equals(((SymbolicVariableValue) that).variable);
-    }
-
-    @Override
-    public int hashCode() {
-      return variable.hashCode();
+    public String toString() {
+      return Long.toString(value);
     }
   }
 

@@ -72,6 +72,19 @@ enum SymbolicRelation {
 
   private static final Map<Integer, SymbolicRelation> FLAGS_CONSTANT_MAP = HashBiMap.create(CONSTANT_FLAGS_MAP).inverse();
 
+  public SymbolicBooleanConstraint combine(SymbolicRelation other) {
+    if (other != UNKNOWN) {
+      int thisFlags = CONSTANT_FLAGS_MAP.get(this);
+      int and = thisFlags & CONSTANT_FLAGS_MAP.get(other);
+      if (and == 0) {
+        return SymbolicBooleanConstraint.FALSE;
+      } else if (and == thisFlags) {
+        return SymbolicBooleanConstraint.TRUE;
+      }
+    }
+    return SymbolicBooleanConstraint.UNKNOWN;
+  }
+
   public SymbolicRelation negate() {
     return NEGATE_MAP.get(this);
   }

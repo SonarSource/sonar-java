@@ -19,21 +19,23 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
 import org.sonar.java.symexec.SymbolicBooleanConstraint;
 import org.sonar.java.symexec.SymbolicEvaluator;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.java.symexec.SymbolicExecutionCheck;
+import org.sonar.java.symexec.SymbolicValue;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Rule(
@@ -44,21 +46,18 @@ import java.util.Map;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
-
-  private SymbolicEvaluator engine = new SymbolicEvaluator();
+public class UselessConditionCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitMethod(MethodTree tree) {
-    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : engine.evaluateMethod(new ExecutionState(), tree).entrySet()) {
+  public void visitNode(Tree tree) {
+    Check check = new Check();
+    SymbolicEvaluator.evaluateMethod(new ExecutionState(), (MethodTree) tree, check);
+    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : check.values.entrySet()) {
       switch (entry.getValue()) {
         case FALSE:
           raiseIssue(entry.getKey(), "false");
@@ -73,7 +72,16 @@ public class UselessConditionCheck extends BaseTreeVisitor implements JavaFileSc
   }
 
   private void raiseIssue(Tree tree, String value) {
-    context.addIssue(tree, this, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
+    addIssue(tree, String.format("Change this condition so that it does not always evaluate to \"%s\"", value));
+  }
+
+  private static class Check extends SymbolicExecutionCheck {
+    private Map<Tree, SymbolicBooleanConstraint> values = new HashMap<>();
+
+    @Override
+    protected void onCondition(ExecutionState executionState, Tree tree, SymbolicValue result) {
+      values.put(tree, executionState.getBooleanConstraint(result).union(values.get(tree)));
+    }
   }
 
 }
