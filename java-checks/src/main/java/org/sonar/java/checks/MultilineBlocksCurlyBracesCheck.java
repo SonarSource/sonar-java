@@ -31,11 +31,14 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.Locale;
 
 @Rule(
   key = "S2681",
@@ -47,8 +50,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static String LOOP_MESSAGE = "Only the first line of this n-line block will be executed in a loop. The rest will execute only once.";
-  private static String IF_MESSAGE = "Only the first line of this n-line block will be executed conditionally. The rest will execute unconditionally.";
+  private static String LOOP_MESSAGE = "Only the first line of this %d-line block will be executed in a loop. The rest will execute only once.";
+  private static String IF_MESSAGE = "Only the first line of this %d-line block will be executed conditionally. The rest will execute unconditionally.";
   private JavaFileScannerContext context;
 
   @Override
@@ -83,10 +86,14 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
       condition = true;
     }
     if (block != null && !block.is(Tree.Kind.BLOCK)) {
-      int previousColumn = FirstSyntaxTokenFinder.firstSyntaxToken(block).column();
-      int currentColumn = FirstSyntaxTokenFinder.firstSyntaxToken(current).column();
+      SyntaxToken previousToken = FirstSyntaxTokenFinder.firstSyntaxToken(block);
+      int previousColumn = previousToken.column();
+      int previousLine = previousToken.line();
+      SyntaxToken currentToken = FirstSyntaxTokenFinder.firstSyntaxToken(current);
+      int currentColumn = currentToken.column();
+      int currentLine = currentToken.line();
       if (previousColumn == currentColumn) {
-        context.addIssue(current, this, condition ? IF_MESSAGE : LOOP_MESSAGE);
+        context.addIssue(current, this, String.format(Locale.US, condition ? IF_MESSAGE : LOOP_MESSAGE, 1 + currentLine - previousLine));
       }
     }
   }
