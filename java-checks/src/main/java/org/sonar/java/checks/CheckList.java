@@ -334,6 +334,7 @@ public final class CheckList {
       .add(MultilineBlocksCurlyBracesCheck.class)
       .add(EnumMapCheck.class)
       .add(FileCreateTempFileCheck.class)
+      .add(BooleanInversionCheck.class)
       .build();
   }
 
