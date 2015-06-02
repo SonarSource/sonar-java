@@ -35,7 +35,7 @@ public class BadTypeParameterName_S00119_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Rename this generic name to match the regular expression '^[A-Z]$'.")
+        .next().atLine(1).withMessage("Rename this generic name to match the regular expression '^[A-Z][1-9]?$'.")
         .next().atLine(2)
         .noMore();
   }
