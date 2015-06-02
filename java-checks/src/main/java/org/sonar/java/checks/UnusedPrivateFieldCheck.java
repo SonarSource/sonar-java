@@ -57,7 +57,24 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
 
-  private static final String LOMBOK_GETTER = "lombok.Getter";
+  private static final List<String> EXCLUDED_ANNOTATIONS_FIELD = ImmutableList.<String>builder()
+      .add("lombok.Getter")
+      .add("lombok.Setter")
+      .add("javax.enterprise.inject.Produces")
+      .build();
+
+  private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
+      .add("lombok.Getter")
+      .add("lombok.Setter")
+      .add("lombok.Value")
+      .add("lombok.Data")
+      .add("lombok.Builder")
+      .add("lombok.ToString")
+      .add("lombok.AllArgsConstructor")
+      .add("lombok.NoArgsConstructor")
+      .add("lombok.RequiredArgsConstructor")
+      .build();
+
 
   private static final Tree.Kind[] ASSIGNMENT_KINDS = {
     Tree.Kind.ASSIGNMENT,
@@ -115,7 +132,7 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkClassFields(ClassTree classTree) {
-    if (!hasAnnotation(classTree.modifiers(), LOMBOK_GETTER)) {
+    if (!hasExcludedAnnotation(classTree)) {
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
           checkIfUnused((VariableTree) member);
@@ -123,6 +140,7 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
       }
     }
   }
+
 
   public void checkIfUnused(VariableTree tree) {
     if (ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
@@ -132,10 +150,21 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
       }
     }
   }
+  private boolean hasExcludedAnnotation(ClassTree classTree) {
+    return hasExcludedAnnotation(classTree.modifiers(), EXCLUDED_ANNOTATIONS_TYPE);
+  }
 
   private boolean hasExcludedAnnotation(VariableTree tree) {
-    ModifiersTree modifiers = tree.modifiers();
-    return hasAnnotation(modifiers, LOMBOK_GETTER) || hasAnnotation(modifiers, "javax.enterprise.inject.Produces");
+    return hasExcludedAnnotation(tree.modifiers(), EXCLUDED_ANNOTATIONS_FIELD);
+  }
+
+  private boolean hasExcludedAnnotation(ModifiersTree modifiers, List<String> excludedAnnotations) {
+    for (String excludedAnnotation : excludedAnnotations) {
+      if(hasAnnotation(modifiers, excludedAnnotation)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private boolean hasAnnotation(ModifiersTree modifiers, String annotationName) {
