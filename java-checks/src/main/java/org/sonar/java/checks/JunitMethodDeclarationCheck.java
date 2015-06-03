@@ -126,7 +126,7 @@ public class JunitMethodDeclarationCheck extends BaseTreeVisitor implements Java
     context.addIssue(methodTree, this, "This method should be named \"" + expected + "\" not \"" + actual + "\".");
   }
 
-  private boolean isJunit3Class(ClassTree classTree) {
+  private static boolean isJunit3Class(ClassTree classTree) {
     return classTree.symbol().type().isSubtypeOf("junit.framework.TestCase");
   }
 

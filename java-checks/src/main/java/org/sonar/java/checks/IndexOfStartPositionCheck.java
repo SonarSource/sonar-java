@@ -89,7 +89,7 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private ExpressionTree removeParenthesis(ExpressionTree expression) {
+  private static ExpressionTree removeParenthesis(ExpressionTree expression) {
     ExpressionTree result = expression;
     while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       result = ((ParenthesizedTree) result).expression();

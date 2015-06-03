@@ -134,14 +134,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     return isChainedToVerify || isChainedToAssertThatWithBadResolution || isAssertion(mit);
   }
 
-  private boolean isAssertion(MethodInvocationTree mit) {
+  private static boolean isAssertion(MethodInvocationTree mit) {
     return ASSERTION_INVOCATION_MATCHERS.anyMatch(mit) &&
       !FEST_AS_METHOD.matches(mit) &&
       !FEST_OVERRIDE_ERROR_METHOD.matches(mit) &&
       !FEST_DESCRIBED_AS_METHOD.matches(mit);
   }
 
-  private boolean isUnitTest(MethodTree methodTree) {
+  private static boolean isUnitTest(MethodTree methodTree) {
     if (methodTree.symbol().metadata().isAnnotatedWith("org.junit.Test")) {
       return true;
     }

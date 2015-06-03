@@ -138,7 +138,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     }
   }
 
-  private boolean isMutableType(Type type) {
+  private static boolean isMutableType(Type type) {
     if (type.isArray()) {
       return true;
     }
@@ -150,7 +150,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     return false;
   }
 
-  private boolean isNotImmutable(Type type) {
+  private static boolean isNotImmutable(Type type) {
     for (String immutableType : IMMUTABLE_TYPES) {
       if (type.isSubtypeOf(immutableType)) {
         return false;

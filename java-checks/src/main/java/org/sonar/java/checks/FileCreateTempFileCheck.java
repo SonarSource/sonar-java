@@ -109,7 +109,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     }
   }
 
-  private boolean isFileCreateTempFile(ExpressionTree givenExpression) {
+  private static boolean isFileCreateTempFile(ExpressionTree givenExpression) {
     ExpressionTree expressionTree = removeParenthesis(givenExpression);
     return expressionTree.is(Tree.Kind.METHOD_INVOCATION) && FILE_CREATE_TEMP_FILE.matches((MethodInvocationTree) expressionTree);
   }
