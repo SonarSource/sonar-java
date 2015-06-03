@@ -85,7 +85,21 @@ class Fruit {
   private static final Fruit.StaticSeed instance = new Fruit.StaticSeed(5){
   };
 
-  // Coverage
   public interface Interface {
   }
+
+  public void noncompliant() {
+    class Seed implements Interface { // Noncompliant
+      public void foo() {
+        return;
+      }
+    }
+
+    Interface inter = new Interface() { // Noncompliant
+      public void foo() {
+        return;
+      }
+    };
+  }
+
 }
