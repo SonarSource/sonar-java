@@ -81,7 +81,7 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     result.setStackTrace(stack);
   }
 
-  private UnitTestResult parseTestResult(SMInputCursor testCaseCursor) throws XMLStreamException {
+  private static UnitTestResult parseTestResult(SMInputCursor testCaseCursor) throws XMLStreamException {
     UnitTestResult detail = new UnitTestResult();
     String name = getTestCaseName(testCaseCursor);
     detail.setName(name);

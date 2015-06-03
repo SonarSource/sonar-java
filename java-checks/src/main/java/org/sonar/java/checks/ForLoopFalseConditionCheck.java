@@ -73,7 +73,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
     return null;
   }
 
-  private boolean isConditionFalseAtInitialization(ForStatementTree forStatement) {
+  private static boolean isConditionFalseAtInitialization(ForStatementTree forStatement) {
     Iterable<ForLoopInitializer> initializers = ForLoopInitializer.list(forStatement);
     ExpressionTree condition = forStatement.condition();
     if (!condition.is(Tree.Kind.GREATER_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO)) {

@@ -151,15 +151,15 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
       }
     }
   }
-  private boolean hasExcludedAnnotation(ClassTree classTree) {
+  private static boolean hasExcludedAnnotation(ClassTree classTree) {
     return hasExcludedAnnotation(classTree.modifiers(), EXCLUDED_ANNOTATIONS_TYPE);
   }
 
-  private boolean hasExcludedAnnotation(VariableTree tree) {
+  private static boolean hasExcludedAnnotation(VariableTree tree) {
     return hasExcludedAnnotation(tree.modifiers(), EXCLUDED_ANNOTATIONS_FIELD);
   }
 
-  private boolean hasExcludedAnnotation(ModifiersTree modifiers, List<String> excludedAnnotations) {
+  private static boolean hasExcludedAnnotation(ModifiersTree modifiers, List<String> excludedAnnotations) {
     for (String excludedAnnotation : excludedAnnotations) {
       if(hasAnnotation(modifiers, excludedAnnotation)) {
         return true;

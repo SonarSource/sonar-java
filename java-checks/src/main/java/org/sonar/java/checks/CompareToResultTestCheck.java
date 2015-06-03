@@ -107,7 +107,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isNonZeroInt(ExpressionTree expression) {
+  private static boolean isNonZeroInt(ExpressionTree expression) {
     return isNonZeroIntLiteral(expression)
       || (expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression()));
   }

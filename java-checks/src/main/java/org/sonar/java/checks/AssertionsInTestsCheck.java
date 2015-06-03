@@ -127,7 +127,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     }
   }
 
-  private boolean containsAssertion(MethodInvocationTree mit, ChainedMethods chainedToResult) {
+  private static boolean containsAssertion(MethodInvocationTree mit, ChainedMethods chainedToResult) {
     // ignore assertThat chained with bad resolution method invocations
     boolean isChainedToAssertThatWithBadResolution = ChainedMethods.ASSERT_THAT.equals(chainedToResult) && mit.symbol().isUnknown();
     boolean isChainedToVerify = ChainedMethods.MOCKITO_VERIFY.equals(chainedToResult);
