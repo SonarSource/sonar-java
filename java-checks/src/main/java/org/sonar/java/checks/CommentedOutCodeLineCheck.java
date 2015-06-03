@@ -122,7 +122,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
    * Documentation comments should be recognized only when placed
    * immediately before class, interface, constructor, method, or field declarations.
    */
-  private boolean isJavadoc(String comment) {
+  private static boolean isJavadoc(String comment) {
     return StringUtils.startsWith(comment, "/**");
   }
 
@@ -133,7 +133,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
    * between the end of the parameter list and the trailing semicolon.
    * A JSNI comment block begins with the exact token {@link #START_JSNI} and ends with the exact token {@link #END_JSNI}.
    */
-  private boolean isJSNI(String comment) {
+  private static boolean isJSNI(String comment) {
     return StringUtils.startsWith(comment, START_JSNI) && StringUtils.endsWith(comment, END_JSNI);
   }
 

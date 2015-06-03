@@ -51,7 +51,7 @@ public class EqualsOnAtomicClassCheck extends AbstractMethodDetection {
       equalsInvocationMatcher("java.util.concurrent.atomic.AtomicLong"));
   }
 
-  private MethodInvocationMatcher equalsInvocationMatcher(String fullyQualifiedName) {
+  private static MethodInvocationMatcher equalsInvocationMatcher(String fullyQualifiedName) {
     return MethodInvocationMatcher.create()
       .callSite(TypeCriteria.is(fullyQualifiedName))
       .name("equals")

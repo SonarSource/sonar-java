@@ -62,11 +62,11 @@ public class HasNextCallingNextCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isHasNextMethod(MethodTree methodTree) {
+  private static boolean isHasNextMethod(MethodTree methodTree) {
     return "hasNext".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && isIteratorMethod(methodTree.symbol());
   }
 
-  private boolean isIteratorMethod(Symbol method) {
+  private static boolean isIteratorMethod(Symbol method) {
     Type type = method.owner().enclosingClass().type();
     return !type.is("java.util.Iterator") && type.isSubtypeOf("java.util.Iterator");
   }

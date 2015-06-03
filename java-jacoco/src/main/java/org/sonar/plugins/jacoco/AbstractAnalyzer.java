@@ -212,7 +212,7 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
+  private static List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
     List<Integer> linesCover = newArrayList();
     for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
       if (hitsByLine.getValue() > 0) {
@@ -237,7 +237,7 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
+  private static CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;

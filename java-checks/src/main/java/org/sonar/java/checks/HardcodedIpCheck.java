@@ -68,7 +68,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
-  private boolean areAllBelow256(Iterable<String> numbersAsStrings) {
+  private static boolean areAllBelow256(Iterable<String> numbersAsStrings) {
     for (String numberAsString : numbersAsStrings) {
       if (Integer.valueOf(numberAsString) > 255) {
         return false;

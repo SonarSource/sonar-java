@@ -80,7 +80,7 @@ public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implement
     super.visitClass(tree);
   }
 
-  private boolean isAbstract(ClassTree tree) {
+  private static boolean isAbstract(ClassTree tree) {
     return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT);
   }
 

@@ -65,7 +65,7 @@ public class NonShortCircuitLogicCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isBoolean(ExpressionTree expression) {
+  private static boolean isBoolean(ExpressionTree expression) {
     return expression.symbolType().is("boolean") || expression.symbolType().is("java.lang.Boolean");
   }
 

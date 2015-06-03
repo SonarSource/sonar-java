@@ -53,7 +53,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
       arrayMethodInvocation("hashCode"));
   }
 
-  private MethodInvocationMatcher arrayMethodInvocation(String methodName) {
+  private static MethodInvocationMatcher arrayMethodInvocation(String methodName) {
     return MethodInvocationMatcher.create()
       .callSite(IS_ARRAY)
       .name(methodName);

@@ -57,7 +57,7 @@ public class AsmMethodVisitor extends MethodVisitor {
     emptyMethod = false;
   }
 
-  private boolean isNotCallToJavaArrayMethod(String internalName) {
+  private static boolean isNotCallToJavaArrayMethod(String internalName) {
     return internalName.charAt(0) != '[';
   }
 

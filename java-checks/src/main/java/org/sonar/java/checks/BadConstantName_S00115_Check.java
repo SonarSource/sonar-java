@@ -87,7 +87,7 @@ public class BadConstantName_S00115_Check extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isConstantType(Type symbolType) {
+  private static boolean isConstantType(Type symbolType) {
     return symbolType.isPrimitive() || symbolType.is("java.lang.String") || ((JavaType) symbolType).isPrimitiveWrapper();
   }
 
@@ -97,7 +97,7 @@ public class BadConstantName_S00115_Check extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isStaticFinal(VariableTree variableTree) {
+  private static boolean isStaticFinal(VariableTree variableTree) {
     boolean isStatic = false;
     boolean isFinal = false;
     for (ModifierKeywordTree modifierKeywordTree : variableTree.modifiers().modifiers()) {

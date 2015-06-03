@@ -75,7 +75,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isAnonymous(ClassTree classTree) {
+  private static boolean isAnonymous(ClassTree classTree) {
     return classTree.simpleName() == null;
   }
 
@@ -105,18 +105,18 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return null;
   }
 
-  private boolean isSerializable(Type type) {
+  private static boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isExclusion(Symbol.TypeSymbol symbol) {
+  private static boolean isExclusion(Symbol.TypeSymbol symbol) {
     return symbol.isAbstract()
       || symbol.type().isSubtypeOf("java.lang.Throwable")
       || isGuiClass((TypeJavaSymbol) symbol)
       || hasSuppressWarningAnnotation((TypeJavaSymbol) symbol);
   }
 
-  private boolean isGuiClass(TypeJavaSymbol symbol) {
+  private static boolean isGuiClass(TypeJavaSymbol symbol) {
     for (ClassJavaType superType : symbol.superTypes()) {
       TypeJavaSymbol superTypeSymbol = superType.getSymbol();
       if (hasGuiPackage(superTypeSymbol)) {
@@ -126,12 +126,12 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return hasGuiPackage(symbol) || (!symbol.equals(symbol.outermostClass()) && isGuiClass(symbol.outermostClass()));
   }
 
-  private boolean hasGuiPackage(TypeJavaSymbol superTypeSymbol) {
+  private static boolean hasGuiPackage(TypeJavaSymbol superTypeSymbol) {
     String fullyQualifiedName = superTypeSymbol.getFullyQualifiedName();
     return fullyQualifiedName.startsWith("javax.swing.") || fullyQualifiedName.startsWith("java.awt.");
   }
 
-  private boolean hasSuppressWarningAnnotation(TypeJavaSymbol symbol) {
+  private static boolean hasSuppressWarningAnnotation(TypeJavaSymbol symbol) {
     List<SymbolMetadata.AnnotationValue> annotations = symbol.metadata().valuesForAnnotation("java.lang.SuppressWarnings");
     if (annotations != null) {
       for (SymbolMetadata.AnnotationValue annotationValue : annotations) {
@@ -143,7 +143,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private String stringLiteralValue(Object object) {
+  private static String stringLiteralValue(Object object) {
     if (object instanceof LiteralTree) {
       LiteralTree literal = (LiteralTree) object;
       return LiteralUtils.trimQuotes(literal.value());

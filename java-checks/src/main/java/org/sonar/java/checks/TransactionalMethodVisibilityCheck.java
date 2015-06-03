@@ -60,7 +60,7 @@ public class TransactionalMethodVisibilityCheck extends SubscriptionBaseVisitor 
     }
   }
 
-  private boolean hasTransactionalAnnotation(MethodTree method) {
+  private static boolean hasTransactionalAnnotation(MethodTree method) {
     for (AnnotationTree annotation : method.modifiers().annotations()) {
       if (annotation.symbolType().is("org.springframework.transaction.annotation.Transactional")) {
         return true;

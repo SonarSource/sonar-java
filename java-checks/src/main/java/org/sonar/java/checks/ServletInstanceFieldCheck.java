@@ -59,15 +59,12 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isOwnedByAServlet(VariableTree variable) {
+  private static boolean isOwnedByAServlet(VariableTree variable) {
     Symbol owner = variable.symbol().owner();
-    if (owner.isTypeSymbol()) {
-      return owner.type().isSubtypeOf("javax.servlet.http.HttpServlet") || owner.type().isSubtypeOf("org.apache.struts.action.Action");
-    }
-    return false;
+    return owner.isTypeSymbol() && (owner.type().isSubtypeOf("javax.servlet.http.HttpServlet") || owner.type().isSubtypeOf("org.apache.struts.action.Action"));
   }
 
-  private boolean isStaticOrFinal(VariableTree variable) {
+  private static boolean isStaticOrFinal(VariableTree variable) {
     ModifiersTree modifiers = variable.modifiers();
     return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) || ModifiersUtils.hasModifier(modifiers, Modifier.FINAL);
   }

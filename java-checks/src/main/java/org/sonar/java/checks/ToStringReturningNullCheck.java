@@ -66,11 +66,11 @@ public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isToStringDeclaration(MethodTree method) {
+  private static boolean isToStringDeclaration(MethodTree method) {
     return "toString".equals(method.simpleName().name()) && method.parameters().isEmpty();
   }
 
-  private boolean isReturnNull(ReturnStatementTree returnStatement) {
+  private static boolean isReturnNull(ReturnStatementTree returnStatement) {
     return returnStatement.expression().is(Tree.Kind.NULL_LITERAL);
   }
 

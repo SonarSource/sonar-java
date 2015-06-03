@@ -73,7 +73,7 @@ public class RedundantModifierCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isInterfaceOrAnnotation(Tree tree) {
+  private static boolean isInterfaceOrAnnotation(Tree tree) {
     return tree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
   }
 

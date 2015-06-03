@@ -63,15 +63,15 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isNotSerializableMissingNoArgConstructor(@Nullable Type superclass) {
+  private static boolean isNotSerializableMissingNoArgConstructor(@Nullable Type superclass) {
     return superclass != null && !isSerializable(superclass) && !hasNonPrivateNoArgConstructor(superclass);
   }
 
-  private boolean isSerializable(Type type) {
+  private static boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean hasNonPrivateNoArgConstructor(Type type) {
+  private static boolean hasNonPrivateNoArgConstructor(Type type) {
     Collection<Symbol> constructors = type.symbol().lookupSymbols("<init>");
     for (Symbol member : constructors) {
       if (member.isMethodSymbol()) {

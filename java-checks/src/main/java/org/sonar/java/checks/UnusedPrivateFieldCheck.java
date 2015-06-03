@@ -168,7 +168,7 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean hasAnnotation(ModifiersTree modifiers, String annotationName) {
+  private static boolean hasAnnotation(ModifiersTree modifiers, String annotationName) {
     for (AnnotationTree annotation : modifiers.annotations()) {
       if (annotation.symbolType().is(annotationName)) {
         return true;

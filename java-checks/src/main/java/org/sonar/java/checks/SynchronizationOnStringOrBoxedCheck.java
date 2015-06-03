@@ -68,7 +68,7 @@ public class SynchronizationOnStringOrBoxedCheck extends SubscriptionBaseVisitor
     }
   }
 
-  private boolean isForbiddenType(Type expressionType) {
+  private static boolean isForbiddenType(Type expressionType) {
     for (String forbiddenType : FORBIDDEN_TYPES) {
       if (expressionType.is(forbiddenType)) {
         return true;

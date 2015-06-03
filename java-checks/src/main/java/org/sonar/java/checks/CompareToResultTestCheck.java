@@ -112,11 +112,11 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
       || (expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression()));
   }
 
-  private boolean isNonZeroIntLiteral(ExpressionTree expression) {
+  private static boolean isNonZeroIntLiteral(ExpressionTree expression) {
     return expression.is(Tree.Kind.INT_LITERAL) && !"0".equals(((LiteralTree) expression).value());
   }
   
-  private boolean isReassigned(Symbol variableSymbol, Tree method) {
+  private static boolean isReassigned(Symbol variableSymbol, Tree method) {
     Collection<IdentifierTree> usages = variableSymbol.usages();
     ReAssignmentFinder reAssignmentFinder = new ReAssignmentFinder(usages);
     method.accept(reAssignmentFinder);

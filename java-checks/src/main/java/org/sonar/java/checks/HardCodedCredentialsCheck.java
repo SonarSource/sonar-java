@@ -82,16 +82,16 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isSettingPassword(MethodInvocationTree tree) {
+  private static boolean isSettingPassword(MethodInvocationTree tree) {
     List<ExpressionTree> arguments = tree.arguments();
     return arguments.size() == 2 && argumentsAreLiterals(arguments) && isPassword((LiteralTree) arguments.get(0));
   }
 
-  private boolean isPassword(LiteralTree argument) {
+  private static boolean isPassword(LiteralTree argument) {
     return argument.is(Tree.Kind.STRING_LITERAL) && PASSWORD_VARIABLE_PATTERN.matcher(LiteralUtils.trimQuotes(argument.value())).matches();
   }
 
-  private boolean argumentsAreLiterals(List<ExpressionTree> arguments) {
+  private static boolean argumentsAreLiterals(List<ExpressionTree> arguments) {
     for (ExpressionTree argument : arguments) {
       if (!argument.is(
         Kind.INT_LITERAL,
@@ -108,15 +108,15 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
     return true;
   }
 
-  private boolean isStringLiteral(ExpressionTree initializer) {
+  private static boolean isStringLiteral(ExpressionTree initializer) {
     return initializer != null && initializer.is(Tree.Kind.STRING_LITERAL);
   }
 
-  private boolean isPasswordVariableName(IdentifierTree identifierTree) {
+  private static boolean isPasswordVariableName(IdentifierTree identifierTree) {
     return PASSWORD_VARIABLE_PATTERN.matcher(identifierTree.name()).find();
   }
 
-  private boolean isPasswordVariable(ExpressionTree variable) {
+  private static boolean isPasswordVariable(ExpressionTree variable) {
     if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       return isPasswordVariableName(((MemberSelectExpressionTree) variable).identifier());
     } else if (variable.is(Tree.Kind.IDENTIFIER)) {

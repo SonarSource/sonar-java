@@ -65,7 +65,7 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     }
   }
 
-  private boolean isNotSerializable(Symbol.TypeSymbol symbol) {
+  private static boolean isNotSerializable(Symbol.TypeSymbol symbol) {
     for (Type superType : ((TypeJavaSymbol) symbol).superTypes()) {
       if (superType.isUnknown()) {
         return false;
@@ -74,7 +74,7 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     return !symbol.type().isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isTransient(Tree tree) {
+  private static boolean isTransient(Tree tree) {
     if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
       return ModifiersUtils.hasModifier(variable.modifiers(), Modifier.TRANSIENT);

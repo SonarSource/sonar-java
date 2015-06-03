@@ -95,7 +95,7 @@ public final class ParameterSignatureScanner {
     return new Parameter(jvmJavaType, isArray);
   }
 
-  private int searchEndOfParameterSignature(String signature, int index) {
+  private static int searchEndOfParameterSignature(String signature, int index) {
     int genericDefinitionStack = 0;
     for (; index < signature.length(); index++) {
       char character = signature.charAt(index);

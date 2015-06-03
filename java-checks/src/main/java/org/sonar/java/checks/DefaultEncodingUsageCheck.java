@@ -149,7 +149,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_UTIL_SCANNER, JAVA_IO_INPUTSTREAM));
   }
 
-  private MethodInvocationMatcher method(String type, String methodName, String... argTypes) {
+  private static MethodInvocationMatcher method(String type, String methodName, String... argTypes) {
     MethodInvocationMatcher matcher = MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
     for (String argType : argTypes) {
       matcher = matcher.addParameter(argType);
@@ -157,7 +157,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
     return matcher;
   }
 
-  private MethodInvocationMatcher constructor(String type, String... argTypes) {
+  private static MethodInvocationMatcher constructor(String type, String... argTypes) {
     return method(type, "<init>", argTypes);
   }
 

@@ -69,7 +69,7 @@ public class Parameter {
     return jvmJavaType == JvmJavaType.L;
   }
 
-  private String extractClassName(String classCanonicalName) {
+  private static String extractClassName(String classCanonicalName) {
     int slashIndex = classCanonicalName.lastIndexOf('/');
     int dollarIndex = classCanonicalName.lastIndexOf('$');
     if (slashIndex != -1 || dollarIndex != -1) {

@@ -101,7 +101,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     }
   }
 
-  private String methodName(MethodInvocationTree mit) {
+  private static String methodName(MethodInvocationTree mit) {
     String name = null;
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
@@ -114,7 +114,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     return name;
   }
 
-  private String algorithm(ExpressionTree invocationArgument) {
+  private static String algorithm(ExpressionTree invocationArgument) {
     if (invocationArgument.is(Tree.Kind.STRING_LITERAL)) {
       String value = ((LiteralTree) invocationArgument).value();
       return value.substring(1, value.length() - 1);

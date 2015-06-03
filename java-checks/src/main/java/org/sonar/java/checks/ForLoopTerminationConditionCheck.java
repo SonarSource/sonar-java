@@ -82,7 +82,7 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
     addIssue(tree, "Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.");
   }
 
-  private boolean forBodyUpdatesLoopIdentifier(ForStatementTree forStatement, IdentifierTree loopIdentifier) {
+  private static boolean forBodyUpdatesLoopIdentifier(ForStatementTree forStatement, IdentifierTree loopIdentifier) {
     LoopVariableAssignmentVisitor visitor = new LoopVariableAssignmentVisitor(loopIdentifier);
     forStatement.statement().accept(visitor);
     return visitor.foundAssignment;
@@ -115,7 +115,7 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
     }
   }
 
-  private Integer initialValue(IdentifierTree loopIdentifier, ForStatementTree forStatement) {
+  private static Integer initialValue(IdentifierTree loopIdentifier, ForStatementTree forStatement) {
     Integer value = null;
     for (ForLoopInitializer initializer : ForLoopInitializer.list(forStatement)) {
       if (initializer.hasSameIdentifier(loopIdentifier) && initializer.value() != null) {
