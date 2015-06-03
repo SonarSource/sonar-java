@@ -54,7 +54,7 @@ public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetA
 
   @RuleProperty(
     key = "headerFormat",
-    description = "Expected copyright and license header (plain text)",
+    description = "Expected copyright and license header",
     type = "TEXT",
     defaultValue = DEFAULT_HEADER_FORMAT)
   public String headerFormat = DEFAULT_HEADER_FORMAT;
