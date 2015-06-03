@@ -21,6 +21,10 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
+import java.util.List;
+
 /**
  * Array type.
  *
@@ -28,6 +32,7 @@ import com.google.common.annotations.Beta;
  *
  * <pre>
  *   {@link #type()} []
+ *   {@link #type()} ...
  * </pre>
  *
  * @since Java 1.3
@@ -36,5 +41,16 @@ import com.google.common.annotations.Beta;
 public interface ArrayTypeTree extends ExpressionTree, TypeTree {
 
   TypeTree type();
+
+  List<AnnotationTree> annotations();
+
+  @Nullable
+  SyntaxToken openBracketToken();
+
+  @Nullable
+  SyntaxToken closeBracketToken();
+
+  @Nullable
+  SyntaxToken ellipsisToken();
 
 }

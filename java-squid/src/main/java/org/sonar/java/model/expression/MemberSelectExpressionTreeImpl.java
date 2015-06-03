@@ -31,6 +31,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,13 +40,14 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   private ExpressionTree expression;
 
-  private final int dims;
+  @Nullable
+  private final ArrayTypeTreeImpl nestedDimensions;
   private final IdentifierTree identifier;
 
-  public MemberSelectExpressionTreeImpl(int dims, IdentifierTreeImpl identifier, List<AstNode> children) {
+  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, IdentifierTreeImpl identifier, List<AstNode> children) {
     super(Kind.MEMBER_SELECT);
 
-    this.dims = dims;
+    this.nestedDimensions = nestedDimensions;
     this.identifier = identifier;
 
     for (AstNode child : children) {
@@ -55,7 +58,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, IdentifierTree identifier, AstNode... children) {
     super(Kind.MEMBER_SELECT);
 
-    this.dims = -1;
+    this.nestedDimensions = null;
     this.expression = Preconditions.checkNotNull(expression);
     this.identifier = Preconditions.checkNotNull(identifier);
 
@@ -67,18 +70,18 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   public MemberSelectExpressionTreeImpl(AstNode astNode, ExpressionTree expression, IdentifierTree identifier) {
     super(astNode);
 
-    this.dims = -1;
+    this.nestedDimensions = null;
     this.expression = Preconditions.checkNotNull(expression);
     this.identifier = Preconditions.checkNotNull(identifier);
   }
 
   public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
-    Preconditions.checkState(dims >= 0 && this.expression == null);
+    Preconditions.checkState(this.expression == null);
     ExpressionTree result = expression;
 
-    // TODO Remove logic?
-    for (int i = 0; i < dims; i++) {
-      result = new ArrayTypeTreeImpl(null, (TypeTree) result);
+    if (nestedDimensions != null) {
+      nestedDimensions.setLastChildType((TypeTree) expression);
+      result = nestedDimensions;
     }
 
     this.expression = result;

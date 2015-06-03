@@ -189,9 +189,9 @@ public class JavaGrammar {
       .is(
         f.newType(
           b.firstOf(
-              BASIC_TYPE(),
-              TYPE_QUALIFIED_IDENTIFIER()),
-              b.zeroOrMore(f.newWrapperAstNode5(b.zeroOrMore((AstNode) ANNOTATION()), DIMENSION()))));
+            BASIC_TYPE(),
+            TYPE_QUALIFIED_IDENTIFIER()),
+          b.zeroOrMore(f.newAnnotatedDimensionFromType(b.zeroOrMore(ANNOTATION()), DIMENSION()))));
   }
 
   public TypeArgumentListTreeImpl TYPE_ARGUMENTS() {
@@ -297,8 +297,7 @@ public class JavaGrammar {
           f.completeGenericMethodOrConstructorDeclaration(TYPE_PARAMETERS(), METHOD_OR_CONSTRUCTOR_DECLARATION()),
           f.newMethod(
             TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
-            // TOOD Dedicated rule for annotated dimensions
-            b.zeroOrMore(f.newTuple9(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+            b.zeroOrMore(f.newAnnotatedDimensionFromMethod(b.zeroOrMore(ANNOTATION()), DIMENSION())),
             b.optional(f.newTuple10(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
             b.firstOf(
               BLOCK(),
@@ -306,8 +305,7 @@ public class JavaGrammar {
           // TODO Largely duplicated with method, but there is a prefix capture on the TYPE, it can be improved
           f.newConstructor(
             b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
-            // TOOD Dedicated rule for annotated dimensions
-            b.zeroOrMore(f.newTuple15(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+            b.zeroOrMore(f.newAnnotatedDimensionFromConstructor(b.zeroOrMore(ANNOTATION()), DIMENSION())),
             b.optional(f.newTuple16(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
             b.firstOf(
               BLOCK(),
@@ -537,7 +535,7 @@ public class JavaGrammar {
       .is(
         f.newVariableDeclaratorId(
           b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.zeroOrMore(f.newWrapperAstNode11(b.zeroOrMore((AstNode) ANNOTATION()), DIMENSION()))));
+          b.zeroOrMore(f.newAnnotatedDimensionFromVariableDeclaratorId(b.zeroOrMore(ANNOTATION()), DIMENSION()))));
   }
 
   public VariableTreeImpl FORMAL_PARAMETER() {
@@ -568,7 +566,7 @@ public class JavaGrammar {
     return b.<VariableTreeImpl>nonterminal(JavaLexer.VARIABLE_DECLARATOR)
       .is(
         f.completeVariableDeclarator(
-          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(DIMENSION()),
+          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(f.newAnnotatedDimensionFromVariableDeclarator(b.zeroOrMore(ANNOTATION()), DIMENSION())),
           b.optional(
             f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), VARIABLE_INITIALIZER()))));
   }

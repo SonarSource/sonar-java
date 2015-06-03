@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
@@ -570,20 +571,44 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree {
-    private final TypeTree type;
+    private TypeTree type;
+    private final List<AnnotationTree> annotations;
+    private final InternalSyntaxToken openBracketToken;
+    private final InternalSyntaxToken closeBracketToken;
+    private final InternalSyntaxToken ellipsisToken;
 
-    public ArrayTypeTreeImpl(TypeTree type, List<AstNode> children) {
+    public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
       super(Kind.ARRAY_TYPE);
-      this.type = Preconditions.checkNotNull(type);
+      this.type = type;
+      this.annotations = getAnnotations(annotations);
+      this.openBracketToken = openBracketToken;
+      this.closeBracketToken = closeBracketToken;
+      this.ellipsisToken = null;
 
-      for (AstNode child : children) {
-        addChild(child);
-      }
+      addAstNodes();
     }
 
-    public ArrayTypeTreeImpl(@Nullable AstNode astNode, TypeTree type) {
-      super(astNode);
-      this.type = Preconditions.checkNotNull(type);
+    public ArrayTypeTreeImpl(@Nullable TypeTree type, List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellispsisToken) {
+      super(Kind.ARRAY_TYPE);
+      this.type = type;
+      this.annotations = getAnnotations(annotations);
+      this.openBracketToken = null;
+      this.closeBracketToken = null;
+      this.ellipsisToken = ellispsisToken;
+
+      addAstNodes();
+    }
+
+    public void completeType(TypeTree type) {
+      this.type = type;
+    }
+
+    public void setLastChildType(TypeTree type) {
+      ArrayTypeTree childType = this;
+      while (childType.type() != null && childType.is(Tree.Kind.ARRAY_TYPE)) {
+        childType = (ArrayTypeTree) childType.type();
+      }
+      ((ArrayTypeTreeImpl) childType).completeType(type);
     }
 
     @Override
@@ -604,6 +629,49 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
       return Iterators.<Tree>singletonIterator(type);
+    }
+
+    @Override
+    public List<AnnotationTree> annotations() {
+      return annotations;
+    }
+
+    @Override
+    public SyntaxToken openBracketToken() {
+      return openBracketToken;
+    }
+
+    @Override
+    public SyntaxToken closeBracketToken() {
+      return closeBracketToken;
+    }
+
+    @Override
+    public SyntaxToken ellipsisToken() {
+      return ellipsisToken;
+    }
+
+    private static ImmutableList<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
+      ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
+      for (AnnotationTreeImpl annotation : annotations) {
+        annotationBuilder.add((AnnotationTree) annotation);
+      }
+      return annotationBuilder.build();
+    }
+
+    private void addAstNodes() {
+      if (type != null) {
+        addChild((AstNode) type);
+      }
+      for (AnnotationTree annotation : annotations) {
+        addChild((AnnotationTreeImpl) annotation);
+      }
+      if (ellipsisToken != null) {
+        addChild(ellipsisToken);
+      } else {
+        addChild(openBracketToken);
+        addChild(closeBracketToken);
+      }
     }
   }
 }

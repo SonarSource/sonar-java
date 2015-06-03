@@ -99,6 +99,9 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -234,19 +237,15 @@ public class TreeFactory {
 
   // Types
 
-  public TypeTree newType(TypeTree basicOrClassType, Optional<List<AstNode>> dims) {
+  public TypeTree newType(TypeTree basicOrClassType,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dims) {
     if (!dims.isPresent()) {
       return basicOrClassType;
     } else {
       TypeTree result = basicOrClassType;
 
-      for (AstNode dim : dims.get()) {
-        List<AstNode> children = Lists.newArrayList();
-        children.add((AstNode) result);
-        children.addAll(dim.getChildren());
-
-        result = new ArrayTypeTreeImpl(result,
-          children);
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> dim : dims.get()) {
+        result = newArrayTypeTreeWithAnnotations(result, dim);
       }
 
       return result;
@@ -630,9 +629,10 @@ public class TreeFactory {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
 
+    ArrayTypeTreeImpl nestedDimensions = newArrayTypeTreeWithAnnotations(annotatedDimensions);
     TypeTree actualType;
     if (type.isPresent()) {
-      actualType = applyDim(type.get(), annotatedDimensions.isPresent() ? annotatedDimensions.get().size() : 0);
+      actualType = applyDim(type.get(), nestedDimensions);
     } else {
       actualType = null;
     }
@@ -658,15 +658,8 @@ public class TreeFactory {
     }
     children.add(identifier);
     children.add(parameters);
-    if (annotatedDimensions.isPresent()) {
-      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> annotatedDimension : annotatedDimensions.get()) {
-        if (annotatedDimension.first().isPresent()) {
-          for (AnnotationTreeImpl annotation : annotatedDimension.first().get()) {
-            children.add(annotation);
-          }
-        }
-        children.add(annotatedDimension.second());
-      }
+    if (nestedDimensions != null) {
+      children.add(nestedDimensions);
     }
     if (throwsClause.isPresent()) {
       children.add(throwsClause.get().first());
@@ -942,7 +935,7 @@ public class TreeFactory {
   public FormalParametersListTreeImpl newVariableArgumentFormalParameter(Optional<List<AnnotationTreeImpl>> annotations, AstNode ellipsisTokenAstNode, VariableTreeImpl variable) {
     InternalSyntaxToken ellipsisToken = InternalSyntaxToken.create(ellipsisTokenAstNode);
 
-    variable.setVararg(true);
+    variable.addEllipsisDimension(new ArrayTypeTreeImpl(null, annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(), ellipsisToken));
 
     return new FormalParametersListTreeImpl(
       annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(),
@@ -950,12 +943,12 @@ public class TreeFactory {
       variable);
   }
 
-  public VariableTreeImpl newVariableDeclaratorId(AstNode identifierAstNode, Optional<List<AstNode>> dims) {
+  public VariableTreeImpl newVariableDeclaratorId(AstNode identifierAstNode, Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dims) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
-    return new VariableTreeImpl(
-      identifier,
-      dims.isPresent() ? dims.get().size() : 0,
-      dims.isPresent() ? dims.get() : ImmutableList.<AstNode>of());
+    ArrayTypeTreeImpl nestedDimensions = newArrayTypeTreeWithAnnotations(dims);
+    List<AstNode> children = Lists.newArrayList();
+    children.add(nestedDimensions);
+    return new VariableTreeImpl(identifier, nestedDimensions, children);
   }
 
   public VariableTreeImpl newFormalParameter(ModifiersTreeImpl modifiers, TypeTree type, VariableTreeImpl variable) {
@@ -1012,26 +1005,23 @@ public class TreeFactory {
     return new VariableDeclaratorListTreeImpl(variables.build(), children);
   }
 
-  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<Tuple<AstNode, AstNode>>> dimensions, Optional<VariableTreeImpl> partial) {
+  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dimensions,
+    Optional<VariableTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
 
-    List<AstNode> children = Lists.newArrayList();
-    if (dimensions.isPresent()) {
-      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
-        children.add(dimension.first());
-        children.add(dimension.second());
-      }
-    }
+    ArrayTypeTreeImpl nestedDimensions = newArrayTypeTreeWithAnnotations(dimensions);
 
+    List<AstNode> children = Lists.newArrayList();
+    if (nestedDimensions != null) {
+      children.add(nestedDimensions);
+    }
     if (partial.isPresent()) {
       children.add(0, identifier);
       partial.get().prependChildren(children);
 
-      return partial.get().completeIdentifierAndDims(identifier, dimensions.isPresent() ? dimensions.get().size() : 0);
+      return partial.get().completeIdentifierAndDims(identifier, nestedDimensions);
     } else {
-      return new VariableTreeImpl(
-        identifier, dimensions.isPresent() ? dimensions.get().size() : 0,
-        children);
+      return new VariableTreeImpl(identifier, nestedDimensions, children);
     }
   }
 
@@ -1846,19 +1836,17 @@ public class TreeFactory {
     // int[].class
 
     IdentifierTreeImpl classToken = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
+    ArrayTypeTreeImpl nestedDimensions = newArrayTypeTree(dimensions);
 
     List<AstNode> children = Lists.newArrayList();
     children.add(basicType);
-    if (dimensions.isPresent()) {
-      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
-        children.add(dimension.first());
-        children.add(dimension.second());
-      }
+    if (nestedDimensions != null) {
+      children.add(nestedDimensions);
     }
     children.add(dotToken);
     children.add(classToken);
 
-    TypeTree typeTree = applyDim(basicType, dimensions.isPresent() ? dimensions.get().size() : 0);
+    TypeTree typeTree = applyDim(basicType, nestedDimensions);
     return new MemberSelectExpressionTreeImpl((ExpressionTree) typeTree, classToken, children.toArray(new AstNode[children.size()]));
   }
 
@@ -2093,20 +2081,15 @@ public class TreeFactory {
   public ExpressionTree newDotClassSelector(Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotTokenAstNode, AstNode classTokenAstNode) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
 
+    ArrayTypeTreeImpl nestedAnnotations = newArrayTypeTree(dimensions);
     List<AstNode> children = Lists.newArrayList();
-
-    if (dimensions.isPresent()) {
-      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
-        children.add(dimension.first());
-        children.add(dimension.second());
-      }
+    if (nestedAnnotations != null) {
+      children.add(nestedAnnotations);
     }
-
     children.add(dotTokenAstNode);
     children.add(identifier);
 
-    return new MemberSelectExpressionTreeImpl(dimensions.isPresent() ? dimensions.get().size() : 0, identifier,
-      children);
+    return new MemberSelectExpressionTreeImpl(nestedAnnotations, identifier, children);
   }
 
   private ExpressionTree applySelectors(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
@@ -2217,10 +2200,6 @@ public class TreeFactory {
     return newWrapperAstNode(e1, e2);
   }
 
-  public AstNode newWrapperAstNode5(Optional<List<AstNode>> e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
   public AstNode newWrapperAstNode6(AstNode e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
@@ -2238,10 +2217,6 @@ public class TreeFactory {
   }
 
   public AstNode newWrapperAstNode10(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode11(Optional<List<AstNode>> e1, AstNode e2) {
     return newWrapperAstNode(e1, e2);
   }
 
@@ -2345,10 +2320,6 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
-  public <T, U> Tuple<T, U> newTuple9(T first, U second) {
-    return newTuple(first, second);
-  }
-
   public <T, U> Tuple<T, U> newTuple10(T first, U second) {
     return newTuple(first, second);
   }
@@ -2365,10 +2336,6 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
-  public <T, U> Tuple<T, U> newTuple15(T first, U second) {
-    return newTuple(first, second);
-  }
-
   public <T, U> Tuple<T, U> newTuple16(T first, U second) {
     return newTuple(first, second);
   }
@@ -2377,14 +2344,69 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
+  public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariable(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariableDeclarator(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariableDeclaratorId(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newAnnotatedDimensionFromType(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newAnnotatedDimensionFromMethod(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newAnnotatedDimensionFromConstructor(T first, U second) {
+    return newTuple(first, second);
+  }
+
   // End
 
-  private TypeTree applyDim(TypeTree expression, int count) {
-    TypeTree result = expression;
-    for (int i = 0; i < count; i++) {
-      result = new JavaTree.ArrayTypeTreeImpl(/* FIXME should not be null */null, result);
+  private TypeTree applyDim(TypeTree expression, @Nullable ArrayTypeTreeImpl dim) {
+    if (dim != null) {
+      dim.setLastChildType(expression);
+      return dim;
+    } else {
+      return expression;
+    }
+  }
+
+  @CheckForNull
+  private static ArrayTypeTreeImpl newArrayTypeTreeWithAnnotations(Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dims) {
+    ArrayTypeTreeImpl result = null;
+    if (dims.isPresent()) {
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> dim : dims.get()) {
+        result = newArrayTypeTreeWithAnnotations(result, dim);
+      }
     }
     return result;
   }
 
+  private static ArrayTypeTreeImpl newArrayTypeTreeWithAnnotations(TypeTree type, Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> dim) {
+    List<AnnotationTreeImpl> annotations = dim.first().isPresent() ? dim.first().get() : ImmutableList.<AnnotationTreeImpl>of();
+    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(dim.second().first());
+    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(dim.second().second());
+    return new ArrayTypeTreeImpl(type, annotations, openBracketToken, closeBracketToken);
+  }
+
+  @CheckForNull
+  private static ArrayTypeTreeImpl newArrayTypeTree(Optional<List<Tuple<AstNode, AstNode>>> dims) {
+    ArrayTypeTreeImpl result = null;
+    if (dims.isPresent()) {
+      for (Tuple<AstNode, AstNode> dim : dims.get()) {
+        InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(dim.first());
+        InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(dim.second());
+        result = new ArrayTypeTreeImpl(result, ImmutableList.<AnnotationTreeImpl>of(), openBracketToken, closeBracketToken);
+      }
+    }
+    return result;
+  }
 }
