@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -26,15 +27,21 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodInvocationMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.CheckForNull;
 
 import java.util.List;
 
@@ -49,6 +56,11 @@ import java.util.List;
 public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetection {
 
   @Override
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.<Kind>builder().addAll(super.nodesToVisit()).add(Kind.PLUS).build();
+  }
+
+  @Override
   protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
     return getToStringMatchers(
       "java.lang.Byte",
@@ -61,7 +73,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
       "java.lang.Boolean");
   }
 
-  private List<MethodInvocationMatcher> getToStringMatchers(String... typeFullyQualifiedNames) {
+  private static List<MethodInvocationMatcher> getToStringMatchers(String... typeFullyQualifiedNames) {
     List<MethodInvocationMatcher> matchers = Lists.newArrayList();
     for (String fullyQualifiedName : typeFullyQualifiedNames) {
       matchers.add(MethodInvocationMatcher.create()
@@ -69,6 +81,32 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
         .name("toString"));
     }
     return matchers;
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (tree.is(Kind.PLUS)) {
+      checkPrimitiveConcatenationWithEmptyString((BinaryExpressionTree) tree);
+    } else {
+      super.visitNode(tree);
+    }
+  }
+
+  @CheckForNull
+  private void checkPrimitiveConcatenationWithEmptyString(BinaryExpressionTree concatenation) {
+    Type wrapper = null;
+    if (isEmptyString(concatenation.leftOperand())) {
+      wrapper = ((JavaType) concatenation.rightOperand().symbolType()).primitiveWrapperType();
+    } else if (isEmptyString(concatenation.rightOperand())) {
+      wrapper = ((JavaType) concatenation.leftOperand().symbolType()).primitiveWrapperType();
+    }
+    if (wrapper != null) {
+      addIssue(concatenation, "Use \"" + wrapper.name() + ".toString\" instead.");
+    }
+  }
+
+  private static boolean isEmptyString(ExpressionTree expressionTree) {
+    return expressionTree.is(Kind.STRING_LITERAL) && LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value()).isEmpty();
   }
 
   @Override
@@ -80,7 +118,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
     }
   }
 
-  private boolean isValueOfInvocation(ExpressionTree abstractTypedTree) {
+  private static boolean isValueOfInvocation(ExpressionTree abstractTypedTree) {
     if (!abstractTypedTree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
