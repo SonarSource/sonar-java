@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -43,6 +44,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Maps with keys that are enum values should be replaced with EnumMap",
   tags = {"performance"},
   priority = Priority.MAJOR)
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")
 public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
