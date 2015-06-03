@@ -5,8 +5,13 @@ install: true
 jdk:
   - oraclejdk7
 
-script:
-  - mvn verify -B -e -V
+script: ./travis.sh
+env:
+  - TESTS=CI
+  - TESTS=IT-DEV
+
+matrix:
+  fast_finish: true
 
 cache:
   directories:
