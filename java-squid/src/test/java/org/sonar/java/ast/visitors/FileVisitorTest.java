@@ -46,16 +46,16 @@ public class FileVisitorTest {
     when(file.getPath()).thenReturn("/some/other/path");
     context.setFile(file, mock(MetricDef.class));
 
-    assertThat(context.peekSourceCode() instanceof SourceProject);
+    assertThat(context.peekSourceCode() instanceof SourceFile).isTrue();
 
     visitor.visitFile(astNode);
-    assertThat(context.peekSourceCode() instanceof SourceFile);
+    assertThat(context.peekSourceCode() instanceof SourceFile).isTrue();
     SourceFile sourceFile = (SourceFile) context.peekSourceCode();
     assertThat(sourceFile.getKey()).isEqualTo("/some/path");
     assertThat(sourceFile.getName()).isEqualTo("/some/other/path");
 
     visitor.leaveFile(astNode);
-    assertThat(context.peekSourceCode() instanceof SourceProject);
+    assertThat(context.peekSourceCode() instanceof SourceFile).isTrue();
   }
 
 }

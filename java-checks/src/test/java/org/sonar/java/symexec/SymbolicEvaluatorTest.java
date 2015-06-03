@@ -377,7 +377,7 @@ public class SymbolicEvaluatorTest {
     ExecutionState state = new ExecutionState();
     PackedStatementStates result = new SymbolicEvaluator().evaluateStatement(ImmutableList.of(state), parseStatement("local1 && local1;"));
     assertThat(result.states).containsExactly(state);
-    assertThat(state.relations.isEmpty());
+    assertThat(state.relations.isEmpty()).isTrue();
   }
 
   @Test

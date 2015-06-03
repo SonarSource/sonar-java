@@ -164,14 +164,14 @@ public class BytecodeCompleterTest {
     assertThat(innerClassRef.isPrivate()).isFalse();
     assertThat(innerClassRef.isPublic()).isFalse();
     assertThat(innerClassRef.isPackageVisibility()).isFalse();
-    assertThat(innerClassRef.isDeprecated());
+    assertThat(innerClassRef.isDeprecated()).isTrue();
   }
 
   @Test
   public void complete_flags_for_varargs_methods() throws Exception {
     JavaSymbol.TypeJavaSymbol classSymbol = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ProtectedInnerClassChild");
     JavaSymbol.MethodJavaSymbol foo = (JavaSymbol.MethodJavaSymbol) classSymbol.members().lookup("foo").get(0);
-    assertThat((foo.flags & Flags.VARARGS) != 0);
+    assertThat((foo.flags & Flags.VARARGS) != 0).isTrue();
   }
 
   @Test
@@ -288,7 +288,7 @@ public class BytecodeCompleterTest {
     assertThat(constructor.getParameters().scopeSymbols()).hasSize(1);
     for (JavaSymbol arg : constructor.getParameters().scopeSymbols()) {
       assertThat(arg.metadata().annotations()).hasSize(1);
-      assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable"));
+      assertThat(arg.metadata().annotations().get(0).symbol().type().is("javax.annotation.Nullable")).isTrue();
     }
   }
 

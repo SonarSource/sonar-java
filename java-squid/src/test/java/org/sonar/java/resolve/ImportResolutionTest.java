@@ -42,7 +42,7 @@ public class ImportResolutionTest {
 
   @Test
   public void extends_should_point_to_correct_symbol() {
-    assertThat(result.symbol("Class2").kind == JavaSymbol.TYP);
+    assertThat(result.symbol("Class2").kind == JavaSymbol.TYP).isTrue();
     JavaSymbol.TypeJavaSymbol class1 = (JavaSymbol.TypeJavaSymbol) result.symbol("Class1");
     JavaSymbol.TypeJavaSymbol class2 = (JavaSymbol.TypeJavaSymbol) result.symbol("Class2");
     assertThat(class2.getSuperclass().symbol).isEqualTo(class1);

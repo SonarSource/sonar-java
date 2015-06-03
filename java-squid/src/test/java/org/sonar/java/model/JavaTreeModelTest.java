@@ -514,8 +514,9 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.returnType()).isNotNull();
-    assertThat(tree.returnType().is(Tree.Kind.ARRAY_TYPE));
-    assertThat(((ArrayTypeTree) tree.returnType()).type().is(Tree.Kind.INT_LITERAL));
+    assertThat(tree.returnType().is(Tree.Kind.ARRAY_TYPE)).isTrue();
+    assertThat(((ArrayTypeTree) tree.returnType()).type().is(Kind.ARRAY_TYPE)).isTrue();
+    assertThat(((ArrayTypeTree) ((ArrayTypeTree) tree.returnType()).type()).type().is(Kind.PRIMITIVE_TYPE)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(2);
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -528,8 +529,8 @@ public class JavaTreeModelTest {
     tree = (MethodTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.parameters()).isEmpty();
-    assertThat(tree.returnType().is(Kind.ARRAY_TYPE));
-    assertThat(((ArrayTypeTree) tree.returnType()).is(Kind.PRIMITIVE_TYPE));
+    assertThat(tree.returnType().is(Kind.ARRAY_TYPE)).isTrue();
+    assertThat(tree.returnType().is(Kind.PRIMITIVE_TYPE)).isFalse();
   }
 
   /*

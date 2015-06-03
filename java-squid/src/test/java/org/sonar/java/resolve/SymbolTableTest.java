@@ -60,8 +60,8 @@ public class SymbolTableTest {
     JavaType.TypeVariableJavaType STypeVariableType = (JavaType.TypeVariableJavaType) typeSymbol.typeParameters.lookup("S").get(0).type;
     assertThat(STypeVariableType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
     JavaType arrayErasure = typeSymbol.members().lookup("arrayErasure").get(0).type;
-    assertThat(arrayErasure.isTagged(JavaType.ARRAY));
-    assertThat(arrayErasure.erasure().isTagged(JavaType.ARRAY));
+    assertThat(arrayErasure.isTagged(JavaType.ARRAY)).isTrue();
+    assertThat(arrayErasure.erasure().isTagged(JavaType.ARRAY)).isTrue();
     assertThat(((JavaType.ArrayJavaType)arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
 
     IdentifierTree tree = result.referenceTree(20, 7);
@@ -439,7 +439,7 @@ public class SymbolTableTest {
   @Test
   public void TypesOfDeclarations() {
     Result result = Result.createFor("TypesOfDeclarations");
-    assertThat(result.symbol("Class2").kind == JavaSymbol.TYP);
+    assertThat(result.symbol("Class2").kind == JavaSymbol.TYP).isTrue();
     JavaSymbol.TypeJavaSymbol class1 = (JavaSymbol.TypeJavaSymbol) result.symbol("Class1");
     JavaSymbol.TypeJavaSymbol class2 = (JavaSymbol.TypeJavaSymbol) result.symbol("Class2");
     assertThat(class2.getSuperclass().symbol).isEqualTo(class1);

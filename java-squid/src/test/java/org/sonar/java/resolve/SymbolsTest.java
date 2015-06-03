@@ -134,7 +134,7 @@ public class SymbolsTest {
       symbols.getPrimitiveFromDescriptor('P');
       Fail.failure("should have thrown an exception");
     }catch (IllegalStateException ise) {
-      assertThat(ise.getMessage().contains("'P'"));
+      assertThat(ise.getMessage()).contains("'P'");
     }
 
   }
