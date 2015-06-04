@@ -21,6 +21,7 @@ package org.sonar.java.checks.methods;
 
 import org.junit.Test;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -54,6 +55,7 @@ public class MethodInvocationMatcherCollectionTest {
     MethodInvocationMatcher matcher = mock(MethodInvocationMatcher.class);
     when(matcher.matches(any(MethodInvocationTree.class))).thenReturn(false);
     assertThat(MethodInvocationMatcherCollection.create(matcher).anyMatch(mock(MethodInvocationTree.class))).isFalse();
+    assertThat(MethodInvocationMatcherCollection.create(matcher).anyMatch(mock(MethodTree.class))).isFalse();
   }
 
   @Test
@@ -63,5 +65,11 @@ public class MethodInvocationMatcherCollectionTest {
     MethodInvocationMatcher matcher2 = mock(MethodInvocationMatcher.class);
     when(matcher2.matches(any(MethodInvocationTree.class))).thenReturn(true);
     assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodInvocationTree.class))).isTrue();
+
+    matcher1 = mock(MethodInvocationMatcher.class);
+    when(matcher1.matches(any(MethodTree.class))).thenReturn(false);
+    matcher2 = mock(MethodInvocationMatcher.class);
+    when(matcher2.matches(any(MethodTree.class))).thenReturn(true);
+    assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodTree.class))).isTrue();
   }
 }

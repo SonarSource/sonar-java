@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -97,19 +98,24 @@ public class MethodInvocationMatcher {
 
   public boolean matches(NewClassTree newClassTree) {
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
-    return matches(newClassTreeImpl.getConstructorIdentifier(), null);
+    return matches(newClassTreeImpl.getConstructorIdentifier().symbol(), null);
   }
 
   public boolean matches(MethodInvocationTree mit) {
     IdentifierTree id = getIdentifier(mit);
-    if (id != null) {
-      return matches(id, getCallSiteType(mit));
+    return id != null && matches(id.symbol(), getCallSiteType(mit));
+  }
+
+  public boolean matches(MethodTree methodTree) {
+    MethodSymbol symbol = methodTree.symbol();
+    if (symbol != null) {
+      Symbol.TypeSymbol enclosingClass = symbol.enclosingClass();
+      return enclosingClass != null && matches(symbol, enclosingClass.type());
     }
     return false;
   }
 
-  private boolean matches(IdentifierTree id, Type callSiteType) {
-    Symbol symbol = id.symbol();
+  private boolean matches(Symbol symbol, Type callSiteType) {
     if (symbol.isMethodSymbol()) {
       Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
       if (isSearchedMethod(methodSymbol, callSiteType)) {

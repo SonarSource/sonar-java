@@ -19,9 +19,25 @@
  */
 package org.sonar.java.checks.methods;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.java.JavaAstScanner;
+import org.sonar.java.checks.SubscriptionBaseVisitor;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodInvocationMatcherTest {
 
@@ -42,6 +58,54 @@ public class MethodInvocationMatcherTest {
     MethodInvocationMatcher matcher = MethodInvocationMatcher.create().name("name").addParameter("int");
     exception.expect(IllegalStateException.class);
     matcher.withNoParameterConstraint();
+  }
+
+  @Test
+  public void detected() {
+    MethodInvocationMatcher objectToString = MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("toString");
+    MethodInvocationMatcher integerToString = MethodInvocationMatcher.create().typeDefinition("java.lang.Integer").name("toString");
+
+    Map<MethodInvocationMatcher, List<Integer>> matches = new HashMap<>();
+    matches.put(objectToString, new ArrayList<Integer>());
+    matches.put(integerToString, new ArrayList<Integer>());
+
+    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/methodMatcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
+
+    assertThat(matches.get(objectToString)).containsExactly(6, 14);
+    assertThat(matches.get(integerToString)).containsExactly(14);
+  }
+
+  class Visitor extends SubscriptionBaseVisitor {
+
+    public Map<MethodInvocationMatcher, List<Integer>> matches;
+
+    public Visitor(Map<MethodInvocationMatcher, List<Integer>> matches) {
+      this.matches = matches;
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      super.visitNode(tree);
+      for (Map.Entry<MethodInvocationMatcher, List<Integer>> entry : matches.entrySet()) {
+        boolean match  = false;
+        MethodInvocationMatcher matcher = entry.getKey();
+        if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+          match = matcher.matches((MethodInvocationTree) tree);
+        } else if (tree.is(Tree.Kind.METHOD)) {
+          match = matcher.matches((MethodTree) tree);
+        } else if (tree.is(Tree.Kind.METHOD)) {
+          match = matcher.matches((MethodTree) tree);
+        }
+        if (match) {
+          entry.getValue().add(((JavaTree) tree).getLine());
+        }
+      }
+    }
   }
 
 }
