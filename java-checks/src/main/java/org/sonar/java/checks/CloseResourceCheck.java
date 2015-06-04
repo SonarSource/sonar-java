@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.closeresource.CloseableVisitor;
+import org.sonar.java.closeresource.CloseableCheck;
 import org.sonar.java.symexecengine.DataFlowVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -55,7 +55,7 @@ public class CloseResourceCheck extends SubscriptionBaseVisitor {
     if (!hasSemantic()) {
       return;
     }
-    CloseableVisitor visitor = new CloseableVisitor();
+    CloseableCheck visitor = new CloseableCheck();
     DataFlowVisitor.analyze((MethodTree) tree, visitor);
     for (Tree issueTree : visitor.getIssueTrees()) {
       Type reportedType = null;

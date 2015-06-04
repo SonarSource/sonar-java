@@ -34,7 +34,7 @@ public abstract class State {
     }
   };
 
-  private State() {
+  public State() {
     changingStateTrees = Lists.newArrayList();
   }
 

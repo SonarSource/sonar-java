@@ -20,6 +20,7 @@
 package org.sonar.java.symexecengine;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -36,18 +37,41 @@ import java.util.Set;
 
 public class ExecutionState {
 
-  final ExecutionState parent;
-  private SetMultimap<Symbol, SymbolicValue> reachableValues = HashMultimap.create();
+  public final ExecutionState parent;
+
+  /*
+   * definitelyReachableValues and potentiallyReachableValues contains the set of possible values from a given symbol.
+   * - definitelyReachableValues contains the values that are definitely retrieved by a read operation.
+   * - potentiallyReachableValues contains all the values that can be retrieved by a read operation.
+   * this is illustrated in the examples below:
+   * example 1                      example 2                        example 3
+   * a = V1;                        a = V1;                          a = V1;
+   * if(condition) {                if(condition) {                  a = V2;
+   *   a = V2;                        a = V2;
+   * } else {                       }
+   *   a = V3;
+   * }
+   * a.hashCode();                  a.hashCode();                    a.hashCode();
+   * a.unlock();                    a.unlock();                      a.unlock();
+   * definitely reachable: V2, V3   definitely reachable: V2         definitely reachable: V2
+   * potentially reachable: V2, V3  potentially reachable: V1, V2    potentially reachable: V2
+   */
+
+  // all values that are definitely modifiable (i.e. through an update).
+  private SetMultimap<Symbol, SymbolicValue> definitelyReachableValues = HashMultimap.create();
+  // all values that are reachable (i.e. through a read).
+  private final SetMultimap<Symbol, SymbolicValue> potentiallyReachableValues = HashMultimap.create();
   private SetMultimap<Symbol, SymbolicValue> unreachableValues = HashMultimap.create();
   /**
    * List of symbol that were declared within this execution state.
    */
+  // FIXME(merciesa): this rather relates to scope and should eventually be moved to the visitor.
   private List<Symbol> definedInState = Lists.newArrayList();
   private Map<SymbolicValue, State> stateOfValue = Maps.newHashMap();
 
   public ExecutionState(ExecutionState executionState) {
     this.parent = executionState;
-    this.reachableValues = HashMultimap.create(executionState.reachableValues);
+    this.definitelyReachableValues = HashMultimap.create(executionState.definitelyReachableValues);
     this.unreachableValues = HashMultimap.create(executionState.unreachableValues);
   }
 
@@ -63,9 +87,15 @@ public class ExecutionState {
   }
 
   public ExecutionState merge(ExecutionState executionState) {
-    for (Symbol symbol : executionState.reachableValues.keys()) {
+    for (Symbol symbol : executionState.potentiallyReachableValues.keys()) {
+      // FIXME(merciesa) this copies the accessible values from the parent state and is memory inefficient.
+      potentiallyReachableValues.putAll(symbol, getPotentiallyReachableValues(symbol));
+    }
+    potentiallyReachableValues.putAll(executionState.potentiallyReachableValues);
+
+    for (Symbol symbol : executionState.definitelyReachableValues.keys()) {
       if (!executionState.definedInState.contains(symbol)) {
-        this.reachableValues.putAll(symbol, executionState.reachableValues.get(symbol));
+        this.definitelyReachableValues.putAll(symbol, executionState.definitelyReachableValues.get(symbol));
       }
     }
     for (Symbol symbol : executionState.unreachableValues.keys()) {
@@ -77,7 +107,7 @@ public class ExecutionState {
     for (Symbol symbol : unreachableValues.keys()) {
       // cleanup after merge of reachable/unreachable values
       for (SymbolicValue value : unreachableValues.get(symbol)) {
-        reachableValues.remove(symbol, value);
+        definitelyReachableValues.remove(symbol, value);
       }
     }
     // Merge states of values
@@ -96,8 +126,13 @@ public class ExecutionState {
   }
 
   public ExecutionState overrideBy(ExecutionState executionState) {
+    for (Symbol symbol : executionState.potentiallyReachableValues.keys()) {
+      potentiallyReachableValues.get(symbol).clear();
+    }
+    potentiallyReachableValues.putAll(executionState.potentiallyReachableValues);
+
     this.unreachableValues.putAll(executionState.unreachableValues);
-    this.reachableValues = executionState.reachableValues;
+    this.definitelyReachableValues = executionState.definitelyReachableValues;
     this.stateOfValue.putAll(executionState.stateOfValue);
     return this;
   }
@@ -109,7 +144,7 @@ public class ExecutionState {
   Set<State> getStatesOfCurrentExecutionState() {
     Set<State> results = Sets.newHashSet();
     for (Symbol symbol : definedInState) {
-      for (SymbolicValue value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
+      for (SymbolicValue value : Iterables.concat(definitelyReachableValues.get(symbol), unreachableValues.get(symbol))) {
         State state = stateOfValue.get(value);
         if (state != null) {
           results.add(state);
@@ -122,7 +157,7 @@ public class ExecutionState {
   // FIXME : Hideous hack for closeable to get "Ignored" variables
   public List<State> getStatesOf(Symbol symbol) {
     List<State> states = Lists.newArrayList();
-    for (SymbolicValue value : Iterables.concat(reachableValues.get(symbol), unreachableValues.get(symbol))) {
+    for (SymbolicValue value : Iterables.concat(definitelyReachableValues.get(symbol), unreachableValues.get(symbol))) {
       State state = stateOfValue.get(value);
       if (state != null) {
         states.add(state);
@@ -144,29 +179,66 @@ public class ExecutionState {
     return null;
   }
 
-  Iterable<SymbolicValue> getValues(Symbol symbol) {
-    return reachableValues.get(symbol);
+  Iterable<SymbolicValue> getDefinitelyReachableValues(Symbol symbol) {
+    return definitelyReachableValues.get(symbol);
   }
 
   public SymbolicValue createValueForSymbol(Symbol symbol, Tree tree) {
     // When creating a new value, all reachable values are now unreachable.
-    Set<SymbolicValue> values = this.reachableValues.get(symbol);
+    potentiallyReachableValues.get(symbol).clear();
+    Set<SymbolicValue> values = this.definitelyReachableValues.get(symbol);
     unreachableValues.putAll(symbol, values);
     values.clear();
     SymbolicValue value = new SymbolicValue(tree);
-    reachableValues.put(symbol, value);
+    potentiallyReachableValues.put(symbol, value);
+    definitelyReachableValues.put(symbol, value);
     stateOfValue.put(value, State.UNSET);
     return value;
   }
 
-  public void markValueAs(Symbol symbol, State state) {
-    for (SymbolicValue value : getValues(symbol)) {
+  public void markDefinitelyReachableValues(Symbol symbol, State state) {
+    for (SymbolicValue value : getDefinitelyReachableValues(symbol)) {
       stateOfValue.put(value, state);
     }
   }
 
   public void markValueAs(SymbolicValue value, State state) {
     stateOfValue.put(value, state);
+  }
+
+  public void markPotentiallyReachableValues(Symbol symbol, State state) {
+    for (SymbolicValue value : getPotentiallyReachableValues(symbol)) {
+      markValueAs(value, state);
+    }
+  }
+
+  /**
+   * returns the merged state of all potentially reachable values.
+   *
+   * @param symbol symbol whose merged state must be retrieved.
+   * @return merged state of all all potentially reachable values.
+   */
+  public State mergePotentiallyReachableStates(Symbol symbol) {
+    State result = null;
+    for (SymbolicValue value : getPotentiallyReachableValues(symbol)) {
+      State state = getStateOfValue(value);
+      if (state != null) {
+        result = result != null ? state.merge(result) : state;
+      }
+    }
+    return result != null ? result : State.UNSET;
+  }
+
+  private Set<SymbolicValue> getPotentiallyReachableValues(Symbol symbol) {
+    ExecutionState executionState = this;
+    while (executionState != null) {
+      Set<SymbolicValue> result = executionState.potentiallyReachableValues.get(symbol);
+      if (!result.isEmpty()) {
+        return result;
+      }
+      executionState = executionState.parent;
+    }
+    return ImmutableSet.<SymbolicValue>of();
   }
 
 }
