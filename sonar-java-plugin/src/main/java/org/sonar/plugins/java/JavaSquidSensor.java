@@ -95,7 +95,7 @@ public class JavaSquidSensor implements Sensor {
     return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST))));
   }
 
-  private Iterable<File> toFile(Iterable<InputFile> inputFiles) {
+  private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
     List<File> files = Lists.newArrayList();
     for (InputFile inputFile : inputFiles) {
       files.add(inputFile.file());
