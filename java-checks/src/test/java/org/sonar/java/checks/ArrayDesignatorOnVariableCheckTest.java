@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ArrayDesignatorOnVariableCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ArrayDesignatorOnVariableCheck.java"), new ArrayDesignatorOnVariableCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Move the array designator from the variable to the type.")
-        .next().atLine(5)
-        .next().atLine(10)
-        .next().atLine(17)
-        .next().atLine(18);
+    JavaCheckVerifier.verify("src/test/files/checks/ArrayDesignatorOnVariableCheck.java", new ArrayDesignatorOnVariableCheck());
   }
 
 }
