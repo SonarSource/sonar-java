@@ -91,7 +91,7 @@ public class FileHeaderCheckTest {
     JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/FileHeaderCheck/Regex2.java", "Add or update the header of this file.", check);
 
     check = new FileHeaderCheck();
-    check.headerFormat = "// copyright \\d{4}\\n// mycompany";
+    check.headerFormat = "// copyright \\d{4}\\r?\\n// mycompany";
     check.isRegularExpression = true;
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/FileHeaderCheck/Regex3.java", check);
 
