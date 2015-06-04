@@ -34,3 +34,13 @@ class Utilities {
 
 }
 </pre>
+
+<h2>Exceptions</h2>
+<p>
+  When <code>java.io.Serializable</code> is implemented the following three methods are excluded by the rule:
+</p>
+<ul>
+  <li><code>private void writeObject(java.io.ObjectOutputStream out) throws IOException;</code></li>
+  <li><code>private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException;</code></li>
+  <li><code>private void readObjectNoData() throws ObjectStreamException;</code></li>
+</ul>
