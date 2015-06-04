@@ -19,18 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.TreeFactory;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
   key = "S1195",
@@ -40,18 +42,32 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class ArrayDesignatorAfterTypeCheck extends SquidCheck<LexerlessGrammar> implements JavaCheck {
+public class ArrayDesignatorAfterTypeCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(Kind.METHOD);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(TreeFactory.WRAPPER_AST_NODE)) {
-      getContext().createLineViolation(this, "Move the array designators \"[]\" to the end of the return type.", node);
+  public void visitNode(Tree tree) {
+    MethodTree methodTree = (MethodTree) tree;
+    TypeTree returnType = methodTree.returnType();
+    SyntaxToken identifierToken = methodTree.simpleName().identifierToken();
+    while (returnType.is(Tree.Kind.ARRAY_TYPE)) {
+      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) returnType;
+      SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
+      if (isInvalidPosition(openBracketToken, identifierToken)) {
+        addIssue(openBracketToken, "Move the array designators \"[]\" to the end of the return type.");
+        break;
+      }
+      returnType = arrayTypeTree.type();
     }
+  }
+
+  private static boolean isInvalidPosition(SyntaxToken openBracketToken, SyntaxToken identifierToken) {
+    return identifierToken.line() < openBracketToken.line()
+      || (identifierToken.line() == openBracketToken.line() && identifierToken.column() < openBracketToken.column());
   }
 
 }

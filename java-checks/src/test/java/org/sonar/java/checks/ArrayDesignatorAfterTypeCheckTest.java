@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ArrayDesignatorAfterTypeCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ArrayDesignatorAfterTypeCheck.java"), new ArrayDesignatorAfterTypeCheck());
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Move the array designators \"[]\" to the end of the return type.")
-        .next().atLine(6)
-        .next().atLine(10)
-        .next().atLine(14);
+    JavaCheckVerifier.verify("src/test/files/checks/ArrayDesignatorAfterTypeCheck.java", new ArrayDesignatorAfterTypeCheck());
   }
 
 }
