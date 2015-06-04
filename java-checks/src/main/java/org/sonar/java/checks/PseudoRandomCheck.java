@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -41,7 +41,7 @@ import java.util.List;
 @SqaleConstantRemediation("10min")
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
-  private MethodInvocationMatcher methodInvocationMatcher = MethodInvocationMatcher.create().typeDefinition("java.lang.Math").name("random");
+  private MethodMatcher methodInvocationMatcher = MethodMatcher.create().typeDefinition("java.lang.Math").name("random");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

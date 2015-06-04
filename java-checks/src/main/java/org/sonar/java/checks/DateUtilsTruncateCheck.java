@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -41,7 +41,7 @@ import java.util.List;
 public class DateUtilsTruncateCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       truncateMethodMatcher("java.util.Date"),
       truncateMethodMatcher("java.util.Calendar"),
@@ -49,12 +49,12 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "Use \"Instant.truncatedTo\" instead.");
   }
 
-  private MethodInvocationMatcher truncateMethodMatcher(String firstParameterType) {
-    return MethodInvocationMatcher.create()
+  private MethodMatcher truncateMethodMatcher(String firstParameterType) {
+    return MethodMatcher.create()
       .typeDefinition("org.apache.commons.lang.time.DateUtils").name("truncate").addParameter(firstParameterType).addParameter("int");
   }
 }

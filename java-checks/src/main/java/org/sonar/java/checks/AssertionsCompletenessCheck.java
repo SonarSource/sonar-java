@@ -23,7 +23,7 @@ import com.google.common.base.Objects;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -46,19 +46,19 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public class AssertionsCompletenessCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final MethodInvocationMatcher MOCKITO_VERIFY = MethodInvocationMatcher.create()
+  private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
   private static final MethodInvocationMatcherCollection FEST_ASSERT_THAT = MethodInvocationMatcherCollection.create(
     // Fest 1.X
-    MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter(TypeCriteria.anyType()),
+    MethodMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter(TypeCriteria.anyType()),
     // Fest 2.X
-    MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.api.Assertions").name("assertThat").addParameter(TypeCriteria.anyType())
+    MethodMatcher.create().typeDefinition("org.fest.assertions.api.Assertions").name("assertThat").addParameter(TypeCriteria.anyType())
   );
 
   private static final MethodInvocationMatcherCollection FEST_EXCLUSIONS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.anyType()).name("as").withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.anyType()).name("describedAs").withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.anyType()).name("overridingErrorMessage").withNoParameterConstraint()
+    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("as").withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("describedAs").withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name("overridingErrorMessage").withNoParameterConstraint()
   );
 
   private Boolean chainedToAnyMethodButFestExclusions = null;

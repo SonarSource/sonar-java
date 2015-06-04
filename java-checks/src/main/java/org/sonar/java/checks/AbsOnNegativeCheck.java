@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -55,26 +55,26 @@ import java.util.List;
 public class AbsOnNegativeCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
 
   private static final MethodInvocationMatcherCollection MATH_ABS_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition("java.lang.Math")
       .name("abs")
       .addParameter("int"),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition("java.lang.Math")
       .name("abs")
       .addParameter("long")
     );
 
   private static final MethodInvocationMatcherCollection NEGATIVE_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .name("hashCode"),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Random"))
       .name("nextInt"),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Random"))
       .name("nextLong"),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.lang.Comparable"))
       .name("compareTo")
       .addParameter(TypeCriteria.anyType())

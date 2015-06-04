@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -49,7 +49,7 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher WRITE_OBJECT_MATCHER = MethodInvocationMatcher.create()
+  private static final MethodMatcher WRITE_OBJECT_MATCHER = MethodMatcher.create()
     .typeDefinition("java.io.ObjectOutputStream")
     .name("writeObject")
     .addParameter("java.lang.Object");

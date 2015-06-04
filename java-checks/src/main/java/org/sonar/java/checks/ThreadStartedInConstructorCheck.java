@@ -24,7 +24,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,7 +45,7 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class ThreadStartedInConstructorCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher THREAD_START = MethodInvocationMatcher.create()
+  private static final MethodMatcher THREAD_START = MethodMatcher.create()
     .typeDefinition("java.lang.Thread")
     .name("start");
 

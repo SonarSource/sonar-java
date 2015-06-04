@@ -26,7 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -63,19 +63,19 @@ public class PrintfCheck extends AbstractMethodDetection {
   private static final String FORMAT_METHOD_NAME = "format";
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodInvocationMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
+        MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
     );
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
     //Check type of first argument:

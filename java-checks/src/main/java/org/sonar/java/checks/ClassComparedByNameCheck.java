@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -49,12 +49,12 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
   private ClassGetNameDetector classGetNameDetector = new ClassGetNameDetector();
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("java.lang.String").name("equals").withNoParameterConstraint());
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.String").name("equals").withNoParameterConstraint());
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ((MemberSelectExpressionTree) mit.methodSelect()).expression().accept(classGetNameDetector);
     }
@@ -64,8 +64,8 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
   private class ClassGetNameDetector extends BaseTreeVisitor {
 
     private final MethodInvocationMatcherCollection methodMatchers = MethodInvocationMatcherCollection.create(
-      MethodInvocationMatcher.create().typeDefinition("java.lang.Class").name("getName"),
-      MethodInvocationMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName"));
+      MethodMatcher.create().typeDefinition("java.lang.Class").name("getName"),
+      MethodMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName"));
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {

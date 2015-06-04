@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -47,25 +47,25 @@ import java.util.Set;
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
   private static final String GENERIC_ASSERT = "org.fest.assertions.GenericAssert";
-  private static final MethodInvocationMatcher FEST_AS_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher FEST_AS_METHOD = MethodMatcher.create()
         .typeDefinition(GENERIC_ASSERT).name("as").addParameter("java.lang.String");
   private static final Set<String> ASSERT_METHODS_WITH_ONE_PARAM = Sets.newHashSet("assertNull", "assertNotNull");
   private static final Set<String> ASSERT_METHODS_WITH_TWO_PARAMS = Sets.newHashSet("assertEquals", "assertSame", "assertNotSame", "assertThat");
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Lists.newArrayList(
-        MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(GENERIC_ASSERT)).name(NameCriteria.any()).withNoParameterConstraint()
+        MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(GENERIC_ASSERT)).name(NameCriteria.any()).withNoParameterConstraint()
     );
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if(mit.symbol().owner().type().isSubtypeOf(GENERIC_ASSERT) && !FEST_AS_METHOD.matches(mit)) {
       FestVisitor visitor = new FestVisitor();
       mit.methodSelect().accept(visitor);

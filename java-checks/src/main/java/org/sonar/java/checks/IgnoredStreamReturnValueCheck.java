@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -71,8 +71,8 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private static MethodInvocationMatcher inputStreamInvocationMatcher(String methodName, String parameterType) {
-    return MethodInvocationMatcher.create()
+  private static MethodMatcher inputStreamInvocationMatcher(String methodName, String parameterType) {
+    return MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.InputStream"))
       .name(methodName)
       .addParameter(parameterType);

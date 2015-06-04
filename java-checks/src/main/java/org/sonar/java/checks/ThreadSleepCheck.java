@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -42,14 +42,14 @@ import java.util.List;
 public class ThreadSleepCheck extends AbstractInSynchronizeChecker {
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (isInSyncBlock()) {
       addIssue(mit, "Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".");
     }
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withNoParameterConstraint());
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.Thread").name("sleep").withNoParameterConstraint());
   }
 }

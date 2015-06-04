@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -46,17 +46,17 @@ public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
   private static final String ASSERT = "assert";
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return Lists.newArrayList(
-      MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("junit.framework.TestCase").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
-      MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter("boolean")
+      MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("junit.framework.TestCase").name(NameCriteria.startsWith(ASSERT)).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("org.fest.assertions.Assertions").name("assertThat").addParameter("boolean")
       );
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     int arity = mit.arguments().size();
     for (int i = 0; i < arity; i++) {
       ExpressionTree booleanArg = mit.arguments().get(i);

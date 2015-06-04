@@ -29,7 +29,7 @@ import java.util.List;
 
 public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
-  private List<MethodInvocationMatcher> matchers;
+  private List<MethodMatcher> matchers;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -39,17 +39,17 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      for (MethodInvocationMatcher invocationMatcher : matchers()) {
+      for (MethodMatcher invocationMatcher : matchers()) {
         checkInvocation(tree, invocationMatcher);
       }
     }
   }
 
-  private void checkInvocation(Tree tree, MethodInvocationMatcher invocationMatcher) {
+  private void checkInvocation(Tree tree, MethodMatcher invocationMatcher) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       if (invocationMatcher.matches(mit)) {
-        onMethodFound(mit);
+        onMethodInvocationFound(mit);
       }
     } else if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
@@ -59,9 +59,9 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
     }
   }
 
-  protected abstract List<MethodInvocationMatcher> getMethodInvocationMatchers();
+  protected abstract List<MethodMatcher> getMethodInvocationMatchers();
 
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     // Do nothing by default
   }
 
@@ -69,7 +69,7 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
     // Do nothing by default
   }
 
-  private List<MethodInvocationMatcher> matchers() {
+  private List<MethodMatcher> matchers() {
     if (matchers == null) {
       matchers = getMethodInvocationMatchers();
     }

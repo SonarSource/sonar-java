@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -49,7 +49,7 @@ import java.util.List;
 public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";
-  private static final MethodInvocationMatcher INDEX_OF_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher INDEX_OF_METHOD = MethodMatcher.create()
     .typeDefinition(JAVA_LANG_STRING).name("indexOf").addParameter(JAVA_LANG_STRING);
 
   @Override

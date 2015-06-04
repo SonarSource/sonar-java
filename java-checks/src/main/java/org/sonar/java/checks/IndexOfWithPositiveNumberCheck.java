@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
@@ -52,15 +52,15 @@ public class IndexOfWithPositiveNumberCheck extends SubscriptionBaseVisitor {
   private static final String INDEXOF = "indexOf";
 
   private static final MethodInvocationMatcherCollection CHECKED_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(String.class.getName())
       .name(INDEXOF)
       .addParameter("int"),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(String.class.getName())
       .name(INDEXOF)
       .addParameter(String.class.getName()),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.List"))
       .name(INDEXOF)
       .addParameter("java.lang.Object")

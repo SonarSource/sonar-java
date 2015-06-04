@@ -24,7 +24,7 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -53,12 +53,12 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher MAP_GET_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher MAP_GET_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("java.util.Map"))
     .name("get")
     .addParameter("java.lang.Object");
 
-  private static final MethodInvocationMatcher MAP_KEYSET_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher MAP_KEYSET_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("java.util.Map"))
     .name("keySet");
 

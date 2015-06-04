@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -53,14 +53,14 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
   private static final String MESSAGE = "Remove this call to \"equals\"; comparisons between unrelated types always return false.";
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create()
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create()
       .name("equals")
       .addParameter(JAVA_LANG_OBJECT));
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree tree) {
+  protected void onMethodInvocationFound(MethodInvocationTree tree) {
     ExpressionTree firstArgument = Iterables.getOnlyElement(tree.arguments());
     Type argumentType = firstArgument.symbolType().erasure();
     if (argumentType.isPrimitive()) {

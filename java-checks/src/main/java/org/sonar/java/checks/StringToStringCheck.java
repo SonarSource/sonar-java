@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -50,14 +50,14 @@ import java.util.List;
 public class StringToStringCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create()
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create()
       .typeDefinition("java.lang.String")
       .name("toString"));
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree tree) {
+  protected void onMethodInvocationFound(MethodInvocationTree tree) {
     ExpressionTree expressionTree = extractBaseExpression(((MemberSelectExpressionTree) tree.methodSelect()).expression());
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       addIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.",

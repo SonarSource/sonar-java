@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -53,13 +53,13 @@ import java.util.List;
 public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("getClass"));
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("getClass"));
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (hasSemantic() && mit.methodSelect().is(Kind.MEMBER_SELECT)) {
       ExpressionTree expressionTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
       if (expressionTree.is(Kind.NEW_CLASS)) {

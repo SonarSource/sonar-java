@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -44,24 +44,24 @@ import java.util.List;
 public class EqualsOnAtomicClassCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       equalsInvocationMatcher("java.util.concurrent.atomic.AtomicBoolean"),
       equalsInvocationMatcher("java.util.concurrent.atomic.AtomicInteger"),
       equalsInvocationMatcher("java.util.concurrent.atomic.AtomicLong"));
   }
 
-  private static MethodInvocationMatcher equalsInvocationMatcher(String fullyQualifiedName) {
-    return MethodInvocationMatcher.create()
+  private static MethodMatcher equalsInvocationMatcher(String fullyQualifiedName) {
+    return MethodMatcher.create()
       .callSite(TypeCriteria.is(fullyQualifiedName))
       .name("equals")
       .addParameter("java.lang.Object");
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "Use \".get()\" to retrieve the value and compare it instead.");
-    super.onMethodFound(mit);
+    super.onMethodInvocationFound(mit);
   }
 
 }

@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -107,18 +107,18 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
     private final String className;
     private final Type.Primitives tag;
     private final String message;
-    private final MethodInvocationMatcher unboxingInvocationMatcher;
-    private final MethodInvocationMatcher valueOfInvocationMatcher;
+    private final MethodMatcher unboxingInvocationMatcher;
+    private final MethodMatcher valueOfInvocationMatcher;
 
     private PrimitiveCheck(String primitiveName, String className, Type.Primitives tag) {
       this.primitiveName = primitiveName;
       this.className = className;
       this.tag = tag;
       this.message = "Use \"" + parseMethodName() + "\" for this string-to-" + primitiveName + " conversion.";
-      this.unboxingInvocationMatcher = MethodInvocationMatcher.create()
+      this.unboxingInvocationMatcher = MethodMatcher.create()
         .typeDefinition("java.lang." + className)
         .name(primitiveName + "Value");
-      this.valueOfInvocationMatcher = MethodInvocationMatcher.create()
+      this.valueOfInvocationMatcher = MethodMatcher.create()
         .typeDefinition("java.lang." + className)
         .name("valueOf")
         .addParameter("java.lang.String");

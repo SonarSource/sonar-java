@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -47,20 +47,20 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
   private static final TypeCriteria IS_ARRAY = new IsArrayCriteria();
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       arrayMethodInvocation("toString"),
       arrayMethodInvocation("hashCode"));
   }
 
-  private static MethodInvocationMatcher arrayMethodInvocation(String methodName) {
-    return MethodInvocationMatcher.create()
+  private static MethodMatcher arrayMethodInvocation(String methodName) {
+    return MethodMatcher.create()
       .callSite(IS_ARRAY)
       .name(methodName);
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
     addIssue(mit, "Use \"Arrays." + methodName + "(array)\" instead.");
   }

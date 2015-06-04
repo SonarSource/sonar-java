@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -64,13 +64,13 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   private static final String[] DATE_GET_METHODS = {"getDate", "getMonth", "getHours", "getMinutes", "getSeconds"};
   private static final String[] DATE_SET_METHODS = {"setDate", "setMonth", "setHours", "setMinutes", "setSeconds"};
 
-  private static final List<MethodInvocationMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodInvocationMatcher>builder()
-    .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
+  private static final List<MethodMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodMatcher>builder()
+    .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
     .addAll(dateGetMatchers())
     .build();
 
-  private static List<MethodInvocationMatcher> dateGetMatchers() {
-    ImmutableList.Builder<MethodInvocationMatcher> builder = ImmutableList.builder();
+  private static List<MethodMatcher> dateGetMatchers() {
+    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
     for (String dateGetMethod : DATE_GET_METHODS) {
       builder.add(dateMethodInvocationMatcherGetter(JAVA_UTIL_DATE, dateGetMethod));
       builder.add(dateMethodInvocationMatcherGetter(JAVA_SQL_DATE, dateGetMethod));
@@ -112,7 +112,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       String name = getMethodName(mit);
-      for (MethodInvocationMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
+      for (MethodMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
         if (methodInvocationMatcher.matches(mit)) {
           if ("get".equals(name)) {
             // Calendar
@@ -139,28 +139,28 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    ImmutableList.Builder<MethodInvocationMatcher> builder = ImmutableList.builder();
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
     for (String dateSetMethod : DATE_SET_METHODS) {
       builder.add(dateMethodInvocationMatcherSetter(JAVA_UTIL_DATE, dateSetMethod));
       builder.add(dateMethodInvocationMatcherSetter(JAVA_SQL_DATE, dateSetMethod));
     }
     return builder
-      .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
-      .add(MethodInvocationMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
+      .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
+      .add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
       .build();
   }
 
-  private static MethodInvocationMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
-    return MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
+  private static MethodMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
+    return MethodMatcher.create().typeDefinition(type).name(methodName);
   }
 
-  private static MethodInvocationMatcher dateMethodInvocationMatcherSetter(String type, String methodName) {
-    return MethodInvocationMatcher.create().typeDefinition(type).name(methodName).addParameter("int");
+  private static MethodMatcher dateMethodInvocationMatcherSetter(String type, String methodName) {
+    return MethodMatcher.create().typeDefinition(type).name(methodName).addParameter("int");
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String name = getMethodName(mit);
     if ("set".equals(name)) {
       // Calendar method

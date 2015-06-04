@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -44,13 +44,13 @@ import java.util.List;
 public class ThreadRunCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Runnable")).name("run").withNoParameterConstraint());
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Runnable")).name("run").withNoParameterConstraint());
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
   }
 

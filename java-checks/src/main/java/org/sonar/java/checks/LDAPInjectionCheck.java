@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -39,11 +39,11 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("30min")
 public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
-  private static final MethodInvocationMatcher LDAP_SEARCH_MATCHER = MethodInvocationMatcher.create()
+  private static final MethodMatcher LDAP_SEARCH_MATCHER = MethodMatcher.create()
     .typeDefinition("javax.naming.directory.DirContext")
     .name("search").withNoParameterConstraint();
 
-  private static final MethodInvocationMatcher SEARCH_CONTROLS_MATCHER = MethodInvocationMatcher.create()
+  private static final MethodMatcher SEARCH_CONTROLS_MATCHER = MethodMatcher.create()
     .typeDefinition("javax.naming.directory.SearchControls")
     .name("setReturningAttributes").addParameter("java.lang.String[]");
 

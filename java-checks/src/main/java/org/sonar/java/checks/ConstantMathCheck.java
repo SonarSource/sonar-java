@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -62,45 +62,45 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
   private static final String ROUND = "round";
 
   private static final MethodInvocationMatcherCollection CONSTANT_WITH_LITERAL_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(FLOAT),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("int"),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("long")
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(FLOAT),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("int"),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("long")
     );
 
   private static final MethodInvocationMatcherCollection TRUNCATION_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(FLOAT),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(FLOAT),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("rint").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(FLOAT)
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(FLOAT),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(FLOAT),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("rint").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(FLOAT)
     );
 
   private static final MethodInvocationMatcherCollection CONSTANT_WITH_ZERO_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan2").addParameter(DOUBLE).addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cos").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cosh").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("expm1").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sin").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sinh").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("tan").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("tanh").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toRadians").addParameter(DOUBLE)
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan2").addParameter(DOUBLE).addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cos").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cosh").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("expm1").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sin").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sinh").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("tan").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("tanh").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toRadians").addParameter(DOUBLE)
     );
 
   private static final MethodInvocationMatcherCollection CONSTANT_WITH_ZERO_OR_ONE_METHODS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("acos").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("asin").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cbrt").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("exp").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("log").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("log10").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sqrt").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toDegrees").addParameter(DOUBLE),
-    MethodInvocationMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("exp").addParameter(DOUBLE)
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("acos").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("asin").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cbrt").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("exp").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("log").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("log10").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sqrt").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toDegrees").addParameter(DOUBLE),
+    MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("exp").addParameter(DOUBLE)
     );
 
   @Override

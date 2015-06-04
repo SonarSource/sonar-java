@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -45,7 +45,7 @@ import java.util.List;
 public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (!isInSyncBlock()) {
       String methodName;
       String lockName;
@@ -62,12 +62,12 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodInvocationMatcher>builder()
-        .add(MethodInvocationMatcher.create().name("wait"))
-        .add(MethodInvocationMatcher.create().name("wait").addParameter("long"))
-        .add(MethodInvocationMatcher.create().name("wait").addParameter("long").addParameter("int"))
-        .add(MethodInvocationMatcher.create().name("notify"))
-        .add(MethodInvocationMatcher.create().name("notifyAll")).build();
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.<MethodMatcher>builder()
+        .add(MethodMatcher.create().name("wait"))
+        .add(MethodMatcher.create().name("wait").addParameter("long"))
+        .add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"))
+        .add(MethodMatcher.create().name("notify"))
+        .add(MethodMatcher.create().name("notifyAll")).build();
   }
 }

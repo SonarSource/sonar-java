@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -63,11 +63,11 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static final String JAVA_IO_FILE = "java.io.File";
-  private static final MethodInvocationMatcher FILE_CREATE_TEMP_FILE = MethodInvocationMatcher.create()
+  private static final MethodMatcher FILE_CREATE_TEMP_FILE = MethodMatcher.create()
     .typeDefinition(JAVA_IO_FILE).name("createTempFile").withNoParameterConstraint();
-  private static final MethodInvocationMatcher FILE_DELETE = MethodInvocationMatcher.create()
+  private static final MethodMatcher FILE_DELETE = MethodMatcher.create()
     .typeDefinition(JAVA_IO_FILE).name("delete");
-  private static final MethodInvocationMatcher FILE_MKDIR = MethodInvocationMatcher.create()
+  private static final MethodMatcher FILE_MKDIR = MethodMatcher.create()
     .typeDefinition(JAVA_IO_FILE).name("mkdir");
 
   private final Deque<Map<Symbol, State>> symbolStack = new LinkedList<>();

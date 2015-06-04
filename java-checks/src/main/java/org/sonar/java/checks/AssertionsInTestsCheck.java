@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -47,30 +47,30 @@ import java.util.Deque;
 @SqaleConstantRemediation("10min")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final MethodInvocationMatcher MOCKITO_VERIFY = MethodInvocationMatcher.create()
+  private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
-  private static final MethodInvocationMatcher ASSERT_THAT = MethodInvocationMatcher.create()
+  private static final MethodMatcher ASSERT_THAT = MethodMatcher.create()
     .typeDefinition(TypeCriteria.anyType()).name("assertThat").addParameter(TypeCriteria.anyType());
-  private static final MethodInvocationMatcher FEST_AS_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher FEST_AS_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.anyType()).name("as").withNoParameterConstraint();
-  private static final MethodInvocationMatcher FEST_DESCRIBED_AS_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher FEST_DESCRIBED_AS_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.anyType()).name("describedAs").withNoParameterConstraint();
-  private static final MethodInvocationMatcher FEST_OVERRIDE_ERROR_METHOD = MethodInvocationMatcher.create()
+  private static final MethodMatcher FEST_OVERRIDE_ERROR_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.anyType()).name("overridingErrorMessage").withNoParameterConstraint();
   private static final MethodInvocationMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition("org.junit.rules.ExpectedException").name(NameCriteria.startsWith("expect")).withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.junit.rules.ExpectedException").name(NameCriteria.startsWith("expect")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
     // fest 1.x
-    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
     // fest 2.x
-    MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
-    MethodInvocationMatcher.create().typeDefinition("org.fest.assertions.api.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.fest.assertions.api.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
     // Mockito
-    MethodInvocationMatcher.create().typeDefinition("org.mockito.Mockito").name("verifyNoMoreInteractions").withNoParameterConstraint()
+    MethodMatcher.create().typeDefinition("org.mockito.Mockito").name("verifyNoMoreInteractions").withNoParameterConstraint()
   );
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();

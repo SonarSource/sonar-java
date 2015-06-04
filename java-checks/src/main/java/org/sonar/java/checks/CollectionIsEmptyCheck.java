@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -49,7 +49,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
-  private static final MethodInvocationMatcher SIZE_METHOD = getSizeMethodInvocationMatcher();
+  private static final MethodMatcher SIZE_METHOD = getSizeMethodInvocationMatcher();
   private JavaFileScannerContext context;
 
   @Override
@@ -120,8 +120,8 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
       "1".equals(((LiteralTree) tree).value());
   }
 
-  private static MethodInvocationMatcher getSizeMethodInvocationMatcher() {
-    return MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_UTIL_COLLECTION)).name("size").withNoParameterConstraint();
+  private static MethodMatcher getSizeMethodInvocationMatcher() {
+    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_UTIL_COLLECTION)).name("size").withNoParameterConstraint();
   }
 
 }

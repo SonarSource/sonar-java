@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -43,12 +43,12 @@ import java.util.List;
 public class ResultSetIsLastCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast"));
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.sql.ResultSet").name("isLast"));
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "Remove this call to \"isLast()\".");
   }
 }

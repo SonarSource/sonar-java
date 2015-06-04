@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
@@ -54,22 +54,22 @@ import java.util.List;
 public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       collectionMethodInvocation("remove"),
       collectionMethodInvocation("contains")
       );
   }
 
-  private MethodInvocationMatcher collectionMethodInvocation(String methodName) {
-    return MethodInvocationMatcher.create()
+  private MethodMatcher collectionMethodInvocation(String methodName) {
+    return MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Collection"))
       .name(methodName)
       .addParameter("java.lang.Object");
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree tree) {
+  protected void onMethodInvocationFound(MethodInvocationTree tree) {
     Type argumentType = getType(tree.arguments().get(0));
     Type collectionType = getMethodOwner(tree);
     // can be null when using raw types

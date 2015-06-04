@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -51,8 +51,8 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher NEXT_INVOCATION_MATCHER =
-    MethodInvocationMatcher.create()
+  private static final MethodMatcher NEXT_INVOCATION_MATCHER =
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator"))
       .name("next");
 

@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaType;
@@ -61,7 +61,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return getToStringMatchers(
       "java.lang.Byte",
       "java.lang.Character",
@@ -73,10 +73,10 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
       "java.lang.Boolean");
   }
 
-  private static List<MethodInvocationMatcher> getToStringMatchers(String... typeFullyQualifiedNames) {
-    List<MethodInvocationMatcher> matchers = Lists.newArrayList();
+  private static List<MethodMatcher> getToStringMatchers(String... typeFullyQualifiedNames) {
+    List<MethodMatcher> matchers = Lists.newArrayList();
     for (String fullyQualifiedName : typeFullyQualifiedNames) {
-      matchers.add(MethodInvocationMatcher.create()
+      matchers.add(MethodMatcher.create()
         .typeDefinition(TypeCriteria.subtypeOf(fullyQualifiedName))
         .name("toString"));
     }
@@ -110,7 +110,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree abstractTypedTree = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
     if (abstractTypedTree.is(Kind.NEW_CLASS) || isValueOfInvocation(abstractTypedTree)) {
       String typeName = abstractTypedTree.symbolType().toString();
@@ -123,7 +123,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends AbstractMethodDetectio
       return false;
     }
     Type type = abstractTypedTree.symbolType();
-    MethodInvocationMatcher valueOfMatcher = MethodInvocationMatcher.create()
+    MethodMatcher valueOfMatcher = MethodMatcher.create()
       .typeDefinition(type.fullyQualifiedName())
       .name("valueOf")
       .addParameter(((JavaType) type).primitiveType().fullyQualifiedName());

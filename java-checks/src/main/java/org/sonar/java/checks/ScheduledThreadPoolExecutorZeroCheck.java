@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -48,15 +48,15 @@ import java.util.List;
 public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.ThreadPoolExecutor")).name("setCorePoolSize").addParameter("int"),
-        MethodInvocationMatcher.create().typeDefinition("java.util.concurrent.ScheduledThreadPoolExecutor").name("<init>").addParameter("int")
+        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.ThreadPoolExecutor")).name("setCorePoolSize").addParameter("int"),
+        MethodMatcher.create().typeDefinition("java.util.concurrent.ScheduledThreadPoolExecutor").name("<init>").addParameter("int")
     );
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if(isZeroIntLiteral(mit.arguments().get(0))) {
       reportIssue(mit);
     }

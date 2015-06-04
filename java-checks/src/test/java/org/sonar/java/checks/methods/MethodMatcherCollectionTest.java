@@ -28,7 +28,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MethodInvocationMatcherCollectionTest {
+public class MethodMatcherCollectionTest {
 
   @Test
   public void should_create_a_collection() {
@@ -37,12 +37,12 @@ public class MethodInvocationMatcherCollectionTest {
 
   @Test
   public void should_create_a_collection_with_MethodInvocationMatcher() {
-    assertThat(MethodInvocationMatcherCollection.create(MethodInvocationMatcher.create())).isNotNull();
+    assertThat(MethodInvocationMatcherCollection.create(MethodMatcher.create())).isNotNull();
   }
 
   @Test
   public void should_be_able_to_add_MethodInvocationMatcher() {
-    assertThat(MethodInvocationMatcherCollection.create().add(MethodInvocationMatcher.create())).isNotNull();
+    assertThat(MethodInvocationMatcherCollection.create().add(MethodMatcher.create())).isNotNull();
   }
 
   @Test
@@ -52,7 +52,7 @@ public class MethodInvocationMatcherCollectionTest {
 
   @Test
   public void should_not_match_when_method_invocation_tree_does_not_match() {
-    MethodInvocationMatcher matcher = mock(MethodInvocationMatcher.class);
+    MethodMatcher matcher = mock(MethodMatcher.class);
     when(matcher.matches(any(MethodInvocationTree.class))).thenReturn(false);
     assertThat(MethodInvocationMatcherCollection.create(matcher).anyMatch(mock(MethodInvocationTree.class))).isFalse();
     assertThat(MethodInvocationMatcherCollection.create(matcher).anyMatch(mock(MethodTree.class))).isFalse();
@@ -60,15 +60,15 @@ public class MethodInvocationMatcherCollectionTest {
 
   @Test
   public void should_match_if_any_of_the_matchers_match() {
-    MethodInvocationMatcher matcher1 = mock(MethodInvocationMatcher.class);
+    MethodMatcher matcher1 = mock(MethodMatcher.class);
     when(matcher1.matches(any(MethodInvocationTree.class))).thenReturn(false);
-    MethodInvocationMatcher matcher2 = mock(MethodInvocationMatcher.class);
+    MethodMatcher matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodInvocationTree.class))).thenReturn(true);
     assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodInvocationTree.class))).isTrue();
 
-    matcher1 = mock(MethodInvocationMatcher.class);
+    matcher1 = mock(MethodMatcher.class);
     when(matcher1.matches(any(MethodTree.class))).thenReturn(false);
-    matcher2 = mock(MethodInvocationMatcher.class);
+    matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodTree.class))).thenReturn(true);
     assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodTree.class))).isTrue();
   }

@@ -26,7 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -122,7 +122,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       method(JAVA_LANG_STRING, "getBytes"),
       method(JAVA_LANG_STRING, "getBytes", INT, INT, BYTE_ARRAY, INT),
@@ -149,20 +149,20 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_UTIL_SCANNER, JAVA_IO_INPUTSTREAM));
   }
 
-  private static MethodInvocationMatcher method(String type, String methodName, String... argTypes) {
-    MethodInvocationMatcher matcher = MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
+  private static MethodMatcher method(String type, String methodName, String... argTypes) {
+    MethodMatcher matcher = MethodMatcher.create().typeDefinition(type).name(methodName);
     for (String argType : argTypes) {
       matcher = matcher.addParameter(argType);
     }
     return matcher;
   }
 
-  private static MethodInvocationMatcher constructor(String type, String... argTypes) {
+  private static MethodMatcher constructor(String type, String... argTypes) {
     return method(type, "<init>", argTypes);
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "Remove this use of \"" + mit.symbol().name() + "\"");
   }
 

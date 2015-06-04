@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -51,8 +51,8 @@ public class URLHashCodeAndEqualsCheck extends SubscriptionBaseVisitor {
   private static final String JAVA_NET_URL = "java.net.URL";
 
   private static final MethodInvocationMatcherCollection URL_MATCHERS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create().typeDefinition(JAVA_NET_URL).name("equals").addParameter("java.lang.Object"),
-    MethodInvocationMatcher.create().typeDefinition(JAVA_NET_URL).name("hashCode"));
+    MethodMatcher.create().typeDefinition(JAVA_NET_URL).name("equals").addParameter("java.lang.Object"),
+    MethodMatcher.create().typeDefinition(JAVA_NET_URL).name("hashCode"));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -45,7 +45,7 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
-  private static final MethodInvocationMatcher RUNTIME_EXEC_MATCHER = MethodInvocationMatcher.create()
+  private static final MethodMatcher RUNTIME_EXEC_MATCHER = MethodMatcher.create()
     .typeDefinition("java.lang.Runtime")
     .name("exec").withNoParameterConstraint();
 

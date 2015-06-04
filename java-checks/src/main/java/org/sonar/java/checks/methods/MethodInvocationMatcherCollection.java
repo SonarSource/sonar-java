@@ -28,7 +28,7 @@ import java.util.List;
 
 public class MethodInvocationMatcherCollection {
 
-  private List<MethodInvocationMatcher> matchers = Lists.newLinkedList();
+  private List<MethodMatcher> matchers = Lists.newLinkedList();
 
   private MethodInvocationMatcherCollection() {
   }
@@ -37,19 +37,19 @@ public class MethodInvocationMatcherCollection {
     return new MethodInvocationMatcherCollection();
   }
 
-  public static MethodInvocationMatcherCollection create(MethodInvocationMatcher... matchers) {
+  public static MethodInvocationMatcherCollection create(MethodMatcher... matchers) {
     MethodInvocationMatcherCollection collection = new MethodInvocationMatcherCollection();
     Collections.addAll(collection.matchers, matchers);
     return collection;
   }
 
-  public MethodInvocationMatcherCollection add(MethodInvocationMatcher matcher) {
+  public MethodInvocationMatcherCollection add(MethodMatcher matcher) {
     this.matchers.add(matcher);
     return this;
   }
 
   public boolean anyMatch(MethodInvocationTree mit) {
-    for (MethodInvocationMatcher matcher : matchers) {
+    for (MethodMatcher matcher : matchers) {
       if (matcher.matches(mit)) {
         return true;
       }
@@ -58,7 +58,7 @@ public class MethodInvocationMatcherCollection {
   }
 
   public boolean anyMatch(final MethodTree method) {
-    for (MethodInvocationMatcher matcher : matchers) {
+    for (MethodMatcher matcher : matchers) {
       if (matcher.matches(method)) {
         return true;
       }

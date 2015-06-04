@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -43,15 +43,15 @@ import java.util.List;
 public class RunFinalizersCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodInvocationMatcher>builder()
-        .add(MethodInvocationMatcher.create().typeDefinition("java.lang.Runtime").name("runFinalizersOnExit").addParameter("boolean"))
-        .add(MethodInvocationMatcher.create().typeDefinition("java.lang.System").name("runFinalizersOnExit").addParameter("boolean"))
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.<MethodMatcher>builder()
+        .add(MethodMatcher.create().typeDefinition("java.lang.Runtime").name("runFinalizersOnExit").addParameter("boolean"))
+        .add(MethodMatcher.create().typeDefinition("java.lang.System").name("runFinalizersOnExit").addParameter("boolean"))
         .build();
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "Remove this call to \"" + mit.symbol().owner().name() + ".runFinalizersOnExit()\".");
   }
 }

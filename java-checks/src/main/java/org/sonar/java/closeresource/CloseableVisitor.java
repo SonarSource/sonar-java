@@ -19,7 +19,7 @@
  */
 package org.sonar.java.closeresource;
 
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.symexecengine.ExecutionState;
@@ -52,15 +52,15 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
   private static final String JAVA_LANG_AUTOCLOSEABLE = "java.lang.AutoCloseable";
 
   private static final MethodInvocationMatcherCollection CLOSE_INVOCATIONS = MethodInvocationMatcherCollection.create(
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_CLOSEABLE))
       .name(CLOSE_METHOD_NAME)
       .withNoParameterConstraint(),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(JAVA_LANG_AUTOCLOSEABLE))
       .name(CLOSE_METHOD_NAME)
       .withNoParameterConstraint(),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("org.springframework.context.support.AbstractApplicationContext"))
       .name("registerShutdownHook")
       .withNoParameterConstraint());

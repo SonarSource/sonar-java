@@ -26,7 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -64,24 +64,24 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     .build();
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    Builder<MethodInvocationMatcher> builder = ImmutableList.<MethodInvocationMatcher>builder()
-      .add(MethodInvocationMatcher.create()
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    Builder<MethodMatcher> builder = ImmutableList.<MethodMatcher>builder()
+      .add(MethodMatcher.create()
         .typeDefinition("java.security.MessageDigest")
         .name("getInstance")
         .addParameter("java.lang.String"))
-      .add(MethodInvocationMatcher.create()
+      .add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name("getDigest")
         .addParameter("java.lang.String"));
     for (String methodName : ALGORITHM_BY_METHOD_NAME.keySet()) {
-      builder.add(MethodInvocationMatcher.create()
+      builder.add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name(methodName)
         .withNoParameterConstraint());
     }
     for (String methodName : ImmutableList.of("md5", "sha1")) {
-      builder.add(MethodInvocationMatcher.create()
+      builder.add(MethodMatcher.create()
         .typeDefinition("com.google.common.hash.Hashing")
         .name(methodName));
     }
@@ -89,7 +89,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = methodName(mit);
     String algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
     if (algorithm == null) {

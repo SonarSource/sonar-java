@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -53,14 +53,14 @@ import java.util.List;
 public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create()
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AnnotatedElement"))
       .name("isAnnotationPresent").withNoParameterConstraint());
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree expressionTree = mit.arguments().get(0);
     // For now ignore everything that is not a .class expression
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {

@@ -39,14 +39,14 @@ import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class MethodInvocationMatcherTest {
+public class MethodMatcherTest {
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
 
   @Test
   public void should_fail_if_addParameter_is_called_after_withNoParameterConstraint() throws Exception {
-    MethodInvocationMatcher matcher = MethodInvocationMatcher.create().name("name")
+    MethodMatcher matcher = MethodMatcher.create().name("name")
       .withNoParameterConstraint()
       .withNoParameterConstraint();
     exception.expect(IllegalStateException.class);
@@ -55,17 +55,17 @@ public class MethodInvocationMatcherTest {
 
   @Test
   public void should_fail_if_withNoParameterConstraint_is_called_after_addParameter() throws Exception {
-    MethodInvocationMatcher matcher = MethodInvocationMatcher.create().name("name").addParameter("int");
+    MethodMatcher matcher = MethodMatcher.create().name("name").addParameter("int");
     exception.expect(IllegalStateException.class);
     matcher.withNoParameterConstraint();
   }
 
   @Test
   public void detected() {
-    MethodInvocationMatcher objectToString = MethodInvocationMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("toString");
-    MethodInvocationMatcher integerToString = MethodInvocationMatcher.create().typeDefinition("java.lang.Integer").name("toString");
+    MethodMatcher objectToString = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Object")).name("toString");
+    MethodMatcher integerToString = MethodMatcher.create().typeDefinition("java.lang.Integer").name("toString");
 
-    Map<MethodInvocationMatcher, List<Integer>> matches = new HashMap<>();
+    Map<MethodMatcher, List<Integer>> matches = new HashMap<>();
     matches.put(objectToString, new ArrayList<Integer>());
     matches.put(integerToString, new ArrayList<Integer>());
 
@@ -77,9 +77,9 @@ public class MethodInvocationMatcherTest {
 
   class Visitor extends SubscriptionBaseVisitor {
 
-    public Map<MethodInvocationMatcher, List<Integer>> matches;
+    public Map<MethodMatcher, List<Integer>> matches;
 
-    public Visitor(Map<MethodInvocationMatcher, List<Integer>> matches) {
+    public Visitor(Map<MethodMatcher, List<Integer>> matches) {
       this.matches = matches;
     }
 
@@ -91,9 +91,9 @@ public class MethodInvocationMatcherTest {
     @Override
     public void visitNode(Tree tree) {
       super.visitNode(tree);
-      for (Map.Entry<MethodInvocationMatcher, List<Integer>> entry : matches.entrySet()) {
+      for (Map.Entry<MethodMatcher, List<Integer>> entry : matches.entrySet()) {
         boolean match  = false;
-        MethodInvocationMatcher matcher = entry.getKey();
+        MethodMatcher matcher = entry.getKey();
         if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
           match = matcher.matches((MethodInvocationTree) tree);
         } else if (tree.is(Tree.Kind.METHOD)) {

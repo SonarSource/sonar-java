@@ -35,62 +35,62 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public class MethodInvocationMatcher {
+public class MethodMatcher {
 
   private TypeCriteria typeDefinition;
   private TypeCriteria callSite;
   private NameCriteria methodName;
   private List<TypeCriteria> parameterTypes;
 
-  MethodInvocationMatcher() {
+  MethodMatcher() {
     parameterTypes = Lists.newArrayList();
   }
 
-  public static MethodInvocationMatcher create() {
-    return new MethodInvocationMatcher();
+  public static MethodMatcher create() {
+    return new MethodMatcher();
   }
 
-  public MethodInvocationMatcher name(String methodName) {
+  public MethodMatcher name(String methodName) {
     this.methodName = NameCriteria.is(methodName);
     return this;
   }
 
-  public MethodInvocationMatcher name(NameCriteria methodName) {
+  public MethodMatcher name(NameCriteria methodName) {
     Preconditions.checkState(this.methodName == null);
     this.methodName = methodName;
     return this;
   }
 
-  public MethodInvocationMatcher typeDefinition(TypeCriteria typeDefinition) {
+  public MethodMatcher typeDefinition(TypeCriteria typeDefinition) {
     Preconditions.checkState(this.typeDefinition == null);
     this.typeDefinition = typeDefinition;
     return this;
   }
 
-  public MethodInvocationMatcher typeDefinition(String fullyQualifiedTypeName) {
+  public MethodMatcher typeDefinition(String fullyQualifiedTypeName) {
     Preconditions.checkState(typeDefinition == null);
     this.typeDefinition = TypeCriteria.is(fullyQualifiedTypeName);
     return this;
   }
 
-  public MethodInvocationMatcher callSite(TypeCriteria callSite) {
+  public MethodMatcher callSite(TypeCriteria callSite) {
     this.callSite = callSite;
     return this;
   }
 
-  public MethodInvocationMatcher addParameter(String fullyQualifiedTypeParameterName) {
+  public MethodMatcher addParameter(String fullyQualifiedTypeParameterName) {
     Preconditions.checkState(parameterTypes != null);
     parameterTypes.add(TypeCriteria.is(fullyQualifiedTypeParameterName));
     return this;
   }
 
-  public MethodInvocationMatcher addParameter(TypeCriteria parameterTypeCriteria) {
+  public MethodMatcher addParameter(TypeCriteria parameterTypeCriteria) {
     Preconditions.checkState(parameterTypes != null);
     parameterTypes.add(parameterTypeCriteria);
     return this;
   }
 
-  public MethodInvocationMatcher withNoParameterConstraint() {
+  public MethodMatcher withNoParameterConstraint() {
     Preconditions.checkState(parameterTypes == null || parameterTypes.isEmpty());
     parameterTypes = null;
     return this;
@@ -108,11 +108,8 @@ public class MethodInvocationMatcher {
 
   public boolean matches(MethodTree methodTree) {
     MethodSymbol symbol = methodTree.symbol();
-    if (symbol != null) {
-      Symbol.TypeSymbol enclosingClass = symbol.enclosingClass();
-      return enclosingClass != null && matches(symbol, enclosingClass.type());
-    }
-    return false;
+    Symbol.TypeSymbol enclosingClass = symbol.enclosingClass();
+    return enclosingClass != null && matches(symbol, enclosingClass.type());
   }
 
   private boolean matches(Symbol symbol, Type callSiteType) {
@@ -125,7 +122,7 @@ public class MethodInvocationMatcher {
     return false;
   }
 
-  private Type getCallSiteType(MethodInvocationTree mit) {
+  private static Type getCallSiteType(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
       Symbol.TypeSymbol enclosingClassSymbol = ((IdentifierTree) methodSelect).symbol().enclosingClass();
@@ -174,7 +171,7 @@ public class MethodInvocationMatcher {
     return true;
   }
 
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id = null;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();

@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -50,11 +50,11 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
 
-  private static final List<MethodInvocationMatcher> CHECKED_METHODS = ImmutableList.of(
-    MethodInvocationMatcher.create()
+  private static final List<MethodMatcher> CHECKED_METHODS = ImmutableList.of(
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.BufferedReader"))
       .name("readLine"),
-    MethodInvocationMatcher.create()
+    MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.io.Reader"))
       .name("read"));
 
@@ -66,7 +66,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      for (MethodInvocationMatcher matcher : CHECKED_METHODS) {
+      for (MethodMatcher matcher : CHECKED_METHODS) {
         Symbol symbol = isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher);
         if (symbol != null) {
           raiseIssue(tree, symbol.name());
@@ -74,7 +74,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
       }
     } else {
       BinaryExpressionTree expressionTree = (BinaryExpressionTree) tree;
-      for (MethodInvocationMatcher matcher : CHECKED_METHODS) {
+      for (MethodMatcher matcher : CHECKED_METHODS) {
         Symbol leftSymbol = isTreeMethodInvocation(expressionTree.leftOperand(), matcher);
         if (leftSymbol != null && isTreeLiteralNull(expressionTree.rightOperand())) {
           raiseIssue(tree, leftSymbol.name());
@@ -88,7 +88,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol isTreeMethodInvocation(ExpressionTree tree, MethodInvocationMatcher matcher) {
+  private Symbol isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
     Tree expression = removeParenthesis(tree);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
