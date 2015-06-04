@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -59,9 +60,9 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   Multimap<Integer, String> suppressWarningLines = HashMultimap.create();
 
   private File currentFile;
-  private Deque<String> currentClassKey = new LinkedList<String>();
-  private Deque<Tree> parent = new LinkedList<Tree>();
-  private Deque<Integer> anonymousInnerClassCounter = new LinkedList<Integer>();
+  private Deque<String> currentClassKey = new LinkedList<>();
+  private Deque<Tree> parent = new LinkedList<>();
+  private Deque<Integer> anonymousInnerClassCounter = new LinkedList<>();
   private String currentPackage;
 
   public Map<String, File> getResourcesCache() {
@@ -95,8 +96,9 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitClass(ClassTree tree) {
     String className = "";
-    if (tree.simpleName() != null) {
-      className = tree.simpleName().name();
+    IdentifierTree simpleName = tree.simpleName();
+    if (simpleName != null) {
+      className = simpleName.name();
     }
     String key = getClassKey(className);
     currentClassKey.push(key);
@@ -165,7 +167,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     }
   }
 
-  private boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {
+  private static boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {
     boolean suppressWarningsType = false;
     Tree type = annotationTree.annotationType();
     if (type.is(Tree.Kind.IDENTIFIER)) {
@@ -185,16 +187,12 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   private List<String> getValueFromExpression(ExpressionTree expression) {
     List<String> args = Lists.newArrayList();
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
-      args.add(trimQuotes(((LiteralTree) expression).value()));
+      args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
     } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
       for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
         args.addAll(getValueFromExpression(initializer));
       }
     }
     return args;
-  }
-
-  private String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
   }
 }
