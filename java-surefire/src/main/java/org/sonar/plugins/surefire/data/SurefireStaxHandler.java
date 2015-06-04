@@ -71,7 +71,7 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     return StringUtils.defaultIfBlank(testClassName, defaultClassname);
   }
 
-  private void parseTestCase(SMInputCursor testCaseCursor, UnitTestClassReport report) throws XMLStreamException {
+  private static void parseTestCase(SMInputCursor testCaseCursor, UnitTestClassReport report) throws XMLStreamException {
     report.add(parseTestResult(testCaseCursor));
   }
 
