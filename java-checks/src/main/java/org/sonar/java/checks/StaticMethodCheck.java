@@ -98,8 +98,12 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   private boolean fromInstance(Symbol owner) {
     for (Symbol outerClass : outerClasses) {
       Type ownerType = owner.type();
-      if (owner.equals(outerClass) || (ownerType != null && outerClass.type().isSubtypeOf(ownerType))) {
-        return true;
+      if (ownerType != null) {
+        if (owner.equals(outerClass) || outerClass.type().isSubtypeOf(ownerType)) {
+          return true;
+        } else {
+          return fromInstance(ownerType.symbol().owner());
+        }
       }
     }
     return false;

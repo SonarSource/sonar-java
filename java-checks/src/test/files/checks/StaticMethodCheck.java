@@ -39,6 +39,9 @@ class Utilities {
   }
 
   class Inner {
+    public Inner(String a, String b) {
+    }
+
     public final String getMagicWord() {
       return "a";
     }
@@ -51,6 +54,14 @@ class Utilities {
   }
 
   public void publicMethod() {
+  }
+
+  private Utilities.Inner test() {
+    return new Utilities.Inner("", "");
+  }
+
+  private Unknown unknown() {
+    return new Unknown("", "");
   }
 
 }
