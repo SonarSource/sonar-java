@@ -21,7 +21,9 @@ package org.sonar.java.checks.methods;
 
 import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MethodInvocationMatcherCollection {
@@ -37,9 +39,7 @@ public class MethodInvocationMatcherCollection {
 
   public static MethodInvocationMatcherCollection create(MethodInvocationMatcher... matchers) {
     MethodInvocationMatcherCollection collection = new MethodInvocationMatcherCollection();
-    for (MethodInvocationMatcher matcher : matchers) {
-      collection.matchers.add(matcher);
-    }
+    Collections.addAll(collection.matchers, matchers);
     return collection;
   }
 
@@ -51,6 +51,15 @@ public class MethodInvocationMatcherCollection {
   public boolean anyMatch(MethodInvocationTree mit) {
     for (MethodInvocationMatcher matcher : matchers) {
       if (matcher.matches(mit)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean anyMatch(MethodTree method) {
+    for (MethodInvocationMatcher matcher : matchers) {
+      if (matcher.matches(method)) {
         return true;
       }
     }

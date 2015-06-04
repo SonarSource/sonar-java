@@ -22,6 +22,9 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -48,6 +51,16 @@ import java.util.LinkedList;
 @SqaleConstantRemediation("5min")
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
+  private static MethodInvocationMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectInputStream")),
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("writeObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectOutputStream")),
+      MethodInvocationMatcher.create()
+        .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData")
+      );
+
   private JavaFileScannerContext context;
   private Deque<Symbol> outerClasses = new LinkedList<>();
   private Deque<Boolean> atLeastOneReference = new LinkedList<>();
@@ -67,7 +80,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.anyMatch(tree)) {
       return;
     }
     Symbol.MethodSymbol symbol = tree.symbol();
