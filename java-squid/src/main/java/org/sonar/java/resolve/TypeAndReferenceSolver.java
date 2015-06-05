@@ -143,7 +143,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private void addConstantValue(AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
+  private static void addConstantValue(AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
     Collection<Symbol> scopeSymbols = tree.annotationType().symbolType().symbol().memberSymbols();
     for (ExpressionTree expressionTree : tree.arguments()) {
       String name = "";
@@ -203,7 +203,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     registerType(tree, resolution.type());
   }
 
-  private List<JavaType> getParameterTypes(List<? extends Tree> args) {
+  private static List<JavaType> getParameterTypes(List<? extends Tree> args) {
     ImmutableList.Builder<JavaType> builder = ImmutableList.builder();
     for (Tree expressionTree : args) {
       JavaType symbolType = Symbols.unknownType;

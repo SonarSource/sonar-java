@@ -627,7 +627,7 @@ public class Resolve {
     }
   }
 
-  private boolean notOverriddenIn(JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
+  private static boolean notOverriddenIn(JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
     // TODO see Javac
     return true;
   }
@@ -659,7 +659,7 @@ public class Resolve {
     }
   }
 
-  private boolean isProtectedAccessible(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol c, JavaSymbol.TypeJavaSymbol site) {
+  private static boolean isProtectedAccessible(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol c, JavaSymbol.TypeJavaSymbol site) {
     // TODO see Javac
     return true;
   }

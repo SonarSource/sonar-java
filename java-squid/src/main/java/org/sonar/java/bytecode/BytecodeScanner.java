@@ -61,7 +61,7 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
     return this;
   }
 
-  private void linkVirtualMethods(Collection<String> keys, AsmClassProvider classProvider) {
+  private static void linkVirtualMethods(Collection<String> keys, AsmClassProvider classProvider) {
     VirtualMethodsLinker linker = new VirtualMethodsLinker();
     for (String key : keys) {
       AsmClass asmClass = classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
@@ -84,7 +84,7 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
     }
   }
 
-  private void loadByteCodeInformation(Collection<String> keys, AsmClassProvider classProvider) {
+  private static void loadByteCodeInformation(Collection<String> keys, AsmClassProvider classProvider) {
     for (String key : keys) {
       classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
     }

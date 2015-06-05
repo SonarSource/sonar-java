@@ -342,7 +342,7 @@ public class FirstPass extends BaseTreeVisitor {
     return result;
   }
 
-  private boolean hasDeprecatedAnnotation(Iterable<AnnotationTree> annotations) {
+  private static boolean hasDeprecatedAnnotation(Iterable<AnnotationTree> annotations) {
     for (AnnotationTree annotationTree : annotations) {
       if (isDeprecated(annotationTree)) {
         return true;
@@ -351,7 +351,7 @@ public class FirstPass extends BaseTreeVisitor {
     return false;
   }
 
-  private boolean isDeprecated(AnnotationTree tree) {
+  private static boolean isDeprecated(AnnotationTree tree) {
     return tree.annotationType().is(Tree.Kind.IDENTIFIER) &&
         "Deprecated".equals(((IdentifierTree) tree.annotationType()).name());
   }
