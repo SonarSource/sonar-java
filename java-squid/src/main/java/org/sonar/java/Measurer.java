@@ -62,8 +62,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private int complexityInMethods;
   private RangeDistributionBuilder methodComplexityDistribution;
 
-  private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
-  private final AccessorVisitor accessorVisitor;
+  private final Deque<ClassTree> classTrees = new LinkedList<>();
   private Charset charset;
   private double classes;
 
@@ -71,7 +70,6 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     this.project = project;
     this.sensorContext = context;
     this.separateAccessorsFromMethods = separateAccessorsFromMethods;
-    accessorVisitor = new AccessorVisitor();
   }
 
   @Override
@@ -140,7 +138,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
       MethodTree methodTree = (MethodTree) tree;
-      if (separateAccessorsFromMethods && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+      if (separateAccessorsFromMethods && AccessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
         accessors++;
       } else {
         methods++;
@@ -159,7 +157,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     }
   }
 
-  private boolean isClassTree(Tree tree) {
+  private static boolean isClassTree(Tree tree) {
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 

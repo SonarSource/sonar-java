@@ -34,8 +34,7 @@ import java.util.List;
 public class ComplexityVisitor extends SubscriptionVisitor {
 
   private int complexity;
-  private AccessorVisitor accessorVisitor = new AccessorVisitor();
-  private Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
+  private Deque<ClassTree> classTrees = new LinkedList<>();
   private boolean analyseAccessors;
 
   public ComplexityVisitor(boolean analyseAccessors) {
@@ -96,11 +95,11 @@ public class ComplexityVisitor extends SubscriptionVisitor {
     }
   }
 
-  private boolean isMethod(Tree tree) {
+  private static boolean isMethod(Tree tree) {
     return tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR);
   }
 
-  private boolean isClass(Tree tree) {
+  private static boolean isClass(Tree tree) {
     return tree.is(Tree.Kind.CLASS) ||
         tree.is(Tree.Kind.ENUM) ||
         tree.is(Tree.Kind.ANNOTATION_TYPE);
@@ -120,7 +119,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
   }
 
   private boolean isAccessor(MethodTree methodTree) {
-    return analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree);
+    return analyseAccessors && AccessorVisitor.isAccessor(classTrees.peek(), methodTree);
   }
 
 
