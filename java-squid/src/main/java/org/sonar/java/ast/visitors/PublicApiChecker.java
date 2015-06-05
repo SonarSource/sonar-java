@@ -154,11 +154,30 @@ public class PublicApiChecker extends BaseTreeVisitor {
     }
   }
 
-  public boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
+  public boolean isPublicApi(Tree currentParent, Tree tree) {
+    if (tree.is(CLASS_KINDS) && (currentParent == null || currentParent.is(PublicApiChecker.CLASS_KINDS))) {
+      return isPublicApi((ClassTree) currentParent, (ClassTree) tree);
+    } else if (tree.is(METHOD_KINDS)) {
+      return isPublicApi((ClassTree) currentParent, (MethodTree) tree);
+    } else if (tree.is(Tree.Kind.VARIABLE) && !currentParent.is(METHOD_KINDS)) {
+      return isPublicApi((ClassTree) currentParent, (VariableTree) tree);
+    }
+    return false;
+  }
+
+  private static boolean isPublicApi(ClassTree currentClass, ClassTree classTree) {
     return (currentClass != null && isPublicInterface(currentClass)) || hasPublic(classTree.modifiers());
   }
 
-  public boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
+  private static boolean isPublicInterface(ClassTree currentClass) {
+    return currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !ModifiersUtils.hasModifier(currentClass.modifiers(), Modifier.PRIVATE);
+  }
+
+  private static boolean hasPublic(ModifiersTree modifiers) {
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
+  }
+
+  private boolean isPublicApi(ClassTree classTree, MethodTree methodTree) {
     Preconditions.checkNotNull(classTree);
     if (separateAccessorsFromMethods && AccessorVisitor.isAccessor(classTree, methodTree)) {
       return false;
@@ -170,27 +189,8 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return hasPublic(methodTree.modifiers());
   }
 
-  public boolean isPublicApi(ClassTree classTree, VariableTree variableTree) {
-    return !isPublicInterface(classTree) && !isStaticFinal(variableTree) && hasPublic(variableTree.modifiers());
-  }
-
-  private boolean hasPublic(ModifiersTree modifiers) {
-    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
-  }
-
-  private boolean isPublicInterface(ClassTree currentClass) {
-    return currentClass.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && !ModifiersUtils.hasModifier(currentClass.modifiers(), Modifier.PRIVATE);
-  }
-
-  public boolean isPublicApi(Tree currentParent, Tree tree) {
-    if (tree.is(CLASS_KINDS) && (currentParent == null || currentParent.is(PublicApiChecker.CLASS_KINDS))) {
-      return isPublicApi((ClassTree) currentParent, (ClassTree) tree);
-    } else if (tree.is(METHOD_KINDS)) {
-      return isPublicApi((ClassTree) currentParent, (MethodTree) tree);
-    } else if (tree.is(Tree.Kind.VARIABLE) && !currentParent.is(METHOD_KINDS)) {
-      return isPublicApi((ClassTree) currentParent, (VariableTree) tree);
-    }
-    return false;
+  private static boolean isEmptyDefaultConstructor(MethodTree constructor) {
+    return constructor.is(Tree.Kind.CONSTRUCTOR) && constructor.parameters().isEmpty() && constructor.block().body().isEmpty();
   }
 
   private static boolean hasOverrideAnnotation(MethodTree method) {
@@ -203,17 +203,17 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return false;
   }
 
+  private static boolean isPublicApi(ClassTree classTree, VariableTree variableTree) {
+    return !isPublicInterface(classTree) && !isStaticFinal(variableTree) && hasPublic(variableTree.modifiers());
+  }
+
   private static boolean isStaticFinal(VariableTree variableTree) {
     ModifiersTree modifiersTree = variableTree.modifiers();
     return ModifiersUtils.hasModifier(modifiersTree, Modifier.STATIC) && ModifiersUtils.hasModifier(modifiersTree, Modifier.FINAL);
   }
 
-  private static boolean isEmptyDefaultConstructor(MethodTree constructor) {
-    return constructor.is(Tree.Kind.CONSTRUCTOR) && constructor.parameters().isEmpty() && constructor.block().body().isEmpty();
-  }
-
   @Nullable
-  public String getApiJavadoc(Tree tree) {
+  public static String getApiJavadoc(Tree tree) {
     if (!tree.is(API_KINDS)) {
       return null;
     }
@@ -229,7 +229,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return getCommentFromTree(tree);
   }
 
-  private String getCommentFromMethod(MethodTree methodTree) {
+  private static String getCommentFromMethod(MethodTree methodTree) {
     if (methodTree.typeParameters().isEmpty()) {
       Tree tokenTree = methodTree.returnType();
       while (tokenTree != null && tokenTree.is(Kind.ARRAY_TYPE, Kind.PARAMETERIZED_TYPE, Kind.MEMBER_SELECT)) {
