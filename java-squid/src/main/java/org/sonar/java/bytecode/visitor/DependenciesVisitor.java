@@ -79,7 +79,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
     return dependency;
   }
 
-  private boolean canWeLinkNodes(@Nullable Resource from, @Nullable Resource to) {
+  private static boolean canWeLinkNodes(@Nullable Resource from, @Nullable Resource to) {
     return from != null && to != null && !from.equals(to);
   }
 

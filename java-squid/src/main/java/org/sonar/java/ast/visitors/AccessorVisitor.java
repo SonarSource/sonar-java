@@ -39,6 +39,9 @@ import java.util.List;
 
 public class AccessorVisitor {
 
+  private AccessorVisitor() {
+  }
+
   public static boolean isAccessor(ClassTree classTree, MethodTree methodTree) {
     return isPublicMethod(methodTree) && methodTree.block() != null && (isGetter(classTree, methodTree) || isSetter(classTree, methodTree));
   }
@@ -85,8 +88,8 @@ public class AccessorVisitor {
     String variableName = "";
     if (expression == null) {
       return false;
-    } else if(expression.is(Tree.Kind.IDENTIFIER)) {
-      variableName = ((IdentifierTree)expression).name();
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      variableName = ((IdentifierTree) expression).name();
     }
     return !StringUtils.isEmpty(variableName) && referencePrivateProperty(variableName, classTree);
   }

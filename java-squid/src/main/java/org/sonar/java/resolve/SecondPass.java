@@ -154,7 +154,7 @@ public class SecondPass implements JavaSymbol.Completer {
     }
   }
 
-  private void checkHierarchyCycles(JavaType baseType) {
+  private static void checkHierarchyCycles(JavaType baseType) {
     Set<JavaType.ClassJavaType> types = Sets.newHashSet();
     JavaType.ClassJavaType type = (JavaType.ClassJavaType) baseType;
     while (type != null) {
@@ -225,7 +225,7 @@ public class SecondPass implements JavaSymbol.Completer {
     return (JavaType) ((AbstractTypedTree) tree).symbolType();
   }
 
-  private boolean checkTypeOfTree(Tree tree) {
+  private static boolean checkTypeOfTree(Tree tree) {
     return tree.is(Tree.Kind.MEMBER_SELECT) ||
         tree.is(Tree.Kind.IDENTIFIER) ||
         tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
