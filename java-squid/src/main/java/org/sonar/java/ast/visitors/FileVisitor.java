@@ -31,18 +31,14 @@ public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
 
   @Override
   public void visitFile(AstNode astNode) {
-    SourceFile sourceFile = createSourceFile(getContext().getFile());
-    getContext().addSourceCode(sourceFile);
+    File file = getContext().getFile();
+    getContext().addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
   }
 
   @Override
   public void leaveFile(AstNode astNode) {
     Preconditions.checkState(getContext().peekSourceCode().isType(SourceFile.class));
     getContext().popSourceCode();
-  }
-
-  private SourceFile createSourceFile(File file) {
-    return new SourceFile(file.getAbsolutePath(), file.getPath());
   }
 
 }

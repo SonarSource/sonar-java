@@ -95,11 +95,11 @@ public class ComplexityVisitor extends SubscriptionVisitor {
     }
   }
 
-  private boolean isMethod(Tree tree) {
+  private static boolean isMethod(Tree tree) {
     return tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR);
   }
 
-  private boolean isClass(Tree tree) {
+  private static boolean isClass(Tree tree) {
     return tree.is(Tree.Kind.CLASS) ||
         tree.is(Tree.Kind.ENUM) ||
         tree.is(Tree.Kind.ANNOTATION_TYPE);
