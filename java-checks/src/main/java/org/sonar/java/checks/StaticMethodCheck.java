@@ -22,6 +22,9 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -48,6 +51,16 @@ import java.util.LinkedList;
 @SqaleConstantRemediation("5min")
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
+  private static MethodInvocationMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectInputStream")),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("writeObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectOutputStream")),
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData")
+  );
+
   private JavaFileScannerContext context;
   private Deque<Symbol> outerClasses = new LinkedList<>();
   private Deque<Boolean> atLeastOneReference = new LinkedList<>();
@@ -55,7 +68,9 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
-    scan(context.getTree());
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
+    }
   }
 
   @Override
@@ -67,11 +82,11 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+    if (isExcluded(tree)) {
       return;
     }
     Symbol.MethodSymbol symbol = tree.symbol();
-    if (symbol == null || (outerClasses.size() > 1 && !outerClasses.peek().isStatic())) {
+    if (outerClasses.size() > 1 && !outerClasses.peek().isStatic()) {
       return;
     }
     atLeastOneReference.push(Boolean.FALSE);
@@ -80,6 +95,10 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     if (symbol.isPrivate() && !symbol.isStatic() && !oneReference) {
       context.addIssue(tree, this, "Make \"" + symbol.name() + "\" a \"static\" method.");
     }
+  }
+
+  private static boolean isExcluded(MethodTree tree) {
+    return tree.is(Tree.Kind.CONSTRUCTOR) || EXCLUDED_SERIALIZABLE_METHODS.anyMatch(tree);
   }
 
   @Override
