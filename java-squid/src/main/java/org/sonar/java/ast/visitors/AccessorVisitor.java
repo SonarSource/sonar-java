@@ -35,58 +35,52 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.Collections;
 import java.util.List;
 
-public class AccessorVisitor extends SubscriptionVisitor {
+public class AccessorVisitor {
 
-  @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return Collections.emptyList();
-  }
-
-  public boolean isAccessor(ClassTree classTree, MethodTree methodTree) {
+  public static boolean isAccessor(ClassTree classTree, MethodTree methodTree) {
     return isPublicMethod(methodTree) && methodTree.block() != null && (isGetter(classTree, methodTree) || isSetter(classTree, methodTree));
   }
 
-  private boolean isPublicMethod(MethodTree methodTree) {
+  private static boolean isPublicMethod(MethodTree methodTree) {
     return methodTree.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
-  private boolean isSetter(ClassTree classTree, MethodTree methodTree) {
+  private static boolean isSetter(ClassTree classTree, MethodTree methodTree) {
     return methodTree.simpleName().name().startsWith("set") && methodTree.parameters().size() == 1
         && returnTypeIs(methodTree, "void") && hasOneAssignementStatement(methodTree, classTree);
   }
 
-  private boolean hasOneAssignementStatement(MethodTree methodTree, ClassTree classTree) {
+  private static boolean hasOneAssignementStatement(MethodTree methodTree, ClassTree classTree) {
     List<StatementTree> body = methodTree.block().body();
     return body.size() == 1 && body.get(0).is(Tree.Kind.EXPRESSION_STATEMENT) && ((ExpressionStatementTree) body.get(0)).expression().is(Tree.Kind.ASSIGNMENT)
         && referencePrivateProperty((AssignmentExpressionTree) ((ExpressionStatementTree) body.get(0)).expression(), classTree);
   }
 
-  private boolean referencePrivateProperty(AssignmentExpressionTree assignmentExpressionTree, ClassTree classTree) {
+  private static boolean referencePrivateProperty(AssignmentExpressionTree assignmentExpressionTree, ClassTree classTree) {
     return referencePrivateProperty(assignmentExpressionTree.variable(), classTree);
   }
 
-  private boolean isGetter(ClassTree classTree, MethodTree methodTree) {
+  private static boolean isGetter(ClassTree classTree, MethodTree methodTree) {
     return methodTree.parameters().isEmpty() && hasOneReturnStatement(methodTree, classTree) && (isValidGetter(methodTree) || isBooleanGetter(methodTree));
   }
 
-  private boolean isBooleanGetter(MethodTree methodTree) {
+  private static boolean isBooleanGetter(MethodTree methodTree) {
     return methodTree.simpleName().name().startsWith("is")
         && returnTypeIs(methodTree, "boolean");
   }
 
-  private boolean isValidGetter(MethodTree methodTree) {
+  private static boolean isValidGetter(MethodTree methodTree) {
     return methodTree.simpleName().name().startsWith("get");
   }
 
-  private boolean hasOneReturnStatement(MethodTree methodTree, ClassTree classTree) {
+  private static boolean hasOneReturnStatement(MethodTree methodTree, ClassTree classTree) {
     List<StatementTree> body = methodTree.block().body();
     return body.size() == 1 && body.get(0).is(Tree.Kind.RETURN_STATEMENT) && referencePrivateProperty((ReturnStatementTree) body.get(0), classTree);
   }
 
-  private boolean referencePrivateProperty(ReturnStatementTree returnStatementTree, ClassTree classTree) {
+  private static boolean referencePrivateProperty(ReturnStatementTree returnStatementTree, ClassTree classTree) {
     ExpressionTree expression = returnStatementTree.expression();
     String variableName = "";
     if (expression == null) {
@@ -97,7 +91,7 @@ public class AccessorVisitor extends SubscriptionVisitor {
     return !StringUtils.isEmpty(variableName) && referencePrivateProperty(variableName, classTree);
   }
 
-  private boolean referencePrivateProperty(ExpressionTree expression, ClassTree classTree) {
+  private static boolean referencePrivateProperty(ExpressionTree expression, ClassTree classTree) {
     String variableReturned = "";
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       variableReturned = ((IdentifierTree) expression).name();
@@ -107,7 +101,7 @@ public class AccessorVisitor extends SubscriptionVisitor {
     return !StringUtils.isEmpty(variableReturned) && referencePrivateProperty(variableReturned, classTree);
   }
 
-  private boolean referencePrivateProperty(String variableName, ClassTree classTree) {
+  private static boolean referencePrivateProperty(String variableName, ClassTree classTree) {
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
@@ -119,7 +113,7 @@ public class AccessorVisitor extends SubscriptionVisitor {
     return false;
   }
 
-  private boolean returnTypeIs(MethodTree methodTree, String expectedReturnType) {
+  private static boolean returnTypeIs(MethodTree methodTree, String expectedReturnType) {
     Tree returnType = methodTree.returnType();
     return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && expectedReturnType.equals(((PrimitiveTypeTree) returnType).keyword().text());
   }

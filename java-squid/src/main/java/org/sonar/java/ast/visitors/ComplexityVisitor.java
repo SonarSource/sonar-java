@@ -34,8 +34,7 @@ import java.util.List;
 public class ComplexityVisitor extends SubscriptionVisitor {
 
   private int complexity;
-  private AccessorVisitor accessorVisitor = new AccessorVisitor();
-  private Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
+  private Deque<ClassTree> classTrees = new LinkedList<>();
   private boolean analyseAccessors;
 
   public ComplexityVisitor(boolean analyseAccessors) {
@@ -120,7 +119,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
   }
 
   private boolean isAccessor(MethodTree methodTree) {
-    return analyseAccessors && accessorVisitor.isAccessor(classTrees.peek(), methodTree);
+    return analyseAccessors && AccessorVisitor.isAccessor(classTrees.peek(), methodTree);
   }
 
 

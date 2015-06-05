@@ -158,7 +158,7 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
     return files;
   }
 
-  private File resolvePath(File baseDir, String fileName) {
+  private static File resolvePath(File baseDir, String fileName) {
     File file = new File(fileName);
     if (!file.isAbsolute()) {
       file = new File(baseDir, fileName);

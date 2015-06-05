@@ -34,7 +34,6 @@ import static org.fest.assertions.Assertions.assertThat;
 public class AccessorVisitorTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
-  private final AccessorVisitor accessorVisitor = new AccessorVisitor();
 
   @Test
   public void method_badly_named_is_not_accessor() {
@@ -133,7 +132,7 @@ public class AccessorVisitorTest {
 
   private boolean isAccessor(String code) {
     ClassTree classTree = parseClass(code);
-    return accessorVisitor.isAccessor(classTree, extractMethod(classTree));
+    return AccessorVisitor.isAccessor(classTree, extractMethod(classTree));
   }
 
   private ClassTree parseClass(String code) {
