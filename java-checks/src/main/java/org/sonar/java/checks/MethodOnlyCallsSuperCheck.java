@@ -74,16 +74,16 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     return hasSemantic() && ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.FINAL) && isObjectMethod(methodTreeImpl);
   }
 
-  private boolean isObjectMethod(MethodTreeImpl methodTreeImpl) {
+  private static boolean isObjectMethod(MethodTreeImpl methodTreeImpl) {
     return methodTreeImpl.isEqualsMethod() || methodTreeImpl.isHashCodeMethod() || methodTreeImpl.isToStringMethod();
   }
 
-  private boolean isSingleStatementMethod(MethodTree methodTree) {
+  private static boolean isSingleStatementMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     return block != null && block.body().size() == 1;
   }
 
-  private boolean isUselessSuperCall(MethodTree methodTree) {
+  private static boolean isUselessSuperCall(MethodTree methodTree) {
     ExpressionTree callToSuper = null;
     StatementTree statementTree = methodTree.block().body().get(0);
     if (returnsVoid(methodTree) && statementTree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
@@ -94,7 +94,7 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     return callToSuper != null && isCallToSuper(methodTree, callToSuper);
   }
 
-  private boolean isCallToSuper(MethodTree methodTree, Tree callToSuper) {
+  private static boolean isCallToSuper(MethodTree methodTree, Tree callToSuper) {
     if (callToSuper.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) callToSuper;
       if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
@@ -107,13 +107,13 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean callSuperMethodWithSameName(MemberSelectExpressionTree mset, MethodTree methodTree) {
+  private static boolean callSuperMethodWithSameName(MemberSelectExpressionTree mset, MethodTree methodTree) {
     return mset.expression().is(Tree.Kind.IDENTIFIER)
       && "super".equals(((IdentifierTree) mset.expression()).name())
       && mset.identifier().name().equals(methodTree.simpleName().name());
   }
 
-  private boolean callsWithSameParameters(List<ExpressionTree> arguments, List<VariableTree> parameters) {
+  private static boolean callsWithSameParameters(List<ExpressionTree> arguments, List<VariableTree> parameters) {
     if (arguments.size() != parameters.size()) {
       return false;
     }
@@ -127,12 +127,12 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     return true;
   }
 
-  private boolean returnsVoid(MethodTree methodTree) {
+  private static boolean returnsVoid(MethodTree methodTree) {
     Tree returnType = methodTree.returnType();
     return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
   }
 
-  private boolean hasAnnotationDifferentFromOverride(List<AnnotationTree> annotations) {
+  private static boolean hasAnnotationDifferentFromOverride(List<AnnotationTree> annotations) {
     for (AnnotationTree annotation : annotations) {
       if (!(annotation.annotationType().is(Tree.Kind.IDENTIFIER) && "Override".equals(((IdentifierTree) annotation.annotationType()).name()))) {
         return true;

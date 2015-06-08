@@ -22,17 +22,17 @@ class A {
     String[] myArrayString = new String[] {"myString"};
     Integer[] myArrayInteger = new Integer[] {Integer.valueOf(1)};
 
-    myList.contains(myInteger); // Noncompliant. Always false.
-    myList.remove(myInteger); // Noncompliant. list.add(iger) doesn't compile, so this will always return false
+    myList.contains(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer"}}
+    myList.remove(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer"}}
     myList.contains(myString); // Compliant
-    myBList.contains(myInteger); // Noncompliant
-    mySetList.contains(myString); // Noncompliant
-    mySetList.contains(returnOne()); // Noncompliant
-    mySetList.remove(B.returnOne()); // Noncompliant
+    myBList.contains(myInteger); // Noncompliant {{A "ArrayList<B>" cannot contain a "Integer"}}
+    mySetList.contains(myString); // Noncompliant {{A "List<Set>" cannot contain a "String"}}
+    mySetList.contains(returnOne()); // Noncompliant {{A "List<Set>" cannot contain a "Integer"}}
+    mySetList.remove(B.returnOne()); // Noncompliant {{A "List<Set>" cannot contain a "Integer"}}
     myBList.contains(new B()); // Compliant
     myBList.remove(new A()); // Compliant
-    myList.contains(myArrayInteger); // Noncompliant
-    myList.remove(myArrayInteger[0]); // Noncompliant
+    myList.contains(myArrayInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer[]"}}
+    myList.remove(myArrayInteger[0]); // Noncompliant {{A "List<String>" cannot contain a "Integer"}}
     myList.remove(myArrayString[0]); // Compliant
     myASet.contains(new C()); // Compliant
     myASet.remove(new B()); // Compliant
@@ -63,14 +63,14 @@ class C extends B {
     
     List<Integer> myIntegerList = new ArrayList<Integer>();
     myIntegerList.contains(0); // Compliant (boxing)
-    myIntegerList.remove(0L); // Noncompliant
+    myIntegerList.remove(0L); // Noncompliant {{A "List<Integer>" cannot contain a "long"}}
     
     List<String> myStringList = new ArrayList<String>();
-    myStringList.contains(0); // Noncompliant
+    myStringList.contains(0); // Noncompliant {{A "List<String>" cannot contain a "int"}}
     myStringList.contains(new Object()); // Compliant
     
     List<String[]> myListArrayString = new ArrayList<String[]>();
-    myListArrayString.contains("myString"); // NonCompliant
+    myListArrayString.contains("myString"); // Noncompliant
   }
 }
 

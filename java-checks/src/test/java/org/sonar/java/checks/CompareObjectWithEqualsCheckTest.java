@@ -19,14 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 public class CompareObjectWithEqualsCheckTest {
 
@@ -35,16 +31,7 @@ public class CompareObjectWithEqualsCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CompareObjectWithEqualsCheck.java"), new VisitorsBridge(new CompareObjectWithEqualsCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(7).withMessage("Change this comparison to use the equals method.")
-      .next().atLine(8).withMessage("Change this comparison to use the equals method.")
-      .next().atLine(21).withMessage("Change this comparison to use the equals method.")
-      .next().atLine(37).withMessage("Change this comparison to use the equals method.")
-      .next().atLine(38).withMessage("Change this comparison to use the equals method.")
-      .next().atLine(72).withMessage("Change this comparison to use the equals method.")
-      .next().atLine(76).withMessage("Change this comparison to use the equals method.")
-    ;
+    JavaCheckVerifier.verify("src/test/files/checks/CompareObjectWithEqualsCheck.java", new CompareObjectWithEqualsCheck());
   }
 
 }

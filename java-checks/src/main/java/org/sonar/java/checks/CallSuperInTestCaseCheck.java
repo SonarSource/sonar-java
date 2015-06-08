@@ -69,7 +69,7 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean requiresSuperCall(Symbol.MethodSymbol methodSymbol) {
+  private static boolean requiresSuperCall(Symbol.MethodSymbol methodSymbol) {
     Type superType = methodSymbol.owner().type().symbol().superClass();
     Collection<Symbol> symbols = Lists.newArrayList();
     while (superType != null && !superType.is(JUNIT_FRAMEWORK_TEST_CASE) && symbols.isEmpty()) {
@@ -79,7 +79,7 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
     return !symbols.isEmpty() && !symbols.iterator().next().owner().type().is(JUNIT_FRAMEWORK_TEST_CASE);
   }
 
-  private boolean callSuperOnOverride(@Nullable BlockTree block, Symbol.MethodSymbol methodSymbol) {
+  private static boolean callSuperOnOverride(@Nullable BlockTree block, Symbol.MethodSymbol methodSymbol) {
     if (block == null) {
       return false;
     }
@@ -88,12 +88,12 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
     return visitor.superCallOnOverride;
   }
 
-  private boolean isWithinJunit3TestCase(Symbol.MethodSymbol methodSymbol) {
+  private static boolean isWithinJunit3TestCase(Symbol.MethodSymbol methodSymbol) {
     Type type = methodSymbol.owner().type();
     return type.isSubtypeOf(JUNIT_FRAMEWORK_TEST_CASE) && !type.symbol().superClass().is(JUNIT_FRAMEWORK_TEST_CASE);
   }
 
-  private boolean isSetUpOrTearDown(Symbol.MethodSymbol methodSymbol) {
+  private static boolean isSetUpOrTearDown(Symbol.MethodSymbol methodSymbol) {
     return ("setUp".equals(methodSymbol.name()) || "tearDown".equals(methodSymbol.name()))
       && methodSymbol.parameterTypes().isEmpty();
   }

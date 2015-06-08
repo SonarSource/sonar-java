@@ -143,7 +143,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     }
   }
 
-  private String getType(Tree tree) {
+  private static String getType(Tree tree) {
     String result = "";
     if (tree.is(Tree.Kind.CLASS)) {
       result = "class";
@@ -209,7 +209,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return patterns;
   }
 
-  private List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
+  private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     for (String parameter : parameters) {
       if (!hasParamJavadoc(javadoc, parameter)) {
@@ -219,7 +219,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return builder.build();
   }
 
-  private List<String> getParameters(Tree tree) {
+  private static List<String> getParameters(Tree tree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     if (tree.is(METHOD_KINDS)) {
       MethodTree methodTree = (MethodTree) tree;
@@ -248,12 +248,12 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return false;
   }
 
-  private boolean hasReturnJavadoc(String comment) {
+  private static boolean hasReturnJavadoc(String comment) {
     return comment.contains("@return");
   }
 
-  private String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
+  private static String concatenate(ExpressionTree tree) {
+    Deque<String> pieces = new LinkedList<>();
 
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
