@@ -30,7 +30,6 @@ import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -61,7 +60,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
       );
   }
 
-  private MethodMatcher collectionMethodInvocation(String methodName) {
+  private static MethodMatcher collectionMethodInvocation(String methodName) {
     return MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf("java.util.Collection"))
       .name(methodName)
@@ -70,7 +69,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    Type argumentType = getType(tree.arguments().get(0));
+    Type argumentType = tree.arguments().get(0).symbolType();
     Type collectionType = getMethodOwner(tree);
     // can be null when using raw types
     Type collectionParameterType = getTypeParameter(collectionType);
@@ -80,19 +79,15 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     }
   }
 
-  private Type getType(ExpressionTree tree) {
-    return tree.symbolType();
-  }
-
-  private Type getMethodOwner(MethodInvocationTree mit) {
+  private static Type getMethodOwner(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Kind.MEMBER_SELECT)) {
-      return getType(((MemberSelectExpressionTree) mit.methodSelect()).expression());
+      return ((MemberSelectExpressionTree) mit.methodSelect()).expression().symbolType();
     }
     return mit.symbol().owner().type();
   }
 
   @Nullable
-  private Type getTypeParameter(Type collectionType) {
+  private static Type getTypeParameter(Type collectionType) {
     if (collectionType instanceof ParametrizedTypeJavaType) {
       return getFirstTypeParameter((ParametrizedTypeJavaType) collectionType);
     }
@@ -100,24 +95,24 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   @Nullable
-  private Type getFirstTypeParameter(ParametrizedTypeJavaType parametrizedTypeType) {
+  private static Type getFirstTypeParameter(ParametrizedTypeJavaType parametrizedTypeType) {
     for (TypeVariableJavaType variableType : parametrizedTypeType.typeParameters()) {
       return parametrizedTypeType.substitution(variableType);
     }
     return null;
   }
 
-  private boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
+  private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
     return isSubtypeOf(argumentType.erasure(), collectionParameterType.erasure())
         || isSubtypeOf(collectionParameterType.erasure(), argumentType.erasure())
         || autoboxing(argumentType, collectionParameterType);
   }
 
-  private boolean isSubtypeOf(Type type, Type superType) {
+  private static boolean isSubtypeOf(Type type, Type superType) {
     return type.isSubtypeOf(superType);
   }
 
-  private boolean autoboxing(Type argumentType, Type collectionParameterType) {
+  private static boolean autoboxing(Type argumentType, Type collectionParameterType) {
     return argumentType.isPrimitive()
       && ((JavaType) collectionParameterType).isPrimitiveWrapper()
       && isSubtypeOf(((JavaType)argumentType).primitiveWrapperType(), collectionParameterType);

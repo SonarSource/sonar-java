@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -88,7 +89,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       args = mit.arguments().subList(2, mit.arguments().size());
     }
     if (formatStringTree.is(Tree.Kind.STRING_LITERAL)) {
-      String formatString = trimQuotes(((LiteralTree) formatStringTree).value());
+      String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatStringTree).value());
       checkLineFeed(formatString, mit);
 
       List<String> params = getParameters(formatString, mit);
@@ -111,7 +112,7 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
   }
 
-  private void cleanupLineSeparator(List<String> params) {
+  private static void cleanupLineSeparator(List<String> params) {
     // Cleanup %n and %% values
     Iterator<String> iter = params.iterator();
     while (iter.hasNext()) {
@@ -180,7 +181,7 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean isNumerical(Type argType) {
+  private static boolean isNumerical(Type argType) {
     return argType.isNumerical()
       || argType.is("java.math.BigInteger")
       || argType.is("java.math.BigDecimal")
@@ -192,7 +193,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       || argType.is("java.lang.Double");
   }
 
-  private boolean usesMessageFormat(String formatString, List<String> params) {
+  private static boolean usesMessageFormat(String formatString, List<String> params) {
     return params.isEmpty() && (formatString.contains("{0") || formatString.contains("{1"));
   }
 
@@ -230,11 +231,8 @@ public class PrintfCheck extends AbstractMethodDetection {
     return params;
   }
 
-  private boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
+  private static boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
     return params.isEmpty() && group != null && group.startsWith("<");
   }
 
-  private String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
-  }
 }

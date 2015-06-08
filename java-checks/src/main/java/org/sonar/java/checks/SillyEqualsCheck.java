@@ -97,19 +97,19 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean areNeitherInterfaces(Type ownerType, Type argumentType) {
+  private static boolean areNeitherInterfaces(Type ownerType, Type argumentType) {
     return !ownerType.symbol().isInterface() && !argumentType.symbol().isInterface();
   }
 
-  private boolean areTypesFinalClassAndInterface(Type ownerType, Type argumentType) {
+  private static boolean areTypesFinalClassAndInterface(Type ownerType, Type argumentType) {
     return (ownerType.symbol().isInterface() && argumentType.symbol().isFinal()) || (argumentType.symbol().isInterface() && ownerType.symbol().isFinal());
   }
 
-  private boolean isLiteralNull(Tree tree) {
+  private static boolean isLiteralNull(Tree tree) {
     return tree.is(Tree.Kind.NULL_LITERAL);
   }
 
-  private Type getMethodOwnerType(MethodInvocationTree methodSelectTree) {
+  private static Type getMethodOwnerType(MethodInvocationTree methodSelectTree) {
     if (methodSelectTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) methodSelectTree.methodSelect()).expression().symbolType();
     } else {
@@ -117,7 +117,7 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean areNotRelated(Type type1, Type type2) {
+  private static boolean areNotRelated(Type type1, Type type2) {
     return !type1.isSubtypeOf(type2) && !type2.isSubtypeOf(type1);
   }
 
