@@ -21,6 +21,9 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.google.common.io.Files;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.measures.CoreMetrics;
@@ -31,7 +34,11 @@ import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.AstScanner;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,6 +93,68 @@ public class FileLinesVisitorTest {
     verify(context).setIntValue(CoreMetrics.COMMENT_LINES_DATA_KEY, 18, 0);
 
     verify(context).save();
+  }
+
+  @Test
+  public void exhausted_detected_comments() {
+    File commentsFile = new File("src/test/files/metrics/CommentsFull.java");
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    CommentsVerifier context = new CommentsVerifier();
+    when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
+
+    AstScanner scanner = JavaAstScanner.create(new JavaConfiguration(Charsets.UTF_8), new FileLinesVisitor(sonarComponents, Charsets.UTF_8));
+    scanner.scan(ImmutableList.of(commentsFile));
+
+    List<Integer> reportedCommentLines = context.commentedLine;
+    List<Integer> expectedCommentLines = getCommentLine(commentsFile);
+    assertThat(reportedCommentLines).containsExactly(Lists.newArrayList(expectedCommentLines).toArray());
+  }
+
+  private static List<Integer> getCommentLine(File file) {
+    List<Integer> commentedlines = Lists.newLinkedList();
+    try {
+      int lineNumber = 1;
+      for (String line : Files.readLines(file, Charsets.UTF_8)) {
+        for (int i = 0; i < StringUtils.countMatches(line, "comment"); i++) {
+          commentedlines.add(lineNumber);
+        }
+        lineNumber++;
+      }
+    } catch (IOException e) {
+      fail();
+    }
+    return commentedlines;
+  }
+
+  private static class CommentsVerifier implements FileLinesContext {
+    private List<Integer> commentedLine = Lists.newLinkedList();
+
+    @Override
+    public void setStringValue(String metricKey, int line, String value) {
+    }
+
+    @Override
+    public void setIntValue(String metricKey, int line, int value) {
+      if (CoreMetrics.COMMENT_LINES_DATA_KEY.equals(metricKey)) {
+        for (int i = 0; i < value; i++) {
+          commentedLine.add(line);
+        }
+      }
+    }
+
+    @Override
+    public void save() {
+    }
+
+    @Override
+    public String getStringValue(String metricKey, int line) {
+      return null;
+    }
+
+    @Override
+    public Integer getIntValue(String metricKey, int line) {
+      return null;
+    }
   }
 
 }
