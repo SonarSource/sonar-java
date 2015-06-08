@@ -31,7 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class AccessorVisitorTest {
+public class AccessorsUtilsTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
 
@@ -132,7 +132,7 @@ public class AccessorVisitorTest {
 
   private boolean isAccessor(String code) {
     ClassTree classTree = parseClass(code);
-    return AccessorVisitor.isAccessor(classTree, extractMethod(classTree));
+    return AccessorsUtils.isAccessor(classTree, extractMethod(classTree));
   }
 
   private ClassTree parseClass(String code) {

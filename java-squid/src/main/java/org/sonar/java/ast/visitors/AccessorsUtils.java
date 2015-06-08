@@ -37,9 +37,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
-public class AccessorVisitor {
+public class AccessorsUtils {
 
-  private AccessorVisitor() {
+  private AccessorsUtils() {
   }
 
   public static boolean isAccessor(ClassTree classTree, MethodTree methodTree) {

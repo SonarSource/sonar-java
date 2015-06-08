@@ -119,7 +119,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
   }
 
   private boolean isAccessor(MethodTree methodTree) {
-    return analyseAccessors && AccessorVisitor.isAccessor(classTrees.peek(), methodTree);
+    return analyseAccessors && AccessorsUtils.isAccessor(classTrees.peek(), methodTree);
   }
 
 

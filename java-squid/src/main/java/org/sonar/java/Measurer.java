@@ -30,7 +30,7 @@ import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.api.resources.File;
 import org.sonar.api.resources.Project;
-import org.sonar.java.ast.visitors.AccessorVisitor;
+import org.sonar.java.ast.visitors.AccessorsUtils;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.PublicApiChecker;
@@ -138,7 +138,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
       MethodTree methodTree = (MethodTree) tree;
-      if (separateAccessorsFromMethods && AccessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+      if (separateAccessorsFromMethods && AccessorsUtils.isAccessor(classTrees.peek(), methodTree)) {
         accessors++;
       } else {
         methods++;
