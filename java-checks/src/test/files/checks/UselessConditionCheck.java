@@ -906,6 +906,15 @@ public static class Class extends SuperClass {
     }
   }
 
+  public overrun(boolean[] a) { // analysis aborted due to too many execution states
+    if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
+    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
+    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
+    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
+    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && false) { // Compliant
+    }
+  }
+
 }
 
 class SuperClass {
