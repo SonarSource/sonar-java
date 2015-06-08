@@ -136,6 +136,10 @@ public class PrintfCheck extends AbstractMethodDetection {
       int argIndex = index;
       if (param.contains("$")) {
         argIndex = Integer.valueOf(param.substring(0, param.indexOf("$"))) - 1;
+        if(argIndex == -1) {
+          addIssue(mit, "Arguments are numbered starting from 1.");
+          return;
+        }
         param = param.substring(param.indexOf("$") + 1);
       } else {
         index++;

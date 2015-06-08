@@ -79,6 +79,7 @@ public class PrintfCheckTest {
         .next().atLine(64).withMessage("Format specifiers should be used instead of string concatenation.")
         .next().atLine(65).withMessage("Format specifiers should be used instead of string concatenation.")
         .next().atLine(66).withMessage("Format specifiers should be used instead of string concatenation.")
+        .next().atLine(70).withMessage("Arguments are numbered starting from 1.")
     ;
   }
 }
