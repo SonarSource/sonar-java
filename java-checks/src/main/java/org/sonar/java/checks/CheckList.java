@@ -336,6 +336,7 @@ public final class CheckList {
       .add(FileCreateTempFileCheck.class)
       .add(BooleanInversionCheck.class)
       .add(InnerStaticClassesCheck.class)
+      .add(WildcardImportsShouldNotBeUsedCheck.class)
       .build();
   }
 
