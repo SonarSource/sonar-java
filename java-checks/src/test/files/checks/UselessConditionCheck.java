@@ -793,17 +793,18 @@ public static class Class extends SuperClass {
   }
 
   public void test_condition_assignment(boolean local1, boolean local2) {
-    if (local1 = false) {
-      if (!local1) { // False negative, assignement is not taken into consideration
-      }
-      // False positive
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (local1 = false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (false) { // Compliant, unreachable
       }
     } else {
-      if (local1) { // False negative, assignment is not taken into consideration
+      if (local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      // False positive
-      if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (local2 = true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      }
+    } else {
+      if (false) { // Compliant, unreachable
       }
     }
   }
@@ -903,6 +904,43 @@ public static class Class extends SuperClass {
       return;
     }
     if (false) { // Compliant, unreachable
+    }
+  }
+
+  public void ternary(boolean condition) {
+    boolean result;
+
+    result = condition ? true : false;
+    if (result) { // Compliant
+    }
+
+    result = true ? condition : false;
+    if (result) { // Compliant
+    }
+    result = true ? false : condition;
+    if (result) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+
+    result = false ? true : condition;
+    if (result) { // Compliant
+    }
+    result = false ? condition : true;
+    if (result) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+
+    if (condition ? true : false) { // Compliant
+    }
+    if (condition ? false : false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+
+    if (true ? condition : false) { // Compliant
+    }
+    if (true ? false : condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+
+    if (false ? true : condition) { // Compliant
+    }
+    if (false ? condition : true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 

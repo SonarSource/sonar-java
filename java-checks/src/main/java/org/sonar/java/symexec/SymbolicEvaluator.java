@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.CatchTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -221,12 +222,31 @@ public class SymbolicEvaluator {
     @Override
     public final void visitAssignmentExpression(AssignmentExpressionTree tree) {
       evaluateExpression(currentState, tree.variable());
-      evaluateExpression(currentState, tree.expression());
+      SymbolicBooleanConstraint assignedValue = evaluateExpression(currentState, tree.expression());
       Symbol.VariableSymbol symbol = extractVariableSymbol(tree.variable());
       if (symbol != null) {
-        currentState.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), SymbolicBooleanConstraint.UNKNOWN);
+        currentState.setBooleanConstraint(new SymbolicValue.SymbolicVariableValue(symbol), assignedValue);
       }
-      currentResult.unknownStates.add(currentState);
+      if (assignedValue == SymbolicBooleanConstraint.FALSE) {
+        currentResult.falseStates.add(currentState);
+      } else if (assignedValue == SymbolicBooleanConstraint.TRUE) {
+        currentResult.trueStates.add(currentState);
+      } else {
+        currentResult.unknownStates.add(currentState);
+      }
+    }
+
+    @Override
+    public final void visitConditionalExpression(ConditionalExpressionTree tree) {
+      PackedStates conditionStates = evaluateCondition(currentState, tree.condition());
+      for (ExecutionState state : conditionStates.trueStates) {
+        PackedStates trueResult = evaluateCondition(state, tree.trueExpression());
+        currentResult.add(trueResult);
+      }
+      for (ExecutionState state : conditionStates.falseStates) {
+        PackedStates falseResult = evaluateCondition(state, tree.falseExpression());
+        currentResult.add(falseResult);
+      }
     }
 
     @Override
@@ -361,6 +381,24 @@ public class SymbolicEvaluator {
         currentState.invalidateRelationsOnValue(variable);
         currentState.setBooleanConstraint(variable, currentResult);
       }
+    }
+
+    @Override
+    public final void visitConditionalExpression(ConditionalExpressionTree tree) {
+      PackedStates conditionStates = evaluateCondition(currentState, tree.condition());
+      SymbolicBooleanConstraint conditionResult = conditionStates.getBooleanConstraint();
+      currentResult = null;
+      if (conditionResult != SymbolicBooleanConstraint.FALSE) {
+        for (ExecutionState state : conditionStates.trueStates) {
+          currentResult = evaluateExpression(state, tree.trueExpression()).union(currentResult);
+        }
+      }
+      if (conditionResult != SymbolicBooleanConstraint.TRUE) {
+        for (ExecutionState state : conditionStates.falseStates) {
+          currentResult = evaluateExpression(state, tree.falseExpression()).union(currentResult);
+        }
+      }
+      currentState.mergeRelations(Iterables.concat(conditionStates.falseStates, conditionStates.trueStates));
     }
 
     @Override
