@@ -126,7 +126,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.members());
   }
 
-  private void completeMetadata(JavaSymbol symbol, List<AnnotationTree> annotations) {
+  private static void completeMetadata(JavaSymbol symbol, List<AnnotationTree> annotations) {
     for (AnnotationTree tree : annotations) {
       AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve((JavaSymbol.TypeJavaSymbol) tree.symbolType().symbol());
       symbol.metadata().addAnnotation(annotationInstance);

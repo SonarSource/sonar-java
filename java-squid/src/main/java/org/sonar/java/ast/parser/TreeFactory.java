@@ -414,7 +414,7 @@ public class TreeFactory {
     return partial;
   }
 
-  private ClassTreeImpl newClassBody(Kind kind, AstNode openBraceTokenAstNode, Optional<List<AstNode>> members, AstNode closeBraceTokenAstNode) {
+  private static ClassTreeImpl newClassBody(Kind kind, AstNode openBraceTokenAstNode, Optional<List<AstNode>> members, AstNode closeBraceTokenAstNode) {
     List<AstNode> children = Lists.newArrayList();
     ImmutableList.Builder<Tree> builder = ImmutableList.builder();
 
@@ -2370,7 +2370,7 @@ public class TreeFactory {
 
   // End
 
-  private TypeTree applyDim(TypeTree expression, @Nullable ArrayTypeTreeImpl dim) {
+  private static TypeTree applyDim(TypeTree expression, @Nullable ArrayTypeTreeImpl dim) {
     if (dim != null) {
       dim.setLastChildType(expression);
       return dim;
