@@ -107,7 +107,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     leaveFile();
   }
 
-  private boolean isImportOnDemand(String name) {
+  private static boolean isImportOnDemand(String name) {
     return name.endsWith("*");
   }
 
@@ -147,7 +147,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     return pendingImports.contains(reference);
   }
 
-  private boolean isJavaLangImport(String reference) {
+  private static boolean isJavaLangImport(String reference) {
     return reference.startsWith("java.lang.") && reference.indexOf('.', "java.lang.".length()) == -1;
   }
 
@@ -185,11 +185,11 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   }
 
 
-  private String concatenate(@Nullable ExpressionTree tree) {
+  private static String concatenate(@Nullable ExpressionTree tree) {
     if (tree == null) {
       return "";
     }
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
 
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
@@ -238,7 +238,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       }
     }
 
-    private String extractLastClassName(String reference) {
+    private static String extractLastClassName(String reference) {
       int lastIndexOfDot = reference.lastIndexOf('.');
       return lastIndexOfDot == -1 ? reference : reference.substring(lastIndexOfDot + 1);
     }

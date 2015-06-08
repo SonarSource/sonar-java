@@ -60,7 +60,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     }
   }
 
-  private boolean isEquals(MethodTree tree) {
+  private static boolean isEquals(MethodTree tree) {
     return ((MethodTreeImpl) tree).isEqualsMethod();
   }
 
@@ -76,31 +76,31 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     }
   }
 
-  private boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
+  private static boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
     return isObject(leftOpType) || isObject(rightOpType);
   }
 
-  private boolean isExcluded(Type leftOpType, Type rightOpType) {
+  private static boolean isExcluded(Type leftOpType, Type rightOpType) {
     return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isJavaLangClassComparison(leftOpType, rightOpType);
   }
 
-  private boolean isObject(Type operandType) {
+  private static boolean isObject(Type operandType) {
     return operandType.erasure().isClass() && !operandType.symbol().isEnum();
   }
 
-  private boolean isNullComparison(Type leftOpType, Type rightOpType) {
+  private static boolean isNullComparison(Type leftOpType, Type rightOpType) {
     return isBot(leftOpType) || isBot(rightOpType);
   }
 
-  private boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
+  private static boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
     return leftOperandType.isNumerical() || rightOperandType.isNumerical();
   }
 
-  private boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
+  private static boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
     return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
   }
 
-  private boolean isBot(Type type) {
+  private static boolean isBot(Type type) {
     return ((JavaType) type).isTagged(JavaType.BOT);
 
   }
