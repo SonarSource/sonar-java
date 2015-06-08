@@ -56,34 +56,34 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
   private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
-      "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
-      "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
-      "R", "T", "r", "D", "F", "c"
-  );
+    "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
+    "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
+    "R", "T", "r", "D", "F", "c"
+    );
   private static final String FORMAT_METHOD_NAME = "format";
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
-        MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
-    );
+      MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
+      );
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
-    //Check type of first argument:
+    // Check type of first argument:
     if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
       formatStringTree = mit.arguments().get(0);
       args = mit.arguments().subList(1, mit.arguments().size());
     } else {
-      //format method with "Locale" first argument, skip that one.
+      // format method with "Locale" first argument, skip that one.
       formatStringTree = mit.arguments().get(1);
       args = mit.arguments().subList(2, mit.arguments().size());
     }
@@ -112,7 +112,7 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private void cleanupLineSeparator(List<String> params) {
-    //Cleanup %n and %% values
+    // Cleanup %n and %% values
     Iterator<String> iter = params.iterator();
     while (iter.hasNext()) {
       String param = iter.next();
@@ -136,7 +136,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       int argIndex = index;
       if (param.contains("$")) {
         argIndex = Integer.valueOf(param.substring(0, param.indexOf("$"))) - 1;
-        if(argIndex == -1) {
+        if (argIndex == -1) {
           addIssue(mit, "Arguments are numbered starting from 1.");
           return;
         }
@@ -180,18 +180,16 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
   }
 
-
   private boolean isNumerical(Type argType) {
     return argType.isNumerical()
-        || argType.is("java.math.BigInteger")
-        || argType.is("java.math.BigDecimal")
-        || argType.is("java.lang.Byte")
-        || argType.is("java.lang.Short")
-        || argType.is("java.lang.Integer")
-        || argType.is("java.lang.Long")
-        || argType.is("java.lang.Float")
-        || argType.is("java.lang.Double")
-        ;
+      || argType.is("java.math.BigInteger")
+      || argType.is("java.math.BigDecimal")
+      || argType.is("java.lang.Byte")
+      || argType.is("java.lang.Short")
+      || argType.is("java.lang.Integer")
+      || argType.is("java.lang.Long")
+      || argType.is("java.lang.Float")
+      || argType.is("java.lang.Double");
   }
 
   private boolean usesMessageFormat(String formatString, List<String> params) {
@@ -222,7 +220,7 @@ public class PrintfCheck extends AbstractMethodDetection {
         continue;
       }
       StringBuilder param = new StringBuilder();
-      for (int groupIndex : new int[]{1, 5, 6}) {
+      for (int groupIndex : new int[] {1, 5, 6}) {
         if (matcher.group(groupIndex) != null) {
           param.append(matcher.group(groupIndex));
         }
