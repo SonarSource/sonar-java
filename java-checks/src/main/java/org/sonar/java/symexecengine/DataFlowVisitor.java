@@ -199,11 +199,11 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     }
   }
 
-  private boolean isBreakOrReturnStatement(StatementTree statement) {
+  private static boolean isBreakOrReturnStatement(StatementTree statement) {
     return statement.is(Tree.Kind.BREAK_STATEMENT, Tree.Kind.RETURN_STATEMENT);
   }
 
-  private boolean switchContainsDefaultLabel(SwitchStatementTree tree) {
+  private static boolean switchContainsDefaultLabel(SwitchStatementTree tree) {
     for (CaseGroupTree caseGroupTree : tree.cases()) {
       for (CaseLabelTree label : caseGroupTree.labels()) {
         if ("default".equals(label.caseOrDefaultKeyword().text())) {
@@ -214,7 +214,7 @@ public class DataFlowVisitor extends BaseTreeVisitor {
     return false;
   }
 
-  private boolean lastStatementIsBreakOrReturn(SwitchStatementTree tree) {
+  private static boolean lastStatementIsBreakOrReturn(SwitchStatementTree tree) {
     List<CaseGroupTree> cases = tree.cases();
     if (!cases.isEmpty()) {
       List<StatementTree> lastStatements = cases.get(cases.size() - 1).body();
