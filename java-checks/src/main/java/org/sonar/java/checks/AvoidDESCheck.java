@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -52,7 +53,7 @@ public class AvoidDESCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArg = mit.arguments().get(0);
     if (firstArg.is(Tree.Kind.STRING_LITERAL)) {
-      String tranformation = trimQuotes(((LiteralTree) firstArg).value());
+      String tranformation = LiteralUtils.trimQuotes(((LiteralTree) firstArg).value());
       String[] transformationElements = tranformation.split("/");
       if (transformationElements.length > 0 && isExcludedAlgorithm(transformationElements[0])) {
         addIssue(mit, "Use the recommended AES (Advanced Encryption Standard) instead.");
@@ -60,11 +61,8 @@ public class AvoidDESCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean isExcludedAlgorithm(String algorithm) {
+  private static boolean isExcludedAlgorithm(String algorithm) {
     return "DES".equals(algorithm) || "DESede".equals(algorithm);
   }
 
-  private String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
-  }
 }

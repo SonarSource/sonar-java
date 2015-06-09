@@ -113,12 +113,12 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean expressionIsOperationToInt(@Nullable ExpressionTree expr) {
+  private static boolean expressionIsOperationToInt(@Nullable ExpressionTree expr) {
     return expr != null && expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS)
       && expr.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
 
-  private boolean isVarTypeErrorProne(Type varType) {
+  private static boolean isVarTypeErrorProne(Type varType) {
     return varType.isPrimitive(Type.Primitives.LONG) || varType.isPrimitive(Type.Primitives.FLOAT) || varType.isPrimitive(Type.Primitives.DOUBLE);
   }
 

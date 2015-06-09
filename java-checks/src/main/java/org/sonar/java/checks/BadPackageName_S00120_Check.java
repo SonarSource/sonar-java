@@ -79,7 +79,7 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
     }
   }
 
-  private String concatenate(ExpressionTree tree) {
+  private static String concatenate(ExpressionTree tree) {
     Deque<String> pieces = new LinkedList<String>();
 
     ExpressionTree expr = tree;

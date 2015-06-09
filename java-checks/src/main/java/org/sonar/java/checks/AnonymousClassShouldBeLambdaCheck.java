@@ -76,7 +76,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     }
   }
 
-  private boolean hasOnlyOneMethod(List<Tree> members) {
+  private static boolean hasOnlyOneMethod(List<Tree> members) {
     int methodCounter = 0;
     for (Tree tree : members) {
       if (!tree.is(Tree.Kind.EMPTY_STATEMENT, Tree.Kind.METHOD)) {

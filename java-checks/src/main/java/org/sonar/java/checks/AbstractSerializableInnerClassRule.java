@@ -62,7 +62,7 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
     }
   }
 
-  private boolean isInnerClass(Symbol.TypeSymbol typeSymbol) {
+  private static boolean isInnerClass(Symbol.TypeSymbol typeSymbol) {
     return !typeSymbol.equals(((JavaSymbol.TypeJavaSymbol) typeSymbol).outermostClass());
   }
 
@@ -70,7 +70,7 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean directlyImplementsSerializable(Symbol.TypeSymbol symbol) {
+  private static boolean directlyImplementsSerializable(Symbol.TypeSymbol symbol) {
     for (org.sonar.plugins.java.api.semantic.Type type : symbol.interfaces()) {
       if (type.is("java.io.Serializable")) {
         return true;
