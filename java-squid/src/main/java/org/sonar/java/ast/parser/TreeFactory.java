@@ -808,6 +808,7 @@ public class TreeFactory {
     }
 
     ArgumentListTreeImpl elementValuePairs = partial.get();
+    elementValuePairs.complete(openParenToken, closeParenToken);
     elementValuePairs.prependChildren(openParenToken);
     elementValuePairs.addChild(closeParenToken);
 
