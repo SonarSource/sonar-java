@@ -19,42 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ForLoopTerminationConditionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopTerminationConditionCheck.java"),
-      new VisitorsBridge(new ForLoopTerminationConditionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.")
-      .next().atLine(5)
-      .next().atLine(6)
-      .next().atLine(7)
-      .next().atLine(8)
-      .next().atLine(9)
-      .next().atLine(10)
-      .next().atLine(11)
-      .next().atLine(12)
-      .next().atLine(13)
-      .next().atLine(14)
-      .next().atLine(15)
-      .next().atLine(16)
-      .next().atLine(17)
-      .next().atLine(18)
-      .next().atLine(19)
-      .next().atLine(20);
+    JavaCheckVerifier.verify("src/test/files/checks/ForLoopTerminationConditionCheck.java", new ForLoopTerminationConditionCheck());
   }
 
 }

@@ -125,23 +125,23 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     }
   }
 
-  private boolean isTruncation(MethodInvocationTree methodTree) {
+  private static boolean isTruncation(MethodInvocationTree methodTree) {
     return TRUNCATION_METHODS.anyMatch(methodTree) && isCastFromIntegralToFloating(removeParenthesis(methodTree.arguments().get(0)));
   }
 
-  private boolean isConstantWithLiteral(MethodInvocationTree methodTree) {
+  private static boolean isConstantWithLiteral(MethodInvocationTree methodTree) {
     return CONSTANT_WITH_LITERAL_METHODS.anyMatch(methodTree) && isConstant(methodTree.arguments().get(0));
   }
 
-  private boolean isConstantWithZero(MethodInvocationTree methodTree) {
+  private static boolean isConstantWithZero(MethodInvocationTree methodTree) {
     return CONSTANT_WITH_ZERO_METHODS.anyMatch(methodTree) && isFloatingZero(methodTree.arguments().get(0));
   }
 
-  private boolean isConstantWithZeroOrOne(MethodInvocationTree methodTree) {
+  private static boolean isConstantWithZeroOrOne(MethodInvocationTree methodTree) {
     return CONSTANT_WITH_ZERO_OR_ONE_METHODS.anyMatch(methodTree) && isFloatingZeroOrOne(methodTree.arguments().get(0));
   }
 
-  private boolean isCastFromIntegralToFloating(ExpressionTree tree) {
+  private static boolean isCastFromIntegralToFloating(ExpressionTree tree) {
     Type resultType = tree.symbolType();
     // explicit cast
     if (tree.is(Tree.Kind.TYPE_CAST) && isIntegral(getInnerType(((TypeCastTree) tree).expression())) && (resultType.is(DOUBLE) || resultType.is(FLOAT))) {
@@ -151,20 +151,20 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     return isIntegral(resultType);
   }
 
-  private boolean isConstant(ExpressionTree tree) {
+  private static boolean isConstant(ExpressionTree tree) {
     return getInnerExpression(tree).is(Tree.Kind.CHAR_LITERAL, Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.INT_LITERAL, Tree.Kind.LONG_LITERAL);
   }
 
-  private boolean isIntegral(Type type) {
+  private static boolean isIntegral(Type type) {
     return type.isPrimitive() && !type.is(DOUBLE) && !type.is(FLOAT);
   }
 
-  private boolean isIntegralOne(ExpressionTree tree) {
+  private static boolean isIntegralOne(ExpressionTree tree) {
     Long value = LiteralUtils.longLiteralValue(tree);
     return value != null && value == 1;
   }
 
-  private ExpressionTree getInnerExpression(ExpressionTree tree) {
+  private static ExpressionTree getInnerExpression(ExpressionTree tree) {
     ExpressionTree result = removeParenthesis(tree);
     while (result.is(Tree.Kind.TYPE_CAST)) {
       result = removeParenthesis(((TypeCastTree) result).expression());
@@ -172,11 +172,11 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     return result;
   }
 
-  private Type getInnerType(ExpressionTree tree) {
+  private static Type getInnerType(ExpressionTree tree) {
     return getInnerExpression(tree).symbolType();
   }
 
-  private ExpressionTree removeParenthesis(ExpressionTree tree) {
+  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       result = ((ParenthesizedTree) result).expression();
@@ -184,17 +184,17 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     return result;
   }
 
-  private boolean isFloatingZero(ExpressionTree tree) {
+  private static boolean isFloatingZero(ExpressionTree tree) {
     Integer value = getFloatingZeroOrOne(tree);
     return value != null && value == 0;
   }
 
-  private boolean isFloatingZeroOrOne(ExpressionTree tree) {
+  private static boolean isFloatingZeroOrOne(ExpressionTree tree) {
     return getFloatingZeroOrOne(tree) != null;
   }
 
   @CheckForNull
-  private Integer getFloatingZeroOrOne(ExpressionTree tree) {
+  private static Integer getFloatingZeroOrOne(ExpressionTree tree) {
     ExpressionTree expressionTree = removeParenthesis(tree);
     if (expressionTree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
       String value = ((LiteralTree) expressionTree).value();

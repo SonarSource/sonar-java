@@ -68,12 +68,16 @@ public class StringToStringCheck extends AbstractMethodDetection {
       addIssue(expressionTree, String.format("\"%s\" returns a string, there's no need to call \"toString()\".",
         extractName(((MethodInvocationTree) expressionTree).methodSelect())));
     } else if (expressionTree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-      addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".",
-        extractName(((ArrayAccessExpressionTree) expressionTree).expression())));
+      String name = extractName(((ArrayAccessExpressionTree) expressionTree).expression());
+      if(name.isEmpty()) {
+        addIssue(expressionTree, "There's no need to call \"toString()\" on an array of String.");
+      } else {
+        addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".", name));
+      }
     }
   }
 
-  private ExpressionTree extractBaseExpression(ExpressionTree tree) {
+  private static ExpressionTree extractBaseExpression(ExpressionTree tree) {
     ExpressionTree expressionTree = tree;
     while (true) {
       if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
@@ -88,8 +92,12 @@ public class StringToStringCheck extends AbstractMethodDetection {
     }
   }
 
-  private String extractName(ExpressionTree tree) {
-    return ((IdentifierTree) extractBaseExpression(tree)).identifierToken().text();
+  private static String extractName(ExpressionTree tree) {
+    ExpressionTree expressionTree = extractBaseExpression(tree);
+    if(expressionTree.is(Tree.Kind.IDENTIFIER)) {
+      return ((IdentifierTree) expressionTree).identifierToken().text();
+    }
+    return "";
   }
 
 }

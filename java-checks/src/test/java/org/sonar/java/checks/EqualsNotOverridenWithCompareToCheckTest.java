@@ -19,27 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EqualsNotOverridenWithCompareToCheckTest {
-
-  private final EqualsNotOverridenWithCompareToCheck check = new EqualsNotOverridenWithCompareToCheck();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(18).withMessage("Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.")
-      .next().atLine(45)
-      .next().atLine(59)
-      .next().atLine(90)
-      .next().atLine(121);
+    JavaCheckVerifier.verify("src/test/files/checks/EqualsNotOverridenWithCompareToCheck.java", new EqualsNotOverridenWithCompareToCheck());
   }
-
 }

@@ -1,4 +1,4 @@
-interface notAnnotated {
+interface notAnnotated { // Noncompliant {{Annotate the "notAnnotated" interface with the @FunctionInterface annotation}}
   public int transform(int a);
 }
 interface notAnnotatedWithTwoMethods {
@@ -21,7 +21,7 @@ interface Annotated {
   public int transform(int a);
 }
 
-interface MyFunc {
+interface MyFunc { // Noncompliant {{Annotate the "MyFunc" interface with the @FunctionInterface annotation}}
   int func(Object b);
   String toString();
 }

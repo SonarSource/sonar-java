@@ -19,19 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S1610",
@@ -40,26 +41,22 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
-public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-
-  private JavaFileScannerContext context;
+public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if(classIsAbstract(tree) && classHasNoField(tree) && !classHasProtectedMethod(tree)) {
-      context.addIssue(tree, this, "Convert the abstract class \""+tree.simpleName().name()+"\" into an interface");
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (classIsAbstract(classTree) && classHasNoField(classTree) && !classHasProtectedMethod(classTree)) {
+      addIssue(classTree, "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface");
     }
-    super.visitClass(tree);
   }
 
-  private boolean classHasProtectedMethod(ClassTree tree) {
+  private static boolean classHasProtectedMethod(ClassTree tree) {
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PROTECTED)) {
         return true;
@@ -68,13 +65,13 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor 
     return false;
   }
 
-  private boolean classIsAbstract(ClassTree tree) {
+  private static boolean classIsAbstract(ClassTree tree) {
     return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT);
   }
 
-  private boolean classHasNoField(ClassTree tree) {
-    for(Tree member : tree.members()) {
-      if(member.is(Tree.Kind.VARIABLE)) {
+  private static boolean classHasNoField(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
         return false;
       }
     }

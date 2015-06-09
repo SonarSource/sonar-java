@@ -2,12 +2,12 @@ class A {
 }
 
 class B {
-  public boolean equals(Object o) { // Noncompliant
+  public boolean equals(Object o) { // Noncompliant {{This class overrides "equals()" and should therefore also override "hashCode()".}}
   }
 }
 
 class C {
-  public int hashCode() { // Noncompliant
+  public int hashCode() { // Noncompliant {{This class overrides "hashCode()" and should therefore also override "equals()".}}
   }
 }
 

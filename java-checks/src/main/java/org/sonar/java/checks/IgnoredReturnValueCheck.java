@@ -73,7 +73,7 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isCheckedType(MethodInvocationTree mit) {
+  private static boolean isCheckedType(MethodInvocationTree mit) {
     Symbol owner = mit.symbol().owner();
     for (String type : CHECKED_TYPES) {
       if (owner.type().is(type)) {
@@ -83,15 +83,15 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean returnsVoid(Type methodType) {
+  private static boolean returnsVoid(Type methodType) {
     return methodType.isVoid() || methodType.isUnknown();
   }
 
-  private String methodName(MethodInvocationTree mit) {
+  private static String methodName(MethodInvocationTree mit) {
     return getIdentifier(mit).name();
   }
 
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();

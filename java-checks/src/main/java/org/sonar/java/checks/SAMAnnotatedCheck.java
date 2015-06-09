@@ -27,12 +27,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -52,7 +50,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
-public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {
 
   private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>().
       put("equals", ImmutableList.of("Object")).
@@ -66,24 +64,20 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
       put("wait", ImmutableList.of("long", "int")).
       build();
 
-  private JavaFileScannerContext context;
-
-
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.INTERFACE);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if (isSAM(tree) && !isAnnotated(tree)) {
-      context.addIssue(tree, this, "Annotate the \"" + tree.simpleName().name() + "\" interface with the @FunctionInterface annotation");
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (hasOneAbstractMethod(classTree) && !isAnnotated(classTree)) {
+      addIssue(tree, "Annotate the \"" + classTree.simpleName().name() + "\" interface with the @FunctionInterface annotation");
     }
-    super.visitClass(tree);
   }
 
-  private boolean isAnnotated(ClassTree tree) {
+  private static boolean isAnnotated(ClassTree tree) {
     for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
       Tree annotationType = annotationTree.annotationType();
       if (annotationType.is(Tree.Kind.IDENTIFIER) && "FunctionalInterface".equals(((IdentifierTree) annotationType).name())) {
@@ -93,12 +87,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return false;
   }
 
-  //JLS8 9.8
-  private boolean isSAM(ClassTree tree) {
-    return tree.is(Tree.Kind.INTERFACE) && hasOneAbstractMethod(tree);
-  }
-
-  private boolean hasOneAbstractMethod(ClassTree classTree) {
+  private static boolean hasOneAbstractMethod(ClassTree classTree) {
     TypeSymbol symbol = classTree.symbol();
     if (symbol != null) {
       List<Type> types = symbol.interfaces();
@@ -121,7 +110,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return methods == 1;
   }
 
-  private boolean isNotObjectMethod(MethodTree method) {
+  private static boolean isNotObjectMethod(MethodTree method) {
     ImmutableCollection<List<String>> methods = OBJECT_METHODS.get(method.simpleName().name());
     if (methods != null) {
       for (List<String> arguments : methods) {
@@ -139,7 +128,7 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return true;
   }
 
-  private boolean isNonStaticNonDefaultMethod(Tree memberTree) {
+  private static boolean isNonStaticNonDefaultMethod(Tree memberTree) {
     boolean result = memberTree.is(Tree.Kind.METHOD);
     if (result) {
       MethodTree methodTree = (MethodTree) memberTree;

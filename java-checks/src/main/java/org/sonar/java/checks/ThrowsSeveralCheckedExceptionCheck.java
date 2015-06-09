@@ -62,15 +62,15 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
     }
   }
 
-  private boolean isNotOverriden(MethodTree methodTree) {
+  private static boolean isNotOverriden(MethodTree methodTree) {
     return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriding());
   }
 
-  private boolean isPublic(MethodTree methodTree) {
+  private static boolean isPublic(MethodTree methodTree) {
     return methodTree.symbol().isPublic();
   }
 
-  private List<String> getThrownCheckedExceptions(MethodTree methodTree) {
+  private static List<String> getThrownCheckedExceptions(MethodTree methodTree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     for (Type thrownClass : methodTree.symbol().thrownTypes()) {
       if (!isSubClassOfRuntimeException(thrownClass)) {

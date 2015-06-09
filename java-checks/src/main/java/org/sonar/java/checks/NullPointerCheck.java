@@ -284,7 +284,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     currentState.invalidateVariables(assignedVariables);
   }
 
-  private AbstractValue checkNullity(Symbol symbol) {
+  private static AbstractValue checkNullity(Symbol symbol) {
     if (symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull")) {
       return AbstractValue.NOTNULL;
     } else if (symbol.metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
@@ -344,7 +344,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
-  private boolean isSymbolLocalVariableOrMethodParameter(Symbol symbol) {
+  private static boolean isSymbolLocalVariableOrMethodParameter(Symbol symbol) {
     return symbol.isVariableSymbol() && symbol.owner().isMethodSymbol();
   }
 
@@ -391,7 +391,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
 
   // extracts the symbol in case of ident <op> null, or null <op> ident.
   @Nullable
-  private VariableSymbol extractRelationalSymbol(BinaryExpressionTree tree) {
+  private static VariableSymbol extractRelationalSymbol(BinaryExpressionTree tree) {
     Symbol symbol = null;
     if (tree.leftOperand().is(Tree.Kind.NULL_LITERAL) && tree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
       symbol = ((IdentifierTree) tree.rightOperand()).symbol();
