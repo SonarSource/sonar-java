@@ -121,7 +121,7 @@ public class LastSyntaxTokenFinderTest {
     p = "public @MyAnnotation(42) class Foo {}";
     c = getFirstClass(getCompilationUnit(p));
     lastToken = getLastSyntaxToken(c.modifiers());
-    assertThat(lastToken.text()).isEqualTo("42");
+    assertThat(lastToken.text()).isEqualTo(")");
 
     p = "@Deprecated public class Foo {}";
     c = getFirstClass(getCompilationUnit(p));
