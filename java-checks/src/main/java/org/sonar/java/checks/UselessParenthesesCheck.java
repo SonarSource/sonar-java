@@ -52,6 +52,7 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
       Kind.ANNOTATION,
       Kind.ARRAY_ACCESS_EXPRESSION,
       Kind.ASSERT_STATEMENT,
+      Kind.ASSIGNMENT,
       Kind.CASE_LABEL,
       Kind.CONDITIONAL_EXPRESSION,
       Kind.DO_STATEMENT,
