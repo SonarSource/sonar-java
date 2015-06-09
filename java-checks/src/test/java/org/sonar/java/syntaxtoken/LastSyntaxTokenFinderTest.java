@@ -190,7 +190,12 @@ public class LastSyntaxTokenFinderTest {
   public void array_type() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test { int[][] i; }");
     SyntaxToken lastToken = getLastSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)).type());
-    assertThat(lastToken.text()).isEqualTo("int");
+    assertThat(lastToken.text()).isEqualTo("]");
+    assertThat(lastToken.column()).isEqualTo(19);
+
+    MethodTree method = getFirstMethod(getCompilationUnit("class Test { void m(int ... a) {} }"));
+    lastToken = getLastSyntaxToken(method.parameters().get(0).type());
+    assertThat(lastToken.text()).isEqualTo("...");
   }
 
   @Test

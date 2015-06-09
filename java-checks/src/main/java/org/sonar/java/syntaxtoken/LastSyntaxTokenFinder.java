@@ -363,8 +363,11 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-    // FIXME should be the close bracket of the last dimension
-    scan(tree.type());
+    if (tree.ellipsisToken() != null) {
+      lastSyntaxToken = tree.ellipsisToken();
+    } else {
+      lastSyntaxToken = tree.closeBracketToken();
+    }
   }
 
   @Override
