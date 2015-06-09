@@ -103,7 +103,9 @@ public class SyntaxHighlighterVisitor extends SquidAstVisitor<LexerlessGrammar> 
   @Override
   public void visitNode(AstNode astNode) {
     if (astNode.is(Kind.ANNOTATION)) {
-      highlighting.highlight(astNode.getFromIndex(), ((AstNode) ((AnnotationTree) astNode).annotationType()).getToIndex(), types.get(astNode.getType()));
+      int from = astNode.getFromIndex();
+      int to = ((AstNode) ((AnnotationTree) astNode).annotationType()).getToIndex();
+      highlighting.highlight(from, to, types.get(astNode.getType()));
     } else {
       // FIXME Hack to support prepending of keywords in literals, such as "default 0" in annotation type methods
       AstNode target = astNode;

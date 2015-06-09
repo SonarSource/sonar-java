@@ -20,6 +20,8 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,20 +29,30 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import org.sonar.api.source.Highlightable;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.api.source.Highlightable.HighlightingBuilder;
+import org.sonar.java.JavaConfiguration;
+import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
+import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SyntaxHighlighterVisitorTest {
 
   @Rule
   public TemporaryFolder temp = new TemporaryFolder();
 
-  private final SonarComponents sonarComponents = Mockito.mock(SonarComponents.class);
-  private final Highlightable highlightable = Mockito.mock(Highlightable.class);
-  private final Highlightable.HighlightingBuilder highlighting = Mockito.mock(Highlightable.HighlightingBuilder.class);
+  private final SonarComponents sonarComponents = mock(SonarComponents.class);
+  private final Highlightable highlightable = mock(Highlightable.class);
+  private final HighlightingBuilderTester highlighting = new HighlightingBuilderTester();
 
   private final SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
 
@@ -48,92 +60,69 @@ public class SyntaxHighlighterVisitorTest {
   private String eol;
 
   @Before
-  public void setUp() {
-    Mockito.when(sonarComponents.highlightableFor(Mockito.any(File.class))).thenReturn(highlightable);
-    Mockito.when(highlightable.newHighlighting()).thenReturn(highlighting);
+  public void setUp() throws Exception {
+    when(sonarComponents.highlightableFor(Mockito.any(File.class))).thenReturn(highlightable);
+    when(highlightable.newHighlighting()).thenReturn(highlighting);
   }
 
   @Test
   public void parse_error() throws Exception {
     File file = temp.newFile();
     Files.write("ParseError", file, Charsets.UTF_8);
-    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
-
+    scan(file);
     Mockito.verifyZeroInteractions(highlightable);
   }
-
-  // TODO Factorize duplicated methods, but still allow double click on failures to jump to the right line
 
   @Test
   public void test_LF() throws Exception {
     this.eol = "\n";
-    File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
-
-    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
-
-    lines = Files.readLines(file, Charsets.UTF_8);
-    Mockito.verify(highlighting).highlight(offset(1, 1), offset(3, 4), "cppd");
-    Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
-    Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
-    Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
-    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
-    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
-    Mockito.verify(highlighting).highlight(offset(17, 2), offset(17, 12), "k");
-    Mockito.verify(highlighting).highlight(offset(18, 21), offset(18, 29), "k");
-    Mockito.verify(highlighting).highlight(offset(18, 29), offset(18, 30), "c");
-    Mockito.verify(highlighting).done();
-    Mockito.verifyNoMoreInteractions(highlighting);
+    File file = generateTestFile();
+    scan(file);
+    verifyHighlighting(file);
   }
 
   @Test
   public void test_CR_LF() throws Exception {
     this.eol = "\r\n";
-    File file = temp.newFile();
-    Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
-
-    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
-
-    lines = Files.readLines(file, Charsets.UTF_8);
-    Mockito.verify(highlighting).highlight(offset(1, 1), offset(3, 4), "cppd");
-    Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
-    Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
-    Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
-    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
-    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
-    Mockito.verify(highlighting).highlight(offset(17, 2), offset(17, 12), "k");
-    Mockito.verify(highlighting).highlight(offset(18, 21), offset(18, 29), "k");
-    Mockito.verify(highlighting).highlight(offset(18, 29), offset(18, 30), "c");
-    Mockito.verify(highlighting).done();
-    Mockito.verifyNoMoreInteractions(highlighting);
+    File file = generateTestFile();
+    scan(file);
+    verifyHighlighting(file);
   }
 
   @Test
   public void test_CR() throws Exception {
     this.eol = "\r";
+    File file = generateTestFile();
+    scan(file);
+    verifyHighlighting(file);
+  }
+
+  private void scan(File file) {
+    JavaSquid squid = new JavaSquid(new JavaConfiguration(Charsets.UTF_8), null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
+    squid.scan(Lists.newArrayList(file), Collections.<File>emptyList(), Collections.<File>emptyList());
+  }
+
+  private File generateTestFile() throws IOException {
     File file = temp.newFile();
     Files.write(Files.toString(new File("src/test/files/highlighter/Example.java"), Charsets.UTF_8).replaceAll("\\r\\n", "\n").replaceAll("\\n", eol), file, Charsets.UTF_8);
+    return file;
+  }
 
-    JavaAstScanner.scanSingleFile(file, syntaxHighlighterVisitor);
-
+  private void verifyHighlighting(File file) throws IOException {
     lines = Files.readLines(file, Charsets.UTF_8);
-    Mockito.verify(highlighting).highlight(offset(1, 1), offset(3, 4), "cppd");
-    Mockito.verify(highlighting).highlight(offset(5, 1), offset(7, 4), "cppd");
-    Mockito.verify(highlighting).highlight(offset(8, 1), offset(8, 18), "a");
-    Mockito.verify(highlighting).highlight(offset(8, 19), offset(8, 27), "s");
-    Mockito.verify(highlighting).highlight(offset(9, 1), offset(9, 6), "k");
-    Mockito.verify(highlighting).highlight(offset(11, 3), offset(11, 7), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 5), offset(12, 11), "k");
-    Mockito.verify(highlighting).highlight(offset(12, 12), offset(12, 14), "c");
-    Mockito.verify(highlighting).highlight(offset(17, 2), offset(17, 12), "k");
-    Mockito.verify(highlighting).highlight(offset(18, 21), offset(18, 29), "k");
-    Mockito.verify(highlighting).highlight(offset(18, 29), offset(18, 30), "c");
-    Mockito.verify(highlighting).done();
-    Mockito.verifyNoMoreInteractions(highlighting);
+    assertThat(hasBeenHighlighted(offset(1, 1), offset(3, 4), "cppd")).isTrue();
+    assertThat(hasBeenHighlighted(offset(5, 1), offset(7, 4), "cppd")).isTrue();
+    assertThat(hasBeenHighlighted(offset(8, 1), offset(8, 18), "a")).isTrue();
+    assertThat(hasBeenHighlighted(offset(8, 19), offset(8, 27), "s")).isTrue();
+    assertThat(hasBeenHighlighted(offset(9, 1), offset(9, 6), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(11, 3), offset(11, 7), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(12, 5), offset(12, 11), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(12, 12), offset(12, 14), "c")).isTrue();
+    assertThat(hasBeenHighlighted(offset(17, 2), offset(17, 12), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(18, 21), offset(18, 29), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(18, 29), offset(18, 30), "c")).isTrue();
+    assertThat(highlighting.done).isTrue();
+    assertThat(highlighting.entries).isEmpty();
   }
 
   private int offset(int line, int column) {
@@ -143,6 +132,69 @@ public class SyntaxHighlighterVisitorTest {
     }
     result += column - 1;
     return result;
+  }
+
+  private boolean hasBeenHighlighted(int start, int end, String type) {
+    HighlightingBuilderTester.Entry expected = new HighlightingBuilderTester.Entry(start, end, type);
+    HighlightingBuilderTester.Entry observed = null;
+    for (HighlightingBuilderTester.Entry entry : highlighting.entries) {
+      if (entry.equals(expected)) {
+        observed = entry;
+        break;
+      }
+    }
+    if (observed == null) {
+      return false;
+    }
+
+    // consume the entry
+    highlighting.entries.remove(observed);
+    return true;
+  }
+
+  private static class HighlightingBuilderTester implements Highlightable.HighlightingBuilder {
+    private Set<Entry> entries = Sets.newHashSet();
+    private boolean done = false;
+
+    @Override
+    public HighlightingBuilder highlight(int startOffset, int endOffset, String typeOfText) {
+      entries.add(new Entry(startOffset, endOffset, typeOfText));
+      return this;
+    }
+
+    @Override
+    public void done() {
+      done = true;
+    }
+
+    private static class Entry {
+      private final int start;
+      private final int end;
+      private final String type;
+
+      public Entry(int start, int end, String type) {
+        this.start = start;
+        this.end = end;
+        this.type = type;
+      }
+
+      @Override
+      public boolean equals(Object obj) {
+        Entry other = (Entry) obj;
+        if (end != other.end)
+          return false;
+        if (start != other.start)
+          return false;
+        if (!type.equals(other.type))
+          return false;
+        return true;
+      }
+
+      @Override
+      public String toString() {
+        return "[" + start + ", " + end + ", \"" + type + "\"]";
+      }
+    }
   }
 
 }
