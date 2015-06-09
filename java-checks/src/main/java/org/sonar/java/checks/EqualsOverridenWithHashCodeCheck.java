@@ -76,20 +76,20 @@ public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isEquals(MethodTree methodTree) {
+  private static boolean isEquals(MethodTree methodTree) {
     return ((MethodTreeImpl) methodTree).isEqualsMethod();
   }
 
-  private boolean isHashCode(MethodTree methodTree) {
+  private static boolean isHashCode(MethodTree methodTree) {
     return HASHCODE.equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && returnsInt(methodTree);
   }
 
-  private boolean returnsInt(MethodTree tree) {
+  private static boolean returnsInt(MethodTree tree) {
     TypeTree typeTree = tree.returnType();
     return typeTree != null && typeTree.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
 
-  private String getMessage(String overridenMethod, String methodToOverride) {
+  private static String getMessage(String overridenMethod, String methodToOverride) {
     return "This class overrides \"" + overridenMethod + "()\" and should therefore also override \"" + methodToOverride + "()\".";
   }
 

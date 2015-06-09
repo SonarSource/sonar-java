@@ -100,12 +100,12 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isConstructorInitialized(VariableTree variableTree) {
+  private static boolean isConstructorInitialized(VariableTree variableTree) {
     ExpressionTree initializer = variableTree.initializer();
     return initializer != null && initializer.is(Tree.Kind.NEW_CLASS);
   }
 
-  private boolean isSetSecureCall(MethodInvocationTree mit) {
+  private static boolean isSetSecureCall(MethodInvocationTree mit) {
     Symbol methodSymbol = mit.symbol();
     boolean hasArityOne = mit.arguments().size() == 1;
     if (hasArityOne && isCallSiteCookie(methodSymbol)) {
@@ -118,11 +118,11 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCallSiteCookie(Symbol methodSymbol) {
+  private static boolean isCallSiteCookie(Symbol methodSymbol) {
     return methodSymbol.isMethodSymbol() && methodSymbol.owner().type().is("javax.servlet.http.Cookie");
   }
 
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();

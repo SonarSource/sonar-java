@@ -26,7 +26,6 @@ import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -57,7 +56,7 @@ import java.util.LinkedList;
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Tree> loopLevel = new LinkedList<Tree>();
+  private Deque<Tree> loopLevel = new LinkedList<>();
   private SemanticModel semanticModel;
 
   @Override
@@ -87,7 +86,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     return true;
   }
 
-  private IdentifierTree getIdentifierTree(ExpressionTree tree) {
+  private static IdentifierTree getIdentifierTree(ExpressionTree tree) {
     IdentifierTree idTree;
     if(tree.is(Tree.Kind.MEMBER_SELECT)) {
       idTree = getIdentifierTree(((MemberSelectExpressionTree) tree).expression());
@@ -101,7 +100,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     return idTree;
   }
 
-  private Tree loopStatement(Tree loopTree) {
+  private static Tree loopStatement(Tree loopTree) {
     if(loopTree.is(Tree.Kind.FOR_STATEMENT)) {
       return ((ForStatementTree) loopTree).statement();
     } else if(loopTree.is(Tree.Kind.DO_STATEMENT)) {
@@ -115,36 +114,32 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private boolean isStringConcatenation(AssignmentExpressionTree tree) {
-    return isString(tree.symbolType()) && isConcatenation(tree);
+    return tree.symbolType().is("java.lang.String") && isConcatenation(tree);
   }
 
-  private boolean isConcatenation(AssignmentExpressionTree tree) {
+  private static boolean isConcatenation(AssignmentExpressionTree tree) {
     return tree.is(Tree.Kind.PLUS_ASSIGNMENT) || (tree.is(Tree.Kind.ASSIGNMENT) && removeParenthesis(tree.expression()).is(Tree.Kind.PLUS)
       && concatenateVariable(tree.variable(), (BinaryExpressionTree) removeParenthesis(tree.expression()))
     );
   }
 
-  private boolean concatenateVariable(ExpressionTree variable, BinaryExpressionTree plus) {
+  private static boolean concatenateVariable(ExpressionTree variable, BinaryExpressionTree plus) {
     return concatenateVariable(variable, plus.leftOperand()) || concatenateVariable(variable, plus.rightOperand());
   }
 
-  private boolean concatenateVariable(ExpressionTree variable, ExpressionTree operand) {
+  private static boolean concatenateVariable(ExpressionTree variable, ExpressionTree operand) {
     if(operand.is(Tree.Kind.PLUS)) {
       return concatenateVariable(variable, (BinaryExpressionTree) operand);
     }
     return SyntacticEquivalence.areEquivalent(variable, operand);
   }
 
-  private Tree removeParenthesis(Tree tree) {
+  private static Tree removeParenthesis(Tree tree) {
     Tree result = tree;
     while(result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       result = ((ParenthesizedTree) result).expression();
     }
     return result;
-  }
-
-  private boolean isString(Type type) {
-    return type.is("java.lang.String");
   }
 
   @Override

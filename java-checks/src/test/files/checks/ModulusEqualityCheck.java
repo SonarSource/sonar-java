@@ -6,11 +6,11 @@ import java.util.Queue;
 class A {
 
   void myMethod(int x, int y, Integer z) {
-     x % 2 == 1; // Noncompliant
-     x % 2 == -1; // Noncompliant
-     2 % x == 1; // Noncompliant
-     1 == x % 2; // Noncompliant
-     z.intValue() % 2 == 1; // Noncompliant
+     x % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     x % 2 == -1; // Noncompliant {{The results of this modulus operation may not be negative.}}
+     2 % x == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     1 == x % 2; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     z.intValue() % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
      x % 2 == y;
      x % 2 == 0;
      x % 2 != 1;
@@ -26,8 +26,8 @@ class A {
     b = q.size() % 2 == 1; // Compliant
     b = 2 % l.size() == 1; // Compliant
 
-    b = a.hashCode() % 2 == 1; // Noncompliant
-    b = c.hashCode() % 2 == 1; // Noncompliant
-    b = s.indexOf("") % 2 == -1; // Noncompliant
+    b = a.hashCode() % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+    b = c.hashCode() % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+    b = s.indexOf("") % 2 == -1; // Noncompliant {{The results of this modulus operation may not be negative.}}
   }
 }

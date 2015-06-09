@@ -19,30 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CompareToReturnValueCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CompareToReturnValueCheck.java"),
-      new VisitorsBridge(new CompareToReturnValueCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Simply return -1")
-      .next().atLine(44)
-      .next().atLine(48)
-      .next().atLine(52)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CompareToReturnValueCheck.java", new CompareToReturnValueCheck());
   }
 
 }
