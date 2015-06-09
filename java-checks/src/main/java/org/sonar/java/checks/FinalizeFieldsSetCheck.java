@@ -66,11 +66,11 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     return isMethodNamedFinalize(tree) && hasNoParameters(tree);
   }
 
-  private boolean isMethodNamedFinalize(MethodTree tree) {
+  private static boolean isMethodNamedFinalize(MethodTree tree) {
     return "finalize".equals(tree.simpleName().name());
   }
 
-  private boolean hasNoParameters(MethodTree tree) {
+  private static boolean hasNoParameters(MethodTree tree) {
     return tree.parameters().isEmpty();
   }
 

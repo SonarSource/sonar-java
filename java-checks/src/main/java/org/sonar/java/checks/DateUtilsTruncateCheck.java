@@ -53,7 +53,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection {
     addIssue(mit, "Use \"Instant.truncatedTo\" instead.");
   }
 
-  private MethodMatcher truncateMethodMatcher(String firstParameterType) {
+  private static MethodMatcher truncateMethodMatcher(String firstParameterType) {
     return MethodMatcher.create()
       .typeDefinition("org.apache.commons.lang.time.DateUtils").name("truncate").addParameter(firstParameterType).addParameter("int");
   }

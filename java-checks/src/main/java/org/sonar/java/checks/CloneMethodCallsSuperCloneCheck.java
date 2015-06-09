@@ -69,7 +69,7 @@ public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isCloneMethod(Tree tree) {
+  private static boolean isCloneMethod(Tree tree) {
     if (!tree.is(Kind.METHOD)) {
       return false;
     }
@@ -77,7 +77,7 @@ public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
     return "clone".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty() && methodTree.block() != null;
   }
 
-  private boolean isSuperCloneCall(Tree tree) {
+  private static boolean isSuperCloneCall(Tree tree) {
     if (!tree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
@@ -89,7 +89,7 @@ public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
         isSuperClone((MemberSelectExpressionTree) mit.methodSelect());
   }
 
-  private boolean isSuperClone(MemberSelectExpressionTree tree) {
+  private static boolean isSuperClone(MemberSelectExpressionTree tree) {
     return "clone".equals(tree.identifier().name()) &&
         tree.expression().is(Kind.IDENTIFIER) &&
         "super".equals(((IdentifierTree) tree.expression()).name());

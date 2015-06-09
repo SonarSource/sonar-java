@@ -78,7 +78,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 
-  private boolean hasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
+  private static boolean hasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
     Collection<MethodSymbol> methods = filterMethods(newClassTypeSymbol.memberSymbols());
     if (methods.isEmpty()) {
       return false;
@@ -91,7 +91,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return superClassHasOnlyStaticMethods(newClassTypeSymbol);
   }
 
-  private boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
+  private static boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
     Type superClass = newClassTypeSymbol.superClass();
     if (superClass != null && !superClass.is("java.lang.Object")) {
       return hasOnlyStaticMethods(superClass.symbol());
@@ -99,7 +99,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return true;
   }
 
-  private Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
+  private static Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
     List<MethodSymbol> methods = Lists.newArrayList();
     for (Symbol symbol : symbols) {
       if (symbol.isMethodSymbol() && !isConstructor(symbol)) {
@@ -109,12 +109,12 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return methods;
   }
 
-  private boolean isConstructor(Symbol symbol) {
+  private static boolean isConstructor(Symbol symbol) {
     return "<init>".equals(symbol.name());
   }
 
   @Nullable
-  private String getNewClassName(Tree tree) {
+  private static String getNewClassName(Tree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree).name();
     } else if (tree.is(Kind.MEMBER_SELECT)) {

@@ -81,11 +81,11 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
     }
   }
 
-  private boolean isPrivateUnused(AsmMethod asmMethod) {
+  private static boolean isPrivateUnused(AsmMethod asmMethod) {
     return !asmMethod.isUsed() && asmMethod.isPrivate();
   }
 
-  private boolean isExcludedFromCheck(AsmMethod asmMethod) {
+  private static boolean isExcludedFromCheck(AsmMethod asmMethod) {
     return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
   }
 

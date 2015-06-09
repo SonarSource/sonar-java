@@ -169,11 +169,11 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isReturningNull(ReturnStatementTree tree) {
+  private static boolean isReturningNull(ReturnStatementTree tree) {
     return tree.expression() != null && tree.expression().is(Tree.Kind.NULL_LITERAL);
   }
 
-  private boolean isAllowingNull(MethodTree methodTree) {
+  private static boolean isAllowingNull(MethodTree methodTree) {
     for (AnnotationTree annotation : methodTree.modifiers().annotations()) {
       Type type = annotation.annotationType().symbolType();
       if (type.is("javax.annotation.Nullable") || type.is("javax.annotation.CheckForNull")) {

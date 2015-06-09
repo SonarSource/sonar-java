@@ -50,7 +50,7 @@ import java.util.Set;
 @SqaleConstantRemediation("1h")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private Set<Integer> reportedLines = new HashSet<Integer>();
+  private Set<Integer> reportedLines = new HashSet<>();
 
   private static final String DEFAULT_EXCLUDE = "";
 
@@ -83,11 +83,11 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
     }
   }
 
-  private boolean isSunClass(String reference) {
+  private static boolean isSunClass(String reference) {
     return "com.sun".equals(reference) || reference.matches("sun\\.[^\\.]*");
   }
 
-  private String merge(ExpressionTree tree) {
+  private static String merge(ExpressionTree tree) {
     Deque<String> pieces = new LinkedList<String>();
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {

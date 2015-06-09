@@ -73,20 +73,20 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isOwnedBySerializable(Symbol.MethodSymbol methodSymbol) {
+  private static boolean isOwnedBySerializable(Symbol.MethodSymbol methodSymbol) {
     Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
     return owner.type().isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean hasSignature(Symbol.MethodSymbol methodSymbol, String name, String paramType) {
+  private static boolean hasSignature(Symbol.MethodSymbol methodSymbol, String name, String paramType) {
     return name.equals(methodSymbol.name()) && hasSingleParam(methodSymbol, paramType);
   }
 
-  private boolean hasSignature(Symbol.MethodSymbol methodSymbol, String name) {
+  private static boolean hasSignature(Symbol.MethodSymbol methodSymbol, String name) {
     return name.equals(methodSymbol.name()) && methodSymbol.parameterTypes().isEmpty();
   }
 
-  private boolean hasSingleParam(Symbol.MethodSymbol methodSymbol, String searchedParamType) {
+  private static boolean hasSingleParam(Symbol.MethodSymbol methodSymbol, String searchedParamType) {
     List<Type> parametersTypes = methodSymbol.parameterTypes();
     return parametersTypes.size() == 1 && parametersTypes.get(0).is(searchedParamType);
   }

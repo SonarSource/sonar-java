@@ -90,7 +90,7 @@ public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol.TypeSymbol getSuperclass(Symbol.TypeSymbol symbol) {
+  private static Symbol.TypeSymbol getSuperclass(Symbol.TypeSymbol symbol) {
     Type superType = symbol.superClass();
     if (superType != null) {
       return superType.symbol();

@@ -58,12 +58,12 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isDirectSubtypeOfThread(Symbol.TypeSymbol classSymbol) {
+  private static boolean isDirectSubtypeOfThread(Symbol.TypeSymbol classSymbol) {
     Type superClass = classSymbol.superClass();
     return superClass != null && superClass.is("java.lang.Thread");
   }
 
-  private boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
+  private static boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
     Collection<Symbol> runSymbols = classSymbol.lookupSymbols("run");
     boolean overridesRunMethod = false;
     for (Symbol run : runSymbols) {

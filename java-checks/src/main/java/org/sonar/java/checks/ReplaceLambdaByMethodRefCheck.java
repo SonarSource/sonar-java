@@ -33,6 +33,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
+
 @Rule(
   key = "S1612",
   name = "Replace lambdas with method references when possible",
@@ -58,11 +60,11 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     super.visitLambdaExpression(tree);
   }
 
-  private boolean isMethodInvocation(Tree tree) {
+  private static boolean isMethodInvocation(@Nullable Tree tree) {
     return tree != null && tree.is(Tree.Kind.METHOD_INVOCATION);
   }
 
-  private boolean isBlockInvokingMethod(Tree tree) {
+  private static boolean isBlockInvokingMethod(Tree tree) {
     if (isBlockWithOneStatement(tree)) {
       Tree statement = ((BlockTree) tree).body().get(0);
       return isExpressionStatementInvokingMethod(statement) || isReturnStatementInvokingMethod(statement);
@@ -70,15 +72,15 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     return false;
   }
 
-  private boolean isReturnStatementInvokingMethod(Tree statement) {
+  private static boolean isReturnStatementInvokingMethod(Tree statement) {
     return statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression());
   }
 
-  private boolean isExpressionStatementInvokingMethod(Tree statement) {
+  private static boolean isExpressionStatementInvokingMethod(Tree statement) {
     return statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression());
   }
 
-  private boolean isBlockWithOneStatement(Tree tree) {
+  private static boolean isBlockWithOneStatement(Tree tree) {
     return tree.is(Tree.Kind.BLOCK) && ((BlockTree) tree).body().size() == 1;
   }
 

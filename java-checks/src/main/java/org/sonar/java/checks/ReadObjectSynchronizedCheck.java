@@ -63,15 +63,15 @@ public class ReadObjectSynchronizedCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean implementsSerializable(ClassTree classTree) {
+  private static boolean implementsSerializable(ClassTree classTree) {
     return classTree.symbol().type().isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isSynchronized(MethodTree methodTree) {
+  private static boolean isSynchronized(MethodTree methodTree) {
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.SYNCHRONIZED);
   }
 
-  private boolean isReadObject(MethodTree methodTree) {
+  private static boolean isReadObject(MethodTree methodTree) {
     if (!"readObject".equals(methodTree.simpleName().name())) {
       return false;
     }

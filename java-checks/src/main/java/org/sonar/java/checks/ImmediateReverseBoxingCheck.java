@@ -66,8 +66,8 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     .put("java.lang.Short", "short")
     .build();
 
-  private final MethodInvocationMatcherCollection unboxingInvocationMatchers = unboxingInvocationMatchers();
-  private final MethodInvocationMatcherCollection valueOfInvocationMatchers = valueOfInvocationMatchers();
+  private static final MethodInvocationMatcherCollection unboxingInvocationMatchers = unboxingInvocationMatchers();
+  private static final MethodInvocationMatcherCollection valueOfInvocationMatchers = valueOfInvocationMatchers();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -154,7 +154,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Symbol.TypeSymbol wrapperClassSymbol(NewClassTree newClassTree) {
+  private static Symbol.TypeSymbol wrapperClassSymbol(NewClassTree newClassTree) {
     Symbol.TypeSymbol classSymbol = newClassTree.symbolType().symbol();
     if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(newClassTree.symbolType().fullyQualifiedName())) {
       return classSymbol;
@@ -199,7 +199,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private MethodInvocationMatcherCollection unboxingInvocationMatchers() {
+  private static MethodInvocationMatcherCollection unboxingInvocationMatchers() {
     MethodInvocationMatcherCollection matchers = MethodInvocationMatcherCollection.create();
     for (String primitiveType : PRIMITIVE_TYPES_BY_WRAPPER.values()) {
       matchers.add(
@@ -210,7 +210,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     return matchers;
   }
 
-  private MethodInvocationMatcherCollection valueOfInvocationMatchers() {
+  private static MethodInvocationMatcherCollection valueOfInvocationMatchers() {
     MethodInvocationMatcherCollection matchers = MethodInvocationMatcherCollection.create();
     for (Entry<String, String> primitiveMapping : PRIMITIVE_TYPES_BY_WRAPPER.entrySet()) {
       matchers.add(
@@ -222,11 +222,11 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     return matchers;
   }
 
-  private boolean isUnboxingMethodInvocation(MethodInvocationTree mit) {
+  private static boolean isUnboxingMethodInvocation(MethodInvocationTree mit) {
     return unboxingInvocationMatchers.anyMatch(mit);
   }
 
-  private boolean isValueOfInvocation(MethodInvocationTree mit) {
+  private static boolean isValueOfInvocation(MethodInvocationTree mit) {
     return valueOfInvocationMatchers.anyMatch(mit);
   }
 }

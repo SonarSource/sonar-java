@@ -87,7 +87,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean staticNonFinal(VariableTree variableTree) {
+  private static boolean staticNonFinal(VariableTree variableTree) {
     return isFinal(variableTree) && !isStatic(variableTree);
   }
 
@@ -108,7 +108,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
+  private static boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
     for (Tree.Kind kind : kinds) {
       if (tree.is(kind)) {
         return true;
