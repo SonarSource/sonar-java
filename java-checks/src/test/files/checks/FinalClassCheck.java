@@ -1,6 +1,6 @@
 public final class PrivateConstructorFinalClass {  // Compliant, declared final
 
-  private PrivateConstructorClass() {
+  private PrivateConstructorFinalClass() {
     // ...
   }
 
@@ -12,7 +12,7 @@ public final class PrivateConstructorFinalClass {  // Compliant, declared final
 
 public class PrivateConstructorNotFinalClass {  // Noncompliant {{Make this class "final" or add a public constructor.}}
 
-  private PrivateConstructorClass() {
+  private PrivateConstructorNotFinalClass() {
     // ...
   }
 
@@ -23,11 +23,11 @@ public class PrivateConstructorNotFinalClass {  // Noncompliant {{Make this clas
 
 public class PrivateAndPublicConstructorClass { // Compliant, one public constructor
 
-  private PrivateConstructorClass() {
+  private PrivateAndPublicConstructorClass() {
     // ...
   }
 
-  public PrivateConstructorClass(int i) {
+  public PrivateAndPublicConstructorClass(int i) {
     // ...
   }
 
@@ -38,7 +38,7 @@ public class PrivateAndPublicConstructorClass { // Compliant, one public constru
 
 public class ProtectedConstructorClass {  // Compliant, all constructors are not private
 
-  protected PrivateConstructorClass() {
+  protected ProtectedConstructorClass() {
     // ...
   }
 
