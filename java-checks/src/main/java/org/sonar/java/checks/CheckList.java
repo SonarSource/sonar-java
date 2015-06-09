@@ -56,6 +56,7 @@ public final class CheckList {
       .add(BadInterfaceName_S00114_Check.class)
       .add(BadConstantName_S00115_Check.class)
       .add(BadFieldName_S00116_Check.class)
+      .add(BadFieldNameStaticNonFinalCheck.class)
       .add(BadLocalVariableName_S00117_Check.class)
       .add(BadAbstractClassName_S00118_Check.class)
       .add(BadTypeParameterName_S00119_Check.class)

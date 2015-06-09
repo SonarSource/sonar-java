@@ -1,12 +1,12 @@
 class BadFieldName {
-  public int BAD_FIELD_NAME;
+  public int BAD_FIELD_NAME; // Noncompliant {{Rename this field "BAD_FIELD_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
   public int goodFieldName;
   public static int STATIC;
 
   enum Enum {
     CONSTANT;
 
-    int BAD_FIELD_NAME;
+    int BAD_FIELD_NAME; // Noncompliant {{Rename this field "BAD_FIELD_NAME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
     int goodFieldName;
   }
 
