@@ -231,7 +231,7 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
   }
 
   @CheckForNull
-  private SyntaxToken getFirstModifierToken(ModifiersTree modifiers) {
+  private static SyntaxToken getFirstModifierToken(ModifiersTree modifiers) {
     if (!modifiers.isEmpty()) {
       ModifierTree firstModifier = modifiers.get(0);
       if (firstModifier.is(Tree.Kind.ANNOTATION)) {
