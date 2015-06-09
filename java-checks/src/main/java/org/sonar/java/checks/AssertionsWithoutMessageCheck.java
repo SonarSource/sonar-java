@@ -79,19 +79,19 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean isAssertingOnStringWithNoMessage(MethodInvocationTree mit) {
+  private static boolean isAssertingOnStringWithNoMessage(MethodInvocationTree mit) {
     return isAssertWithTwoParams(mit) || isAssertWithOneParam(mit);
   }
 
-  private boolean isAssertWithOneParam(MethodInvocationTree mit) {
+  private static boolean isAssertWithOneParam(MethodInvocationTree mit) {
     return ASSERT_METHODS_WITH_ONE_PARAM.contains(mit.symbol().name()) && mit.arguments().size() == 1;
   }
 
-  private boolean isAssertWithTwoParams(MethodInvocationTree mit) {
+  private static boolean isAssertWithTwoParams(MethodInvocationTree mit) {
     return ASSERT_METHODS_WITH_TWO_PARAMS.contains(mit.symbol().name()) && mit.arguments().size() == 2;
   }
 
-  private boolean isString(ExpressionTree expressionTree) {
+  private static boolean isString(ExpressionTree expressionTree) {
     return expressionTree.symbolType().is("java.lang.String");
   }
 

@@ -13,10 +13,10 @@ class A {
     cookie.setSecure(true);
   }
   void baz() {
-    Cookie cookie = new Cookie("name", "value"); //Non Compliant
+    Cookie cookie = new Cookie("name", "value"); // Noncompliant {{Add the "secure" attribute to this cookie}}
   }
   void qix() {
-    Cookie cookie = new Cookie("name", "value"); //Non Compliant
+    Cookie cookie = new Cookie("name", "value"); // Noncompliant {{Add the "secure" attribute to this cookie}}
     cookie.setSecure(false);
   }
 

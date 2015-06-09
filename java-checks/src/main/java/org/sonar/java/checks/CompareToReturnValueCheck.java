@@ -67,16 +67,16 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
     return isNamedCompareTo(tree) && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
   }
 
-  private boolean isNamedCompareTo(MethodTree tree) {
+  private static boolean isNamedCompareTo(MethodTree tree) {
     return "compareTo".equals(tree.simpleName().name());
   }
 
-  private boolean hasOneNonPrimitiveParameter(MethodTree methodTree) {
+  private static boolean hasOneNonPrimitiveParameter(MethodTree methodTree) {
     List<VariableTree> parameters = methodTree.parameters();
     return parameters.size() == 1 && !parameters.get(0).type().symbolType().isPrimitive();
   }
 
-  private boolean returnsInt(MethodTree methodTree) {
+  private static boolean returnsInt(MethodTree methodTree) {
     TypeTree typeTree = methodTree.returnType();
     return typeTree != null && typeTree.symbolType().isPrimitive(Type.Primitives.INT);
   }

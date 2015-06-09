@@ -82,6 +82,9 @@ public class JavaSquid implements SourceCodeSearchEngine {
     List<File> testClasspath = Lists.newArrayList();
     Collection<CodeVisitor> testCheckClasses = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
     if(sonarComponents != null) {
+      visitorsToBridge = Iterables.concat(
+        visitorsToBridge, 
+        Arrays.asList(new FileLinesVisitor(sonarComponents, conf.getCharset())));
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
       testCheckClasses.addAll(sonarComponents.testCheckClasses());
@@ -110,7 +113,6 @@ public class JavaSquid implements SourceCodeSearchEngine {
   private static void setupAstScanner(AstScanner astScanner, Iterable<CodeVisitor> visitorsToBridge,
                                List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
     if(sonarComponents != null) {
-      astScanner.accept(new FileLinesVisitor(sonarComponents, conf.getCharset()));
       astScanner.accept(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
     }
     VisitorsBridge visitorsBridgeTest = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);

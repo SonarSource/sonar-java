@@ -75,16 +75,16 @@ public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisito
     }
   }
 
-  private boolean isCompareToMethod(MethodTree method) {
+  private static boolean isCompareToMethod(MethodTree method) {
     String name = method.simpleName().name();
     return "compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1;
   }
 
-  private boolean isEqualsMethod(MethodTree method) {
+  private static boolean isEqualsMethod(MethodTree method) {
     return ((MethodTreeImpl) method).isEqualsMethod();
   }
 
-  private boolean isComparable(ClassTree tree) {
+  private static boolean isComparable(ClassTree tree) {
     for (Type type : tree.symbol().interfaces()) {
       if (type.is("java.lang.Comparable")) {
         return true;
@@ -93,7 +93,7 @@ public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisito
     return false;
   }
 
-  private boolean returnsInt(MethodTree tree) {
+  private static boolean returnsInt(MethodTree tree) {
     TypeTree typeTree = tree.returnType();
     return typeTree != null && typeTree.symbolType().isPrimitive(Type.Primitives.INT);
   }

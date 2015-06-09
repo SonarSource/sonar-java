@@ -90,20 +90,20 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isInvalidShift(long reducedNumberBits, long numberBits, int base) {
+  private static boolean isInvalidShift(long reducedNumberBits, long numberBits, int base) {
     return reducedNumberBits == 0L || tooManyBits(numberBits, base);
   }
 
-  private boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
+  private static boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
     return isLiteralValue(binaryExpressionTree.leftOperand(), 1L) && isLiteralValue(binaryExpressionTree.rightOperand(), 0L);
   }
 
-  private boolean isLiteralValue(ExpressionTree tree, long value) {
+  private static boolean isLiteralValue(ExpressionTree tree, long value) {
     Long evaluatedValue = LiteralUtils.longLiteralValue(tree);
     return evaluatedValue != null && evaluatedValue.longValue() == value;
   }
 
-  private String getMessage(long numberBits, long reducedNumberBits, int base, @Nullable String identifier) {
+  private static String getMessage(long numberBits, long reducedNumberBits, int base, @Nullable String identifier) {
     if (reducedNumberBits == 0L) {
       return "Remove this useless shift";
     } else if (base == 32) {
@@ -117,19 +117,19 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private int getNumericalBase(ExpressionTree tree) {
+  private static int getNumericalBase(ExpressionTree tree) {
     if (tree.symbolType().is("int")) {
       return 32;
     }
     return 64;
   }
 
-  private boolean tooManyBits(long numberBits, int base) {
+  private static boolean tooManyBits(long numberBits, int base) {
     return Math.abs(numberBits) >= base;
   }
 
   @CheckForNull
-  private String getIdentifierName(ExpressionTree tree) {
+  private static String getIdentifierName(ExpressionTree tree) {
     if (tree.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
       return getIdentifierName(((ArrayAccessExpressionTree) tree).expression());
     } else if (tree.is(Kind.IDENTIFIER)) {

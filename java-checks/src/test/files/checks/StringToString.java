@@ -26,6 +26,11 @@ public class TestClass {
     this.inner.field.toString(); // Noncompliant {{"field" is already a string, there's no need to call "toString()" on it.}}
 
     toString(); // Compliant
+    foo()[0].toString(); // Noncompliant {{There's no need to call "toString()" on an array of String.}}
+    bar()[0][0].toString(); // Noncompliant {{There's no need to call "toString()" on an array of String.}}
   }
+
+  String[] foo() {}
+  String[][] bar() {}
 
 }

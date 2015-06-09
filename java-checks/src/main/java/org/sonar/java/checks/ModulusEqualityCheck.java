@@ -108,7 +108,7 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isSizeAccessor(ExpressionTree expressionTree) {
+  private static boolean isSizeAccessor(ExpressionTree expressionTree) {
     if (expressionTree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expressionTree;
       Type type = memberSelectExpressionTree.expression().symbolType();
@@ -121,15 +121,15 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isArrayLength(Type type, String memberName) {
+  private static boolean isArrayLength(Type type, String memberName) {
     return type.isArray() && "length".equals(memberName);
   }
 
-  private boolean isStringLength(Type type, String memberName) {
+  private static boolean isStringLength(Type type, String memberName) {
     return type.is("java.lang.String") && "length".equals(memberName);
   }
 
-  private boolean isCollectionSize(Type type, String memberName) {
+  private static boolean isCollectionSize(Type type, String memberName) {
     return type.isSubtypeOf("java.util.Collection") && "size".equals(memberName);
   }
 }

@@ -61,12 +61,12 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree) {
+  private static boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree) {
     return isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_AND, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN_OR_EQUAL_TO)
         || isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_OR, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
   }
 
-  private boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree, Tree.Kind indirectOperator, Tree.Kind comparator1, Tree.Kind comparator2) {
+  private static boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree, Tree.Kind indirectOperator, Tree.Kind comparator1, Tree.Kind comparator2) {
     if (binaryExpressionTree.is(indirectOperator) && binaryExpressionTree.leftOperand().is(comparator1, comparator2)) {
       BinaryExpressionTree leftOp = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
       if (binaryExpressionTree.rightOperand().is(comparator1, comparator2)) {
@@ -86,11 +86,11 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
   }
 
 
-  private boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
+  private static boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
     return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand());
   }
 
-  private boolean hasFloatingType(ExpressionTree expressionTree) {
+  private static boolean hasFloatingType(ExpressionTree expressionTree) {
     return expressionTree.symbolType().isPrimitive(Type.Primitives.FLOAT) || expressionTree.symbolType().isPrimitive(Type.Primitives.DOUBLE);
   }
 

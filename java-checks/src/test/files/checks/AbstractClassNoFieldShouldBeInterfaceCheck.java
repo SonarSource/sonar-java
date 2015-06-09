@@ -3,7 +3,7 @@ abstract class A {
 
   abstract void method();
 }
-abstract class B {
+abstract class B { // Noncompliant {{Convert the abstract class "B" into an interface}}
   int method(){
     return 1;
   }
