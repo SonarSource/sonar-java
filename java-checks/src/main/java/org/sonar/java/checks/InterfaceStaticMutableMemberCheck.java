@@ -64,19 +64,19 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isStaticMember(VariableTree variableTree) {
+  private static boolean isStaticMember(VariableTree variableTree) {
     return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC);
   }
 
-  private boolean isMutableMember(VariableTree variableTree) {
+  private static boolean isMutableMember(VariableTree variableTree) {
     return isArray(variableTree.type()) || isDateOrCollection(variableTree.type().symbolType());
   }
 
-  private boolean isArray(Tree typeTree) {
+  private static boolean isArray(Tree typeTree) {
     return typeTree.is(Kind.ARRAY_TYPE);
   }
 
-  private boolean isDateOrCollection(Type variableSymbolType) {
+  private static boolean isDateOrCollection(Type variableSymbolType) {
     return variableSymbolType.is("java.util.Date") ||
         (variableSymbolType.isSubtypeOf("java.util.Collection") && !variableSymbolType.isSubtypeOf("com.google.common.collect.ImmutableCollection"));
   }

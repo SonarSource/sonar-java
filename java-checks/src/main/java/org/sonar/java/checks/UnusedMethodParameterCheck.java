@@ -28,7 +28,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -61,8 +60,7 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
     if (hasSemantic() && methodTree.block() != null && !isExcluded(methodTree)) {
       List<String> unused = Lists.newArrayList();
       for (VariableTree var : methodTree.parameters()) {
-        Symbol sym = var.symbol();
-        if (sym != null && /*getSemanticModel().getUsages(sym).isEmpty()*/sym.usages().isEmpty()) {
+        if (var.symbol().usages().isEmpty()) {
           unused.add(var.simpleName().name());
         }
       }
@@ -72,19 +70,19 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isExcluded(MethodTree tree) {
+  private static boolean isExcluded(MethodTree tree) {
     return ((MethodTreeImpl) tree).isMainMethod() || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
   }
 
-  private boolean isDesignedForExtension(MethodTree tree) {
+  private static boolean isDesignedForExtension(MethodTree tree) {
     return !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE) && isEmptyOrThrowStatement(tree.block());
   }
 
-  private boolean isEmptyOrThrowStatement(BlockTree block) {
+  private static boolean isEmptyOrThrowStatement(BlockTree block) {
     return block.body().isEmpty() || (block.body().size() == 1 && block.body().get(0).is(Tree.Kind.THROW_STATEMENT));
   }
 
-  private boolean isSerializableMethod(MethodTree methodTree) {
+  private static boolean isSerializableMethod(MethodTree methodTree) {
     boolean result = false;
     // FIXME detect methods based on type of arg and throws, not arity.
     if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
@@ -94,7 +92,7 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
     return result;
   }
 
-  private boolean isOverriding(MethodTree tree) {
+  private static boolean isOverriding(MethodTree tree) {
     // if overriding cannot be determined, we consider it is overriding to avoid FP.
     return !BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
   }
