@@ -33,4 +33,6 @@ public interface SyntaxTrivia extends Tree {
 
   int startLine();
 
+  int column();
+
 }
