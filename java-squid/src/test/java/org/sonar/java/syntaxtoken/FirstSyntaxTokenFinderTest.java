@@ -25,6 +25,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -78,6 +79,11 @@ public class FirstSyntaxTokenFinderTest {
     ClassTree firstClass = getFirstClass(compilationUnit);
     firstToken = getFirstSyntaxToken(firstClass.modifiers().get(0));
     assertThat(firstToken.text()).isEqualTo("@");
+
+    compilationUnit = getCompilationUnit("class A { A a = new A(){}; }");
+    NewClassTree newClassTree = (NewClassTree) getFirstVariable(getFirstClass(compilationUnit)).initializer();
+    firstToken = getFirstSyntaxToken(newClassTree.classBody());
+    assertThat(firstToken.text()).isEqualTo("{");
   }
 
   @Test

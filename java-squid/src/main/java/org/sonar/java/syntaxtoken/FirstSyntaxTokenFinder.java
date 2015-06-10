@@ -248,8 +248,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
     SyntaxToken firstModifierToken = getFirstModifierToken(tree.modifiers());
     if (firstModifierToken != null) {
       firstSyntaxToken = firstModifierToken;
-    } else {
+    } else if (tree.declarationKeyword() != null) {
       firstSyntaxToken = tree.declarationKeyword();
+    } else {
+      // case of anonymous classes
+      firstSyntaxToken = tree.openBraceToken();
     }
   }
 
