@@ -1,0 +1,28 @@
+<p>Declaring multiple variable on one line is difficult to read.</p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+class MyClass {
+
+  private int fieldOne, fieldTwo;
+
+  public void method(){
+    int varOne, varTwo;
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+class MyClass {
+
+  private int fieldOne;
+  private int fieldTwo;
+
+  public void method(){
+    int varOne;
+    int varTwo;
+  }
+}
+</pre>
+
