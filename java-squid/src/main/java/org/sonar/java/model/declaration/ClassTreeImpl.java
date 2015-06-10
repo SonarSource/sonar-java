@@ -188,6 +188,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return symbol;
   }
 
+  @Nullable
   @Override
   public SyntaxToken declarationKeyword() {
     return declarationKeyowrd;

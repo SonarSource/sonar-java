@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -59,6 +60,7 @@ import java.util.List;
 @Beta
 public interface ClassTree extends StatementTree {
 
+  @Nullable
   SyntaxToken declarationKeyword();
 
   @Nullable
