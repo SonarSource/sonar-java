@@ -339,6 +339,7 @@ public final class CheckList {
       .add(InnerStaticClassesCheck.class)
       .add(WildcardImportsShouldNotBeUsedCheck.class)
       .add(FinalClassCheck.class)
+      .add(OneDeclarationPerLineCheck.class)
       .build();
   }
 
@@ -356,3 +357,4 @@ public final class CheckList {
         .build();
   }
 }
+
