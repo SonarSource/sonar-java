@@ -58,7 +58,7 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean declaresCloneMethod(Symbol.TypeSymbol classSymbol) {
+  private static boolean declaresCloneMethod(Symbol.TypeSymbol classSymbol) {
     for (Symbol memberSymbol : classSymbol.lookupSymbols("clone")) {
       if (memberSymbol.isMethodSymbol()) {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) memberSymbol;
@@ -70,7 +70,7 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCloneable(ClassTree classTree) {
+  private static boolean isCloneable(ClassTree classTree) {
     for (TypeTree superInterface : classTree.superInterfaces()) {
       if (superInterface.symbolType().is("java.lang.Cloneable")) {
         return true;

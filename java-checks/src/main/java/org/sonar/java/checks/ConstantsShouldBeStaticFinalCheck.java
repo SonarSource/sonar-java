@@ -96,7 +96,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     nestedClassesLevel--;
   }
 
-  private boolean hasConstantInitializer(VariableTree variableTree) {
+  private static boolean hasConstantInitializer(VariableTree variableTree) {
     Tree init = variableTree.initializer();
     if (init != null) {
       if (init.is(Tree.Kind.NEW_ARRAY)) {

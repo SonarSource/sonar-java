@@ -70,7 +70,7 @@ public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFile
     super.visitClass(tree);
   }
 
-  private boolean isJavaLang(ExpressionTree tree) {
+  private static boolean isJavaLang(ExpressionTree tree) {
     if (tree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       if (!"lang".equals(mse.identifier().name())) {

@@ -62,7 +62,7 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinalizeDeclaration(MethodTree tree) {
+  private static boolean isFinalizeDeclaration(MethodTree tree) {
     return isMethodNamedFinalize(tree) && hasNoParameters(tree);
   }
 

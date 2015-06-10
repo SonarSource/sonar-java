@@ -61,7 +61,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     }
   }
 
-  private boolean hasAtLeastOneField(ClassTree classTree) {
+  private static boolean hasAtLeastOneField(ClassTree classTree) {
     for (Tree member : classTree.members()) {
       if (isField(member)) {
         return true;
@@ -70,15 +70,15 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     return false;
   }
 
-  private boolean isField(Tree tree) {
+  private static boolean isField(Tree tree) {
     return tree.is(Kind.VARIABLE) && !ModifiersUtils.hasModifier(((VariableTree) tree).modifiers(), Modifier.STATIC);
   }
 
-  private boolean implementsEquals(ClassTree classTree) {
+  private static boolean implementsEquals(ClassTree classTree) {
     return hasNotFinalEqualsMethod(classTree.symbol());
   }
 
-  private boolean parentClassImplementsEquals(ClassTree tree) {
+  private static boolean parentClassImplementsEquals(ClassTree tree) {
     TypeTree superClass = tree.superClass();
     if (superClass != null) {
       Type superClassType = superClass.symbolType();
@@ -94,7 +94,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     return false;
   }
 
-  private boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
+  private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
     for (Symbol symbol : superClassSymbol.lookupSymbols("equals")) {
       if (isEqualsMethod(symbol) && !symbol.isFinal()) {
         return true;
@@ -103,7 +103,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     return false;
   }
 
-  private boolean isEqualsMethod(Symbol symbol) {
+  private static boolean isEqualsMethod(Symbol symbol) {
     if (symbol.isMethodSymbol()) {
       List<Type> parameterTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
       return !parameterTypes.isEmpty() && parameterTypes.get(0).is("java.lang.Object");

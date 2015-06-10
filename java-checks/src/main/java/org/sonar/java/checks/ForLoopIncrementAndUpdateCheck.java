@@ -73,13 +73,13 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Collection<Symbol> getUpdatedSymbols(ForStatementTree forStatementTree) {
+  private static Collection<Symbol> getUpdatedSymbols(ForStatementTree forStatementTree) {
     UpdateVisitor updateVisitor = new UpdateVisitor();
     forStatementTree.accept(updateVisitor);
     return updateVisitor.symbols;
   }
 
-  private String getSymbols(Collection<Symbol> updateSymbols) {
+  private static String getSymbols(Collection<Symbol> updateSymbols) {
     List<String> names = Lists.newArrayList();
     for (Symbol updateSymbol : updateSymbols) {
       names.add(updateSymbol.name());
