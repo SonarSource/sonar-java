@@ -29,6 +29,7 @@ import org.sonar.java.ast.parser.AstNodeReflector;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -127,7 +128,11 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public int getLine() {
-    return astNode.getTokenLine();
+    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(this);
+    if (firstSyntaxToken == null) {
+      return -1;
+    }
+    return firstSyntaxToken.line();
   }
 
   @Override

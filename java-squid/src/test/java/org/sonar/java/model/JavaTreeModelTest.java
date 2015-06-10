@@ -110,6 +110,16 @@ public class JavaTreeModelTest {
   }
 
   @Test
+  public void line_of_tree() throws Exception {
+    CompilationUnitTree empty = (CompilationUnitTree) p.parse("");
+    assertThat(((JavaTree) empty).getLine()).isEqualTo(-1);
+    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A {}");
+    ClassTree classTree = (ClassTree) cut.types().get(0);
+    assertThat(((JavaTree) classTree).getLine()).isEqualTo(1);
+    assertThat(((JavaTree) classTree.modifiers()).getLine()).isEqualTo(-1);
+  }
+
+  @Test
   public void integration_test() {
     Iterable<File> files = Iterables.concat(
         FileUtils.listFiles(new File("src/main/java/"), new String[]{"java"}, true),
