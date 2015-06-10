@@ -19,31 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class HiddenFieldCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/HiddenFieldCheck.java"), new VisitorsBridge(new HiddenFieldCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("Rename \"foo\" which hides the field declared at line 3.")
-        .next().atLine(42).withMessage("Rename \"bar\" which hides the field declared at line 4.")
-        .next().atLine(59).withMessage("Rename \"bar\" which hides the field declared at line 55.")
-        .next().atLine(66).withMessage("Rename \"foo\" which hides the field declared at line 3.")
-        .next().atLine(67)
-        .next().atLine(87)
-        .next().atLine(88);
+    JavaCheckVerifier.verify("src/test/files/checks/HiddenFieldCheck.java", new HiddenFieldCheck());
   }
 
 }

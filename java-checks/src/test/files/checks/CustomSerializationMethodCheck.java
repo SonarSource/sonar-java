@@ -14,13 +14,13 @@ class A implements Serializable { // all compliant
 }
 
 class B implements Serializable { // non private methods
-  void writeObject(ObjectOutputStream out) throws IOException {} // Noncompliant
+  void writeObject(ObjectOutputStream out) throws IOException {} // Noncompliant {{Make "writeObject" "private".}}
   void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {} // Noncompliant
   void readObjectNoData() throws ObjectStreamException {} // Noncompliant
 }
 
 class C implements Serializable { // static methods
-  private static void writeObject(ObjectOutputStream out) throws IOException {} // Noncompliant
+  private static void writeObject(ObjectOutputStream out) throws IOException {} // Noncompliant {{The "static" modifier should not be applied to "writeObject".}}
   private static void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {} // Noncompliant
   private static void readObjectNoData() throws ObjectStreamException {} // Noncompliant
   static Object writeReplace() throws ObjectStreamException {} // Noncompliant
@@ -36,7 +36,7 @@ class D implements Serializable { // wrong exceptions: compliant
 }
 
 class E implements Serializable { // invalid return type
-  Unknown writeReplace() throws ObjectStreamException {} // Noncompliant
+  Unknown writeReplace() throws ObjectStreamException {} // Noncompliant {{"writeReplace" should return "java.lang.Object".}}
   String readResolve() throws ObjectStreamException {} // Noncompliant
 }
 

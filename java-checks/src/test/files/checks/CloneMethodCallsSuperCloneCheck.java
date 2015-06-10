@@ -1,6 +1,6 @@
 class A {
   @Override
-  protected A clone() throws CloneNotSupportedException { // Non-Compliant
+  protected A clone() throws CloneNotSupportedException { // Noncompliant {{Use super.clone() to create and seed the cloned instance to be returned.}}
     return new A();
   }
 
@@ -43,14 +43,14 @@ class E {
 
 class F {
   @Override
-  protected Object clone() throws CloneNotSupportedException { // Non-Compliant
+  protected Object clone() throws CloneNotSupportedException { // Noncompliant {{Use super.clone() to create and seed the cloned instance to be returned.}}
     return super.toString();
   }
 }
 
 class G {
   @Override
-  protected Object clone() throws CloneNotSupportedException { // Non-Compliant
+  protected Object clone() throws CloneNotSupportedException { // Noncompliant {{Use super.clone() to create and seed the cloned instance to be returned.}}
     super();
     super.clone;
     new Foo().super.clone();

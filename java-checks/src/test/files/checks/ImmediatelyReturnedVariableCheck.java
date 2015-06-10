@@ -1,12 +1,12 @@
 class A{
 
   public long computeDurationInMilliseconds() {
-    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000 ;
+    long duration = (((hours * 60) + minutes) * 60 + seconds ) * 1000 ; // Noncompliant {{Immediately return this expression instead of assigning it to the temporary variable "duration".}}
     return duration;
   }
 
   public void doSomething() {
-    RuntimeException myException = new RuntimeException();
+    RuntimeException myException = new RuntimeException(); // Noncompliant {{Immediately throw this expression instead of assigning it to the temporary variable "myException".}}
     throw myException;
   }
 

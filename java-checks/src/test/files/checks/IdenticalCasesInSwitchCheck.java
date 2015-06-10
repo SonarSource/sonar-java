@@ -8,11 +8,11 @@ class A {
         System.out.println("bar"); //Compliant
         break;
       case 3:
-      case 4:
-        System.out.println("plop"); //Non-Compliant
+      case 4: // Noncompliant {{Either merge this case with the identical one on line "4" or change one of the implementations.}}
+        System.out.println("plop");
         break;
-      case 5:
-        System.out.println("plop"); //Non-Compliant
+      case 5: // Noncompliant {{Either merge this case with the identical one on line "4" or change one of the implementations.}}
+        System.out.println("plop");
         break;
     }
   }

@@ -4,7 +4,7 @@ public class HiddenFieldCheck extends MyBaseClass {
   public int bar;
 
   {
-    int foo = this.foo; // Non-Compliant
+    int foo = this.foo; // Noncompliant {{Rename "foo" which hides the field declared at line 3.}}
     int ok = 0; // Compliant
     System.out.println(foo + ok);
   }
@@ -39,7 +39,7 @@ public class HiddenFieldCheck extends MyBaseClass {
 
       @Override
       public void foo() {
-        int bar = 0; // Non-Compliant
+        int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 4.}}
         int otherBase1 = 0; // Compliant - limitation
         System.out.println(bar + otherBase1);
       }
@@ -56,15 +56,15 @@ public class HiddenFieldCheck extends MyBaseClass {
     int myInnerClass1;
 
     public void foo() {
-      int bar = 0; // Non-Compliant
+      int bar = 0; // Noncompliant {{Rename "bar" which hides the field declared at line 55.}}
       System.out.println(bar);
     }
 
     public class MyInnerInnerClass {
 
       public void foo() {
-        int foo = 0; // Non-Compliant
-        int myInnerClass1 = 0; // Non-Compliant
+        int foo = 0; // Noncompliant {{Rename "foo" which hides the field declared at line 3.}}
+        int myInnerClass1 = 0; // Noncompliant
         System.out.println(foo + myInnerClass1);
       }
 
@@ -84,8 +84,8 @@ class MyBaseClass {
   }
 
   public void method2() {
-    int base1 = 0; // Non-Compliant
-    int base2 = 0; // Non-Compliant
+    int base1 = 0; // Noncompliant
+    int base2 = 0; // Noncompliant
     System.out.println(base1 + base2);
   }
 

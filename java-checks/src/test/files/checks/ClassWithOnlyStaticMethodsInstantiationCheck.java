@@ -2,13 +2,13 @@ import java.nio.channels.IllegalSelectorException;
 
 class Tester {
   void bar() {
-    A a = new A(); // Noncompliant
-    D d = new D(); // Noncompliant
-    E e = new E(); // Noncompliant
-    F f = new F(); // Noncompliant
-    InnerClass i1 = new InnerClass(); // Noncompliant
-    Tester.InnerClass i2 = new Tester.InnerClass(); // Noncompliant
-    J<A> j = new J<A>(); // Noncompliant
+    A a = new A(); // Noncompliant {{Remove this instantiation of "A".}}
+    D d = new D(); // Noncompliant {{Remove this instantiation of "D".}}
+    E e = new E(); // Noncompliant {{Remove this instantiation of "E".}}
+    F f = new F(); // Noncompliant {{Remove this instantiation of "F".}}
+    InnerClass i1 = new InnerClass(); // Noncompliant {{Remove this instantiation of "InnerClass".}}
+    Tester.InnerClass i2 = new Tester.InnerClass(); // Noncompliant {{Remove this instantiation of "InnerClass".}}
+    J<A> j = new J<A>(); // Noncompliant {{Remove this instantiation of "J".}}
     B b = new B(); // Compliant
     C c = new C(); // Compliant
     G g = new G(); // Compliant

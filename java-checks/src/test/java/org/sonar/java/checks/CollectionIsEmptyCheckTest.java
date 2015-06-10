@@ -26,9 +26,6 @@ import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 public class CollectionIsEmptyCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
     JavaCheckVerifier.verify("src/test/files/checks/CollectionIsEmptyCheck.java", new CollectionIsEmptyCheck());

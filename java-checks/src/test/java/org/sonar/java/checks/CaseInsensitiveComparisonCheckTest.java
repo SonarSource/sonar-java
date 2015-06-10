@@ -19,35 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CaseInsensitiveComparisonCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CaseInsensitiveComparisonCheck.java"), new VisitorsBridge(new CaseInsensitiveComparisonCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.")
-        .next().atLine(4)
-        .next().atLine(5)
-        .next().atLine(6)
-        .next().atLine(7)
-        .next().atLine(8)
-        .next().atLine(10)
-        .next().atLine(12)
-        .next().atLine(13)
-        .next().atLine(24)
-        .next().atLine(25);
+    JavaCheckVerifier.verify("src/test/files/checks/CaseInsensitiveComparisonCheck.java", new CaseInsensitiveComparisonCheck());
   }
-
 }
