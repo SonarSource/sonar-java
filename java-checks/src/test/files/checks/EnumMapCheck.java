@@ -14,6 +14,9 @@ class MyClass {
     Map<COLOR, String> moodMap2 = new HashMap<>(); // Noncompliant
     Map<MyClass.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
     Map moodMap4 = (new HashMap<COLOR, String>()); // Noncompliant
+    
+    Map<COLOR, String> map;
+    map = new HashMap<>(); // Noncompliant
   }
 
   public void compliant() {
@@ -23,7 +26,9 @@ class MyClass {
     Map otherMap3 = new HashMap();
     Map otherMap4;
     Map otherMap5 = otherMap3;
+    otherMap4 = new HashMap<>();
     new HashMap<String, String>();
     int a = 5;
+    a = 3;
   }
 }
