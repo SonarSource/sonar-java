@@ -65,7 +65,7 @@ public class ImplementsEnumerationCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isEnumeration(@Nullable IdentifierTree tree) {
+  private static boolean isEnumeration(@Nullable IdentifierTree tree) {
     return tree != null && "Enumeration".equals(tree.name());
   }
 }

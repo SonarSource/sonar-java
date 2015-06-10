@@ -19,37 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CatchOfThrowableOrErrorCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/CatchOfThrowableOrErrorCheck.java"),
-      new VisitorsBridge(new CatchOfThrowableOrErrorCheck(), ImmutableList.of(new File("target/test-classes"))));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(9).withMessage("Catch Exception instead of Error.")
-      .next().atLine(12).withMessage("Catch Exception instead of Error.")
-      .next().atLine(15).withMessage("Catch Exception instead of Error.")
-      .next().atLine(17).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(18).withMessage("Catch Exception instead of Error.")
-      .next().atLine(24).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(26).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(32).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(34).withMessage("Catch Exception instead of Throwable.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CatchOfThrowableOrErrorCheck.java", new CatchOfThrowableOrErrorCheck());
   }
 }

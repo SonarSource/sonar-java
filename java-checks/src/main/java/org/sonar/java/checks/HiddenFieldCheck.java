@@ -121,7 +121,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isClassTree(Tree tree) {
+  private static boolean isClassTree(Tree tree) {
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 

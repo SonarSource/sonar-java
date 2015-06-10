@@ -8,7 +8,7 @@ class A {
     }
 
     if (false) { // Compliant 3
-      if (false) { // Non-Compliant 4
+      if (false) { // Noncompliant {{Merge this if statement with the enclosing one.}}
       }
     }
 
@@ -38,12 +38,12 @@ class A {
 
     if (false) { // Compliant 13
     } else if (false) { // Compliant  14
-      if (false) { // Non-Compliant 15
+      if (false) { // Noncompliant {{Merge this if statement with the enclosing one.}}
       }
     }
 
     if (false) // Compliant 16
-      if (true) { // Non-Compliant  17
+      if (true) { // Noncompliant {{Merge this if statement with the enclosing one.}}
     }
 
     if (false) { // Compliant 18
@@ -71,7 +71,7 @@ class A {
        }
 
     if (true) {  // Compliant 24
-      if (true) { // Noncompliant 25
+      if (true) { // Noncompliant {{Merge this if statement with the enclosing one.}}
         int a;
         if (true) {   // Compliant 26
           int b;
@@ -87,8 +87,8 @@ class A {
     }
 
     if (true) // Compliant 29
-      if (false)  // Noncompliant 30
-        if (true)  // Noncompliant 31
+      if (false)  // Noncompliant {{Merge this if statement with the enclosing one.}}
+        if (true)  // Noncompliant {{Merge this if statement with the enclosing one.}}
           a = 0;
   }
 }

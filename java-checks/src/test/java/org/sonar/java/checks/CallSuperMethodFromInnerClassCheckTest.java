@@ -19,29 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CallSuperMethodFromInnerClassCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CallSuperMethodFromInnerClassCheck.java"), new VisitorsBridge(new CallSuperMethodFromInnerClassCheck()));
-//    SourceFile file = JavaAstScanner.scanSingleFile(new File("/home/benzonico/Development/SonarSource/it-sources/sslr/oracle-jdk-1.7.0.3/com/sun/jmx/mbeanserver/WeakIdentityHashMap.java"), new VisitorsBridge(new CallSuperMethodFromInnerClassCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-//        .next().atLine(124).withMessage("Prefix this call to \"get\" with \"super.\".")
-        .next().atLine(12).withMessage("Prefix this call to \"foo\" with \"super.\".")
-        .next().atLine(23).withMessage("Prefix this call to \"plop\" with \"super.\".")
-        .next().atLine(73).withMessage("Prefix this call to \"foo\" with \"super.\".")
-    ;
+    JavaCheckVerifier.verify("src/test/files/checks/CallSuperMethodFromInnerClassCheck.java", new CallSuperMethodFromInnerClassCheck());
   }
 }

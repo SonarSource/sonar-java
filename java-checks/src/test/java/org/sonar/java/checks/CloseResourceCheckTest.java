@@ -24,10 +24,8 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CloseResourceCheckTest {
 
-  private final CloseResourceCheck check = new CloseResourceCheck();
-
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/CloseResourceCheck.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/CloseResourceCheck.java", new CloseResourceCheck());
   }
 }
