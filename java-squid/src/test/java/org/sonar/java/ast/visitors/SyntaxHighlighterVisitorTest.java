@@ -115,11 +115,11 @@ public class SyntaxHighlighterVisitorTest {
     assertThat(hasBeenHighlighted(offset(8, 1), offset(8, 18), "a")).isTrue();
     assertThat(hasBeenHighlighted(offset(8, 19), offset(8, 27), "s")).isTrue();
     assertThat(hasBeenHighlighted(offset(9, 1), offset(9, 6), "k")).isTrue();
-    assertThat(hasBeenHighlighted(offset(11, 3), offset(11, 7), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(11, 3), offset(11, 6), "k")).isTrue();
     assertThat(hasBeenHighlighted(offset(12, 5), offset(12, 11), "k")).isTrue();
     assertThat(hasBeenHighlighted(offset(12, 12), offset(12, 14), "c")).isTrue();
-    assertThat(hasBeenHighlighted(offset(17, 2), offset(17, 12), "k")).isTrue();
-    assertThat(hasBeenHighlighted(offset(18, 21), offset(18, 29), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(17, 2), offset(17, 11), "k")).isTrue();
+    assertThat(hasBeenHighlighted(offset(18, 21), offset(18, 28), "k")).isTrue();
     assertThat(hasBeenHighlighted(offset(18, 29), offset(18, 30), "c")).isTrue();
     assertThat(highlighting.done).isTrue();
     assertThat(highlighting.entries).isEmpty();
