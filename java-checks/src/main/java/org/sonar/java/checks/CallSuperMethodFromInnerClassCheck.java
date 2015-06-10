@@ -60,11 +60,11 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
   }
 
-  private boolean isInnerClass(Symbol symbol) {
+  private static boolean isInnerClass(Symbol symbol) {
     return symbol.owner().isTypeSymbol();
   }
 
-  private boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
+  private static boolean extendsOuterClass(Symbol.TypeSymbol classSymbol) {
     Type superType = classSymbol.superClass();
     return superType != null && superType.equals(classSymbol.owner().type());
   }

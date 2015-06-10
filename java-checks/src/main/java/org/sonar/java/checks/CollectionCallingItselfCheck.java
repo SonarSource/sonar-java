@@ -84,7 +84,7 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isMethodFromCollection(Symbol methodSymbol) {
+  private static boolean isMethodFromCollection(Symbol methodSymbol) {
     if(!methodSymbol.isMethodSymbol()) {
       return false;
     }

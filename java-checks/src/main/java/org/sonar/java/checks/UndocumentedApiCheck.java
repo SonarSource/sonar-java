@@ -128,7 +128,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private void visitNode(Tree tree) {
     if (!isExcluded(tree)) {
-      String javadoc = publicApiChecker.getApiJavadoc(tree);
+      String javadoc = PublicApiChecker.getApiJavadoc(tree);
       if (javadoc == null) {
         context.addIssue(tree, this, "Document this public " + getType(tree) + ".");
       } else if (!javadoc.contains("{@inheritDoc}")) {

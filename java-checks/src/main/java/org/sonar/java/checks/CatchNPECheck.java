@@ -93,7 +93,7 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
     }
   }
 
-  private boolean isNPE(String name) {
+  private static boolean isNPE(String name) {
     return "NullPointerException".equals(name);
   }
 

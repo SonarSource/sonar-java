@@ -8,7 +8,7 @@ class A {
   }
 }
 
-class B extends A { // Noncompliant; instances will use A's equals method
+class B extends A { // Noncompliant {{Override this superclass' "equals" method.}}
   String s2;
 }
 

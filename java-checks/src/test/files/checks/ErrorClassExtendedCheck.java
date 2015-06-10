@@ -1,7 +1,7 @@
-class A extends Error { // Non-Compliant
+class A extends Error { // Noncompliant {{Extend "java.lang.Exception" or one of its subclasses.}}
 }
 
-class B extends java.lang.Error { // Non-Compliant
+class B extends java.lang.Error { // Noncompliant
 }
 
 class C { // Compliant

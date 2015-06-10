@@ -58,11 +58,11 @@ public class ExceptionsShouldBeImmutableCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinal(VariableTree member) {
+  private static boolean isFinal(VariableTree member) {
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.FINAL);
   }
 
-  private boolean isException(ClassTree classTree) {
+  private static boolean isException(ClassTree classTree) {
     IdentifierTree simpleName = classTree.simpleName();
     return simpleName != null && (simpleName.name().endsWith("Exception") || simpleName.name().endsWith("Error"));
   }

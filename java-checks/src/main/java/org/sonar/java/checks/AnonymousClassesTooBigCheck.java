@@ -95,13 +95,13 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     super.visitLambdaExpression(lambdaExpressionTree);
   }
 
-  private int getNumberOfLines(ClassTree classTree) {
+  private static int getNumberOfLines(ClassTree classTree) {
     int startLine = classTree.openBraceToken().line();
     int endline = classTree.closeBraceToken().line();
     return endline - startLine + 1;
   }
 
-  private int getNumberOfLines(LambdaExpressionTree lambdaExpressionTree) {
+  private static int getNumberOfLines(LambdaExpressionTree lambdaExpressionTree) {
     Tree body = lambdaExpressionTree.body();
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(body);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(body);

@@ -113,7 +113,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private JavaFileScannerContext context;
   private Deque<Tree.Kind> stack = new LinkedList<>();
-  private Set<Integer> reportedLines = new HashSet<Integer>();
+  private Set<Integer> reportedLines = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -156,7 +156,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     stack.pop();
   }
 
-  private boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
+  private static boolean requiresParenthesis(Tree.Kind kind1, Tree.Kind kind2) {
     return BooleanUtils.isTrue(OPERATORS_RELATION_TABLE.get(kind1, kind2));
   }
 
@@ -220,7 +220,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     }
   }
 
-  private Tree.Kind getKind(Tree tree) {
+  private static Tree.Kind getKind(Tree tree) {
     return ((JavaTree) tree).getKind();
   }
 

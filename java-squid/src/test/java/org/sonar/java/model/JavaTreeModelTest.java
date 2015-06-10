@@ -360,8 +360,10 @@ public class JavaTreeModelTest {
     assertThat(annotations).hasSize(1);
     AnnotationTree annotation = annotations.get(0);
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(annotation.openParenToken()).isNotNull();
     assertThat(annotation.arguments()).hasSize(1);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.STRING_LITERAL)).isTrue();
+    assertThat(annotation.closeParenToken()).isNotNull();
     assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@Target( ) class U {}");
@@ -369,7 +371,9 @@ public class JavaTreeModelTest {
     annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
+    assertThat(annotation.openParenToken()).isNotNull();
     assertThat(annotation.arguments()).hasSize(0);
+    assertThat(annotation.closeParenToken()).isNotNull();
     assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@Target({ElementType.METHOD}) class U {}");
@@ -377,8 +381,10 @@ public class JavaTreeModelTest {
     annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
+    assertThat(annotation.openParenToken()).isNotNull();
     assertThat(annotation.arguments()).hasSize(1);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.NEW_ARRAY)).isTrue();
+    assertThat(annotation.closeParenToken()).isNotNull();
     assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("@Target(value={ElementType.METHOD}, value2=\"toto\") class T { }");
@@ -387,8 +393,10 @@ public class JavaTreeModelTest {
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(annotation.openParenToken()).isNotNull();
     assertThat(annotation.arguments()).hasSize(2);
     assertThat(annotation.arguments().get(0).is(Tree.Kind.ASSIGNMENT)).isTrue();
+    assertThat(annotation.closeParenToken()).isNotNull();
     assertThat(annotation.atToken()).isNotNull();
 
     astNode = p.parse("class T { private void meth() { @NonNullable String str;}}");
@@ -399,11 +407,15 @@ public class JavaTreeModelTest {
     annotation = annotations.get(0);
     assertThat(annotation.annotationType().is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(annotation.atToken()).isNotNull();
+    assertThat(annotation.openParenToken()).isNull();
+    assertThat(annotation.closeParenToken()).isNull();
 
     astNode = p.parse("@PackageLevelAnnotation package blammy;");
     annotations = ((CompilationUnitTree) astNode).packageAnnotations();
     assertThat(annotations).hasSize(1);
     assertThat(annotations.get(0).atToken()).isNotNull();
+    assertThat(annotation.openParenToken()).isNull();
+    assertThat(annotation.closeParenToken()).isNull();
   }
 
   @Test

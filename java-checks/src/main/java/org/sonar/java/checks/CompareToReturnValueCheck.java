@@ -63,7 +63,7 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isCompareToDeclaration(MethodTree tree) {
+  private static boolean isCompareToDeclaration(MethodTree tree) {
     return isNamedCompareTo(tree) && hasOneNonPrimitiveParameter(tree) && returnsInt(tree);
   }
 

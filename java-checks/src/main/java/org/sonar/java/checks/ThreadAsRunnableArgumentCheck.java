@@ -94,7 +94,7 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
+  private static Type getExpectedType(Type providedType, List<Type> parametersTypes, int index, boolean varargs) {
     int lastParameterIndex = parametersTypes.size() - 1;
     Type lastParameterType = parametersTypes.get(lastParameterIndex);
     Type lastExpectedType = varargs ? ((Type.ArrayType) lastParameterType).elementType() : lastParameterType;
@@ -104,12 +104,12 @@ public class ThreadAsRunnableArgumentCheck extends SubscriptionBaseVisitor {
     return parametersTypes.get(index);
   }
 
-  private String getMessage(ExpressionTree argument, Type providedType, int index) {
+  private static String getMessage(ExpressionTree argument, Type providedType, int index) {
     String array = providedType.isArray() ? "[]" : "";
     return MessageFormat.format("\"{0}\" is a \"Thread{1}\".", getArgName(argument, index), array);
   }
 
-  private String getArgName(ExpressionTree tree, int index) {
+  private static String getArgName(ExpressionTree tree, int index) {
     if (tree.is(Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree).name();
     }

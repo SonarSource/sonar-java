@@ -79,7 +79,7 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private int firstStatementLine(List<StatementTree> body) {
+  private static int firstStatementLine(List<StatementTree> body) {
     if (!body.isEmpty()) {
       StatementTree firstStatement = body.get(0);
       int firstStatementLine = line(body.get(0));
@@ -92,7 +92,7 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
     return Integer.MAX_VALUE;
   }
 
-  private int firstLineTrivia(List<Trivia> trivias) {
+  private static int firstLineTrivia(List<Trivia> trivias) {
     return trivias.get(0).getToken().getLine();
   }
 
@@ -104,7 +104,7 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private int getNextLine(SwitchStatementTree switchStatementTree, CaseGroupTree caseGroupTree) {
+  private static int getNextLine(SwitchStatementTree switchStatementTree, CaseGroupTree caseGroupTree) {
     int switchLastLine = line(switchStatementTree.closeBraceToken());
     List<CaseGroupTree> cases = switchStatementTree.cases();
     int indexOfCaseGroup = cases.indexOf(caseGroupTree);
@@ -115,7 +115,7 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private int line(Tree tree) {
+  private static int line(Tree tree) {
     return ((JavaTree) tree).getLine();
   }
 }

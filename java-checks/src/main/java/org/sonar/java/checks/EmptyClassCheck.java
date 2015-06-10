@@ -52,15 +52,15 @@ public class EmptyClassCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isEmptyClass(ClassTree tree) {
+  private static boolean isEmptyClass(ClassTree tree) {
     return tree.simpleName() != null && isNotExtending(tree) && isEmpty(tree);
   }
 
-  private boolean isNotExtending(ClassTree tree) {
+  private static boolean isNotExtending(ClassTree tree) {
     return tree.superClass() == null && tree.superInterfaces().isEmpty();
   }
 
-  private boolean isEmpty(ClassTree tree) {
+  private static boolean isEmpty(ClassTree tree) {
     for (Tree member : tree.members()) {
       if (!member.is(Tree.Kind.EMPTY_STATEMENT)) {
         return false;

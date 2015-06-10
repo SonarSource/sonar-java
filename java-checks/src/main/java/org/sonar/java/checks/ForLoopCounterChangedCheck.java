@@ -91,11 +91,11 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
     super.visitUnaryExpression(tree);
   }
 
-  private boolean isIncrement(UnaryExpressionTree tree) {
+  private static boolean isIncrement(UnaryExpressionTree tree) {
     return tree.is(Tree.Kind.PREFIX_INCREMENT) || tree.is(Tree.Kind.POSTFIX_INCREMENT);
   }
 
-  private boolean isDecrement(UnaryExpressionTree tree) {
+  private static boolean isDecrement(UnaryExpressionTree tree) {
     return tree.is(Tree.Kind.POSTFIX_DECREMENT) || tree.is(Tree.Kind.PREFIX_DECREMENT);
   }
 

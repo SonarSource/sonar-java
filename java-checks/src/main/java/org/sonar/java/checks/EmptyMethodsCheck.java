@@ -71,7 +71,7 @@ public class EmptyMethodsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isEmpty(BlockTree block) {
+  private static boolean isEmpty(BlockTree block) {
     List<StatementTree> body = block.body();
     if (!body.isEmpty()) {
       for (StatementTree statementTree : body) {

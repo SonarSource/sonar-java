@@ -24,6 +24,13 @@ class Foo {
     A a = new A((1/3)); // Noncompliant
     return (((x & 0x0000FFFF)) | y); // Noncompliant 2
     getContentSpec(((int[])contentSpec.value)[0], contentSpec);
+
+    this.a = b; // Compliant
+    this.a = (b); // Noncompliant
+    this.a = (true ?  1 : 2); // Noncompliant
+    this.a = false ? (true ? 1 : 2) : 2; // Compliant
+    this.a = (1+2)/2; // Compliant
+    this.a = ((int[])contentSpec.value)[0]; // Compliant
   }
     public static final short value = (short)(0);
 }

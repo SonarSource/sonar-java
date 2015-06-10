@@ -72,11 +72,11 @@ public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasCommentInside(BlockTree tree) {
+  private static boolean hasCommentInside(BlockTree tree) {
     return tree.closeBraceToken() == null || !tree.closeBraceToken().trivias().isEmpty();
   }
 
-  private boolean hasStatements(BlockTree tree) {
+  private static boolean hasStatements(BlockTree tree) {
     return !tree.body().isEmpty();
   }
 

@@ -42,12 +42,22 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
   private final SyntaxToken atToken;
   private final TypeTree annotationType;
   private final List<ExpressionTree> arguments;
+  private final SyntaxToken openParenToken;
+  private final SyntaxToken closeParenToken;
 
   public AnnotationTreeImpl(InternalSyntaxToken atToken, TypeTree annotationType, @Nullable ArgumentListTreeImpl arguments) {
     super(Kind.ANNOTATION);
     this.atToken = atToken;
     this.annotationType = annotationType;
-    this.arguments = arguments == null ? Collections.<ExpressionTree>emptyList() : arguments;
+    if (arguments == null) {
+      this.openParenToken = null;
+      this.arguments = Collections.<ExpressionTree>emptyList();
+      this.closeParenToken = null;
+    } else {
+      this.openParenToken = arguments.openParenToken();
+      this.arguments = arguments;
+      this.closeParenToken = arguments.closeParenToken();
+    }
 
     addChild(atToken);
     addChild((AstNode) annotationType);
@@ -86,6 +96,16 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
   @Override
   public SyntaxToken atToken() {
     return atToken;
+  }
+
+  @Override
+  public SyntaxToken openParenToken() {
+    return openParenToken;
+  }
+
+  @Override
+  public SyntaxToken closeParenToken() {
+    return closeParenToken;
   }
 
 }

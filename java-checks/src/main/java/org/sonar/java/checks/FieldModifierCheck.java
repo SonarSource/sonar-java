@@ -58,7 +58,7 @@ public class FieldModifierCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasNoVisibilityModifier(VariableTree member) {
+  private static boolean hasNoVisibilityModifier(VariableTree member) {
     ModifiersTree modifiers = member.modifiers();
     return !(ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC)
       || ModifiersUtils.hasModifier(modifiers, Modifier.PRIVATE)

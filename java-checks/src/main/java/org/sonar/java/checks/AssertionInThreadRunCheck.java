@@ -65,7 +65,7 @@ public class AssertionInThreadRunCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isRunMethod(MethodTree methodTree) {
+  private static boolean isRunMethod(MethodTree methodTree) {
     return methodTree.symbol().owner().type().isSubtypeOf("java.lang.Runnable") && "run".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty();
   }
 

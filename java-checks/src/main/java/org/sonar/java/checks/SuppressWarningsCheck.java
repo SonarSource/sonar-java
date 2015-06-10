@@ -87,7 +87,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isJavaLangSuppressWarnings(AnnotationTree tree) {
+  private static boolean isJavaLangSuppressWarnings(AnnotationTree tree) {
     return tree.symbolType().is("java.lang.SuppressWarnings");
   }
 
@@ -110,19 +110,16 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
   private List<String> getSuppressedWarnings(ExpressionTree argument) {
     List<String> result = Lists.newArrayList();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
-      result.add(getCleanedLiteralValue((LiteralTree) argument));
+      result.add(LiteralUtils.trimQuotes(((LiteralTree) argument).value()));
     } else if (argument.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree array = (NewArrayTree) argument;
       for (ExpressionTree expressionTree : array.initializers()) {
         if (expressionTree.is(Kind.STRING_LITERAL)) {
-          result.add(getCleanedLiteralValue((LiteralTree) expressionTree));
+          result.add(LiteralUtils.trimQuotes(((LiteralTree) expressionTree).value()));
         }
       }
     }
     return result;
   }
 
-  private String getCleanedLiteralValue(LiteralTree tree) {
-    return LiteralUtils.trimQuotes(tree.value());
-  }
 }

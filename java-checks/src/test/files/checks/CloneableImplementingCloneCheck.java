@@ -1,4 +1,4 @@
-class CloneableWithoutCloneMethod implements Cloneable { // Noncompliant
+class CloneableWithoutCloneMethod implements Cloneable { // Noncompliant {{Add a "clone()" method to this class.}}
   
   private String clone;
   

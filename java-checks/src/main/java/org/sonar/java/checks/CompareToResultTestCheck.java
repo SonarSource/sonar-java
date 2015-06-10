@@ -83,7 +83,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCompareToInvocation(MethodInvocationTree invocation) {
+  private static boolean isCompareToInvocation(MethodInvocationTree invocation) {
     Symbol method = invocation.symbol();
     if ("compareTo".equals(method.name()) && invocation.arguments().size() == 1) {
       return method.owner().enclosingClass().type().isSubtypeOf("java.lang.Comparable");
@@ -91,7 +91,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isIdentifierContainingCompareToResult(IdentifierTree identifier) {
+  private static boolean isIdentifierContainingCompareToResult(IdentifierTree identifier) {
     Symbol variableSymbol = identifier.symbol();
     if (!variableSymbol.isVariableSymbol()) {
       return false;

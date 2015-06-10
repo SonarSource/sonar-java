@@ -59,7 +59,7 @@ public class BooleanMethodReturnCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean returnsBoolean(MethodTree methodTree) {
+  private static boolean returnsBoolean(MethodTree methodTree) {
     TypeTree returnType = methodTree.returnType();
     return returnType != null && returnType.symbolType().is("java.lang.Boolean");
   }

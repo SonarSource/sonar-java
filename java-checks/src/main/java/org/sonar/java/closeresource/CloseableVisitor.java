@@ -81,7 +81,7 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     }
   }
 
-  private void ignoreValue(ExecutionState executionState, SymbolicValue value) {
+  private static void ignoreValue(ExecutionState executionState, SymbolicValue value) {
     executionState.markValueAs(value, new CloseableState.Ignored(value.getTree()));
   }
 
@@ -116,11 +116,11 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     }
   }
 
-  private boolean isVariableIdentifierOrMemberSelect(AssignmentExpressionTree tree) {
+  private static boolean isVariableIdentifierOrMemberSelect(AssignmentExpressionTree tree) {
     return tree.variable().is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT);
   }
 
-  private State getCloseableStateFromExpression(ExecutionState executionState, Symbol symbol, @Nullable ExpressionTree expression) {
+  private static State getCloseableStateFromExpression(ExecutionState executionState, Symbol symbol, @Nullable ExpressionTree expression) {
     if (shouldBeIgnored(executionState, symbol, expression)) {
       return new CloseableState.Ignored(expression);
     } else if (isNull(expression)) {
@@ -139,11 +139,11 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     return expression == null || expression.is(Tree.Kind.NULL_LITERAL);
   }
 
-  private boolean shouldBeIgnored(ExecutionState executionState, Symbol symbol, @Nullable ExpressionTree expression) {
+  private static boolean shouldBeIgnored(ExecutionState executionState, Symbol symbol, @Nullable ExpressionTree expression) {
     return shouldBeIgnored(executionState, symbol) || shouldBeIgnored(expression);
   }
 
-  private boolean shouldBeIgnored(ExecutionState executionState, Symbol symbol) {
+  private static boolean shouldBeIgnored(ExecutionState executionState, Symbol symbol) {
     return isSymbolIgnored(executionState, symbol) || symbol.isFinal()
       || isIgnoredCloseableSubtype(symbol.type())
       || isSubclassOfInputStreamOrOutputStreamWithoutClose(symbol.type());
@@ -153,7 +153,7 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     return expression != null && (isSubclassOfInputStreamOrOutputStreamWithoutClose(expression.symbolType()) || isIgnoredCloseableSubtype(expression.symbolType()));
   }
 
-  private boolean usesIgnoredCloseableAsArgument(ExecutionState executionState, List<ExpressionTree> arguments) {
+  private static boolean usesIgnoredCloseableAsArgument(ExecutionState executionState, List<ExpressionTree> arguments) {
     for (ExpressionTree argument : arguments) {
       if (isNewClassWithIgnoredArguments(executionState, argument)) {
         return true;
@@ -166,15 +166,15 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     return false;
   }
 
-  private boolean isNewClassWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
+  private static boolean isNewClassWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
     return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(executionState, ((NewClassTree) argument).arguments());
   }
 
-  private boolean isMethodInvocationWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
+  private static boolean isMethodInvocationWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
     return argument.is(Tree.Kind.METHOD_INVOCATION) && usesIgnoredCloseableAsArgument(executionState, ((MethodInvocationTree) argument).arguments());
   }
 
-  private boolean useIgnoredCloseable(ExecutionState executionState, ExpressionTree expression) {
+  private static boolean useIgnoredCloseable(ExecutionState executionState, ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER, Tree.Kind.MEMBER_SELECT)) {
       IdentifierTree identifier;
       if (expression.is(Tree.Kind.MEMBER_SELECT)) {
@@ -189,7 +189,7 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     return false;
   }
 
-  private boolean isIgnoredCloseable(ExecutionState executionState, Symbol symbol) {
+  private static boolean isIgnoredCloseable(ExecutionState executionState, Symbol symbol) {
     if (CloseableVisitor.isCloseableOrAutoCloseableSubtype(symbol.type()) && !symbol.owner().isMethodSymbol()) {
       return true;
     } else {
@@ -197,7 +197,7 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     }
   }
 
-  private boolean isSymbolIgnored(ExecutionState executionState, Symbol symbol) {
+  private static boolean isSymbolIgnored(ExecutionState executionState, Symbol symbol) {
     List<State> statesOf = executionState.getStatesOf(symbol);
     for (State state : statesOf) {
       if ((state instanceof CloseableState) && ((CloseableState) state).isIgnored()) {
@@ -238,13 +238,13 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
     }
   }
 
-  private void ignoreClosableSymbols(ExecutionState executionState, List<ExpressionTree> expressions) {
+  private static void ignoreClosableSymbols(ExecutionState executionState, List<ExpressionTree> expressions) {
     for (ExpressionTree expression : expressions) {
       ignoreClosableSymbols(executionState, expression);
     }
   }
 
-  private void ignoreClosableSymbols(ExecutionState executionState, @Nullable ExpressionTree expression) {
+  private static void ignoreClosableSymbols(ExecutionState executionState, @Nullable ExpressionTree expression) {
     if (expression != null) {
       if (expression.is(Tree.Kind.IDENTIFIER) && CloseableVisitor.isCloseableOrAutoCloseableSubtype(expression.symbolType())) {
         executionState.markValueAs(((IdentifierTree) expression).symbol(), new CloseableState.Ignored(expression));

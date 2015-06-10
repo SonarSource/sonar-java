@@ -68,7 +68,7 @@ public class LockedVisitor extends SymbolicExecutionCheck {
     }
   }
 
-  private List<Symbol> getAccessibleLockFields(Symbol.MethodSymbol symbol) {
+  private static List<Symbol> getAccessibleLockFields(Symbol.MethodSymbol symbol) {
     List<Symbol> symbols = Lists.newArrayList();
     Symbol owner = symbol.owner();
     while (owner.isTypeSymbol()) {

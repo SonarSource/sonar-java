@@ -115,7 +115,7 @@ public class AbsOnNegativeCheck extends SubscriptionBaseVisitor implements JavaF
   }
 
   @CheckForNull
-  private MethodInvocationTree extractMethodInvocation(ExpressionTree tree) {
+  private static MethodInvocationTree extractMethodInvocation(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (true) {
       if (result.is(Tree.Kind.TYPE_CAST)) {

@@ -363,8 +363,11 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitArrayType(ArrayTypeTree tree) {
-    // FIXME should be the close bracket of the last dimension
-    scan(tree.type());
+    if (tree.ellipsisToken() != null) {
+      lastSyntaxToken = tree.ellipsisToken();
+    } else {
+      lastSyntaxToken = tree.closeBracketToken();
+    }
   }
 
   @Override
@@ -401,9 +404,9 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-    if (!annotationTree.arguments().isEmpty()) {
-      // TODO(SONARJAVA-547) should be the close parenthesis token
-      scan(Iterables.getLast(annotationTree.arguments()));
+    SyntaxToken closeParenToken = annotationTree.closeParenToken();
+    if (closeParenToken != null) {
+      lastSyntaxToken = closeParenToken;
     } else {
       scan(annotationTree.annotationType());
     }

@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -43,5 +45,11 @@ public interface AnnotationTree extends ExpressionTree, ModifierTree {
   TypeTree annotationType();
 
   List<ExpressionTree> arguments();
+
+  @Nullable
+  SyntaxToken openParenToken();
+
+  @Nullable
+  SyntaxToken closeParenToken();
 
 }

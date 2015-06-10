@@ -57,7 +57,7 @@ public class BigDecimalDoubleConstructorCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isDoubleConstructor(NewClassTree nct) {
+  private static boolean isDoubleConstructor(NewClassTree nct) {
     if (!nct.arguments().isEmpty() && nct.arguments().size() <= 2) {
       Type argumentType = nct.arguments().get(0).symbolType();
       return argumentType.is("double") || argumentType.is("float");

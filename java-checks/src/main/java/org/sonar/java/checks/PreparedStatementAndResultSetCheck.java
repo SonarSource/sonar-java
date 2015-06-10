@@ -95,7 +95,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   @CheckForNull
-  private Tree getPreparedStatementReference(MethodInvocationTree mit) {
+  private static Tree getPreparedStatementReference(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
@@ -108,7 +108,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   @CheckForNull
-  private Integer getNumberParametersFromPreparedStatement(@Nullable Tree tree) {
+  private static Integer getNumberParametersFromPreparedStatement(@Nullable Tree tree) {
     if (tree != null && tree.is(Kind.VARIABLE)) {
       ExpressionTree initializer = ((VariableTree) tree).initializer();
       if (initializer != null && initializer.is(Kind.METHOD_INVOCATION)) {

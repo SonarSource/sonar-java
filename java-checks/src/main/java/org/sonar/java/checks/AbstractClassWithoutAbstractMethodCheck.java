@@ -19,13 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -33,6 +32,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
+import java.util.List;
 
 @Rule(
   key = "S1694",
@@ -41,46 +41,41 @@ import java.util.Collection;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.CLASS)) {
-      Symbol.TypeSymbol typeSymbol = tree.symbol();
-      if (typeSymbol != null && typeSymbol.isAbstract()) {
-        Collection<Symbol> symbols = typeSymbol.memberSymbols();
-        int abstractMethod = countAbstractMethods(symbols);
-        if (isExtendingObject(tree) && abstractMethod == symbols.size() - 2) {
-          //emtpy abstract class or only abstract method
-          context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to an interface");
-        }
-        if (symbols.size() > 2 && abstractMethod == 0 && !isPartialImplementation(tree)) {
-          //Not empty abstract class with no abstract method
-          context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
-        }
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbol typeSymbol = classTree.symbol();
+    if (typeSymbol.isAbstract()) {
+      Collection<Symbol> symbols = typeSymbol.memberSymbols();
+      int abstractMethod = countAbstractMethods(symbols);
+      if (isExtendingObject(classTree) && abstractMethod == symbols.size() - 2) {
+        // emtpy abstract class or only abstract method
+        context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to an interface");
+      }
+      if (symbols.size() > 2 && abstractMethod == 0 && !isPartialImplementation(classTree)) {
+        // Not empty abstract class with no abstract method
+        context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
       }
     }
-    super.visitClass(tree);
   }
 
-  private boolean isExtendingObject(ClassTree tree) {
+  private static boolean isExtendingObject(ClassTree tree) {
     TypeTree superClass = tree.superClass();
     return superClass == null || superClass.symbolType().is("java.lang.Object");
   }
 
-  private boolean isPartialImplementation(ClassTree tree) {
+  private static boolean isPartialImplementation(ClassTree tree) {
     return tree.superClass() != null || !tree.superInterfaces().isEmpty();
   }
 
-  private int countAbstractMethods(Collection<? extends Symbol> symbols) {
+  private static int countAbstractMethods(Collection<? extends Symbol> symbols) {
     int abstractMethod = 0;
     for (Symbol sym : symbols) {
       if (isAbstractMethod(sym)) {
@@ -90,7 +85,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends BaseTreeVisitor imp
     return abstractMethod;
   }
 
-  private boolean isAbstractMethod(Symbol sym) {
+  private static boolean isAbstractMethod(Symbol sym) {
     return sym.isMethodSymbol() && sym.isAbstract();
   }
 }

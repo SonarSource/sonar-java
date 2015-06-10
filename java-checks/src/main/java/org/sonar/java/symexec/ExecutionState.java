@@ -220,7 +220,7 @@ public class ExecutionState {
     }
   }
 
-  private boolean isField(SymbolicValue value) {
+  private static boolean isField(SymbolicValue value) {
     return value instanceof SymbolicValue.SymbolicVariableValue && ((SymbolicValue.SymbolicVariableValue) value).variable.owner().isTypeSymbol();
   }
 
