@@ -96,7 +96,9 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
+      openBracketToken,
       expression,
-      index);
+      index,
+      closeBracketToken);
   }
 }

@@ -1738,10 +1738,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void array_access_expression() {
-    ArrayAccessExpressionTree tree = (ArrayAccessExpressionTree) p.parse("class T { T() { return a[42]; } }").getFirstDescendant(Kind.ARRAY_ACCESS_EXPRESSION);
+    String code = "class T { T() { return a[42]; } }";
+    ArrayAccessExpressionTree tree = (ArrayAccessExpressionTree) ((ReturnStatementTree) firstMethodFirstStatement(code)).expression();
     assertThat(tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.index()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 4);
   }
 
   /**
@@ -2104,6 +2106,10 @@ public class JavaTreeModelTest {
     assertThat(param.bounds()).hasSize(2);
     assertThat(((IdentifierTree) param.bounds().get(0)).name()).isEqualTo("Object");
     assertThat(((IdentifierTree) param.bounds().get(1)).name()).isEqualTo("Number");
+  }
+
+  private StatementTree firstMethodFirstStatement(String code) {
+    return ((MethodTree) firstTypeMember(code)).block().body().get(0);
   }
 
   private Tree firstTypeMember(String code) {
