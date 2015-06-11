@@ -106,9 +106,12 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    boolean hasParentheses = openParenToken != null;
     return Iterators.concat(
+      hasParentheses ? Iterators.<Tree>singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
       parameters.iterator(),
-      Iterators.singletonIterator(body)
+      hasParentheses ? Iterators.<Tree>singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator(),
+      Iterators.forArray(arrowToken, body)
       );
   }
 
