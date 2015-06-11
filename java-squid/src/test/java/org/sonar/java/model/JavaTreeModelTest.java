@@ -2042,11 +2042,13 @@ public class JavaTreeModelTest {
    */
   @Test
   public void assignment_expression() {
-    AssignmentExpressionTree tree = (AssignmentExpressionTree) p.parse("class T { void m() { a += 42; } }").getFirstDescendant(Kind.PLUS_ASSIGNMENT);
+    String code = "class T { void m() { a += 42; } }";
+    AssignmentExpressionTree tree = (AssignmentExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
     assertThat(tree.is(Tree.Kind.PLUS_ASSIGNMENT)).isTrue();
     assertThat(tree.variable()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("+=");
     assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   @Test
