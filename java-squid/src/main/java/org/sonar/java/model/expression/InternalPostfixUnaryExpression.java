@@ -70,8 +70,9 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression
+    return Iterators.<Tree>forArray(
+      expression,
+      operatorToken
       );
   }
 
