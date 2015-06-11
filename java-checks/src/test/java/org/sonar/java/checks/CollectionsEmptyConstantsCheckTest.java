@@ -19,23 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CollectionsEmptyConstantsCheckTest {
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CollectionsEmptyConstants.java"), new VisitorsBridge(new CollectionsEmptyConstantsCheck()));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Replace \"Collections.EMPTY_LIST\" by \"Collections.emptyList()\".")
-      .next().atLine(7).withMessage("Replace \"Collections.EMPTY_MAP\" by \"Collections.emptyMap()\".")
-      .next().atLine(8).withMessage("Replace \"Collections.EMPTY_SET\" by \"Collections.emptySet()\".")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CollectionsEmptyConstants.java", new CollectionsEmptyConstantsCheck());
   }
 
 }

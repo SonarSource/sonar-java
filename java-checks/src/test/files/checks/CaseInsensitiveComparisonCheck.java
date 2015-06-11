@@ -1,16 +1,16 @@
 class A {
   private void f() {
-    boolean result = foo.toLowerCase().equals(bar);             // Non-Compliant
-    boolean result = foo.toUpperCase().equals(bar);             // Non-Compliant
-    boolean result = "foo".toUpperCase().equals(bar);           // Non-Compliant
-    boolean result = foo.equals(bar.toLowerCase());             // Non-Compliant
-    boolean result = foo.equals(bar.toUpperCase());             // Non-Compliant
-    boolean result = "foo".equals(bar.toUpperCase());           // Non-Compliant
+    boolean result = foo.toLowerCase().equals(bar);             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    boolean result = foo.toUpperCase().equals(bar);             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    boolean result = "foo".toUpperCase().equals(bar);           // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    boolean result = foo.equals(bar.toLowerCase());             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    boolean result = foo.equals(bar.toUpperCase());             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    boolean result = "foo".equals(bar.toUpperCase());           // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
 
-    foo.toLowerCase().equals(bar.toLowerCase());                // Non-Compliant
+    foo.toLowerCase().equals(bar.toLowerCase());                // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     foo.equals(toLowerCase());                                  // Compliant
-    foo.equals(something().somethingElse().toUpperCase());      // Non-Compliant
-    foo.equals("bar".toLowerCase());                            // Non-Compliant
+    foo.equals(something().somethingElse().toUpperCase());      // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    foo.equals("bar".toLowerCase());                            // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
 
     boolean result = foo.equalsIgnoreCase(bar);                 // Compliant
 
@@ -21,7 +21,7 @@ class A {
     foo.equals();                                               // Compliant
     foo.toLowerCase().equals[0];                                // Compliant
 
-    foo.toLowerCase().toLowerCase().equals(bar);                // Non-Compliant
-    foo.toLowerCase().toUpperCase().equals(bar);                // Non-Compliant
+    foo.toLowerCase().toLowerCase().equals(bar);                // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    foo.toLowerCase().toUpperCase().equals(bar);                // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
   }
 }

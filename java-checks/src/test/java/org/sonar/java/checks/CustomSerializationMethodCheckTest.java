@@ -19,35 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CustomSerializationMethodCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CustomSerializationMethodCheck.java"),
-      new VisitorsBridge(new CustomSerializationMethodCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(17).withMessage("Make \"writeObject\" \"private\".")
-      .next().atLine(18)
-      .next().atLine(19)
-      .next().atLine(23).withMessage("The \"static\" modifier should not be applied to \"writeObject\".")
-      .next().atLine(24)
-      .next().atLine(25)
-      .next().atLine(26)
-      .next().atLine(27)
-      .next().atLine(39).withMessage("\"writeReplace\" should return \"java.lang.Object\".")
-      .next().atLine(40);
+    JavaCheckVerifier.verify("src/test/files/checks/CustomSerializationMethodCheck.java", new CustomSerializationMethodCheck());
   }
 
 }

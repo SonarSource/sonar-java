@@ -71,7 +71,7 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private CaseLabelTree getLastLabel(CaseGroupTree cases) {
+  private static CaseLabelTree getLastLabel(CaseGroupTree cases) {
     return cases.labels().get(cases.labels().size() - 1);
   }
 
