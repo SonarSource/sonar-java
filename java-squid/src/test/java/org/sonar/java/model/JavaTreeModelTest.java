@@ -1930,11 +1930,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void instanceof_expression() {
-    InstanceOfTree tree = (InstanceOfTree) p.parse("class T { boolean m() { return null instanceof Object; } }").getFirstDescendant(Kind.INSTANCE_OF);
+    InstanceOfTree tree = (InstanceOfTree) expressionOfReturnStatement("class T { boolean m() { return null instanceof Object; } }");
     assertThat(tree.is(Tree.Kind.INSTANCE_OF)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.instanceofKeyword().text()).isEqualTo("instanceof");
     assertThat(tree.type()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
