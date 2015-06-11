@@ -20,13 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -39,36 +40,49 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   tags = {"convention"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("5min")
+@SqaleConstantRemediation("2min")
 public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {
 
-  private int varLineLast;
-  private List<String> varsOnSameLine = new ArrayList<>();
+  private boolean varSameDeclaration;
+  private int lastVarLine;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    varLineLast = -1;
-    varsOnSameLine.clear();
+    // Check is singleton => line storage clean (corner case : previous file last variable line = next file first variable line)
+    lastVarLine = -1;
     super.scanFile(context);
   }
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE);
+    return ImmutableList.of(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    VariableTree varTree = (VariableTree) tree;
-    int varLineCurrent = varTree.endToken().line();
-    if (varLineCurrent == varLineLast) {
-      varsOnSameLine.add(varTree.symbol().name());
-    } else {
-      if (!varsOnSameLine.isEmpty()) {
-        addIssue(varLineLast, String.format("Declare \"%s\" on a separate line.", StringUtils.join(varsOnSameLine, "\", \"")));
+    // Field class declaration
+    if (tree instanceof ClassTree) {
+      for (Tree member : ((ClassTree) tree).members()) {
+        if (member.is(Tree.Kind.VARIABLE)) {
+          checkVariable((VariableTree) member);
+        }
       }
-      varLineLast = varLineCurrent;
-      varsOnSameLine.clear();
     }
+    // Local variable declaration (in method, static initialization, ...)
+    if (tree instanceof BlockTree) {
+      for (StatementTree statment : ((BlockTree) tree).body()) {
+        if (statment.is(Tree.Kind.VARIABLE)) {
+          checkVariable((VariableTree) statment);
+        }
+      }
+    }
+  }
+
+  private void checkVariable(VariableTree varTree) {
+    if (varSameDeclaration || lastVarLine == varTree.simpleName().identifierToken().line()) {
+      addIssue(varTree, String.format("Declare \"%s\" on a separate line.", varTree.symbol().name()));
+    }
+    varSameDeclaration = ",".equals(varTree.endToken().text());
+    lastVarLine = varTree.simpleName().identifierToken().line();
   }
 }
