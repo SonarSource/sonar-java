@@ -90,6 +90,7 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       variable,
+      operatorToken,
       expression
       );
   }
