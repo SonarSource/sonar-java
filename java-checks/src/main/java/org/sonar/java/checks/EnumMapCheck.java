@@ -22,22 +22,23 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeArguments;
-import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S1640",
@@ -59,44 +60,48 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitVariable(VariableTree tree) {
     if (tree.type().symbolType().isSubtypeOf("java.util.Map")) {
-      checkMap(tree);
+      ExpressionTree initializer = tree.initializer();
+      if (initializer != null) {
+        checkNewMap(tree, removeParenthesis(initializer), hasEnumKey(tree.type().symbolType()));
+      }
     } else {
       super.visitVariable(tree);
     }
   }
 
-  private void checkMap(VariableTree tree) {
-    boolean returnTypeHasEnumKey = hasEnumKey(tree.type());
-    ExpressionTree initializer = tree.initializer();
-    if (initializer != null) {
-      initializer = removeParenthesis(initializer);
-      if (initializer.is(Tree.Kind.NEW_CLASS)) {
-        NewClassTree newClassTree = (NewClassTree) initializer;
-        if (newClassTree.symbolType().isSubtypeOf("java.util.HashMap") && (returnTypeHasEnumKey || hasEnumKey(newClassTree.identifier()))) {
-          addIssue(tree);
-        }
-      }
+  @Override
+  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+    if (tree.variable().symbolType().isSubtypeOf("java.util.Map")) {
+      checkNewMap(tree, removeParenthesis(tree.expression()), hasEnumKey(tree.variable().symbolType()));
+    } else {
+      super.visitAssignmentExpression(tree);
     }
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (tree.symbolType().isSubtypeOf("java.util.HashMap") && hasEnumKey(tree.identifier())) {
+    if (tree.symbolType().isSubtypeOf("java.util.HashMap") && hasEnumKey(tree.identifier().symbolType())) {
       addIssue(tree);
     } else {
       super.visitNewClass(tree);
     }
   }
 
-  private static boolean hasEnumKey(TypeTree typeTree) {
-    if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      TypeArguments typeArguments = ((ParameterizedTypeTree) typeTree).typeArguments();
-      if (!typeArguments.isEmpty()) {
-        Tree keyTree = typeArguments.get(0);
-        if ((keyTree.is(Tree.Kind.MEMBER_SELECT) && ((MemberSelectExpressionTree) keyTree).identifier().symbol().isEnum()) ||
-            (keyTree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) keyTree).symbol().isEnum())) {
-          return true;
-        }
+  private void checkNewMap(Tree tree, ExpressionTree expression, boolean useEnumKey) {
+    if (expression.is(Tree.Kind.NEW_CLASS)) {
+      NewClassTree newClassTree = (NewClassTree) expression;
+      if (newClassTree.symbolType().isSubtypeOf("java.util.HashMap") && (useEnumKey || hasEnumKey(newClassTree.identifier().symbolType()))) {
+        addIssue(tree);
+      }
+    }
+  }
+
+  private static boolean hasEnumKey(Type type) {
+    if (type instanceof ParametrizedTypeJavaType) {
+      ParametrizedTypeJavaType parametrizedTypeJavaType = (ParametrizedTypeJavaType) type;
+      List<TypeVariableJavaType> typeParameters = parametrizedTypeJavaType.typeParameters();
+      if (!typeParameters.isEmpty()) {
+        return parametrizedTypeJavaType.substitution(typeParameters.get(0)).symbol().isEnum();
       }
     }
     return false;

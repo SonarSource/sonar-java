@@ -90,7 +90,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     }
   }
 
-  public boolean hasEquivalentOperand(BinaryExpressionTree tree) {
+  public static boolean hasEquivalentOperand(BinaryExpressionTree tree) {
     if (isNanTest(tree) || isLeftShiftOnOne(tree)) {
       return false;
     }
@@ -98,7 +98,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     return areOperandEquivalent(tree.leftOperand(), tree.rightOperand(), binaryKind);
   }
 
-  public boolean areOperandEquivalent(ExpressionTree left, ExpressionTree right, Tree.Kind binaryKind) {
+  public static boolean areOperandEquivalent(ExpressionTree left, ExpressionTree right, Tree.Kind binaryKind) {
     if (SyntacticEquivalence.areEquivalent(left, right)) {
       return true;
     }
@@ -110,7 +110,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     return false;
   }
 
-  private boolean isNanTest(BinaryExpressionTree tree) {
+  private static boolean isNanTest(BinaryExpressionTree tree) {
     Type leftOperandType = tree.leftOperand().symbolType();
     if (tree.is(Tree.Kind.NOT_EQUAL_TO) && (leftOperandType.isPrimitive(Type.Primitives.FLOAT) || leftOperandType.isPrimitive(Type.Primitives.DOUBLE))) {
       return true;
@@ -118,7 +118,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     return false;
   }
 
-  private boolean isLeftShiftOnOne(BinaryExpressionTree tree) {
+  private static boolean isLeftShiftOnOne(BinaryExpressionTree tree) {
     // 1 << 1 is used for bit masks construction and should be excluded.
     if (tree.is(Tree.Kind.LEFT_SHIFT) && tree.leftOperand().is(Tree.Kind.INT_LITERAL) && tree.rightOperand().is(Tree.Kind.INT_LITERAL)) {
       String left = ((LiteralTree) tree.leftOperand()).value();

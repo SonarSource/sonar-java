@@ -20,23 +20,12 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BooleanMethodReturnCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BooleanMethodReturnCheck.java"),
-      new VisitorsBridge(new BooleanMethodReturnCheck()));
-    new CheckMessagesVerifierRule().verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Null is returned but a \"Boolean\" is expected.")
-      .next().atLine(24)
-      .next().atLine(30)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/BooleanMethodReturnCheck.java", new BooleanMethodReturnCheck());
   }
 }

@@ -20,8 +20,8 @@ class A {
 class B {
   
   B(B otherB) {
-    nonFinalPublicMethod(); // NonCompliant
-    this.nonFinalPublicMethod(); // NonCompliant
+    nonFinalPublicMethod(); // Noncompliant {{Remove this call from a constructor to the overridable "nonFinalPublicMethod" method.}}
+    this.nonFinalPublicMethod(); // Noncompliant
     otherB.nonFinalPublicMethod();
     unknownMethod().nonFinalPublicMethod();
   }
@@ -41,7 +41,7 @@ class SubClass extends SuperClass {
   
   SuperClass() {
     super.finalMethod();
-    super.nonFinalPublicMethod(); //NonCompliant
+    super.nonFinalPublicMethod(); // Noncompliant
   }
   
 }

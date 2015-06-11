@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -116,8 +117,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   private static String algorithm(ExpressionTree invocationArgument) {
     if (invocationArgument.is(Tree.Kind.STRING_LITERAL)) {
-      String value = ((LiteralTree) invocationArgument).value();
-      return value.substring(1, value.length() - 1);
+      return LiteralUtils.trimQuotes(((LiteralTree) invocationArgument).value());
     }
     return null;
   }
