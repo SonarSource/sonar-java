@@ -1689,7 +1689,12 @@ public class TreeFactory {
   }
 
   public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, Tree body) {
-    return new LambdaExpressionTreeImpl(parameters.openParenToken(), ImmutableList.<VariableTree>builder().addAll(parameters).build(), parameters.closeParenToken(), body,
+    return new LambdaExpressionTreeImpl(
+      parameters.openParenToken(),
+      ImmutableList.<VariableTree>builder().addAll(parameters).build(),
+      parameters.closeParenToken(),
+      InternalSyntaxToken.create(arrowToken),
+      body,
       parameters, arrowToken, (AstNode) body);
   }
 

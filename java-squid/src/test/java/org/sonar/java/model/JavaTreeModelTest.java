@@ -58,6 +58,7 @@ import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -2007,12 +2008,30 @@ public class JavaTreeModelTest {
 
   }
 
-  // TODO Poor test
   @Test
-  public void lambda_expressions_should_not_break_AST() {
-    ExpressionTree expressionTree = (ExpressionTree) p.parse("class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}").getFirstDescendant(
-        Kind.METHOD_INVOCATION);
+  public void lambda_expressions() {
+    String code = "class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}";
+    ExpressionTree expressionTree = ((ExpressionStatementTree) ((MethodTree) firstMember(code)).block().body().get(0)).expression();
+    
+    // parsing not broken by lambda
     assertThat(expressionTree).isNotNull();
+    
+    MethodInvocationTree mit = (MethodInvocationTree) expressionTree;
+    LambdaExpressionTree tree = (LambdaExpressionTree) mit.arguments().get(0);
+    assertThat(tree.openParenToken()).isNotNull();
+    assertThat(tree.parameters()).hasSize(1);
+    assertThat(tree.parameters().get(0).is(Tree.Kind.VARIABLE)).isTrue();
+    assertThat(tree.closeParenToken()).isNotNull();
+    assertThat(tree.arrowToken()).isNotNull();
+    assertThat(tree.body().is(Tree.Kind.BLOCK)).isTrue();
+
+    tree = (LambdaExpressionTree) ((MethodInvocationTree) ((MemberSelectExpressionTree) mit.methodSelect()).expression()).arguments().get(0);
+    assertThat(tree.openParenToken()).isNull();
+    assertThat(tree.parameters()).hasSize(1);
+    assertThat(tree.parameters().get(0).is(Tree.Kind.VARIABLE)).isTrue();
+    assertThat(tree.closeParenToken()).isNull();
+    assertThat(tree.arrowToken()).isNotNull();
+    assertThat(tree.body().is(Tree.Kind.MULTIPLY)).isTrue();
   }
 
   @Test
