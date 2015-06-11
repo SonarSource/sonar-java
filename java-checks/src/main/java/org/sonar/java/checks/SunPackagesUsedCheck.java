@@ -23,7 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -74,7 +74,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     String reference = merge(tree);
     if (!isExcluded(reference)) {
-      int line = ((JavaTree) tree).getLine();
+      int line = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
       if (!reportedLines.contains(line) && isSunClass(reference)) {
         context.addIssue(line, this, "Replace this usage of Sun classes by ones from the Java API.");
         reportedLines.add(line);

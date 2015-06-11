@@ -25,7 +25,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -94,7 +94,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
           } else if (isDuplicatedImport(importName)) {
             context.addIssue(importTree, this, "Remove this duplicated import.");
           } else {
-            lineByImportReference.put(importName, ((JavaTree) importTree).getLine());
+            lineByImportReference.put(importName, FirstSyntaxTokenFinder.firstSyntaxToken(importTree).line());
             pendingImports.add(importName);
           }
         }

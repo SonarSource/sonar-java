@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -131,7 +131,8 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     }
 
     private String getMessage(Tree variable) {
-      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), ((JavaTree) variable).getLine());
+      int line = FirstSyntaxTokenFinder.firstSyntaxToken(variable).line();
+      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), line);
     }
   }
 }

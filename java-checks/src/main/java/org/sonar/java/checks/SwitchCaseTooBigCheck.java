@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -116,6 +117,6 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
   }
 
   private static int line(Tree tree) {
-    return ((JavaTree) tree).getLine();
+    return FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
   }
 }

@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -115,7 +116,8 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       String identifier = variableTree.simpleName().name();
       VariableTree hiddenVariable = variables.get(identifier);
       if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
-        addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + ((JavaTree) hiddenVariable).getLine() + ".");
+        int line = FirstSyntaxTokenFinder.firstSyntaxToken(hiddenVariable).line();
+        addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }
     }

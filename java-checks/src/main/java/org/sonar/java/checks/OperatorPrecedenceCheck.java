@@ -28,6 +28,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -210,7 +211,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private void checkConditionalOperand(ExpressionTree tree) {
     if(!(tree.is(CONDITIONAL_EXCLUSIONS) || tree instanceof LiteralTree || tree instanceof UnaryExpressionTree)) {
-      raiseIssue(((JavaTree) tree).getLine(), tree);
+      raiseIssue(FirstSyntaxTokenFinder.firstSyntaxToken(tree).line(), tree);
     }
   }
 
