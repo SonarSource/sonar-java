@@ -634,9 +634,11 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
+      boolean hasBrackets = ellipsisToken == null;
       return Iterators.concat(
         Iterators.<Tree>singletonIterator(type),
-        annotations.iterator());
+        annotations.iterator(),
+        hasBrackets ? Iterators.forArray(openBracketToken, closeBracketToken) : Iterators.singletonIterator(ellipsisToken));
     }
 
     @Override
