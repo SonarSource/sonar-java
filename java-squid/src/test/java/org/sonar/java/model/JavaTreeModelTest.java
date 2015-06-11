@@ -1300,7 +1300,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void this_expression() {
-    IdentifierTree tree = (IdentifierTree) ((ReturnStatementTree) p.parse("class T { Object m() { return this; } }").getFirstDescendant(Kind.RETURN_STATEMENT)).expression();
+    IdentifierTree tree = (IdentifierTree) expressionOfReturnStatement("class T { Object m() { return this; } }");
     assertThat(tree.is(Tree.Kind.IDENTIFIER)).isTrue();
     assertThat(tree).isNotNull();
     assertThat(tree.identifierToken().text()).isEqualTo("this");
@@ -1772,7 +1772,7 @@ public class JavaTreeModelTest {
   @Test
   public void array_access_expression() {
     String code = "class T { T() { return a[42]; } }";
-    ArrayAccessExpressionTree tree = (ArrayAccessExpressionTree) ((ReturnStatementTree) firstMethodFirstStatement(code)).expression();
+    ArrayAccessExpressionTree tree = (ArrayAccessExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.index()).isNotNull();
@@ -1836,21 +1836,25 @@ public class JavaTreeModelTest {
    */
   @Test
   public void multiplicative_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 * 2 / 3 % 4; } }").getFirstDescendant(Kind.REMAINDER);
+    String code = "class T { int m() { return 1 * 2 / 3 % 4; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Kind.REMAINDER)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("%");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.DIVIDE)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("/");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Kind.MULTIPLY)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("*");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1858,17 +1862,20 @@ public class JavaTreeModelTest {
    */
   @Test
   public void additive_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 + 2 - 3; } }").getFirstDescendant(Kind.MINUS);
+    String code = "class T { int m() { return 1 + 2 - 3; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Kind.MINUS)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("-");
     assertThat(tree.rightOperand()).isNotNull();
     assertThat(tree.rightOperand().is(Kind.INT_LITERAL)).isTrue();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Kind.PLUS)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("+");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1876,21 +1883,25 @@ public class JavaTreeModelTest {
    */
   @Test
   public void shift_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 >> 2 << 3 >>> 4; } }").getFirstDescendant(Kind.UNSIGNED_RIGHT_SHIFT);
+    String code = "class T { int m() { return 1 >> 2 << 3 >>> 4; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.UNSIGNED_RIGHT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo(">>>");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.LEFT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("<<");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Kind.RIGHT_SHIFT)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo(">>");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1898,16 +1909,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void relational_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return 1 < 2 > 3; } }").getFirstDescendant(Kind.GREATER_THAN);
+    String code = "class T { boolean m() { return 1 < 2 > 3; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.GREATER_THAN)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo(">");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Kind.LESS_THAN)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("<");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1927,16 +1941,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void equality_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false == false != true; } }").getFirstDescendant(Kind.NOT_EQUAL_TO);
+    String code = "class T { boolean m() { return false == false != true; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.NOT_EQUAL_TO)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("!=");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.EQUAL_TO)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("==");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1944,38 +1961,47 @@ public class JavaTreeModelTest {
    */
   @Test
   public void bitwise_and_logical_operators() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 & 2 & 3; } }").getFirstDescendant(Kind.AND);
+    String code = "class T { int m() { return 1 & 2 & 3; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 ^ 2 ^ 3; } }").getFirstDescendant(Kind.XOR);
+    code = "class T { int m() { return 1 ^ 2 ^ 3; } }";
+    tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.XOR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("^");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.XOR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("^");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (BinaryExpressionTree) p.parse("class T { int m() { return 1 | 2 | 3; } }").getFirstDescendant(Kind.OR);
+    code = "class T { int m() { return 1 | 2 | 3; } }";
+    tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("|");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("|");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1983,16 +2009,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void conditional_and_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false && false && true; } }").getFirstDescendant(Kind.CONDITIONAL_AND);
+    String code = "class T { boolean m() { return false && false && true; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&&");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.CONDITIONAL_AND)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("&&");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -2000,16 +2029,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void conditional_or_expression() {
-    BinaryExpressionTree tree = (BinaryExpressionTree) p.parse("class T { boolean m() { return false || false || true; } }").getFirstDescendant(Kind.CONDITIONAL_OR);
+    String code = "class T { boolean m() { return false || false || true; } }";
+    BinaryExpressionTree tree = (BinaryExpressionTree) expressionOfReturnStatement(code);
     assertThat(tree.is(Tree.Kind.CONDITIONAL_OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("||");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
     tree = (BinaryExpressionTree) tree.leftOperand();
     assertThat(tree.is(Tree.Kind.CONDITIONAL_OR)).isTrue();
     assertThat(tree.leftOperand()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("||");
     assertThat(tree.rightOperand()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -2141,6 +2173,10 @@ public class JavaTreeModelTest {
     assertThat(param.bounds()).hasSize(2);
     assertThat(((IdentifierTree) param.bounds().get(0)).name()).isEqualTo("Object");
     assertThat(((IdentifierTree) param.bounds().get(1)).name()).isEqualTo("Number");
+  }
+
+  private ExpressionTree expressionOfReturnStatement(String code) {
+    return ((ReturnStatementTree) firstMethodFirstStatement(code)).expression();
   }
 
   private StatementTree firstMethodFirstStatement(String code) {
