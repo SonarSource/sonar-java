@@ -275,7 +275,7 @@ public class LastSyntaxTokenFinderTest {
         + "    ;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -286,7 +286,7 @@ public class LastSyntaxTokenFinderTest {
         + "    bar();"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ")");
+    assertLastStatementlastTokenValue(p, ")");
   }
 
   @Test
@@ -297,7 +297,7 @@ public class LastSyntaxTokenFinderTest {
         + "    A.b.c;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "c");
+    assertLastStatementlastTokenValue(p, "c");
   }
 
   @Test
@@ -308,7 +308,7 @@ public class LastSyntaxTokenFinderTest {
         + "    if (test) { }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
 
     p =
       "class Foo {"
@@ -317,7 +317,7 @@ public class LastSyntaxTokenFinderTest {
         + "    else { }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -328,7 +328,7 @@ public class LastSyntaxTokenFinderTest {
         + "    assert true;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -342,7 +342,7 @@ public class LastSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
 
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) getFirstStatement(p);
     CaseGroupTree firstCaseGroup = switchStatementTree.cases().get(0);
@@ -362,7 +362,7 @@ public class LastSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
 
     switchStatementTree = (SwitchStatementTree) getFirstStatement(p);
     CaseGroupTree lastCaseGroup = switchStatementTree.cases().get(1);
@@ -379,7 +379,7 @@ public class LastSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -391,7 +391,7 @@ public class LastSyntaxTokenFinderTest {
         + "    } while (true);"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -403,7 +403,7 @@ public class LastSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
 
     p =
       "class Foo {"
@@ -412,7 +412,7 @@ public class LastSyntaxTokenFinderTest {
         + "      doStuff();"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -424,7 +424,7 @@ public class LastSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -435,7 +435,7 @@ public class LastSyntaxTokenFinderTest {
         + "    break;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -446,7 +446,7 @@ public class LastSyntaxTokenFinderTest {
         + "    continue;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -457,7 +457,7 @@ public class LastSyntaxTokenFinderTest {
         + "    return;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -468,7 +468,7 @@ public class LastSyntaxTokenFinderTest {
         + "    throw new Exception();"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -479,7 +479,7 @@ public class LastSyntaxTokenFinderTest {
         + "    synchronized (new Object()) {}"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -490,7 +490,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new Foo();"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ")");
+    assertLastStatementlastTokenValue(p, ")");
 
     p =
       "class T {"
@@ -498,7 +498,7 @@ public class LastSyntaxTokenFinderTest {
         + "    this.new T(true, false) {};"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "}");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test
@@ -509,7 +509,7 @@ public class LastSyntaxTokenFinderTest {
         + "    \"test\";"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "\"test\"");
+    assertLastStatementlastTokenValue(p, "\"test\"");
   }
 
   @Test
@@ -521,7 +521,7 @@ public class LastSyntaxTokenFinderTest {
         + "      return;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ";");
+    assertLastStatementlastTokenValue(p, ";");
   }
 
   @Test
@@ -532,7 +532,7 @@ public class LastSyntaxTokenFinderTest {
         + "    ++i;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "i");
+    assertLastStatementlastTokenValue(p, "i");
 
     p =
       "class Foo {"
@@ -540,7 +540,7 @@ public class LastSyntaxTokenFinderTest {
         + "    i++;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "++");
+    assertLastStatementlastTokenValue(p, "++");
   }
 
   @Test
@@ -551,7 +551,7 @@ public class LastSyntaxTokenFinderTest {
         + "    ((Object) list);"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ")");
+    assertLastStatementlastTokenValue(p, ")");
   }
 
   @Test
@@ -562,7 +562,7 @@ public class LastSyntaxTokenFinderTest {
         + "    a + b;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "b");
+    assertLastStatementlastTokenValue(p, "b");
   }
 
   @Test
@@ -573,7 +573,7 @@ public class LastSyntaxTokenFinderTest {
         + "    array[4];"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "]");
+    assertLastStatementlastTokenValue(p, "]");
   }
 
   @Test
@@ -584,7 +584,7 @@ public class LastSyntaxTokenFinderTest {
         + "    test ? 1 : 2;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "2");
+    assertLastStatementlastTokenValue(p, "2");
   }
 
   @Test
@@ -595,7 +595,7 @@ public class LastSyntaxTokenFinderTest {
         + "    test = false;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "false");
+    assertLastStatementlastTokenValue(p, "false");
   }
 
   @Test
@@ -606,7 +606,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new int[3];"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "3");
+    assertLastStatementlastTokenValue(p, "3");
 
     p =
       "class Foo {"
@@ -614,7 +614,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new int[] {1, 2, 3};"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "3");
+    assertLastStatementlastTokenValue(p, "3");
   }
 
   @Test
@@ -625,7 +625,7 @@ public class LastSyntaxTokenFinderTest {
         + "    (Object) f;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "f");
+    assertLastStatementlastTokenValue(p, "f");
   }
 
   @Test
@@ -636,7 +636,7 @@ public class LastSyntaxTokenFinderTest {
         + "    f instanceof Object;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "Object");
+    assertLastStatementlastTokenValue(p, "Object");
   }
 
   @Test
@@ -647,7 +647,7 @@ public class LastSyntaxTokenFinderTest {
         + "    p -> p.printPerson();"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, ")");
+    assertLastStatementlastTokenValue(p, ")");
   }
 
   @Test
@@ -658,10 +658,21 @@ public class LastSyntaxTokenFinderTest {
         + "    HashSet::new;"
         + "  }"
         + "}";
-    assertFirstStatementlastTokenValue(p, "new");
+    assertLastStatementlastTokenValue(p, "new");
   }
 
-  private void assertFirstStatementlastTokenValue(String p, String expected) {
+  @Test
+  public void syntax_token() {
+    String p = "class Foo {}";
+    ClassTree firstClass = getFirstClass(getCompilationUnit(p));
+    assertLastStatementFirstTokenValue(firstClass.declarationKeyword(), "class");
+  }
+
+  private void assertLastStatementFirstTokenValue(Tree tree, String expected) {
+    assertThat(getLastSyntaxToken(tree).text()).isEqualTo(expected);
+  }
+
+  private void assertLastStatementlastTokenValue(String p, String expected) {
     assertThat(getLastSyntaxToken(getFirstStatement(p)).text()).isEqualTo(expected);
   }
 

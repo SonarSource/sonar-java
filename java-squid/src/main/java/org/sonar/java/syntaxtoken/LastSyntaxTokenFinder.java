@@ -101,6 +101,9 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
    */
   @Nullable
   public static SyntaxToken lastSyntaxToken(Tree tree) {
+    if (tree.is(Tree.Kind.TOKEN)) {
+      return (SyntaxToken) tree;
+    }
     LastSyntaxTokenFinder visitor = new LastSyntaxTokenFinder();
     tree.accept(visitor);
     return visitor.lastSyntaxToken;
@@ -443,6 +446,6 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitOther(Tree tree) {
-    // firstSyntaxToken will be null
+    // lastSyntaxToken will be null
   }
 }

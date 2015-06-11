@@ -583,6 +583,17 @@ public class FirstSyntaxTokenFinderTest {
     assertFirstStatementFirstTokenValue(p, "HashSet");
   }
 
+  @Test
+  public void syntax_token() {
+    String p = "class Foo {}";
+    ClassTree firstClass = getFirstClass(getCompilationUnit(p));
+    assertFirstStatementFirstTokenValue(firstClass.declarationKeyword(), "class");
+  }
+
+  private void assertFirstStatementFirstTokenValue(Tree tree, String expected) {
+    assertThat(getFirstSyntaxToken(tree).text()).isEqualTo(expected);
+  }
+
   private void assertFirstStatementFirstTokenValue(String p, String expected) {
     assertThat(getFirstSyntaxToken(getFirstStatement(p)).text()).isEqualTo(expected);
   }

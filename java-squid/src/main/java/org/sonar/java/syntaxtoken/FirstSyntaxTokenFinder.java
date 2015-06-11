@@ -99,6 +99,9 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
    */
   @Nullable
   public static SyntaxToken firstSyntaxToken(Tree tree) {
+    if (tree.is(Tree.Kind.TOKEN)) {
+      return (SyntaxToken) tree;
+    }
     FirstSyntaxTokenFinder visitor = new FirstSyntaxTokenFinder();
     tree.accept(visitor);
     return visitor.firstSyntaxToken;
