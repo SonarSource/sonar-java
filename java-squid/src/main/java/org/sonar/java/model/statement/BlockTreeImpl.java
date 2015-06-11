@@ -94,9 +94,9 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      // (Godin): workaround for generics
-      Iterators.<Tree>emptyIterator(),
-      body.iterator());
+      Iterators.singletonIterator(openBraceToken),
+      body.iterator(),
+      Iterators.singletonIterator(closeBraceToken));
   }
 
 }

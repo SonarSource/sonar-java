@@ -432,21 +432,21 @@ public class JavaTreeModelTest {
 
   @Test
   public void class_init_declaration() {
-    AstNode astNode = p.parse("class T { { ; ; } }");
-    BlockTree tree = (BlockTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
+    BlockTree tree = (BlockTree) firstTypeMember("class T { { ; ; } }");
     assertThat(tree.is(Tree.Kind.INITIALIZER)).isTrue();
     assertThat(tree.body()).hasSize(2);
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
+    assertThatChildrenIteratorHasSize(tree, 4);
 
-    astNode = p.parse("class T { static { ; ; } }");
-    tree = (BlockTree) ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members().get(0);
+    tree = (BlockTree) firstTypeMember("class T { static { ; ; } }");
     assertThat(tree.is(Tree.Kind.STATIC_INITIALIZER)).isTrue();
     StaticInitializerTree staticInitializerTree = (StaticInitializerTree) tree;
     assertThat(staticInitializerTree.body()).hasSize(2);
     assertThat(staticInitializerTree.staticKeyword().text()).isEqualTo("static");
     assertThat(staticInitializerTree.openBraceToken().text()).isEqualTo("{");
     assertThat(staticInitializerTree.closeBraceToken().text()).isEqualTo("}");
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   @Test
@@ -825,11 +825,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void blocks() {
-    BlockTree tree = (BlockTree) p.parse("class T { void m() { ; ; } }").getFirstDescendant(Kind.BLOCK);
+    BlockTree tree = ((MethodTree) firstTypeMember("class T { void m() { ; ; } }")).block();
     assertThat(tree.is(Tree.Kind.BLOCK)).isTrue();
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.body()).hasSize(2);
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
+    assertThatChildrenIteratorHasSize(tree, 4);
   }
 
   /**
@@ -837,7 +838,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void local_class_declaration() {
-    BlockTree block = (BlockTree) p.parse("class T { void m() { abstract class Local { } } }").getFirstDescendant(Kind.BLOCK);
+    BlockTree block = ((MethodTree) firstTypeMember("class T { void m() { abstract class Local { } } }")).block();
     ClassTree tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     assertThat(tree.simpleName().identifierToken().text()).isEqualTo("Local");
@@ -845,7 +846,7 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
 
-    block = (BlockTree) p.parse("class T { void m() { static enum Local { ; } } }").getFirstDescendant(Kind.BLOCK);
+    block = ((MethodTree) firstTypeMember("class T { void m() { static enum Local { ; } } }")).block();
     tree = (ClassTree) block.body().get(0);
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
@@ -858,7 +859,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void local_variable_declaration() {
-    BlockTree block = (BlockTree) p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(Kind.BLOCK);
+    BlockTree block = ((MethodTree) firstTypeMember("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }")).block();
     List<StatementTree> declarations = block.body();
     assertThat(declarations).hasSize(3);
     // FIXME will be removed when children are removed. Use to verify that endToken are not added multiple times
