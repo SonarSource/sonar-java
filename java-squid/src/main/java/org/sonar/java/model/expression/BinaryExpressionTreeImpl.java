@@ -106,6 +106,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       leftOperand,
+      operator,
       rightOperand);
   }
 
