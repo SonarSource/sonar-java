@@ -157,73 +157,82 @@ public class JavaTreeModelTest {
 
   @Test
   public void literal() {
-    LiteralTree tree = (LiteralTree) p.parse("class T { int m() { return 1; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    LiteralTree tree = (LiteralTree) expressionOfReturnStatement("class T { int m() { return 1; } }");
     assertThat(tree.is(Tree.Kind.INT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1");
+    assertThatChildrenIteratorHasSize(tree, 1);
     SyntaxToken token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(27);
 
-    tree = (LiteralTree) p.parse("class T { long m() { return 1L; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { long m() { return 1L; } }");
     assertThat(tree.is(Tree.Kind.LONG_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1L");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(28);
 
-    tree = (LiteralTree) p.parse("class T { float m() { return 1F; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { float m() { return 1F; } }");
     assertThat(tree.is(Tree.Kind.FLOAT_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1F");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(29);
 
-    tree = (LiteralTree) p.parse("class T { double m() { return 1d; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { double m() { return 1d; } }");
     assertThat(tree.is(Tree.Kind.DOUBLE_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("1d");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(30);
 
-    tree = (LiteralTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { boolean m() { return true; } }");
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("true");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(31);
 
-    tree = (LiteralTree) p.parse("class T { boolean m() { return false; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { boolean m() { return false; } }");
     assertThat(tree.is(Tree.Kind.BOOLEAN_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("false");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(31);
 
-    tree = (LiteralTree) p.parse("class T { char m() { return 'c'; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { char m() { return 'c'; } }");
     assertThat(tree.is(Tree.Kind.CHAR_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("'c'");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(28);
 
-    tree = (LiteralTree) p.parse("class T { String m() { return \"s\"; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { String m() { return \"s\"; } }");
     assertThat(tree.is(Tree.Kind.STRING_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("\"s\"");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
     assertThat(token.column()).isEqualTo(30);
 
-    tree = (LiteralTree) p.parse("class T { Object m() { return null; } }").getFirstDescendant(getKindsAssociatedTo(LiteralTree.class));
+    tree = (LiteralTree) expressionOfReturnStatement("class T { Object m() { return null; } }");
     assertThat(tree.is(Tree.Kind.NULL_LITERAL)).isTrue();
     assertThat(tree.value()).isEqualTo("null");
+    assertThatChildrenIteratorHasSize(tree, 1);
     token = tree.token();
     assertThat(token).isNotNull();
     assertThat(token.line()).isEqualTo(1);
