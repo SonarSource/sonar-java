@@ -2126,7 +2126,7 @@ public class JavaTreeModelTest {
   @Test
   public void lambda_expressions() {
     String code = "class T { public void meth(){IntStream.range(1,12).map(x->x*x).map((int a)-> {return a*a;});}}";
-    ExpressionTree expressionTree = ((ExpressionStatementTree) ((MethodTree) firstTypeMember(code)).block().body().get(0)).expression();
+    ExpressionTree expressionTree = ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
     
     // parsing not broken by lambda
     assertThat(expressionTree).isNotNull();
