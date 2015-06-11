@@ -1305,6 +1305,7 @@ public class JavaTreeModelTest {
     assertThat(tree).isNotNull();
     assertThat(tree.identifierToken().text()).isEqualTo("this");
     assertThat(tree.name()).isEqualTo("this");
+    assertThatChildrenIteratorHasSize(tree, 1);
   }
 
   /**
