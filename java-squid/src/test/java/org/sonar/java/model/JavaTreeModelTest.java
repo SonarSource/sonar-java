@@ -2049,24 +2049,28 @@ public class JavaTreeModelTest {
    */
   @Test
   public void conditional_expression() {
-    ConditionalExpressionTree tree = (ConditionalExpressionTree) p.parse("class T { boolean m() { return true ? true : false; } }").getFirstDescendant(Kind.CONDITIONAL_EXPRESSION);
+    ConditionalExpressionTree tree;
+    tree = (ConditionalExpressionTree) expressionOfReturnStatement("class T { boolean m() { return true ? true : false; } }");
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
     assertThat(tree.condition()).isInstanceOf(LiteralTree.class);
     assertThat(tree.questionToken().text()).isEqualTo("?");
     assertThat(tree.trueExpression()).isInstanceOf(LiteralTree.class);
     assertThat(tree.colonToken().text()).isEqualTo(":");
     assertThat(tree.falseExpression()).isInstanceOf(LiteralTree.class);
+    assertThatChildrenIteratorHasSize(tree, 5);
 
-    tree = (ConditionalExpressionTree) p.parse("class T { boolean m() { return true ? true : false ? true : false; } }").getFirstDescendant(Kind.CONDITIONAL_EXPRESSION);
+    tree = (ConditionalExpressionTree) expressionOfReturnStatement("class T { boolean m() { return true ? true : false ? true : false; } }");
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
     assertThat(tree.condition()).isInstanceOf(LiteralTree.class);
     assertThat(tree.trueExpression()).isInstanceOf(LiteralTree.class);
     assertThat(tree.falseExpression()).isInstanceOf(ConditionalExpressionTree.class);
+    assertThatChildrenIteratorHasSize(tree, 5);
     tree = (ConditionalExpressionTree) tree.falseExpression();
     assertThat(tree.is(Tree.Kind.CONDITIONAL_EXPRESSION)).isTrue();
     assertThat(tree.condition()).isInstanceOf(LiteralTree.class);
     assertThat(tree.trueExpression()).isInstanceOf(LiteralTree.class);
     assertThat(tree.falseExpression()).isInstanceOf(LiteralTree.class);
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   /**
