@@ -102,7 +102,9 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       condition,
+      queryToken,
       trueExpression,
+      colonToken,
       falseExpression
       );
   }
