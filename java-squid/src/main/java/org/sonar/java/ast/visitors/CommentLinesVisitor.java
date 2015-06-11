@@ -44,7 +44,7 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
   public int commentLines(CompilationUnitTree tree) {
     comments.clear();
     seenFirstToken = false;
-    visitTokens(tree);
+    scanTree(tree);
     return comments.size();
   }
 

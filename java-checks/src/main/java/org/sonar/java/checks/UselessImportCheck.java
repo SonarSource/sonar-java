@@ -220,7 +220,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
 
     public void checkImportsFromComments(CompilationUnitTree cut, Set<String> pendingImports) {
       this.pendingImports = pendingImports;
-      visitTokens(cut);
+      scanTree(cut);
     }
 
     @Override
