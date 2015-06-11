@@ -70,7 +70,8 @@ public class InternalPrefixUnaryExpression extends AbstractTypedTree implements 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
+    return Iterators.<Tree>forArray(
+      operatorToken,
       expression
       );
   }

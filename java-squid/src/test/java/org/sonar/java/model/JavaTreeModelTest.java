@@ -1785,15 +1785,18 @@ public class JavaTreeModelTest {
    */
   @Test
   public void postfix_expression() {
-    UnaryExpressionTree tree = (UnaryExpressionTree) p.parse("class T { void m() { i++; } }").getFirstDescendant(Kind.POSTFIX_INCREMENT);
+    UnaryExpressionTree tree;
+    tree = (UnaryExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(("class T { void m() { i++; } }"))).expression();
     assertThat(tree.is(Tree.Kind.POSTFIX_INCREMENT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("++");
+    assertThatChildrenIteratorHasSize(tree, 2);
 
-    tree = (UnaryExpressionTree) p.parse("class T { void m() { i--; } }").getFirstDescendant(Kind.POSTFIX_DECREMENT);
+    tree = (UnaryExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(("class T { void m() { i--; } }"))).expression();
     assertThat(tree.is(Tree.Kind.POSTFIX_DECREMENT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.operatorToken().text()).isEqualTo("--");
+    assertThatChildrenIteratorHasSize(tree, 2);
   }
 
   /**
@@ -1801,15 +1804,18 @@ public class JavaTreeModelTest {
    */
   @Test
   public void unary_operators() {
-    UnaryExpressionTree tree = (UnaryExpressionTree) p.parse("class T { void m() { ++i; } }").getFirstDescendant(Kind.PREFIX_INCREMENT);
+    UnaryExpressionTree tree;
+    tree = (UnaryExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(("class T { void m() { ++i; } }"))).expression();
     assertThat(tree.is(Tree.Kind.PREFIX_INCREMENT)).isTrue();
     assertThat(tree.operatorToken().text()).isEqualTo("++");
     assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 2);
 
-    tree = (UnaryExpressionTree) p.parse("class T { void m() { --i; } }").getFirstDescendant(Kind.PREFIX_DECREMENT);
+    tree = (UnaryExpressionTree) ((ExpressionStatementTree) firstMethodFirstStatement(("class T { void m() { --i; } }"))).expression();
     assertThat(tree.is(Tree.Kind.PREFIX_DECREMENT)).isTrue();
     assertThat(tree.operatorToken().text()).isEqualTo("--");
     assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 2);
   }
 
   /**
