@@ -1375,8 +1375,9 @@ public class TreeFactory {
   }
 
   public ThrowStatementTreeImpl throwStatement(AstNode throwToken, ExpressionTree expression, AstNode semicolonToken) {
-    return new ThrowStatementTreeImpl(expression,
-      throwToken, (AstNode) expression, semicolonToken);
+    InternalSyntaxToken throwSyntaxToken = InternalSyntaxToken.create(throwToken);
+    InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
+    return new ThrowStatementTreeImpl(throwSyntaxToken, expression, semicolonSyntaxToken);
   }
 
   public LabeledStatementTreeImpl labeledStatement(AstNode identifierAstNode, AstNode colon, StatementTree statement) {

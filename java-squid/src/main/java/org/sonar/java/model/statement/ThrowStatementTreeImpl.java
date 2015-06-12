@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,15 +33,19 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTree {
+  private final InternalSyntaxToken throwKeyword;
   private final ExpressionTree expression;
+  private final InternalSyntaxToken semicolonToken;
 
-  public ThrowStatementTreeImpl(ExpressionTree expression, AstNode... children) {
+  public ThrowStatementTreeImpl(InternalSyntaxToken throwKeyword, ExpressionTree expression, InternalSyntaxToken semicolonToken) {
     super(Kind.THROW_STATEMENT);
+    this.throwKeyword = throwKeyword;
     this.expression = Preconditions.checkNotNull(expression);
+    this.semicolonToken = semicolonToken;
 
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    addChild(throwKeyword);
+    addChild((AstNode) expression);
+    addChild(semicolonToken);
   }
 
   @Override
@@ -53,7 +55,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
 
   @Override
   public SyntaxToken throwKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.THROW));
+    return throwKeyword;
   }
 
   @Override
@@ -63,7 +65,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override
