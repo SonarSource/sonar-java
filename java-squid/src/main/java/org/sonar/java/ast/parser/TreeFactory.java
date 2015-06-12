@@ -1368,11 +1368,10 @@ public class TreeFactory {
   }
 
   public ReturnStatementTreeImpl returnStatement(AstNode returnToken, Optional<ExpressionTree> expression, AstNode semicolonToken) {
-    return expression.isPresent() ?
-      new ReturnStatementTreeImpl(expression.get(),
-        returnToken, (AstNode) expression.get(), semicolonToken) :
-      new ReturnStatementTreeImpl(null,
-        returnToken, semicolonToken);
+    InternalSyntaxToken returnKeywordSyntaxToken = InternalSyntaxToken.create(returnToken);
+    InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
+    ExpressionTree expressionTree = expression.isPresent() ? expression.get() : null;
+    return new ReturnStatementTreeImpl(returnKeywordSyntaxToken, expressionTree, semicolonSyntaxToken);
   }
 
   public ThrowStatementTreeImpl throwStatement(AstNode throwToken, ExpressionTree expression, AstNode semicolonToken) {

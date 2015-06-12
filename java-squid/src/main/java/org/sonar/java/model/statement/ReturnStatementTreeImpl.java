@@ -21,8 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,19 +30,26 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatementTree {
+  private final InternalSyntaxToken returnKeyword;
   @Nullable
   private final ExpressionTree expression;
+  private final InternalSyntaxToken semicolonToken;
 
-  public ReturnStatementTreeImpl(@Nullable ExpressionTree expression, AstNode... children) {
+  public ReturnStatementTreeImpl(InternalSyntaxToken returnKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken semicolonToken) {
     super(Kind.RETURN_STATEMENT);
+    this.returnKeyword = returnKeyword;
     this.expression = expression;
+    this.semicolonToken = semicolonToken;
 
-    for (AstNode child : children) {
-      addChild(child);
+    addChild(returnKeyword);
+    if (expression != null) {
+      addChild((AstNode) expression);
     }
+    addChild(semicolonToken);
   }
 
   @Override
@@ -54,7 +59,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken returnKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.RETURN));
+    return returnKeyword;
   }
 
   @Nullable
@@ -65,7 +70,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override
