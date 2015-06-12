@@ -1344,15 +1344,13 @@ public class TreeFactory {
   }
 
   public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<AstNode> identifierAstNode, AstNode semicolonToken) {
+    InternalSyntaxToken continueKeywordSyntaxToken = InternalSyntaxToken.create(continueToken);
+    InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
+    IdentifierTreeImpl identifier = null;
     if (identifierAstNode.isPresent()) {
-      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode.get()));
-
-      return new ContinueStatementTreeImpl(identifier,
-        continueToken, identifier, semicolonToken);
-    } else {
-      return new ContinueStatementTreeImpl(null,
-        continueToken, semicolonToken);
+      identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode.get()));
     }
+    return new ContinueStatementTreeImpl(continueKeywordSyntaxToken, identifier, semicolonSyntaxToken);
   }
 
   public ReturnStatementTreeImpl returnStatement(AstNode returnToken, Optional<ExpressionTree> expression, AstNode semicolonToken) {
