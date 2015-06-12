@@ -1635,14 +1635,7 @@ public class TreeFactory {
 
   public TypeCastExpressionTreeImpl newBasicTypeCastExpression(PrimitiveTypeTreeImpl basicType, AstNode closeParenTokenAstNode, ExpressionTree expression) {
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-
-    List<AstNode> children = Lists.newArrayList();
-    children.add(basicType);
-    children.add(closeParenToken);
-    children.add((AstNode) expression);
-
-    return new TypeCastExpressionTreeImpl(basicType, expression, closeParenToken,
-      children);
+    return new TypeCastExpressionTreeImpl(basicType, closeParenToken, expression);
   }
 
   public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
@@ -1650,6 +1643,7 @@ public class TreeFactory {
 
     List<AstNode> children = Lists.newArrayList();
     children.add((AstNode) type);
+    // TODO SONARJAVA-1139 bound should be present in castTree
     if (classTypes.isPresent()) {
       for (AstNode classType : classTypes.get()) {
         children.addAll(classType.getChildren());
@@ -1658,8 +1652,7 @@ public class TreeFactory {
     children.add(closeParenToken);
     children.add((AstNode) expression);
 
-    return new TypeCastExpressionTreeImpl(type, expression, closeParenToken,
-      children);
+    return new TypeCastExpressionTreeImpl(type, closeParenToken, expression, children);
   }
 
   public ExpressionTree completeMethodReference(MethodReferenceTreeImpl partial, Optional<TypeArgumentListTreeImpl> typeArguments, AstNode newOrIdentifierToken) {

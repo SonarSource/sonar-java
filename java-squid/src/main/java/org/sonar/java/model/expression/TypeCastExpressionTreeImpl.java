@@ -22,7 +22,6 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -38,17 +37,26 @@ import java.util.List;
 public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
 
   private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
-
   private final TypeTree type;
+  private final InternalSyntaxToken closeParenToken;
   private final ExpressionTree expression;
 
-  public TypeCastExpressionTreeImpl(TypeTree type, ExpressionTree expression, InternalSyntaxToken closeParenToken, List<AstNode> children) {
+  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
+    this.closeParenToken = closeParenToken;
     this.expression = Preconditions.checkNotNull(expression);
 
+    addChild((AstNode) type);
+    addChild(closeParenToken);
+    addChild((AstNode) expression);
+  }
+
+  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression, List<AstNode> children) {
+    super(Kind.TYPE_CAST);
+    this.type = Preconditions.checkNotNull(type);
     this.closeParenToken = closeParenToken;
+    this.expression = Preconditions.checkNotNull(expression);
 
     for (AstNode child : children) {
       addChild(child);
@@ -71,7 +79,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -81,7 +89,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
