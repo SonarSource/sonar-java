@@ -1080,16 +1080,27 @@ public class TreeFactory {
     AstNode openParenTokenAstNode,
     Optional<StatementExpressionListTreeImpl> forInit, AstNode forInitSemicolonTokenAstNode,
     Optional<ExpressionTree> expression, AstNode expressionSemicolonTokenAstNode,
-    Optional<StatementExpressionListTreeImpl> forUpdate, AstNode forUpdateSemicolonTokenAstNode,
+    Optional<StatementExpressionListTreeImpl> forUpdate, AstNode closeParenTokenAstNode,
     StatementTree statement) {
 
     StatementExpressionListTreeImpl forInit2 = forInit.isPresent() ? forInit.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
     StatementExpressionListTreeImpl forUpdate2 = forUpdate.isPresent() ? forUpdate.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
 
+    InternalSyntaxToken forKeyword = InternalSyntaxToken.create(forTokenAstNode);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken firstSemicolonToken = InternalSyntaxToken.create(forInitSemicolonTokenAstNode);
+    InternalSyntaxToken secondSemicolonToken = InternalSyntaxToken.create(expressionSemicolonTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+    
     ForStatementTreeImpl result = new ForStatementTreeImpl(
+      forKeyword,
+      openParenToken,
       forInit2,
+      firstSemicolonToken,
       expression.isPresent() ? expression.get() : null,
+      secondSemicolonToken,
       forUpdate2,
+      closeParenToken,
       statement);
 
     List<AstNode> children = Lists.newArrayList();
@@ -1102,7 +1113,7 @@ public class TreeFactory {
     }
     children.add(expressionSemicolonTokenAstNode);
     children.add(forUpdate2);
-    children.add(forUpdateSemicolonTokenAstNode);
+    children.add(closeParenTokenAstNode);
     children.add((AstNode) statement);
 
     result.prependChildren(children);
