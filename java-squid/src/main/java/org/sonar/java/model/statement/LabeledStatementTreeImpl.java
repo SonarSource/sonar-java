@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.JavaSymbol;
@@ -38,17 +37,19 @@ import java.util.Iterator;
 
 public class LabeledStatementTreeImpl extends JavaTree implements LabeledStatementTree {
   private final IdentifierTree label;
+  private final InternalSyntaxToken colonToken;
   private final StatementTree statement;
   private Symbol.LabelSymbol symbol;
 
-  public LabeledStatementTreeImpl(IdentifierTree label, StatementTree statement, AstNode... children) {
+  public LabeledStatementTreeImpl(IdentifierTree label, InternalSyntaxToken colonToken, StatementTree statement) {
     super(Kind.LABELED_STATEMENT);
     this.label = Preconditions.checkNotNull(label);
+    this.colonToken = colonToken;
     this.statement = Preconditions.checkNotNull(statement);
 
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    addChild((AstNode) label);
+    addChild(colonToken);
+    addChild((AstNode) statement);
   }
 
   @Override
@@ -63,7 +64,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
 
   @Override
   public SyntaxToken colonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Override

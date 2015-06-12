@@ -1382,9 +1382,8 @@ public class TreeFactory {
 
   public LabeledStatementTreeImpl labeledStatement(AstNode identifierAstNode, AstNode colon, StatementTree statement) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
-
-    return new LabeledStatementTreeImpl(identifier, statement,
-      identifier, colon, (AstNode) statement);
+    InternalSyntaxToken colonSyntaxToken = InternalSyntaxToken.create(colon);
+    return new LabeledStatementTreeImpl(identifier, colonSyntaxToken, statement);
   }
 
   public ExpressionStatementTreeImpl expressionStatement(ExpressionTree expression, AstNode semicolonTokenAstNode) {
