@@ -22,8 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -33,39 +31,48 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
-  private ExpressionTree condition;
 
+  private InternalSyntaxToken assertToken;
+  private ExpressionTree condition;
+  @Nullable
+  private final InternalSyntaxToken colonToken;
   @Nullable
   private final ExpressionTree detail;
+  private InternalSyntaxToken semicolonToken;
 
-  public AssertStatementTreeImpl(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
+  public AssertStatementTreeImpl(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     super(Kind.ASSERT_STATEMENT);
+    this.assertToken = assertToken;
     this.condition = Preconditions.checkNotNull(condition);
+    this.colonToken = null;
     this.detail = null;
+    this.semicolonToken = semicolonToken;
 
     addChild(assertToken);
-    addChild(expression);
+    addChild((AstNode) condition);
     addChild(semicolonToken);
   }
 
-  public AssertStatementTreeImpl(ExpressionTree detail, AstNode colonToken, AstNode expression) {
+  public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
     super(Kind.ASSERT_STATEMENT);
+    this.colonToken = colonToken;
     this.detail = Preconditions.checkNotNull(detail);
 
     addChild(colonToken);
-    addChild(expression);
+    addChild((AstNode) detail);
   }
 
-  public AssertStatementTreeImpl complete(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
+  public AssertStatementTreeImpl complete(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
+    this.assertToken = assertToken;
     this.condition = Preconditions.checkNotNull(condition);
+    this.semicolonToken = semicolonToken;
 
-    prependChildren(
-      assertToken,
-      expression);
-    // optional: colonToken, expression
+    prependChildren(assertToken, (AstNode) condition);
+    // optional: colonToken, detail
     addChild(semicolonToken);
 
     return this;
@@ -78,7 +85,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken assertKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.ASSERT));
+    return assertToken;
   }
 
   @Override
@@ -89,7 +96,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   @Nullable
   @Override
   public SyntaxToken colonToken() {
-    return detail == null ? null : InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Nullable
@@ -100,7 +107,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override

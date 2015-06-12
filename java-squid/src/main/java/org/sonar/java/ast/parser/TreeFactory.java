@@ -1044,16 +1044,15 @@ public class TreeFactory {
   public AssertStatementTreeImpl completeAssertStatement(
     AstNode assertToken, ExpressionTree expression, Optional<AssertStatementTreeImpl> detailExpression, AstNode semicolonToken) {
 
+    InternalSyntaxToken assertSyntaxToken = InternalSyntaxToken.create(assertToken);
+    InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
     return detailExpression.isPresent() ?
-      detailExpression.get().complete(expression,
-        assertToken, (AstNode) expression, semicolonToken) :
-      new AssertStatementTreeImpl(expression,
-        assertToken, (AstNode) expression, semicolonToken);
+      detailExpression.get().complete(assertSyntaxToken, expression, semicolonSyntaxToken) :
+      new AssertStatementTreeImpl(assertSyntaxToken, expression, semicolonSyntaxToken);
   }
 
   public AssertStatementTreeImpl newAssertStatement(AstNode colonToken, ExpressionTree expression) {
-    return new AssertStatementTreeImpl(expression,
-      colonToken, (AstNode) expression);
+    return new AssertStatementTreeImpl(InternalSyntaxToken.create(colonToken), expression);
   }
 
   public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode openParen, ExpressionTree condition, AstNode closeParen, StatementTree statement,
