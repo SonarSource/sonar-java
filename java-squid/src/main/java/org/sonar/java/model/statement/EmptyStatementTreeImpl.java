@@ -20,8 +20,6 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
@@ -32,10 +30,12 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTree {
+  private final InternalSyntaxToken semicolonToken;
 
-  public EmptyStatementTreeImpl(AstNode astNode) {
+  public EmptyStatementTreeImpl(InternalSyntaxToken semicolonToken) {
     super(Kind.EMPTY_STATEMENT);
-    addChild(astNode);
+    this.semicolonToken = semicolonToken;
+    addChild(semicolonToken);
   }
 
   @Override
@@ -50,7 +50,7 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override

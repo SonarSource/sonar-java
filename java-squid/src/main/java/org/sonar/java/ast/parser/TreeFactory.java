@@ -200,7 +200,7 @@ public class TreeFactory {
   }
 
   public ImportClauseTree newEmptyImport(AstNode semicolonTokenAstNode) {
-    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
+    return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolonTokenAstNode));
   }
 
   public ImportTreeImpl newImportDeclaration(AstNode importTokenAstNode, Optional<AstNode> staticTokenAstNode, ExpressionTree qualifiedIdentifier,
@@ -230,7 +230,7 @@ public class TreeFactory {
   }
 
   public Tree newEmptyType(AstNode semicolonTokenAstNode) {
-    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
+    return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolonTokenAstNode));
   }
 
   // End of compilation unit
@@ -612,7 +612,7 @@ public class TreeFactory {
   }
 
   public AstNode newEmptyMember(AstNode semicolonTokenAstNode) {
-    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
+    return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolonTokenAstNode));
   }
 
   public MethodTreeImpl completeGenericMethodOrConstructorDeclaration(TypeParameterListTreeImpl typeParameters, MethodTreeImpl partial) {
@@ -1381,7 +1381,7 @@ public class TreeFactory {
   }
 
   public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
-    return new EmptyStatementTreeImpl(semicolon);
+    return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolon));
   }
 
   public BlockStatementListTreeImpl blockStatements(Optional<List<BlockStatementListTreeImpl>> blockStatements) {
