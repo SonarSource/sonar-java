@@ -1745,8 +1745,9 @@ public class TreeFactory {
   }
 
   public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, ExpressionTree expression, AstNode rightParenthesisToken) {
-    return new ParenthesizedTreeImpl(expression,
-      leftParenthesisToken, (AstNode) expression, rightParenthesisToken);
+    InternalSyntaxToken leftParenSyntaxToken = InternalSyntaxToken.create(leftParenthesisToken);
+    InternalSyntaxToken rightParenSyntaxToken = InternalSyntaxToken.create(rightParenthesisToken);
+    return new ParenthesizedTreeImpl(leftParenSyntaxToken, expression, rightParenSyntaxToken);
   }
 
   public ExpressionTree newExpression(AstNode newToken, Optional<List<AnnotationTreeImpl>> annotations, ExpressionTree partial) {
