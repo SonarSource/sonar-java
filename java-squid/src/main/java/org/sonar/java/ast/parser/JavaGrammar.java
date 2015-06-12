@@ -62,6 +62,7 @@ import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.java.parser.sslr.GrammarBuilder;
+import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
@@ -1269,15 +1270,16 @@ public class JavaGrammar {
       .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
   }
 
-  public ExpressionTree SELECTOR() {
-    return b.<ExpressionTree>nonterminal(JavaLexer.SELECTOR)
+  public Tuple<Optional<InternalSyntaxToken>, ExpressionTree> SELECTOR() {
+    return b.<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>nonterminal(JavaLexer.SELECTOR)
       .is(
         b.firstOf(
           f.completeMemberSelectOrMethodSelector(b.invokeRule(JavaPunctuator.DOT), IDENTIFIER_OR_METHOD_INVOCATION()),
           // TODO Perhaps NEW_EXPRESSION() is not as good as before, as it allows NewArrayTree to be constructed
           f.completeCreatorSelector(b.invokeRule(JavaPunctuator.DOT), NEW_EXPRESSION()),
-          ARRAY_ACCESS_EXPRESSION(),
-          f.newDotClassSelector(b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS))));
+          f.<ExpressionTree>newTupleAbsent1(ARRAY_ACCESS_EXPRESSION()),
+          f.newTupleAbsent2(f.newDotClassSelector(b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)))
+        ));
   }
 
   public ExpressionTree IDENTIFIER_OR_METHOD_INVOCATION() {

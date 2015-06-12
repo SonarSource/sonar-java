@@ -46,6 +46,12 @@ public interface NewClassTree extends ExpressionTree {
   ExpressionTree enclosingExpression();
 
   /**
+   * "dot" is not null only when the enclosing expression is present  
+   */
+  @Nullable
+  SyntaxToken dotToken();
+
+  /**
    * "new" keyword is null for {@link EnumConstantTree #initializer()}
    */
   @Nullable

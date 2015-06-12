@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -43,7 +44,10 @@ import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
+  @Nullable
   private ExpressionTree enclosingExpression;
+  @Nullable
+  private SyntaxToken dotToken;
   @Nullable
   private SyntaxToken newKeyword;
   private TypeTree identifier;
@@ -168,5 +172,16 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   @Override
   public SyntaxToken newKeyword() {
     return newKeyword;
+  }
+
+  public void completeWithDotToken(InternalSyntaxToken dotToken) {
+    this.dotToken = dotToken;
+    prependChildren(dotToken);
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken dotToken() {
+    return dotToken;
   }
 }

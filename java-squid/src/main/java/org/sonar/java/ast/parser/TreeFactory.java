@@ -210,8 +210,8 @@ public class TreeFactory {
     ExpressionTree target = qualifiedIdentifier;
     if (dotStar.isPresent()) {
       IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(dotStar.get().second()));
-
-      target = new MemberSelectExpressionTreeImpl(qualifiedIdentifier, identifier,
+      InternalSyntaxToken dotToken = InternalSyntaxToken.create(dotStar.get().first());
+      target = new MemberSelectExpressionTreeImpl(qualifiedIdentifier, dotToken, identifier,
         (AstNode) qualifiedIdentifier, dotStar.get().first(), identifier);
     }
 
@@ -1843,28 +1843,30 @@ public class TreeFactory {
 
     IdentifierTreeImpl classToken = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
     ArrayTypeTreeImpl nestedDimensions = newArrayTypeTree(dimensions);
+    InternalSyntaxToken dotSyntaxToken = InternalSyntaxToken.create(dotToken);
 
     List<AstNode> children = Lists.newArrayList();
     children.add(basicType);
     if (nestedDimensions != null) {
       children.add(nestedDimensions);
     }
-    children.add(dotToken);
+    children.add(dotSyntaxToken);
     children.add(classToken);
 
     TypeTree typeTree = applyDim(basicType, nestedDimensions);
-    return new MemberSelectExpressionTreeImpl((ExpressionTree) typeTree, classToken, children.toArray(new AstNode[children.size()]));
+    return new MemberSelectExpressionTreeImpl((ExpressionTree) typeTree, dotSyntaxToken, classToken, children.toArray(new AstNode[children.size()]));
   }
 
   public ExpressionTree voidClassExpression(AstNode voidTokenAstNode, AstNode dotToken, AstNode classTokenAstNode) {
     // void.class
     InternalSyntaxToken voidToken = InternalSyntaxToken.create(voidTokenAstNode);
+    InternalSyntaxToken dotSyntaxToken = InternalSyntaxToken.create(dotToken);
     PrimitiveTypeTreeImpl voidType = new PrimitiveTypeTreeImpl(voidToken,
       ImmutableList.<AstNode>of(voidToken));
 
     IdentifierTreeImpl classToken = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
 
-    return new MemberSelectExpressionTreeImpl(voidType, classToken,
+    return new MemberSelectExpressionTreeImpl(voidType, dotSyntaxToken, classToken,
       voidType, dotToken, classToken);
   }
 
@@ -1910,7 +1912,7 @@ public class TreeFactory {
     List<AstNode> children = Lists.newArrayList();
     children.add(firstIdentifier);
     if (rests.isPresent()) {
-      for (Tuple<AstNode,AstNode> rest : rests.get()) {
+      for (Tuple<AstNode, AstNode> rest : rests.get()) {
         children.add(rest.first());
         children.add(rest.second());
       }
@@ -1919,8 +1921,10 @@ public class TreeFactory {
     JavaTree result = null;
 
     List<AstNode> pendingChildren = Lists.newArrayList();
+    InternalSyntaxToken dotToken = null;
     for (AstNode child : children) {
       if (!child.is(JavaTokenType.IDENTIFIER)) {
+        dotToken = InternalSyntaxToken.create(child);
         pendingChildren.add(child);
       } else {
         InternalSyntaxToken identifierToken = InternalSyntaxToken.create(child);
@@ -1934,7 +1938,7 @@ public class TreeFactory {
           pendingChildren.add(0, result);
           pendingChildren.add(identifier);
 
-          result = new MemberSelectExpressionTreeImpl((ExpressionTree) result, identifier,
+          result = new MemberSelectExpressionTreeImpl((ExpressionTree) result, dotToken, identifier,
             pendingChildren.toArray(new AstNode[pendingChildren.size()]));
         }
 
@@ -1945,19 +1949,20 @@ public class TreeFactory {
     return (TypeTree) result;
   }
 
-  public <T extends Tree> T  newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
+  public <T extends Tree> T newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
     ExpressionTree result = firstIdentifier;
 
     if (rests.isPresent()) {
       for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
+        InternalSyntaxToken dotToken = InternalSyntaxToken.create(rest.first());
         if (rest.second().is(Kind.IDENTIFIER)) {
-          result = new MemberSelectExpressionTreeImpl(result, (IdentifierTreeImpl) rest.second(),
+          result = new MemberSelectExpressionTreeImpl(result, dotToken, (IdentifierTreeImpl) rest.second(),
             (AstNode) result, rest.first(), (AstNode) rest.second());
         } else if (rest.second().is(Kind.PARAMETERIZED_TYPE)) {
           ParameterizedTypeTreeImpl parameterizedType = (ParameterizedTypeTreeImpl) rest.second();
           IdentifierTreeImpl identifier = (IdentifierTreeImpl) parameterizedType.type();
 
-          result = new MemberSelectExpressionTreeImpl(result, identifier,
+          result = new MemberSelectExpressionTreeImpl(result, dotToken, identifier,
             (AstNode) result, rest.first(), identifier);
 
           result = new ParameterizedTypeTreeImpl((TypeTree) result, (TypeArgumentListTreeImpl) parameterizedType.typeArguments());
@@ -2074,60 +2079,64 @@ public class TreeFactory {
     return result;
   }
 
-  public ExpressionTree completeMemberSelectOrMethodSelector(AstNode dotTokenAstNode, ExpressionTree partial) {
-    ((JavaTree) partial).prependChildren(dotTokenAstNode);
-    return partial;
+  public Tuple<Optional<InternalSyntaxToken>, ExpressionTree> completeMemberSelectOrMethodSelector(AstNode dotTokenAstNode, ExpressionTree partial) {
+    return newTuple(Optional.of(InternalSyntaxToken.create(dotTokenAstNode)), partial);
   }
 
-  public ExpressionTree completeCreatorSelector(AstNode dotTokenAstNode, ExpressionTree partial) {
-    ((JavaTree) partial).prependChildren(dotTokenAstNode);
-    return partial;
+  public Tuple<Optional<InternalSyntaxToken>, ExpressionTree> completeCreatorSelector(AstNode dotTokenAstNode, ExpressionTree partial) {
+    ((NewClassTreeImpl) partial).completeWithDotToken(InternalSyntaxToken.create(dotTokenAstNode));
+    return newTuple(Optional.<InternalSyntaxToken>absent(), partial);
   }
 
   public ExpressionTree newDotClassSelector(Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotTokenAstNode, AstNode classTokenAstNode) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
+    InternalSyntaxToken dotToken = InternalSyntaxToken.create(dotTokenAstNode);
 
-    ArrayTypeTreeImpl nestedAnnotations = newArrayTypeTree(dimensions);
+    ArrayTypeTreeImpl nestedDimensions = newArrayTypeTree(dimensions);
     List<AstNode> children = Lists.newArrayList();
-    if (nestedAnnotations != null) {
-      children.add(nestedAnnotations);
+    if (nestedDimensions != null) {
+      children.add(nestedDimensions);
     }
     children.add(dotTokenAstNode);
     children.add(identifier);
 
-    return new MemberSelectExpressionTreeImpl(nestedAnnotations, identifier, children);
+    return new MemberSelectExpressionTreeImpl(nestedDimensions, dotToken, identifier, children);
   }
 
-  private ExpressionTree applySelectors(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
+  private ExpressionTree applySelectors(ExpressionTree primary, Optional<List<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>> selectors) {
     ExpressionTree result = primary;
 
-    // TODO This a bit crappy in the way dots are handled for example
-    // Perhaps we need other objects instead of completing existing ones
     if (selectors.isPresent()) {
-      for (ExpressionTree selector : selectors.get()) {
-        if (selector.is(Kind.IDENTIFIER)) {
-          IdentifierTreeImpl identifier = (IdentifierTreeImpl) selector;
-          result = new MemberSelectExpressionTreeImpl(result, identifier,
-            (AstNode) result, identifier);
-        } else if (selector.is(Kind.METHOD_INVOCATION)) {
-          MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) selector;
-          IdentifierTreeImpl identifier = (IdentifierTreeImpl) methodInvocation.methodSelect();
+      for (Tuple<Optional<InternalSyntaxToken>, ExpressionTree> tuple : selectors.get()) {
+        Optional<InternalSyntaxToken> dotTokenOptional = tuple.first();
+        ExpressionTree selector = tuple.second();
 
-          MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(result, identifier,
-            (AstNode) result, methodInvocation.getFirstChild(JavaPunctuator.DOT), identifier);
+        if (dotTokenOptional.isPresent()) {
+          InternalSyntaxToken dotToken = dotTokenOptional.get();
 
-          List<AstNode> children = Lists.newArrayList();
-          children.add(memberSelect);
-          ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) methodInvocation.arguments();
-          children.add(arguments);
+          if (selector.is(Kind.IDENTIFIER)) {
+            IdentifierTreeImpl identifier = (IdentifierTreeImpl) selector;
+            result = new MemberSelectExpressionTreeImpl(result, dotToken, identifier,
+              (AstNode) result, dotToken, identifier);
+          } else {
+            MethodInvocationTreeImpl methodInvocation = (MethodInvocationTreeImpl) selector;
+            IdentifierTreeImpl identifier = (IdentifierTreeImpl) methodInvocation.methodSelect();
+            MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(result, dotToken, identifier,
+              (AstNode) result, dotToken, identifier);
 
-          result = new MethodInvocationTreeImpl(
-            memberSelect,
-            methodInvocation.typeArguments(),
-            arguments.openParenToken(),
-            arguments,
-            arguments.closeParenToken(),
-            children.toArray(new AstNode[0]));
+            List<AstNode> children = Lists.newArrayList();
+            children.add(memberSelect);
+            ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) methodInvocation.arguments();
+            children.add(arguments);
+
+            result = new MethodInvocationTreeImpl(
+              memberSelect,
+              methodInvocation.typeArguments(),
+              arguments.openParenToken(),
+              arguments,
+              arguments.closeParenToken(),
+              children.toArray(new AstNode[0]));
+          }
         } else if (selector.is(Kind.NEW_CLASS)) {
           NewClassTreeImpl newClass = (NewClassTreeImpl) selector;
           newClass.prependChildren((AstNode) result);
@@ -2148,11 +2157,11 @@ public class TreeFactory {
     return result;
   }
 
-  public ExpressionTree applySelectors1(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
+  public ExpressionTree applySelectors1(ExpressionTree primary, Optional<List<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>> selectors) {
     return applySelectors(primary, selectors);
   }
 
-  public ExpressionTree applySelectors2(ExpressionTree primary, Optional<List<ExpressionTree>> selectors) {
+  public ExpressionTree applySelectors2(ExpressionTree primary, Optional<List<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>> selectors) {
     return applySelectors(primary, selectors);
   }
 
@@ -2350,8 +2359,12 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
-  public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariable(T first, U second) {
-    return newTuple(first, second);
+  public <U> Tuple<Optional<InternalSyntaxToken>, U> newTupleAbsent1(U expression) {
+    return newTuple(Optional.<InternalSyntaxToken>absent(), expression);
+  }
+
+  public <U> Tuple<Optional<InternalSyntaxToken>, U> newTupleAbsent2(U expression) {
+    return newTuple(Optional.<InternalSyntaxToken>absent(), expression);
   }
 
   public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariableDeclarator(T first, U second) {

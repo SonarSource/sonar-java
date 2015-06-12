@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -42,12 +43,14 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   @Nullable
   private final ArrayTypeTreeImpl nestedDimensions;
+  private InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
 
-  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, IdentifierTreeImpl identifier, List<AstNode> children) {
+  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier, List<AstNode> children) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = nestedDimensions;
+    this.dotToken = dotToken;
     this.identifier = identifier;
 
     for (AstNode child : children) {
@@ -55,11 +58,12 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     }
   }
 
-  public MemberSelectExpressionTreeImpl(ExpressionTree expression, IdentifierTree identifier, AstNode... children) {
+  public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier, AstNode... children) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = null;
     this.expression = Preconditions.checkNotNull(expression);
+    this.dotToken = dotToken;
     this.identifier = Preconditions.checkNotNull(identifier);
 
     for (AstNode child : children) {
@@ -82,6 +86,8 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     if (nestedDimensions != null) {
       nestedDimensions.setLastChildType((TypeTree) expression);
       result = nestedDimensions;
+    } else {
+      prependChildren((AstNode) expression);
     }
 
     this.expression = result;
@@ -101,7 +107,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   @Override
   public SyntaxToken operatorToken() {
-    throw new UnsupportedOperationException();
+    return dotToken;
   }
 
   @Override
