@@ -1156,9 +1156,12 @@ public class TreeFactory {
     AstNode closeParenTokenAstNode,
     StatementTree statement) {
 
-    return new ForEachStatementImpl(
-      variable, expression, statement,
-      forTokenAstNode, openParenTokenAstNode, variable, colonTokenAstNode, (AstNode) expression, closeParenTokenAstNode, (AstNode) statement);
+    InternalSyntaxToken forKeyword = InternalSyntaxToken.create(forTokenAstNode);
+    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
+    InternalSyntaxToken colonToken = InternalSyntaxToken.create(colonTokenAstNode);
+    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+
+    return new ForEachStatementImpl(forKeyword, openParenToken, variable, colonToken, expression, closeParenToken, statement);
   }
 
   public WhileStatementTreeImpl whileStatement(AstNode whileToken, AstNode openParen, ExpressionTree expression, AstNode closeParen, StatementTree statement) {

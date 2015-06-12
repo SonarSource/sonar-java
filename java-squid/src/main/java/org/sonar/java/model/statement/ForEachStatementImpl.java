@@ -22,10 +22,9 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -37,19 +36,32 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.Iterator;
 
 public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
+  private final InternalSyntaxToken forKeyword;
+  private final InternalSyntaxToken openParenToken;
   private final VariableTree variable;
+  private final InternalSyntaxToken colonToken;
   private final ExpressionTree expression;
+  private final InternalSyntaxToken closeParenToken;
   private final StatementTree statement;
 
-  public ForEachStatementImpl(VariableTree variable, ExpressionTree expression, StatementTree statement, AstNode... children) {
+  public ForEachStatementImpl(InternalSyntaxToken forKeyword, InternalSyntaxToken openParenToken, VariableTreeImpl variable, InternalSyntaxToken colonToken,
+    ExpressionTree expression, InternalSyntaxToken closeParenToken, StatementTree statement) {
     super(Kind.FOR_EACH_STATEMENT);
+    this.forKeyword = forKeyword;
+    this.openParenToken = openParenToken;
     this.variable = Preconditions.checkNotNull(variable);
+    this.colonToken = colonToken;
     this.expression = Preconditions.checkNotNull(expression);
+    this.closeParenToken = closeParenToken;
     this.statement = Preconditions.checkNotNull(statement);
 
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    addChild(forKeyword);
+    addChild(openParenToken);
+    addChild(variable);
+    addChild(colonToken);
+    addChild((AstNode) expression);
+    addChild(closeParenToken);
+    addChild((AstNode) statement);
   }
 
   @Override
@@ -59,12 +71,12 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   @Override
   public SyntaxToken forKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.FOR));
+    return forKeyword;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -74,7 +86,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   @Override
   public SyntaxToken colonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Override
@@ -84,7 +96,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
