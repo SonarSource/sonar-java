@@ -21,8 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -33,19 +31,26 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
+  private final InternalSyntaxToken caseOrDefaultKeyword;
   @Nullable
   private final ExpressionTree expression;
+  private final InternalSyntaxToken colonToken;
 
-  public CaseLabelTreeImpl(@Nullable ExpressionTree expression, AstNode... children) {
+  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken colonToken) {
     super(JavaLexer.SWITCH_LABEL);
+    this.caseOrDefaultKeyword = caseOrDefaultKeyword;
     this.expression = expression;
+    this.colonToken = colonToken;
 
-    for (AstNode child : children) {
-      addChild(child);
+    addChild(caseOrDefaultKeyword);
+    if (expression != null) {
+      addChild((AstNode) expression);
     }
+    addChild(colonToken);
   }
 
   @Override
@@ -55,7 +60,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken caseOrDefaultKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT));
+    return caseOrDefaultKeyword;
   }
 
   @Nullable
@@ -66,7 +71,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken colonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Override

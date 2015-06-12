@@ -1314,13 +1314,15 @@ public class TreeFactory {
   }
 
   public CaseLabelTreeImpl newCaseSwitchLabel(AstNode caseToken, ExpressionTree expression, AstNode colonToken) {
-    return new CaseLabelTreeImpl(expression,
-      caseToken, (AstNode) expression, colonToken);
+    InternalSyntaxToken caseSyntaxToken = InternalSyntaxToken.create(caseToken);
+    InternalSyntaxToken colonSyntaxToken = InternalSyntaxToken.create(colonToken);
+    return new CaseLabelTreeImpl(caseSyntaxToken, expression, colonSyntaxToken);
   }
 
   public CaseLabelTreeImpl newDefaultSwitchLabel(AstNode defaultToken, AstNode colonToken) {
-    return new CaseLabelTreeImpl(null,
-      defaultToken, colonToken);
+    InternalSyntaxToken defaultSyntaxToken = InternalSyntaxToken.create(defaultToken);
+    InternalSyntaxToken colonSyntaxToken = InternalSyntaxToken.create(colonToken);
+    return new CaseLabelTreeImpl(defaultSyntaxToken, null, colonSyntaxToken);
   }
 
   public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode openParen, ExpressionTree expression, AstNode closeParen, BlockTreeImpl block) {
