@@ -116,6 +116,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       expression,
+      dotToken,
       identifier);
   }
 

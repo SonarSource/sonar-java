@@ -1266,42 +1266,47 @@ public class JavaTreeModelTest {
    */
   @Test
   public void class_literal() {
-    MemberSelectExpressionTree tree = (MemberSelectExpressionTree) p.parse("class T { m() { return void.class; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return void.class; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.identifier().identifierToken().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (MemberSelectExpressionTree) p.parse("class T { m() { return int.class; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return int.class; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.identifier().identifierToken().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (MemberSelectExpressionTree) p.parse("class T { m() { return int[].class; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return int[].class; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isInstanceOf(ArrayTypeTree.class);
     assertThatArrayTypeHasBrackets((ArrayTypeTree) tree.expression());
     assertThat(tree.identifier().identifierToken().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (MemberSelectExpressionTree) p.parse("class T { m() { return T.class; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return T.class; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.identifier().identifierToken().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (MemberSelectExpressionTree) p.parse("class T { m() { return T[].class; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { m() { return T[].class; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isInstanceOf(ArrayTypeTree.class);
     assertThatArrayTypeHasBrackets((ArrayTypeTree) tree.expression());
     assertThat(tree.identifier().identifierToken().text()).isEqualTo("class");
     assertThat(tree.identifier().name()).isEqualTo("class");
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1322,11 +1327,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void qualified_this() {
-    MemberSelectExpressionTree tree = (MemberSelectExpressionTree) p.parse("class T { Object m() { return ClassName.this; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    MemberSelectExpressionTree tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { Object m() { return ClassName.this; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.identifier().identifierToken().text()).isEqualTo("this");
     assertThat(tree.identifier().name()).isEqualTo("this");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1417,17 +1423,19 @@ public class JavaTreeModelTest {
     // assertThat(tree.expression()).isNotNull();
     // assertThat(tree.identifier()).isNotNull();
 
-    tree = (MemberSelectExpressionTree) p.parse("class T { int m() { return super.identifier; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { int m() { return super.identifier; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (MemberSelectExpressionTree) p.parse("class T { int m() { return ClassName.super.identifier; } }").getFirstDescendant(Kind.MEMBER_SELECT);
+    tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { int m() { return ClassName.super.identifier; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
     assertThat(tree.operatorToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
@@ -1451,6 +1459,7 @@ public class JavaTreeModelTest {
     tree = (MethodInvocationTree) p.parse("class T { T() { super.identifier(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     MemberSelectExpressionTree memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThatChildrenIteratorHasSize(memberSelectExpression, 3);
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
     assertThat(memberSelectExpression.operatorToken()).isNotNull();
     assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("super");
@@ -1462,6 +1471,7 @@ public class JavaTreeModelTest {
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
     assertThat(memberSelectExpression.operatorToken()).isNotNull();
     memberSelectExpression = (MemberSelectExpressionTree) memberSelectExpression.expression();
+    assertThatChildrenIteratorHasSize(memberSelectExpression, 3);
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("super");
     assertThat(memberSelectExpression.operatorToken()).isNotNull();
     assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
@@ -1470,6 +1480,7 @@ public class JavaTreeModelTest {
     tree = (MethodInvocationTree) p.parse("class T { T() { TypeName.identifier(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThatChildrenIteratorHasSize(memberSelectExpression, 3);
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
     assertThat(memberSelectExpression.operatorToken()).isNotNull();
     assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
@@ -1478,6 +1489,7 @@ public class JavaTreeModelTest {
     tree = (MethodInvocationTree) p.parse("class T { T() { TypeName.<T>identifier(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThatChildrenIteratorHasSize(memberSelectExpression, 3);
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
     assertThat(memberSelectExpression.operatorToken()).isNotNull();
     assertThat(((IdentifierTree) memberSelectExpression.expression()).name()).isEqualTo("TypeName");
@@ -1486,6 +1498,7 @@ public class JavaTreeModelTest {
     tree = (MethodInvocationTree) p.parse("class T { T() { primary().<T>identifier(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     memberSelectExpression = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThatChildrenIteratorHasSize(memberSelectExpression, 3);
     assertThat(memberSelectExpression.identifier().name()).isEqualTo("identifier");
     assertThat(memberSelectExpression.expression()).isInstanceOf(MethodInvocationTree.class);
     assertThat(memberSelectExpression.operatorToken()).isNotNull();
@@ -1522,6 +1535,7 @@ public class JavaTreeModelTest {
     tree = (MethodInvocationTree) p.parse("class T { T() { ClassName.super(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThatChildrenIteratorHasSize(methodSelect, 3);
     assertThat(methodSelect.identifier().name()).isEqualTo("super");
     assertThat(methodSelect.operatorToken()).isNotNull();
     assertThat(((IdentifierTree) methodSelect.expression()).name()).isEqualTo("ClassName");
@@ -1530,6 +1544,7 @@ public class JavaTreeModelTest {
     tree = (MethodInvocationTree) p.parse("class T { T() { ClassName.<T>super(true, false); } }").getFirstDescendant(Kind.METHOD_INVOCATION);
     assertThat(tree.is(Tree.Kind.METHOD_INVOCATION)).isTrue();
     methodSelect = (MemberSelectExpressionTree) tree.methodSelect();
+    assertThatChildrenIteratorHasSize(methodSelect, 3);
     assertThat(methodSelect.identifier().name()).isEqualTo("super");
     assertThat(methodSelect.operatorToken()).isNotNull();
     assertThat(((IdentifierTree) methodSelect.expression()).name()).isEqualTo("ClassName");
