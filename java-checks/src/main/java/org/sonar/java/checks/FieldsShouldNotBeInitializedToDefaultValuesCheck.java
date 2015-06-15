@@ -72,7 +72,6 @@ public class FieldsShouldNotBeInitializedToDefaultValuesCheck extends Subscripti
         explicitInit = true;
       } else if (initTree.symbolType().isPrimitive() && initTree.symbolType().isNumerical()
         && NumberFormat.getInstance().parse(initTree.value()).shortValue() == 0) {
-        // Most numerical value are initialized with 0 => test "0" is a little optimization before using NumberFormat.parse
         explicitInit = true;
       } else if (initTree.symbolType().isPrimitive(Primitives.BOOLEAN) && !Boolean.parseBoolean(initTree.value())) {
         explicitInit = true;
