@@ -1213,11 +1213,13 @@ public class JavaTreeModelTest {
     assertThat(catchTree.block()).isNotNull();
     assertThat(catchTree.openParenToken().text()).isEqualTo("(");
     assertThat(catchTree.closeParenToken().text()).isEqualTo(")");
+    assertThatChildrenIteratorHasSize(catchTree, 5);
     VariableTree parameterTree = catchTree.parameter();
     assertThat(parameterTree.type()).isNotNull();
     assertThat(parameterTree.simpleName().name()).isEqualTo("e1");
     assertThat(parameterTree.initializer()).isNull();
     catchTree = tree.catches().get(1);
+    assertThatChildrenIteratorHasSize(catchTree, 5);
     parameterTree = catchTree.parameter();
     assertThat(parameterTree.type()).isNotNull();
     assertThat(parameterTree.simpleName().name()).isEqualTo("e2");
@@ -1229,6 +1231,7 @@ public class JavaTreeModelTest {
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).hasSize(1);
     assertThat(tree.finallyKeyword().text()).isEqualTo("finally");
+    assertThatChildrenIteratorHasSize(tree.catches().get(0), 5);
     assertThat(tree.finallyBlock()).isNotNull();
 
     tree = (TryStatementTree) p.parse("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }")
@@ -1237,6 +1240,7 @@ public class JavaTreeModelTest {
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).hasSize(1);
     assertThat(tree.finallyKeyword().text()).isEqualTo("finally");
+    assertThatChildrenIteratorHasSize(tree.catches().get(0), 5);
     assertThat(tree.finallyBlock()).isNotNull();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.resources()).hasSize(2);

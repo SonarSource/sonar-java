@@ -95,7 +95,10 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
+      catchToken,
+      openParenToken,
       parameter,
+      closeParenToken,
       block);
   }
 
