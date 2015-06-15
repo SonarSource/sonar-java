@@ -1,0 +1,22 @@
+<p>The compiler automatically initializes class fields to their default values before setting them with any initialization values, so not only is there no need to explicitly set a field to its default value, but doing so is slightly less performant. Further, under the logic that cleaner code is better code, it's considered poor style to do so.</p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public class MyClass {
+
+  int count = 0;  // Noncompliant
+  // ...
+
+}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public class MyClass {
+
+  int count;
+  // ...
+
+}
+</pre>
+
