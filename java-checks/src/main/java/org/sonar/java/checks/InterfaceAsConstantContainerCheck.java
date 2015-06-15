@@ -53,7 +53,7 @@ public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasConstant(ClassTree tree) {
+  private static boolean hasConstant(ClassTree tree) {
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         return true;

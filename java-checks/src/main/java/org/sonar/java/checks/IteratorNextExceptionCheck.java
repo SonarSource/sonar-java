@@ -73,11 +73,11 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isIteratorNextMethod(Symbol.MethodSymbol symbol) {
+  private static boolean isIteratorNextMethod(Symbol.MethodSymbol symbol) {
     return "next".equals(symbol.name()) && symbol.parameterTypes().isEmpty() && isIterator(symbol.enclosingClass());
   }
 
-  private boolean isIterator(Symbol.TypeSymbol typeSymbol) {
+  private static boolean isIterator(Symbol.TypeSymbol typeSymbol) {
     return typeSymbol.type().isSubtypeOf("java.util.Iterator");
   }
 

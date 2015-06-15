@@ -88,7 +88,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
+  private static Symbol isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
     Tree expression = removeParenthesis(tree);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
@@ -99,7 +99,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
     return null;
   }
 
-  private boolean isTreeLiteralNull(ExpressionTree tree) {
+  private static boolean isTreeLiteralNull(ExpressionTree tree) {
     return removeParenthesis(tree).is(Tree.Kind.NULL_LITERAL);
   }
 

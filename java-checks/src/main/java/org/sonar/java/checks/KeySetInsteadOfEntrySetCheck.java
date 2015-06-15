@@ -83,7 +83,7 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol getOwnerSymbol(MethodInvocationTree tree) {
+  private static Symbol getOwnerSymbol(MethodInvocationTree tree) {
     ExpressionTree expressionTree = tree.methodSelect();
     // direct invocation: symbol is implicitly this
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {

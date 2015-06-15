@@ -150,7 +150,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     return node.is(Kind.ENUM_CONSTANT) || isBlockAlreadyReported || lastCheckedLine == nodeLine || isInAnonymousClass.peek();
   }
 
-  private boolean isClassTree(Tree tree) {
+  private static boolean isClassTree(Tree tree) {
     return tree.is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE, Kind.ANNOTATION_TYPE);
   }
 

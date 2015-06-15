@@ -108,7 +108,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   @CheckForNull
-  private String getThresholdToCheck(ExpressionTree tree) {
+  private static String getThresholdToCheck(ExpressionTree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       String name = getMethodName(mit);
@@ -127,7 +127,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   @CheckForNull
-  private String getReferencedCalendarName(ExpressionTree argument) {
+  private static String getReferencedCalendarName(ExpressionTree argument) {
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) argument;
       Symbol reference = mse.identifier().symbol();
@@ -203,7 +203,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     }
   }
 
-  private String getMethodName(MethodInvocationTree mit) {
+  private static String getMethodName(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) methodSelect).identifier().name();
