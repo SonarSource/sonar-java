@@ -29,12 +29,14 @@ import java.util.Iterator;
 public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   private final String comment;
-  private int startLine;
+  private final int startLine;
+  private final int column;
 
-  public InternalSyntaxTrivia(String comment, int startLine) {
+  public InternalSyntaxTrivia(String comment, int startLine, int column) {
     super((AstNode)null);
     this.comment = comment;
     this.startLine = startLine;
+    this.column = column;
   }
 
   @Override
@@ -67,12 +69,17 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
     //FIXME do nothing
   }
 
-  public static SyntaxTrivia create (String comment, int startLine) {
-    return new InternalSyntaxTrivia(comment, startLine);
+  public static SyntaxTrivia create(String comment, int startLine, int column) {
+    return new InternalSyntaxTrivia(comment, startLine, column);
   }
 
   @Override
   public int getLine() {
     return startLine;
+  }
+
+  @Override
+  public int column() {
+    return column;
   }
 }
