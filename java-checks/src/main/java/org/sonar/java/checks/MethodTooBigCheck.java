@@ -63,7 +63,7 @@ public class MethodTooBigCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private int getLines(BlockTree block) {
+  private static int getLines(BlockTree block) {
     return 1 + block.closeBraceToken().line() - block.openBraceToken().line();
   }
 }

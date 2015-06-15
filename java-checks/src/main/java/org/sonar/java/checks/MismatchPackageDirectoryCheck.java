@@ -69,7 +69,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     }
   }
 
-  private String concatenate(ExpressionTree tree) {
+  private static String concatenate(ExpressionTree tree) {
     Deque<String> pieces = new LinkedList<>();
 
     ExpressionTree expr = tree;

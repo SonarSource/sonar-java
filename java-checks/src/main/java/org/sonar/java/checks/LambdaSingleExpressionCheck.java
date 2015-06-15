@@ -20,12 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.Beta;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -45,29 +44,26 @@ import java.util.List;
 @Beta
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
-  public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
+  public void visitNode(Tree tree) {
+    LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) tree;
     if (isBlockWithOneStatement(lambdaExpressionTree.body())) {
       String message = "Remove useless curly braces around statement";
       if (singleStatementIsReturn(lambdaExpressionTree)) {
         message += " and then remove useless return keyword";
       }
-      context.addIssue(lambdaExpressionTree.body(), this, message);
+      addIssue(lambdaExpressionTree.body(), message);
     }
-    super.visitLambdaExpression(lambdaExpressionTree);
   }
 
-  private boolean isBlockWithOneStatement(Tree tree) {
+  private static boolean isBlockWithOneStatement(Tree tree) {
     boolean result = false;
     if (tree.is(Tree.Kind.BLOCK)) {
       List<StatementTree> blockBody = ((BlockTree) tree).body();
@@ -76,15 +72,15 @@ public class LambdaSingleExpressionCheck extends BaseTreeVisitor implements Java
     return result;
   }
 
-  private boolean isRefactorizable(StatementTree statementTree) {
+  private static boolean isRefactorizable(StatementTree statementTree) {
     return isBlockWithOneStatement(statementTree) || statementTree.is(Tree.Kind.EXPRESSION_STATEMENT) || isReturnStatement(statementTree);
   }
 
-  private boolean singleStatementIsReturn(LambdaExpressionTree lambdaExpressionTree) {
+  private static boolean singleStatementIsReturn(LambdaExpressionTree lambdaExpressionTree) {
     return isReturnStatement(((BlockTree) lambdaExpressionTree.body()).body().get(0));
   }
 
-  private boolean isReturnStatement(Tree tree){
+  private static boolean isReturnStatement(Tree tree) {
     return tree.is(Tree.Kind.RETURN_STATEMENT);
   }
 

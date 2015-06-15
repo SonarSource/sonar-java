@@ -68,12 +68,12 @@ public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
     return isObjectType(parameters.get(0));
   }
 
-  private boolean isObjectType(VariableTree variableTree) {
+  private static boolean isObjectType(VariableTree variableTree) {
     String type = concatenate((ExpressionTree) variableTree.type());
     return "Object".equals(type)|| "java.lang.Object".equals(type);
   }
 
-  private String concatenate(ExpressionTree tree) {
+  private static String concatenate(ExpressionTree tree) {
     Deque<String> pieces = new LinkedList<String>();
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {

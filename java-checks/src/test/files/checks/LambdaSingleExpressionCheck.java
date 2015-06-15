@@ -1,8 +1,8 @@
 class A {
   public void method() {
     IntStream.range(1, 5).map(x -> x * x - 1).forEach(x -> System.out.println(x));
-    IntStream.range(1, 5).map(x -> {return x * x - 1;})
-        .forEach(x -> {
+    IntStream.range(1, 5).map(x -> {return x * x - 1;}) // Noncompliant {{Remove useless curly braces around statement and then remove useless return keyword}}
+        .forEach(x -> { // Noncompliant {{Remove useless curly braces around statement}}
           System.out.println(x + 11);
         });
     //Non-Expression statement :
@@ -23,7 +23,7 @@ class A {
     });
 
     //Nested blocks
-    IntStream.range(1, 5).map(x -> {
+    IntStream.range(1, 5).map(x -> { // Noncompliant {{Remove useless curly braces around statement}}
       {
         {
           return x + 1;

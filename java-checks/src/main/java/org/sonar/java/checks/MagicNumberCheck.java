@@ -65,7 +65,7 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
       try {
         checked = (BigDecimal) decimalFormat.parse(tree.value());
       } catch (ParseException e) {
-        //noop case not encountered
+        // noop case not encountered
 
       }
       if (checked != null && !isExcluded(checked)) {
@@ -74,28 +74,24 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
     }
   }
 
-  private boolean isNumberLiteral(LiteralTree tree) {
-    return tree.is(Tree.Kind.DOUBLE_LITERAL)
-        || tree.is(Tree.Kind.FLOAT_LITERAL)
-        || tree.is(Tree.Kind.LONG_LITERAL)
-        || tree.is(Tree.Kind.INT_LITERAL);
+  private static boolean isNumberLiteral(LiteralTree tree) {
+    return tree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.INT_LITERAL);
   }
 
-  private boolean isExcluded(BigDecimal bigDecimal) {
+  private static boolean isExcluded(BigDecimal bigDecimal) {
     return bigDecimal.compareTo(BigDecimal.ONE) == 0
-        || bigDecimal.compareTo(BigDecimal.ZERO) == 0
-        || bigDecimal.compareTo(BigDecimal.ONE.negate()) == 0;
+      || bigDecimal.compareTo(BigDecimal.ZERO) == 0
+      || bigDecimal.compareTo(BigDecimal.ONE.negate()) == 0;
   }
-
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-    //Ignore literals within annotation
+    // Ignore literals within annotation
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    //skip static final variables
+    // skip static final variables
     ModifiersTree modifiers = tree.modifiers();
     if (!(ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) && ModifiersUtils.hasModifier(modifiers, Modifier.FINAL))) {
       super.visitVariable(tree);

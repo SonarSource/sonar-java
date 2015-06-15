@@ -19,29 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class LambdaSingleExpressionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner
-      .scanSingleFile(new File("src/test/files/checks/LambdaSingleExpressionCheck.java"), new VisitorsBridge(new LambdaSingleExpressionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Remove useless curly braces around statement and then remove useless return keyword")
-      .next().atLine(5).withMessage("Remove useless curly braces around statement")
-      .next().atLine(26).withMessage("Remove useless curly braces around statement")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/LambdaSingleExpressionCheck.java", new LambdaSingleExpressionCheck());
   }
 
 }
