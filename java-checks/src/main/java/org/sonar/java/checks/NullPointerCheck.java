@@ -221,7 +221,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
       if (!parameters.isEmpty()) {
         for (int i = 0; i < tree.arguments().size(); i += 1) {
           // in case of varargs, there could be more arguments than parameters. in that case, pick the last parameter.
-          if (checkNullity(parameters.get(i < parameters.size() ? i : parameters.size() - 1)) == AbstractValue.NOTNULL) {
+          if (checkNullity(parameters.get(i < parameters.size() ? i : (parameters.size() - 1))) == AbstractValue.NOTNULL) {
             this.checkForIssue(tree.arguments().get(i),
               String.format("'%%s' is nullable here and method '%s' does not accept nullable argument", methodSymbol.name()),
               String.format("method '%s' does not accept nullable argument", methodSymbol.name()));

@@ -19,20 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
 import org.sonar.java.checks.NullPointerCheck.AbstractValue;
 import org.sonar.java.checks.NullPointerCheck.AssignmentVisitor;
 import org.sonar.java.checks.NullPointerCheck.ConditionalState;
 import org.sonar.java.checks.NullPointerCheck.State;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.resolve.JavaSymbol.VariableJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,61 +38,9 @@ import static org.sonar.java.checks.NullPointerCheck.AbstractValue.UNSET;
 
 public class NullPointerCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void check() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NullPointerCheck.java"),
-      new VisitorsBridge(new NullPointerCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(14).withMessage("null is dereferenced")
-      .next().atLine(15).withMessage("null is dereferenced")
-      .next().atLine(16).withMessage("null is dereferenced")
-      .next().atLine(76).withMessage("NullPointerException might be thrown as 'array2' is nullable here")
-      .next().atLine(78).withMessage("NullPointerException might be thrown as 'checkForNullMethod' is nullable here")
-      .next().atLine(107).withMessage("NullPointerException might be thrown as 'a2' is nullable here")
-      .next().atLine(144).withMessage("'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument")
-      .next().atLine(145).withMessage("'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument")
-      .next().atLine(146).withMessage("'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument")
-      .next().atLine(151).withMessage("method 'method2' does not accept nullable argument")
-      .next().atLine(152).withMessage("method 'method2' does not accept nullable argument")
-      .next().atLine(153).withMessage("method 'method2' does not accept nullable argument")
-      .next().atLine(159).withMessage("NullPointerException might be thrown as 'argument1' is nullable here")
-      .next().atLine(165).withMessage("NullPointerException might be thrown as 'argument1' is nullable here")
-      .next().atLine(172).withMessage("NullPointerException might be thrown as 'argument2' is nullable here")
-      .next().atLine(174).withMessage("NullPointerException might be thrown as 'argument2' is nullable here")
-      .next().atLine(209).withMessage("NullPointerException might be thrown as 'argument4' is nullable here")
-      .next().atLine(215).withMessage("NullPointerException might be thrown as 'argument2' is nullable here")
-      .next().atLine(217).withMessage("NullPointerException might be thrown as 'argument3' is nullable here")
-      .next().atLine(225).withMessage("NullPointerException might be thrown as 'var1' is nullable here")
-      .next().atLine(235).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(237).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(245).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(246).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(248).withMessage("NullPointerException might be thrown as 'str' is nullable here")
-      .next().atLine(255).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(256).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(258).withMessage("NullPointerException might be thrown as 'str' is nullable here")
-      .next().atLine(270).withMessage("NullPointerException might be thrown as 'object1' is nullable here")
-      .next().atLine(278).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(278).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(283).withMessage("NullPointerException might be thrown as 'object2' is nullable here")
-      .next().atLine(284).withMessage("NullPointerException might be thrown as 'object1' is nullable here")
-      .next().atLine(292).withMessage("NullPointerException might be thrown as 'set' is nullable here")
-      .next().atLine(293).withMessage("NullPointerException might be thrown as 'head' is nullable here")
-      .next().atLine(295).withMessage("NullPointerException might be thrown as 'value' is nullable here")
-      .next().atLine(297).withMessage("NullPointerException might be thrown as 'head' is nullable here")
-      .next().atLine(303).withMessage("NullPointerException might be thrown as 'object1' is nullable here")
-      .next().atLine(306).withMessage("NullPointerException might be thrown as 'object2' is nullable here")
-      .next().atLine(310).withMessage("NullPointerException might be thrown as 'object3' is nullable here")
-      .next().atLine(333).withMessage("NullPointerException might be thrown as 'str1' is nullable here")
-      .next().atLine(335).withMessage("NullPointerException might be thrown as 'str2' is nullable here")
-      .next().atLine(337).withMessage("NullPointerException might be thrown as 'str3' is nullable here")
-      .next().atLine(354).withMessage("NullPointerException might be thrown as 'object' is nullable here")
-      .next().atLine(361).withMessage("NullPointerException might be thrown as 'object12' is nullable here")
-      .next().atLine(376).withMessage("NullPointerException might be thrown as 'object22' is nullable here")
-      .next().atLine(414).withMessage("NullPointerException might be thrown as 'object3' is nullable here");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/NullPointerCheck.java", new NullPointerCheck());
   }
 
   @Test

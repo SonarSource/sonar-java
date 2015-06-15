@@ -61,7 +61,7 @@ public class StaticMultithreadedUnsafeFieldsCheck extends SubscriptionBaseVisito
     }
   }
 
-  private boolean isForbiddenType(Type type) {
+  private static boolean isForbiddenType(Type type) {
     for (String name : FORBIDDEN_TYPES) {
       if (type.isSubtypeOf(name)) {
         return true;

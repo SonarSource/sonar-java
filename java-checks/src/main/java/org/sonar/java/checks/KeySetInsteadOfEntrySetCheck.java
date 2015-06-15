@@ -98,7 +98,7 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol getFieldAccessedUsingSuperOrThis(ExpressionTree expressionTree) {
+  private static Symbol getFieldAccessedUsingSuperOrThis(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) expressionTree;
       if (memberSelectTree.expression().is(Tree.Kind.IDENTIFIER)) {

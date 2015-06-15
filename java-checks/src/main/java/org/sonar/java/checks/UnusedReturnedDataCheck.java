@@ -103,7 +103,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
     return removeParenthesis(tree).is(Tree.Kind.NULL_LITERAL);
   }
 
-  private ExpressionTree removeParenthesis(ExpressionTree tree) {
+  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
     ExpressionTree result = tree;
     while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       result = ((ParenthesizedTree) result).expression();

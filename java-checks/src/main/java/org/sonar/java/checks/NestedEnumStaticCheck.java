@@ -55,7 +55,7 @@ public class NestedEnumStaticCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isStatic(ClassTree classTree) {
+  private static boolean isStatic(ClassTree classTree) {
     return ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.STATIC);
   }
 

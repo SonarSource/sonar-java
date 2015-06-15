@@ -87,7 +87,7 @@ public class IndexOfWithPositiveNumberCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isIndexOfOnArrayOrString(Tree tree) {
+  private static boolean isIndexOfOnArrayOrString(Tree tree) {
     return tree.is(Tree.Kind.METHOD_INVOCATION) && CHECKED_METHODS.anyMatch((MethodInvocationTree) tree);
   }
 

@@ -124,7 +124,10 @@ public class ExecutionState {
   @VisibleForTesting
   SymbolicRelation getRelation(SymbolicValue leftValue, SymbolicValue rightValue) {
     SymbolicRelation result = relations.get(leftValue, rightValue);
-    return result != null ? result : parentState != null ? parentState.getRelation(leftValue, rightValue) : UNKNOWN;
+    if(result != null) {
+      return result;
+    }
+    return parentState != null ? parentState.getRelation(leftValue, rightValue) : UNKNOWN;
   }
 
   SymbolicBooleanConstraint evaluateRelation(SymbolicValue leftValue, SymbolicRelation relation, SymbolicValue rightValue) {
