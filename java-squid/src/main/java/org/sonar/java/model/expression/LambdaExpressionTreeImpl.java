@@ -31,21 +31,27 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
 
+  @Nullable
+  private final InternalSyntaxToken openParenToken;
   private final List<VariableTree> parameters;
+  @Nullable
+  private final InternalSyntaxToken closeParenToken;
+  private final InternalSyntaxToken arrowToken;
   private final Tree body;
-  private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
 
-  public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken, Tree body, AstNode... children) {
+  public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
+    InternalSyntaxToken arrowToken, Tree body, AstNode... children) {
     super(JavaLexer.LAMBDA_EXPRESSION);
     this.openParenToken = openParenToken;
     this.parameters = parameters;
     this.closeParenToken = closeParenToken;
+    this.arrowToken = arrowToken;
     this.body = body;
     for (AstNode child : children) {
       addChild(child);
@@ -72,6 +78,11 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   @Override
   public SyntaxToken closeParenToken() {
     return  closeParenToken;
+  }
+
+  @Override
+  public SyntaxToken arrowToken() {
+    return arrowToken;
   }
 
   @Override
