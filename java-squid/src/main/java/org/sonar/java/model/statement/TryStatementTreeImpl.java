@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.parser.ResourceListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -34,6 +33,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,25 +42,28 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   private InternalSyntaxToken tryToken;
 
   @Nullable
-  private final InternalSyntaxToken openParenToken;
-  private final List<VariableTree> resources;
+  private InternalSyntaxToken openParenToken;
+  private List<VariableTree> resources;
   @Nullable
-  private final InternalSyntaxToken closeParenToken;
+  private InternalSyntaxToken closeParenToken;
 
   private BlockTree block;
-  private final List<CatchTreeImpl> catches;
+  private List<CatchTree> catches;
 
+  @Nullable
+  private final InternalSyntaxToken finallyKeyword;
   @Nullable
   private final BlockTreeImpl finallyBlock;
 
-  public TryStatementTreeImpl(List<CatchTreeImpl> catches, @Nullable BlockTreeImpl finallyBlock) {
+  public TryStatementTreeImpl(List<CatchTreeImpl> catches, @Nullable InternalSyntaxToken finallyKeyword, @Nullable BlockTreeImpl finallyBlock) {
     super(Kind.TRY_STATEMENT);
 
     this.openParenToken = null;
     this.resources = ImmutableList.of();
     this.closeParenToken = null;
 
-    this.catches = catches;
+    this.catches = getCatches(catches);
+    this.finallyKeyword = finallyKeyword;
     this.finallyBlock = finallyBlock;
 
     for (CatchTreeImpl catchTree : catches) {
@@ -68,29 +71,31 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     }
 
     if (finallyBlock != null) {
+      addChild(finallyKeyword);
       addChild(finallyBlock);
     }
   }
 
-  public TryStatementTreeImpl(BlockTreeImpl finallyBlock) {
-    this(ImmutableList.<CatchTreeImpl>of(), finallyBlock);
+  public TryStatementTreeImpl(InternalSyntaxToken finallyKeyword, BlockTreeImpl finallyBlock) {
+    this(ImmutableList.<CatchTreeImpl>of(), finallyKeyword, finallyBlock);
   }
 
   public TryStatementTreeImpl(
     InternalSyntaxToken tryToken,
     InternalSyntaxToken openParenToken, ResourceListTreeImpl resources, InternalSyntaxToken closeParenToken,
     BlockTreeImpl block,
-    List<CatchTreeImpl> catches, @Nullable BlockTreeImpl finallyBlock) {
+    List<CatchTreeImpl> catches) {
 
     super(Kind.TRY_STATEMENT);
 
     this.tryToken = tryToken;
     this.openParenToken = openParenToken;
-    this.resources = (List) resources;
+    this.resources = getResources(resources);
     this.closeParenToken = closeParenToken;
     this.block = block;
-    this.catches = catches;
-    this.finallyBlock = finallyBlock;
+    this.catches = getCatches(catches);
+    this.finallyKeyword = null;
+    this.finallyBlock = null;
 
     addChild(tryToken);
     addChild(openParenToken);
@@ -101,10 +106,14 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     for (CatchTreeImpl catchTree : catches) {
       addChild(catchTree);
     }
+  }
 
-    if (finallyBlock != null) {
-      addChild(finallyBlock);
-    }
+  public TryStatementTreeImpl completeWithCatches(List<CatchTreeImpl> catches) {
+    this.catches = getCatches(catches);
+
+    prependChildren(catches);
+
+    return this;
   }
 
   public TryStatementTreeImpl completeStandardTry(InternalSyntaxToken tryToken, BlockTreeImpl block) {
@@ -112,6 +121,21 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
     this.block = block;
 
     prependChildren(tryToken, block);
+
+    return this;
+  }
+
+  public TryStatementTreeImpl completeTryWithResources(InternalSyntaxToken tryToken, InternalSyntaxToken openParenToken, ResourceListTreeImpl resources,
+    InternalSyntaxToken closeParenToken, BlockTreeImpl block, List<CatchTreeImpl> catches) {
+    this.tryToken = tryToken;
+    this.openParenToken = openParenToken;
+    this.resources = getResources(resources);
+    this.closeParenToken = closeParenToken;
+    this.block = block;
+    this.catches = getCatches(catches);
+
+    prependChildren(catches);
+    prependChildren(tryToken, openParenToken, resources, closeParenToken, block);
 
     return this;
   }
@@ -150,7 +174,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
   @Override
   public List<CatchTree> catches() {
-    return (List) catches;
+    return catches;
   }
 
   @Nullable
@@ -160,7 +184,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
       return null;
     }
 
-    return InternalSyntaxToken.createLegacy(finallyBlock.getFirstChild(JavaKeyword.FINALLY));
+    return finallyKeyword;
   }
 
   @Nullable
@@ -183,4 +207,15 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
       Iterators.singletonIterator(finallyBlock));
   }
 
+  private static List<VariableTree> getResources(ResourceListTreeImpl resources) {
+    return TryStatementTreeImpl.<VariableTree>getList(resources);
+  }
+
+  private static List<CatchTree> getCatches(List<CatchTreeImpl> catches) {
+    return TryStatementTreeImpl.<CatchTree>getList(catches);
+  }
+
+  private static <T> List<T> getList(List<? extends T> list) {
+    return ImmutableList.<T>builder().addAll(list).build();
+  }
 }

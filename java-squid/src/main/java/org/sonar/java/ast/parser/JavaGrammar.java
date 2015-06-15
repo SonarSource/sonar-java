@@ -708,7 +708,7 @@ public class JavaGrammar {
           BLOCK(),
           b.firstOf(
             f.newTryCatch(b.zeroOrMore(CATCH_CLAUSE()), b.optional(FINALLY())),
-            f.newTryFinally(FINALLY()))));
+            FINALLY())));
   }
 
   public CatchTreeImpl CATCH_CLAUSE() {
@@ -730,8 +730,8 @@ public class JavaGrammar {
         f.newCatchType(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newWrapperAstNode13(b.invokeRule(JavaPunctuator.OR), (AstNode) QUALIFIED_IDENTIFIER()))));
   }
 
-  public BlockTreeImpl FINALLY() {
-    return b.<BlockTreeImpl>nonterminal(JavaLexer.FINALLY_)
+  public TryStatementTreeImpl FINALLY() {
+    return b.<TryStatementTreeImpl>nonterminal(JavaLexer.FINALLY_)
       .is(
         f.newFinallyBlock(b.invokeRule(JavaKeyword.FINALLY), BLOCK()));
   }

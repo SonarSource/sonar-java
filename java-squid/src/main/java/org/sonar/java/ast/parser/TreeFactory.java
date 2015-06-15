@@ -1200,12 +1200,13 @@ public class TreeFactory {
     return partial.completeStandardTry(tryToken, block);
   }
 
-  public TryStatementTreeImpl newTryCatch(Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
-    return new TryStatementTreeImpl(catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(), finallyBlock.isPresent() ? finallyBlock.get() : null);
-  }
-
-  public TryStatementTreeImpl newTryFinally(BlockTreeImpl finallyBlock) {
-    return new TryStatementTreeImpl(finallyBlock);
+  public TryStatementTreeImpl newTryCatch(Optional<List<CatchTreeImpl>> catches, Optional<TryStatementTreeImpl> finallyBlock) {
+    List<CatchTreeImpl> catchTrees = catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of();
+    if (finallyBlock.isPresent()) {
+      return finallyBlock.get().completeWithCatches(catchTrees);
+    } else {
+      return new TryStatementTreeImpl(catchTrees, null, null);
+    }
   }
 
   public CatchTreeImpl newCatchClause(AstNode catchTokenAstNode, AstNode openParenTokenAstNode, VariableTreeImpl parameter, AstNode closeParenTokenAstNode, BlockTreeImpl block) {
@@ -1251,28 +1252,25 @@ public class TreeFactory {
     return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), children));
   }
 
-  public BlockTreeImpl newFinallyBlock(AstNode finallyTokenAstNode, BlockTreeImpl block) {
-    InternalSyntaxToken finallyToken = InternalSyntaxToken.create(finallyTokenAstNode);
-    block.prependChildren(finallyToken);
-
-    return block;
+  public TryStatementTreeImpl newFinallyBlock(AstNode finallyTokenAstNode, BlockTreeImpl block) {
+    return new TryStatementTreeImpl(InternalSyntaxToken.create(finallyTokenAstNode), block);
   }
 
   public TryStatementTreeImpl newTryWithResourcesStatement(
     AstNode tryTokenAstNode, AstNode openParenTokenAstNode, ResourceListTreeImpl resources, AstNode closeParenTokenAstNode,
     BlockTreeImpl block,
-    Optional<List<CatchTreeImpl>> catches, Optional<BlockTreeImpl> finallyBlock) {
+    Optional<List<CatchTreeImpl>> catches, Optional<TryStatementTreeImpl> finallyBlock) {
 
     InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-
-    return new TryStatementTreeImpl(
-      tryToken,
-      openParenToken, resources, closeParenToken,
-      block,
-      catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of(),
-      finallyBlock.isPresent() ? finallyBlock.get() : null);
+    
+    List<CatchTreeImpl> catchTrees = catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of();
+    if (finallyBlock.isPresent()) {
+      return finallyBlock.get().completeTryWithResources(tryToken, openParenToken, resources, closeParenToken, block, catchTrees);
+    } else {
+      return new TryStatementTreeImpl(tryToken, openParenToken, resources, closeParenToken, block, catchTrees);
+    }
   }
 
   public ResourceListTreeImpl newResources(List<AstNode> rests) {
