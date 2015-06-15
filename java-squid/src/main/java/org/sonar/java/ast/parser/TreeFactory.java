@@ -1690,13 +1690,13 @@ public class TreeFactory {
   }
 
   public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, Tree body) {
+    InternalSyntaxToken arrowSyntaxToken = InternalSyntaxToken.create(arrowToken);
     return new LambdaExpressionTreeImpl(
       parameters.openParenToken(),
       ImmutableList.<VariableTree>builder().addAll(parameters).build(),
       parameters.closeParenToken(),
-      InternalSyntaxToken.create(arrowToken),
-      body,
-      parameters, arrowToken, (AstNode) body);
+      arrowSyntaxToken,
+      body);
   }
 
   public LambdaParameterListTreeImpl newInferedParameters(
@@ -1715,15 +1715,20 @@ public class TreeFactory {
     if (identifiersOpt.isPresent()) {
       Tuple<VariableTreeImpl, Optional<List<Tuple<AstNode, VariableTreeImpl>>>> identifiers = identifiersOpt.get();
 
-      params.add(identifiers.first());
-      children.add(identifiers.first());
+      VariableTreeImpl variable = identifiers.first();
+      params.add(variable);
+      children.add(variable);
 
+      VariableTreeImpl previousVariable = variable;
       if (identifiers.second().isPresent()) {
         for (Tuple<AstNode, VariableTreeImpl> identifier : identifiers.second().get()) {
-          params.add(identifier.second());
+          variable = identifier.second();
+          params.add(variable);
+          children.add(variable);
 
-          children.add(identifier.first());
-          children.add(identifier.second());
+          InternalSyntaxToken comma = InternalSyntaxToken.create(identifier.first());
+          previousVariable.setEndToken(comma);
+          previousVariable = variable;
         }
       }
     }

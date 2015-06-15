@@ -46,16 +46,25 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   private final Tree body;
 
   public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
-    InternalSyntaxToken arrowToken, Tree body, AstNode... children) {
+    InternalSyntaxToken arrowToken, Tree body) {
     super(JavaLexer.LAMBDA_EXPRESSION);
     this.openParenToken = openParenToken;
     this.parameters = parameters;
     this.closeParenToken = closeParenToken;
     this.arrowToken = arrowToken;
     this.body = body;
-    for (AstNode child : children) {
-      addChild(child);
+
+    if (openParenToken != null) {
+      addChild(openParenToken);
     }
+    for (VariableTree param : parameters) {
+      addChild((AstNode) param);
+    }
+    if (closeParenToken != null) {
+      addChild(closeParenToken);
+    }
+    addChild(arrowToken);
+    addChild((AstNode) body);
   }
 
   @Override
