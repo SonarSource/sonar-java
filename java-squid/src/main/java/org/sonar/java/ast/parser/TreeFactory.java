@@ -1069,18 +1069,15 @@ public class TreeFactory {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     if (elseClause.isPresent()) {
-      return elseClause.get().complete(ifKeyword, openParenToken, condition, closeParenToken, statement,
-        ifKeyword, openParenToken, (AstNode) condition, closeParenToken, (AstNode) statement);
+      return elseClause.get().complete(ifKeyword, openParenToken, condition, closeParenToken, statement);
     } else {
-      return new IfStatementTreeImpl(ifKeyword, openParenToken, condition, closeParenToken, statement,
-        ifKeyword, openParenToken, (AstNode) condition, closeParenToken, (AstNode) statement);
+      return new IfStatementTreeImpl(ifKeyword, openParenToken, condition, closeParenToken, statement);
     }
   }
 
   public IfStatementTreeImpl newIfWithElse(AstNode elseToken, StatementTree elseStatement) {
     InternalSyntaxToken elseKeyword = InternalSyntaxToken.create(elseToken);
-    return new IfStatementTreeImpl(elseKeyword, elseStatement,
-      elseKeyword, (AstNode) elseStatement);
+    return new IfStatementTreeImpl(elseKeyword, elseStatement);
   }
 
   public ForStatementTreeImpl newStandardForStatement(
