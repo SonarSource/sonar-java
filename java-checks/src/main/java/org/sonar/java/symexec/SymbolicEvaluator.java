@@ -22,7 +22,9 @@ package org.sonar.java.symexec;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import org.apache.log4j.Logger;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -80,13 +82,15 @@ public class SymbolicEvaluator {
 
   private int currentExecutionStateCount;
 
-  public Map<Tree, SymbolicBooleanConstraint> evaluateMethod(ExecutionState state, MethodTree tree) {
+  public Map<Tree, SymbolicBooleanConstraint> evaluateMethod(JavaFileScannerContext context, ExecutionState state, MethodTree tree) {
     result.clear();
     if (tree.block() != null) {
       try {
         evaluateStatement(ImmutableList.of(state), tree.block());
       } catch (SymbolicExecutionException e) {
-        LOGGER.info("analysis of " + tree + " failed: " + e.getMessage(), e);
+        JavaTree javaTree = (JavaTree) tree;
+        LOGGER.info("in " + context.getFile() + ": analysis of " + tree.simpleName().name() + " at line " + javaTree.getLine() + " failed: " + e.getMessage());
+        LOGGER.debug(e);
         result.clear();
       }
     }

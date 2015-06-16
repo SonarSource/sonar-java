@@ -56,7 +56,7 @@ public class UselessConditionCheck extends SubscriptionBaseVisitor {
       return;
     }
     SymbolicEvaluator engine = new SymbolicEvaluator();
-    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : engine.evaluateMethod(new ExecutionState(), (MethodTree) tree).entrySet()) {
+    for (Map.Entry<Tree, SymbolicBooleanConstraint> entry : engine.evaluateMethod(context, new ExecutionState(), (MethodTree) tree).entrySet()) {
       switch (entry.getValue()) {
         case FALSE:
           raiseIssue(entry.getKey(), "false");
