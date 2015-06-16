@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
@@ -860,6 +861,8 @@ public class JavaTreeModelTest {
     BlockTree block = (BlockTree) p.parse("class T { void m() { int a = 42, b[]; final @Nullable int c = 42; } }").getFirstDescendant(Kind.BLOCK);
     List<StatementTree> declarations = block.body();
     assertThat(declarations).hasSize(3);
+    // FIXME will be removed when children are removed. Use to verify that endToken are not added multiple times
+    assertThat(((JavaTree) block).getAstNode().getDescendants(JavaPunctuator.SEMI)).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();

@@ -975,7 +975,6 @@ public class TreeFactory {
     InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonTokenAstNode);
 
     variables.prependChildren(modifiers, (AstNode) type);
-    variables.addChild(semicolonSyntaxToken);
 
     for (VariableTreeImpl variable : variables) {
       variable.completeModifiersAndType(modifiers, type);
@@ -1001,7 +1000,6 @@ public class TreeFactory {
         InternalSyntaxToken separator = InternalSyntaxToken.create(rest.first());
 
         variables.add(newVariable);
-        children.add(separator);
         children.add(newVariable);
 
         // store the separator
