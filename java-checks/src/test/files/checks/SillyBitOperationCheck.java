@@ -3,12 +3,12 @@ class A {
     int result;
     int bitMask = 0x000F;
 
-    result = bitMask & -1; // Noncompliant
-    result = bitMask | 0;  // Noncompliant
-    result = bitMask ^ 0;  // Noncompliant
-    result &= -1; // Noncompliant
-    result |= 0;  // NonCompliant
-    result ^= 0;  // Noncompliant
+    result = bitMask & -1; // Noncompliant {{Remove this silly bit operation.}}
+    result = bitMask | 0;  // Noncompliant {{Remove this silly bit operation.}}
+    result = bitMask ^ 0;  // Noncompliant {{Remove this silly bit operation.}}
+    result &= -1; // Noncompliant {{Remove this silly bit operation.}}
+    result |= 0;  // Noncompliant {{Remove this silly bit operation.}}
+    result ^= 0;  // Noncompliant {{Remove this silly bit operation.}}
 
     result = bitMask & 1; // Compliant
     result = bitMask | 1; // compliant
@@ -19,7 +19,7 @@ class A {
 
     long bitMaskLong = 0x000F;
     long resultLong;
-    resultLong = bitMaskLong & -1l; // Noncompliant
+    resultLong = bitMaskLong & -1l; // Noncompliant {{Remove this silly bit operation.}}
     resultLong = bitMaskLong & 0L; // Compliant
     resultLong = bitMaskLong & returnLong(); // Compliant
     resultLong = bitMaskLong & 0x0F; // Compliant

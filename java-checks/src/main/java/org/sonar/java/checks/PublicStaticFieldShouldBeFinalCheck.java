@@ -64,7 +64,7 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
     super.visitClass(tree);
   }
 
-  private boolean isPublicStaticNotFinal(VariableTree tree) {
+  private static boolean isPublicStaticNotFinal(VariableTree tree) {
     boolean isPublic = false, isStatic = false, isFinal = false;
 
     for (ModifierKeywordTree modifierKeywordTree : tree.modifiers().modifiers()) {

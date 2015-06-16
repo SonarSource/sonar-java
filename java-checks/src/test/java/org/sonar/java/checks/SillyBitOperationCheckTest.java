@@ -19,32 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SillyBitOperationCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SillyBitOperationCheck.java"),
-      new VisitorsBridge(new SillyBitOperationCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Remove this silly bit operation.")
-      .next().atLine(7)
-      .next().atLine(8)
-      .next().atLine(9)
-      .next().atLine(10)
-      .next().atLine(11)
-      .next().atLine(22)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SillyBitOperationCheck.java", new SillyBitOperationCheck());
   }
 }

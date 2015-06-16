@@ -65,7 +65,7 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Long getBitwiseOperationIdentityElement(Tree tree) {
+  private static Long getBitwiseOperationIdentityElement(Tree tree) {
     Long identityElement = 0L;
     if (tree.is(Kind.AND, Kind.AND_ASSIGNMENT)) {
       identityElement = -1L;
@@ -73,7 +73,7 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     return identityElement;
   }
 
-  private ExpressionTree getExpression(Tree tree) {
+  private static ExpressionTree getExpression(Tree tree) {
     ExpressionTree expression;
     if (tree.is(Kind.OR, Kind.XOR, Kind.AND)) {
       expression = ((BinaryExpressionTree) tree).rightOperand();

@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class PublicStaticFieldShouldBeFinalCheckTest {
 
-  private final PublicStaticFieldShouldBeFinalCheck check = new PublicStaticFieldShouldBeFinalCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PublicStaticFieldShouldBeFinalCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Make this \"public static " + "foo" + "\" field final")
-      .next().atLine(18)
-      .noMore();
-
+    JavaCheckVerifier.verify("src/test/files/checks/PublicStaticFieldShouldBeFinalCheck.java", new PublicStaticFieldShouldBeFinalCheck());
   }
-
 
 }

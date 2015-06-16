@@ -40,6 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -71,7 +72,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   }
 
   @CheckForNull
-  private ExpressionTree getInitializer(IdentifierTree tree) {
+  private static ExpressionTree getInitializer(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
     if(symbol.isVariableSymbol()) {
       VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
@@ -82,7 +83,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     return null;
   }
 
-  private boolean variableUsedOnlyToGetClass(IdentifierTree tree) {
+  private static boolean variableUsedOnlyToGetClass(IdentifierTree tree) {
     if ("this".equals(tree.name()) || "super".equals(tree.name())) {
       return false;
     }
@@ -90,7 +91,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     return symbol.usages().size() == 1 && hasBeenInitialized(tree);
   }
 
-  private boolean hasBeenInitialized(IdentifierTree tree) {
+  private static boolean hasBeenInitialized(IdentifierTree tree) {
     ExpressionTree initializer = getInitializer(tree);
     return initializer != null && initializer.is(Kind.NEW_CLASS);
   }
@@ -101,7 +102,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     }
   }
 
-  private String getTypeName(ExpressionTree tree) {
+  private static String getTypeName(ExpressionTree tree) {
     Type type = tree.symbolType();
     String name = getTypeName(type);
     if (name.isEmpty()) {
@@ -110,7 +111,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     return name;
   }
 
-  private String getAnonymousClassTypeName(Symbol.TypeSymbol symbol) {
+  private static String getAnonymousClassTypeName(Symbol.TypeSymbol symbol) {
     String name = "";
     if (symbol.interfaces().isEmpty()) {
       name = getTypeName(symbol.superClass());
@@ -120,7 +121,7 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
     return name;
   }
 
-  private String getTypeName(Type type) {
+  private static String getTypeName(Type type) {
     return type.symbol().name();
   }
 

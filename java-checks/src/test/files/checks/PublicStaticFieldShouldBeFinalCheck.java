@@ -1,21 +1,21 @@
 public class Greeter {
 
-  public static Foo foo = new Foo();        // NOK
+  public static Foo foo = new Foo();        // Noncompliant {{Make this "public static foo" field final}}
 
-  public static final Bar bar = new Bar();  // OK
-  public final Bar bar = new Bar();         // OK
-  public Bar bar = new Bar();               // OK
+  public static final Bar bar = new Bar();  // Compliant
+  public final Bar bar = new Bar();         // Compliant
+  public Bar bar = new Bar();               // Compliant
 
-  private static final Fun fun = new Fun(); // OK
-  private final Fun fun = new Fun();        // OK
-  private  Fun fun = new Fun();             // OK
+  private static final Fun fun = new Fun(); // Compliant
+  private final Fun fun = new Fun();        // Compliant
+  private  Fun fun = new Fun();             // Compliant
 
   public static method() {
     Foo foo = new Foo ();
   }
 
   class InnerClass {
-    public static Foo foo; // NOK
+    public static Foo foo; // Noncompliant {{Make this "public static foo" field final}}
   }
 
 }

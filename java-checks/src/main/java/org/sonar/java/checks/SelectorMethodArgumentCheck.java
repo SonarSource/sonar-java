@@ -79,11 +79,11 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isPublic(MethodTree methodTree) {
+  private static boolean isPublic(MethodTree methodTree) {
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
-  private List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
+  private static List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
     List<Symbol> booleanParameters = Lists.newLinkedList();
     for (VariableTree variableTree : parameters) {
       if (isBooleanVariable(variableTree)) {
@@ -93,7 +93,7 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
     return booleanParameters;
   }
 
-  private boolean isBooleanVariable(VariableTree variableTree) {
+  private static boolean isBooleanVariable(VariableTree variableTree) {
     return variableTree.type().symbolType().isPrimitive(Type.Primitives.BOOLEAN);
   }
 
