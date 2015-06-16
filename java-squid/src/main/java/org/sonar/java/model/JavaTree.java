@@ -606,7 +606,6 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     public void completeType(TypeTree type) {
-      this.prependChildren((AstNode) type);
       this.type = type;
     }
 

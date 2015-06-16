@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
 
@@ -45,21 +46,19 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   private InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
 
-  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
+  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier, List<AstNode> children) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = nestedDimensions;
     this.dotToken = dotToken;
     this.identifier = identifier;
 
-    if (nestedDimensions != null) {
-      addChild(nestedDimensions);
+    for (AstNode child : children) {
+      addChild(child);
     }
-    addChild(dotToken);
-    addChild(identifier);
   }
 
-  public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
+  public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier, AstNode... children) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = null;
@@ -67,9 +66,9 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     this.dotToken = dotToken;
     this.identifier = Preconditions.checkNotNull(identifier);
 
-    addChild((AstNode) expression);
-    addChild(dotToken);
-    addChild(identifier);
+    for (AstNode child : children) {
+      addChild(child);
+    }
   }
 
   public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
@@ -79,8 +78,9 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     if (nestedDimensions != null) {
       nestedDimensions.setLastChildType((TypeTree) expression);
       result = nestedDimensions;
+    } else {
+      prependChildren((AstNode) expression);
     }
-    prependChildren((AstNode) expression);
 
     this.expression = result;
 
