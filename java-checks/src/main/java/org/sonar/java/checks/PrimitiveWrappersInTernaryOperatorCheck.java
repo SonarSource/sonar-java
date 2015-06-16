@@ -59,11 +59,11 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends SubscriptionBaseVis
     }
   }
 
-  private boolean dissimilarPrimitiveTypeWrappers(Type trueExprType, Type falseExprType) {
+  private static boolean dissimilarPrimitiveTypeWrappers(Type trueExprType, Type falseExprType) {
     return isPrimitiveWrapper(trueExprType) && isPrimitiveWrapper(falseExprType) && !trueExprType.equals(falseExprType);
   }
 
-  private boolean isPrimitiveWrapper(Type type) {
+  private static boolean isPrimitiveWrapper(Type type) {
     return ((JavaType) type).isPrimitiveWrapper();
   }
 

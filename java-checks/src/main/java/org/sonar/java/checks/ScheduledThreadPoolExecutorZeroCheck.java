@@ -73,7 +73,7 @@ public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetectio
     addIssue(tree, "Increase the \"corePoolSize\".");
   }
 
-  private boolean isZeroIntLiteral(ExpressionTree arg) {
+  private static boolean isZeroIntLiteral(ExpressionTree arg) {
     return arg.is(Tree.Kind.INT_LITERAL) && "0".equals(((LiteralTree) arg).value());
   }
 }

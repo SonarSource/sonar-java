@@ -55,7 +55,7 @@ public class RSAUsesOAEPCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isRSA(String algorithmName) {
+  private static boolean isRSA(String algorithmName) {
     return algorithmName.startsWith("RSA/NONE");
   }
 

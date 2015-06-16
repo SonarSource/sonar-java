@@ -71,7 +71,7 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
     }
   }
 
-  private boolean isNotRuntimeAnnotation(Type symbolType) {
+  private static boolean isNotRuntimeAnnotation(Type symbolType) {
     List<SymbolMetadata.AnnotationValue> valuesFor = symbolType.symbol().metadata().valuesForAnnotation("java.lang.annotation.Retention");
     // default policy is CLASS
     if (valuesFor == null) {
@@ -82,7 +82,7 @@ public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetecti
   }
 
   @Nullable
-  private String getRetentionValue(Object value) {
+  private static String getRetentionValue(Object value) {
     String retentionValue = null;
     if (value instanceof Tree) {
       Tree tree = (Tree) value;

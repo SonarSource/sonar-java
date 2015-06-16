@@ -80,7 +80,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
     return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
   }
 
-  private boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
+  private static boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
     return ((MemberSelectExpressionTree) tree.methodSelect()).expression().symbolType().isSubtypeOf("java.lang.Throwable");
   }
 }

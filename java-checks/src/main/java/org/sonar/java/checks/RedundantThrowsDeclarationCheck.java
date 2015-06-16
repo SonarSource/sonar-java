@@ -78,7 +78,7 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
     }
   }
 
-  private String getIssueMessage(List<AsmClass> thrownClasses, AsmClass thrownClass) {
+  private static String getIssueMessage(List<AsmClass> thrownClasses, AsmClass thrownClass) {
     String thrownClassName = thrownClass.getDisplayName();
     if (isSubClassOfAny(thrownClass, thrownClasses)) {
       return "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";

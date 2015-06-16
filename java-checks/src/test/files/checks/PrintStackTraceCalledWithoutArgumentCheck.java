@@ -2,14 +2,14 @@ import java.lang.reflect.InvocationTargetException;
 
 class A {
   private void f(Throwable e) {
-    e.printStackTrace(); // Non-Compliant
-    e.printStackTrace(System.out); // Non-Compliant
+    e.printStackTrace(); // Noncompliant {{Use a logger to log this exception.}}
+    e.printStackTrace(System.out); // Noncompliant {{Use a logger to log this exception.}}
     e.getMessage(); // Compliant
-    new java.lang.Throwable().printStackTrace(); // Non-Compliant
+    new java.lang.Throwable().printStackTrace(); // Noncompliant
     e.printStackTrace[0]; // Compliant
   }
   void fun(MyException e) {
-    e.printStackTrace(); //Non-Compliant
+    e.printStackTrace(); // Noncompliant
   }
   void fun(CustomException e) {
     e.printStackTrace(); //Compliant : e is not extending Throwable
@@ -17,7 +17,7 @@ class A {
   }
 
   void fun(InvocationTargetException ite) {
-    ite.getTargetException().printStackTrace(); //Non-Compliant
+    ite.getTargetException().printStackTrace(); // Noncompliant
   }
 
   static class CustomException {

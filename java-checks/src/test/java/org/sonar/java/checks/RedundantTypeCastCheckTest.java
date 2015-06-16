@@ -19,33 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class RedundantTypeCastCheckTest {
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RedundantTypeCastCheck.java"), new VisitorsBridge(new RedundantTypeCastCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(9).withMessage("Remove this unnecessary cast to \"List\".")
-        .next().atLine(10).withMessage("Remove this unnecessary cast to \"List\".")
-        .next().atLine(11).withMessage("Remove this unnecessary cast to \"List\".")
-        .next().atLine(13).withMessage("Remove this unnecessary cast to \"String\".")
-        .next().atLine(14).withMessage("Remove this unnecessary cast to \"A\".")
-        .next().atLine(15).withMessage("Remove this unnecessary cast to \"A[][]\".")
-        .next().atLine(24).withMessage("Remove this unnecessary cast to \"int\".")
-        .next().atLine(38).withMessage("Remove this unnecessary cast to \"Object\".")
-        .next().atLine(44).withMessage("Remove this unnecessary cast to \"T[]\".")
-        .next().atLine(47).withMessage("Remove this unnecessary cast to \"String[]\".")
-    ;
+    JavaCheckVerifier.verify("src/test/files/checks/RedundantTypeCastCheck.java", new RedundantTypeCastCheck());
   }
 }

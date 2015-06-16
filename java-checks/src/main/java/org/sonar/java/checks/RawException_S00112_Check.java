@@ -84,11 +84,11 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
     }
   }
 
-  private boolean isRawException(Tree tree) {
+  private static boolean isRawException(Tree tree) {
     return tree.is(Tree.Kind.IDENTIFIER) && RAW_EXCEPTIONS.contains(((IdentifierTree) tree).name());
   }
 
-  private boolean isNotOverriden(MethodTree tree) {
+  private static boolean isNotOverriden(MethodTree tree) {
     return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
   }
 

@@ -1,19 +1,19 @@
 public class Example {
 
-  public void throws_Throwable() throws Throwable { // Non-Compliant
-    throw new Throwable(); // NOK
+  public void throws_Throwable() throws Throwable { // Noncompliant
+    throw new Throwable(); // Noncompliant
   }
 
   public void throws_Error() {
-    throw new Error(); // NOK
+    throw new Error(); // Noncompliant
   }
 
-  public void throws_Exception() throws Exception { // Non-Compliant
-    throw new Exception(); // NOK
+  public void throws_Exception() throws Exception { // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
+    throw new Exception(); // Noncompliant
   }
 
   public void throws_RuntimeException() {
-    throw new RuntimeException(); // NOK
+    throw new RuntimeException(); // Noncompliant
   }
 
   public void throws_custom() {
@@ -42,10 +42,10 @@ public class Example {
   }
 
   public Example() throws
-     Error,                   // Non-Compliant
-     Exception {              // Non-Compliant
+     Error,                   // Noncompliant
+     Exception {              // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}
      throw new
-         Throwable();         // Non-Compliant
+         Throwable();         // Noncompliant
 
      throw new int[0];        // Compliant
      }
@@ -56,7 +56,7 @@ public class Example {
   }
 
   @Deprecated
-  public void throws_Exception() throws Exception {
+  public void throws_Exception() throws Exception { // Noncompliant
   }
 }
 class SubClass extends Example {

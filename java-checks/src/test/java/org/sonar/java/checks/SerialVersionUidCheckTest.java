@@ -19,33 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SerialVersionUidCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SerialVersionUidCheck.java"),
-      new VisitorsBridge(new SerialVersionUidCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(7).withMessage("Add a \"static final long serialVersionUID\" field to this class.")
-      .next().atLine(8).withMessage("Add a \"static final long serialVersionUID\" field to this class.")
-      .next().atLine(10).withMessage("Make this \"serialVersionUID\" field \"static\".")
-      .next().atLine(13).withMessage("Make this \"serialVersionUID\" field \"final\".")
-      .next().atLine(16).withMessage("Make this \"serialVersionUID\" field \"final long\".")
-      .next().atLine(30)
-      .next().atLine(37)
-      .next().atLine(40);
+    JavaCheckVerifier.verify("src/test/files/checks/SerialVersionUidCheck.java", new SerialVersionUidCheck());
   }
-
 }

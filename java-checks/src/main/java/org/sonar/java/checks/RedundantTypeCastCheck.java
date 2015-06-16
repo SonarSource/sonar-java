@@ -91,11 +91,11 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isExcluded(JavaType cast) {
+  private static boolean isExcluded(JavaType cast) {
     return cast.isUnknown();
   }
 
-  private boolean isRedundantCast(JavaType cast, JavaType expressionType) {
+  private static boolean isRedundantCast(JavaType cast, JavaType expressionType) {
     JavaType erasedExpressionType = expressionType;
     if(erasedExpressionType.isTagged(JavaType.TYPEVAR)) {
       erasedExpressionType = erasedExpressionType.erasure();
@@ -103,7 +103,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
     return erasedExpressionType.equals(cast) || (!(cast instanceof JavaType.ParametrizedTypeJavaType) && !cast.isNumerical() && erasedExpressionType.isSubtypeOf(cast));
   }
 
-  private boolean isRedundantNumericalCast(JavaType cast, JavaType expressionType) {
+  private static boolean isRedundantNumericalCast(JavaType cast, JavaType expressionType) {
     return cast.isNumerical() && cast.equals(expressionType);
   }
 }

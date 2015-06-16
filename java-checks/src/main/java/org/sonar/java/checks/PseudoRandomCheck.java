@@ -59,7 +59,7 @@ public class PseudoRandomCheck extends SubscriptionBaseVisitor {
     return tree.is(Tree.Kind.METHOD_INVOCATION) && hasSemantic() && methodInvocationMatcher.matches((MethodInvocationTree) tree);
   }
 
-  private boolean isJavaUtilRandom(ExpressionTree tree) {
+  private static boolean isJavaUtilRandom(ExpressionTree tree) {
     return tree.is(Tree.Kind.NEW_CLASS) && tree.symbolType().is("java.util.Random");
   }
 }

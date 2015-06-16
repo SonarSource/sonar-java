@@ -57,11 +57,11 @@ public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisit
     }
   }
 
-  private boolean isPublic(MethodTree methodTree) {
+  private static boolean isPublic(MethodTree methodTree) {
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
-  private boolean isFinalize(MethodTree methodTree) {
+  private static boolean isFinalize(MethodTree methodTree) {
     if("finalize".equals(methodTree.simpleName().name()) ) {
       Tree returnType = methodTree.returnType();
       if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
