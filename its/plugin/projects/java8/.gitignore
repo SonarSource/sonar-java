@@ -1,0 +1,3 @@
+# Java7 bytecode is in the Git repo. Do not remove it.
+!target
+target/sonar

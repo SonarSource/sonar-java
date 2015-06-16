@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+    $Id: tiles-defs.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+ <!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://struts.apache.org/dtds/tiles-config_1_1.dtd">
+
+<!-- Definitions for Tiles documentation   -->
+
+<tiles-definitions>
+
+  <!-- =======================================================  -->
+  <!-- Master definition  									-->
+  <!-- =======================================================  -->
+
+  <!-- Doc index page description  -->
+  <definition name="doc.mainLayout" path="/layout/classicLayout.jsp">
+	  <put name="title"  value="Tiles Library Documentation" />
+	  <put name="header" value="/common/header.jsp" />
+	  <put name="menu"   value="doc.menu.main" />
+	  <put name="footer" value="/common/footer.jsp" />
+	  <put name="body"   value="doc.portal.body" />
+  </definition>
+
+  <!-- =======================================================  -->
+  <!-- Main page body definitions  									-->
+  <!-- =======================================================  -->
+
+  <definition name="doc.portal.body" path="/layout/columnsLayout.jsp">
+    <put name="numCols" value="2" />
+    <putList name="list0" >
+      <add value="/doc/portal/welcome.jsp" />
+      <add value="/doc/portal/features.jsp" />
+      <!--<add value="/doc/portal/todo.jsp" /> -->
+      <add value="/doc/portal/documentation.jsp" />
+    </putList>
+    <putList name="list1" >
+      <add value="/doc/portal/news.jsp" />
+      <add value="/doc/portal/download.jsp" />
+      <add value="/doc/portal/tilesCompsTemplates.jsp" />
+      <add value="/doc/portal/strutsIntegration.jsp" />
+      <add value="/doc/portal/comments.jsp" />
+      <add value="/doc/portal/revisions.jsp" />
+    </putList>
+  </definition>
+  
+  <!-- =======================================================  -->
+  <!-- Menus definitions  									-->
+  <!-- =======================================================  -->
+
+  <!-- Menu bar definition -->
+<definition name="doc.menu.main" path="/layout/vboxLayout.jsp" >
+  <putList name="componentsList" >
+    <add value="doc.menu.links" />
+    <add value="doc.menu.taglib.references" />
+    <add value="doc.menu.printer.friendly" />
+    <add value="doc.menu.old.documents" />
+  </putList>
+</definition>
+
+  <!-- Documentation menu definition v1.1-->
+<definition name="doc.menu.links" path="/layouts/menu.jsp" >
+  <put name="title" value="Documentation" />
+    <putList name="items" >
+      <item value="Home"           link="/index.jsp"  />
+      <item value="Live Examples (new)" link="/examples/index.jsp"  />
+      <!--
+	  <item> <value>Commented Examples</value> 
+	  		<link>/examples/index.jsp</link>
+			<classtype>org.apache.struts.tiles.beans.SimpleMenuItem</classtype>
+	  </item>
+	  -->
+      <item value="Quick overview" link="/doc/quickOverview.jsp"  />
+      <!--
+      <item value="Tutorial"       link="/doc/tutorial.jsp"  />
+      -->
+      <item value="Tutorial Live Examples" link="/tutorial/index.jsp" />
+      <item value="Download"       link="/doc/download.jsp" />
+      <item value="Installation"   link="/doc/installation.jsp" />
+      <item value="User Guide"	   link="/doc/userGuide.jsp" />
+      <item value="Javadoc"        link="/api/index.html" />
+      <item value="Struts Home"    link="http://www.apache.org"   icon="/images/struts-power.gif"        
+			classtype="org.apache.struts.tiles.beans.SimpleMenuItem" />
+    </putList>
+</definition>
+
+  <!-- Printer friendly menu definition -->
+<definition name="doc.menu.printer.friendly" path="/layouts/menu.jsp" >
+  <put name="title" value="Printer Versions" />
+  <putList name="items" >
+    <item value="Quick Overview"     link="/test/testAll.jsp" />
+    <item value="Tutorial"           link="/doc/tutorialBody.html" />
+    <item value="User Guide"         link="/doc/userGuideBody.html" />
+    <item value="Overview (old)"  	 link="/doc/overviewBody.html" />
+  </putList>
+</definition>
+
+  <!-- Taglib menu definition -->
+<definition name="doc.menu.taglib.references" path="/layouts/menu.jsp" >
+  <put name="title" value="Tag Library Reference" />
+    <putList name="items" >
+      <item value="Tiles Tags"     link="/doc/tilesTags.jsp" />
+      <!-- <item value="Extension Tags (old)"   link="/doc/extensionsTags.jsp" /> -->
+    </putList>
+</definition>
+
+  <!-- Oldies menu definition -->
+<definition name="doc.menu.old.documents" path="/layouts/menu.jsp" >
+  <put name="title" value="Old Documents" />
+  <putList name="items" >
+    <item value="Overview (old)"     link="/doc/overview.jsp" />
+  </putList>
+</definition>
+
+
+</tiles-definitions>

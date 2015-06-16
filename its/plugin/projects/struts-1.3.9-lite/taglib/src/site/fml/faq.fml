@@ -1,0 +1,610 @@
+<?xml version="1.0"?>
+<!--
+    $Id$
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+
+<faqs title="Taglib FAQ">
+        <part id="general">
+
+            <faq id="jstl">
+                <question>
+                What about JSTL?
+                </question>
+                <answer>
+                <p>
+                    There is overlap between Struts Taglib and the 
+                    <a href="http://java.sun.com/products/jsp/jstl/">
+                        JavaServer Standard Tag Library (JSTL).</a>
+                       To make the best use of JSTL, 
+                       use the <a href="../struts-el/index.html">
+                       Struts EL component</a> instead. 
+                   </p>             
+                </answer>
+             </faq>                
+
+
+            <faq id="jsf">
+                <question>
+                What about JSF?
+                </question>
+                <answer>
+                <p>
+                    Struts 1 is <strong>not</strong> the best choice if you'd 
+                    like to use JavaServer Faces components in your 
+                    application. 
+                    The Struts Faces component provides some interoperability 
+                    with JSF, 
+                    but Faces is really only intended as a stop gap for teams 
+                    experimenting with JSF.
+                </p>
+                
+                 <p>
+                    For better JavaServer Faces support, 
+                    consider using Struts 2 or 
+                   <a href="http://shale.apache.org/">Apache Shale.</a>
+                </p>
+
+                </answer>
+             </faq>                
+
+            <faq id="xhtml">
+                <question>
+                Is Struts Taglib XHTML compliant?
+                </question>
+                <answer>
+                <p>
+                    If you use an &lt;html:html xhtml="true&gt; or &lt;html:xhtml/&gt;
+                    element on your page, the tags
+                    will render as XHTML (since version 1.1).
+                 </p>
+                </answer>
+             </faq>                
+
+            <faq id="wml">
+                <question>
+                Will the Struts tags support other markup languages such as WML?
+                </question>
+                <answer>
+                <p>
+                    The framework itself is markup neutral. The original Struts
+                    taglibs are only one example of how
+                    presentation layer components can access the framework.
+                    The framework objects are exposed
+                    through the standard application, session, and request
+                    contexts, where any Java component in
+                    the application can make use of them.
+                </p>
+
+                <p>Markup extensions that use the framework are available for
+                    <a href="http://jakarta.apache.org/velocity">Velocity</a>
+                    and
+                    <a href="http://www.openroad.ca/opencode/">XLST,</a>
+                    among others.
+                    A new Struts tag library for
+                    <a href="#jsf">Java Server Faces</a>
+                    is also in development.
+                </p>
+
+                <p>For more about using WAP/WML with Struts see the article
+                    <a href="http://www.sys-con.com/pbdj/archives2/0904/hamboeck/">
+                        WAP up your EAserver.</a>
+                </p>
+                </answer>
+             </faq>                
+
+            <faq id="multiple">
+                <question>
+                Can I use multiple HTML form elements with the same name?
+                </question>
+                <answer>
+                <p>
+                    Yes. Define the element as an array and the framework will
+                    autopopulate it like any other.
+                </p>
+                <pre>
+                    <code>
+                        private String[] id= {};
+                        public String[] getId() { return this.id; }
+                        public void setItem(String id[]) {this.id = id;}
+                    </code>
+                </pre>
+                <p>
+                    And so forth
+                </p>
+                </answer>
+             </faq>                
+
+            <faq id="multipleSubmits">
+                <question>
+                Can I have multiple submit buttons on the same form
+                </question>
+                <answer>
+                <p>
+                    <strong>Yes</strong>
+                    . The issue is that only one action class can be
+                    associated with a single form. So the real issue is how do
+                    I decode
+                    multiple submit types to a single
+                    <code>Action</code>
+                    class.
+                    There is more than one way to achieve this functionality.
+                </p>
+                <p>
+                    One popular approach is to use a 
+                    <a href="../api/org/apache/struts/actions/LookupDispatchAction.html">
+                        <code>LookupDispatchAction.</code>
+                    </a>
+                    Basically,
+                    <code>LookupDispatchAction</code>
+                    is using the keys from
+                    <code>ApplicationProperties.resources</code>
+                    as keys to a map of actions
+                    available to your
+                    <code>Action</code>
+                    class. It uses
+                    <a href="http://java.sun.com/j2se/1.3/docs/guide/reflection/">
+                        reflection</a>
+                    to
+                    decode the request and invoke the proper action. It also
+                    takes advantage of
+                    the 
+                    <a href="../userGuide/struts-html.html#submit">
+                        <code>&lt;html:submit&gt;</code>
+                    </a>
+                    tags and is straight forward to implement.
+                </p>
+                <p>
+                    You can roll your own with JavaScript events and
+                    <code>javascript:void
+                        (document.forms["myform"].submit)</code>
+                    on any html element. This gives you
+                    control of how you want your page to look. Again you
+                    will have to decode the expected action in the
+                    <code>execute</code>
+                    method of
+                    your action form if you choose this route.
+                </p>
+                </answer>
+             </faq>                
+
+            <faq id="focus">
+                <question>
+                Why doesn't the focus feature on the &lt;html:form> tag work in every circumstance?
+                </question>
+                <answer>
+                <p>
+                    Unfortunately, there is some disagreement between the
+                    various browsers, and different versions of the same
+                    browser, as to how the focus can be set.
+                    The &lt;html:form> tag provides a quick and easy
+                    JavaScript that will set the focus on a form
+                    for most versions of most browsers.
+                    If this feature doesn't work for you, then you should set
+                    the focus using your own JavaScript.
+                    The focus feature is a convenient "value-add" -- not a
+                    core requirement of the tag.
+                    If you do come up with a JavaScript that provides the
+                    final solution to this project,
+                    please post your patch to this
+                    <a href="http://issues.apache.org/struts/browse/STR-899">
+                        JIRA ticket.</a>
+                </p>
+                
+                <p>
+                    Another approach is to use a separate JavaScript that 
+                    automatically focusses the first enabled field on the 
+                    first form on a page. 
+                    See the article 
+                    <a href="http://www.codeproject.com/jscript/FocusFirstInput.asp">
+                    Set Focus to First Input on Web Page</a>
+                    for a working example that you can use in your own 
+                    applications. 
+                </p>
+                </answer>
+             </faq>                
+
+            <faq id="checkbox">
+                <question>
+                Why are my checkboxes not being set from ON to OFF?
+                </question>
+                <answer>
+                <p>
+                    A problem with a checkbox is that the browser will only
+                    include it in the request
+                    when it is checked. If it is not checked, the HTML
+                    specification suggests that it
+                    not be sent (i.e. omitted from the request). If the value
+                    of the checkbox is being
+                    persisted, either in a session bean or in the model, a
+                    checked box can never
+                    unchecked by a HTML form -- because the form can never
+                    send a signal to uncheck
+                    the box. The application must somehow ascertain that since
+                    the element was not
+                    sent that the corresponding value is unchecked.
+                </p>
+                <p>
+                    The recommended approach for framework applications is to use
+                    the reset method in the
+                    ActionForm to set all properties represented by checkboxes
+                    to null or false. The
+                    checked boxes submitted by the form will then set those
+                    properties to true. The
+                    omitted properties will remain false. Another solution is
+                    to use radio buttons
+                    instead, which always submit a value.
+                </p>
+                <p>
+                    It is important to note that the HTML specification
+                    recommends this same
+                    behavior whenever a control is not "successful". Any blank
+                    element in a HTML
+                    form is not guaranteed to submitted. It is therefor very
+                    important to set the
+                    default values for an ActionForm correctly, and to
+                    implement the reset method
+                    when the ActionForm might kept in session scope.
+                </p>                
+                </answer>
+             </faq>                
+
+            <faq id="javascript.submit">
+                <question>
+                Can I use JavaScript to submit a form?
+                </question>
+                <answer>
+                <p>
+                    You can submit a form with a link as below.
+                    BTW, the examples below assume you are in an &lt;html:form&gt;
+                    block and 'myForm'
+                    is picked up from the struts-config.xml name field of the
+                    action.
+                </p>
+                <source>
+                    &lt;a
+                    href='javascript:void(document.forms["myForm"].submit()&gt;My
+                    Link&lt;/a&gt;
+                </source>
+                <p>
+                    Now the trick in the action is to decode what action you
+                    intend to perform.
+                    Since you are using JavaScript, you could set a field
+                    value and look for it in
+                    the request or in the form.
+                </p>
+                <p>
+                    ... html/javascript part ...
+                </p>
+                <source>
+                    &lt;input type='hidden' value='myAction' /&gt;
+                    &lt;input type='button' value='Save Meeeee'
+                    onclick='document.forms["myForm"].myAction.value="save";
+                    document.forms["myForm"].submit();' /&gt;
+                    &lt;input type='button' value='Delete Meeeee'
+                    onclick='document.forms["myForm"].myAction.value="delete";
+                    document.forms["myForm"].submit();' /&gt;
+                </source>
+                <p>
+                    ... the java part ...
+                </p>
+                <source>
+                    class MyAction extends ActionForm implements Serializable
+                    {
+
+                    public ActionForward execute (ActionMapping map,
+                    ActionForm form,
+                    HttpServletRequest req, HttpServletResponse) {
+
+                    String myAction = req.getParameter("myAction");
+
+                    if (myAction.equals("save") {
+                    // ... save action ...
+                    } else if (myAction.equals("delete") {
+                    // ... delete action ...
+                    }
+                    }
+                    }
+                    }
+                </source>
+                <p>
+                    This is just one of many ways to achieve submitting a form
+                    and decoding the
+                    intended action. Once you get used to the framework you
+                    will find other ways
+                    that make more sense for your coding style and
+                    requirements. Just remember
+                    this example is completely non-functional without
+                    JavaScript.
+                </p>
+                <p>
+                    Here is a link
+                    which utilizes the LookupDispatch action to submit forms
+                    with multiple actions
+                    without javascript:
+                    <a href="http://husted.com/struts/tips/003.html">
+                        http://husted.com/struts/tips/003.html</a>
+                </p>
+                </answer>
+             </faq>                
+
+            <faq id="javascript">
+                <question>
+                How do I use JavaScript to ...
+                </question>
+                <answer>
+                <p>
+                    The framework is mainly a server-side technology.
+                    We bundled in some JSP tags to expose the framework
+                    components to your
+                    presentation page, but past that, the usual development
+                    process applies.
+                </p>
+
+                <p>
+                    Interactive pages require the use of JavaScript.
+                    (That's why it was invented.)
+                    If you want things popping up or doing this when they
+                    click that,
+                    you are outside the scope of the framework and back into the web
+                    development mainstream.
+                </p>
+
+                <p>
+                    You use JavaScript with the framework the same way you use with
+                    any presentation
+                    page.
+                    Since JavaScript is a client-side technology, you can use
+                    simple relative
+                    references to your scripts.
+                    If you need to fire a JavaScript from a HTML control, the
+                    Struts HTML tags
+                    have properties for the JavaScript events.
+                </p>
+
+                <p>
+                    A very good JavaScript resource is Matt Kruse's site at
+                    <a href="http://www.mattkruse.com/javascript/">
+                        http://www.mattkruse.com/javascript/</a>
+                </p>                
+                </answer>
+             </faq>                
+
+            <faq id="reset">
+                <question>
+                Do I need to implement reset and set all my form properties to their initial values?
+                </question>
+                <answer>
+                <p>
+                    No.
+                    You need to set checkbox properties to false if the
+                    ActionForm is being retained in session scope.
+                    This is because an unchecked box does not submit an
+                    attribute.
+                    Only checked boxes submit attributes.
+                    If the form is in session scope, and the checkbox was
+                    checked, there is no way to turn it back off without the
+                    reset method.
+                    Resetting the properties for other controls, or for a
+                    request scope form, is pointless.
+                    If the form is in request scope, everything already just
+                    started at the initial value.
+                </p>                
+                </answer>
+             </faq>                
+
+            <faq id="scriptlets">
+                <question>
+                Can't I just create some of my JavaBeans in the JSP using a scriptlet?
+                </question>
+                <answer>
+                <p>
+                    The framework is designed to encourage a
+                    <a href="http://www.javaworld.com/javaworld/jw-12-1999/jw-12-ssj-jspmvc.html">
+                        Model 2/MVC architecture</a>
+                    . But there is nothing that prevents you from using Model
+                    1
+                    techniques in your JavaServer Pages, so the answer to the
+                    question is "Yes, you can".
+                </p>
+                <p>
+                    Though, using Model 1 techniques in a framework application
+                    does go against the grain.
+                    The approach recommended by most developers is to
+                    create and populate whatever
+                    objects the view may need in the Action, and then forward
+                    these through the request.
+                    Some objects may also be created and stored in the session
+                    or context,
+                    depending on how they are used.
+                </p>
+                <p>
+                    Likewise, there is nothing to prevent you from using
+                    scriptlets along with JSP tags in your pages. Though, 
+                    many developers report
+                    writing very complex
+                    scriplet-free applications and recommend the JSP tag
+                    approach to others.
+                </p>
+                <p>
+                    For help with Model 1 techniques and scriptlets, you might
+                    consider joining the
+                    <a href="http://archives.java.sun.com/jsp-interest.html">
+                        Javasoft JSP-interest
+                        mailing list,</a>
+                    where there are more people still using these
+                    approaches.
+                </p>                </answer>
+             </faq>                
+
+            <faq id="link">
+                <question>
+                Why does the &lt;html:link> tag URL-encode javascript and mailto links?
+                </question>
+                <answer>
+                <p>
+                    The &lt;html:link> tag is not intended for use with
+                    client-side references like those used to launch
+                    Javascripts or email clients.
+                    The purpose of link tag is to interject the context (or
+                    module) path into the URI so that your server-side links
+                    are not dependent on your context (or module) name.
+                    It also encodes the link, as needed, to maintain the
+                    client's session on the server.
+                    Neither feature applies to client-side links, so there is
+                    no reason to use the &lt;html:link> tag.
+                    Simply markup the client-side links using the standard
+                    <a/>
+                    tag.
+                </p>                
+                </answer>
+             </faq>                
+
+            <faq id="pager">
+                <question>
+                How can I scroll through list of pages like the search results in Google?
+                </question>
+                <answer>
+                <p>Many Struts developers use the Pager from the JSPTags
+                    site.</p>
+                <p>
+                    <a href="http://jsptags.com/tags/navigation/pager/">
+                        http://jsptags.com/tags/navigation/pager/</a>
+                </p>                
+                </answer>
+             </faq>                
+             
+
+            <faq id="minimization">
+                <question>
+                Why does the option tag render selected=selected instead of just selected?
+                </question>
+                <answer>
+                <p>
+                    Attribute minimization (that is, specifying an attribute
+                    with no value) is
+                    a place where HTML violates standard XML syntax rules.
+                    This matters a lot
+                    for people writing to browsers that support XHTML, where
+                    doing so makes
+                    the page invalid.It's much better for Struts to use the
+                    expanded syntax,
+                    which works the same on existing browsers interpreting
+                    HTML, and newer
+                    browsers that expect XHTML-compliant syntax. Struts is
+                    following the
+                    behavior recommended by the
+                    <a href="http://www.w3.org/TR/xhtml1/#h-4.5">
+                        XHTML specification</a>
+                </p>
+                </answer>
+             </faq>                
+
+            <faq id="tags">
+                <question>
+                Why does Struts Taglib provide for so little formatting?
+                </question>
+                <answer>
+                <p>
+                    <em>The Struts tags seem to provide only the most
+                        rudimentary functionality.
+                        Why is there not better support for date formatting
+                        and advanced string handling?</em>
+                </p>
+                <p>
+                    Three historical reasons:
+                </p>
+                <p>
+                    First, work started on the JSTL and we didn't want to
+                    duplicate the effort.
+                </p>
+                <p>
+                    Second, work started on Java Server Faces, and we didn't
+                    want to duplicate that effort either.
+                </p>
+                <p>
+                    Third, in a Model 2 application, most of the formatting
+                    can be handled in the ActionForms (or in the business
+                    tier),
+                    so all the tag has to do is spit out a string.
+                    This leads to better reuse since the same "how to format"
+                    code does not need to be repeated in every instance.
+                    You can "say it once" in a JavaBean and be done with it.
+                </p>                
+                </answer>
+             </faq>                
+             
+
+            <faq id="layout">
+                <question>
+                Why doesn't Struts Taglib offer more layout options?
+                </question>
+                <answer>
+                <p>
+                    For more flexible placement of error messages,
+                    try the
+                    <a href="http://www.rabago.net/struts/html2/">&lt;html2&gt;</a>
+                    Tag Library for Struts.
+                </p>
+                <p>
+                    Since the Struts tags are open source, you can extend them
+                    to provide whatever additional formatting you may need.
+                    If you are interested in a pre-written taglib that offers
+                    more layout options, see the
+                    <a href="http://struts.application-servers.com">
+                        struts-layout taglib</a>
+                    .
+                </p>
+                <p>
+                    In the same arena, there is a well regarded contributor
+                    taglib that can help you create
+                    <a href="http://sourceforge.net/projects/struts-menu/">
+                        Menus for your Struts applications.</a>
+                </p>
+                <p>
+                    Another very popular tag library is
+                    <a href="http://displaytag.sourceforge.net">DisplayTag.</a>
+                    .
+                    DisplayTag is an excellent choice when you have tabular
+                    data to present.
+                </p>
+                
+                </answer>
+             </faq>                
+
+            <faq id="undocumented">
+                <question>
+                If you would like to contribute, here is a list of
+    popular but undocumented questions
+                </question>
+                <answer>
+                <ul>
+
+                    <li>Why do my option lists disappear when validation
+                        fails?</li>
+
+                    <li>Why can't I disable URL-encoding in the Struts
+                        taglibs?</li>
+
+                </ul>                
+                </answer>
+            </faq>
+        </part>
+</faqs>

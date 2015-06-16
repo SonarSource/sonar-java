@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    $Id: site.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="Struts Taglib">
+    <bannerLeft>
+        <name>Apache Software Foundation</name>
+        <src>http://www.apache.org/images/asf-logo.gif</src>
+        <href>http://www.apache.org/</href>
+    </bannerLeft>
+    <bannerRight>
+        <name>Apache Struts</name>
+        <src>http://struts.apache.org/images/struts.gif</src>
+        <href>http://struts.apache.org/</href>
+    </bannerRight>     
+    <body>
+        <links>
+            <item name="Apache" href="http://www.apache.org/" /> 
+            <item name="Struts 1" href="http://struts.apache.org/1.x/" />
+            <item name="Struts 2" href="http://struts.apache.org/2.x/" />
+        </links>
+        <menu name="Struts Taglib">
+            <item name="Welcome" href="index.html"/>
+       </menu>
+        <menu name="FAQs and HOWTOs">
+            <item name="Taglib FAQ" href="faq.html"/>
+            <item name="Building View Components" href="building_view.html"/>
+            <item name="Indexed Properties" href="indexedprops.html"/>
+       </menu>
+        <menu name="Struts Taglib Guides">
+            <item name="Bean" href="dev_bean.html"/>
+            <item name="HTML" href="dev_html.html"/>
+            <item name="Logic" href="dev_logic.html"/>
+            <item name="Nested" href="dev_nested.html"/>
+        </menu>
+
+       <menu name="Components">
+        
+            <item   name="Struts Apps"
+                    href="../struts-apps/index.html" />
+
+            <item   name="Struts EL"
+                    href="../struts-el/index.html" />
+
+            <item   name="Struts Extras"
+                    href="../struts-extras/index.html" />
+
+            <item   name="Struts Faces"
+                    href="../struts-faces/index.html" />
+
+            <item   name="Struts Scripting"
+                    href="../struts-scripting/index.html" />
+
+            <item   name="Struts Taglib"
+                    href="../struts-taglib/index.html" />
+
+            <item   name="Struts Tiles"
+                    href="../struts-tiles/index.html" />
+
+        </menu>
+        
+        <menu name="Related Resources">
+            <item name="Display Tag"
+                  href="http://displaytag.sourceforge.net/"/>
+
+            <item name="html2"
+                  href="http://www.rabago.net/struts/html2/"/>
+
+            <item name="JSTL"
+                  href="http://java.sun.com/products/jsp/jstl/"/>
+
+            <item name="JSF"
+                  href="http://java.sun.com/j2ee/javaserverfaces/"/>
+
+            <item name="Struts Layout"
+                  href="http://struts.application-servers.com"/>
+
+            <item name="Struts Menu"
+                  href="http://struts-menu.sourceforge.net/"/>
+        </menu>
+       
+        <menu name="Quick Links">
+            <item
+                    name="Javadoc"
+                    href="apidocs/index.html"/>
+            <item
+                    name="Struts 1"
+                    href="../index.html"/>
+        </menu>
+        
+        ${reports}
+    </body>
+</project>

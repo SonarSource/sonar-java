@@ -1,0 +1,294 @@
+<?xml version="1.0"?>
+<!--
+    $Id: examples.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+<properties>
+  <title>Examples</title>
+</properties>
+
+<body>
+
+<section name="Creating Templates">
+
+    <p>The following examples illustrate Tiles' templating features using a 
+       basic template.  The template contains three elements: a title, a header,
+       and a body displayed vertically.  These elements will be manipulated in 
+       various ways in each example.  Tiles' flexibility will be demonstrated by
+       defining the template "inline" in a JSP page and by loading it from a
+       "factory" defined in an XML file.</p>
+       
+    <subsection name="Basic Template">
+    
+    <p>The first example shows the basic template.  There are three ways to 
+       define the template.  First, it can be defined anonymously in a JSP page 
+       by using the Tiles insert tag.  Secondly, it can be defined in a JSP 
+       using the Tiles definition tag.  Finally, it can be defined in an XML
+       file and loaded from a factory using the Tiles insert tag.  This example
+       will illustrate all three methods.  First, let's look at the output of 
+       the example.  Then we will examine each method.</p>
+       
+    <strong>Example Output</strong>
+    <div align="center" width="300" border="2" bordercolor="black" >
+        <table width="100%">
+        <tr>
+        <td  bgcolor="Blue"><strong>This is the title.</strong></td>
+        </tr>
+        <tr>
+        <td><strong>This is the header</strong>
+        <img src="images/struts-power.gif" align="right" border="0"/>
+        </td>
+        </tr>
+        <tr>
+        <td><div align="center"><b><i>This is the body</i></b></div>
+        </td>
+        </tr>
+        </table>
+    </div>
+    
+    <p>First let's look at the template.  The layout.jsp file contains the
+       template code.  This file does not change no matter whether the Tile
+       is defined anonymously, in a JSP, or in an XML definitions file.</p>
+       
+    <strong>file: layout.jsp</strong>
+
+    <source><![CDATA[
+<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+
+<table  border="2"  width="300"  bordercolor="Gray">
+  <tr>
+    <td  bgcolor="Blue"><strong><tiles:getAsString name="title"/></strong></td>
+  </tr>
+  <tr>
+    <td><tiles:insert attribute="header"/></td>
+  </tr>
+  <tr>
+    <td><tiles:insert attribute="body"/></td>
+  </tr>
+</table>                     
+    ]]></source>
+
+    <p>Next we show the template being inserted anonymously using the Tiles
+       insert tag.  The insert tag is used to define the Tile and insert it in
+       a single action.  The Tile is not placed in the Definitions Factory and
+       is not available for later use.  The template is invoked and the 
+       attributes are filled in.  Notice that the title is inserted directly and
+       the header and body values are included JSP pages.</p>
+       
+    <strong>file: somepage.jsp </strong>
+    <source><![CDATA[
+<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+
+<tiles:insert template="layout.jsp">
+  <tiles:put name="title"  value="This is the title." />
+  <tiles:put name="header" value="header.jsp" />
+  <tiles:put name="body"   value="body.jsp" />
+</tiles:insert>
+    ]]></source>
+
+    <strong>file: header.jsp </strong>
+    <source><![CDATA[
+<strong>This is the header</strong>
+<img src="<%=request.getContextPath()%>/images/struts-power.gif" align="right" border="0"/>
+    ]]></source>
+
+    <strong>file: body.jsp </strong>
+    <source><![CDATA[
+<div align="center"><b><i>This is a body</i></b></div>
+    ]]></source>
+    
+    <p>Now we will see the same example in a different way.  In this version the
+       Tile is defined in a JSP using the Tiles definition tag.  This works very
+       similarly to the anonymous version.  The only difference is that it is not
+       anonymous.  Using this method the template is included and populated and
+       the Tile is inserted into the Definitions Factory so that it can be used
+       by other JSP pages.</p>
+       
+    <strong>file: somepage.jsp </strong>
+    <source><![CDATA[
+<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+
+<tiles:definition id="templateDefinition" template="layout.jsp">
+  <tiles:put name="title"  value="This is the title." />
+  <tiles:put name="header" value="header.jsp" />
+  <tiles:put name="body"   value="body.jsp" />
+</tiles:definition>
+<tiles:insert beanName="templateDefinition" />
+    ]]></source>
+
+    <p>Using this method of defining Tiles can be very tricky.  If you define a
+       Tile like this and then insert it in another page using the Tiles insert
+       tag, you must make sure that JSP page will never be invoked before the 
+       page that defines the Tile.  The Tiles Definitions Factory is stored in 
+       application scope.  So if the server is restarted or the Definitions 
+       Factory is reloaded for any reason, a Tile defined in a JSP page is not
+       reloaded until that JSP page is invoked.</p>
+
+    <p>The scenario above can be avoided by defining Tiles in an XML configuration
+       file.  The file is loaded at servlet startup using the Tiles Servlet or
+       a plugin.  The example below defines the Tile in an XML file and
+       uses the Tiles insert tag in a JSP to invoke it.</p>
+
+    <strong>file: WEB-INF/tiles-defs.xml</strong>
+    <source><![CDATA[
+...
+<definition name="templateDefinition" path="/layout.jsp">
+  <put name="title"  value="This is the title." />
+  <put name="header" value="header.jsp" />
+  <put name="body"   value="body.jsp" />
+</definition>
+...
+    ]]></source>
+
+    <strong>file: somepage.jsp</strong>
+    <source><![CDATA[
+<%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+
+<tiles:insert beanName="templateDefinition" />
+    ]]></source>
+    
+    <p>This is the preferred method of defining Tiles.  It ensures that all
+       definitions are loaded at application startup and reduces the coupling
+       between JSP pages.</p>
+       
+    </subsection>
+    
+    <subsection name="Specify Attribute Types">
+
+    <p>The previous examples used the <strong>put</strong> tag to set
+       attributes in a Tiles definition. In those examples Tiles inferred they 
+       attribute type.  In most cases this is fine as long as you understand the
+       rules of how value types are inferred.  More on that later.  This example
+       shows that you can specify the attribute type to give Tiles a hint about
+       what to do with the value.</p>
+           
+    <strong>file: WEB-INF/tiles-defs.xml</strong>
+    <source><![CDATA[
+...
+<definition name="templateDefinition" path="/layout.jsp">
+  <put name="title"  value="Title with specified Type." type="string" />
+  <put name="header" value="header.jsp" type="page" />
+  <put name="body"   value="body.jsp" type="page" />
+</definition>
+...
+    ]]></source>
+    
+    <p>The above code is really no different from the first example.  Tiles 
+       would've inferred the types we specified.  There are several valid 
+       settings for the type attribute.  However, they all resolve to just
+       three different types.  The type will be interpreted in one of the
+       following ways.</p>
+       
+    <ul>
+        <li><strong>String.</strong>  Value will be inserted directly in the 
+            page as text.</li>
+        <li><strong>Definition.</strong>  Value points to a valid Tiles definition
+            that will be processed and inserted in the page.</li>
+        <li><strong>Page.</strong>  Value points to a JSP page that will be
+            included in the current page.</li>
+    </ul>
+       
+    <p>In most cases Tiles will determine the appropriate type.  When would you
+       need to specify it?  Perhaps you have an attribute that is a logo that is
+       either reused or overriden for a Tile.  Tiles might interpret this value
+       as a path and try to process it as a JSP page.  If you specify it as a 
+       String it will be inserted directly into the page.  It would also be 
+       useful to specify the type if the value points to a Tiles definition
+       and you want to make sure Tiles doesn't interpret it as a direct
+       String.</p>
+       
+    </subsection>
+    
+    <subsection name="Set Attribute With Tag Body">
+       
+    <strong>Example Output</strong>
+    <div align="center" width="300" border="2" bordercolor="black" >
+        <table width="100%">
+        <tr>
+        <td  bgcolor="Blue"><strong>Test with tag body.</strong></td>
+        </tr>
+        <tr>
+        <td>
+          <strong>This header is inserted as body of tag</strong>
+        </td>
+        </tr>
+        <tr>
+        <td><div align="center"><b><i>This is the body</i></b></div>
+        </td>
+        </tr>
+        </table>
+    </div>
+    
+    <strong>file: WEB-INF/tiles-defs.xml</strong>
+    <source><![CDATA[
+...
+<definition name="templateDefinition" path="/layout.jsp">
+  <put name="title"  value="Test with tag body." type="string" />
+  <put name="header" type="string" >
+    <strong>This header is inserted as body of tag</strong>
+  </put>
+  <put name="body"   value="body.jsp" type="page" />
+</definition>
+...
+    ]]></source>
+    </subsection>
+
+</section>
+    
+<!-- 
+
+    <subsection name="Using Inheritance:  Overloading parameters">
+    </subsection>
+    
+    <subsection name="No Body Defined">
+    </subsection>
+    
+    <subsection name="List Usage">
+    </subsection>
+
+<section name="JSP Usage">
+    <subsection name="Defining Tiles In A JSP Page">
+    </subsection>
+    
+    <subsection name="Inserting Definitions Defined In A Factory">
+    </subsection>
+    
+    <subsection name="Overloading Attributes">
+    </subsection>
+</section>
+
+<section name="Tiles Controllers">
+</section>
+
+<section name="Using Tiles With Struts">
+
+    <subsection name="Tiles Controller Invoking an Action">
+    </subsection>
+    
+    <subsection name="Forwarding To A Tiles Definition">
+    </subsection>
+    
+</section>
+
+-->
+
+</body>
+</document>

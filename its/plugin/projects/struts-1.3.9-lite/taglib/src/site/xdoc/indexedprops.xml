@@ -1,0 +1,574 @@
+<?xml version="1.0"?>
+<!--
+    $Id: indexedprops.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+
+    <properties>
+        <title>Indexed Properties, Mapped Properties, and Indexed Tags</title>
+    </properties>
+    <body>
+        <section
+                name="Indexed Properties, Mapped Properties, and Indexed Tags">
+            <subsection name="Introduction">
+                <p>
+                    The JSP specification discusses using "indexed properties"
+                    in reference to
+                    the &lt;jsp:setProperty&gt; tag. However, none of the
+                    support provided in
+                    the base JSP specification actually deals with the
+                    "indexing" part. In
+                    truth, it allows for setting "array properties", but it
+                    doesn't do much
+                    for setting or even getting the actual values in each
+                    entry of the array,
+                    except with explicit JSP expressions (&lt;%= %&gt;).
+                </p>
+                <p>
+                    The framework provides much more powerful features
+                    related to
+                    indexed properties, but in truth most of the heavy lifting
+                    is not even in
+                    the framework, but in the Jakarta Commons Beanutils
+                    package. This
+                    package is used by the framework to provide this functionality.
+                    You can see the
+                    javadoc documentation for the Beanutils package at
+                    <a
+                            href="http://jakarta.apache.org/commons/beanutils/api/index.html">
+                        http://jakarta.apache.org/commons/beanutils/api/index.html</a>
+                    .
+                    The information particularly related to indexed properties
+                    is in the
+                    package description for the org.apache.commons.beanutils
+                    package. This
+                    article mirrors that information, but focuses on how this
+                    functionality is
+                    mapped to JSP tags using the Struts tag library.
+                </p>
+                <p>
+                    The support for indexed properties also includes "mapped
+                    properties",
+                    "nested properties" and "indexed tags", which are all
+                    related but slightly
+                    different. The latter is exclusive to the framework, but the
+                    first two are also
+                    provided by the Beanutils package. This article will cover
+                    all three of
+                    these topics.
+                </p>
+            </subsection>
+            <subsection name="Indexed Properties">
+                <p>
+                    The simplest demonstration of using indexed properties 
+                    can be
+                    shown with the following simple bean and JSP page:
+                </p>
+                <pre>
+                    package org.apache.struts.webapp.exercise;
+                    import org.apache.struts.action.ActionForm;
+                    public class StringBean extends ActionForm {
+                    private String strAry[] = { "String 0", "String 1",
+                    "String 2", "String 3", "String 4" };
+
+                    public String getStringIndexed(int index) {
+                    return strAry[index];
+                    }
+
+                    public void setStringIndexed(int index, String value) {
+                    strAry[index] = value;
+                    }
+                    }</pre>
+                <p>
+                    First note the two methods in the StringBean class,
+                    "getStringIndexed()"
+                    and "setStringIndexed()". Note that the "get" method takes
+                    an "int" and
+                    the "set" method takes an "int" and "String". The
+                    Beanutils package and
+                    the framework recognizes this arrangement of signatures as an
+                    "indexed property",
+                    in this case with the property name "stringIndexed".
+                </p>
+                <pre>
+                    &lt;!-- indexedtest.jsp --&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"
+                    %&gt;
+                    &lt;jsp:useBean id="bean"
+                    class="org.apache.struts.webapp.exercise.StringBean"/&gt;
+                    &lt;bean:write name="bean" property="stringIndexed[1]"/&gt;</pre>
+                <p>
+                    Note the property value of "stringIndexed[1]". This is
+                    intended to
+                    reference the indexed property "stringIndexed", and the
+                    1st (zero-based)
+                    entry of whatever array or collection which the indexed
+                    property
+                    represents.
+                </p>
+                <p>
+                    As you might be able to guess, when this page is executed,
+                    it will print
+                    just the string "String 1", which is the corresponding
+                    array entry at that
+                    index value.
+                </p>
+                <p>
+                    This is a simple demonstration of what indexed properties
+                    can provide.
+                </p>
+            </subsection>
+            <subsection name="List-Backed Indexed Properties">
+                <p>
+                    A variation on indexed properties are properties whose
+                    type is
+                    <code>java.util.List</code>
+                    or a subclass.
+                </p>
+                <p>
+                    For instance, the first example using "StringBean.java"
+                    and
+                    "indexedtest.jsp" could use a modified "StringBean.java"
+                    class, like this:
+                </p>
+                <pre>
+                    package org.apache.struts.webapp.exercise;
+                    import org.apache.struts.action.ActionForm;
+                    public class StringBean2 extends ActionForm {
+                    private String strAry[] = { "String 0", "String 1",
+                    "String 2", "String 3", "String 4" };
+
+                    public java.util.List getStringIndexed() {
+                    return java.util.Arrays.asList(strAry);
+                    }
+                    }</pre>
+                <p>
+                    Note the different implementation of the
+                    "getStringIndexed()" method,
+                    returning a List instead of a String. If this bean class
+                    is substituted
+                    with the original "indexedtest.jsp", the result will be
+                    identical.
+                </p>
+            </subsection>
+            <subsection name="Mapped Properties">
+                <p>
+                    The idea of "mapped properties" as opposed to "indexed
+                    properties" is that
+                    the property represents a "map" type, as opposed to an
+                    array or collection
+                    type. The signature of the "get" and "set" methods for a
+                    mapped property
+                    are different from the same methods for an indexed
+                    property. In
+                    particular, instead of an "int" for the index, there is a
+                    "String" for the
+                    key.
+                </p>
+                <p>
+                    The previous example for indexed properties can be changed
+                    to the
+                    following to demonstrate mapped properties:
+                </p>
+                <pre>
+                    package org.apache.struts.webapp.exercise;
+                    import java.util.HashMap;
+                    import org.apache.struts.action.ActionForm;
+                    public class StringBean3 extends ActionForm {
+                    private String strAry[] = { "String 0", "String 1",
+                    "String 2", "String 3", "String 4" };
+
+                    private HashMap map = new HashMap();
+
+                    public StringBean() {
+                    map.put("zero", strAry[0]);
+                    map.put("one", strAry[1]);
+                    map.put("two", strAry[2]);
+                    map.put("three", strAry[3]);
+                    map.put("four", strAry[4]);
+                    }
+
+                    public Object getStringMapped(String key) {
+                    return map.get(key);
+                    }
+
+                    public void setStringMapped(String key, Object value) {
+                    map.put(key, value);
+                    }
+                    }</pre>
+                <p>
+                    Note the "get" and "set" methods to represent the mapped
+                    property.
+                </p>
+                <pre>
+                    &lt;!-- indexedtest3.jsp --&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"
+                    %&gt;
+                    &lt;jsp:useBean id="bean"
+                    class="org.apache.struts.webapp.exercise.StringBean"/&gt;
+                    &lt;bean:write name="bean" property="stringMapped(two)"/&gt;</pre>
+                <p>
+                    Note the property value of "stringMapped(two)". This will
+                    reference the
+                    mapped property "stringMapped", using the key value of
+                    "two".
+                </p>
+                <p>
+                    When this page is executed, it will print just the string
+                    "String 2",
+                    which is the string stored in the HashMap with the key
+                    "two".
+                </p>
+            </subsection>
+            <subsection name="Nested Properties">
+                <p>
+                    Nested properties allows you to combine normal properties,
+                    indexed
+                    properties, and mapped properties in a hierarchical
+                    fashion. A property
+                    value of a bean does not have to be a primitive like "int"
+                    or "String.
+                    The property value can be a bean with its own properties.
+                    The following
+                    example demonstrates this.
+                </p>
+                <pre>
+                    package org.apache.struts.webapp.exercise;
+                    import org.apache.struts.util.LabelValueBean;
+                    import org.apache.struts.action.ActionForm;
+                    public class StringBean4 extends ActionForm {
+                    private LabelValueBean[] lvbeans;
+
+                    public StringBean() {
+                    lvbeans = new LabelValueBean[5];
+                    lvbeans[0] = new LabelValueBean("Zero", 0+"");
+                    lvbeans[1] = new LabelValueBean("One", 1+"");
+                    lvbeans[2] = new LabelValueBean("Two", 2+"");
+                    lvbeans[3] = new LabelValueBean("Three", 3+"");
+                    lvbeans[4] = new LabelValueBean("Four", 4+"");
+                    }
+
+                    public LabelValueBean getLabelValue(int index) {
+                    return lvbeans[index];
+                    }
+                    }</pre>
+                <p>
+                    First note the use of the class "LabelValueBean". This is
+                    a simple class
+                    provided in the framework which represents a pair of
+                    two Strings, a
+                    "label" and a "value". It itself is a bean, providing
+                    these two
+                    properties with standard getters and setter methods.
+                </p>
+                <p>
+                    Then, see the "getLabelValue()" method, representing the
+                    indexed property
+                    "labelValue". This class doesn't show a "setter" method.
+                    If you only ever
+                    provide read-only access a property, then it is not
+                    necessary to provide a
+                    setter method.
+                </p>
+                <pre>
+                    &lt;!-- indexedtest4.jsp --&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"
+                    %&gt;
+                    &lt;jsp:useBean id="bean"
+                    class="org.apache.struts.webapp.exercise.StringBean"/&gt;
+                    &lt;bean:write name="bean" property="labelValue[1].label"/&gt;</pre>
+                <p>
+                    Note here the "nested" property reference. It is first
+                    using the indexed
+                    property "labelValue" and then the "normal" property of
+                    the LabelValueBean
+                    to get the final result. When this page is executed, it
+                    will print the
+                    string "One", representing the "label" property of the 1st
+                    entry of the
+                    array represented by the "labelValue" indexed property.
+                </p>
+            </subsection>
+            <subsection name="Dynamic Indexes for Indexed Properties">
+                <p>
+                    People often start using indexed properties with 
+                    enthusiasm, but soon become frustrated by an inconvenient  
+                    reality. The reality is
+                    that the "index" for indexed properties often needs to be
+                    a dynamic value,
+                    usually from the "indexId" counter in the "&lt;logic:iterate&gt;"
+                    tag.
+                </p>
+                <p>
+                    For instance, the following example JSP page using the
+                    same "StringBean"
+                    bean class uses a dynamic value for the index:
+                </p>
+                <pre>
+                    &lt;!-- indexedtest5.jsp --&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"
+                    %&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-logic.tld"
+                    prefix="logic" %&gt;
+                    &lt;html&gt;
+                    &lt;body&gt;
+                    &lt;html:form action="indexedtest5.do"&gt;
+                    &lt;logic:iterate name="stringbean" property="stringArray"
+                    id="foo"
+                    indexId="ctr"&gt;
+                    &lt;html:text name="stringbean"
+                    property='&lt;%= "labelValue[" + ctr + "].label" %&gt;' /&gt;
+                    &lt;/logic:iterate&gt;
+                    &lt;html:submit property="submitValue"&gt;Submit Changes&lt;/html:submit&gt;
+                    &lt;/html:form&gt;
+                    &lt;/body&gt;
+                    &lt;/html&gt;</pre>
+                <p>
+                    The JSP expression syntax for the
+                    <code>property</code>
+                    attribute is somewhat
+                    messy and easy to get wrong so it's something we want to
+                    avoid. One
+                    way to make this a little cleaner is to use "indexed
+                    tags", but there's a
+                    wrinkle to this approach. We'll first cover the details of
+                    indexed tags,
+                    then we'll talk about the wrinkle, and then finally an
+                    alternative to
+                    indexed tags.
+                </p>
+            </subsection>
+            <subsection name="Indexed Tags">
+                <p>
+                    The "indexed tags" feature is provided by several tags
+                    that have an
+                    optional boolean "indexed" attribute. This is only legal
+                    when inside a
+                    "&lt;logic:iterate&gt;" tag. When the "indexed" attribute
+                    is true, then
+                    the tag will incorporate the loop index into the resulting
+                    HTML component.
+                </p>
+                <p>
+                    The several tags that support the "indexed" attribute can
+                    be broken into
+                    three groups, split by what they do to incorporate the
+                    loop index into the
+                    resulting HTML component.
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Group 1</th>
+                            <th>Group 2</th>
+                            <th>Group 3</th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td>checkbox</td>
+                        <td>button</td>
+                        <td>link</td>
+                    </tr>
+                    <tr>
+                        <td>file</td>
+                        <td>image</td>
+                        <td>&#160;</td>
+                    </tr>
+                    <tr>
+                        <td>hidden</td>
+                        <td>submit</td>
+                        <td>&#160;</td>
+                    </tr>
+                    <tr>
+                        <td>password</td>
+                        <td>&#160;</td>
+                        <td>&#160;</td>
+                    </tr>
+                    <tr>
+                        <td>radio</td>
+                        <td>&#160;</td>
+                        <td>&#160;</td>
+                    </tr>
+                    <tr>
+                        <td>select</td>
+                        <td>&#160;</td>
+                        <td>&#160;</td>
+                    </tr>
+                    <tr>
+                        <td>text</td>
+                        <td>&#160;</td>
+                        <td>&#160;</td>
+                    </tr>
+                    <tr>
+                        <td>textarea</td>
+                        <td>&#160;</td>
+                        <td>&#160;</td>
+                    </tr>
+                </table>
+                <p>
+                    In Group 1, all of these tags will generate an HTML "name"
+                    attribute of
+                    "name[nn].property". The value of each tag will also be
+                    initialized by
+                    the getter method corresponding to that property
+                    specification.
+                </p>
+                <p>
+                    In Group 2, these tags will generate an HTML "name"
+                    attribute of
+                    "property[nn]". These three tags don't have "name"
+                    attributes, so since
+                    it wouldn't make sense to use "[nn].property" (no name
+                    value), the array
+                    indexes are attached to the property instead.
+                </p>
+                <p>
+                    The "link" tag in Group 3 isn't anything like any of the
+                    others. The base
+                    description of the "link" tag doesn't even mention how
+                    this works, but the
+                    description of the "indexed" tag describes how it works
+                    somewhat (although
+                    it doesn't specifically say that it uses the name "index"
+                    if "indexId"
+                    isn't set). In short, the "indexed" behavior of this tag
+                    is to add a URL
+                    query parameter, where the parameter name is "index" or
+                    the value of the
+                    "indexId" attribute, and the parameter value is the
+                    current index value.
+                    Outside of this, the "indexed" behavior of the "link" tag
+                    needs no more
+                    explanation, in contrast to the tags in the first two
+                    groups.
+                </p>
+            </subsection>
+            <subsection name="The Wrinkle with Indexed Tags">
+                <p>
+                    The problem with using the "indexed" attribute to
+                    automatically attach the
+                    loop index is that it gives you less control over how the
+                    loop index is
+                    used. For instance, in our earlier examples using the "&lt;html:text&gt;"
+                    tag, we attached the loop index to the end of the
+                    "property" attribute
+                    value, which was "labelValue" in our example. This results
+                    in a "name"
+                    attribute value in the HTML component of "labelValue[nn]".
+                    This maps to a
+                    "labelValue" indexed property on the "stringbean" bean
+                    instance.
+                </p>
+                <p>
+                    However, if we instead add the "indexed" attribute, and
+                    remove the manual
+                    attachment of the loop index, then the resulting "name"
+                    attribute in the
+                    HTML component ends up as "stringbean[nn].labelValue".
+                    This will not work
+                    as is. It can be changed to work, however. From the
+                    previous example
+                    (indexedtest5.jsp), the "&lt;html:text&gt;" component
+                    would change the
+                    "name" attribute from "stringbean" to "labelValue", and
+                    the "property"
+                    attribute to "label". With the "indexed" attribute, that
+                    ends up with a
+                    "name" attribute value of "labelValue[nn].label".
+                </p>
+                <p>
+                    So, it's very likely you could use indexed tags to support
+                    your needs for
+                    indexed properties, but you have to understand the
+                    resulting structure of
+                    your "name" attribute in order to understand what other
+                    attribute values
+                    you need.
+                </p>
+            </subsection>
+            <subsection name="Using Struts-EL To Avoid Some Of The Pain">
+                <p>
+                    The "indexed tags" feature was created partially because
+                    of the awkward
+                    process for encoding the loop index into the property
+                    attribute, using a
+                    JSP expression. The creation of the
+                    <a href="http://java.sun.com/products/jsp/jstl/">JSTL</a>
+                    eventually resulted in a solution that makes that process
+                    less painful.
+                </p>
+                <p>
+                    The JSTL uses a string-based expression language to
+                    evaluate attribute
+                    values, instead of using a run-time JSP expression. The
+                    engine that
+                    performs these evaluations is often called just "EL"
+                    (expression language)
+                    for short. After the JSTL was created, a derivative of
+                    Struts Taglib called Struts-EL was created. In short, 
+                    this component does everything that Struts Taglib does, 
+                    but it uses the JSTL EL engine to evaluate attribute 
+                    values.
+                </p>
+                <p>
+                    If you use Struts-EL, you can get back some of the
+                    flexibility of encoding
+                    your loop indices manually, but the resulting expressions
+                    will be a little
+                    more readable, and thus maybe a little easier to maintain.
+                </p>
+                <p>
+                    For instance, following this is a version of
+                    "indexedtest5.jsp" using
+                    Struts-EL:
+                </p>
+                <pre>
+                    &lt;!-- indexedtest6.jsp --&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-html-el.tld"
+                    prefix="html-el" %&gt;
+                    &lt;%@ taglib uri="/WEB-INF/struts-logic-el.tld"
+                    prefix="logic-el" %&gt;
+                    &lt;html&gt;
+                    &lt;body&gt;
+                    &lt;html-el:form action="indexedtest6.do"&gt;
+                    &lt;logic-el:iterate name="stringbean"
+                    property="stringArray" id="foo"
+                    indexId="ctr"&gt;
+                    &lt;html-el:text name="stringbean"
+                    property="labelValue[${ctr}].label" /&gt;
+                    &lt;/logic-el:iterate&gt;
+                    &lt;html-el:submit property="submitValue"&gt;Submit
+                    Changes&lt;/html:submit&gt;
+                    &lt;/html-el:form&gt;
+                    &lt;/body&gt;
+                    &lt;/html&gt;</pre>
+                    
+                <p>    
+                    If you are using JSTL in your application (and we 
+                    recommend that you do!), 
+                    then use Struts EL in place of Struts Taglib.
+                </p>
+                    
+            </subsection>
+        </section>
+    </body>
+</document>
+

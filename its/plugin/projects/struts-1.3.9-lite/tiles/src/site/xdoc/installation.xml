@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!--
+    $Id: installation.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+<properties>
+  <title>Installation</title>
+</properties>
+
+<body>
+
+<section name="Quick Install"
+         href="QuickInstall">
+    <ul>
+        <li>
+            Create a new web application based on the Struts Blank example.
+        </li>
+        <li>
+            Edit the struts-config and uncomment the section that refers 
+            to the "Tiles PlugIn".</li>
+        <li>
+            Create one or more Tiles Definitions XML files in the /WEB-INF
+            directory of the new application.
+         </li>
+        <li>
+            Deploy the new application.
+         </li>
+    </ul>
+
+</section>
+
+
+<section name="Configuring the Plugin" href="Installing">
+
+    <p>
+        Here's how to use Tiles in your own application:
+    </p>
+
+    <ul>
+        <li>
+            Ensure that a <code>struts-tiles.jar</code> is available in 
+            the <code>WEB-INF/lib</code> directory of your web application.
+        </li>
+        <li>
+           <p>
+           Add this <code>init-param</code> to the Action
+    Servlet definition in web.xml:</p>
+    <source><![CDATA[
+    <init-param>
+        <param-name>chainConfig</param-name>
+        <param-value>org/apache/struts/tiles/chain-config.xml</param-value>
+    </init-param>
+    ]]></source>
+       
+        </li>        
+        <li>
+           Configure the Tiles Plugin to load your definitions.
+    <source><![CDATA[
+    <plug-in className="org.apache.struts.tiles.TilesPlugin">
+    <set-property
+        property="definitions-config"
+           value="/WEB-INF/tiles-defs.xml"/>
+    </plug-in>
+    ]]></source>
+        </li>
+        <li>
+            At the top of each JSP page that will use the Tiles custom tags,
+            add a line that declares the Tiles custom tag library.
+
+    <source><![CDATA[
+    <%@ taglib uri="http://struts.apache.org/tags-tiles" prefix="tiles" %>
+    ]]></source>
+        </li>
+    </ul>
+
+</section>
+
+<section name="Avoiding ClassNotFoundExceptions" href="Containers">
+    <p><strong>WARNING</strong> - Do <strong>NOT</strong> add
+       <code>tiles.jar</code> to the classpath of your servlet container in
+       an attempt to avoid placing it in the <code>/WEB-INF/lib</code>
+       directory of each individual web app! Doing so will cause problems with
+       <code>ClassNotFoundException</code> exceptions. </p>
+
+    <p>For most containers, you need only to:</p>
+    <ul>
+        <li>Copy the WAR files in your Tiles <code>/webapp</code> directory
+            to your    containers <code>webapps</code> directory. </li>
+        <li>In some cases, you may need to restart your container if it
+            is running.</li>
+    </ul>
+
+</section>
+
+</body>
+</document>

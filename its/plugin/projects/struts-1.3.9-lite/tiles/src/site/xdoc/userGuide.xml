@@ -1,0 +1,438 @@
+<?xml version="1.0"?>
+<!--
+    $Id: userGuide.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+<properties>
+  <title>User Guide</title>
+</properties>
+
+<body>
+
+<section name="User Guide">
+
+    <p>
+    One Tiles is installed and the XML Definitions are being loaded, 
+    the better part of using Tiles is managing the XML Definitions.
+    </p>
+   
+
+    <subsection name="XML Definitions Configuration">
+    <p>This section provides an overview of the Tiles XML configuration mechanism.
+    </p>
+    
+    <source><![CDATA[
+    <?xml version="1.0" encoding="ISO-8859-1" ?>
+    
+    <!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.3//EN"
+       "http://struts.apache.org/dtds/tiles-config_1_3.dtd">
+    
+    <tiles-definitions>
+    
+    <definition name="mainLayout" path="/common/layouts/classicLayout.jsp">
+        <put name="title"  value="Sample Page Title" />
+        <put name="header" value="/common/header.jsp" />
+        <put name="menu"   value="mainMenu" />
+        <put name="footer" value="/common/footer.jsp" />
+        <put name="body"   value=".portal.body" />
+    </definition>
+    
+    <definition name="mainMenu" path="/common/layouts/vboxLayout.jsp" >
+        <putList name="list" >
+            <add value="menu.links" />
+            <add value="menu.taglib.references" />
+            <add value="menu.printer.friendly" />
+            <add value="menu.old.documents" />
+      </putList>
+    </definition>
+    
+    <definition name="aPage" extends="mainLayout">
+        <put name="title"  value="Another Title" />
+        <put name="body"   value="aPage.body" />
+    </definition>
+    
+    </tiles-definitions>    
+    ]]></source>
+
+    <p>The XML example above is representative of real-life usage.  But it does
+        not illustrate every aspect of the Tiles configuration file.  We will
+        now examine each portion of the configuration file in detail.</p>
+        
+    </subsection>
+    
+    <subsection name="Definitions">
+        <p>A definition can define a template or a "tile."  If it is defining
+        a template its path will point to a JSP page that contains the layout
+        of the template. The definition's attributes will point to various 
+        sections of the template that can be either used as is or overriden.</p>
+        
+        <p>If a definition defines a tile it may refer to a named portion of a 
+        page such as the header, or it may refer to a reusable component, such
+        as a customer form.</p>
+        
+        <p>A template definition would be similar to the <code>mainLayout</code>
+        definition above.  It defines a template containing a layout and 5 named
+        attributes.  The "title" attribute is a String attribute that can be
+        overridden.  The "header" and "footer" attributes are pages that are
+        included in the template.  The "menu" and "body" attributes are 
+        definitions that would be defined elsewhere in the file.</p>
+        
+        <p>A tile definition would be similar to the <code>mainMenu</code>
+        definition above.  This configures a menu tile that can be included
+        anywhere on a page.</p>
+        
+        <p>The following list shows the attributes of the Definition tag.</p>
+        
+        <ul>
+            <li><strong>controllerClass</strong> 
+            The fully qualified Java class name of the controller
+            subclass to call immediately before the tiles is inserted.
+            Only one of controllerClass or controllerUrl should be
+            specified.</li>
+
+            <li><strong>controllerUrl</strong>
+            The context-relative path to the resource used as controller
+            called immediately before the tiles is inserted.
+            Only one of controllerClass or controllerUrl should be
+            specified.</li>
+
+            <li><strong>extends</strong>
+            Name of a definition that is used as ancestor of this definition.
+            All attributes from the ancestor are available to the new
+            definition. Any attribute inherited from the ancestor can
+            be overloaded by providing a new value.</li>
+
+            <li><strong>name</strong> (Required).
+            The unique identifier for this definition.</li>
+
+            <li><strong>page</strong>
+            Same as path.</li>
+
+            <li><strong>path</strong>
+            The context-relative path to the resource used as tiles to
+            insert. This tiles will be inserted and a tiles context
+            containing appropriate attributes will be available.</li>
+
+            <li><strong>role</strong>
+            Security role name that is allowed access to this definition
+            object. The definition is inserted only if the role name is
+            allowed.</li>
+            
+            <li><strong>template</strong>
+            Same as path. For compatibility with the template tag library.</li>
+        </ul>
+    </subsection>
+    
+    <subsection name="Put">
+        <p>The "put" element describes an attribute of a definition. Definition
+           attributes have a name and a value. The value can be specified as an 
+           xml attribute, or in the body of the <code>&lt;put&gt;</code>tag.</p>
+     
+        <p>A definition attribute can be one of three basic types.  It can be
+           a String value that is inserted into a page.  This value can be a 
+           simple String specified in the "value" attribute of the "put" tag or
+           it can be complex HTML content specified as the body of the "put" tag.
+           The attribute can also be the URL of a page to be included in another
+           page.  Thirdly, it can be the name of another Tiles definition to
+           be inserted in a page.</p>
+           
+        <p>The following list shows the attributes of the Put tag.</p>
+        
+        <ul>
+            <li><strong>content</strong>
+                Same as value.</li>
+
+            <li><strong>direct</strong>
+                Same as type="string".</li>
+
+            <li><strong>name</strong> (Required)
+                The unique identifier for this put.</li>
+                
+            <li><strong>type</strong>
+                The type of the value. Can be: string, page, template or 
+                definition. By default, no type is associated to a value. If a 
+                type is associated, it will be used as a hint to process the 
+                value when the attribute will be used in the inserted tiles. A
+                type of "string" indicates that the value should be inserted
+                directly into the content of the page.  A type of "page" or
+                "template" indicates that the value is the URL of a page that
+                should be included.  A type of "definition" indicates that the
+                value is the name of another Tiles definition that should be
+                included in the page.</li>
+                
+            <li><strong>value</strong>
+                The value associated to this tiles attribute. The "value" 
+                attribute is required if the value is not specified in the 
+                content of the "put" tag.
+                </li>
+           </ul>
+           
+    </subsection>
+    
+    <subsection name="PutList">
+        <p>The PutList tag is similar to the Put tag except that it allows you
+            to specify a list of attributes for a Tiles Definition.  It specifies
+            an attribute that is a Java List containing any kind of values. In 
+            the config file, the list elements are specified by nested 
+            <strong>add</strong>, <strong>item</strong> or
+            <strong>putList</strong> elements.</p>
+            
+        <p>The following list shows the attributes of the PutList tag.</p>
+        
+        <ul>
+                <li><strong>name</strong> (Required).
+                    The unique identifier for this put list.</li>
+            </ul>
+    </subsection>
+    
+    <subsection name="Add">
+        <p>The <strong>add</strong> element describes an element of a list. It 
+           is similar to the <strong>put</strong> element except that it is only
+           used in lists.  It supports the following attributes.</p>
+           
+        <ul>
+            <li><strong>content</strong>
+                Same as value.</li>
+
+            <li><strong>direct</strong>
+                Same as type="string".</li>
+
+            <li><strong>name</strong> (Required)
+                The unique identifier for this put.</li>
+                
+            <li><strong>type</strong>
+                The type of the value. Can be: string, page, template or 
+                definition. By default, no type is associated to a value. If a 
+                type is associated, it will be used as a hint to process the 
+                value when the attribute will be used in the inserted tiles. A
+                type of "string" indicates that the value should be inserted
+                directly into the content of the page.  A type of "page" or
+                "template" indicates that the value is the URL of a page that
+                should be included.  A type of "definition" indicates that the
+                value is the name of another Tiles definition that should be
+                included in the page.</li>
+                
+            <li><strong>value</strong>
+                The value associated to this tiles attribute. The "value" 
+                attribute is required if the value is not specified in the 
+                content of the "add" tag.
+                </li>
+           </ul>
+
+    </subsection>
+    
+    <subsection name="Bean">
+        <p>The <strong>bean</strong> element describes an element of a list. It 
+           causes a bean of the specified java classtype to be created. This 
+           bean is initialized with appropriate nested 
+           <strong>set-property</strong> elements.</p>
+
+        <ul>
+            <li><strong>classtype</strong> (Required).
+                The fully qualified classname for this bean.</li>
+        </ul>
+    </subsection>
+    
+    <subsection name="Set-Property">
+        <p>The <strong>set-property</strong> element specifies the method name 
+           and initial value of a bean property. When the object representing
+           the surrounding element is instantiated, the accessor for the 
+           indicated property is called and passed the indicated value.</p>
+           
+        <ul>
+            <li><strong>property</strong> (Required).
+                Name of the JavaBeans property whose setter method will be 
+                called.</li>
+
+            <li><strong>value</strong> (Required).
+                String representation of the value to which this property will 
+                be set, after suitable type conversion</li>
+        </ul>
+        
+    </subsection>
+    
+    <subsection name="Item">
+        <p>The <strong>item</strong> element describes an element of a list. 
+           It causes a bean of the specified classtype to be created and added
+           to the list. Each bean can contain different properties: value, link,
+           icon, tooltip. These properties are to be interpreted by the jsp 
+           page using them.</p>
+
+        <p>Using the Item element is a good way to build menus.  By default the 
+           bean is of type 
+           <code>org.apache.struts.tiles.beans.SimpleMenuItem</code>.  The 
+           following attributes are supported.</p>
+           
+        <ul>
+            <li><strong>classtype</strong>
+                The fully qualified classtype for this bean. If specified, the 
+                classtype must be a subclass of the interface
+                <code>org.apache.struts.tiles.beans.MenuItem</code>.</li>
+
+            <li><strong>icon</strong>
+                Link to the icon for the menu item.</li>
+
+            <li><strong>link</strong> (Required).
+                URL of the location pointed to by the menu item.</li>
+
+            <li><strong>tooltip</strong>
+                Alternative text describing the menu item.</li>
+
+            <li><strong>value</strong> (Required)
+                The String to be displayed on the menu.</li>
+        </ul>
+    </subsection>
+    
+    <subsection name="Description">
+        <p>The <strong>description</strong> element contains descriptive 
+           (paragraph length) text about the surrounding element, suitable for 
+           use in GUI tools.</p>
+    </subsection>
+    
+    <subsection name="Display-Name">
+        <p>The <strong>display-name</strong> element contains a short (one line) 
+           description of the surrounding element, suitable for use in GUI 
+           tools.</p>
+    </subsection>
+    
+    <subsection name="Icon">
+        <p>The <strong>icon</strong> element contains a small-icon and 
+           large-icon element which specify the location, relative to the 
+           Tiles configuration file, for small and large images used to 
+           represent the surrounding element in GUI tools.</p>
+    </subsection>
+    
+    <subsection name="Large-Icon">
+        <p>The <strong>large-icon</strong> element specifies the location, 
+           relative to the Struts configuration file, of a resource containing 
+           a large (32x32 pixel) icon image.</p>
+    </subsection>
+    
+    <subsection name="Small-Icon">
+        <p>The <strong>large-icon</strong> element specifies the location, 
+           relative to the Struts configuration file, of a resource containing 
+           a large (16x16 pixel) icon image.</p>
+    </subsection>
+</section>
+
+<!--
+
+<section name="2. Using Tiles">
+    <subsection name="2.1 Inserting Tiles Into A JSP Page">
+    </subsection>
+    
+    <subsection name="2.2 Using Tiles Controllers">
+    </subsection>
+    
+    <subsection name="2.3 Definitions Factory">
+    </subsection>
+</section>
+
+-->
+
+<section name="Other Resources">
+
+<p>
+Tiles has been covered by many books and articles.
+</p>
+
+<subsection name="Sample Book Chapters">
+
+<ul>
+<li>
+<a href="http://www.manning-source.com/books/husted/husted_ch11.pdf">
+<strong>Developing applications with Tiles</strong></a> by Cedric Dumoulin and 
+Ted Husted.  Sample chapter from
+<a href="http://www.amazon.com/exec/obidos/ISBN=1930110502/hitchhikeguidetoA/">
+Struts in Action</a>; available as a free download (PDF).
+</li>
+
+<li>
+<a href="http://www.oreilly.com/catalog/jakarta/chapter/">
+<strong>Using Tiles</strong></a> Sample beta chapter from
+<a href="http://www.amazon.com/exec/obidos/ISBN=0596003285/hitchhikeguidetoA/">
+Programming Jakarta Struts</a>; available as a free download (PDF).
+</li>
+</ul>
+
+</subsection>
+
+<subsection name="Articles">
+
+<ul>
+<li>
+<a href="http://www.developer.com/java/ent/article.php/3569446">
+<strong>Open Source-Based Portal-Lite</strong></a>
+by Scott Nelson. Using Tiles to prototype a portal site. 
+</li>
+
+<li>
+<a href="http://www-128.ibm.com/developerworks/websphere/library/techarticles/0505_kodali/0505_kodali.html">
+<strong>Improve performance by caching Struts and Tiles applications</strong></a>
+by Nirmala Kodali. Implementing caching under WebSphere.
+</li>
+
+<li>
+<a href="http://www.laliluna.de/first-steps-struts-tiles-tutorial.html">
+<strong>Introduction to Struts and Tiles with a working example</strong></a>
+by Sascha Wolski. 
+</li>
+
+<li>
+<a href="http://www.javaworld.com/javaworld/jw-10-2004/jw-1025-xkins.html">
+<strong> Skin Web applications using Xkins</strong></a>
+by Guillermo Meyer. Use skinning with Struts and Tiles.
+</li>
+
+<li>
+<a href="http://www.oracle.com/technology/oramag/oracle/04-may/o34dev_struts.html">
+<strong>Reuse Tiles and Simplify UI</strong></a> 
+by James Holmes. Howto article in Oracle Magazine.
+</li>
+
+<li>
+<a href="http://www-106.ibm.com/developerworks/java/library/j-strutstiles.html?loc=j">
+<strong>Struts and Tiles aid component-based development</strong></a> by Wellie Chao.
+</li>
+
+<li>
+<a href="http://www.javaworld.com/javaworld/jw-01-2002/jw-0104-tilestrut.html">
+<strong>UI design with Tiles and Struts</strong></a> by Prakash Malani.
+</li>
+
+<li>
+<a href="http://www.lifl.fr/~dumoulin/tiles/tilesAdvancedFeatures.pdf">
+<strong>Tiles Advanced Features</strong></a> by Cedric Dumoulin.
+</li>
+</ul>
+
+<p>
+For a comprehensive listing of Struts resources, visit 
+<a href="http://www.StrutsCentral.net/">Struts Central.</a>
+</p>
+
+</subsection>
+
+</section>
+
+</body>
+</document>

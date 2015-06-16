@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    $Id: dev_bean.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+
+    <properties>
+        <title>Bean Taglib Guide</title>
+    </properties>
+
+    <body>
+        <section name="Bean Taglib Guide">
+
+            <subsection href="bean" name="The Bean Taglib">
+
+                <p>
+                    <strong>Note:</strong>
+                    - Some of the features in this taglib are also
+                    available in the
+                    <a href="http://java.sun.com/products/jsp/jstl/">
+                        JavaServer Pages
+                        Standard Tag Library (JSTL).</a>
+                    The Apache Struts group encourages the use of the standard tags
+                    over the Struts
+                    specific tags when possible.
+                </p>
+
+                <p>
+                    The "struts-bean" tag library contains JSP custom tags
+                    useful in defining
+                    new beans (in any desired scope) from a variety of
+                    possible sources,
+                    as well as a tag to render a particular bean (or bean
+                    property) to the
+                    output response.
+                </p>
+
+                <p>
+                    This tag library contains tags useful in accessing beans
+                    and their
+                    properties, as well as defining new beans (based on these
+                    accesses) that
+                    are accessible to the remainder of the page via scripting
+                    variables and
+                    page scope attributes.
+                    Convenient mechanisms to create new beans based on the
+                    value of request
+                    cookies, headers, and parameters are also provided.
+                </p>
+
+            </subsection>
+
+            <subsection href="resources" name="Bean Taglib Resources">
+
+                <ul>
+                    <li>
+                        <a href="apidocs/org/apache/struts/taglib/bean/package-summary.html#package_description">
+                            Bean Taglib API Package Description</a>
+                    </li>
+                    <li>
+                        <a href="tlddoc/bean/tld-summary.html">Bean
+                            Taglibdoc</a>
+                    </li>
+                    <li>
+                        <a href="tagreference.html#struts-bean.tld">Bean Tag
+                            Reference</a>
+                    </li>
+                </ul>
+
+            </subsection>
+
+        </section>
+    </body>
+</document>
