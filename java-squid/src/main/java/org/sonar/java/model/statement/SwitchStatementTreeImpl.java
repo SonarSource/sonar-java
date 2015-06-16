@@ -20,6 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -37,7 +38,7 @@ import java.util.List;
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
 
   private final ExpressionTree expression;
-  private final List<CaseGroupTreeImpl> cases;
+  private final List<CaseGroupTree> cases;
   private final InternalSyntaxToken switchKeyword;
   private final InternalSyntaxToken openParenToken;
   private final InternalSyntaxToken closeParenToken;
@@ -45,20 +46,25 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   private final InternalSyntaxToken closeBraceToken;
 
   public SwitchStatementTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken,
-    InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken,
-    List<AstNode> children) {
+    InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken) {
     super(Kind.SWITCH_STATEMENT);
     this.switchKeyword = switchKeyword;
     this.openParenToken = openParenToken;
     this.expression = Preconditions.checkNotNull(expression);
     this.closeParenToken = closeParenToken;
     this.openBraceToken = openBraceToken;
-    this.cases = Preconditions.checkNotNull(groups);
+    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Preconditions.checkNotNull(groups)).build();
     this.closeBraceToken = closeBraceToken;
 
-    for (AstNode child : children) {
-      addChild(child);
+    addChild(switchKeyword);
+    addChild(openParenToken);
+    addChild((AstNode) expression);
+    addChild(closeParenToken);
+    addChild(openBraceToken);
+    for (CaseGroupTreeImpl caseGroup : groups) {
+      addChild(caseGroup);
     }
+    addChild(closeBraceToken);
   }
 
   @Override
@@ -93,8 +99,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public List<CaseGroupTree> cases() {
-    // FIXME
-    return (List) cases;
+    return cases;
   }
 
   @Override

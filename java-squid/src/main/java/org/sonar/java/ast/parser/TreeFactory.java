@@ -1317,14 +1317,8 @@ public class TreeFactory {
 
     List<CaseGroupTreeImpl> groups = optionalGroups.isPresent() ? optionalGroups.get() : Collections.<CaseGroupTreeImpl>emptyList();
 
-    ImmutableList.Builder<AstNode> children = ImmutableList.builder();
-    children.add(switchKeyword, openParenToken, (AstNode) expression, closeParenToken, openBraceToken);
-    children.addAll(groups);
-    children.add(closeBraceToken);
-
     return new SwitchStatementTreeImpl(switchKeyword, openParenToken, expression, closeParenToken,
-      openBraceToken, groups, closeBraceToken,
-      children.build());
+      openBraceToken, groups, closeBraceToken);
   }
 
   public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, BlockStatementListTreeImpl blockStatements) {
