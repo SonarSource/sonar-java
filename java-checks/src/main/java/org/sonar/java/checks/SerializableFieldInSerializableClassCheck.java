@@ -73,7 +73,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     }
   }
 
-  private boolean isCollectionOfSerializable(TypeTree typeTree) {
+  private static boolean isCollectionOfSerializable(TypeTree typeTree) {
     Type type = typeTree.symbolType();
     if (type.isSubtypeOf("java.util.Collection") && typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       return isSerializable(((ParameterizedTypeTree) typeTree).typeArguments().get(0));
@@ -81,11 +81,11 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     return false;
   }
 
-  private boolean isStatic(VariableTree member) {
+  private static boolean isStatic(VariableTree member) {
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.STATIC);
   }
 
-  private boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
+  private static boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
     boolean hasWriteObject = false;
     boolean hasReadObject = false;
     for (Tree member : classTree.members()) {
@@ -101,11 +101,11 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     return hasReadObject && hasWriteObject;
   }
 
-  private boolean isTransientOrSerializable(VariableTree member) {
+  private static boolean isTransientOrSerializable(VariableTree member) {
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type());
   }
 
-  private boolean isSerializable(Tree tree) {
+  private static boolean isSerializable(Tree tree) {
     if (tree.is(Tree.Kind.ENUM, Tree.Kind.PRIMITIVE_TYPE)) {
       return true;
     } else if (tree.is(Tree.Kind.CLASS)) {
@@ -118,7 +118,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     return implementsSerializable(((TypeTree) tree).symbolType());
   }
 
-  private boolean implementsSerializable(@Nullable Type type) {
+  private static boolean implementsSerializable(@Nullable Type type) {
     if (type == null || type.isUnknown()) {
       return false;
     }

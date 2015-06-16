@@ -62,7 +62,7 @@ public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
   }
 
 
-  private CaseLabelTree getDefaultLabel(SwitchStatementTree switchStatementTree) {
+  private static CaseLabelTree getDefaultLabel(SwitchStatementTree switchStatementTree) {
     for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
       for (CaseLabelTree caseLabelTree : caseGroupTree.labels()) {
         if (JavaKeyword.DEFAULT.getValue().equals(caseLabelTree.caseOrDefaultKeyword().text())) {
@@ -73,7 +73,7 @@ public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
     return null;
   }
 
-  private CaseLabelTree getLastLabel(SwitchStatementTree switchStatementTree) {
+  private static CaseLabelTree getLastLabel(SwitchStatementTree switchStatementTree) {
     if (!switchStatementTree.cases().isEmpty()) {
       List<CaseLabelTree> labels = switchStatementTree.cases().get(switchStatementTree.cases().size() - 1).labels();
       if (!labels.isEmpty()) {

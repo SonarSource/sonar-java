@@ -64,11 +64,11 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     super.visitAnnotation(annotationTree);
   }
 
-  private boolean isAnnotationRepeatable(ExpressionTree expressionTree) {
+  private static boolean isAnnotationRepeatable(ExpressionTree expressionTree) {
     return expressionTree.symbolType().symbol().metadata().isAnnotatedWith("java.lang.annotation.Repeatable");
   }
 
-  private boolean isAllSameAnnotation(List<ExpressionTree> initializers) {
+  private static boolean isAllSameAnnotation(List<ExpressionTree> initializers) {
     if (initializers.isEmpty()) {
       return false;
     }
@@ -84,7 +84,7 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     return true;
   }
 
-  private String getAnnotationName(ExpressionTree initializer) {
+  private static String getAnnotationName(ExpressionTree initializer) {
     String result = "";
     if (initializer.is(Tree.Kind.ANNOTATION)) {
       Tree annotationType = ((AnnotationTree) initializer).annotationType();
@@ -97,14 +97,14 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     return result;
   }
 
-  private String fullName(MemberSelectExpressionTree tree) {
+  private static String fullName(MemberSelectExpressionTree tree) {
     if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree.expression()).name() + "." + tree.identifier().name();
     }
     return fullName((MemberSelectExpressionTree) tree.expression()) + "." + tree.identifier().name();
   }
 
-  private boolean isArrayInitialized(AnnotationTree annotationTree) {
+  private static boolean isArrayInitialized(AnnotationTree annotationTree) {
     return annotationTree.arguments().size() == 1 && annotationTree.arguments().get(0).is(Tree.Kind.NEW_ARRAY);
   }
 }

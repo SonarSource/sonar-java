@@ -84,7 +84,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
     super.leaveNode(tree);
   }
 
-  private boolean isStaticNotVolatileObject(IdentifierTree variable) {
+  private static boolean isStaticNotVolatileObject(IdentifierTree variable) {
     Symbol symbol = variable.symbol();
     if (symbol.isUnknown()) {
       return false;
@@ -92,7 +92,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
     return isStaticNotFinalNotVolatile(symbol) && !symbol.type().isPrimitive();
   }
 
-  private boolean isStaticNotFinalNotVolatile(Symbol symbol) {
+  private static boolean isStaticNotFinalNotVolatile(Symbol symbol) {
     return symbol.isStatic() && !symbol.isVolatile() && !symbol.isFinal();
   }
 

@@ -57,23 +57,23 @@ public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isStaticFinalNotPrivate(VariableTree variableTree) {
+  private static boolean isStaticFinalNotPrivate(VariableTree variableTree) {
     return isStatic(variableTree) && isFinal(variableTree) && !isPrivate(variableTree);
   }
 
-  private boolean isStatic(VariableTree variableTree) {
+  private static boolean isStatic(VariableTree variableTree) {
     return hasModifier(variableTree, Modifier.STATIC);
   }
 
-  private boolean isFinal(VariableTree variableTree) {
+  private static boolean isFinal(VariableTree variableTree) {
     return hasModifier(variableTree, Modifier.FINAL);
   }
 
-  private boolean isPrivate(VariableTree variableTree) {
+  private static boolean isPrivate(VariableTree variableTree) {
     return hasModifier(variableTree, Modifier.PRIVATE);
   }
 
-  private boolean hasModifier(VariableTree variableTree, Modifier modifier) {
+  private static boolean hasModifier(VariableTree variableTree, Modifier modifier) {
     return ModifiersUtils.hasModifier(variableTree.modifiers(), modifier);
   }
 

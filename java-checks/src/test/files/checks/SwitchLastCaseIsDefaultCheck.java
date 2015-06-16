@@ -1,9 +1,9 @@
 class Foo {
   void foo() {
-    switch (0) { // Non-Compliant
+    switch (0) { // Noncompliant {{Add a default case to this switch.}}
     }
 
-    switch (0) { // Non-Compliant
+    switch (0) { // Noncompliant
       case 0:
     }
 
@@ -12,7 +12,7 @@ class Foo {
     }
 
     switch (0) {
-      default:   // Non-Compliant
+      default:   // Noncompliant {{Move this default to the end of the switch.}}
       case 0:
     }
   }

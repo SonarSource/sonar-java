@@ -19,26 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class RepeatAnnotationCheckTest {
-
-  private final RepeatAnnotationCheck check = new RepeatAnnotationCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RepeatAnnotationCheck.java"),
-        new VisitorsBridge(check, Lists.newArrayList(new File("target/test-classes"))));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2).withMessage("Remove the 'SomeAnnotations' wrapper from this annotation group")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/RepeatAnnotationCheck.java", new RepeatAnnotationCheck());
   }
-
 }

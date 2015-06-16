@@ -56,7 +56,7 @@ public class SystemOutOrErrUsageCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isSystem(ExpressionTree expression) {
+  private static boolean isSystem(ExpressionTree expression) {
     IdentifierTree identifierTree = null;
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       identifierTree = (IdentifierTree) expression;
@@ -66,7 +66,7 @@ public class SystemOutOrErrUsageCheck extends SubscriptionBaseVisitor {
     return identifierTree != null && "System".equals(identifierTree.name());
   }
 
-  private boolean isOutOrErr(MemberSelectExpressionTree mset) {
+  private static boolean isOutOrErr(MemberSelectExpressionTree mset) {
     return "out".equals(mset.identifier().name()) || "err".equals(mset.identifier().name());
   }
 }
