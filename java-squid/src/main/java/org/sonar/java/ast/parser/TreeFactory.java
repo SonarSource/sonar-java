@@ -2043,15 +2043,7 @@ public class TreeFactory {
     ExpressionTree result = identifier;
 
     if (arguments.isPresent()) {
-      ArgumentListTreeImpl argumentListTree = arguments.get();
-      result = new MethodInvocationTreeImpl(
-        identifier,
-        typeArguments.orNull(),
-        argumentListTree.openParenToken(),
-        argumentListTree,
-        argumentListTree.closeParenToken(),
-        identifier,
-        argumentListTree);
+      result = new MethodInvocationTreeImpl(identifier, typeArguments.orNull(), arguments.get());
     }
 
     return result;
@@ -2093,18 +2085,7 @@ public class TreeFactory {
             IdentifierTreeImpl identifier = (IdentifierTreeImpl) methodInvocation.methodSelect();
             MemberSelectExpressionTreeImpl memberSelect = new MemberSelectExpressionTreeImpl(result, dotToken, identifier);
 
-            List<AstNode> children = Lists.newArrayList();
-            children.add(memberSelect);
-            ArgumentListTreeImpl arguments = (ArgumentListTreeImpl) methodInvocation.arguments();
-            children.add(arguments);
-
-            result = new MethodInvocationTreeImpl(
-              memberSelect,
-              methodInvocation.typeArguments(),
-              arguments.openParenToken(),
-              arguments,
-              arguments.closeParenToken(),
-              children.toArray(new AstNode[0]));
+            result = new MethodInvocationTreeImpl(memberSelect, methodInvocation.typeArguments(), (ArgumentListTreeImpl) methodInvocation.arguments());
           }
         } else if (selector.is(Kind.NEW_CLASS)) {
           NewClassTreeImpl newClass = (NewClassTreeImpl) selector;

@@ -22,6 +22,7 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -47,19 +48,27 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   private SyntaxToken openParenToken;
   private SyntaxToken closeParenToken;
 
-  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments,
-    SyntaxToken openParenToken, List<ExpressionTree> arguments, SyntaxToken closeParenToken,
-    AstNode... children) {
+  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     super(Kind.METHOD_INVOCATION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
     this.typeArguments = typeArguments;
+    this.openParenToken = arguments.openParenToken();
     this.arguments = Preconditions.checkNotNull(arguments);
-    this.openParenToken = openParenToken;
-    this.closeParenToken = closeParenToken;
+    this.closeParenToken = arguments.closeParenToken();
 
-    for (AstNode child : children) {
-      addChild(child);
+    addChild((AstNode) methodSelect);
+    if (typeArguments != null) {
+      addChild((AstNode) typeArguments.openBracketToken());
+      for (Tree typeArgument : typeArguments) {
+        addChild((AstNode) typeArgument);
+      }
+      addChild((AstNode) typeArguments.closeBracketToken());
     }
+    addChild((AstNode) openParenToken);
+    for (ExpressionTree argument : arguments) {
+      addChild((AstNode) argument);
+    }
+    addChild((AstNode) closeParenToken);
   }
 
   @Override
