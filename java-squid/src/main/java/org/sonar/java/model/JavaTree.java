@@ -49,6 +49,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -605,6 +606,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     public void completeType(TypeTree type) {
+      this.prependChildren((AstNode) type);
       this.type = type;
     }
 
