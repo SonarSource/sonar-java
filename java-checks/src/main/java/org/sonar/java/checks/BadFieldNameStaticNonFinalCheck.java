@@ -31,14 +31,14 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = "S00116",
-  name = "Field names should comply with a naming convention",
+  key = "S3008",
+  name = "Static non-final field names should comply with a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class BadFieldName_S00116_Check extends AbstractBadFieldNameChecker {
+public class BadFieldNameStaticNonFinalCheck extends AbstractBadFieldNameChecker {
 
   @RuleProperty(
     key = DEFAULT_FORMAT_KEY,
@@ -47,13 +47,13 @@ public class BadFieldName_S00116_Check extends AbstractBadFieldNameChecker {
   public String format = DEFAULT_FORMAT_VALUE;
 
   @Override
-  public String getFormat() {
+  String getFormat() {
     return this.format;
   }
 
   @Override
   boolean isFieldModifierConcernedByRule(ModifiersTree modifier) {
-    return !ModifiersUtils.hasModifier(modifier, Modifier.STATIC);
+    return ModifiersUtils.hasModifier(modifier, Modifier.STATIC) && !ModifiersUtils.hasModifier(modifier, Modifier.FINAL);
   }
 
 }
