@@ -337,6 +337,7 @@ public final class CheckList {
       .add(BooleanInversionCheck.class)
       .add(InnerStaticClassesCheck.class)
       .add(WildcardImportsShouldNotBeUsedCheck.class)
+      .add(FinalClassCheck.class)
       .build();
   }
 
