@@ -1656,12 +1656,9 @@ public class TreeFactory {
     TypeArguments typeArgs = null;
     if (typeArguments.isPresent()) {
       typeArgs = typeArguments.get();
-      partial.addChild((AstNode) typeArgs);
     }
     InternalSyntaxToken newOrIdentifierSyntaxToken = InternalSyntaxToken.create(newOrIdentifierToken);
-    IdentifierTree identifier = new IdentifierTreeImpl(newOrIdentifierSyntaxToken);
-    partial.addChild(newOrIdentifierSyntaxToken);
-    partial.complete(typeArgs, identifier);
+    partial.complete(typeArgs, new IdentifierTreeImpl(newOrIdentifierSyntaxToken));
     return partial;
   }
 
@@ -1669,17 +1666,17 @@ public class TreeFactory {
     InternalSyntaxToken superSyntaxToken = InternalSyntaxToken.create(superToken);
     IdentifierTree superIdentifier = new IdentifierTreeImpl(superSyntaxToken);
     InternalSyntaxToken doubleColonSyntaxToken = InternalSyntaxToken.create(doubleColonToken);
-    return new MethodReferenceTreeImpl(superIdentifier, doubleColonSyntaxToken, superSyntaxToken, doubleColonSyntaxToken);
+    return new MethodReferenceTreeImpl(superIdentifier, doubleColonSyntaxToken);
   }
 
   public MethodReferenceTreeImpl newTypeMethodReference(Tree type, AstNode doubleColonToken) {
     InternalSyntaxToken doubleColonSyntaxToken = InternalSyntaxToken.create(doubleColonToken);
-    return new MethodReferenceTreeImpl(type, doubleColonSyntaxToken, (AstNode) type, doubleColonSyntaxToken);
+    return new MethodReferenceTreeImpl(type, doubleColonSyntaxToken);
   }
 
   public MethodReferenceTreeImpl newPrimaryMethodReference(ExpressionTree expression, AstNode doubleColonToken) {
     InternalSyntaxToken doubleColonSyntaxToken = InternalSyntaxToken.create(doubleColonToken);
-    return new MethodReferenceTreeImpl(expression, doubleColonSyntaxToken, (AstNode) expression, doubleColonSyntaxToken);
+    return new MethodReferenceTreeImpl(expression, doubleColonSyntaxToken);
   }
 
   public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, Tree body) {
