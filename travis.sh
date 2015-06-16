@@ -12,5 +12,5 @@ else
   mvn install -DskipTests=true
 
   installTravisTools
-  travis_run_its "${TESTS:3}"
+  travis_run_its "${TESTS}"
 fi
