@@ -24,12 +24,21 @@ import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+
+import javax.annotation.Nonnull;
 
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
 
   public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer) {
     super(Kind.ENUM_CONSTANT, modifiers, simpleName, Preconditions.checkNotNull(initializer));
+  }
+
+  @Override
+  @Nonnull
+  public NewClassTree initializer() {
+    return (NewClassTree) super.initializer();
   }
 
   @Override

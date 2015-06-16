@@ -539,7 +539,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
     scan(tree.modifiers());
-    NewClassTree newClassTree = (NewClassTree) tree.initializer();
+    NewClassTree newClassTree = tree.initializer();
     scan(newClassTree.enclosingExpression());
     // register identifier type
     registerType(newClassTree.identifier(), ((VariableTreeImpl) tree).getSymbol().getType());

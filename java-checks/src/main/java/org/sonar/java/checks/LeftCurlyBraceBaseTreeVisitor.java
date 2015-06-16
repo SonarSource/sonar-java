@@ -218,7 +218,7 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    NewClassTree initializer = (NewClassTree) tree.initializer();
+    NewClassTree initializer = tree.initializer();
     ClassTree classBody = initializer.classBody();
     if (classBody != null) {
       SyntaxToken closeParenToken = initializer.closeParenToken();

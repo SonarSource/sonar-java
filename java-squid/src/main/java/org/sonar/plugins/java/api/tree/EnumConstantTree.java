@@ -35,6 +35,6 @@ public interface EnumConstantTree extends Tree {
 
   IdentifierTree simpleName();
 
-  ExpressionTree initializer();
+  NewClassTree initializer();
 
 }
