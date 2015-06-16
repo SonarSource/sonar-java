@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -57,6 +58,11 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    scan(tree.initializer().classBody());
+  }
+
+  @Override
   public void visitLiteral(LiteralTree tree) {
     if (isNumberLiteral(tree)) {
       DecimalFormat decimalFormat = new DecimalFormat();
@@ -66,7 +72,6 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
         checked = (BigDecimal) decimalFormat.parse(tree.value());
       } catch (ParseException e) {
         // noop case not encountered
-
       }
       if (checked != null && !isExcluded(checked)) {
         context.addIssue(tree, this, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");

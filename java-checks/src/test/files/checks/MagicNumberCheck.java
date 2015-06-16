@@ -1,6 +1,6 @@
-@Annotation(title= "plop", value=51)
+@Annotation(title = "plop", value = 51)
 class A {
-  //All compliant
+  // All compliant
   int a = 0;
   int b = 1;
   int c = -1;
@@ -27,7 +27,20 @@ class A {
 
   private static final int CONSTANT = 42;
 
-  private static final MyType MY_TYPE = new MyType(){
+  private static final MyType MY_TYPE = new MyType() {
     int magic = 42;
   };
+
+  public enum MyEnum {
+    INSTANCE1(100), // Compliant
+    INSTANCE2 { // Compliant
+      void method() {
+        System.out.println(42); // Noncompliant {{Assign this magic number 42 to a well-named constant, and use the constant instead.}}
+      }
+    };
+
+    MyEnum(int value) {
+    }
+  }
+
 }
