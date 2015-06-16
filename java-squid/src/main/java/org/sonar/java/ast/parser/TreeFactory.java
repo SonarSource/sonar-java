@@ -1472,8 +1472,7 @@ public class TreeFactory {
 
   public InstanceOfTreeImpl newInstanceofExpression(AstNode instanceofTokenAstNode, TypeTree type) {
     InternalSyntaxToken instanceofToken = InternalSyntaxToken.create(instanceofTokenAstNode);
-    return new InstanceOfTreeImpl(instanceofToken, type,
-      (AstNode) type);
+    return new InstanceOfTreeImpl(instanceofToken, type);
   }
 
   private static class OperatorAndOperand {

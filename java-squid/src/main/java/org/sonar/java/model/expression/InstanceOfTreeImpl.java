@@ -39,13 +39,13 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   private final InternalSyntaxToken instanceofToken;
   private final TypeTree type;
 
-  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type, AstNode child) {
+  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
     super(Kind.INSTANCE_OF);
     this.instanceofToken = instanceofToken;
     this.type = Preconditions.checkNotNull(type);
 
     addChild(instanceofToken);
-    addChild(child);
+    addChild((AstNode) type);
   }
 
   public InstanceOfTreeImpl complete(ExpressionTree expression) {
