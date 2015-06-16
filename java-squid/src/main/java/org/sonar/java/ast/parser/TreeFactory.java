@@ -1141,9 +1141,7 @@ public class TreeFactory {
     List<AstNode> children = Lists.newArrayList();
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
 
-    ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(
-      expression, null,
-      (AstNode) expression);
+    ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(expression, null);
     statements.add(statement);
     children.add(statement);
 
@@ -1151,9 +1149,7 @@ public class TreeFactory {
       for (AstNode rest : rests.get()) {
         children.add(rest.getFirstChild());
 
-        statement = new ExpressionStatementTreeImpl(
-          (ExpressionTree) rest.getLastChild(), null,
-          rest.getLastChild());
+        statement = new ExpressionStatementTreeImpl((ExpressionTree) rest.getLastChild(), null);
         statements.add(statement);
         children.add(statement);
       }
@@ -1384,8 +1380,7 @@ public class TreeFactory {
   public ExpressionStatementTreeImpl expressionStatement(ExpressionTree expression, AstNode semicolonTokenAstNode) {
     InternalSyntaxToken semicolonToken = InternalSyntaxToken.create(semicolonTokenAstNode);
 
-    return new ExpressionStatementTreeImpl(expression, semicolonToken,
-      (AstNode) expression, semicolonToken);
+    return new ExpressionStatementTreeImpl(expression, semicolonToken);
   }
 
   public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
