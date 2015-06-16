@@ -1190,8 +1190,7 @@ public class TreeFactory {
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
     InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolon);
-    return new DoWhileStatementTreeImpl(doKeyword, statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken,
-      doKeyword, (AstNode) statement, whileKeyword, openParenToken, (AstNode) expression, closeParenToken, semiColonToken);
+    return new DoWhileStatementTreeImpl(doKeyword, statement, whileKeyword, openParenToken, expression, closeParenToken, semiColonToken);
   }
 
   public TryStatementTreeImpl completeStandardTryStatement(AstNode tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {

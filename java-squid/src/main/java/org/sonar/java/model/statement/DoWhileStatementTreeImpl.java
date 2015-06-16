@@ -44,7 +44,7 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   public DoWhileStatementTreeImpl(InternalSyntaxToken doKeyword, StatementTree statement,
     InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    InternalSyntaxToken semicolonToken, AstNode... children) {
+    InternalSyntaxToken semicolonToken) {
 
     super(Kind.DO_STATEMENT);
     this.statement = Preconditions.checkNotNull(statement);
@@ -55,9 +55,13 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
     this.semicolonToken = semicolonToken;
     this.closeParenToken = closeParenToken;
 
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    addChild(doKeyword);
+    addChild((AstNode) statement);
+    addChild(whileKeyword);
+    addChild(openParenToken);
+    addChild((AstNode) condition);
+    addChild(closeParenToken);
+    addChild(semicolonToken);
   }
 
   @Override
