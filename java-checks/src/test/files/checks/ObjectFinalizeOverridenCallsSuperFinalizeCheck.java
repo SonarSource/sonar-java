@@ -7,16 +7,16 @@ class Foo {
 
   @Override
   protected void finalize() throws Throwable {
-    super.finalize();                           // Non-Compliant
+    super.finalize();                           // Noncompliant {{Move this super.finalize() call to the end of this Object.finalize() implementation.}}
     System.out.println("foo");
   }
 
   @Override
-  protected void finalize() throws Throwable {  // Non-Compliant
+  protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
   }
 
   @Override
-  protected void finalize() throws Throwable {  // Non-Compliant
+  protected void finalize() throws Throwable {  // Noncompliant
     System.out.println("foo");
     super.foo();
   }
@@ -32,7 +32,7 @@ class Foo {
     if (0) {
       super.finalize();
     } else {
-      super.finalize();                         // Non-Compliant
+      super.finalize();                         // Noncompliant
     }
   }
 
@@ -50,7 +50,7 @@ class Foo {
     try {
       // ...
     } finally {
-      super.finalize();                         // Non-Compliant
+      super.finalize();                         // Noncompliant
       System.out.println();
     }
   }
@@ -59,7 +59,7 @@ class Foo {
     try {
       // ...
     } catch (Exception e) {
-      super.finalize();                         // Non-Compliant
+      super.finalize();                         // Noncompliant
     }
   }
   public void finalize(Object pf, int mode) {

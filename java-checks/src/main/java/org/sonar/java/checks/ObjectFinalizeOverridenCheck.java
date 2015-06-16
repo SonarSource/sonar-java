@@ -55,7 +55,7 @@ public class ObjectFinalizeOverridenCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinalize(MethodTree methodTree) {
+  private static boolean isFinalize(MethodTree methodTree) {
     if("finalize".equals(methodTree.simpleName().name()) ) {
       Tree returnType = methodTree.returnType();
       if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {

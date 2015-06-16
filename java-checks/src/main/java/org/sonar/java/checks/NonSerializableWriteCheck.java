@@ -103,7 +103,7 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isAcceptableType(org.sonar.plugins.java.api.semantic.Type argType) {
+  private static boolean isAcceptableType(org.sonar.plugins.java.api.semantic.Type argType) {
     return argType.isSubtypeOf("java.io.Serializable")
       || argType.is("java.lang.Object")
       || argType.isPrimitive()

@@ -54,7 +54,7 @@ public class ObjectFinalizeOverloadedCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinalizeOverload(MethodTree methodTree) {
+  private static boolean isFinalizeOverload(MethodTree methodTree) {
     return "finalize".equals(methodTree.simpleName().name()) && !methodTree.parameters().isEmpty();
   }
 }

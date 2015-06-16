@@ -60,7 +60,7 @@ public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasSingleObjectParameter(MethodTree methodTree) {
+  private static boolean hasSingleObjectParameter(MethodTree methodTree) {
     List<VariableTree> parameters = methodTree.parameters();
     if (parameters.size() != 1) {
       return false;
@@ -74,7 +74,7 @@ public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
   }
 
   private static String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;

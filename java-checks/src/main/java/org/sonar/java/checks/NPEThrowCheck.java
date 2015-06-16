@@ -19,13 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -35,6 +34,8 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
   key = "S1695",
   name = "\"NullPointerException\" should not be explicitly thrown",
@@ -42,39 +43,34 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")
-public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class NPEThrowCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.THROW_STATEMENT, Kind.METHOD, Kind.CONSTRUCTOR);
   }
 
   @Override
-  public void visitThrowStatement(ThrowStatementTree tree) {
-    raiseIssueOnNpe(tree.expression(), tree.expression().symbolType());
-    super.visitThrowStatement(tree);
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    for (TypeTree throwClause : tree.throwsClauses()) {
-      raiseIssueOnNpe(throwClause, throwClause.symbolType());
+  public void visitNode(Tree tree) {
+    if (hasSemantic()) {
+      if (tree.is(Kind.THROW_STATEMENT)) {
+        ExpressionTree expressionTree = ((ThrowStatementTree) tree).expression();
+        raiseIssueOnNpe(expressionTree, expressionTree.symbolType());
+      } else {
+        for (TypeTree throwClause : ((MethodTree) tree).throwsClauses()) {
+          raiseIssueOnNpe(throwClause, throwClause.symbolType());
+        }
+      }
     }
-    super.visitMethod(tree);
   }
 
   private void raiseIssueOnNpe(Tree tree, Type type) {
     if (type.is("java.lang.NullPointerException")) {
-      context.addIssue(treeAtFault(tree), this, "Throw some other exception here, such as \"IllegalArgumentException\".");
+      addIssue(treeAtFault(tree), "Throw some other exception here, such as \"IllegalArgumentException\".");
     }
   }
 
-  private Tree treeAtFault(Tree tree) {
+  private static Tree treeAtFault(Tree tree) {
     return tree.is(Kind.NEW_CLASS) ? ((NewClassTree) tree).identifier() : tree;
   }
 

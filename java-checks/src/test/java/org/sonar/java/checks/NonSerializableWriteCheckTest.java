@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NonSerializableWriteCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonSerializableWriteCheck.java"),
-      new VisitorsBridge(new NonSerializableWriteCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(14).withMessage("Make the \"MyNonSerializable\" class \"Serializable\" or don't write it.")
-      .next().atLine(20);
+    JavaCheckVerifier.verify("src/test/files/checks/NonSerializableWriteCheck.java", new NonSerializableWriteCheck());
   }
 
 }

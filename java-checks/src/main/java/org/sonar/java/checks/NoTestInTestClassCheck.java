@@ -92,7 +92,7 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isTestMethod(boolean forJunit4, MethodTree member) {
+  private static boolean isTestMethod(boolean forJunit4, MethodTree member) {
     return (forJunit4 && member.symbol().metadata().isAnnotatedWith("org.junit.Test")) || member.simpleName().name().startsWith("test");
   }
 }

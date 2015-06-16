@@ -19,27 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ObjectFinalizeOverloadedCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeOverloadedCheck.java"), new VisitorsBridge(new ObjectFinalizeOverloadedCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(9).withMessage("Rename this method to avoid any possible confusion with Object.finalize().")
-        .next().atLine(12)
-        .next().atLine(19);
+    JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverloadedCheck.java", new ObjectFinalizeOverloadedCheck());
   }
-
 }

@@ -89,7 +89,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
     }
   }
 
-  private boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
+  private static boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
     BlockTree blockTree = methodTree.block();
     if(blockTree != null) {
       for (StatementTree statementTree : blockTree.body()) {
@@ -101,7 +101,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
     return isLastStatement(blockTree, lastStatementTree);
   }
 
-  private boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
+  private static boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
     if (blockTree != null) {
       StatementTree last = Iterables.getLast(blockTree.body());
       if (last.is(Kind.EXPRESSION_STATEMENT)) {
@@ -113,7 +113,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
     return false;
   }
 
-  private boolean isFinalize(MethodTree methodTree) {
+  private static boolean isFinalize(MethodTree methodTree) {
     if ("finalize".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty()) {
       Tree returnType = methodTree.returnType();
       if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
