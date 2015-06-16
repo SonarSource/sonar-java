@@ -19,33 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ToStringUsingBoxingCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ToStringUsingBoxingCheck.java"), new VisitorsBridge(new ToStringUsingBoxingCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Call the static method Byte.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(4).withMessage("Call the static method Short.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(5).withMessage("Call the static method Integer.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(6).withMessage("Call the static method Long.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(7).withMessage("Call the static method Float.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(8).withMessage("Call the static method Double.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(9).withMessage("Call the static method Character.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(10).withMessage("Call the static method Boolean.toString(...) instead of instantiating a temporary object to perform this to string conversion.")
-      .next().atLine(11).withMessage("Call the static method Integer.toString(...) instead of instantiating a temporary object to perform this to string conversion.");
+    JavaCheckVerifier.verify("src/test/files/checks/ToStringUsingBoxingCheck.java", new ToStringUsingBoxingCheck());
   }
 
 }

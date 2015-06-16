@@ -5,7 +5,7 @@ import java.util.List;
 
 class Animal {
 
-  public List<? extends Animal> getAnimals() {        // NOK
+  public List<? extends Animal> getAnimals() {        // Noncompliant
     Collection<?> c = new ArrayList<String>();        // Compliant
   }
 
@@ -13,7 +13,7 @@ class Animal {
   }
 
   class InnerCat {
-    public List<? extends Cat> getCats() {            // NonCompliant
+    public List<? extends Cat> getCats() {            // Noncompliant
     }
   }
 
@@ -23,7 +23,7 @@ class Animal {
    }
 
    public List<Class<?>> foo() {} // Compliant Class is ignored
-   public List<? extends Class<String>> bar() {} // NonCompliant wildcard is not in Class
+   public List<? extends Class<String>> bar() {} // Noncompliant {{Remove usage of generic wildcard type.}}
    private List<? extends Cat> getCats() { //Compliant private method are ignored
 
     }

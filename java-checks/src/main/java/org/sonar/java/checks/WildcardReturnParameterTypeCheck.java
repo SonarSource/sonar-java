@@ -61,11 +61,11 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isPrivate(MethodTree methodTree) {
+  private static boolean isPrivate(MethodTree methodTree) {
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE);
   }
 
-  private boolean isOverriding(MethodTree tree) {
+  private static boolean isOverriding(MethodTree tree) {
     return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
@@ -82,11 +82,10 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitWildcard(WildcardTree tree) {
-      if(!classType) {
+      if (!classType) {
         addIssue(tree, "Remove usage of generic wildcard type.");
       }
     }
   }
-
 
 }

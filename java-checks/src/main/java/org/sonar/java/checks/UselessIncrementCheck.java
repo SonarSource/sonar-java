@@ -72,7 +72,7 @@ public class UselessIncrementCheck extends SubscriptionBaseVisitor {
     addIssue(expression, "Remove this increment or correct the code not to waste it.");
   }
 
-  private boolean isPostfix(ExpressionTree tree) {
+  private static boolean isPostfix(ExpressionTree tree) {
     return tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT);
   }
 

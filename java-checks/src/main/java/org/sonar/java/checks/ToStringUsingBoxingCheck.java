@@ -73,7 +73,7 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private String getNewlyCreatedClassName(MethodInvocationTree mit) {
+  private static String getNewlyCreatedClassName(MethodInvocationTree mit) {
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
     if (mset.expression().is(Tree.Kind.NEW_CLASS)) {
       Tree classId = ((NewClassTree) mset.expression()).identifier();
@@ -86,7 +86,7 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     return "";
   }
 
-  private boolean isCallingToString(MethodInvocationTree mit) {
+  private static boolean isCallingToString(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
       return "toString".equals(mset.identifier().name());
