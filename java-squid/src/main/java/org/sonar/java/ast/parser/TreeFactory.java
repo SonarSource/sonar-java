@@ -1348,8 +1348,7 @@ public class TreeFactory {
     InternalSyntaxToken synchronizedKeyword = InternalSyntaxToken.create(synchronizedToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
-    return new SynchronizedStatementTreeImpl(synchronizedKeyword, openParenToken, expression, closeParenToken, block,
-      synchronizedKeyword, openParenToken, (AstNode) expression, closeParenToken, block);
+    return new SynchronizedStatementTreeImpl(synchronizedKeyword, openParenToken, expression, closeParenToken, block);
   }
 
   public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifierAstNode, AstNode semicolonToken) {
