@@ -1,10 +1,9 @@
 language: java
-sudo: false
-install: true
 
 jdk:
   - oraclejdk7
 
+install: true
 script: ./travis.sh
 env:
   - TESTS=CI
