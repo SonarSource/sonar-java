@@ -64,6 +64,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   private JavaFileScannerContext context;
   private Deque<Symbol> outerClasses = new LinkedList<>();
   private Deque<Boolean> atLeastOneReference = new LinkedList<>();
+  private Deque<Symbol> currentMethod = new LinkedList<>();
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -90,8 +91,10 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       return;
     }
     atLeastOneReference.push(Boolean.FALSE);
+    currentMethod.push(symbol);
     scan(tree.block());
     Boolean oneReference = atLeastOneReference.pop();
+    currentMethod.pop();
     if (symbol.isPrivate() && !symbol.isStatic() && !oneReference) {
       context.addIssue(tree, this, "Make \"" + symbol.name() + "\" a \"static\" method.");
     }
@@ -104,7 +107,8 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitIdentifier(IdentifierTree tree) {
     super.visitIdentifier(tree);
-    if (!atLeastOneReference.isEmpty() && !atLeastOneReference.peek() && referenceInstance(tree.symbol())) {
+    Symbol symbol = tree.symbol();
+    if (!atLeastOneReference.isEmpty() && !atLeastOneReference.peek() && !currentMethod.peek().equals(symbol)  && referenceInstance(symbol)) {
       atLeastOneReference.pop();
       atLeastOneReference.push(Boolean.TRUE);
     }

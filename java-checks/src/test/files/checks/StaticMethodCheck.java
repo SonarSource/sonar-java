@@ -86,4 +86,8 @@ class SerializableExclusions implements Serializable {
   private void readObjectNoData() throws ObjectStreamException {}
 
   private void other() {} // Noncompliant
+
+  private void recursive() { // Noncompliant
+    recursive();
+  }
 }
