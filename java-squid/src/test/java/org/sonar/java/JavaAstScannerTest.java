@@ -19,7 +19,9 @@
  */
 package org.sonar.java;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
@@ -27,6 +29,10 @@ import java.io.File;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaAstScannerTest {
+
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
 
   @Test
   public void comments() {
@@ -41,4 +47,12 @@ public class JavaAstScannerTest {
     assertThat(file.getNoSonarTagLines()).contains(8);
   }
 
+  @Test
+  public void scan_single_file_with_dumb_file_should_fail() throws Exception {
+    expectedException.expect(IllegalArgumentException.class);
+    String filename = "!!dummy";
+    expectedException.expectMessage(filename);
+    JavaAstScanner.scanSingleFile(new File(filename));
+
+  }
 }

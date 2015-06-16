@@ -19,33 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SynchronizedFieldAssignmentCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SynchronizedFieldAssignmentCheck.java"),
-      new VisitorsBridge(new SynchronizedFieldAssignmentCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(9).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 10.")
-      .next().atLine(22).withMessage("Don't synchronize on \"b\" or remove its reassignment on line 23.")
-      .next().atLine(26).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 27.")
-      .next().atLine(30).withMessage("Don't synchronize on \"color\" or remove its reassignment on line 31.")
-      .next().atLine(34).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 35.")
-      .next().atLine(38).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 39.")
-      .next().atLine(42).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 43.")
-      .next().atLine(46).withMessage("Don't synchronize on \"val\" or remove its reassignment on line 47.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedFieldAssignmentCheck.java", new SynchronizedFieldAssignmentCheck());
   }
 }

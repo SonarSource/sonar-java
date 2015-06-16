@@ -2063,7 +2063,7 @@ public class TreeFactory {
     return new MemberSelectExpressionTreeImpl(nestedDimensions, dotToken, identifier);
   }
 
-  private ExpressionTree applySelectors(ExpressionTree primary, Optional<List<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>> selectors) {
+  private static ExpressionTree applySelectors(ExpressionTree primary, Optional<List<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>> selectors) {
     ExpressionTree result = primary;
 
     if (selectors.isPresent()) {

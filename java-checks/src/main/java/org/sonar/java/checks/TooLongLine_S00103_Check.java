@@ -94,7 +94,7 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
     }
   }
 
-  private int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
+  private static int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
     if (importClauseTree.is(Tree.Kind.IMPORT)) {
       if (fromStart) {
         return ((ImportTree) importClauseTree).importKeyword().line();

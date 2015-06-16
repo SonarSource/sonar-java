@@ -76,17 +76,17 @@ public class URLHashCodeAndEqualsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isSubTypeOfSetOrMap(Type type) {
+  private static boolean isSubTypeOfSetOrMap(Type type) {
     return type.isSubtypeOf("java.util.Set") || type.isSubtypeOf("java.util.Map");
   }
 
-  private boolean usesURLAsTypeParameter(Type type) {
+  private static boolean usesURLAsTypeParameter(Type type) {
     Type firstTypeParameter = getFirstTypeParameter(type);
     return firstTypeParameter != null && firstTypeParameter.is(JAVA_NET_URL);
   }
 
   @CheckForNull
-  private Type getFirstTypeParameter(Type type) {
+  private static Type getFirstTypeParameter(Type type) {
     if (type instanceof JavaType.ParametrizedTypeJavaType) {
       JavaType.ParametrizedTypeJavaType parametrizedTypeType = (JavaType.ParametrizedTypeJavaType) type;
       for (JavaType.TypeVariableJavaType variableType : parametrizedTypeType.typeParameters()) {

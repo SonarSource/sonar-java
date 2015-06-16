@@ -68,7 +68,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol getField(ExpressionTree tree) {
+  private static Symbol getField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
       if (!reference.isUnknown() && reference.owner().isTypeSymbol()) {
@@ -83,7 +83,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     return null;
   }
 
-  private boolean isField(ExpressionTree tree) {
+  private static boolean isField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       Symbol reference = ((IdentifierTree) tree).symbol();
       return !reference.isUnknown() && reference.owner().isTypeSymbol();
@@ -99,7 +99,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isThis(ExpressionTree expression) {
+  private static boolean isThis(ExpressionTree expression) {
     return expression.is(Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expression).name());
   }
 
