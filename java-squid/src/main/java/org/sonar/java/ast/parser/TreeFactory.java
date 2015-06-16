@@ -1187,8 +1187,7 @@ public class TreeFactory {
     InternalSyntaxToken whileKeyword = InternalSyntaxToken.create(whileToken);
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
-    return new WhileStatementTreeImpl(whileKeyword, openParenToken, expression, closeParenToken, statement,
-      whileKeyword, openParenToken, (AstNode) expression, closeParenToken, (AstNode) statement);
+    return new WhileStatementTreeImpl(whileKeyword, openParenToken, expression, closeParenToken, statement);
   }
 
   public DoWhileStatementTreeImpl doWhileStatement(AstNode doToken, StatementTree statement, AstNode whileToken, AstNode openParen, ExpressionTree expression, AstNode closeParen,

@@ -41,17 +41,20 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   private final InternalSyntaxToken closeParenToken;
 
   public WhileStatementTreeImpl(InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    StatementTree statement, AstNode... children) {
+    StatementTree statement) {
 
     super(Kind.WHILE_STATEMENT);
-    this.condition = Preconditions.checkNotNull(condition);
-    this.statement = Preconditions.checkNotNull(statement);
     this.whileKeyword = whileKeyword;
     this.openParenToken = openParenToken;
+    this.condition = Preconditions.checkNotNull(condition);
     this.closeParenToken = closeParenToken;
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.statement = Preconditions.checkNotNull(statement);
+
+    addChild(whileKeyword);
+    addChild(openParenToken);
+    addChild((AstNode) condition);
+    addChild(closeParenToken);
+    addChild((AstNode) statement);
   }
 
   @Override
