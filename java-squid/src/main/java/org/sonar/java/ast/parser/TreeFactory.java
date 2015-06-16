@@ -1314,8 +1314,7 @@ public class TreeFactory {
   }
 
   public CaseGroupTreeImpl switchGroup(List<CaseLabelTreeImpl> labels, BlockStatementListTreeImpl blockStatements) {
-    return new CaseGroupTreeImpl(labels, blockStatements,
-      blockStatements);
+    return new CaseGroupTreeImpl(labels, blockStatements);
   }
 
   public CaseLabelTreeImpl newCaseSwitchLabel(AstNode caseToken, ExpressionTree expression, AstNode colonToken) {
