@@ -1105,7 +1105,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void enhanced_for_statement() {
-    ForEachStatement tree = (ForEachStatement) p.parse("class T { void m() { for (Object o : objects) ; } }").getFirstDescendant(Kind.FOR_EACH_STATEMENT);
+    ForEachStatement tree = (ForEachStatement) firstMethodFirstStatement("class T { void m() { for (Object o : objects) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_EACH_STATEMENT)).isTrue();
     assertThat(tree.forKeyword().text()).isEqualTo("for");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -1114,6 +1114,7 @@ public class JavaTreeModelTest {
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.statement()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   /**
