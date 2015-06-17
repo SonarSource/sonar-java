@@ -117,9 +117,11 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
-      condition,
-      detail);
+    Iterator<Tree> detailIterator = colonToken != null ? Iterators.<Tree>forArray(colonToken, detail) : Iterators.<Tree>emptyIterator();
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(assertToken, condition),
+      detailIterator,
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }
