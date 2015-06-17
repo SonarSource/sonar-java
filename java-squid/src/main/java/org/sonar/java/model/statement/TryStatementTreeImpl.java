@@ -200,11 +200,19 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    Iterator<Tree> resourcesIterator = resources.isEmpty() ? 
+      Iterators.<Tree>emptyIterator() : 
+        Iterators.concat(
+          Iterators.singletonIterator(openParenToken),
+          resources.iterator(),
+        Iterators.singletonIterator(closeParenToken));
+    Iterator<Tree> finallyIterator = finallyKeyword != null ? Iterators.<Tree>forArray(finallyKeyword, finallyBlock) : Iterators.<Tree>emptyIterator();
     return Iterators.concat(
-      resources.iterator(),
+      Iterators.singletonIterator(tryToken),
+      resourcesIterator,
       Iterators.singletonIterator(block),
       catches.iterator(),
-      Iterators.singletonIterator(finallyBlock));
+      finallyIterator);
   }
 
   private static List<VariableTree> getResources(ResourceListTreeImpl resources) {
