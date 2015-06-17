@@ -121,10 +121,13 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
+      Iterators.<Tree>forArray(forKeyword, openParenToken),
       initializer.iterator(),
-      Iterators.singletonIterator(condition),
+      Iterators.<Tree>singletonIterator(firstSemicolonToken),
+      condition != null ? Iterators.<Tree>singletonIterator(condition) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(secondSemicolonToken),
       update.iterator(),
-      Iterators.singletonIterator(statement));
+      Iterators.<Tree>forArray(closeParenToken, statement));
   }
 
 }

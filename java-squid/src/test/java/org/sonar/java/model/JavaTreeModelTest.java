@@ -1074,7 +1074,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void for_statement() {
-    ForStatementTree tree = (ForStatementTree) p.parse("class T { void m() { for (int i = 0; i < 42; i ++) ; } }").getFirstDescendant(Kind.FOR_STATEMENT);
+    ForStatementTree tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for (int i = 0; i < 42; i ++) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
     assertThat(tree.forKeyword().text()).isEqualTo("for");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -1086,21 +1086,42 @@ public class JavaTreeModelTest {
     assertThat(tree.update()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.statement()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 9);
 
-    tree = (ForStatementTree) p.parse("class T { void m() { for (i = 0; i < 42; i ++) ; } }").getFirstDescendant(Kind.FOR_STATEMENT);
+    tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for (i = 0; i < 42; i ++) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
     assertThat(tree.initializer()).hasSize(1);
     assertThat(tree.initializer().get(0)).isInstanceOf(ExpressionStatementTree.class);
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.update()).isNotNull();
     assertThat(tree.statement()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 9);
 
-    tree = (ForStatementTree) p.parse("class T { void m() { for ( ; ; ) ; } }").getFirstDescendant(Kind.FOR_STATEMENT);
+    tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for ( ; ; ) ; } }");
     assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
     assertThat(tree.initializer()).isEmpty();
     assertThat(tree.condition()).isNull();
     assertThat(tree.update()).isEmpty();
     assertThat(tree.statement()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
+
+    tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for (i = 0, j = 1; i < 42; i++, j--) ; } }");
+    assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
+    assertThat(tree.initializer()).hasSize(2);
+    assertThat(tree.condition()).isNotNull();
+    assertThat(tree.update()).hasSize(2);
+    assertThat(tree.statement()).isNotNull();
+    // TODO SONARJAVA-547 separators for the initializers and updates are not included! (should be 13)
+    assertThatChildrenIteratorHasSize(tree, 11);
+
+    tree = (ForStatementTree) firstMethodFirstStatement("class T { void m() { for (int i = 0, j = 1; i < 42; i++, j--) ; } }");
+    assertThat(tree.is(Tree.Kind.FOR_STATEMENT)).isTrue();
+    assertThat(tree.initializer()).hasSize(2);
+    assertThat(tree.condition()).isNotNull();
+    assertThat(tree.update()).hasSize(2);
+    assertThat(tree.statement()).isNotNull();
+    // TODO SONARJAVA-547 separators for the initializers and updates are not included! (should be 12 - variableTree already handle comma)
+    assertThatChildrenIteratorHasSize(tree, 11);
   }
 
   @Test
