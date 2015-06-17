@@ -112,8 +112,13 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      doKeyword,
       statement,
-      condition);
+      whileKeyword,
+      openParenToken,
+      condition,
+      closeParenToken,
+      semicolonToken);
   }
 
 }

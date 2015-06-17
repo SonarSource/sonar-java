@@ -1055,7 +1055,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void do_statement() {
-    DoWhileStatementTree tree = (DoWhileStatementTree) p.parse("class T { void m() { do ; while (true); } }").getFirstDescendant(Kind.DO_STATEMENT);
+    DoWhileStatementTree tree = (DoWhileStatementTree) firstMethodFirstStatement("class T { void m() { do ; while (true); } }");
     assertThat(tree.is(Tree.Kind.DO_STATEMENT)).isTrue();
     assertThat(tree.doKeyword().text()).isEqualTo("do");
     assertThat(tree.statement()).isNotNull();
@@ -1064,6 +1064,7 @@ public class JavaTreeModelTest {
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   /**
