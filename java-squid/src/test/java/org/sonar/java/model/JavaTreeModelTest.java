@@ -1138,17 +1138,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void continue_statement() {
-    ContinueStatementTree tree = (ContinueStatementTree) p.parse("class T { void m() { continue ; } }").getFirstDescendant(Kind.CONTINUE_STATEMENT);
+    ContinueStatementTree tree = (ContinueStatementTree) firstMethodFirstStatement("class T { void m() { continue ; } }");
     assertThat(tree.is(Tree.Kind.CONTINUE_STATEMENT)).isTrue();
     assertThat(tree.continueKeyword().text()).isEqualTo("continue");
     assertThat(tree.label()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 2);
 
-    tree = (ContinueStatementTree) p.parse("class T { void m() { continue label ; } }").getFirstDescendant(Kind.CONTINUE_STATEMENT);
+    tree = (ContinueStatementTree) firstMethodFirstStatement("class T { void m() { continue label ; } }");
     assertThat(tree.is(Tree.Kind.CONTINUE_STATEMENT)).isTrue();
     assertThat(tree.continueKeyword().text()).isEqualTo("continue");
     assertThat(tree.label().name()).isEqualTo("label");
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
