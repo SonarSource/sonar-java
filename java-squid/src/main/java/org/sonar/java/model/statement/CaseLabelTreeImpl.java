@@ -81,8 +81,10 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(caseOrDefaultKeyword),
+      expression != null ? Iterators.<Tree>singletonIterator(expression) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(colonToken));
   }
 
 }
