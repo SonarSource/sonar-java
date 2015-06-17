@@ -55,7 +55,7 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.emptyIterator();
+    return Iterators.<Tree>singletonIterator(semicolonToken);
   }
 
 }

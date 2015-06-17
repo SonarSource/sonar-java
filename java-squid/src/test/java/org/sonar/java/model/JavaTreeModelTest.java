@@ -912,9 +912,10 @@ public class JavaTreeModelTest {
    */
   @Test
   public void empty_statement() {
-    EmptyStatementTree tree = (EmptyStatementTree) p.parse("class T { void m() { ; } }").getFirstDescendant(Kind.EMPTY_STATEMENT);
+    EmptyStatementTree tree = (EmptyStatementTree) firstMethodFirstStatement("class T { void m() { ; } }");
     assertThat(tree.is(Tree.Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 1);
   }
 
   /**
