@@ -86,6 +86,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       label,
+      colonToken,
       statement);
   }
 

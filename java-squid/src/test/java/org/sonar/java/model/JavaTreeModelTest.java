@@ -922,11 +922,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void labeled_statement() {
-    LabeledStatementTree tree = (LabeledStatementTree) p.parse("class T { void m() { label: ; } }").getFirstDescendant(Kind.LABELED_STATEMENT);
+    LabeledStatementTree tree = (LabeledStatementTree) firstMethodFirstStatement("class T { void m() { label: ; } }");
     assertThat(tree.is(Tree.Kind.LABELED_STATEMENT)).isTrue();
     assertThat(tree.label().name()).isEqualTo("label");
     assertThat(tree.statement()).isNotNull();
     assertThat(tree.colonToken().text()).isEqualTo(":");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
