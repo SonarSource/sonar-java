@@ -53,12 +53,12 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static List<String> MUTABLE_TYPES = ImmutableList.of(
+  private static final List<String> MUTABLE_TYPES = ImmutableList.of(
     "java.util.Collection",
     "java.util.Date",
     "java.util.Hashtable"
   );
-  private static List<String> IMMUTABLE_TYPES = ImmutableList.of(
+  private static final List<String> IMMUTABLE_TYPES = ImmutableList.of(
     "java.util.Collections.UnmodifiableCollection",
     "java.util.Collections.UnmodifiableMap",
     "com.google.common.collect.ImmutableCollection"

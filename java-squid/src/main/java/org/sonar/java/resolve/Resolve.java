@@ -545,13 +545,13 @@ public class Resolve {
         result = (env.enclosingClass().outermostClass() == c.owner().outermostClass());
         break;
       case 0:
-        result = (env.packge() == c.packge());
+        result = env.packge() == c.packge();
         break;
       case Flags.PUBLIC:
         result = true;
         break;
       case Flags.PROTECTED:
-        result = (env.packge() == c.packge()) || isInnerSubClass(env.enclosingClass(), c.owner());
+        result = env.packge() == c.packge() || isInnerSubClass(env.enclosingClass(), c.owner());
         break;
       default:
         throw new IllegalStateException();

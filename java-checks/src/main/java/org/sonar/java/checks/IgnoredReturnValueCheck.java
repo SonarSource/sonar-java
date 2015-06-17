@@ -44,7 +44,7 @@ import java.util.List;
 @SqaleConstantRemediation("10min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
 
-  private static List<String> CHECKED_TYPES = ImmutableList.<String>builder()
+  private static final List<String> CHECKED_TYPES = ImmutableList.<String>builder()
       .add("java.lang.String")
       .add("java.lang.Boolean")
       .add("java.lang.Integer")

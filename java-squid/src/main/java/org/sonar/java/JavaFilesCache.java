@@ -180,11 +180,11 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     return suppressWarningsType;
   }
 
-  private List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
+  private static List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
     return getValueFromExpression(annotationTree.arguments().get(0));
   }
 
-  private List<String> getValueFromExpression(ExpressionTree expression) {
+  private static List<String> getValueFromExpression(ExpressionTree expression) {
     List<String> args = Lists.newArrayList();
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));

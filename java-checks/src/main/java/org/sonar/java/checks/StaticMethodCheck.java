@@ -52,7 +52,7 @@ import java.util.LinkedList;
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
-  private static MethodInvocationMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodInvocationMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectInputStream")),
     MethodMatcher.create()

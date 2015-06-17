@@ -60,7 +60,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     }
   }
 
-  private boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
+  private static boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
     if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
       return !methodTree.arguments().isEmpty() && (isMethodCall("java.sql.Statement", "executeQuery", memberSelectExpressionTree)
@@ -71,7 +71,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     return false;
   }
 
-  private boolean isHibernateCall(MethodInvocationTree methodTree) {
+  private static boolean isHibernateCall(MethodInvocationTree methodTree) {
     if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
       return !methodTree.arguments().isEmpty() && isMethodCall("org.hibernate.Session", "createQuery", memberSelectExpressionTree);
@@ -79,11 +79,11 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     return false;
   }
 
-  private boolean isMethodCall(String typeName, String methodName, MemberSelectExpressionTree memberSelectExpressionTree) {
+  private static boolean isMethodCall(String typeName, String methodName, MemberSelectExpressionTree memberSelectExpressionTree) {
     return methodName.equals(memberSelectExpressionTree.identifier().name()) && isInvokedOnType(typeName, memberSelectExpressionTree.expression());
   }
 
-  private boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
+  private static boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
     Type selectorType = expressionTree.symbolType();
     if (selectorType.isClass()) {
       return type.equals(selectorType.fullyQualifiedName()) || checkInterfaces(type, selectorType.symbol());
@@ -91,7 +91,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     return false;
   }
 
-  private boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
+  private static boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
     for (Type interfaceType : symbol.interfaces()) {
       if (type.equals(interfaceType.fullyQualifiedName()) || checkInterfaces(type, interfaceType.symbol())) {
         return true;
