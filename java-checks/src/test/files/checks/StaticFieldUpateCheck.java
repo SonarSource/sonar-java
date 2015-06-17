@@ -5,27 +5,27 @@ class A {
   private static int[] staticArray;
 
   public void nonCompliantAssignments() {
-    staticValue = value + 1; // Noncompliant
-    staticValue += value; // Noncompliant
-    staticValue++; // Noncompliant
-    ++staticValue; // Noncompliant
-    A.staticValue++; // Noncompliant
-    this.staticValue--; // Noncompliant
+    staticValue = value + 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    staticValue += value; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    ++staticValue; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    A.staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    this.staticValue--; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     A myA = new A();
-    myA.staticValue = 1; // Noncompliant
-    myA.staticArray[0] = 1; // Noncompliant
+    myA.staticValue = 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    myA.staticArray[0] = 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     myA.toString();
 
     class InnerClass {
       InnerClass() {
-        staticValue++; // Noncompliant
+        staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
       }
     }
   }
 
   private class InnerClassWithNonCompliantAssignment {
     void foo() {
-      staticValue++; // Noncompliant
+      staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     }
   }
 

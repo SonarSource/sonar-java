@@ -111,7 +111,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
     return !withinStaticMethod.isEmpty() && !withinStaticMethod.peek();
   }
 
-  private boolean isMethodStatic(MethodTree tree) {
+  private static boolean isMethodStatic(MethodTree tree) {
     return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.STATIC);
   }
 
@@ -142,7 +142,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
     }
   }
 
-  private boolean isStaticField(Symbol symbol) {
+  private static boolean isStaticField(Symbol symbol) {
     return symbol.isVariableSymbol()
       && symbol.owner().isTypeSymbol()
       && symbol.isStatic();

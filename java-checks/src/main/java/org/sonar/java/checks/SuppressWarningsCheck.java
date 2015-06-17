@@ -107,7 +107,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     return forbiddenWarnings;
   }
 
-  private List<String> getSuppressedWarnings(ExpressionTree argument) {
+  private static List<String> getSuppressedWarnings(ExpressionTree argument) {
     List<String> result = Lists.newArrayList();
     if (argument.is(Tree.Kind.STRING_LITERAL)) {
       result.add(LiteralUtils.trimQuotes(((LiteralTree) argument).value()));
