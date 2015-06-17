@@ -30,7 +30,6 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -302,8 +301,8 @@ public class JavaTreeModelTest {
    */
   @Test
   public void type_arguments() {
-    List<Tree> typeArguments = (TypeArgumentListTreeImpl) p.parse("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }")
-        .getFirstDescendant(JavaLexer.TYPE_ARGUMENTS);
+    VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
+    List<Tree> typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
     assertThat(typeArguments).hasSize(4);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
@@ -313,6 +312,7 @@ public class JavaTreeModelTest {
     assertThat(wildcard.queryToken().text()).isEqualTo("?");
     assertThat(wildcard.extendsOrSuperToken()).isNotNull();
     assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("extends");
+    assertThatChildrenIteratorHasSize(wildcard, 3);
 
     wildcard = (WildcardTree) typeArguments.get(1);
     assertThat(wildcard.is(Tree.Kind.SUPER_WILDCARD)).isTrue();
@@ -321,6 +321,7 @@ public class JavaTreeModelTest {
     assertThat(wildcard.queryToken().text()).isEqualTo("?");
     assertThat(wildcard.extendsOrSuperToken()).isNotNull();
     assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("super");
+    assertThatChildrenIteratorHasSize(wildcard, 3);
 
     wildcard = (WildcardTree) typeArguments.get(2);
     assertThat(wildcard.is(Tree.Kind.UNBOUNDED_WILDCARD)).isTrue();
@@ -328,8 +329,21 @@ public class JavaTreeModelTest {
     assertThat(wildcard.queryToken().text()).isEqualTo("?");
     assertThat(wildcard.queryToken()).isNotNull();
     assertThat(wildcard.extendsOrSuperToken()).isNull();
+    assertThatChildrenIteratorHasSize(wildcard, 1);
 
     assertThat(typeArguments.get(3)).isInstanceOf(IdentifierTree.class);
+
+    variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
+    typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
+    wildcard = (WildcardTree) typeArguments.get(0);
+    assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
+    assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+    assertThat(wildcard.queryToken()).isNotNull();
+    assertThat(wildcard.queryToken().text()).isEqualTo("?");
+    assertThat(wildcard.extendsOrSuperToken()).isNotNull();
+    assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("extends");
+    // annotations should be present
+    assertThatChildrenIteratorHasSize(wildcard, 5);
   }
 
   /*

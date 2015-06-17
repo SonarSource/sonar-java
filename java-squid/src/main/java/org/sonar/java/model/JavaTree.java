@@ -326,6 +326,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final Kind kind;
     @Nullable
     private final TypeTree bound;
+    // FIXME annotations can only by accessed through the children iterator
+    private final List<AnnotationTree> annotations;
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
       super(kind);
@@ -335,6 +337,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       this.kind = Preconditions.checkNotNull(kind);
       this.queryToken = queryToken;
       this.extendsOrSuperToken = null;
+      this.annotations = Collections.emptyList();
       this.bound = null;
 
       addChild(queryToken);
@@ -347,6 +350,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
       this.kind = Preconditions.checkNotNull(kind);
       this.extendsOrSuperToken = extendsOrSuperToken;
+      this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
       this.bound = bound;
 
       addChild(extendsOrSuperToken);
@@ -382,8 +386,15 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.<Tree>singletonIterator(
-        bound
+      Iterator<Tree> boundIterator = bound == null ?
+        Iterators.<Tree>emptyIterator() :
+        Iterators.concat(
+          Iterators.singletonIterator(extendsOrSuperToken), 
+          annotations.iterator(),
+          Iterators.singletonIterator(bound));
+      return Iterators.<Tree>concat(
+        Iterators.<Tree>singletonIterator(queryToken),
+        boundIterator
         );
     }
 
