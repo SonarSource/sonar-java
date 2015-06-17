@@ -26,6 +26,7 @@ import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -184,4 +185,10 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   public SyntaxToken dotToken() {
     return dotToken;
   }
+
+  @Override
+  public Symbol constructorSymbol() {
+    return this.getConstructorIdentifier().symbol();
+  }
+
 }
