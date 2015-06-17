@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S1659",
   name = "Multiple variables should not be declared on the same line",
   tags = {"convention"},
-  priority = Priority.MAJOR)
+  priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {
@@ -55,7 +56,7 @@ public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.INTERFACE, Kind.CLASS, Kind.ENUM, Kind.ANNOTATION_TYPE, Kind.BLOCK, Kind.STATIC_INITIALIZER);
+    return ImmutableList.of(Kind.INTERFACE, Kind.CLASS, Kind.ENUM, Kind.ANNOTATION_TYPE, Kind.BLOCK, Kind.STATIC_INITIALIZER, Kind.CASE_GROUP);
   }
 
   @Override
@@ -66,6 +67,8 @@ public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {
     } else if (tree.is(Kind.BLOCK, Kind.STATIC_INITIALIZER)) {
       // Local variable declaration (in method, static initialization, ...)
       checkVariables(((BlockTree) tree).body());
+    } else if (tree.is(Kind.CASE_GROUP)) {
+      checkVariables(((CaseGroupTree) tree).body());
     }
   }
 

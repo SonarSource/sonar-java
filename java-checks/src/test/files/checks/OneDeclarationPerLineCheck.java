@@ -53,6 +53,15 @@ class OneDeclarationPerLineCheck {
 
     for (Object o : Lists.newLinkedList()) { // NPE verify (variable w/o endToken)
     }
+
+
+    switch (2) {
+      case 1:
+        int a, b = 0; // Noncompliant
+        break;
+      case 2:
+        break;
+    }
   }
 
   int i7; int i8; // Noncompliant {{Declare "i8" on a separate line.}}
