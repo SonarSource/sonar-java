@@ -112,8 +112,12 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      forKeyword,
+      openParenToken,
       variable,
+      colonToken,
       expression,
+      closeParenToken,
       statement);
   }
 
