@@ -264,13 +264,13 @@ public abstract class JavaTree extends AstNode implements Tree {
       this.qualifiedIdentifier = qualifiedIdentifier;
       this.semiColonToken = semiColonToken;
       isStatic = staticToken != null;
+
       addChild(importToken);
       if(isStatic) {
         addChild(staticToken);
       }
       addChild((AstNode) qualifiedIdentifier);
       addChild(semiColonToken);
-
     }
 
     @Override
@@ -311,9 +311,10 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.singletonIterator(
-        qualifiedIdentifier
-        );
+
+      return Iterators.<Tree>concat(
+        isStatic ? Iterators.<Tree>singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
+        Iterators.<Tree>forArray(importToken, qualifiedIdentifier, semiColonToken));
     }
   }
 
