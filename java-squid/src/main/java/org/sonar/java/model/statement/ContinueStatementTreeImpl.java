@@ -81,8 +81,10 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      label);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(continueKeyword),
+      label != null ? Iterators.<Tree>singletonIterator(continueKeyword) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }
