@@ -947,7 +947,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void if_statement() {
-    IfStatementTree tree = (IfStatementTree) p.parse("class T { void m() { if (true) { } } }").getFirstDescendant(Kind.IF_STATEMENT);
+    IfStatementTree tree = (IfStatementTree) firstMethodFirstStatement("class T { void m() { if (true) { } } }");
     assertThat(tree.is(Tree.Kind.IF_STATEMENT)).isTrue();
     assertThat(tree.ifKeyword().text()).isEqualTo("if");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -956,8 +956,9 @@ public class JavaTreeModelTest {
     assertThat(tree.thenStatement()).isNotNull();
     assertThat(tree.elseKeyword()).isNull();
     assertThat(tree.elseStatement()).isNull();
+    assertThatChildrenIteratorHasSize(tree, 5);
 
-    tree = (IfStatementTree) p.parse("class T { void m() { if (true) { } else { } } }").getFirstDescendant(Kind.IF_STATEMENT);
+    tree = (IfStatementTree) firstMethodFirstStatement("class T { void m() { if (true) { } else { } } }");
     assertThat(tree.is(Tree.Kind.IF_STATEMENT)).isTrue();
     assertThat(tree.ifKeyword().text()).isEqualTo("if");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
@@ -966,6 +967,7 @@ public class JavaTreeModelTest {
     assertThat(tree.thenStatement()).isNotNull();
     assertThat(tree.elseKeyword().text()).isEqualTo("else");
     assertThat(tree.elseStatement()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   /**
