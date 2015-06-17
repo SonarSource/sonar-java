@@ -970,21 +970,23 @@ public class JavaTreeModelTest {
    */
   @Test
   public void assert_statement() {
-    AssertStatementTree tree = (AssertStatementTree) p.parse("class T { void m() { assert true; } }").getFirstDescendant(Kind.ASSERT_STATEMENT);
+    AssertStatementTree tree = (AssertStatementTree) firstMethodFirstStatement("class T { void m() { assert true; } }");
     assertThat(tree.is(Tree.Kind.ASSERT_STATEMENT)).isTrue();
     assertThat(tree.assertKeyword().text()).isEqualTo("assert");
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.colonToken()).isNull();
     assertThat(tree.detail()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
 
-    tree = (AssertStatementTree) p.parse("class T { void m() { assert true : \"detail\"; } }").getFirstDescendant(Kind.ASSERT_STATEMENT);
+    tree = (AssertStatementTree) firstMethodFirstStatement("class T { void m() { assert true : \"detail\"; } }");
     assertThat(tree.is(Tree.Kind.ASSERT_STATEMENT)).isTrue();
     assertThat(tree.assertKeyword().text()).isEqualTo("assert");
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.colonToken().text()).isEqualTo(":");
     assertThat(tree.detail()).isNotNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   /**
