@@ -75,8 +75,10 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>forArray(
+      throwKeyword,
+      expression,
+      semicolonToken);
   }
 
 }

@@ -1207,11 +1207,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void throw_statement() {
-    ThrowStatementTree tree = (ThrowStatementTree) p.parse("class T { void m() { throw e; } }").getFirstDescendant(Kind.THROW_STATEMENT);
+    ThrowStatementTree tree = (ThrowStatementTree) firstMethodFirstStatement("class T { void m() { throw e; } }");
     assertThat(tree.is(Tree.Kind.THROW_STATEMENT)).isTrue();
     assertThat(tree.throwKeyword().text()).isEqualTo("throw");
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
