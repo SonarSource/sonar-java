@@ -76,6 +76,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
     return Kind.METHOD_INVOCATION;
   }
 
+  @Nullable
   @Override
   public TypeArguments typeArguments() {
     return typeArguments;
@@ -114,10 +115,11 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(methodSelect),
-      Iterators.singletonIterator(typeArguments),
-      arguments.iterator()
-      );
+      typeArguments != null ? Iterators.<Tree>singletonIterator(typeArguments) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>forArray(methodSelect, openParenToken),
+      // FIXME SONARJAVA-547 separators are lost
+      arguments.iterator(),
+      Iterators.<Tree>singletonIterator(closeParenToken));
   }
 
   public void setSymbol(Symbol symbol) {
