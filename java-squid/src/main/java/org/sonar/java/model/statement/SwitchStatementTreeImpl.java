@@ -115,8 +115,9 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(expression),
-      cases.iterator());
+      Iterators.forArray(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
+      cases.iterator(),
+      Iterators.singletonIterator(closeBraceToken));
   }
 
 }
