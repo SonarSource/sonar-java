@@ -41,7 +41,7 @@ import java.util.List;
 
 @Rule(
   key = "S2692",
-  name = "\"indexOf\" checks should not be positive numbers",
+  name = "\"indexOf\" checks should not be for positive numbers",
   tags = {"pitfall"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

@@ -33,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S2078",
   name = "Values passed to LDAP queries should be sanitized",
-  tags = {"cwe", "owasp-top10", "security"},
+  tags = {"cwe", "owasp-a1", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")

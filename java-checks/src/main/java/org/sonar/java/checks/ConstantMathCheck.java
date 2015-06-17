@@ -49,7 +49,7 @@ import java.util.List;
   tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
 

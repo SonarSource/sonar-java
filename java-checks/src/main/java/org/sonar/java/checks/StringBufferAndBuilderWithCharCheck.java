@@ -45,7 +45,7 @@ import java.util.Set;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@SqaleConstantRemediation("5 min")
 public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

@@ -41,7 +41,7 @@ import java.util.List;
 
 @Rule(
   key = "S2274",
-  name = "\"Object.wait(...)\" and \"Condition.await(...)\" should always be called inside a \"while\" loop",
+  name = "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
   tags = {"bug", "cert", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

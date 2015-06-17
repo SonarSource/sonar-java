@@ -36,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S1862",
-  name = "Conditions in related \"if/else if\" statements should not have the same condition",
+  name = "Related \"if/else if\" statements should not have the same condition",
   tags = {"bug", "cert", "pitfall", "unused"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

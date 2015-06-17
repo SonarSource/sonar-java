@@ -33,7 +33,7 @@ import java.util.List;
 @Rule(
   key = "S2096",
   name = "\"main\" should not \"throw\" anything",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("15min")

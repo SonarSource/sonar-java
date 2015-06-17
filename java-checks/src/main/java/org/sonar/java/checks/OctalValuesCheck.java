@@ -34,7 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1314",
   name = "Octal values should not be used",
-  tags = {"misra", "pitfall"},
+  tags = {"cert", "misra", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)

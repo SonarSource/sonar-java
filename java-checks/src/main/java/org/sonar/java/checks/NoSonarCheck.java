@@ -35,7 +35,7 @@ import java.util.List;
  */
 @Rule(
   key = "NoSonar",
-  name = "\"NOSONAR\" marker should not be used to switch-off issues",
+  name = "\"NOSONAR\" should not be used to switch off issues",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)

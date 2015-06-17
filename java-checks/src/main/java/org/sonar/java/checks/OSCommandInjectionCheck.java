@@ -39,7 +39,7 @@ import java.util.List;
 @Rule(
   key = "S2076",
   name = "Values passed to OS commands should be sanitized",
-  tags = {"cwe", "owasp-top10", "sans-top25", "security"},
+  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")

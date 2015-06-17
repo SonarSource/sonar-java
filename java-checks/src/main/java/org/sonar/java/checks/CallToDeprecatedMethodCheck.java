@@ -35,7 +35,7 @@ import org.sonar.squidbridge.api.SourceFile;
 @Rule(
   key = "CallToDeprecatedMethod",
   name = "Avoid use of deprecated methods",
-  tags = {"cwe", "obsolete", "owasp-top10"},
+  tags = {"cwe", "obsolete", "owasp-a9", "security"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
 @SqaleConstantRemediation("15min")

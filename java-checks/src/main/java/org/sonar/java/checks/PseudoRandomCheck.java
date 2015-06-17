@@ -35,7 +35,7 @@ import java.util.List;
 @Rule(
   key = "S2245",
   name = "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
-  tags = {"cert", "cwe", "owasp-top10", "security"},
+  tags = {"cert", "cwe", "owasp-a6", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("10min")

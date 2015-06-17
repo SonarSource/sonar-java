@@ -37,7 +37,7 @@ import java.util.List;
 @Rule(
   key = "S2089",
   name = "HTTP referers should not be relied on",
-  tags = {"cwe", "owasp-top10", "security"},
+  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("20min")

@@ -37,8 +37,8 @@ import java.util.List;
 
 @Rule(
   key = "S2278",
-  name = "DES (Data Encryption Standard) and DESede (3DES) should not be used",
-  tags = {"cwe", "owasp-top10", "security"},
+  name = "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
+  tags = {"cwe", "owasp-a6", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")

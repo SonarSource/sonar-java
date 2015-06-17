@@ -35,7 +35,7 @@ import java.util.List;
 @Rule(
   key = "S2254",
   name = "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
-  tags = {"owasp-top10", "security"},
+  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)

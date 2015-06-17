@@ -35,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S2077",
   name = "Values passed to SQL commands should be sanitized",
-  tags = {"cwe", "hibernate", "injection", "owasp-top10", "sans-top25", "security", "sql"},
+  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security", "sql", "hibernate"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)

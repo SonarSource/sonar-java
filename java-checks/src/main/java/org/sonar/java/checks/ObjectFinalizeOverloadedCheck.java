@@ -33,7 +33,7 @@ import java.util.List;
 
 @Rule(
   key = "S1175",
-  name = "Object.finalize() should not be overloaded (by adding method parameters)",
+  name = "The signature of \"finalize()\" should match that of \"Object.finalize()\"",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

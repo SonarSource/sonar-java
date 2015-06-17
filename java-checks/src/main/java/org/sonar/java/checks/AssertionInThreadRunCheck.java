@@ -39,7 +39,7 @@ import java.util.List;
 @Rule(
   key = "S2186",
   name = "JUnit assertions should not be used in \"run\" methods",
-  tags = {"pitfall", "junit"},
+  tags = {"junit", "pitfall"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("30min")

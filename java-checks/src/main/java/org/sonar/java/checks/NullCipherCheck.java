@@ -34,7 +34,7 @@ import java.util.List;
 @Rule(
   key = "S2258",
   name = "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
-  tags = {"cwe", "owasp-top10", "security"},
+  tags = {"cwe", "owasp-a6", "security"},
   priority = Priority.BLOCKER)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("15min")
