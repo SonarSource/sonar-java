@@ -1344,11 +1344,12 @@ public class JavaTreeModelTest {
    */
   @Test
   public void parenthesized_expression() {
-    ParenthesizedTree tree = (ParenthesizedTree) p.parse("class T { boolean m() { return (true); } }").getFirstDescendant(Kind.PARENTHESIZED_EXPRESSION);
+    ParenthesizedTree tree = (ParenthesizedTree) expressionOfReturnStatement("class T { boolean m() { return (true); } }");
     assertThat(tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
