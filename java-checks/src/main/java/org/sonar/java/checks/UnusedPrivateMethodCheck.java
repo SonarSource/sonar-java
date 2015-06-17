@@ -19,24 +19,29 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.java.signature.MethodSignatureScanner;
-import org.sonar.java.signature.Parameter;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "UnusedPrivateMethod",
@@ -46,47 +51,83 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class UnusedPrivateMethodCheck extends BytecodeVisitor {
+public class UnusedPrivateMethodCheck extends SubscriptionBaseVisitor {
 
-  private AsmClass asmClass;
+  private static final MethodInvocationMatcherCollection SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+    MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
+    MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"),
+    MethodMatcher.create().name("writeReplace"),
+    MethodMatcher.create().name("readResolve"),
+    MethodMatcher.create().name("readObjectNoData")
+    );
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
   }
 
   @Override
-  public void visitMethod(AsmMethod asmMethod) {
-    if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
-      String messageStr = "Private method '" + asmMethod.getName() + "' is never used.";
-      if ("<init>".equals(asmMethod.getName())) {
-        messageStr = "Private constructor '" + asmClass.getDisplayName() + "(";
-        List<String> params = Lists.newArrayList();
-        for (Parameter param : MethodSignatureScanner.scan(asmMethod.getGenericKey()).getArgumentTypes()) {
-          String paramName = param.getClassName();
-          if (StringUtils.isEmpty(paramName)) {
-            paramName = MethodSignatureScanner.getReadableType(param.getJvmJavaType());
-          }
-          params.add(paramName + (param.isArray() ? "[]" : ""));
-        }
-        messageStr += Joiner.on(",").join(params) + ")' is never used.";
-      }
-      CheckMessage message = new CheckMessage(this, messageStr);
-      int line = getMethodLineNumber(asmMethod);
-      if (line > 0) {
-        message.setLine(line);
-      }
-      SourceFile file = getSourceFile(asmClass);
-      file.log(message);
+  public void visitNode(Tree tree) {
+    for (Tree memberTree : ((CompilationUnitTree) tree).types()) {
+      MethodInvocationVisitor methodInvocationVisitor = new MethodInvocationVisitor();
+      memberTree.accept(methodInvocationVisitor);
+      memberTree.accept(new MethodVisitor(methodInvocationVisitor.calledPrivateMethods));
     }
   }
 
-  private static boolean isPrivateUnused(AsmMethod asmMethod) {
-    return !asmMethod.isUsed() && asmMethod.isPrivate();
+  private static class MethodInvocationVisitor extends BaseTreeVisitor {
+    final Set<Symbol> calledPrivateMethods = new HashSet<>();
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      Symbol constructorSymbol = tree.constructorSymbol();
+      if (constructorSymbol.isPrivate()) {
+        calledPrivateMethods.add(constructorSymbol);
+      }
+      super.visitNewClass(tree);
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      Symbol methodSymbol = tree.symbol();
+      if (methodSymbol.isPrivate()) {
+        calledPrivateMethods.add(methodSymbol);
+      }
+      super.visitMethodInvocation(tree);
+    }
   }
 
-  private static boolean isExcludedFromCheck(AsmMethod asmMethod) {
-    return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
+  private class MethodVisitor extends BaseTreeVisitor {
+    final Set<Symbol> calledPrivateMethods;
+
+    MethodVisitor(Set<Symbol> calledPrivateMethods) {
+      this.calledPrivateMethods = calledPrivateMethods;
+    }
+
+    @Override
+    public void visitMethod(MethodTree tree) {
+      if (!containsParameterizedTypes(tree.typeParameters())) {
+        Symbol methodSymbol = tree.symbol();
+        if (methodSymbol.isPrivate()
+          && !calledPrivateMethods.contains(methodSymbol)
+          && !SERIALIZABLE_METHODS.anyMatch(tree)) {
+          String kind = tree.is(Tree.Kind.CONSTRUCTOR) ? "constructor" : "method";
+          addIssue(tree, "Private " + kind + " '" + tree.simpleName().name() + "' is never used.");
+        }
+        super.visitMethod(tree);
+      }
+    }
+
+    private boolean containsParameterizedTypes(TypeParameters typeParameters) {
+      for (TypeParameterTree typeParameterTree : typeParameters) {
+        for (Tree bound : typeParameterTree.bounds()) {
+          if (bound.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
   }
 
 }
