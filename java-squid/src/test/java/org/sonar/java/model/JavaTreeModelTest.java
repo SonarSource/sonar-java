@@ -1234,15 +1234,16 @@ public class JavaTreeModelTest {
    */
   @Test
   public void try_statement() {
-    TryStatementTree tree = (TryStatementTree) p.parse("class T { void m() { try { } finally { } } }").getFirstDescendant(Kind.TRY_STATEMENT);
+    TryStatementTree tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } finally { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.resources()).isEmpty();
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).isEmpty();
     assertThat(tree.finallyKeyword().text()).isEqualTo("finally");
     assertThat(tree.finallyBlock()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 4);
 
-    tree = (TryStatementTree) p.parse("class T { void m() { try { } catch (RuntimeException e1) { } catch (Exception e2) { } } }").getFirstDescendant(Kind.TRY_STATEMENT);
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (RuntimeException e1) { } catch (Exception e2) { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.tryKeyword().text()).isEqualTo("try");
     assertThat(tree.openParenToken()).isNull();
@@ -1252,6 +1253,7 @@ public class JavaTreeModelTest {
     assertThat(tree.finallyKeyword()).isNull();
     assertThat(tree.finallyBlock()).isNull();
     assertThat(tree.catches()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 4);
     CatchTree catchTree = tree.catches().get(0);
     assertThat(catchTree.catchKeyword().text()).isEqualTo("catch");
     assertThat(catchTree.block()).isNotNull();
@@ -1269,7 +1271,7 @@ public class JavaTreeModelTest {
     assertThat(parameterTree.simpleName().name()).isEqualTo("e2");
     assertThat(parameterTree.initializer()).isNull();
 
-    tree = (TryStatementTree) p.parse("class T { void m() { try { } catch (Exception e) { } finally { } } }").getFirstDescendant(Kind.TRY_STATEMENT);
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (Exception e) { } finally { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.resources()).isEmpty();
     assertThat(tree.block()).isNotNull();
@@ -1277,9 +1279,9 @@ public class JavaTreeModelTest {
     assertThat(tree.finallyKeyword().text()).isEqualTo("finally");
     assertThatChildrenIteratorHasSize(tree.catches().get(0), 5);
     assertThat(tree.finallyBlock()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 5);
 
-    tree = (TryStatementTree) p.parse("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }")
-        .getFirstDescendant(Kind.TRY_STATEMENT);
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.block()).isNotNull();
     assertThat(tree.catches()).hasSize(1);
@@ -1295,10 +1297,12 @@ public class JavaTreeModelTest {
     resource = tree.resources().get(1);
     assertThat(resource.simpleName().name()).isEqualTo("r2");
     assertThat(resource.initializer()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 9);
 
-    tree = (TryStatementTree) p.parse("class T { void m() { try { } catch (Exception1 | Exception2 e) { } } }").getFirstDescendant(Kind.TRY_STATEMENT);
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (Exception1 | Exception2 e) { } } }");
     parameterTree = tree.catches().get(0).parameter();
     assertThat(((UnionTypeTree) parameterTree.type()).typeAlternatives()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /*
