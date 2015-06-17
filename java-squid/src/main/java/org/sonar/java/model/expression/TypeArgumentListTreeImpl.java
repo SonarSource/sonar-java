@@ -37,7 +37,7 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken openBracketToken;
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
+  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, InternalSyntaxToken closeBracketToken, List<AstNode> children) {
     super(JavaLexer.TYPE_ARGUMENTS, expressions, ImmutableList.<AstNode>of());
 
     this.openBracketToken = openBracketToken;
@@ -67,7 +67,8 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
+    // FIXME SONARJAVA-547 separators between arguments are currently ignored
+    return ImmutableList.<Tree>builder().add(openBracketToken).addAll(this).add(closeBracketToken).build().iterator();
   }
 
   @Override

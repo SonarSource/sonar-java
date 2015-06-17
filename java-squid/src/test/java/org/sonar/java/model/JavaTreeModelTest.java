@@ -85,6 +85,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -302,8 +303,9 @@ public class JavaTreeModelTest {
   @Test
   public void type_arguments() {
     VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
-    List<Tree> typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
+    TypeArguments typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
     assertThat(typeArguments).hasSize(4);
+    assertThatChildrenIteratorHasSize(typeArguments, 6);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
     assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
@@ -335,6 +337,7 @@ public class JavaTreeModelTest {
 
     variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
     typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
+    assertThatChildrenIteratorHasSize(typeArguments, 3);
     wildcard = (WildcardTree) typeArguments.get(0);
     assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
     assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
@@ -342,7 +345,7 @@ public class JavaTreeModelTest {
     assertThat(wildcard.queryToken().text()).isEqualTo("?");
     assertThat(wildcard.extendsOrSuperToken()).isNotNull();
     assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("extends");
-    // annotations should be present
+    // FIXME SONARJAVA-547 annotations should be present in the wildcard tree
     assertThatChildrenIteratorHasSize(wildcard, 5);
   }
 
@@ -352,24 +355,23 @@ public class JavaTreeModelTest {
 
   @Test
   public void class_declaration() {
-    AstNode astNode = p.parse("public class T<U> extends C implements I1, I2 { }");
-    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
+    ClassTree tree = firstType("public class T<U> extends C implements I1, I2 { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
     List<ModifierKeywordTree> modifiers = tree.modifiers().modifiers();
     assertThat(modifiers).hasSize(1);
     assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(modifiers.get(0).keyword().text()).isEqualTo("public");
     assertThat(tree.simpleName().name()).isEqualTo("T");
-    assertThat(tree.typeParameters()).isNotEmpty();
+    TypeParameters typeParameters = tree.typeParameters();
+    assertThat(typeParameters).isNotEmpty();
+    assertThatChildrenIteratorHasSize(typeParameters, 3);
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.superClass()).isNotNull();
     assertThat(tree.superInterfaces()).hasSize(2);
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.declarationKeyword().text()).isEqualTo("class");
 
-    astNode = p.parse("public class T { }");
-    assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
-    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
+    tree = firstType("public class T { }");
     modifiers = tree.modifiers().modifiers();
     assertThat(modifiers).hasSize(1);
     assertThat(modifiers.get(0).modifier()).isEqualTo(Modifier.PUBLIC);
@@ -380,9 +382,19 @@ public class JavaTreeModelTest {
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("class");
 
-    astNode = p.parse("@Deprecated class T { }");
+    tree = firstType("class T<U,V> { }");
+    assertThat(tree.modifiers()).isEmpty();
+    assertThat(tree.simpleName().name()).isEqualTo("T");
+    typeParameters = tree.typeParameters();
+    assertThat(typeParameters).isNotEmpty();
+    // FIXME SONARJAVA-547 separators should be present in children iterator of type parameters
+    assertThatChildrenIteratorHasSize(typeParameters, 4);
+    assertThat(tree.superClass()).isNull();
+    assertThat(tree.superInterfaces()).isEmpty();
+    assertThat(tree.declarationKeyword().text()).isEqualTo("class");
+
+    tree = firstType("@Deprecated class T { }");
     assertThat(tree.is(Tree.Kind.CLASS)).isTrue();
-    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
     assertThat(tree.modifiers().annotations()).hasSize(1);
     assertThat(tree.declarationKeyword().text()).isEqualTo("class");
   }
@@ -709,19 +721,19 @@ public class JavaTreeModelTest {
 
   @Test
   public void interface_declaration() {
-    AstNode astNode = p.parse("public interface T<U> extends I1, I2 { }");
-    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
+    ClassTree tree = firstType("public interface T<U> extends I1, I2 { }");
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
     assertThat(tree.simpleName().name()).isEqualTo("T");
-    assertThat(tree.typeParameters()).isNotEmpty();
+    TypeParameters typeParameters = tree.typeParameters();
+    assertThatChildrenIteratorHasSize(typeParameters, 3);
+    assertThat(typeParameters).isNotEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
     assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
 
-    astNode = p.parse("public interface T { }");
-    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
+    tree = firstType("public interface T { }");
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
@@ -2243,26 +2255,28 @@ public class JavaTreeModelTest {
 
   @Test
   public void type_parameters_tokens() {
-    ParameterizedTypeTree tree = (ParameterizedTypeTree) p.parse("class Foo<E> extends List<E> {}").getFirstDescendant(getKindsAssociatedTo(ParameterizedTypeTree.class));
+    ParameterizedTypeTree tree = (ParameterizedTypeTree) firstType("class Foo<E> extends List<E> {}").superClass();
     assertThat(tree).isNotNull();
     TypeArguments typeArguments = tree.typeArguments();
     assertThat(typeArguments).isNotNull();
     assertThat(typeArguments).hasSize(1);
     assertThat(typeArguments.openBracketToken()).isNotNull();
     assertThat(typeArguments.closeBracketToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(typeArguments, 3);
 
-    tree = (ParameterizedTypeTree) p.parse("class Mop<K,V> implements Map<K,V> {}").getFirstDescendant(getKindsAssociatedTo(ParameterizedTypeTree.class));
+    tree = (ParameterizedTypeTree) firstType("class Mop<K,V> implements Map<K,V> {}").superInterfaces().get(0);
     assertThat(tree).isNotNull();
     typeArguments = tree.typeArguments();
     assertThat(typeArguments).isNotNull();
     assertThat(typeArguments).hasSize(2);
     assertThat(typeArguments.openBracketToken()).isNotNull();
     assertThat(typeArguments.closeBracketToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(typeArguments, 4);
   }
 
   @Test
   public void type_parameters_and_bounds() {
-    TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) p.parse("class Foo<T, U extends Object & Number> {}").getFirstDescendant(JavaLexer.TYPE_PARAMETERS);
+    TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) firstType("class Foo<T, U extends Object & Number> {}").typeParameters();
     assertThat(tree.openBracketToken().text()).isEqualTo("<");
     assertThat(tree.closeBracketToken().text()).isEqualTo(">");
 

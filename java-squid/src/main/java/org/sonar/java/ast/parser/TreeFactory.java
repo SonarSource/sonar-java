@@ -265,6 +265,7 @@ public class TreeFactory {
     if (rests.isPresent()) {
       for (AstNode rest : rests.get()) {
         for (AstNode child : rest.getChildren()) {
+          // FIXME SONARJAVA-547 comma should be part of the ArgumentList as token
           if (!child.is(JavaPunctuator.COMMA)) {
             typeArguments.add((Tree) child);
           }
@@ -274,14 +275,14 @@ public class TreeFactory {
       }
     }
 
-    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), children, closeBracketToken);
+    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), closeBracketToken, children);
   }
 
   public TypeArgumentListTreeImpl newDiamondTypeArgument(AstNode openBracketTokenAstNode, AstNode closeBracketTokenAstNode) {
     InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
     InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
 
-    return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), ImmutableList.<AstNode>of(), closeBracketToken);
+    return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), closeBracketToken, ImmutableList.<AstNode>of());
   }
 
   public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, Tree partial) {
