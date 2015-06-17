@@ -935,10 +935,11 @@ public class JavaTreeModelTest {
    */
   @Test
   public void expression_statement() {
-    ExpressionStatementTree tree = (ExpressionStatementTree) p.parse("class T { void m() { i++; } }").getFirstDescendant(Kind.EXPRESSION_STATEMENT);
+    ExpressionStatementTree tree = (ExpressionStatementTree) firstMethodFirstStatement("class T { void m() { i++; } }");
     assertThat(tree.is(Tree.Kind.EXPRESSION_STATEMENT)).isTrue();
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 2);
   }
 
   /**
