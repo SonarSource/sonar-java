@@ -75,8 +75,10 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>forArray(
+      openParenToken,
+      expression,
+      closeParenToken);
   }
 
 }
