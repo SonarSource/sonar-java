@@ -1112,17 +1112,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void break_statement() {
-    BreakStatementTree tree = (BreakStatementTree) p.parse("class T { void m() { break ; } }").getFirstDescendant(Kind.BREAK_STATEMENT);
+    BreakStatementTree tree = (BreakStatementTree) firstMethodFirstStatement("class T { void m() { break ; } }");
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
     assertThat(tree.label()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 2);
 
-    tree = (BreakStatementTree) p.parse("class T { void m() { break label ; } }").getFirstDescendant(Kind.BREAK_STATEMENT);
+    tree = (BreakStatementTree) firstMethodFirstStatement("class T { void m() { break label ; } }");
     assertThat(tree.is(Tree.Kind.BREAK_STATEMENT)).isTrue();
     assertThat(tree.breakKeyword().text()).isEqualTo("break");
     assertThat(tree.label().name()).isEqualTo("label");
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
