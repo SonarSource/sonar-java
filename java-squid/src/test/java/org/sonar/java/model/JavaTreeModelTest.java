@@ -264,38 +264,37 @@ public class JavaTreeModelTest {
 
   @Test
   public void import_declaration() {
-    AstNode astNode = p.parse(";");
-    ImportClauseTree tree = ((CompilationUnitTree) astNode).imports().get(0);
+    ImportClauseTree tree = compilationUnit(";").imports().get(0);
     assertThat(tree.is(Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.is(Kind.IMPORT)).isFalse();
 
-    astNode = p.parse("import foo.Bar;");
-    tree = ((CompilationUnitTree) astNode).imports().get(0);
+    tree = compilationUnit("import foo.Bar;").imports().get(0);
     assertThat(tree.is(Kind.IMPORT)).isTrue();
     ImportTree importTree = (ImportTree) tree;
     assertThat(importTree.isStatic()).isFalse();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
+    assertThatChildrenIteratorHasSize(importTree, 3);
 
-    astNode = p.parse("import foo.bar.*;");
-    tree = ((CompilationUnitTree) astNode).imports().get(0);
+    tree = compilationUnit("import foo.bar.*;").imports().get(0);
     assertThat(tree.is(Kind.IMPORT)).isTrue();
     importTree = (ImportTree) tree;
     assertThat(importTree.isStatic()).isFalse();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
+    assertThatChildrenIteratorHasSize(importTree, 3);
 
-    astNode = p.parse("import static foo.Bar.method;");
-    tree = ((CompilationUnitTree) astNode).imports().get(0);
+    tree = compilationUnit("import static foo.Bar.method;").imports().get(0);
     assertThat(tree.is(Kind.IMPORT)).isTrue();
     importTree = (ImportTree) tree;
     assertThat(importTree.isStatic()).isTrue();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
+    assertThatChildrenIteratorHasSize(importTree, 4);
 
-    astNode = p.parse("import static foo.Bar.*;");
-    tree = ((CompilationUnitTree) astNode).imports().get(0);
+    tree = compilationUnit("import static foo.Bar.*;").imports().get(0);
     assertThat(tree.is(Kind.IMPORT)).isTrue();
     importTree = (ImportTree) tree;
     assertThat(importTree.isStatic()).isTrue();
     assertThat(importTree.qualifiedIdentifier()).isNotNull();
+    assertThatChildrenIteratorHasSize(importTree, 4);
   }
 
   /**
@@ -2268,8 +2267,11 @@ public class JavaTreeModelTest {
   }
 
   private ClassTree firstType(String code) {
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
-    return (ClassTree) compilationUnitTree.types().get(0);
+    return (ClassTree) compilationUnit(code).types().get(0);
+  }
+
+  private CompilationUnitTree compilationUnit(String code) {
+    return (CompilationUnitTree) p.parse(code);
   }
 
   private static void assertThatArrayTypeHasBrackets(ArrayTypeTree tree) {
