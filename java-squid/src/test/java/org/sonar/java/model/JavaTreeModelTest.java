@@ -1047,13 +1047,14 @@ public class JavaTreeModelTest {
    */
   @Test
   public void while_statement() {
-    WhileStatementTree tree = (WhileStatementTree) p.parse("class T { void m() { while (true) ; } }").getFirstDescendant(Kind.WHILE_STATEMENT);
+    WhileStatementTree tree = (WhileStatementTree) firstMethodFirstStatement("class T { void m() { while (true) ; } }");
     assertThat(tree.is(Tree.Kind.WHILE_STATEMENT)).isTrue();
     assertThat(tree.whileKeyword().text()).isEqualTo("while");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.statement()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   /**
