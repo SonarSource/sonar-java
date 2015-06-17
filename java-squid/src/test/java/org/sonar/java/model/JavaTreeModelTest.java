@@ -1006,6 +1006,7 @@ public class JavaTreeModelTest {
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.cases()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 8);
 
     CaseGroupTree c = tree.cases().get(0);
     assertThat(c.is(Tree.Kind.CASE_GROUP)).isTrue();
@@ -1038,6 +1039,7 @@ public class JavaTreeModelTest {
     tree = (SwitchStatementTree) firstMethodFirstStatement("class T { void m() { switch (e) { default: } } }");
     assertThat(tree.cases()).hasSize(1);
     assertThat(tree.cases().get(0).body()).isEmpty();
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   /**
