@@ -1185,17 +1185,19 @@ public class JavaTreeModelTest {
    */
   @Test
   public void return_statement() {
-    ReturnStatementTree tree = (ReturnStatementTree) p.parse("class T { boolean m() { return ; } }").getFirstDescendant(Kind.RETURN_STATEMENT);
+    ReturnStatementTree tree = (ReturnStatementTree) firstMethodFirstStatement("class T { boolean m() { return ; } }");
     assertThat(tree.is(Tree.Kind.RETURN_STATEMENT)).isTrue();
     assertThat(tree.returnKeyword().text()).isEqualTo("return");
     assertThat(tree.expression()).isNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 2);
 
-    tree = (ReturnStatementTree) p.parse("class T { boolean m() { return true; } }").getFirstDescendant(Kind.RETURN_STATEMENT);
+    tree = (ReturnStatementTree) firstMethodFirstStatement("class T { boolean m() { return true; } }");
     assertThat(tree.is(Tree.Kind.RETURN_STATEMENT)).isTrue();
     assertThat(tree.returnKeyword().text()).isEqualTo("return");
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
   }
 
   /**
