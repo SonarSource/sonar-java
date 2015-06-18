@@ -647,11 +647,19 @@ public class TreeFactory {
       semicolonToken = InternalSyntaxToken.create(blockOrSemicolon);
     }
 
+    InternalSyntaxToken throwsToken = null;
+    List<TypeTree> throwsClauses = ImmutableList.<TypeTree>of();
+    if (throwsClause.isPresent()) {
+      throwsToken = InternalSyntaxToken.create(throwsClause.get().first());
+      throwsClauses = throwsClause.get().second();
+    }
+
     MethodTreeImpl result = new MethodTreeImpl(
       actualType,
       identifier,
       parameters,
-      throwsClause.isPresent() ? (List<TypeTree>) throwsClause.get().second() : ImmutableList.<TypeTree>of(),
+      throwsToken,
+      throwsClauses,
       block,
       semicolonToken);
 
