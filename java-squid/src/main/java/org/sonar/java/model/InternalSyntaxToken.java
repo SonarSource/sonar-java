@@ -60,6 +60,10 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     this.trivias = createTrivias(token);
   }
 
+  public InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
+    this(internalSyntaxToken.token);
+  }
+
   @Override
   public String text() {
     return token.getValue();
@@ -128,4 +132,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     return new InternalSyntaxToken(astNode);
   }
 
+  public void setType(AstNodeType type) {
+    this.type = type;
+  }
 }
