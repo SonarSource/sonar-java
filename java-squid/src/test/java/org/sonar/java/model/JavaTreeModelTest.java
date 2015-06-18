@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
@@ -292,6 +293,7 @@ public class JavaTreeModelTest {
   @Test
   public void type_arguments() {
     VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
+    assertThatChildrenIteratorHasSize(variableTree, 4);
     TypeArguments typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
     assertThat(typeArguments).hasSize(4);
     assertThatChildrenIteratorHasSize(typeArguments, 6);
@@ -435,8 +437,8 @@ public class JavaTreeModelTest {
     assertThat(annotation.atToken()).isNotNull();
     assertThatChildrenIteratorHasSize(annotation, 6);
 
-    tree = firstType("class T { private void meth() { @NonNullable String str;}}");
-    VariableTree variable = (VariableTree) ((MethodTree) tree.members().get(0)).block().body().get(0);
+    VariableTree variable = (VariableTree) firstMethodFirstStatement("class T { private void meth() { @NonNullable String str;}}");
+    assertThatChildrenIteratorHasSize(variable, 4);
     annotations = variable.modifiers().annotations();
     assertThat(annotations).hasSize(1);
     annotation = annotations.get(0);
@@ -503,6 +505,7 @@ public class JavaTreeModelTest {
     assertThat(tree.initializer()).isNotNull();
     assertThat(tree.endToken()).isNotNull();
     assertThat(tree.endToken().text()).isEqualTo(",");
+    assertThatChildrenIteratorHasSize(tree, 6);
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -514,6 +517,7 @@ public class JavaTreeModelTest {
     assertThat(tree.initializer()).isNull();
     assertThat(tree.endToken()).isNotNull();
     assertThat(tree.endToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 4);
   }
 
   @Test
@@ -653,6 +657,7 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -661,6 +666,7 @@ public class JavaTreeModelTest {
     assertThatArrayTypeHasBrackets((ArrayTypeTree) tree.type());
     assertThat(tree.simpleName().name()).isEqualTo("f2");
     assertThat(tree.initializer()).isNull();
+    assertThatChildrenIteratorHasSize(tree, 4);
   }
 
   @Test
@@ -748,6 +754,7 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("f1");
     assertThat(tree.initializer()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -757,6 +764,7 @@ public class JavaTreeModelTest {
     assertThatArrayTypeHasBrackets((ArrayTypeTree) tree.type());
     assertThat(tree.simpleName().name()).isEqualTo("f2");
     assertThat(tree.initializer()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   @Test
@@ -831,6 +839,7 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.simpleName().name()).isEqualTo("c1");
     assertThat(tree.initializer()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6); // 1+5, as empty modifiers are always included
 
     tree = (VariableTree) members.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -838,6 +847,7 @@ public class JavaTreeModelTest {
     assertThatArrayTypeHasBrackets((ArrayTypeTree) tree.type());
     assertThat(tree.simpleName().name()).isEqualTo("c2");
     assertThat(tree.initializer()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   /*
@@ -897,6 +907,7 @@ public class JavaTreeModelTest {
     assertThat(tree.initializer()).isNotNull();
     assertThat(tree.endToken()).isNotNull();
     assertThat(tree.endToken().text()).isEqualTo(",");
+    assertThatChildrenIteratorHasSize(tree, 6);
 
     tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
@@ -907,6 +918,7 @@ public class JavaTreeModelTest {
     assertThat(tree.initializer()).isNull();
     assertThat(tree.endToken()).isNotNull();
     assertThat(tree.endToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 4);
 
     // TODO Test annotation
 
@@ -919,6 +931,7 @@ public class JavaTreeModelTest {
     assertThat(tree.initializer()).isNotNull();
     assertThat(tree.endToken()).isNotNull();
     assertThat(tree.endToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   /**
@@ -1100,6 +1113,7 @@ public class JavaTreeModelTest {
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.initializer()).hasSize(1);
     assertThat(tree.initializer().get(0)).isInstanceOf(VariableTree.class);
+    assertThatChildrenIteratorHasSize(tree.initializer().get(0), 5);
     assertThat(tree.firstSemicolonToken().text()).isEqualTo(";");
     assertThat(tree.condition()).isNotNull();
     assertThat(tree.secondSemicolonToken().text()).isEqualTo(";");
@@ -1281,12 +1295,14 @@ public class JavaTreeModelTest {
     assertThat(parameterTree.type()).isNotNull();
     assertThat(parameterTree.simpleName().name()).isEqualTo("e1");
     assertThat(parameterTree.initializer()).isNull();
+    assertThatChildrenIteratorHasSize(parameterTree, 3);
     catchTree = tree.catches().get(1);
     assertThatChildrenIteratorHasSize(catchTree, 5);
     parameterTree = catchTree.parameter();
     assertThat(parameterTree.type()).isNotNull();
     assertThat(parameterTree.simpleName().name()).isEqualTo("e2");
     assertThat(parameterTree.initializer()).isNull();
+    assertThatChildrenIteratorHasSize(parameterTree, 3);
 
     tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (Exception e) { } finally { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
@@ -1318,6 +1334,7 @@ public class JavaTreeModelTest {
 
     tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (Exception1 | Exception2 e) { } } }");
     parameterTree = tree.catches().get(0).parameter();
+    assertThatChildrenIteratorHasSize(parameterTree, 3);
     UnionTypeTree type = (UnionTypeTree) parameterTree.type();
     // TODO SONARJAVA-547 or operator is not stored
     assertThatChildrenIteratorHasSize(type, 2);
@@ -1637,6 +1654,7 @@ public class JavaTreeModelTest {
     ArrayTypeTree arrayTypeTree, childArrayTypeTree;
 
     field = (VariableTree) firstTypeMember("class T { int[] a; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThatArrayTypeHasBrackets(arrayTypeTree);
@@ -1644,6 +1662,7 @@ public class JavaTreeModelTest {
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
 
     field = (VariableTree) firstTypeMember("class T { int[][] a; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThatArrayTypeHasBrackets(arrayTypeTree);
@@ -1656,6 +1675,7 @@ public class JavaTreeModelTest {
     assertThat(childArrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
 
     field = (VariableTree) firstTypeMember("class T { int @Foo [] a; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -1663,6 +1683,7 @@ public class JavaTreeModelTest {
     assertThatChildrenIteratorHasSize(arrayTypeTree, 4);
 
     field = (VariableTree) firstTypeMember("class T { int @Foo @bar [] a; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -1670,6 +1691,7 @@ public class JavaTreeModelTest {
     assertThatChildrenIteratorHasSize(arrayTypeTree, 5);
 
     field = (VariableTree) firstTypeMember("class T { int[] @Foo [] a; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThatArrayTypeHasBracketsAndAnnotations(arrayTypeTree, 1);
@@ -1682,6 +1704,7 @@ public class JavaTreeModelTest {
     assertThat(childArrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
 
     field = (VariableTree) firstTypeMember("class T { int[] a[]; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThatArrayTypeHasBrackets(arrayTypeTree);
@@ -1694,6 +1717,7 @@ public class JavaTreeModelTest {
     assertThat(childArrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
 
     field = (VariableTree) firstTypeMember("class T { int[] a @Foo []; }");
+    assertThatChildrenIteratorHasSize(field, 4);
     assertThat(field.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) field.type();
     assertThat(arrayTypeTree).isInstanceOf(ArrayTypeTree.class);
@@ -1779,6 +1803,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int[] a); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3); // 1+2, as empty modifiers are always included
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -1787,6 +1812,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int... a); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -1795,6 +1821,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int @Foo ... a); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -1803,6 +1830,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int @Foo ... a[]); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThatArrayTypeHasBrackets(arrayTypeTree);
@@ -1815,6 +1843,7 @@ public class JavaTreeModelTest {
     assertThat(childArrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
 
     method = (MethodTree) firstTypeMember("interface T { void m(int @Foo [] a); }");
+    assertThatChildrenIteratorHasSize(variable, 3);
     variable = method.parameters().get(0);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
@@ -1824,6 +1853,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int @Foo @bar [] a); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThat(arrayTypeTree.type()).isInstanceOf(PrimitiveTypeTree.class);
@@ -1832,6 +1862,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int[] @Foo [] a); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThatArrayTypeHasBracketsAndAnnotations(arrayTypeTree, 1);
@@ -1845,6 +1876,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int[] a[]); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThatArrayTypeHasBrackets(arrayTypeTree);
@@ -1858,6 +1890,7 @@ public class JavaTreeModelTest {
 
     method = (MethodTree) firstTypeMember("interface T { void m(int[] a @Foo []); }");
     variable = method.parameters().get(0);
+    assertThatChildrenIteratorHasSize(variable, 3);
     assertThat(variable.type()).isInstanceOf(ArrayTypeTree.class);
     arrayTypeTree = (ArrayTypeTree) variable.type();
     assertThat(arrayTypeTree).isInstanceOf(ArrayTypeTree.class);
@@ -2353,7 +2386,8 @@ public class JavaTreeModelTest {
   }
 
   private static void assertThatChildrenIteratorHasSize(Tree tree, int size) {
-    assertThat(((JavaTree) tree).childrenIterator()).hasSize(size);
+    List<Tree> children = ImmutableList.<Tree>builder().addAll(((JavaTree) tree).childrenIterator()).build();
+    assertThat(children).hasSize(size);
   }
 
   private static void assertThatArrayTypeHasBrackets(ArrayTypeTree tree, int numberAnnotations, boolean shouldHaveEllipsis) {
@@ -2370,5 +2404,4 @@ public class JavaTreeModelTest {
       assertThat(tree.closeBracketToken().text()).isEqualTo("]");
     }
   }
-
 }
