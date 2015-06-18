@@ -1318,7 +1318,10 @@ public class JavaTreeModelTest {
 
     tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (Exception1 | Exception2 e) { } } }");
     parameterTree = tree.catches().get(0).parameter();
-    assertThat(((UnionTypeTree) parameterTree.type()).typeAlternatives()).hasSize(2);
+    UnionTypeTree type = (UnionTypeTree) parameterTree.type();
+    // TODO SONARJAVA-547 or operator is not stored
+    assertThatChildrenIteratorHasSize(type, 2);
+    assertThat(type.typeAlternatives()).hasSize(2);
     assertThatChildrenIteratorHasSize(tree, 3);
   }
 
