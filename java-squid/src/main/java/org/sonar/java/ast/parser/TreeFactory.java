@@ -193,13 +193,13 @@ public class TreeFactory {
     return (ExpressionTree) partial;
   }
 
-  public ImportClauseTree newEmptyImport(AstNode semicolonTokenAstNode) {
-    return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolonTokenAstNode));
+  public ImportClauseTree newEmptyImport(InternalSyntaxToken semicolonTokenAstNode) {
+    return new EmptyStatementTreeImpl(semicolonTokenAstNode);
   }
 
-  public ImportTreeImpl newImportDeclaration(AstNode importTokenAstNode, Optional<JavaTree> staticTokenAstNode, ExpressionTree qualifiedIdentifier,
+  public ImportTreeImpl newImportDeclaration(JavaTree importTokenAstNode, Optional<JavaTree> staticTokenAstNode, ExpressionTree qualifiedIdentifier,
     Optional<Tuple<InternalSyntaxToken, InternalSyntaxToken>> dotStar,
-    AstNode semicolonTokenAstNode) {
+    InternalSyntaxToken semicolonToken) {
 
     ExpressionTree target = qualifiedIdentifier;
     if (dotStar.isPresent()) {
@@ -209,13 +209,8 @@ public class TreeFactory {
         (AstNode) qualifiedIdentifier, dotStar.get().first(), identifier);
     }
 
-    InternalSyntaxToken importToken = InternalSyntaxToken.create(importTokenAstNode);
-    InternalSyntaxToken staticToken = null;
-    if (staticTokenAstNode.isPresent()) {
-      staticToken = (InternalSyntaxToken) staticTokenAstNode.get();
-    }
-    InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolonTokenAstNode);
-    return new ImportTreeImpl(importToken, staticToken, target, semiColonToken);
+    InternalSyntaxToken staticToken = (InternalSyntaxToken) staticTokenAstNode.orNull();
+    return new ImportTreeImpl((InternalSyntaxToken) importTokenAstNode, staticToken, target, semicolonToken);
   }
 
   public ClassTreeImpl newTypeDeclaration(ModifiersTreeImpl modifiers, ClassTreeImpl partial) {
@@ -268,10 +263,7 @@ public class TreeFactory {
     return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), children, closeBracketToken);
   }
 
-  public TypeArgumentListTreeImpl newDiamondTypeArgument(AstNode openBracketTokenAstNode, AstNode closeBracketTokenAstNode) {
-    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
-    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
-
+  public TypeArgumentListTreeImpl newDiamondTypeArgument(InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
     return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), ImmutableList.<AstNode>of(), closeBracketToken);
   }
 
@@ -287,19 +279,17 @@ public class TreeFactory {
     return type;
   }
 
-  public WildcardTreeImpl completeWildcardTypeArgument(AstNode queryTokenAstNode, Optional<WildcardTreeImpl> partial) {
-    InternalSyntaxToken queryToken = InternalSyntaxToken.create(queryTokenAstNode);
-
+  public WildcardTreeImpl completeWildcardTypeArgument(InternalSyntaxToken queryToken, Optional<WildcardTreeImpl> partial) {
     return partial.isPresent() ?
       partial.get().complete(queryToken) :
       new WildcardTreeImpl(Kind.UNBOUNDED_WILDCARD, queryToken);
   }
 
-  public WildcardTreeImpl newWildcardTypeArguments(AstNode extendsOrSuperTokenAstNode, Optional<List<AnnotationTreeImpl>> annotations, TypeTree type) {
-    InternalSyntaxToken extendsOrSuperToken = InternalSyntaxToken.create(extendsOrSuperTokenAstNode);
+  public WildcardTreeImpl newWildcardTypeArguments(JavaTree extendsOrSuperToken, Optional<List<AnnotationTreeImpl>> annotations, TypeTree type) {
+    InternalSyntaxToken extendsOrSuperKeyword = (InternalSyntaxToken) extendsOrSuperToken;
     return new WildcardTreeImpl(
-      JavaKeyword.EXTENDS.getValue().equals(extendsOrSuperToken.text()) ? Kind.EXTENDS_WILDCARD : Kind.SUPER_WILDCARD,
-      extendsOrSuperToken,
+      JavaKeyword.EXTENDS.getValue().equals(extendsOrSuperKeyword.text()) ? Kind.EXTENDS_WILDCARD : Kind.SUPER_WILDCARD,
+      extendsOrSuperKeyword,
       annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(),
       type);
   }
@@ -338,8 +328,8 @@ public class TreeFactory {
       new TypeParameterTreeImpl(identifier);
   }
 
-  public TypeParameterTreeImpl newTypeParameter(AstNode extendsTokenAstNode, BoundListTreeImpl bounds) {
-    return new TypeParameterTreeImpl(InternalSyntaxToken.create(extendsTokenAstNode), bounds);
+  public TypeParameterTreeImpl newTypeParameter(JavaTree extendsToken, BoundListTreeImpl bounds) {
+    return new TypeParameterTreeImpl((InternalSyntaxToken) extendsToken, bounds);
   }
 
   public BoundListTreeImpl newBounds(TypeTree classType, Optional<List<AstNode>> rests) {
@@ -1027,29 +1017,25 @@ public class TreeFactory {
   }
 
   public ForStatementTreeImpl newStandardForStatement(
-    AstNode forTokenAstNode,
-    AstNode openParenTokenAstNode,
-    Optional<StatementExpressionListTreeImpl> forInit, AstNode forInitSemicolonTokenAstNode,
-    Optional<ExpressionTree> expression, AstNode expressionSemicolonTokenAstNode,
-    Optional<StatementExpressionListTreeImpl> forUpdate, AstNode closeParenTokenAstNode,
+    JavaTree forTokenAstNode,
+    InternalSyntaxToken openParenToken,
+    Optional<StatementExpressionListTreeImpl> forInit, InternalSyntaxToken forInitSemicolonToken,
+    Optional<ExpressionTree> expression, InternalSyntaxToken expressionSemicolonToken,
+    Optional<StatementExpressionListTreeImpl> forUpdate, InternalSyntaxToken closeParenToken,
     StatementTree statement) {
 
     StatementExpressionListTreeImpl forInit2 = forInit.isPresent() ? forInit.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
     StatementExpressionListTreeImpl forUpdate2 = forUpdate.isPresent() ? forUpdate.get() : new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of());
 
-    InternalSyntaxToken forKeyword = InternalSyntaxToken.create(forTokenAstNode);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
-    InternalSyntaxToken firstSemicolonToken = InternalSyntaxToken.create(forInitSemicolonTokenAstNode);
-    InternalSyntaxToken secondSemicolonToken = InternalSyntaxToken.create(expressionSemicolonTokenAstNode);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-    
+    InternalSyntaxToken forKeyword = (InternalSyntaxToken) forTokenAstNode;
+
     ForStatementTreeImpl result = new ForStatementTreeImpl(
       forKeyword,
       openParenToken,
       forInit2,
-      firstSemicolonToken,
+      forInitSemicolonToken,
       expression.isPresent() ? expression.get() : null,
-      secondSemicolonToken,
+      expressionSemicolonToken,
       forUpdate2,
       closeParenToken,
       statement);
@@ -1058,11 +1044,11 @@ public class TreeFactory {
     children.add(forKeyword);
     children.add(openParenToken);
     children.add(forInit2);
-    children.add(firstSemicolonToken);
+    children.add(forInitSemicolonToken);
     if (expression.isPresent()) {
       children.add((AstNode) expression.get());
     }
-    children.add(secondSemicolonToken);
+    children.add(expressionSemicolonToken);
     children.add(forUpdate2);
     children.add(closeParenToken);
     children.add((AstNode) statement);
@@ -1128,10 +1114,8 @@ public class TreeFactory {
     return new DoWhileStatementTreeImpl(doKeyword, statement, whileKeyword, openParen, expression, closeParen, semicolon);
   }
 
-  public TryStatementTreeImpl completeStandardTryStatement(AstNode tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {
-    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
-
-    return partial.completeStandardTry(tryToken, block);
+  public TryStatementTreeImpl completeStandardTryStatement(JavaTree tryTokenAstNode, BlockTreeImpl block, TryStatementTreeImpl partial) {
+    return partial.completeStandardTry((InternalSyntaxToken) tryTokenAstNode, block);
   }
 
   public TryStatementTreeImpl newTryCatch(Optional<List<CatchTreeImpl>> catches, Optional<TryStatementTreeImpl> finallyBlock) {
@@ -1143,12 +1127,9 @@ public class TreeFactory {
     }
   }
 
-  public CatchTreeImpl newCatchClause(AstNode catchTokenAstNode, AstNode openParenTokenAstNode, VariableTreeImpl parameter, AstNode closeParenTokenAstNode, BlockTreeImpl block) {
-    InternalSyntaxToken catchToken = InternalSyntaxToken.create(catchTokenAstNode);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-
-    return new CatchTreeImpl(catchToken, openParenToken, parameter, closeParenToken, block);
+  public CatchTreeImpl newCatchClause(JavaTree catchToken, InternalSyntaxToken openParenToken, VariableTreeImpl parameter, InternalSyntaxToken closeParenToken, BlockTreeImpl block) {
+    InternalSyntaxToken catchKeyword = (InternalSyntaxToken) catchToken;
+    return new CatchTreeImpl(catchKeyword, openParenToken, parameter, closeParenToken, block);
   }
 
   public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, TypeTree type, VariableTreeImpl parameter) {
@@ -1186,24 +1167,21 @@ public class TreeFactory {
     return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), children));
   }
 
-  public TryStatementTreeImpl newFinallyBlock(AstNode finallyTokenAstNode, BlockTreeImpl block) {
-    return new TryStatementTreeImpl(InternalSyntaxToken.create(finallyTokenAstNode), block);
+  public TryStatementTreeImpl newFinallyBlock(JavaTree finallyToken, BlockTreeImpl block) {
+    return new TryStatementTreeImpl((InternalSyntaxToken) finallyToken, block);
   }
 
   public TryStatementTreeImpl newTryWithResourcesStatement(
-    AstNode tryTokenAstNode, AstNode openParenTokenAstNode, ResourceListTreeImpl resources, AstNode closeParenTokenAstNode,
+    JavaTree tryToken, InternalSyntaxToken openParenToken, ResourceListTreeImpl resources, InternalSyntaxToken closeParenToken,
     BlockTreeImpl block,
     Optional<List<CatchTreeImpl>> catches, Optional<TryStatementTreeImpl> finallyBlock) {
 
-    InternalSyntaxToken tryToken = InternalSyntaxToken.create(tryTokenAstNode);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-    
+    InternalSyntaxToken tryKeyword = (InternalSyntaxToken) tryToken;
     List<CatchTreeImpl> catchTrees = catches.isPresent() ? catches.get() : ImmutableList.<CatchTreeImpl>of();
     if (finallyBlock.isPresent()) {
-      return finallyBlock.get().completeTryWithResources(tryToken, openParenToken, resources, closeParenToken, block, catchTrees);
+      return finallyBlock.get().completeTryWithResources(tryKeyword, openParenToken, resources, closeParenToken, block, catchTrees);
     } else {
-      return new TryStatementTreeImpl(tryToken, openParenToken, resources, closeParenToken, block, catchTrees);
+      return new TryStatementTreeImpl(tryKeyword, openParenToken, resources, closeParenToken, block, catchTrees);
     }
   }
 
@@ -1233,14 +1211,10 @@ public class TreeFactory {
     return partial.completeTypeAndInitializer(classType, expression);
   }
 
-  public SwitchStatementTreeImpl switchStatement(AstNode switchToken, AstNode openParen, ExpressionTree expression, AstNode closeParen,
-    AstNode leftCurlyBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, AstNode rightCurlyBraceToken) {
+  public SwitchStatementTreeImpl switchStatement(JavaTree switchToken, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken,
+                                                 InternalSyntaxToken openBraceToken, Optional<List<CaseGroupTreeImpl>> optionalGroups, InternalSyntaxToken closeBraceToken) {
 
-    InternalSyntaxToken switchKeyword = InternalSyntaxToken.create(switchToken);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
-    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(leftCurlyBraceToken);
-    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(rightCurlyBraceToken);
+    InternalSyntaxToken switchKeyword = (InternalSyntaxToken) switchToken;
 
     List<CaseGroupTreeImpl> groups = optionalGroups.isPresent() ? optionalGroups.get() : Collections.<CaseGroupTreeImpl>emptyList();
 
@@ -1252,22 +1226,17 @@ public class TreeFactory {
     return new CaseGroupTreeImpl(labels, blockStatements);
   }
 
-  public CaseLabelTreeImpl newCaseSwitchLabel(AstNode caseToken, ExpressionTree expression, AstNode colonToken) {
-    InternalSyntaxToken caseSyntaxToken = InternalSyntaxToken.create(caseToken);
-    InternalSyntaxToken colonSyntaxToken = InternalSyntaxToken.create(colonToken);
-    return new CaseLabelTreeImpl(caseSyntaxToken, expression, colonSyntaxToken);
+  public CaseLabelTreeImpl newCaseSwitchLabel(JavaTree caseSyntaxToken, ExpressionTree expression, InternalSyntaxToken colonSyntaxToken) {
+    return new CaseLabelTreeImpl((InternalSyntaxToken) caseSyntaxToken, expression, colonSyntaxToken);
   }
 
-  public CaseLabelTreeImpl newDefaultSwitchLabel(AstNode defaultToken, AstNode colonToken) {
-    InternalSyntaxToken defaultSyntaxToken = InternalSyntaxToken.create(defaultToken);
-    InternalSyntaxToken colonSyntaxToken = InternalSyntaxToken.create(colonToken);
-    return new CaseLabelTreeImpl(defaultSyntaxToken, null, colonSyntaxToken);
+  public CaseLabelTreeImpl newDefaultSwitchLabel(JavaTree defaultToken, InternalSyntaxToken colonToken) {
+    InternalSyntaxToken defaultSyntaxToken = (InternalSyntaxToken) defaultToken;
+    return new CaseLabelTreeImpl(defaultSyntaxToken, null, colonToken);
   }
 
-  public SynchronizedStatementTreeImpl synchronizedStatement(AstNode synchronizedToken, AstNode openParen, ExpressionTree expression, AstNode closeParen, BlockTreeImpl block) {
-    InternalSyntaxToken synchronizedKeyword = InternalSyntaxToken.create(synchronizedToken);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
+  public SynchronizedStatementTreeImpl synchronizedStatement(JavaTree synchronizedToken, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTreeImpl block) {
+    InternalSyntaxToken synchronizedKeyword = (InternalSyntaxToken) synchronizedToken;
     return new SynchronizedStatementTreeImpl(synchronizedKeyword, openParenToken, expression, closeParenToken, block);
   }
 
@@ -1524,9 +1493,8 @@ public class TreeFactory {
     return newOperatorAndOperand(operator, operand);
   }
 
-  public ExpressionTree newPrefixedExpression(AstNode operatorTokenAstNode, ExpressionTree expression) {
-    InternalSyntaxToken operatorToken = InternalSyntaxToken.create(operatorTokenAstNode);
-    return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorTokenAstNode.getType()), operatorToken, expression);
+  public ExpressionTree newPrefixedExpression(InternalSyntaxToken operatorToken, ExpressionTree expression) {
+    return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorToken.getType()), operatorToken, expression);
   }
 
   public ExpressionTree newPostfixExpression(ExpressionTree expression, Optional<InternalSyntaxToken> postfixOperatorAstNode) {
@@ -1540,14 +1508,12 @@ public class TreeFactory {
     return result;
   }
 
-  public ExpressionTree newTildaExpression(AstNode tildaTokenAstNode, ExpressionTree expression) {
-    InternalSyntaxToken operatorToken = InternalSyntaxToken.create(tildaTokenAstNode);
-    return new InternalPrefixUnaryExpression(Kind.BITWISE_COMPLEMENT, operatorToken, expression);
+  public ExpressionTree newTildaExpression(InternalSyntaxToken tildaToken, ExpressionTree expression) {
+    return new InternalPrefixUnaryExpression(Kind.BITWISE_COMPLEMENT, tildaToken, expression);
   }
 
-  public ExpressionTree newBangExpression(AstNode bangTokenAstNode, ExpressionTree expression) {
-    InternalSyntaxToken operatorToken = InternalSyntaxToken.create(bangTokenAstNode);
-    return new InternalPrefixUnaryExpression(Kind.LOGICAL_COMPLEMENT, operatorToken, expression);
+  public ExpressionTree newBangExpression(InternalSyntaxToken bangToken, ExpressionTree expression) {
+    return new InternalPrefixUnaryExpression(Kind.LOGICAL_COMPLEMENT, bangToken, expression);
   }
 
   public ExpressionTree completeCastExpression(InternalSyntaxToken openParenTokenAstNode, TypeCastExpressionTreeImpl partial) {
@@ -1574,40 +1540,35 @@ public class TreeFactory {
     return new TypeCastExpressionTreeImpl(type, closeParenToken, expression, children);
   }
 
-  public ExpressionTree completeMethodReference(MethodReferenceTreeImpl partial, Optional<TypeArgumentListTreeImpl> typeArguments, AstNode newOrIdentifierToken) {
+  public ExpressionTree completeMethodReference(MethodReferenceTreeImpl partial, Optional<TypeArgumentListTreeImpl> typeArguments, JavaTree newOrIdentifierToken) {
     TypeArguments typeArgs = null;
     if (typeArguments.isPresent()) {
       typeArgs = typeArguments.get();
     }
-    InternalSyntaxToken newOrIdentifierSyntaxToken = InternalSyntaxToken.create(newOrIdentifierToken);
+    InternalSyntaxToken newOrIdentifierSyntaxToken = (InternalSyntaxToken) newOrIdentifierToken;
     partial.complete(typeArgs, new IdentifierTreeImpl(newOrIdentifierSyntaxToken));
     return partial;
   }
 
-  public MethodReferenceTreeImpl newSuperMethodReference(AstNode superToken, AstNode doubleColonToken) {
-    InternalSyntaxToken superSyntaxToken = InternalSyntaxToken.create(superToken);
-    IdentifierTree superIdentifier = new IdentifierTreeImpl(superSyntaxToken);
-    InternalSyntaxToken doubleColonSyntaxToken = InternalSyntaxToken.create(doubleColonToken);
-    return new MethodReferenceTreeImpl(superIdentifier, doubleColonSyntaxToken);
+  public MethodReferenceTreeImpl newSuperMethodReference(JavaTree superToken, InternalSyntaxToken doubleColonToken) {
+    IdentifierTree superIdentifier = new IdentifierTreeImpl((InternalSyntaxToken) superToken);
+    return new MethodReferenceTreeImpl(superIdentifier, doubleColonToken);
   }
 
-  public MethodReferenceTreeImpl newTypeMethodReference(Tree type, AstNode doubleColonToken) {
-    InternalSyntaxToken doubleColonSyntaxToken = InternalSyntaxToken.create(doubleColonToken);
-    return new MethodReferenceTreeImpl(type, doubleColonSyntaxToken);
+  public MethodReferenceTreeImpl newTypeMethodReference(Tree type, InternalSyntaxToken doubleColonToken) {
+    return new MethodReferenceTreeImpl(type, doubleColonToken);
   }
 
-  public MethodReferenceTreeImpl newPrimaryMethodReference(ExpressionTree expression, AstNode doubleColonToken) {
-    InternalSyntaxToken doubleColonSyntaxToken = InternalSyntaxToken.create(doubleColonToken);
-    return new MethodReferenceTreeImpl(expression, doubleColonSyntaxToken);
+  public MethodReferenceTreeImpl newPrimaryMethodReference(ExpressionTree expression, InternalSyntaxToken doubleColonToken) {
+    return new MethodReferenceTreeImpl(expression, doubleColonToken);
   }
 
-  public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, AstNode arrowToken, Tree body) {
-    InternalSyntaxToken arrowSyntaxToken = InternalSyntaxToken.create(arrowToken);
+  public ExpressionTree lambdaExpression(LambdaParameterListTreeImpl parameters, JavaTree arrowToken, Tree body) {
     return new LambdaExpressionTreeImpl(
       parameters.openParenToken(),
       ImmutableList.<VariableTree>builder().addAll(parameters).build(),
       parameters.closeParenToken(),
-      arrowSyntaxToken,
+      (InternalSyntaxToken) arrowToken,
       body);
   }
 
@@ -1658,14 +1619,12 @@ public class TreeFactory {
     return new LambdaParameterListTreeImpl(null, ImmutableList.of(parameter), null, ImmutableList.<AstNode>of(parameter));
   }
 
-  public VariableTreeImpl newSimpleParameter(AstNode identifierAstNode) {
-    IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
+  public VariableTreeImpl newSimpleParameter(JavaTree identifierToken) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl((InternalSyntaxToken) identifierToken);
     return new VariableTreeImpl(identifier);
   }
 
-  public ParenthesizedTreeImpl parenthesizedExpression(AstNode leftParenthesisToken, ExpressionTree expression, AstNode rightParenthesisToken) {
-    InternalSyntaxToken leftParenSyntaxToken = InternalSyntaxToken.create(leftParenthesisToken);
-    InternalSyntaxToken rightParenSyntaxToken = InternalSyntaxToken.create(rightParenthesisToken);
+  public ParenthesizedTreeImpl parenthesizedExpression(InternalSyntaxToken leftParenSyntaxToken, ExpressionTree expression, InternalSyntaxToken rightParenSyntaxToken) {
     return new ParenthesizedTreeImpl(leftParenSyntaxToken, expression, rightParenSyntaxToken);
   }
 
