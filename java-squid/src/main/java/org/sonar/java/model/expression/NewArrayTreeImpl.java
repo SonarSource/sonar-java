@@ -20,7 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -29,15 +29,23 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
+  @Nullable
   private Tree type;
+  @Nullable
   private SyntaxToken newKeyword;
   private final List<ExpressionTree> dimensions;
+  @Nullable
+  private SyntaxToken openCurlyBraceToken;
   private final List<ExpressionTree> initializers;
+  @Nullable
+  private SyntaxToken closeCurlyBraceToken;
 
   public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers, List<AstNode> children) {
     super(Kind.NEW_ARRAY);
@@ -63,6 +71,12 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
   public NewArrayTreeImpl completeWithNewKeyword(SyntaxToken newKeyword) {
     this.newKeyword = newKeyword;
+    return this;
+  }
+
+  public NewArrayTreeImpl completeWithCurlyBraces(SyntaxToken openCurlyBraceToken, SyntaxToken closeCurlyBraceToken) {
+    this.openCurlyBraceToken = openCurlyBraceToken;
+    this.closeCurlyBraceToken = closeCurlyBraceToken;
     return this;
   }
 
@@ -93,11 +107,15 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.singletonIterator(type),
-      dimensions.iterator(),
-      initializers.iterator()
-      );
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
+    addIfNotNull(iteratorBuilder, newKeyword);
+    addIfNotNull(iteratorBuilder, type);
+    // TODO SONARJAVA-547 Brackets of dimensions are missing
+    iteratorBuilder.addAll(dimensions);
+    addIfNotNull(iteratorBuilder, openCurlyBraceToken);
+    iteratorBuilder.addAll(initializers);
+    addIfNotNull(iteratorBuilder, closeCurlyBraceToken);
+    return iteratorBuilder.build().iterator();
   }
 
   @Override
@@ -105,4 +123,10 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     return newKeyword;
   }
 
+  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, Tree tree) {
+    if (tree != null) {
+      builder.add(tree);
+    }
+    return builder;
+  }
 }

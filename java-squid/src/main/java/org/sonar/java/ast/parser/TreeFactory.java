@@ -886,7 +886,7 @@ public class TreeFactory {
     }
     elementValues.addChild(closeBraceToken);
 
-    return elementValues;
+    return elementValues.completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public NewArrayTreeImpl newElementValueArrayInitializer(ExpressionTree elementValue, Optional<List<AstNode>> rests) {
@@ -1841,6 +1841,7 @@ public class TreeFactory {
     }
 
     List<AstNode> children = Lists.newArrayList();
+    // TODO SONARJAVA-547 brackets should be stored
     children.add(openBracketToken);
     children.add((AstNode) expression);
     children.add(closeBracketToken);
@@ -2013,7 +2014,10 @@ public class TreeFactory {
     ImmutableList.Builder<ExpressionTree> initializers = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
-    children.add(openBraceTokenAstNode);
+    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
+    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
+
+    children.add(openBraceToken);
     if (rests.isPresent()) {
       for (AstNode rest : rests.get()) {
         initializers.add((ExpressionTree) rest.getFirstChild());
@@ -2024,9 +2028,9 @@ public class TreeFactory {
         }
       }
     }
-    children.add(closeBraceTokenAstNode);
+    children.add(closeBraceToken);
 
-    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children);
+    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children).completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<AstNode, TypeTree>>> rests) {

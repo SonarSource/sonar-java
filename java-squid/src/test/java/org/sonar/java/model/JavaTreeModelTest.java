@@ -1494,21 +1494,27 @@ public class JavaTreeModelTest {
    */
   @Test
   public void array_creation_expression() {
-    NewArrayTree tree = (NewArrayTree) p.parse("class T { int[][] m() { return new int[][]{{1}, {2, 3}}; } }").getFirstDescendant(Kind.NEW_ARRAY);
+    NewArrayTree tree = (NewArrayTree) expressionOfReturnStatement("class T { int[][] m() { return new int[][]{{1}, {2, 3}}; } }");
     assertThat(tree.is(Tree.Kind.NEW_ARRAY)).isTrue();
     assertThat(tree.type()).isNotNull();
     assertThat(tree.dimensions()).isEmpty();
     assertThat(tree.initializers()).hasSize(2);
     assertThat(tree.newKeyword()).isNotNull();
-    assertThat(((NewArrayTree) tree.initializers().get(0)).initializers()).hasSize(1);
-    assertThat(((NewArrayTree) tree.initializers().get(1)).initializers()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 6);
+    NewArrayTree firstDim = (NewArrayTree) tree.initializers().get(0);
+    assertThat(firstDim.initializers()).hasSize(1);
+    assertThatChildrenIteratorHasSize(firstDim, 3);
+    NewArrayTree secondDim = (NewArrayTree) tree.initializers().get(1);
+    assertThat(secondDim.initializers()).hasSize(2);
+    assertThatChildrenIteratorHasSize(secondDim, 4);
 
-    tree = (NewArrayTree) p.parse("class T { int[] m() { return new int[2][2]; } }").getFirstDescendant(Kind.NEW_ARRAY);
+    tree = (NewArrayTree) expressionOfReturnStatement("class T { int[] m() { return new int[2][2]; } }");
     assertThat(tree.is(Tree.Kind.NEW_ARRAY)).isTrue();
     assertThat(tree.type()).isNotNull();
     assertThat(tree.dimensions()).hasSize(2);
     assertThat(tree.initializers()).isEmpty();
     assertThat(tree.newKeyword()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 4);
   }
 
   /**
