@@ -78,8 +78,8 @@ public class MethodReferenceTreeImpl extends AbstractTypedTree implements Method
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-        Iterators.singletonIterator(expression),
-        Iterators.singletonIterator(method));
+      typeArgument != null ? Iterators.<Tree>singletonIterator(typeArgument) : Iterators.<Tree>emptyIterator(),
+      Iterators.forArray(expression, doubleColon, method));
   }
 
   @Override

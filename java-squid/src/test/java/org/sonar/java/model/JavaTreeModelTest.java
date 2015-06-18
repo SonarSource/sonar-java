@@ -2208,30 +2208,35 @@ public class JavaTreeModelTest {
 
   @Test
   public void method_reference_expression_should_not_break_AST() throws Exception {
-    List<AstNode> methodReferences = p.parse(
-        "class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::<String>square).map(super::myMethod).map(int[]::new).forEach(System.out::println);}}")
-        .getDescendants(JavaLexer.METHOD_REFERENCE);
-    assertThat(methodReferences).hasSize(4);
-    MethodReferenceTree mrt = (MethodReferenceTree) methodReferences.get(0);
+    String code = "class T { public void meth(){IntStream.range(1,12).map(new MethodReferences()::<String>square).map(super::myMethod).map(int[]::new).forEach(System.out::println);}}";
+    MethodInvocationTree mit = (MethodInvocationTree) ((ExpressionStatementTree) firstMethodFirstStatement(code)).expression();
+
+    MethodReferenceTree mrt = (MethodReferenceTree) mit.arguments().get(0);
+    assertThat(mrt.expression().is(Kind.MEMBER_SELECT)).isTrue();
+    assertThat(mrt.doubleColon()).isNotNull();
+    assertThatChildrenIteratorHasSize(mrt, 3);
+
+    mit = (MethodInvocationTree) ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+    mrt = (MethodReferenceTree) mit.arguments().get(0);
+    assertThat(mrt.expression().is(Kind.ARRAY_TYPE)).isTrue();
+    assertThat(mrt.doubleColon()).isNotNull();
+    assertThat(mrt.method().name()).isEqualTo("new");
+    assertThatChildrenIteratorHasSize(mrt, 3);
+
+    mit = (MethodInvocationTree) ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+    mrt = (MethodReferenceTree) mit.arguments().get(0);
+    assertThat(mrt.expression().is(Kind.IDENTIFIER)).isTrue();
+    assertThat(((IdentifierTree) mrt.expression()).name()).isEqualTo("super");
+    assertThat(mrt.doubleColon()).isNotNull();
+    assertThatChildrenIteratorHasSize(mrt, 3);
+
+    mit = (MethodInvocationTree) ((MemberSelectExpressionTree) mit.methodSelect()).expression();
+    mrt = (MethodReferenceTree) mit.arguments().get(0);
     assertThat(mrt.expression().is(Kind.NEW_CLASS)).isTrue();
     assertThat(mrt.doubleColon()).isNotNull();
     assertThat(mrt.typeArguments()).isNotNull();
     assertThat(mrt.method().name()).isEqualTo("square");
-
-    mrt = (MethodReferenceTree) methodReferences.get(1);
-    assertThat(mrt.expression().is(Kind.IDENTIFIER)).isTrue();
-    assertThat(((IdentifierTree) mrt.expression()).name()).isEqualTo("super");
-    assertThat(mrt.doubleColon()).isNotNull();
-
-    mrt = (MethodReferenceTree) methodReferences.get(2);
-    assertThat(mrt.expression().is(Kind.ARRAY_TYPE)).isTrue();
-    assertThat(mrt.doubleColon()).isNotNull();
-    assertThat(mrt.method().name()).isEqualTo("new");
-
-    mrt = (MethodReferenceTree) methodReferences.get(3);
-    assertThat(mrt.expression().is(Kind.MEMBER_SELECT)).isTrue();
-    assertThat(mrt.doubleColon()).isNotNull();
-
+    assertThatChildrenIteratorHasSize(mrt, 4);
   }
 
   @Test
