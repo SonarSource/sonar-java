@@ -43,19 +43,19 @@ public class LastSyntaxTokenFinderTest {
   public void compilationUnit() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test {}");
     SyntaxToken lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo("}");
+    assertThat(lastToken).isNotNull();
 
     compilationUnit = getCompilationUnit("package myPackage; import A;");
     lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo(";");
+    assertThat(lastToken).isNotNull();
 
     compilationUnit = getCompilationUnit("package myPackage;");
     lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo(";");
+    assertThat(lastToken).isNotNull();
 
     compilationUnit = getCompilationUnit("");
     lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken).isNull();
+    assertThat(lastToken).isNotNull();
   }
 
   @Test

@@ -42,4 +42,6 @@ public interface CompilationUnitTree extends Tree {
 
   List<Tree> types();
 
+  SyntaxToken eofToken();
+
 }

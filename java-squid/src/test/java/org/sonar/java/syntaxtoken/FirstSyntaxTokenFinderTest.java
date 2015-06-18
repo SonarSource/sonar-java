@@ -58,7 +58,7 @@ public class FirstSyntaxTokenFinderTest {
 
     compilationUnit = getCompilationUnit("");
     firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken).isNull();
+    assertThat(firstToken).isNotNull();
   }
 
   @Test
