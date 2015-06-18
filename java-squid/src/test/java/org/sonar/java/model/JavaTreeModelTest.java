@@ -2281,18 +2281,22 @@ public class JavaTreeModelTest {
     TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) firstType("class Foo<T, U extends Object & Number> {}").typeParameters();
     assertThat(tree.openBracketToken().text()).isEqualTo("<");
     assertThat(tree.closeBracketToken().text()).isEqualTo(">");
-
+    // TODO SONARJAVA-547 comma is missing
+    assertThatChildrenIteratorHasSize(tree, 4);
     assertThat(tree).hasSize(2);
 
     TypeParameterTree param = tree.get(0);
     assertThat(param.identifier().name()).isEqualTo("T");
     assertThat(param.bounds()).isEmpty();
+    assertThatChildrenIteratorHasSize(param, 1);
 
     param = tree.get(1);
     assertThat(param.identifier().name()).isEqualTo("U");
     assertThat(param.bounds()).hasSize(2);
     assertThat(((IdentifierTree) param.bounds().get(0)).name()).isEqualTo("Object");
     assertThat(((IdentifierTree) param.bounds().get(1)).name()).isEqualTo("Number");
+    // TODO SONARJAVA-547 ampersand is missing in bounds
+    assertThatChildrenIteratorHasSize(param, 4);
   }
 
   private ExpressionTree expressionOfReturnStatement(String code) {
