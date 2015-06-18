@@ -58,6 +58,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -336,9 +337,8 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageName() != null) {
-      // TODO(SONARJAVA-547) Should be the package token
-      scan(tree.packageName());
+    if (tree.packageDeclaration() != null) {
+      scan(tree.packageDeclaration());
     } else if (!tree.imports().isEmpty()) {
       scan(tree.imports().get(0));
     } else if (!tree.types().isEmpty()) {
@@ -435,5 +435,14 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitOther(Tree tree) {
     // firstSyntaxToken will be null
+  }
+
+  @Override
+  public void visitPackage(PackageDeclarationTree tree) {
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations().get(0));
+    } else {
+      firstSyntaxToken = tree.packageKeyword();
+    }
   }
 }

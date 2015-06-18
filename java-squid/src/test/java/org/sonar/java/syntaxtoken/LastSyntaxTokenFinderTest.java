@@ -51,7 +51,7 @@ public class LastSyntaxTokenFinderTest {
 
     compilationUnit = getCompilationUnit("package myPackage;");
     lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo("myPackage");
+    assertThat(lastToken.text()).isEqualTo(";");
 
     compilationUnit = getCompilationUnit("");
     lastToken = getLastSyntaxToken(compilationUnit);

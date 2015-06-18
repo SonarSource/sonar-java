@@ -21,25 +21,29 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import javax.annotation.Nullable;
-
 import java.util.List;
 
 /**
- * Compilation unit.
+ * Package declaration.
  *
- * JLS 7.3 and 7.4
+ * JLS 7.4.1
  *
- * @since Java 1.3
+ * <pre>
+ *   {@link #annotations()} package {@link #packageName()} ;
+ * </pre>
  */
 @Beta
-public interface CompilationUnitTree extends Tree {
+public interface PackageDeclarationTree extends Tree {
 
-  @Nullable
-  PackageDeclarationTree packageDeclaration();
+  /**
+   * @since Java 1.5
+   */
+  List<AnnotationTree> annotations();
 
-  List<ImportClauseTree> imports();
+  SyntaxToken packageKeyword();
 
-  List<Tree> types();
+  ExpressionTree packageName();
+
+  SyntaxToken semicolonToken();
 
 }

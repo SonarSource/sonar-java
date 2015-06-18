@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -96,8 +97,9 @@ public class FirstPass extends BaseTreeVisitor {
   public void visitCompilationUnit(CompilationUnitTree tree) {
     JavaSymbol.PackageJavaSymbol compilationUnitPackage = symbols.defaultPackage;
 
-    ExpressionTree packageName = tree.packageName();
-    if (packageName != null) {
+    PackageDeclarationTree packageDeclaration = tree.packageDeclaration();
+    if (packageDeclaration != null) {
+      ExpressionTree packageName = packageDeclaration.packageName();
       PackageResolverVisitor packageResolver = new PackageResolverVisitor();
       packageName.accept(packageResolver);
       compilationUnitPackage = (JavaSymbol.PackageJavaSymbol) resolve.findIdentInPackage(compilationUnitPackage, packageResolver.packageName, JavaSymbol.PCK);

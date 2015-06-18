@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
@@ -84,7 +85,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaTree.CompilationUnitTreeImpl tree = (JavaTree.CompilationUnitTreeImpl) context.getTree();
-    currentPackage = tree.packageNameAsString().replace('.', '/');
+    currentPackage = PackageDeclarationTreeImpl.packageNameAsString(tree.packageDeclaration()).replace('.', '/');
     currentFile = context.getFile();
     currentClassKey.clear();
     parent.clear();

@@ -232,19 +232,19 @@ public class JavaTreeModelTest {
   public void compilation_unit() {
     CompilationUnitTree tree = (CompilationUnitTree) p.parse("import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
-    assertThat(tree.packageName()).isNull();
+    assertThat(tree.packageDeclaration()).isNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
 
     tree = (CompilationUnitTree) p.parse("package pkg; import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
-    assertThat(tree.packageName()).isNotNull();
+    assertThat(tree.packageDeclaration()).isNotNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
 
     tree = (CompilationUnitTree) p.parse("import foo; ; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
-    assertThat(tree.packageName()).isNull();
+    assertThat(tree.packageDeclaration()).isNull();
     assertThat(tree.imports()).hasSize(3);
     assertThat(tree.imports().get(1).is(Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.types()).hasSize(2);
@@ -450,7 +450,7 @@ public class JavaTreeModelTest {
     assertThat(annotation.closeParenToken()).isNull();
     assertThatChildrenIteratorHasSize(annotation, 2);
 
-    annotations = ((CompilationUnitTree) p.parse("@PackageLevelAnnotation package blammy;")).packageAnnotations();
+    annotations = ((CompilationUnitTree) p.parse("@PackageLevelAnnotation package blammy;")).packageDeclaration().annotations();
     assertThat(annotations).hasSize(1);
     assertThat(annotations.get(0).atToken()).isNotNull();
     assertThat(annotation.openParenToken()).isNull();

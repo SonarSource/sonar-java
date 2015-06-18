@@ -71,8 +71,8 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageName() != null) {
-      String name = concatenate(tree.packageName());
+    if (tree.packageDeclaration() != null) {
+      String name = concatenate(tree.packageDeclaration().packageName());
       if (!pattern.matcher(name).matches()) {
         context.addIssue(tree, this, "Rename this package name to match the regular expression '" + format + "'.");
       }

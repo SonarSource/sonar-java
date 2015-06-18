@@ -59,6 +59,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -263,9 +264,8 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
       scan(Iterables.getLast(tree.types()));
     } else if (!tree.imports().isEmpty()) {
       scan(Iterables.getLast(tree.imports()));
-    } else {
-      // TODO(SONARJAVA-547) Should be the semi-colon token
-      scan(tree.packageName());
+    } else if (tree.packageDeclaration() != null) {
+      scan(tree.packageDeclaration());
     }
     // with empty files lastSyntaxToken will be null
   }
@@ -447,5 +447,10 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitOther(Tree tree) {
     // lastSyntaxToken will be null
+  }
+
+  @Override
+  public void visitPackage(PackageDeclarationTree tree) {
+    lastSyntaxToken = tree.semicolonToken();
   }
 }

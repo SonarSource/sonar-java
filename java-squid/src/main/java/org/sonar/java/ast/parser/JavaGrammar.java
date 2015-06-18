@@ -66,6 +66,7 @@ import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -144,8 +145,8 @@ public class JavaGrammar {
           b.invokeRule(JavaLexer.EOF)));
   }
 
-  public ExpressionTree PACKAGE_DECLARATION() {
-    return b.<ExpressionTree>nonterminal(JavaLexer.PACKAGE_DECLARATION)
+  public PackageDeclarationTree PACKAGE_DECLARATION() {
+    return b.<PackageDeclarationTree>nonterminal(JavaLexer.PACKAGE_DECLARATION)
       .is(f.newPackageDeclaration(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaKeyword.PACKAGE), EXPRESSION_QUALIFIED_IDENTIFIER(), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
