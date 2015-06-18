@@ -20,6 +20,9 @@
 package org.sonar.java.parser.sslr;
 
 import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
@@ -38,7 +41,8 @@ public interface GrammarBuilder {
 
   <T> Optional<List<T>> zeroOrMore(T method);
 
-  AstNode invokeRule(GrammarRuleKey ruleKey);
+  JavaTree invokeRule(GrammarRuleKey ruleKey);
+  InternalSyntaxToken invokeRule(JavaPunctuator ruleKey);
 
   AstNode token(String value);
 

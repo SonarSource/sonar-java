@@ -66,7 +66,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private List<TypeTree> superInterfaces;
   private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
 
-  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken, List<AstNode> children) {
+  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken, List<? extends AstNode> children) {
     super(kind);
 
     this.kind = kind;
