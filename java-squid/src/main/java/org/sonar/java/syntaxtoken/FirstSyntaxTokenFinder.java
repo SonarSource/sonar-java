@@ -93,7 +93,6 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
    * @param tree the tree to visit to get the first syntax token
    * @return the first syntax token of the tree, or null if the provided tree is:
    * <ul>
-   *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
    *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
    *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
    * </ul>
@@ -343,8 +342,9 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
       scan(tree.imports().get(0));
     } else if (!tree.types().isEmpty()) {
       scan(tree.types().get(0));
+    } else {
+      firstSyntaxToken = tree.eofToken();
     }
-    // with empty files firstSyntaxToken will be null
   }
 
   @Override

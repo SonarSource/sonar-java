@@ -169,12 +169,14 @@ public class TreeFactory {
       }
     }
 
-    children.add(eof);
+    InternalSyntaxToken eofToken = InternalSyntaxToken.create(eof);
+    children.add(eofToken);
 
     return new CompilationUnitTreeImpl(
       packageDeclaration.orNull(),
       imports.build(),
       types.build(),
+      eofToken,
       children);
   }
 

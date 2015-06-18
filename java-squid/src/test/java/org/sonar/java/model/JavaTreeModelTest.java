@@ -67,6 +67,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -102,7 +103,7 @@ public class JavaTreeModelTest {
   @Test
   public void line_of_tree() throws Exception {
     CompilationUnitTree empty = compilationUnit("");
-    assertThat(((JavaTree) empty).getLine()).isEqualTo(-1);
+    assertThat(((JavaTree) empty).getLine()).isEqualTo(1);
     ClassTree classTree = firstType("class A {}");
     assertThat(((JavaTree) classTree).getLine()).isEqualTo(1);
     assertThat(((JavaTree) classTree.modifiers()).getLine()).isEqualTo(-1);
@@ -230,24 +231,48 @@ public class JavaTreeModelTest {
 
   @Test
   public void compilation_unit() {
-    CompilationUnitTree tree = (CompilationUnitTree) p.parse("import foo; import bar; class Foo {} class Bar {}");
+    CompilationUnitTree tree = compilationUnit("import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
     assertThat(tree.packageDeclaration()).isNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 5);
 
-    tree = (CompilationUnitTree) p.parse("package pkg; import foo; import bar; class Foo {} class Bar {}");
+    tree = compilationUnit("package pkg; import foo; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
     assertThat(tree.packageDeclaration()).isNotNull();
     assertThat(tree.imports()).hasSize(2);
     assertThat(tree.types()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 6);
 
-    tree = (CompilationUnitTree) p.parse("import foo; ; import bar; class Foo {} class Bar {}");
+    tree = compilationUnit("import foo; ; import bar; class Foo {} class Bar {}");
     assertThat(tree.is(Tree.Kind.COMPILATION_UNIT)).isTrue();
     assertThat(tree.packageDeclaration()).isNull();
     assertThat(tree.imports()).hasSize(3);
     assertThat(tree.imports().get(1).is(Kind.EMPTY_STATEMENT)).isTrue();
     assertThat(tree.types()).hasSize(2);
+    assertThatChildrenIteratorHasSize(tree, 6);
+  }
+
+  @Test
+  public void package_declaration() {
+    PackageDeclarationTree tree = compilationUnit("package myPackage;").packageDeclaration();
+    assertThat(tree.is(Tree.Kind.PACKAGE)).isTrue();
+    assertThat(tree.annotations()).isEmpty();
+    assertThat(tree.packageKeyword().text()).isEqualTo("package");
+    assertThat(tree.packageName()).isNotNull();
+    assertThat(tree.packageName().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
+
+    tree = compilationUnit("@Foo @Bar package org.myPackage;").packageDeclaration();
+    assertThat(tree.is(Tree.Kind.PACKAGE)).isTrue();
+    assertThat(tree.annotations()).hasSize(2);
+    assertThat(tree.packageKeyword().text()).isEqualTo("package");
+    assertThat(tree.packageName()).isNotNull();
+    assertThat(tree.packageName().is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(tree.semicolonToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   @Test
@@ -450,7 +475,7 @@ public class JavaTreeModelTest {
     assertThat(annotation.closeParenToken()).isNull();
     assertThatChildrenIteratorHasSize(annotation, 2);
 
-    annotations = ((CompilationUnitTree) p.parse("@PackageLevelAnnotation package blammy;")).packageDeclaration().annotations();
+    annotations = compilationUnit("@PackageLevelAnnotation package blammy;").packageDeclaration().annotations();
     assertThat(annotations).hasSize(1);
     assertThat(annotations.get(0).atToken()).isNotNull();
     assertThat(annotation.openParenToken()).isNull();

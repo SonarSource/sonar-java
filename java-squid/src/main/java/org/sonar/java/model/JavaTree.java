@@ -168,13 +168,15 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final PackageDeclarationTree packageDeclaration;
     private final List<ImportClauseTree> imports;
     private final List<Tree> types;
+    private final SyntaxToken eofToken;
 
     public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports,
-      List<Tree> types, List<AstNode> children) {
+      List<Tree> types, SyntaxToken eofToken, List<AstNode> children) {
       super(Kind.COMPILATION_UNIT);
       this.packageDeclaration = packageDeclaration;
       this.imports = Preconditions.checkNotNull(imports);
       this.types = Preconditions.checkNotNull(types);
+      this.eofToken = eofToken;
 
       for (AstNode child : children) {
         addChild(child);
@@ -209,14 +211,19 @@ public abstract class JavaTree extends AstNode implements Tree {
       return Iterators.concat(
         packageIterator,
         imports.iterator(),
-        types.iterator()
-        );
+        types.iterator(),
+        Iterators.singletonIterator(eofToken));
     }
 
     @Nullable
     @Override
     public PackageDeclarationTree packageDeclaration() {
       return packageDeclaration;
+    }
+
+    @Override
+    public SyntaxToken eofToken() {
+      return eofToken;
     }
 
   }

@@ -95,7 +95,6 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
    * @param tree the tree to visit to get its last syntax token
    * @return the last syntax token of the tree, or null if the provided tree is:
    * <ul>
-   *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
    *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
    *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
    * </ul>
@@ -260,14 +259,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (!tree.types().isEmpty()) {
-      scan(Iterables.getLast(tree.types()));
-    } else if (!tree.imports().isEmpty()) {
-      scan(Iterables.getLast(tree.imports()));
-    } else if (tree.packageDeclaration() != null) {
-      scan(tree.packageDeclaration());
-    }
-    // with empty files lastSyntaxToken will be null
+    lastSyntaxToken = tree.eofToken();
   }
 
   @Override
