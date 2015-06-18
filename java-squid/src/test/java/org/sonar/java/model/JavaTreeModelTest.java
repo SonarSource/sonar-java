@@ -27,7 +27,6 @@ import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -1247,13 +1246,14 @@ public class JavaTreeModelTest {
    */
   @Test
   public void synchronized_statement() {
-    SynchronizedStatementTree tree = (SynchronizedStatementTree) p.parse("class T { void m() { synchronized(e) { } } }").getFirstDescendant(Kind.SYNCHRONIZED_STATEMENT);
+    SynchronizedStatementTree tree = (SynchronizedStatementTree) firstMethodFirstStatement("class T { void m() { synchronized(e) { } } }");
     assertThat(tree.is(Tree.Kind.SYNCHRONIZED_STATEMENT)).isTrue();
     assertThat(tree.synchronizedKeyword().text()).isEqualTo("synchronized");
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.expression()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.block()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   /**
