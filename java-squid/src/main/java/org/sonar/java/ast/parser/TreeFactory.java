@@ -401,14 +401,18 @@ public class TreeFactory {
       partial.completeTypeParameters(typeParameters.get());
     }
     if (extendsClause.isPresent()) {
-      children.add(extendsClause.get().first());
-      children.add((AstNode) extendsClause.get().second());
-      partial.completeSuperclass(extendsClause.get().second());
+      InternalSyntaxToken extendsKeyword = InternalSyntaxToken.create(extendsClause.get().first());
+      TypeTree superClass = extendsClause.get().second();
+      children.add(extendsKeyword);
+      children.add((AstNode) superClass);
+      partial.completeSuperclass(extendsKeyword, superClass);
     }
     if (implementsClause.isPresent()) {
-      children.add(implementsClause.get().first());
-      children.add(implementsClause.get().second());
-      partial.completeInterfaces(implementsClause.get().second());
+      InternalSyntaxToken implementsKeyword = InternalSyntaxToken.create(implementsClause.get().first());
+      QualifiedIdentifierListTreeImpl interfaces = implementsClause.get().second();
+      children.add(implementsKeyword);
+      children.add(interfaces);
+      partial.completeInterfaces(implementsKeyword, interfaces);
     }
 
     partial.prependChildren(children);
@@ -482,10 +486,11 @@ public class TreeFactory {
     children.add(identifier);
 
     if (implementsClause.isPresent()) {
-      children.add(implementsClause.get().first());
-      children.add(implementsClause.get().second());
-
-      result.completeInterfaces(implementsClause.get().second());
+      InternalSyntaxToken implementsKeyword = InternalSyntaxToken.create(implementsClause.get().first());
+      QualifiedIdentifierListTreeImpl interfaces = implementsClause.get().second();
+      children.add(implementsKeyword);
+      children.add(interfaces);
+      result.completeInterfaces(implementsKeyword, interfaces);
     }
 
     result.prependChildren(children);
@@ -560,9 +565,11 @@ public class TreeFactory {
       partial.completeTypeParameters(typeParameters.get());
     }
     if (extendsClause.isPresent()) {
-      children.add(extendsClause.get().first());
-      children.add(extendsClause.get().second());
-      partial.completeInterfaces(extendsClause.get().second());
+      InternalSyntaxToken extendsKeyword = InternalSyntaxToken.create(extendsClause.get().first());
+      QualifiedIdentifierListTreeImpl interfaces = extendsClause.get().second();
+      children.add(extendsKeyword);
+      children.add(interfaces);
+      partial.compleInterfacesForInterface(extendsKeyword, interfaces);
     }
 
     partial.prependChildren(children);
