@@ -630,6 +630,7 @@ public class JavaTreeModelTest {
     assertThat(newClassTree.closeParenToken()).isNull();
     assertThat(newClassTree.classBody()).isNull();
     assertThat(newClassTree.newKeyword()).isNull();
+    assertThatChildrenIteratorHasSize(newClassTree, 1);
 
     tree = (EnumConstantTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
@@ -641,7 +642,7 @@ public class JavaTreeModelTest {
     assertThat(newClassTree.classBody()).isNotNull();
     assertThat(newClassTree.classBody().openBraceToken().text()).isEqualTo("{");
     assertThat(newClassTree.newKeyword()).isNull();
-
+    assertThatChildrenIteratorHasSize(newClassTree, 5);
   }
 
   @Test
@@ -1449,7 +1450,7 @@ public class JavaTreeModelTest {
    */
   @Test
   public void class_instance_creation_expression() {
-    NewClassTree tree = (NewClassTree) p.parse("class T { T m() { return new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
+    NewClassTree tree = (NewClassTree) expressionOfReturnStatement("class T { T m() { return new T(true, false) {}; } }");
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNull();
     assertThat(tree.dotToken()).isNull();
@@ -1459,9 +1460,10 @@ public class JavaTreeModelTest {
     assertThat(tree.identifier()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     assertThat(tree.newKeyword()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 7);
     // assertThat(tree.typeArguments()).isEmpty();
 
-    tree = (NewClassTree) p.parse("class T { T m() { return Enclosing.new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
+    tree = (NewClassTree) expressionOfReturnStatement("class T { T m() { return Enclosing.new T(true, false) {}; } }");
     assertThat(tree.is(Tree.Kind.NEW_CLASS)).isTrue();
     assertThat(tree.enclosingExpression()).isNotNull();
     assertThat(tree.dotToken()).isNotNull();
@@ -1471,9 +1473,10 @@ public class JavaTreeModelTest {
     assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     assertThat(tree.newKeyword()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 9);
     // assertThat(tree.typeArguments()).isEmpty();
 
-    tree = (NewClassTree) p.parse("class T { T m() { return this.new T(true, false) {}; } }").getFirstDescendant(Kind.NEW_CLASS);
+    tree = (NewClassTree) expressionOfReturnStatement("class T { T m() { return this.new T(true, false) {}; } }");
     assertThat(tree.enclosingExpression()).isNotNull();
     assertThat(tree.dotToken()).isNotNull();
     assertThat(tree.identifier()).isNotNull();
@@ -1482,6 +1485,7 @@ public class JavaTreeModelTest {
     assertThat(tree.closeParenToken()).isNotNull();
     assertThat(tree.classBody()).isNotNull();
     assertThat(tree.newKeyword()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 9);
     // assertThat(tree.typeArguments()).isEmpty();
   }
 

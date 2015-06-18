@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -128,14 +127,14 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.forArray(
-        enclosingExpression,
-        identifier
-        ),
-      arguments.iterator(),
-      Iterators.singletonIterator(classBody)
-      );
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
+    addIfNotNull(iteratorBuilder, enclosingExpression, dotToken, newKeyword);
+    iteratorBuilder.add(identifier);
+    addIfNotNull(iteratorBuilder, openParenToken);
+    iteratorBuilder.addAll(arguments);
+    addIfNotNull(iteratorBuilder, closeParenToken, classBody);
+    
+    return iteratorBuilder.build().iterator();
   }
 
   public IdentifierTree getConstructorIdentifier() {
@@ -191,4 +190,12 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return this.getConstructorIdentifier().symbol();
   }
 
+  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, Tree... trees) {
+    for (Tree tree : trees) {
+      if (tree != null) {
+        builder.add(tree);
+      }
+    }
+    return builder;
+  }
 }
