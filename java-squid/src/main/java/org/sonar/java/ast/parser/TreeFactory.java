@@ -246,10 +246,7 @@ public class TreeFactory {
     }
   }
 
-  public TypeArgumentListTreeImpl newTypeArgumentList(AstNode openBracketTokenAstNode, Tree typeArgument, Optional<List<AstNode>> rests, AstNode closeBracketTokenAstNode) {
-    InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(openBracketTokenAstNode);
-    InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(closeBracketTokenAstNode);
-
+  public TypeArgumentListTreeImpl newTypeArgumentList(InternalSyntaxToken openBracketToken, Tree typeArgument, Optional<List<AstNode>> rests, InternalSyntaxToken closeBracketToken) {
     ImmutableList.Builder<Tree> typeArguments = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
@@ -1046,11 +1043,9 @@ public class TreeFactory {
     return new AssertStatementTreeImpl(InternalSyntaxToken.create(colonToken), expression);
   }
 
-  public IfStatementTreeImpl completeIf(AstNode ifToken, AstNode openParen, ExpressionTree condition, AstNode closeParen, StatementTree statement,
+  public IfStatementTreeImpl completeIf(JavaTree ifToken, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken, StatementTree statement,
     Optional<IfStatementTreeImpl> elseClause) {
-    InternalSyntaxToken ifKeyword = InternalSyntaxToken.create(ifToken);
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParen);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParen);
+    InternalSyntaxToken ifKeyword = (InternalSyntaxToken) ifToken;
     if (elseClause.isPresent()) {
       return elseClause.get().complete(ifKeyword, openParenToken, condition, closeParenToken, statement);
     } else {
@@ -1058,9 +1053,8 @@ public class TreeFactory {
     }
   }
 
-  public IfStatementTreeImpl newIfWithElse(AstNode elseToken, StatementTree elseStatement) {
-    InternalSyntaxToken elseKeyword = InternalSyntaxToken.create(elseToken);
-    return new IfStatementTreeImpl(elseKeyword, elseStatement);
+  public IfStatementTreeImpl newIfWithElse(JavaTree elseToken, StatementTree elseStatement) {
+    return new IfStatementTreeImpl((InternalSyntaxToken) elseToken, elseStatement);
   }
 
   public ForStatementTreeImpl newStandardForStatement(
@@ -1344,10 +1338,8 @@ public class TreeFactory {
     return new ReturnStatementTreeImpl(returnKeywordSyntaxToken, expressionTree, semicolonSyntaxToken);
   }
 
-  public ThrowStatementTreeImpl throwStatement(AstNode throwToken, ExpressionTree expression, AstNode semicolonToken) {
-    InternalSyntaxToken throwSyntaxToken = InternalSyntaxToken.create(throwToken);
-    InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
-    return new ThrowStatementTreeImpl(throwSyntaxToken, expression, semicolonSyntaxToken);
+  public ThrowStatementTreeImpl throwStatement(JavaTree throwToken, ExpressionTree expression, InternalSyntaxToken semicolonToken) {
+    return new ThrowStatementTreeImpl((InternalSyntaxToken) throwToken, expression, semicolonToken);
   }
 
   public LabeledStatementTreeImpl labeledStatement(AstNode identifierAstNode, AstNode colon, StatementTree statement) {
@@ -1362,8 +1354,8 @@ public class TreeFactory {
     return new ExpressionStatementTreeImpl(expression, semicolonToken);
   }
 
-  public EmptyStatementTreeImpl emptyStatement(AstNode semicolon) {
-    return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolon));
+  public EmptyStatementTreeImpl emptyStatement(InternalSyntaxToken semicolon) {
+    return new EmptyStatementTreeImpl(semicolon);
   }
 
   public BlockStatementListTreeImpl blockStatements(Optional<List<BlockStatementListTreeImpl>> blockStatements) {
@@ -1608,8 +1600,8 @@ public class TreeFactory {
     return new InternalPrefixUnaryExpression(Kind.LOGICAL_COMPLEMENT, operatorToken, expression);
   }
 
-  public ExpressionTree completeCastExpression(AstNode openParenTokenAstNode, TypeCastExpressionTreeImpl partial) {
-    return partial.complete(InternalSyntaxToken.create(openParenTokenAstNode));
+  public ExpressionTree completeCastExpression(InternalSyntaxToken openParenTokenAstNode, TypeCastExpressionTreeImpl partial) {
+    return partial.complete(openParenTokenAstNode);
   }
 
   public TypeCastExpressionTreeImpl newBasicTypeCastExpression(PrimitiveTypeTreeImpl basicType, AstNode closeParenTokenAstNode, ExpressionTree expression) {
@@ -1617,9 +1609,7 @@ public class TreeFactory {
     return new TypeCastExpressionTreeImpl(basicType, closeParenToken, expression);
   }
 
-  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
-
+  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<AstNode>> classTypes, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     List<AstNode> children = Lists.newArrayList();
     children.add((AstNode) type);
     // TODO SONARJAVA-1139 bound should be present in castTree
@@ -2031,20 +2021,15 @@ public class TreeFactory {
       children.toArray(new AstNode[0]));
   }
 
-  public ExpressionTree newIdentifierOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, AstNode identifierAstNode, Optional<ArgumentListTreeImpl> arguments) {
-    InternalSyntaxToken identifierToken = InternalSyntaxToken.create(identifierAstNode);
-    IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
-
+  public ExpressionTree newIdentifierOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, JavaTree identifierToken, Optional<ArgumentListTreeImpl> arguments) {
+    IdentifierTreeImpl identifier = new IdentifierTreeImpl((InternalSyntaxToken) identifierToken);
     if (typeArguments.isPresent()) {
       identifier.prependChildren(typeArguments.get());
     }
-
     ExpressionTree result = identifier;
-
     if (arguments.isPresent()) {
       result = new MethodInvocationTreeImpl(identifier, typeArguments.orNull(), arguments.get());
     }
-
     return result;
   }
 
