@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -49,8 +50,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    scan(tree.packageAnnotations());
-    scan(tree.packageName());
+    scan(tree.packageDeclaration());
     scan(tree.imports());
     scan(tree.types());
   }
@@ -366,6 +366,12 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(methodReferenceTree.expression());
     scan(methodReferenceTree.typeArguments());
     scan(methodReferenceTree.method());
+  }
+
+  @Override
+  public void visitPackage(PackageDeclarationTree tree) {
+    scan(tree.annotations());
+    scan(tree.packageName());
   }
 
 }

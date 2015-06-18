@@ -32,6 +32,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.ArrayTypeTreeImpl;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaTree.ImportTreeImpl;
+import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
 import org.sonar.java.model.JavaTree.ParameterizedTypeTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.JavaTree.UnionTypeTreeImpl;
@@ -90,6 +91,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -134,7 +136,7 @@ public class TreeFactory {
 
   public CompilationUnitTreeImpl newCompilationUnit(
     AstNode spacing,
-    Optional<ExpressionTree> packageDeclaration,
+    Optional<PackageDeclarationTree> packageDeclaration,
     Optional<List<ImportClauseTree>> importDeclarations,
     Optional<List<Tree>> typeDeclarations,
     AstNode eof) {
@@ -142,14 +144,8 @@ public class TreeFactory {
     List<AstNode> children = Lists.newArrayList();
     children.add(spacing);
 
-    ImmutableList.Builder<AnnotationTree> packageAnnotations = ImmutableList.builder();
     if (packageDeclaration.isPresent()) {
       children.add((AstNode) packageDeclaration.get());
-      for (AstNode child : ((AstNode) packageDeclaration.get()).getChildren()) {
-        if (child.is(Kind.ANNOTATION)) {
-          packageAnnotations.add((AnnotationTree) child);
-        }
-      }
     }
 
     ImmutableList.Builder<ImportClauseTree> imports = ImmutableList.builder();
@@ -179,24 +175,20 @@ public class TreeFactory {
       packageDeclaration.orNull(),
       imports.build(),
       types.build(),
-      packageAnnotations.build(),
       children);
   }
 
-  public ExpressionTree newPackageDeclaration(Optional<List<AnnotationTreeImpl>> annotations, AstNode packageTokenAstNode, ExpressionTree qualifiedIdentifier,
+  public PackageDeclarationTree newPackageDeclaration(Optional<List<AnnotationTreeImpl>> annotations, AstNode packageTokenAstNode, ExpressionTree qualifiedIdentifier,
     AstNode semicolonTokenAstNode) {
-    JavaTree partial = (JavaTree) qualifiedIdentifier;
 
-    List<AstNode> children = Lists.newArrayList();
+    List<AnnotationTree> annotationList = Collections.emptyList();
     if (annotations.isPresent()) {
-      children.addAll(annotations.get());
+      annotationList = ImmutableList.<AnnotationTree>builder().addAll(annotations.get()).build();
     }
-    children.add(packageTokenAstNode);
+    InternalSyntaxToken packageToken = InternalSyntaxToken.create(packageTokenAstNode);
+    InternalSyntaxToken semicolonToken = InternalSyntaxToken.create(semicolonTokenAstNode);
 
-    partial.prependChildren(children);
-    partial.addChild(semicolonTokenAstNode);
-
-    return (ExpressionTree) partial;
+    return new PackageDeclarationTreeImpl(annotationList, packageToken, qualifiedIdentifier, semicolonToken);
   }
 
   public ImportClauseTree newEmptyImport(AstNode semicolonTokenAstNode) {

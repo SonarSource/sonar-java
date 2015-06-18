@@ -599,7 +599,15 @@ public interface Tree {
      */
     TYPE_PARAMETER(TypeParameterTree.class),
 
+    /**
+     * {@link ImportTree}
+     */
     IMPORT(ImportTree.class),
+
+    /**
+     * {@link PackageTree}
+     */
+    PACKAGE(PackageDeclarationTree.class),
 
     /**
      *An implementation-reserved node.

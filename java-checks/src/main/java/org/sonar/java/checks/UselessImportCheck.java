@@ -42,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -70,11 +71,13 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     CompilationUnitTree cut = context.getTree();
+    ExpressionTree packageName = cut.packageDeclaration() != null ? cut.packageDeclaration().packageName() : null;
 
     pendingReferences.clear();
     lineByImportReference.clear();
     pendingImports.clear();
-    currentPackage = concatenate(cut.packageName());
+
+    currentPackage = concatenate(packageName);
     for (ImportClauseTree importClauseTree : cut.imports()) {
       ImportTree importTree = null;
 
@@ -114,7 +117,9 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     //do not scan imports and package name identifiers.
-    scan(tree.packageAnnotations());
+    if (tree.packageDeclaration() != null) {
+      scan(tree.packageDeclaration().annotations());
+    }
     scan(tree.types());
   }
 

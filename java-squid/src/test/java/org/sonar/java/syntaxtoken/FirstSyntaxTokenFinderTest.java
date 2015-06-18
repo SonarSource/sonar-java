@@ -50,7 +50,11 @@ public class FirstSyntaxTokenFinderTest {
 
     compilationUnit = getCompilationUnit("package myPackage; import A; class Test {}");
     firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken.text()).isEqualTo("myPackage");
+    assertThat(firstToken.text()).isEqualTo("package");
+
+    compilationUnit = getCompilationUnit("@Foo package myPackage; import A; class Test {}");
+    firstToken = getFirstSyntaxToken(compilationUnit);
+    assertThat(firstToken.text()).isEqualTo("@");
 
     compilationUnit = getCompilationUnit("");
     firstToken = getFirstSyntaxToken(compilationUnit);
