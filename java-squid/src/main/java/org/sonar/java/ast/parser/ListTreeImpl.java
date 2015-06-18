@@ -60,14 +60,17 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   @Override
   public void accept(TreeVisitor visitor) {
+    for (T t : list) {
+      ((Tree) t).accept(visitor);
+    }
     // TODO
-    throw new UnsupportedOperationException("On class: " + getClass().getSimpleName());
+//    throw new UnsupportedOperationException("On class: " + getClass().getSimpleName());
   }
 
   @Override
   public Kind getKind() {
     // TODO
-    throw new UnsupportedOperationException();
+    return Kind.OTHER;
   }
 
   @Override
