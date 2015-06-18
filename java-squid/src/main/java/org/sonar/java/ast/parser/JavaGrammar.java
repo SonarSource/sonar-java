@@ -25,6 +25,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
@@ -273,8 +274,8 @@ public class JavaGrammar {
       .is(f.newClassBody(b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.invokeRule(JavaPunctuator.RWING)));
   }
 
-  public AstNode CLASS_MEMBER() {
-    return b.<AstNode>nonterminal(JavaLexer.MEMBER_DECL)
+  public JavaTree CLASS_MEMBER() {
+    return b.<JavaTree>nonterminal(JavaLexer.MEMBER_DECL)
       .is(
         b.firstOf(
           f.completeMember(
@@ -527,7 +528,7 @@ public class JavaGrammar {
     return b.<FormalParametersListTreeImpl>nonterminal(JavaLexer.FORMAL_PARAMETERS_DECLS_REST)
       .is(
         b.firstOf(
-          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newWrapperAstNode10(b.invokeRule(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
+          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newTuple18(b.invokeRule(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
           f.newVariableArgumentFormalParameter(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.ELLIPSIS), VARIABLE_DECLARATOR_ID())));
   }
 
