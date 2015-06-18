@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -102,10 +101,9 @@ public class JavaTreeModelTest {
 
   @Test
   public void line_of_tree() throws Exception {
-    CompilationUnitTree empty = (CompilationUnitTree) p.parse("");
+    CompilationUnitTree empty = compilationUnit("");
     assertThat(((JavaTree) empty).getLine()).isEqualTo(-1);
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A {}");
-    ClassTree classTree = (ClassTree) cut.types().get(0);
+    ClassTree classTree = firstType("class A {}");
     assertThat(((JavaTree) classTree).getLine()).isEqualTo(1);
     assertThat(((JavaTree) classTree.modifiers()).getLine()).isEqualTo(-1);
   }
@@ -492,8 +490,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void class_field() {
-    AstNode astNode = p.parse("class T { public int f1 = 42, f2[]; }");
-    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
+    List<Tree> declarations = firstType("class T { public int f1 = 42, f2[]; }").members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -592,8 +589,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void enum_declaration() {
-    AstNode astNode = p.parse("public enum T implements I1, I2 { }");
-    ClassTree tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
+    ClassTree tree = firstType("public enum T implements I1, I2 { }");
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
@@ -601,9 +597,9 @@ public class JavaTreeModelTest {
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
     assertThat(tree.declarationKeyword().text()).isEqualTo("enum");
+    assertThatChildrenIteratorHasSize(tree, 9);
 
-    astNode = p.parse("public enum T { }");
-    tree = (ClassTree) ((CompilationUnitTree) astNode).types().get(0);
+    tree = firstType("public enum T { }");
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
@@ -613,12 +609,12 @@ public class JavaTreeModelTest {
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("enum");
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   @Test
   public void enum_constant() {
-    AstNode astNode = p.parse("enum T { C1, C2(2) { }; }");
-    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
+    List<Tree> declarations = firstType("enum T { C1, C2(2) { }; }").members();
     assertThat(declarations).hasSize(2);
 
     EnumConstantTree tree = (EnumConstantTree) declarations.get(0);
@@ -646,8 +642,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void enum_field() {
-    AstNode astNode = p.parse("enum T { ; public int f1 = 42, f2[]; }");
-    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
+    List<Tree> declarations = firstType("enum T { ; public int f1 = 42, f2[]; }").members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -727,6 +722,7 @@ public class JavaTreeModelTest {
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
     assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
+    assertThatChildrenIteratorHasSize(tree, 9);
 
     tree = firstType("public interface T { }");
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
@@ -739,12 +735,12 @@ public class JavaTreeModelTest {
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   @Test
   public void interface_field() {
-    AstNode astNode = p.parse("interface T { public int f1 = 42, f2[] = { 13 }; }");
-    List<Tree> declarations = ((ClassTree) ((CompilationUnitTree) astNode).types().get(0)).members();
+    List<Tree> declarations = firstType("interface T { public int f1 = 42, f2[] = { 13 }; }").members();
     assertThat(declarations).hasSize(2);
 
     VariableTree tree = (VariableTree) declarations.get(0);
@@ -801,7 +797,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void annotation_declaration() {
-    ClassTree tree = (ClassTree) ((CompilationUnitTree) p.parse("public @interface T { }")).types().get(0);
+    ClassTree tree = firstType("public @interface T { }");
     assertThat(tree.is(Tree.Kind.ANNOTATION_TYPE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).keyword().text()).isEqualTo("public");
@@ -810,7 +806,8 @@ public class JavaTreeModelTest {
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
-    assertThat(tree.declarationKeyword().text()).isEqualTo("@");
+    assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   @Test
@@ -834,7 +831,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void annotation_constant() {
-    List<Tree> members = ((ClassTree) p.parse("@interface T { int c1 = 1, c2[] = { 2 }; }").getFirstDescendant(Kind.ANNOTATION_TYPE)).members();
+    List<Tree> members = firstType("@interface T { int c1 = 1, c2[] = { 2 }; }").members();
     assertThat(members).hasSize(2);
 
     VariableTree tree = (VariableTree) members.get(0);
@@ -882,6 +879,7 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
 
     block = ((MethodTree) firstTypeMember("class T { void m() { static enum Local { ; } } }")).block();
     tree = (ClassTree) block.body().get(0);
@@ -889,6 +887,8 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.STATIC);
     assertThat(tree).isNotNull();
+    // TODO SONARJAVA-547 empty statements in class members are ignored as members
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   /**
