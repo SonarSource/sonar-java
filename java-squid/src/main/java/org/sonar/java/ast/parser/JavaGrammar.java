@@ -1265,8 +1265,8 @@ public class JavaGrammar {
       .is(f.newClassCreatorRest(ARGUMENTS(), b.optional(CLASS_BODY())));
   }
 
-  public Tuple<AstNode, AstNode> DIMENSION() {
-    return b.<Tuple<AstNode, AstNode>>nonterminal(JavaLexer.DIM)
+  public Tuple<InternalSyntaxToken, InternalSyntaxToken> DIMENSION() {
+    return b.<Tuple<InternalSyntaxToken, InternalSyntaxToken>>nonterminal(JavaLexer.DIM)
       .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
   }
 

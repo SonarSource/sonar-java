@@ -28,6 +28,7 @@ import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.api.Trivia.TriviaKind;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.parser.sslr.ActionParser2.GrammarBuilderInterceptor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.internal.grammar.MutableParsingRule;
@@ -134,6 +135,9 @@ public class SyntaxTreeCreator<T> {
       Token token = null;
 
       for (Object child : convertedChildren) {
+        if(child instanceof InternalSyntaxToken) {
+          return child;
+        }
         if (child instanceof AstNode && ((AstNode) child).hasToken()) {
           token = ((AstNode) child).getToken();
           break;
@@ -161,7 +165,7 @@ public class SyntaxTreeCreator<T> {
     }
   }
 
-  private AstNode visitTerminal(ParseNode node) {
+  private InternalSyntaxToken visitTerminal(ParseNode node) {
     if (node.getMatcher() instanceof TriviaExpression) {
       TriviaExpression ruleMatcher = (TriviaExpression) node.getMatcher();
       if (ruleMatcher.getTriviaKind() == TriviaKind.SKIPPED_TEXT) {
@@ -190,10 +194,7 @@ public class SyntaxTreeCreator<T> {
     }
     Token token = tokenBuilder.setTrivia(trivias).build();
     trivias.clear();
-    AstNode astNode = new AstNode(token);
-    astNode.setFromIndex(node.getStartIndex());
-    astNode.setToIndex(node.getEndIndex());
-    return astNode;
+    return new InternalSyntaxToken(token);
   }
 
   private void updateTokenPositionAndValue(ParseNode node) {

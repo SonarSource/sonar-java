@@ -119,7 +119,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   }
 
   public static InternalSyntaxToken create(AstNode astNode) {
-    Preconditions.checkArgument(astNode.hasToken(), "has no token");
+//    Preconditions.checkArgument(astNode.hasToken(), "has no token");
     Preconditions.checkArgument(astNode.getToken() == astNode.getLastToken(), "has several tokens");
     return new InternalSyntaxToken(astNode.getType(), astNode.getToken(), astNode.getFromIndex(), astNode.getToIndex());
   }

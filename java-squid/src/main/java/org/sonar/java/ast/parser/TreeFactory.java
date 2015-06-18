@@ -156,12 +156,7 @@ public class TreeFactory {
     if (importDeclarations.isPresent()) {
       for (ImportClauseTree child : importDeclarations.get()) {
         children.add((AstNode) child);
-
-        if (!child.is(Kind.EMPTY_STATEMENT)) {
-          imports.add((ImportTreeImpl) child);
-        } else {
-          imports.add((EmptyStatementTreeImpl) child);
-        }
+        imports.add(child);
       }
     }
 
@@ -203,14 +198,14 @@ public class TreeFactory {
     return new EmptyStatementTreeImpl(InternalSyntaxToken.create(semicolonTokenAstNode));
   }
 
-  public ImportTreeImpl newImportDeclaration(AstNode importTokenAstNode, Optional<AstNode> staticTokenAstNode, ExpressionTree qualifiedIdentifier,
-    Optional<Tuple<AstNode, AstNode>> dotStar,
+  public ImportTreeImpl newImportDeclaration(AstNode importTokenAstNode, Optional<JavaTree> staticTokenAstNode, ExpressionTree qualifiedIdentifier,
+    Optional<Tuple<InternalSyntaxToken, InternalSyntaxToken>> dotStar,
     AstNode semicolonTokenAstNode) {
 
     ExpressionTree target = qualifiedIdentifier;
     if (dotStar.isPresent()) {
-      IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(dotStar.get().second()));
-      InternalSyntaxToken dotToken = InternalSyntaxToken.create(dotStar.get().first());
+      IdentifierTreeImpl identifier = new IdentifierTreeImpl(dotStar.get().second());
+      InternalSyntaxToken dotToken = dotStar.get().first();
       target = new MemberSelectExpressionTreeImpl(qualifiedIdentifier, dotToken, identifier,
         (AstNode) qualifiedIdentifier, dotStar.get().first(), identifier);
     }
@@ -218,7 +213,7 @@ public class TreeFactory {
     InternalSyntaxToken importToken = InternalSyntaxToken.create(importTokenAstNode);
     InternalSyntaxToken staticToken = null;
     if (staticTokenAstNode.isPresent()) {
-      staticToken = InternalSyntaxToken.create(staticTokenAstNode.get());
+      staticToken = (InternalSyntaxToken) staticTokenAstNode.get();
     }
     InternalSyntaxToken semiColonToken = InternalSyntaxToken.create(semicolonTokenAstNode);
     return new ImportTreeImpl(importToken, staticToken, target, semiColonToken);
@@ -238,13 +233,13 @@ public class TreeFactory {
   // Types
 
   public TypeTree newType(TypeTree basicOrClassType,
-    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dims) {
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dims) {
     if (!dims.isPresent()) {
       return basicOrClassType;
     } else {
       TypeTree result = basicOrClassType;
 
-      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> dim : dims.get()) {
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>> dim : dims.get()) {
         result = newArrayTypeTreeWithAnnotations(result, dim);
       }
 
@@ -383,8 +378,8 @@ public class TreeFactory {
   public ClassTreeImpl completeClassDeclaration(
     AstNode classTokenAstNode,
     AstNode identifierAstNode, Optional<TypeParameterListTreeImpl> typeParameters,
-    Optional<Tuple<AstNode, TypeTree>> extendsClause,
-    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> implementsClause,
+    Optional<Tuple<JavaTree, TypeTree>> extendsClause,
+    Optional<Tuple<JavaTree, QualifiedIdentifierListTreeImpl>> implementsClause,
     ClassTreeImpl partial) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
@@ -447,10 +442,10 @@ public class TreeFactory {
   public ClassTreeImpl newEnumDeclaration(
     AstNode enumTokenAstNode,
     AstNode identifierAstNode,
-    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> implementsClause,
+    Optional<Tuple<JavaTree, QualifiedIdentifierListTreeImpl>> implementsClause,
     AstNode openBraceTokenAstNode,
     Optional<List<EnumConstantTreeImpl>> enumConstants,
-    Optional<AstNode> semicolonTokenAstNode,
+    Optional<InternalSyntaxToken> semicolonTokenAstNode,
     Optional<List<AstNode>> enumDeclarations,
     AstNode closeBraceTokenAstNode) {
 
@@ -496,7 +491,7 @@ public class TreeFactory {
     Optional<List<AnnotationTreeImpl>> annotations, AstNode identifierAstNode,
     Optional<ArgumentListTreeImpl> arguments,
     Optional<ClassTreeImpl> classBody,
-    Optional<AstNode> semicolonTokenAstNode) {
+    Optional<InternalSyntaxToken> semicolonTokenAstNode) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     if (annotations.isPresent()) {
@@ -542,7 +537,7 @@ public class TreeFactory {
   public ClassTreeImpl completeInterfaceDeclaration(
     AstNode interfaceTokenAstNode,
     AstNode identifierAstNode, Optional<TypeParameterListTreeImpl> typeParameters,
-    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> extendsClause,
+    Optional<Tuple<JavaTree, QualifiedIdentifierListTreeImpl>> extendsClause,
     ClassTreeImpl partial) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
@@ -593,7 +588,7 @@ public class TreeFactory {
     return partial;
   }
 
-  public BlockTreeImpl newInitializerMember(Optional<AstNode> staticTokenAstNode, BlockTreeImpl block) {
+  public BlockTreeImpl newInitializerMember(Optional<JavaTree> staticTokenAstNode, BlockTreeImpl block) {
     BlockTreeImpl blockTree;
     List<AstNode> children = Lists.newArrayList();
 
@@ -625,8 +620,8 @@ public class TreeFactory {
 
   private MethodTreeImpl newMethodOrConstructor(
     Optional<TypeTree> type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
-    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
-    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> annotatedDimensions,
+    Optional<Tuple<JavaTree, QualifiedIdentifierListTreeImpl>> throwsClause,
     AstNode blockOrSemicolon) {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
@@ -680,8 +675,8 @@ public class TreeFactory {
 
   public MethodTreeImpl newMethod(
     TypeTree type, AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
-    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
-    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> annotatedDimensions,
+    Optional<Tuple<JavaTree, QualifiedIdentifierListTreeImpl>> throwsClause,
     AstNode blockOrSemicolon) {
 
     return newMethodOrConstructor(Optional.of(type), identifierAstNode, parameters, annotatedDimensions, throwsClause, blockOrSemicolon);
@@ -689,8 +684,8 @@ public class TreeFactory {
 
   public MethodTreeImpl newConstructor(
     AstNode identifierAstNode, FormalParametersListTreeImpl parameters,
-    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> annotatedDimensions,
-    Optional<Tuple<AstNode, QualifiedIdentifierListTreeImpl>> throwsClause,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> annotatedDimensions,
+    Optional<Tuple<JavaTree, QualifiedIdentifierListTreeImpl>> throwsClause,
     AstNode blockOrSemicolon) {
 
     return newMethodOrConstructor(Optional.<TypeTree>absent(), identifierAstNode, parameters, annotatedDimensions, throwsClause, blockOrSemicolon);
@@ -854,10 +849,10 @@ public class TreeFactory {
   }
 
   public NewArrayTreeImpl completeElementValueArrayInitializer(
-    AstNode openBraceTokenAstNode, Optional<NewArrayTreeImpl> partial, Optional<AstNode> commaTokenAstNode, AstNode closeBraceTokenAstNode) {
+    AstNode openBraceTokenAstNode, Optional<NewArrayTreeImpl> partial, Optional<InternalSyntaxToken> commaTokenAstNode, AstNode closeBraceTokenAstNode) {
 
     InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
-    InternalSyntaxToken commaToken = commaTokenAstNode.isPresent() ? InternalSyntaxToken.create(commaTokenAstNode.get()) : null;
+    InternalSyntaxToken commaToken = commaTokenAstNode.orNull();
     InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
 
     NewArrayTreeImpl elementValues = partial.isPresent() ?
@@ -905,9 +900,7 @@ public class TreeFactory {
 
   // Formal parameters
 
-  public FormalParametersListTreeImpl completeParenFormalParameters(AstNode openParenTokenAstNode, Optional<FormalParametersListTreeImpl> partial, AstNode closeParenTokenAstNode) {
-    InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
-    InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
+  public FormalParametersListTreeImpl completeParenFormalParameters(InternalSyntaxToken openParenToken, Optional<FormalParametersListTreeImpl> partial, InternalSyntaxToken closeParenToken) {
 
     return partial.isPresent() ?
       partial.get().complete(openParenToken, closeParenToken) :
@@ -951,7 +944,7 @@ public class TreeFactory {
       variable);
   }
 
-  public VariableTreeImpl newVariableDeclaratorId(AstNode identifierAstNode, Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dims) {
+  public VariableTreeImpl newVariableDeclaratorId(AstNode identifierAstNode, Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dims) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
     ArrayTypeTreeImpl nestedDimensions = newArrayTypeTreeWithAnnotations(dims);
     List<AstNode> children = Lists.newArrayList();
@@ -987,7 +980,7 @@ public class TreeFactory {
     return variables;
   }
 
-  public VariableDeclaratorListTreeImpl newVariableDeclarators(VariableTreeImpl variable, Optional<List<Tuple<AstNode, VariableTreeImpl>>> rests) {
+  public VariableDeclaratorListTreeImpl newVariableDeclarators(VariableTreeImpl variable, Optional<List<Tuple<InternalSyntaxToken, VariableTreeImpl>>> rests) {
     ImmutableList.Builder<VariableTreeImpl> variables = ImmutableList.builder();
 
     variables.add(variable);
@@ -996,9 +989,9 @@ public class TreeFactory {
 
     if (rests.isPresent()) {
       VariableTreeImpl previousVariable = variable;
-      for (Tuple<AstNode, VariableTreeImpl> rest : rests.get()) {
+      for (Tuple<InternalSyntaxToken, VariableTreeImpl> rest : rests.get()) {
         VariableTreeImpl newVariable = rest.second();
-        InternalSyntaxToken separator = InternalSyntaxToken.create(rest.first());
+        InternalSyntaxToken separator = rest.first();
 
         variables.add(newVariable);
         children.add(newVariable);
@@ -1012,7 +1005,7 @@ public class TreeFactory {
     return new VariableDeclaratorListTreeImpl(variables.build(), children);
   }
 
-  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dimensions,
+  public VariableTreeImpl completeVariableDeclarator(AstNode identifierAstNode, Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dimensions,
     Optional<VariableTreeImpl> partial) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(identifierAstNode));
 
@@ -1334,7 +1327,7 @@ public class TreeFactory {
     return new SynchronizedStatementTreeImpl(synchronizedKeyword, openParenToken, expression, closeParenToken, block);
   }
 
-  public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<AstNode> identifierAstNode, AstNode semicolonToken) {
+  public BreakStatementTreeImpl breakStatement(AstNode breakToken, Optional<JavaTree> identifierAstNode, AstNode semicolonToken) {
     InternalSyntaxToken breakSyntaxToken = InternalSyntaxToken.create(breakToken);
     InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
     IdentifierTreeImpl identifier = null;
@@ -1344,7 +1337,7 @@ public class TreeFactory {
     return new BreakStatementTreeImpl(breakSyntaxToken, identifier, semicolonSyntaxToken);
   }
 
-  public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<AstNode> identifierAstNode, AstNode semicolonToken) {
+  public ContinueStatementTreeImpl continueStatement(AstNode continueToken, Optional<JavaTree> identifierAstNode, AstNode semicolonToken) {
     InternalSyntaxToken continueKeywordSyntaxToken = InternalSyntaxToken.create(continueToken);
     InternalSyntaxToken semicolonSyntaxToken = InternalSyntaxToken.create(semicolonToken);
     IdentifierTreeImpl identifier = null;
@@ -1604,11 +1597,11 @@ public class TreeFactory {
     return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorTokenAstNode.getType()), operatorToken, expression);
   }
 
-  public ExpressionTree newPostfixExpression(ExpressionTree expression, Optional<AstNode> postfixOperatorAstNode) {
+  public ExpressionTree newPostfixExpression(ExpressionTree expression, Optional<InternalSyntaxToken> postfixOperatorAstNode) {
     ExpressionTree result = expression;
 
     if (postfixOperatorAstNode.isPresent()) {
-      InternalSyntaxToken postfixOperatorToken = InternalSyntaxToken.create(postfixOperatorAstNode.get());
+      InternalSyntaxToken postfixOperatorToken = postfixOperatorAstNode.get();
       result = new InternalPostfixUnaryExpression(kindMaps.getPostfixOperator((JavaPunctuator) postfixOperatorAstNode.get().getType()), result, postfixOperatorToken);
     }
 
@@ -1690,7 +1683,7 @@ public class TreeFactory {
 
   public LambdaParameterListTreeImpl newInferedParameters(
     AstNode openParenTokenAstNode,
-    Optional<Tuple<VariableTreeImpl, Optional<List<Tuple<AstNode, VariableTreeImpl>>>>> identifiersOpt,
+    Optional<Tuple<VariableTreeImpl, Optional<List<Tuple<InternalSyntaxToken, VariableTreeImpl>>>>> identifiersOpt,
     AstNode closeParenTokenAstNode) {
 
     InternalSyntaxToken openParenToken = InternalSyntaxToken.create(openParenTokenAstNode);
@@ -1702,7 +1695,7 @@ public class TreeFactory {
     children.add(openParenToken);
 
     if (identifiersOpt.isPresent()) {
-      Tuple<VariableTreeImpl, Optional<List<Tuple<AstNode, VariableTreeImpl>>>> identifiers = identifiersOpt.get();
+      Tuple<VariableTreeImpl, Optional<List<Tuple<InternalSyntaxToken, VariableTreeImpl>>>> identifiers = identifiersOpt.get();
 
       VariableTreeImpl variable = identifiers.first();
       params.add(variable);
@@ -1710,12 +1703,12 @@ public class TreeFactory {
 
       VariableTreeImpl previousVariable = variable;
       if (identifiers.second().isPresent()) {
-        for (Tuple<AstNode, VariableTreeImpl> identifier : identifiers.second().get()) {
+        for (Tuple<InternalSyntaxToken, VariableTreeImpl> identifier : identifiers.second().get()) {
           variable = identifier.second();
           params.add(variable);
           children.add(variable);
 
-          InternalSyntaxToken comma = InternalSyntaxToken.create(identifier.first());
+          InternalSyntaxToken comma = identifier.first();
           previousVariable.setEndToken(comma);
           previousVariable = variable;
         }
@@ -1787,14 +1780,14 @@ public class TreeFactory {
 
   public NewArrayTreeImpl newArrayCreatorWithInitializer(
     AstNode openBracketToken, AstNode closeBracketToken,
-    Optional<List<Tuple<AstNode, AstNode>>> dimensions,
+    Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dimensions,
     NewArrayTreeImpl partial) {
 
     List<AstNode> children = Lists.newArrayList();
     children.add(openBracketToken);
     children.add(closeBracketToken);
     if (dimensions.isPresent()) {
-      for (Tuple<AstNode, AstNode> dimension : dimensions.get()) {
+      for (Tuple<InternalSyntaxToken, InternalSyntaxToken> dimension : dimensions.get()) {
         children.add(dimension.first());
         children.add(dimension.second());
       }
@@ -1832,7 +1825,7 @@ public class TreeFactory {
       children);
   }
 
-  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotToken, AstNode classTokenAstNode) {
+  public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dimensions, AstNode dotToken, AstNode classTokenAstNode) {
     // 15.8.2. Class Literals
     // int.class
     // int[].class
@@ -1866,16 +1859,15 @@ public class TreeFactory {
       voidType, dotToken, classToken);
   }
 
-  public PrimitiveTypeTreeImpl newBasicType(Optional<List<AnnotationTreeImpl>> annotations, AstNode basicType) {
-    InternalSyntaxToken token = InternalSyntaxToken.create(basicType);
+  public PrimitiveTypeTreeImpl newBasicType(Optional<List<AnnotationTreeImpl>> annotations, JavaTree basicType) {
 
     List<AstNode> children = Lists.newArrayList();
     if (annotations.isPresent()) {
       children.addAll(annotations.get());
     }
-    children.add(token);
+    children.add(basicType);
 
-    return new JavaTree.PrimitiveTypeTreeImpl(token, children);
+    return new JavaTree.PrimitiveTypeTreeImpl((InternalSyntaxToken) basicType, children);
   }
 
   public ArgumentListTreeImpl completeArguments(AstNode openParenthesisTokenAstNode, Optional<ArgumentListTreeImpl> expressions, AstNode closeParenthesisTokenAstNode) {
@@ -1904,11 +1896,11 @@ public class TreeFactory {
     return new ArgumentListTreeImpl(expressions.build(), children);
   }
 
-  public TypeTree annotationIdentifier(AstNode firstIdentifier, Optional<List<Tuple<AstNode, AstNode>>> rests) {
+  public TypeTree annotationIdentifier(AstNode firstIdentifier, Optional<List<Tuple<InternalSyntaxToken, JavaTree>>> rests) {
     List<AstNode> children = Lists.newArrayList();
     children.add(firstIdentifier);
     if (rests.isPresent()) {
-      for (Tuple<AstNode, AstNode> rest : rests.get()) {
+      for (Tuple<InternalSyntaxToken, JavaTree> rest : rests.get()) {
         children.add(rest.first());
         children.add(rest.second());
       }
@@ -1944,12 +1936,12 @@ public class TreeFactory {
     return (TypeTree) result;
   }
 
-  public <T extends Tree> T newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<AstNode, ExpressionTree>>> rests) {
+  public <T extends Tree> T newQualifiedIdentifier(ExpressionTree firstIdentifier, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ExpressionTree result = firstIdentifier;
 
     if (rests.isPresent()) {
-      for (Tuple<AstNode, ExpressionTree> rest : rests.get()) {
-        InternalSyntaxToken dotToken = InternalSyntaxToken.create(rest.first());
+      for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
+        InternalSyntaxToken dotToken = rest.first();
         if (rest.second().is(Kind.IDENTIFIER)) {
           result = new MemberSelectExpressionTreeImpl(result, dotToken, (IdentifierTreeImpl) rest.second(),
             (AstNode) result, rest.first(), (AstNode) rest.second());
@@ -2006,7 +1998,7 @@ public class TreeFactory {
     return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children);
   }
 
-  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<AstNode, TypeTree>>> rests) {
+  public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {
     ImmutableList.Builder<TypeTree> qualifiedIdentifiers = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
 
@@ -2014,7 +2006,7 @@ public class TreeFactory {
     children.add((AstNode) qualifiedIdentifier);
 
     if (rests.isPresent()) {
-      for (Tuple<AstNode, TypeTree> rest : rests.get()) {
+      for (Tuple<InternalSyntaxToken, TypeTree> rest : rests.get()) {
         qualifiedIdentifiers.add(rest.second());
         children.add(rest.first());
         children.add((AstNode) rest.second());
@@ -2075,7 +2067,7 @@ public class TreeFactory {
     return newTuple(Optional.<InternalSyntaxToken>absent(), partial);
   }
 
-  public ExpressionTree newDotClassSelector(Optional<List<Tuple<AstNode, AstNode>>> dimensions, AstNode dotTokenAstNode, AstNode classTokenAstNode) {
+  public ExpressionTree newDotClassSelector(Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dimensions, AstNode dotTokenAstNode, AstNode classTokenAstNode) {
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
     InternalSyntaxToken dotToken = InternalSyntaxToken.create(dotTokenAstNode);
 
@@ -2172,7 +2164,7 @@ public class TreeFactory {
     return astNode;
   }
 
-  public AstNode newWrapperAstNode(AstNode e1, Optional<AstNode> e2) {
+  public AstNode newWrapperAstNode(AstNode e1, Optional<? extends JavaTree> e2) {
     AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
     astNode.addChild(e1);
     if (e2.isPresent()) {
@@ -2219,11 +2211,11 @@ public class TreeFactory {
     return newWrapperAstNode(e1, e2);
   }
 
-  public AstNode newWrapperAstNode14(AstNode e1, Optional<AstNode> e2) {
+  public AstNode newWrapperAstNode14(AstNode e1, Optional<InternalSyntaxToken> e2) {
     return newWrapperAstNode(e1, e2);
   }
 
-  public AstNode newWrapperAstNode15(AstNode e1, Optional<AstNode> e2) {
+  public AstNode newWrapperAstNode15(AstNode e1, Optional<InternalSyntaxToken> e2) {
     return newWrapperAstNode(e1, e2);
   }
 
@@ -2375,17 +2367,17 @@ public class TreeFactory {
   }
 
   @CheckForNull
-  private static ArrayTypeTreeImpl newArrayTypeTreeWithAnnotations(Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>>>> dims) {
+  private static ArrayTypeTreeImpl newArrayTypeTreeWithAnnotations(Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dims) {
     ArrayTypeTreeImpl result = null;
     if (dims.isPresent()) {
-      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> dim : dims.get()) {
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>> dim : dims.get()) {
         result = newArrayTypeTreeWithAnnotations(result, dim);
       }
     }
     return result;
   }
 
-  private static ArrayTypeTreeImpl newArrayTypeTreeWithAnnotations(TypeTree type, Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<AstNode, AstNode>> dim) {
+  private static ArrayTypeTreeImpl newArrayTypeTreeWithAnnotations(TypeTree type, Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>> dim) {
     List<AnnotationTreeImpl> annotations = dim.first().isPresent() ? dim.first().get() : ImmutableList.<AnnotationTreeImpl>of();
     InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(dim.second().first());
     InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(dim.second().second());
@@ -2393,12 +2385,12 @@ public class TreeFactory {
   }
 
   @CheckForNull
-  private static ArrayTypeTreeImpl newArrayTypeTree(Optional<List<Tuple<AstNode, AstNode>>> dims) {
+  private static ArrayTypeTreeImpl newArrayTypeTree(Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dims) {
     ArrayTypeTreeImpl result = null;
     if (dims.isPresent()) {
-      for (Tuple<AstNode, AstNode> dim : dims.get()) {
-        InternalSyntaxToken openBracketToken = InternalSyntaxToken.create(dim.first());
-        InternalSyntaxToken closeBracketToken = InternalSyntaxToken.create(dim.second());
+      for (Tuple<InternalSyntaxToken, InternalSyntaxToken> dim : dims.get()) {
+        InternalSyntaxToken openBracketToken = dim.first();
+        InternalSyntaxToken closeBracketToken = dim.second();
         result = new ArrayTypeTreeImpl(result, ImmutableList.<AnnotationTreeImpl>of(), openBracketToken, closeBracketToken);
       }
     }
