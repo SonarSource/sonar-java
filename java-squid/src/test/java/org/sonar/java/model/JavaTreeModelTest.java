@@ -1927,19 +1927,29 @@ public class JavaTreeModelTest {
    */
   @Test
   public void type_cast() {
-    TypeCastTree tree = (TypeCastTree) p.parse("class T { boolean m() { return (Boolean) true; } }").getFirstDescendant(Kind.TYPE_CAST);
+    TypeCastTree tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Boolean) true; } }");
     assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.type()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 4);
 
-    tree = (TypeCastTree) p.parse("class T { boolean m() { return (Foo<T> & Bar) true; } }").getFirstDescendant(Kind.TYPE_CAST);
+    tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Foo<T> & Bar) true; } }");
     assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.type()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 5);
+
+    tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Foo<T> & @Gul Bar) true; } }");
+    assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
+    assertThat(tree.openParenToken().text()).isEqualTo("(");
+    assertThat(tree.type()).isNotNull();
+    assertThat(tree.closeParenToken().text()).isEqualTo(")");
+    assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 5);
   }
 
   /**

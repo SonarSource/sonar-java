@@ -1635,21 +1635,28 @@ public class TreeFactory {
     return new TypeCastExpressionTreeImpl(basicType, closeParenToken, expression);
   }
 
-  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<AstNode>> classTypes, AstNode closeParenTokenAstNode, ExpressionTree expression) {
+  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<Tuple<InternalSyntaxToken, Tree>>> classTypes, AstNode closeParenTokenAstNode,
+    ExpressionTree expression) {
     InternalSyntaxToken closeParenToken = InternalSyntaxToken.create(closeParenTokenAstNode);
 
+    ImmutableList.Builder<Tree> boundsBuilder = ImmutableList.<Tree>builder();
     List<AstNode> children = Lists.newArrayList();
     children.add((AstNode) type);
-    // TODO SONARJAVA-1139 bound should be present in castTree
     if (classTypes.isPresent()) {
-      for (AstNode classType : classTypes.get()) {
-        children.addAll(classType.getChildren());
+      for (Tuple<InternalSyntaxToken, Tree> tuple : classTypes.get()) {
+        // TODO SONARJAVA-547 andOperator should be present in the tree
+        InternalSyntaxToken andOperator = tuple.first();
+        Tree classType = tuple.second();
+        boundsBuilder.add(classType);
+
+        children.add(andOperator);
+        children.add((AstNode) classType);
       }
     }
     children.add(closeParenToken);
     children.add((AstNode) expression);
 
-    return new TypeCastExpressionTreeImpl(type, closeParenToken, expression, children);
+    return new TypeCastExpressionTreeImpl(type, boundsBuilder.build(), closeParenToken, expression, children);
   }
 
   public ExpressionTree completeMethodReference(MethodReferenceTreeImpl partial, Optional<TypeArgumentListTreeImpl> typeArguments, AstNode newOrIdentifierToken) {
@@ -2362,6 +2369,11 @@ public class TreeFactory {
 
   public <T, U> Tuple<T, U> newAnnotatedDimensionFromConstructor(T first, U second) {
     return newTuple(first, second);
+  }
+
+  public Tuple<InternalSyntaxToken, Tree> newAdditionalBound(AstNode andToken, Tree type) {
+    InternalSyntaxToken andSyntaxToken = InternalSyntaxToken.create(andToken);
+    return newTuple(andSyntaxToken, type);
   }
 
   // End

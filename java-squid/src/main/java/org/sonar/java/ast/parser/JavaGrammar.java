@@ -1061,7 +1061,7 @@ public class JavaGrammar {
             f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
             f.newClassCastExpression(
               TYPE(),
-              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), (AstNode) QUALIFIED_IDENTIFIER())),
+              b.zeroOrMore(f.newAdditionalBound(b.invokeRule(JavaPunctuator.AND), QUALIFIED_IDENTIFIER())),
               b.invokeRule(JavaPunctuator.RPAR),
               UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
   }
