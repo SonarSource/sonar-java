@@ -292,7 +292,9 @@ public class JavaTreeModelTest {
   public void type_arguments() {
     VariableTree variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends A, ? super B, ?, C> var; } }");
     assertThatChildrenIteratorHasSize(variableTree, 4);
-    TypeArguments typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
+    ParameterizedTypeTree parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
+    assertThatChildrenIteratorHasSize(parameterizedTypeTree, 2);
+    TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
     assertThat(typeArguments).hasSize(4);
     assertThatChildrenIteratorHasSize(typeArguments, 6);
 
@@ -325,7 +327,9 @@ public class JavaTreeModelTest {
     assertThat(typeArguments.get(3)).isInstanceOf(IdentifierTree.class);
 
     variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
-    typeArguments = ((ParameterizedTypeTree) variableTree.type()).typeArguments();
+    parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
+    assertThatChildrenIteratorHasSize(parameterizedTypeTree, 2);
+    typeArguments = parameterizedTypeTree.typeArguments();
     assertThatChildrenIteratorHasSize(typeArguments, 3);
     wildcard = (WildcardTree) typeArguments.get(0);
     assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
@@ -2308,6 +2312,7 @@ public class JavaTreeModelTest {
   public void type_parameters_tokens() {
     ParameterizedTypeTree tree = (ParameterizedTypeTree) firstType("class Foo<E> extends List<E> {}").superClass();
     assertThat(tree).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 2);
     TypeArguments typeArguments = tree.typeArguments();
     assertThat(typeArguments).isNotNull();
     assertThat(typeArguments).hasSize(1);
@@ -2317,6 +2322,7 @@ public class JavaTreeModelTest {
 
     tree = (ParameterizedTypeTree) firstType("class Mop<K,V> implements Map<K,V> {}").superInterfaces().get(0);
     assertThat(tree).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 2);
     typeArguments = tree.typeArguments();
     assertThat(typeArguments).isNotNull();
     assertThat(typeArguments).hasSize(2);

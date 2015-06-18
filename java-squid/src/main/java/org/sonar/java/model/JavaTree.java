@@ -576,10 +576,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.concat(
-        Iterators.singletonIterator(type),
-        typeArguments.iterator()
-        );
+      return Iterators.forArray(type, typeArguments);
     }
   }
 
