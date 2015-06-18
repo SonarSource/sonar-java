@@ -517,13 +517,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     @Override
-    public boolean isLeaf() {
-      return true;
-    }
-
-    @Override
     public Iterator<Tree> childrenIterator() {
-      throw new UnsupportedOperationException();
+      return Iterators.<Tree>singletonIterator(token);
     }
 
     @Nullable

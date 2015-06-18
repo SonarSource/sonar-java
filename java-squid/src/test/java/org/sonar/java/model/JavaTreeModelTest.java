@@ -21,7 +21,6 @@ package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
@@ -100,16 +99,6 @@ public class JavaTreeModelTest {
 
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
 
-  private static Kind[] getKindsAssociatedTo(Class<? extends Tree> associatedInterface) {
-    List<Kind> result = Lists.newArrayList();
-    for (Kind kind : Kind.values()) {
-      if (associatedInterface.equals(kind.getAssociatedInterface())) {
-        result.add(kind);
-      }
-    }
-    return result.toArray(new Kind[result.size()]);
-  }
-
   @Test
   public void line_of_tree() throws Exception {
     CompilationUnitTree empty = (CompilationUnitTree) p.parse("");
@@ -141,12 +130,13 @@ public class JavaTreeModelTest {
 
   @Test
   public void basic_type() {
-    AstNode astNode = p.parse("class T { int m() { return null; } }").getFirstDescendant(Kind.PRIMITIVE_TYPE);
-    PrimitiveTypeTree tree = (PrimitiveTypeTree) astNode;
+    PrimitiveTypeTree tree = (PrimitiveTypeTree) ((MethodTree) firstTypeMember("class T { int m() { return null; } }")).returnType();
     assertThat(tree.keyword().text()).isEqualTo("int");
+    assertThatChildrenIteratorHasSize(tree, 1);
 
-    tree = (PrimitiveTypeTree) p.parse("class T { void m() { return null; } }").getFirstDescendant(Kind.PRIMITIVE_TYPE);
+    tree = (PrimitiveTypeTree) ((MethodTree) firstTypeMember("class T { void m() { return null; } }")).returnType();
     assertThat(tree.keyword().text()).isEqualTo("void");
+    assertThatChildrenIteratorHasSize(tree, 1);
   }
 
   @Test
