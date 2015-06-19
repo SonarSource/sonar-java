@@ -73,20 +73,26 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
       }
 
       CaseLabelTree lastLabel = Iterables.getLast(labels);
-      int startLine = Math.min(line(lastLabel) + 1, firstStatementLine(caseGroupTree.body()));
+      int lastLabelLine = line(lastLabel);
+      int statementLine = firstStatementLine(caseGroupTree.body(), lastLabelLine);
+      int startLine = Math.min(lastLabelLine + 1, statementLine);
       int endLine = getNextLine(switchStatementTree, caseGroupTree);
       check(lastLabel, startLine, endLine);
     }
   }
 
-  private static int firstStatementLine(List<StatementTree> body) {
+  private static int firstStatementLine(List<StatementTree> body, int lastLabelLine) {
     if (!body.isEmpty()) {
       StatementTree firstStatement = body.get(0);
       int firstStatementLine = line(body.get(0));
 
       List<SyntaxTrivia> trivias = FirstSyntaxTokenFinder.firstSyntaxToken(firstStatement).trivias();
       if (!trivias.isEmpty()) {
-        return Math.min(firstLineTrivia(trivias), firstStatementLine);
+        int firstLineTrivia = firstLineTrivia(trivias);
+        if(firstLineTrivia == lastLabelLine) {
+          firstLineTrivia = firstLineTrivia+1;
+        }
+        return Math.min(firstLineTrivia, firstStatementLine);
       }
       return firstStatementLine;
     }

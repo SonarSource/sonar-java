@@ -78,6 +78,8 @@ public class SwitchCaseTooBigCheckTest {
       .next().atLine(66)
       .next().atLine(74)
       .next().atLine(74)
+      .next().atLine(77)
+      .next().atLine(83)
       .noMore();
   }
 
