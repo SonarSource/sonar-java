@@ -624,6 +624,7 @@ public class JavaTreeModelTest {
     EnumConstantTree tree = (EnumConstantTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("C1");
+    assertThatChildrenIteratorHasSize(tree, 2);
     NewClassTree newClassTree = tree.initializer();
     assertThat(newClassTree.openParenToken()).isNull();
     assertThat(newClassTree.arguments()).isEmpty();
@@ -635,6 +636,7 @@ public class JavaTreeModelTest {
     tree = (EnumConstantTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("C2");
+    assertThatChildrenIteratorHasSize(tree, 2);
     newClassTree = tree.initializer();
     assertThat(newClassTree.openParenToken()).isNotNull();
     assertThat(newClassTree.arguments()).hasSize(1);
