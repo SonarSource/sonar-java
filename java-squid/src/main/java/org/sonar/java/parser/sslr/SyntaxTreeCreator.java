@@ -136,7 +136,8 @@ public class SyntaxTreeCreator<T> {
 
       for (Object child : convertedChildren) {
         if(child instanceof InternalSyntaxToken) {
-          ((InternalSyntaxToken) child).setType(rule.getRealAstNodeType());
+          InternalSyntaxToken syntaxToken = (InternalSyntaxToken) child;
+          syntaxToken.setType(rule.getRealAstNodeType());
           return child;
         }
         if (child instanceof AstNode && ((AstNode) child).hasToken()) {
@@ -195,7 +196,7 @@ public class SyntaxTreeCreator<T> {
     }
     Token token = tokenBuilder.setTrivia(trivias).build();
     trivias.clear();
-    return new InternalSyntaxToken(token);
+    return new InternalSyntaxToken(token, node.getStartIndex(), node.getEndIndex());
   }
 
   private void updateTokenPositionAndValue(ParseNode node) {

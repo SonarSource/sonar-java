@@ -35,7 +35,6 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.AstNodeSanitizer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
@@ -65,7 +64,6 @@ public class ActionParser2 extends Parser {
 
   private final Charset charset;
 
-  private final AstNodeSanitizer astNodeSanitzer = new AstNodeSanitizer();
   private final GrammarBuilderInterceptor grammarBuilderInterceptor;
   private final SyntaxTreeCreator<JavaTree> syntaxTreeCreator;
   private final GrammarRuleKey rootRule;
@@ -142,10 +140,7 @@ public class ActionParser2 extends Parser {
       String message = new ParseErrorFormatter().format(parseError);
       throw new RecognitionException(line, message);
     }
-
-    AstNode astNode = syntaxTreeCreator.create(result.getParseTreeRoot(), input);
-    astNodeSanitzer.sanitize(astNode);
-    return astNode;
+    return syntaxTreeCreator.create(result.getParseTreeRoot(), input);
   }
 
   @Override

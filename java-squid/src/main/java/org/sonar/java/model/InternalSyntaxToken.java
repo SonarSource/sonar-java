@@ -38,29 +38,18 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   private final Token token;
   private List<SyntaxTrivia> trivias;
 
-  public InternalSyntaxToken(AstNodeType astNodeType, Token token, int fromIndex, int toIndex) {
-    // Must pass token to super's constructor
-    super(astNodeType, token);
-    this.token = token;
-    this.trivias = createTrivias(token);
-    setFromIndex(fromIndex);
-    setToIndex(toIndex);
+
+  protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
+    this(internalSyntaxToken.token, internalSyntaxToken.getFromIndex(), internalSyntaxToken.getToIndex());
   }
 
-  private InternalSyntaxToken(AstNode astNode) {
-    super(astNode);
-    this.token = astNode.getToken();
-    this.trivias = createTrivias(token);
-  }
-
-  public InternalSyntaxToken(Token token) {
+  public InternalSyntaxToken(Token token, int startIndex, int endIndex) {
     super((AstNode)null);
     this.token = token;
     this.trivias = createTrivias(token);
-  }
+    setFromIndex(startIndex);
+    setToIndex(endIndex);
 
-  public InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
-    this(internalSyntaxToken.token);
   }
 
   @Override
@@ -119,10 +108,6 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   @Override
   public Iterator<Tree> childrenIterator() {
     throw new UnsupportedOperationException();
-  }
-
-  public static InternalSyntaxToken createLegacy(AstNode astNode) {
-    return new InternalSyntaxToken(astNode);
   }
 
   public void setType(AstNodeType type) {

@@ -578,7 +578,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return token != null ? token : InternalSyntaxToken.createLegacy(getLastTokenAstNode(getAstNode()));
+      return token;
     }
 
     @Override
