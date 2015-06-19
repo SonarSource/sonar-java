@@ -137,7 +137,7 @@ public class TreeFactory {
     Optional<PackageDeclarationTree> packageDeclaration,
     Optional<List<ImportClauseTree>> importDeclarations,
     Optional<List<Tree>> typeDeclarations,
-    AstNode eof) {
+    JavaTree eof) {
 
     List<AstNode> children = Lists.newArrayList();
     children.add(spacing);
