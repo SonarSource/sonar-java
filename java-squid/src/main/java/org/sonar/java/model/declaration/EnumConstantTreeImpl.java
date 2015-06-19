@@ -20,14 +20,18 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nonnull;
+
+import java.util.Iterator;
 
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
 
@@ -49,6 +53,12 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitEnumConstant(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    // the ideentifierTree simpleName is also present in initializer
+    return Iterators.<Tree>forArray(modifiers(), initializer());
   }
 
 }
