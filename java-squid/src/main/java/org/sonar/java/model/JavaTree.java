@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeReflector;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -50,7 +49,6 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -72,11 +70,6 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public JavaTree(AstNodeType type) {
     super(type, type.toString(), null);
-    this.astNode = this;
-  }
-
-  public JavaTree(AstNodeType type, Token token) {
-    super(type, type.toString(), token);
     this.astNode = this;
   }
 

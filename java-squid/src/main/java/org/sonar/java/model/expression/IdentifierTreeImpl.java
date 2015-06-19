@@ -38,10 +38,8 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   private Symbol symbol = Symbols.unknownSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
-    super(Kind.IDENTIFIER, nameToken.getToken());
+    super(Kind.IDENTIFIER);
     this.nameToken = Preconditions.checkNotNull(nameToken);
-
-    addChild(nameToken);
   }
 
   @Override

@@ -36,10 +36,9 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   private final InternalSyntaxToken token;
 
   public LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
-    super(kind, token.getToken());
+    super(kind);
     this.kind = Preconditions.checkNotNull(kind);
     this.token = token;
-    addChild(token);
   }
 
   @Override

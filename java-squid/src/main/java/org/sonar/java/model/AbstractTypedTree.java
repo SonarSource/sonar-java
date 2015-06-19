@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.Token;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
@@ -44,10 +43,6 @@ public abstract class AbstractTypedTree extends JavaTree {
 
   public AbstractTypedTree(AstNodeType astNodeType) {
     super(astNodeType);
-  }
-
-  public AbstractTypedTree(AstNodeType astNodeType, Token token) {
-    super(astNodeType, token);
   }
 
   /**
