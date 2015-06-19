@@ -162,7 +162,7 @@ public class TreeFactory {
       }
     }
 
-    InternalSyntaxToken eofToken = InternalSyntaxToken.create(eof);
+    InternalSyntaxToken eofToken = ((InternalSyntaxToken) eof);
     children.add(eofToken);
 
     return new CompilationUnitTreeImpl(
@@ -372,7 +372,7 @@ public class TreeFactory {
       partial.completeSuperclass((SyntaxToken) extendsClause.get().first(), extendsClause.get().second());
     }
     if (implementsClause.isPresent()) {
-      InternalSyntaxToken implementsKeyword = InternalSyntaxToken.create(implementsClause.get().first());
+      InternalSyntaxToken implementsKeyword = ((InternalSyntaxToken) implementsClause.get().first());
       QualifiedIdentifierListTreeImpl interfaces = implementsClause.get().second();
       children.add(implementsKeyword);
       children.add(interfaces);
@@ -448,7 +448,7 @@ public class TreeFactory {
     children.add(identifier);
 
     if (implementsClause.isPresent()) {
-      InternalSyntaxToken implementsKeyword = InternalSyntaxToken.create(implementsClause.get().first());
+      InternalSyntaxToken implementsKeyword = (InternalSyntaxToken) implementsClause.get().first();
       QualifiedIdentifierListTreeImpl interfaces = implementsClause.get().second();
       children.add(implementsKeyword);
       children.add(interfaces);
@@ -527,7 +527,7 @@ public class TreeFactory {
       partial.completeTypeParameters(typeParameters.get());
     }
     if (extendsClause.isPresent()) {
-      InternalSyntaxToken extendsKeyword = InternalSyntaxToken.create(extendsClause.get().first());
+      InternalSyntaxToken extendsKeyword = (InternalSyntaxToken) extendsClause.get().first();
       QualifiedIdentifierListTreeImpl interfaces = extendsClause.get().second();
       children.add(extendsKeyword);
       children.add(interfaces);
@@ -617,9 +617,9 @@ public class TreeFactory {
     }
 
     InternalSyntaxToken throwsToken = null;
-    List<TypeTree> throwsClauses = ImmutableList.<TypeTree>of();
+    List<TypeTree> throwsClauses = ImmutableList.of();
     if (throwsClause.isPresent()) {
-      throwsToken = InternalSyntaxToken.create(throwsClause.get().first());
+      throwsToken = (InternalSyntaxToken) throwsClause.get().first();
       throwsClauses = throwsClause.get().second();
     }
 
@@ -1742,19 +1742,6 @@ public class TreeFactory {
     return new MemberSelectExpressionTreeImpl((ExpressionTree) typeTree, dotToken, classToken, children.toArray(new AstNode[children.size()]));
   }
 
-  public ExpressionTree voidClassExpression(AstNode voidTokenAstNode, AstNode dotToken, AstNode classTokenAstNode) {
-    // void.class
-    InternalSyntaxToken voidToken = InternalSyntaxToken.create(voidTokenAstNode);
-    InternalSyntaxToken dotSyntaxToken = InternalSyntaxToken.create(dotToken);
-    PrimitiveTypeTreeImpl voidType = new PrimitiveTypeTreeImpl(voidToken,
-      ImmutableList.<AstNode>of(voidToken));
-
-    IdentifierTreeImpl classToken = new IdentifierTreeImpl(InternalSyntaxToken.create(classTokenAstNode));
-
-    return new MemberSelectExpressionTreeImpl(voidType, dotSyntaxToken, classToken,
-      voidType, dotToken, classToken);
-  }
-
   public PrimitiveTypeTreeImpl newBasicType(Optional<List<AnnotationTreeImpl>> annotations, JavaTree basicType) {
 
     List<AstNode> children = Lists.newArrayList();
@@ -1871,12 +1858,9 @@ public class TreeFactory {
     return result;
   }
 
-  public NewArrayTreeImpl newArrayInitializer(AstNode openBraceTokenAstNode, Optional<List<AstNode>> rests, AstNode closeBraceTokenAstNode) {
+  public NewArrayTreeImpl newArrayInitializer(InternalSyntaxToken openBraceToken, Optional<List<AstNode>> rests, InternalSyntaxToken closeBraceToken) {
     ImmutableList.Builder<ExpressionTree> initializers = ImmutableList.builder();
     List<AstNode> children = Lists.newArrayList();
-
-    InternalSyntaxToken openBraceToken = InternalSyntaxToken.create(openBraceTokenAstNode);
-    InternalSyntaxToken closeBraceToken = InternalSyntaxToken.create(closeBraceTokenAstNode);
 
     children.add(openBraceToken);
     if (rests.isPresent()) {
@@ -2245,8 +2229,7 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
-  public Tuple<InternalSyntaxToken, Tree> newAdditionalBound(AstNode andToken, Tree type) {
-    InternalSyntaxToken andSyntaxToken = InternalSyntaxToken.create(andToken);
+  public Tuple<InternalSyntaxToken, Tree> newAdditionalBound(InternalSyntaxToken andSyntaxToken, Tree type) {
     return newTuple(andSyntaxToken, type);
   }
 

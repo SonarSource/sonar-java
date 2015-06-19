@@ -1094,8 +1094,7 @@ public class JavaGrammar {
           PARENTHESIZED_EXPRESSION(),
           LITERAL(),
           NEW_EXPRESSION(),
-          BASIC_CLASS_EXPRESSION(),
-          VOID_CLASS_EXPRESSION()));
+          BASIC_CLASS_EXPRESSION()));
   }
 
   public ExpressionTree LAMBDA_EXPRESSION() {
@@ -1182,12 +1181,6 @@ public class JavaGrammar {
       .<ExpressionTree>nonterminal(JavaLexer.BASIC_CLASS_EXPRESSION)
       .is(
         f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
-  }
-
-  // TODO This method should go away
-  public ExpressionTree VOID_CLASS_EXPRESSION() {
-    return b.<ExpressionTree>nonterminal(JavaLexer.VOID_CLASS_EXPRESSION)
-      .is(f.voidClassExpression(b.invokeRule(JavaKeyword.VOID), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
   public PrimitiveTypeTreeImpl BASIC_TYPE() {
