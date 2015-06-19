@@ -329,9 +329,9 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitNewArray(NewArrayTree tree) {
-    if (!tree.initializers().isEmpty()) {
-      // TODO(SONARJAVA-547) should be the close brace
-      scan(Iterables.getLast(tree.initializers()));
+    SyntaxToken closeBraceToken = tree.closeBraceToken();
+    if (closeBraceToken != null) {
+      lastSyntaxToken = closeBraceToken;
     } else {
       scan(Iterables.getLast(tree.dimensions()));
     }

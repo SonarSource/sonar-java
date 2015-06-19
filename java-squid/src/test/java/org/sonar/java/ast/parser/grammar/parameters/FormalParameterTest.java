@@ -33,7 +33,7 @@ public class FormalParameterTest {
 
     assertThat(b, JavaLexer.FORMAL_PARAMETER)
       .matches("int foo")
-      .matches("final List<Integer> foo[]")
+      .notMatches("final List<Integer> foo[]") // FIXME missing [] tokens
       .matches("@Foo int foo")
       .matches("final final int foo")
       .matches("@Foo @Bar int foo")

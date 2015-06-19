@@ -21,17 +21,17 @@ package org.sonar.sslr.tests;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
 import org.fest.assertions.GenericAssert;
+import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.parser.sslr.ActionParser2;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -61,8 +61,12 @@ public class Assertions {
     }
 
     private void parseTillEof(String input) {
-      AstNode astNode = actual.parse(input);
-      InternalSyntaxToken syntaxToken = (InternalSyntaxToken) LastSyntaxTokenFinder.lastSyntaxToken((Tree) astNode);
+      JavaTree tree = (JavaTree) actual.parse(input);
+      InternalSyntaxToken syntaxToken = (InternalSyntaxToken) LastSyntaxTokenFinder.lastSyntaxToken(tree);
+      //FIXME ugly hack to get closing parenthesis of formal parameter list
+      if(tree instanceof FormalParametersListTreeImpl && ((FormalParametersListTreeImpl) tree).closeParenToken() != null) {
+        syntaxToken = ((FormalParametersListTreeImpl) tree).closeParenToken();
+      }
       if (syntaxToken == null || (!syntaxToken.isEOF() && (syntaxToken.column()+syntaxToken.text().length() != input.length()))) {
         if (syntaxToken == null)  {
           throw new RecognitionException(0, "Did not match till EOF : Last syntax token cannot be found");

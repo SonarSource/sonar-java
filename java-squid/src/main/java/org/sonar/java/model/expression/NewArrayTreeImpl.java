@@ -95,9 +95,21 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     return dimensions;
   }
 
+  @Nullable
+  @Override
+  public SyntaxToken openBraceToken() {
+    return openCurlyBraceToken;
+  }
+
   @Override
   public List<ExpressionTree> initializers() {
     return initializers;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken closeBraceToken() {
+    return closeCurlyBraceToken;
   }
 
   @Override
