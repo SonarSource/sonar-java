@@ -90,13 +90,8 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   }
 
   @Override
-  public int getLine() {
-    return getAstNode().getTokenLine();
-  }
-
-  @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
+    return Iterators.forArray(
       leftOperand,
       operator,
       rightOperand);
