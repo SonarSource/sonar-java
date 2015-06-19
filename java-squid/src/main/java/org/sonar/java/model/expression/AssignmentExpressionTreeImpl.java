@@ -53,14 +53,6 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
     addChild((AstNode) expression);
   }
 
-  public AssignmentExpressionTreeImpl(AstNode astNode, ExpressionTree variable, Kind kind, ExpressionTree expression) {
-    super(astNode);
-    this.variable = Preconditions.checkNotNull(variable);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.operatorToken = InternalSyntaxToken.createLegacy(getAstNode());
-    this.expression = Preconditions.checkNotNull(expression);
-  }
-
   @Override
   public Kind getKind() {
     return kind;
