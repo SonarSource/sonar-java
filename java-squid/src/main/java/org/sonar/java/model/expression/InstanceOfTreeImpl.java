@@ -86,6 +86,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       expression,
+      instanceofToken,
       type
       );
   }

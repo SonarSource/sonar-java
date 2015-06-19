@@ -27,8 +27,8 @@ interface I3 { int op(int a, int b); }
 enum E1 {}
 enum E2 {
    /* comment */ A, 
-   B /* comment */, 
-   C /* comment */;
+   B /* comment FIXME separators of enum constants are ignored */, 
+   C /* comment FIXME separators of enum constants are ignored */;
 }
 enum E3 {
   A /* comment */ (
@@ -44,8 +44,8 @@ enum E3 {
 
 @Target(/* comment */{
   /*comment */ ElementType.FIELD
-  /* comment */, ElementType.ANNOTATION_TYPE, 
-  ElementType.TYPE_PARAMETER /* comment */,
+  /* comment FIXME separators of arguments are ignored */, ElementType.ANNOTATION_TYPE, 
+  ElementType.TYPE_PARAMETER /* comment FIXME separators of arguments are ignored */,
   ElementType. /* comment */METHOD,
   ElementType.TYPE_USE /* comment*/}
 /* comment */)
@@ -59,16 +59,16 @@ class A03 /* comment */ {}
 class A05 /* comment */ <T> {}
 class A06 </* comment */ T> {}
 class A07 <T /* comment */> {}
-class A08 </* comment */ @A01 T> {}
-class A09 <T /* comment */, G> {}
+class A08 </* comment FIXME annotations on type parameters are ignored */ @A01 T> {}
+class A09 <T /* comment FIXME separators of type parameters are ignored */, G> {}
 class A10 <T /* comment */ extends I> {}
 class A11 <T extends /* comment */ I> {}
-class A12 <T extends /* comment */ @A01 I> {}
-class A13 <T extends I1 /* comment */ & I2> {}
+class A12 <T extends /* comment FIXME annotations on type parameters are ignored */ @A01 I> {}
+class A13 <T extends I1 /* comment FIXME separators of bound are ignored */ & I2> {}
 class A14 <T extends I1 & /* comment */ I2> {}
 class A15 /* comment */ implements I {}
 class A16 implements /* comment */ I {}
-class A17 implements I1 /* comment */, I2 {}
+class A17 implements I1 /* comment FIXME separators of interface are ignored */, I2 {}
 class A18 implements I1, /* comment */ I2 {}
 class A19 /* comment */ extends A02 {}
 
@@ -80,7 +80,7 @@ abstract class Rest<T> {
   List/* comment */<Integer> a04;
   List</* comment */Integer> a05;
   List<Integer /* comment */> a06;
-  Map<Integer /* comment */, Integer> a07;
+  Map<Integer /* comment FIXME separators of type parameters are ignored */, Integer> a07;
   List</* comment */ ?> a8;
   List</* comment */ ? extends I> a9;
   List<? /* comment */ extends I> a10;
@@ -106,6 +106,7 @@ abstract class Rest<T> {
   char b03 = /* comment */ ' ';
   /* comment */ private int b04; 
   /* comment */ @Deprecated int b05;
+  /* comment */
   int b06 /* comment */, b07;
   int b08 /* comment */ = 0, b09;
   
@@ -118,14 +119,14 @@ abstract class Rest<T> {
   int[] c07 [/* comment*/];
   int[] c08 = /* comment */ new int[0];
   int[] c09 = new /* comment */ int[0];
-  int[] c10 = new int /* comment */[0];
+  int[] c10 = new int /* comment FIXME brackets of dimension initializers are ignored */[0];
   int[] c11 = new int[/* comment */0];
-  int[] c12 = new int[0/* comment */];
-  int[] c13 = new int /* comment */ @A01 [0];
+  int[] c12 = new int[0/* comment FIXME brackets of dimension initializers are ignored */];
+  int[] c13 = new int /* comment FIXME annotations of dimension initializers are ignored */ @A01 [0];
   int[] c14 = new int[] /* comment */{};
   int[] c15 = new int[] {/* comment */};
   int[] c16 = new int[] {/* comment */0, 1};
-  int[] c17 = new int[] {0 /* comment */, 1};
+  int[] c17 = new int[] {0 /* comment FIXME separators of array initializers are ignored */, 1};
   int[][] c18 = new int[][] {/* comment */{0, 1}, null};
   int[][] c19 = new int[][] {{0 , 1}, /* comment */ null};
   
@@ -153,7 +154,7 @@ abstract class Rest<T> {
   abstract <T/* comment */> void m16(T t);
   abstract void m17() /* comment */ throws Exception;
   abstract void m18() throws /* comment */ Exception;
-  abstract void m19() throws RuntimeException /* comment */, Exception;
+  abstract void m19() throws RuntimeException /* comment FIXME separators of exceptions are ignored */, Exception;
   
   /* comment */ public Rest() {}
   public /* comment */ Rest(int i) {}
@@ -253,13 +254,13 @@ abstract class Rest<T> {
     try { } catch (Exception e /* comment */) {}
     try { } catch (Exception e ) /* comment */{}
     try { } catch (Exception e ) {/* comment */}
-    try { throw new FileNotFoundException(); } catch (FileNotFoundException /* comment */ | UnknownTypeException e ) {}
+    try { throw new FileNotFoundException(); } catch (FileNotFoundException /* comment FIXME separators of unary types are ignored */ | UnknownTypeException e ) {}
     try { } /* comment */ finally {}
     try { } finally /* comment */ {}
     try { } finally {/* comment */ }
     try /* comment */ (Closeable c = new FileInputStream("")) {}
     try (Closeable c = new FileInputStream("")/* comment */ ) {}
-    try (Closeable c1 = new FileInputStream("") /* comment */ ; Closeable c2 = new FileInputStream("")) {}
+    try (Closeable c1 = new FileInputStream("") /* comment FIXME separators of resources are ignored */ ; Closeable c2 = new FileInputStream("")) {}
     
     int i /* comment */ = 0, j = 0;
     i /* comment */ ++;
@@ -344,3 +345,4 @@ abstract class Rest<T> {
   }
 }
 
+/* comment */

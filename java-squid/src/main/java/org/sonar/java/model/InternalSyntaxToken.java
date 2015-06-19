@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
@@ -39,25 +38,18 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   private final Token token;
   private List<SyntaxTrivia> trivias;
 
-  public InternalSyntaxToken(AstNodeType astNodeType, Token token, int fromIndex, int toIndex) {
-    // Must pass token to super's constructor
-    super(astNodeType, token);
-    this.token = token;
-    this.trivias = createTrivias(token);
-    setFromIndex(fromIndex);
-    setToIndex(toIndex);
+
+  protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
+    this(internalSyntaxToken.token, internalSyntaxToken.getFromIndex(), internalSyntaxToken.getToIndex());
   }
 
-  private InternalSyntaxToken(AstNode astNode) {
-    super(astNode);
-    this.token = astNode.getToken();
-    this.trivias = createTrivias(token);
-  }
-
-  public InternalSyntaxToken(Token token) {
+  public InternalSyntaxToken(Token token, int startIndex, int endIndex) {
     super((AstNode)null);
     this.token = token;
     this.trivias = createTrivias(token);
+    setFromIndex(startIndex);
+    setToIndex(endIndex);
+
   }
 
   @Override
@@ -118,14 +110,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     throw new UnsupportedOperationException();
   }
 
-  public static InternalSyntaxToken create(AstNode astNode) {
-    Preconditions.checkArgument(astNode.hasToken(), "has no token");
-    Preconditions.checkArgument(astNode.getToken() == astNode.getLastToken(), "has several tokens");
-    return new InternalSyntaxToken(astNode.getType(), astNode.getToken(), astNode.getFromIndex(), astNode.getToIndex());
+  public void setType(AstNodeType type) {
+    this.type = type;
   }
-
-  public static InternalSyntaxToken createLegacy(AstNode astNode) {
-    return new InternalSyntaxToken(astNode);
-  }
-
 }

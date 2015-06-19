@@ -74,8 +74,9 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(expression),
+      semicolonToken != null ? Iterators.<Tree>singletonIterator(semicolonToken) : Iterators.<Tree>emptyIterator());
   }
 
 }

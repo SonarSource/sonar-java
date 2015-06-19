@@ -95,7 +95,10 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      whileKeyword,
+      openParenToken,
       condition,
+      closeParenToken,
       statement);
   }
 

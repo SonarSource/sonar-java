@@ -80,8 +80,10 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      label);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(breakToken),
+      label != null ? Iterators.<Tree>singletonIterator(label) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }

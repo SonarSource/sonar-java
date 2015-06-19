@@ -35,7 +35,7 @@ public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
   public int linesOfCode(CompilationUnitTree tree) {
     lines.clear();
-    visitTokens(tree);
+    scanTree(tree);
     return lines.size();
   }
 

@@ -25,6 +25,7 @@ import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.java.ast.parser.TreeFactory.Tuple;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.CompilationUnitTreeImpl;
 import org.sonar.java.model.JavaTree.PrimitiveTypeTreeImpl;
 import org.sonar.java.model.TypeParameterTreeImpl;
@@ -66,6 +67,7 @@ import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -144,8 +146,8 @@ public class JavaGrammar {
           b.invokeRule(JavaLexer.EOF)));
   }
 
-  public ExpressionTree PACKAGE_DECLARATION() {
-    return b.<ExpressionTree>nonterminal(JavaLexer.PACKAGE_DECLARATION)
+  public PackageDeclarationTree PACKAGE_DECLARATION() {
+    return b.<PackageDeclarationTree>nonterminal(JavaLexer.PACKAGE_DECLARATION)
       .is(f.newPackageDeclaration(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaKeyword.PACKAGE), EXPRESSION_QUALIFIED_IDENTIFIER(), b.invokeRule(JavaPunctuator.SEMI)));
   }
 
@@ -273,8 +275,8 @@ public class JavaGrammar {
       .is(f.newClassBody(b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.invokeRule(JavaPunctuator.RWING)));
   }
 
-  public AstNode CLASS_MEMBER() {
-    return b.<AstNode>nonterminal(JavaLexer.MEMBER_DECL)
+  public JavaTree CLASS_MEMBER() {
+    return b.<JavaTree>nonterminal(JavaLexer.MEMBER_DECL)
       .is(
         b.firstOf(
           f.completeMember(
@@ -527,7 +529,7 @@ public class JavaGrammar {
     return b.<FormalParametersListTreeImpl>nonterminal(JavaLexer.FORMAL_PARAMETERS_DECLS_REST)
       .is(
         b.firstOf(
-          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newWrapperAstNode10(b.invokeRule(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
+          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newTuple18(b.invokeRule(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
           f.newVariableArgumentFormalParameter(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.ELLIPSIS), VARIABLE_DECLARATOR_ID())));
   }
 
@@ -1061,7 +1063,7 @@ public class JavaGrammar {
             f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
             f.newClassCastExpression(
               TYPE(),
-              b.zeroOrMore(f.newWrapperAstNode(b.invokeRule(JavaPunctuator.AND), (AstNode) QUALIFIED_IDENTIFIER())),
+              b.zeroOrMore(f.newAdditionalBound(b.invokeRule(JavaPunctuator.AND), QUALIFIED_IDENTIFIER())),
               b.invokeRule(JavaPunctuator.RPAR),
               UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
   }
@@ -1092,8 +1094,7 @@ public class JavaGrammar {
           PARENTHESIZED_EXPRESSION(),
           LITERAL(),
           NEW_EXPRESSION(),
-          BASIC_CLASS_EXPRESSION(),
-          VOID_CLASS_EXPRESSION()));
+          BASIC_CLASS_EXPRESSION()));
   }
 
   public ExpressionTree LAMBDA_EXPRESSION() {
@@ -1182,12 +1183,6 @@ public class JavaGrammar {
         f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
   }
 
-  // TODO This method should go away
-  public ExpressionTree VOID_CLASS_EXPRESSION() {
-    return b.<ExpressionTree>nonterminal(JavaLexer.VOID_CLASS_EXPRESSION)
-      .is(f.voidClassExpression(b.invokeRule(JavaKeyword.VOID), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
-  }
-
   public PrimitiveTypeTreeImpl BASIC_TYPE() {
     return b.<PrimitiveTypeTreeImpl>nonterminal(JavaLexer.BASIC_TYPE)
       .is(
@@ -1265,8 +1260,8 @@ public class JavaGrammar {
       .is(f.newClassCreatorRest(ARGUMENTS(), b.optional(CLASS_BODY())));
   }
 
-  public Tuple<AstNode, AstNode> DIMENSION() {
-    return b.<Tuple<AstNode, AstNode>>nonterminal(JavaLexer.DIM)
+  public Tuple<InternalSyntaxToken, InternalSyntaxToken> DIMENSION() {
+    return b.<Tuple<InternalSyntaxToken, InternalSyntaxToken>>nonterminal(JavaLexer.DIM)
       .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
   }
 

@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,7 +78,17 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
+    ImmutableList.Builder<Tree> iterator = ImmutableList.<Tree>builder();
+    if (openBracketToken != null) {
+      iterator.add(openBracketToken);
+    }
+    // FIXME SONARJAVA-547 separators between parameters are currently ignored
+    iterator.addAll(this);
+    if (closeBracketToken != null) {
+      iterator.add(closeBracketToken);
+    }
+
+    return iterator.build().iterator();
   }
 
   @Override

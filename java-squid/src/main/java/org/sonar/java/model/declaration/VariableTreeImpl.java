@@ -48,6 +48,8 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private TypeTree type;
   private IdentifierTree simpleName;
   @Nullable
+  private SyntaxToken equalToken;
+  @Nullable
   private ExpressionTree initializer;
   @Nullable
   private SyntaxToken endToken;
@@ -77,7 +79,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer, AstNode... children) {
     super(Kind.VARIABLE);
-
+    this.equalToken = equalToken;
     this.initializer = initializer;
 
     for (AstNode child : children) {
@@ -213,11 +215,12 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      modifiers,
-      type,
-      simpleName,
-      initializer
+    Iterator<Tree> initializerIterator = initializer != null ? Iterators.<Tree>forArray(equalToken, initializer) : Iterators.<Tree>emptyIterator();
+    Iterator<Tree> endTokenIterator = endToken != null ? Iterators.<Tree>singletonIterator(endToken) : Iterators.<Tree>emptyIterator();
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(modifiers, type, simpleName),
+      initializerIterator,
+      endTokenIterator
       );
   }
 

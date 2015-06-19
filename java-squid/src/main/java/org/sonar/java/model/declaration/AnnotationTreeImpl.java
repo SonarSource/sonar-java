@@ -88,9 +88,12 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    boolean hasParenthesis = openParenToken != null;
     return Iterators.concat(
-      Iterators.singletonIterator(annotationType),
-      arguments.iterator());
+      Iterators.forArray(atToken, annotationType),
+      hasParenthesis ? Iterators.singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
+      arguments.iterator(),
+      hasParenthesis ? Iterators.singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator());
   }
 
   @Override

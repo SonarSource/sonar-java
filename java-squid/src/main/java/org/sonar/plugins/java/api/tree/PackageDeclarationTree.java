@@ -17,23 +17,33 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser.grammar.parameters;
+package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
-import org.sonar.java.ast.parser.JavaLexer;
+import com.google.common.annotations.Beta;
 
-import static org.sonar.sslr.tests.Assertions.assertThat;
+import java.util.List;
 
-public class VariableDeclaratorIdTest {
+/**
+ * Package declaration.
+ *
+ * JLS 7.4.1
+ *
+ * <pre>
+ *   {@link #annotations()} package {@link #packageName()} ;
+ * </pre>
+ */
+@Beta
+public interface PackageDeclarationTree extends Tree {
 
-  @Test
-  public void ok() {
-    assertThat(JavaLexer.VARIABLE_DECLARATOR_ID)
-      .matches("identifier")
-      .notMatches("identifier []") //FIXME missing [] tokens
-      .notMatches("identifier @Foo []") //FIXME missing [] tokens
-      .notMatches("identifier [] []") //FIXME missing [] tokens
-      .notMatches("identifier [] @Foo @Bar []"); //FIXME missing [] tokens
-  }
+  /**
+   * @since Java 1.5
+   */
+  List<AnnotationTree> annotations();
+
+  SyntaxToken packageKeyword();
+
+  ExpressionTree packageName();
+
+  SyntaxToken semicolonToken();
 
 }

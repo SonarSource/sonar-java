@@ -52,14 +52,6 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
     addChild((AstNode) rightOperand);
   }
 
-  public BinaryExpressionTreeImpl(AstNode astNode, ExpressionTree leftOperand, Kind kind, ExpressionTree rightOperand) {
-    super(astNode);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.leftOperand = Preconditions.checkNotNull(leftOperand);
-    this.operator = InternalSyntaxToken.createLegacy(super.getAstNode());
-    this.rightOperand = Preconditions.checkNotNull(rightOperand);
-  }
-
   @Override
   public ExpressionTree leftOperand() {
     return leftOperand;
@@ -98,14 +90,10 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   }
 
   @Override
-  public int getLine() {
-    return getAstNode().getTokenLine();
-  }
-
-  @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
+    return Iterators.forArray(
       leftOperand,
+      operator,
       rightOperand);
   }
 

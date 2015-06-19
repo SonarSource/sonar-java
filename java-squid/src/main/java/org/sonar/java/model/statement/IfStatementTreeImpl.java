@@ -138,10 +138,8 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      condition,
-      thenStatement,
-      elseStatement);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
+      elseKeyword != null ? Iterators.<Tree>forArray(elseKeyword, elseStatement) : Iterators.<Tree>emptyIterator());
   }
-
 }

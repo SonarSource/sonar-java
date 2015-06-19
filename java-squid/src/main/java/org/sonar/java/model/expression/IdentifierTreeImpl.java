@@ -20,6 +20,7 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.resolve.Symbols;
@@ -37,10 +38,8 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   private Symbol symbol = Symbols.unknownSymbol;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
-    super(Kind.IDENTIFIER, nameToken.getToken());
+    super(Kind.IDENTIFIER);
     this.nameToken = Preconditions.checkNotNull(nameToken);
-
-    addChild(nameToken);
   }
 
   @Override
@@ -78,13 +77,8 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   }
 
   @Override
-  public boolean isLeaf() {
-    return true;
-  }
-
-  @Override
   public Iterator<Tree> childrenIterator() {
-    throw new UnsupportedOperationException();
+    return Iterators.<Tree>singletonIterator(nameToken);
   }
 
 }

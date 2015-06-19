@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.Token;
 import org.sonar.java.ast.parser.AstNodeReflector;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -38,6 +37,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -49,7 +49,7 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
+import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -70,11 +70,6 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public JavaTree(AstNodeType type) {
     super(type, type.toString(), null);
-    this.astNode = this;
-  }
-
-  public JavaTree(AstNodeType type, Token token) {
-    super(type, type.toString(), token);
     this.astNode = this;
   }
 
@@ -163,19 +158,18 @@ public abstract class JavaTree extends AstNode implements Tree {
   }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
-    @Nullable
-    private final ExpressionTree packageName;
+    private final PackageDeclarationTree packageDeclaration;
     private final List<ImportClauseTree> imports;
     private final List<Tree> types;
-    private final List<AnnotationTree> packageAnnotations;
+    private final SyntaxToken eofToken;
 
-    public CompilationUnitTreeImpl(@Nullable ExpressionTree packageName, List<ImportClauseTree> imports,
-                                   List<Tree> types, List<AnnotationTree> packageAnnotations, List<AstNode> children) {
+    public CompilationUnitTreeImpl(@Nullable PackageDeclarationTree packageDeclaration, List<ImportClauseTree> imports,
+      List<Tree> types, SyntaxToken eofToken, List<AstNode> children) {
       super(Kind.COMPILATION_UNIT);
-      this.packageName = packageName;
+      this.packageDeclaration = packageDeclaration;
       this.imports = Preconditions.checkNotNull(imports);
       this.types = Preconditions.checkNotNull(types);
-      this.packageAnnotations = Preconditions.checkNotNull(packageAnnotations);
+      this.eofToken = eofToken;
 
       for (AstNode child : children) {
         addChild(child);
@@ -185,17 +179,6 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public Kind getKind() {
       return Kind.COMPILATION_UNIT;
-    }
-
-    @Override
-    public List<AnnotationTree> packageAnnotations() {
-      return packageAnnotations;
-    }
-
-    @Nullable
-    @Override
-    public ExpressionTree packageName() {
-      return packageName;
     }
 
     @Override
@@ -215,24 +198,100 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
+      Iterator<Tree> packageIterator = packageDeclaration == null ?
+        Iterators.<Tree>emptyIterator() :
+        Iterators.<Tree>singletonIterator(packageDeclaration);
       return Iterators.concat(
-        Iterators.singletonIterator(packageName),
+        packageIterator,
         imports.iterator(),
         types.iterator(),
-        packageAnnotations.iterator()
+        Iterators.singletonIterator(eofToken));
+    }
+
+    @Nullable
+    @Override
+    public PackageDeclarationTree packageDeclaration() {
+      return packageDeclaration;
+    }
+
+    @Override
+    public SyntaxToken eofToken() {
+      return eofToken;
+    }
+
+  }
+
+  public static class PackageDeclarationTreeImpl extends JavaTree implements PackageDeclarationTree {
+
+    private final List<AnnotationTree> annotations;
+    private final SyntaxToken packageKeyword;
+    private final ExpressionTree packageName;
+    private final SyntaxToken semicolonToken;
+
+    public PackageDeclarationTreeImpl(List<AnnotationTree> annotations, SyntaxToken packageKeyword, ExpressionTree packageName, SyntaxToken semicolonToken) {
+      super(Tree.Kind.PACKAGE);
+
+      this.annotations = Preconditions.checkNotNull(annotations);
+      this.packageKeyword = packageKeyword;
+      this.packageName = packageName;
+      this.semicolonToken = semicolonToken;
+
+      for (AnnotationTree annotationTree : annotations) {
+        addChild((AstNode) annotationTree);
+      }
+      addChild((AstNode) packageKeyword);
+      addChild((AstNode) packageName);
+      addChild((AstNode) semicolonToken);
+    }
+
+    @Override
+    public void accept(TreeVisitor visitor) {
+      visitor.visitPackage(this);
+    }
+
+    @Override
+    public List<AnnotationTree> annotations() {
+      return annotations;
+    }
+
+    @Override
+    public SyntaxToken packageKeyword() {
+      return packageKeyword;
+    }
+
+    @Override
+    public ExpressionTree packageName() {
+      return packageName;
+    }
+
+    @Override
+    public SyntaxToken semicolonToken() {
+      return semicolonToken;
+    }
+
+    @Override
+    public Kind getKind() {
+      return Tree.Kind.PACKAGE;
+    }
+
+    @Override
+    public Iterator<Tree> childrenIterator() {
+      return Iterators.concat(
+        annotations.iterator(),
+        Iterators.forArray(packageKeyword, packageName, semicolonToken)
         );
     }
 
-    public String packageNameAsString() {
-      if (packageName == null) {
+    public static String packageNameAsString(@Nullable PackageDeclarationTree tree) {
+      if (tree == null) {
         return "";
       }
       Deque<String> pieces = new LinkedList<String>();
-      ExpressionTree expr = packageName;
+      ExpressionTree expr = tree.packageName();
       while (expr.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
         pieces.push(mse.identifier().name());
-        pieces.push(".");
+        pieces.push(mse.operatorToken().text());
         expr = mse.expression();
       }
       if (expr.is(Tree.Kind.IDENTIFIER)) {
@@ -246,7 +305,6 @@ public abstract class JavaTree extends AstNode implements Tree {
       }
       return sb.toString();
     }
-
   }
 
   public static class ImportTreeImpl extends JavaTree implements ImportTree {
@@ -264,13 +322,13 @@ public abstract class JavaTree extends AstNode implements Tree {
       this.qualifiedIdentifier = qualifiedIdentifier;
       this.semiColonToken = semiColonToken;
       isStatic = staticToken != null;
+
       addChild(importToken);
       if(isStatic) {
         addChild(staticToken);
       }
       addChild((AstNode) qualifiedIdentifier);
       addChild(semiColonToken);
-
     }
 
     @Override
@@ -311,9 +369,10 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.singletonIterator(
-        qualifiedIdentifier
-        );
+
+      return Iterators.<Tree>concat(
+        isStatic ? Iterators.<Tree>singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
+        Iterators.<Tree>forArray(importToken, qualifiedIdentifier, semiColonToken));
     }
   }
 
@@ -325,6 +384,8 @@ public abstract class JavaTree extends AstNode implements Tree {
     private final Kind kind;
     @Nullable
     private final TypeTree bound;
+    // FIXME annotations can only by accessed through the children iterator
+    private final List<AnnotationTree> annotations;
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
       super(kind);
@@ -334,6 +395,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       this.kind = Preconditions.checkNotNull(kind);
       this.queryToken = queryToken;
       this.extendsOrSuperToken = null;
+      this.annotations = Collections.emptyList();
       this.bound = null;
 
       addChild(queryToken);
@@ -346,6 +408,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
       this.kind = Preconditions.checkNotNull(kind);
       this.extendsOrSuperToken = extendsOrSuperToken;
+      this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
       this.bound = bound;
 
       addChild(extendsOrSuperToken);
@@ -381,8 +444,15 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.<Tree>singletonIterator(
-        bound
+      Iterator<Tree> boundIterator = bound == null ?
+        Iterators.<Tree>emptyIterator() :
+        Iterators.concat(
+          Iterators.singletonIterator(extendsOrSuperToken), 
+          annotations.iterator(),
+          Iterators.singletonIterator(bound));
+      return Iterators.<Tree>concat(
+        Iterators.<Tree>singletonIterator(queryToken),
+        boundIterator
         );
     }
 
@@ -501,17 +571,12 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public SyntaxToken keyword() {
-      return token != null ? token : InternalSyntaxToken.createLegacy(getLastTokenAstNode(getAstNode()));
-    }
-
-    @Override
-    public boolean isLeaf() {
-      return true;
+      return token;
     }
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      throw new UnsupportedOperationException();
+      return Iterators.<Tree>singletonIterator(token);
     }
 
     @Nullable
@@ -569,10 +634,7 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.concat(
-        Iterators.singletonIterator(type),
-        typeArguments.iterator()
-        );
+      return Iterators.forArray(type, typeArguments);
     }
   }
 
@@ -634,9 +696,11 @@ public abstract class JavaTree extends AstNode implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
+      boolean hasBrackets = ellipsisToken == null;
       return Iterators.concat(
         Iterators.<Tree>singletonIterator(type),
-        annotations.iterator());
+        annotations.iterator(),
+        hasBrackets ? Iterators.forArray(openBracketToken, closeBracketToken) : Iterators.singletonIterator(ellipsisToken));
     }
 
     @Override

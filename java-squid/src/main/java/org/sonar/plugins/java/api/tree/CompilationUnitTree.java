@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -34,16 +35,13 @@ import java.util.List;
 @Beta
 public interface CompilationUnitTree extends Tree {
 
-  /**
-   * @since Java 1.5
-   */
-  List<AnnotationTree> packageAnnotations();
-
   @Nullable
-  ExpressionTree packageName();
+  PackageDeclarationTree packageDeclaration();
 
   List<ImportClauseTree> imports();
 
   List<Tree> types();
+
+  SyntaxToken eofToken();
 
 }

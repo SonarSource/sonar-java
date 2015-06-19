@@ -94,7 +94,10 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      synchronizedKeyword,
+      openParenToken,
       expression,
+      closeParenToken,
       block);
   }
 
