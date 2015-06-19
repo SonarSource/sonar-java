@@ -41,6 +41,7 @@ import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -229,7 +230,17 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitVariable(VariableTree tree) {
-    lastSyntaxToken = tree.endToken();
+    SyntaxToken endToken = tree.endToken();
+    if(endToken == null) {
+      ExpressionTree initializer = tree.initializer();
+      if(initializer == null) {
+        scan(tree.simpleName());
+      } else {
+        scan(tree.initializer());
+      }
+    } else {
+      lastSyntaxToken = endToken;
+    }
   }
 
   @Override
