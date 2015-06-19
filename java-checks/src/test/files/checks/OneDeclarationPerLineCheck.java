@@ -20,9 +20,11 @@ class OneDeclarationPerLineCheck {
     int staticC = 1; int staticD; // Noncompliant {{Declare "staticD" on a separate line.}}
   }
 
-                                   // Noncompliant@+1
   private int i1 = -1, i2, i3 = 1; // Noncompliant
+                                   // Noncompliant@-1
                                    // Issue order not stable => no message test below
+  
+  ;
 
   // For corner case test, please add a space before ;
   Object o1, o2 ; // Noncompliant {{Declare "o2" on a separate line.}}
@@ -64,7 +66,8 @@ class OneDeclarationPerLineCheck {
     }
   }
 
-  int i7; int i8; // Noncompliant {{Declare "i8" on a separate line.}}
+  // Noncompliant@+1 {{Declare "i8" on a separate line.}}
+  int i7; int i8;
   int i9,
       i10;  // Noncompliant {{Declare "i10" on a separate line.}}
   // For corner case test, last variable must be a "dubble" declaration with no simple declaration after ; and end token on next line.

@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -56,22 +57,41 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
   public String legalCommentPattern = DEFAULT_LEGAL_COMMENT_PATTERN;
 
   private Pattern pattern;
+  private boolean ignoreMultipleOccurences;
+  private Set<SyntaxToken> visitedTokens;
   private int previousTokenLine;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRIVIA);
+    return ImmutableList.of(
+      Tree.Kind.TOKEN,
+      Tree.Kind.VARIABLE);
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     previousTokenLine = -1;
     pattern = Pattern.compile(legalCommentPattern);
+    visitedTokens = Sets.newHashSet();
     super.scanFile(context);
+    visitedTokens.clear();
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    ignoreMultipleOccurences = true;
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    ignoreMultipleOccurences = false;
   }
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
+    if (ignoreMultipleOccurences && !visitedTokens.add(syntaxToken)) {
+      return;
+    }
     int tokenLine = syntaxToken.line();
     if (tokenLine != previousTokenLine) {
       for (SyntaxTrivia trivia : syntaxToken.trivias()) {
