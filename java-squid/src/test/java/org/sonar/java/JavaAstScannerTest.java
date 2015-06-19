@@ -19,30 +19,49 @@
  */
 package org.sonar.java;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JavaAstScannerTest {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  SensorContext context;
+  Project sonarProject;
+
+  @Before
+  public void setUp() throws Exception {
+    context = mock(SensorContext.class);
+    sonarProject = mock(Project.class);
+    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+    File baseDir = new File("src/test/files/metrics");
+    when(sonarProject.getFileSystem()).thenReturn(pfs);
+    when(pfs.getBasedir()).thenReturn(baseDir);
+  }
 
   @Test
   public void comments() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"), new VisitorsBridge(new Measurer(sonarProject, context, false)));
     assertThat(file.getNoSonarTagLines()).contains(15).hasSize(1);
   }
 
   @Test
   public void noSonarLines() throws Exception {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"), new VisitorsBridge(new Measurer(sonarProject, context, false)));
     assertThat(file.getNoSonarTagLines()).hasSize(1);
     assertThat(file.getNoSonarTagLines()).contains(8);
   }
