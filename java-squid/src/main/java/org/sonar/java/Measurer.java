@@ -94,6 +94,9 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     }
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
+    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
+    commentLinesVisitor.analyzeCommentLines(context.getTree());
+    context.addNoSonarLines(commentLinesVisitor.noSonarLines());
     super.scanFile(context);
     //leave file.
     int fileComplexity = context.getComplexity(context.getTree());
@@ -105,7 +108,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     saveMetricOnFile(CoreMetrics.PUBLIC_API, publicApiChecker.getPublicApi());
     saveMetricOnFile(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, publicApiChecker.getDocumentedPublicApiDensity());
     saveMetricOnFile(CoreMetrics.PUBLIC_UNDOCUMENTED_API, publicApiChecker.getUndocumentedPublicApi());
-    saveMetricOnFile(CoreMetrics.COMMENT_LINES, new CommentLinesVisitor().commentLines(context.getTree()));
+    saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
     saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
     saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
 

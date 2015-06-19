@@ -29,7 +29,6 @@ import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.indexer.QueryByType;
-import org.sonar.squidbridge.metrics.CommentsVisitor;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
@@ -78,11 +77,6 @@ public final class JavaAstScanner {
 
     /* Comments */
     builder.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
-
-    builder.withSquidAstVisitor(CommentsVisitor.<LexerlessGrammar>builder()
-      .withNoSonar(true)
-      .withIgnoreHeaderComment(true)
-      .build());
 
     /* External visitors (typically Check ones) */
     for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
