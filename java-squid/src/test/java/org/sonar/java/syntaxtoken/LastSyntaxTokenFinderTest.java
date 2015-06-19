@@ -618,7 +618,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new int[] {1, 2, 3};"
         + "  }"
         + "}";
-    assertLastStatementlastTokenValue(p, "3");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test

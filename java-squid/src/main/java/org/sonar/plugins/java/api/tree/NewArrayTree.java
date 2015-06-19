@@ -47,6 +47,11 @@ public interface NewArrayTree extends ExpressionTree {
 
   List<ExpressionTree> dimensions();
 
+  @Nullable
+  SyntaxToken openBraceToken();
+
   List<ExpressionTree> initializers();
 
+  @Nullable
+  SyntaxToken closeBraceToken();
 }
