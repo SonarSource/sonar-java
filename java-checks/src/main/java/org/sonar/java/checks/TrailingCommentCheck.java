@@ -60,7 +60,7 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRIVIA);
+    return ImmutableList.of(Tree.Kind.TOKEN);
   }
 
   @Override
