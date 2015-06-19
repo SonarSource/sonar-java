@@ -29,6 +29,9 @@ import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.parser.sslr.ActionParser2;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -59,10 +62,13 @@ public class Assertions {
 
     private void parseTillEof(String input) {
       AstNode astNode = actual.parse(input);
-
-      if (astNode.getToIndex() != input.length()) {
+      SyntaxToken syntaxToken = LastSyntaxTokenFinder.lastSyntaxToken((Tree) astNode);
+      if (syntaxToken == null || (syntaxToken.column()+syntaxToken.text().length() != input.length())) {
+        if (syntaxToken == null)  {
+          throw new RecognitionException(0, "Did not match till EOF : Last syntax token cannot be found");
+        }
         throw new RecognitionException(
-          0, "Did not match till EOF, but till line " + astNode.getLastToken().getLine() + ": token \"" + astNode.getLastToken().getValue() + "\"");
+          0, "Did not match till EOF, but till line " + syntaxToken.line() + ": token \"" + syntaxToken.text() + "\"");
       }
     }
 

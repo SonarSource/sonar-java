@@ -34,7 +34,10 @@ import com.sonar.sslr.impl.matcher.RuleDefinition;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.AstNodeSanitizer;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.matchers.InputBuffer;
@@ -64,7 +67,7 @@ public class ActionParser2 extends Parser {
 
   private final AstNodeSanitizer astNodeSanitzer = new AstNodeSanitizer();
   private final GrammarBuilderInterceptor grammarBuilderInterceptor;
-  private final SyntaxTreeCreator<AstNode> syntaxTreeCreator;
+  private final SyntaxTreeCreator<JavaTree> syntaxTreeCreator;
   private final GrammarRuleKey rootRule;
   private final Grammar grammar;
   private final ParseRunner parseRunner;
@@ -102,7 +105,7 @@ public class ActionParser2 extends Parser {
       }
     }
 
-    this.syntaxTreeCreator = new SyntaxTreeCreator<AstNode>(treeFactory, grammarBuilderInterceptor);
+    this.syntaxTreeCreator = new SyntaxTreeCreator<>(treeFactory, grammarBuilderInterceptor);
 
     b.setRootRule(rootRule);
     this.rootRule = rootRule;
@@ -260,7 +263,13 @@ public class ActionParser2 extends Parser {
     }
 
     @Override
-    public AstNode invokeRule(GrammarRuleKey ruleKey) {
+    public JavaTree invokeRule(GrammarRuleKey ruleKey) {
+      push(new DelayedRuleInvocationExpression(b, ruleKey));
+      return null;
+    }
+
+    @Override
+    public InternalSyntaxToken invokeRule(JavaPunctuator ruleKey) {
       push(new DelayedRuleInvocationExpression(b, ruleKey));
       return null;
     }
