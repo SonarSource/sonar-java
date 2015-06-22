@@ -39,10 +39,4 @@ public class ParsingErrorCheckTest {
         .noMore();
   }
 
-  @Test
-  public void test2() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), new VisitorsBridge(new AnonymousClassesTooBigCheck()));
-    SourceFile file2 = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), new VisitorsBridge(new AbstractClassNoFieldShouldBeInterfaceCheck()));
-  }
-
-  }
+}
