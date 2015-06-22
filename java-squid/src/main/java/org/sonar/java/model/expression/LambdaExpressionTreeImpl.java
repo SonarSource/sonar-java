@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -53,18 +52,6 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
     this.closeParenToken = closeParenToken;
     this.arrowToken = arrowToken;
     this.body = body;
-
-    if (openParenToken != null) {
-      addChild(openParenToken);
-    }
-    for (VariableTree param : parameters) {
-      addChild((AstNode) param);
-    }
-    if (closeParenToken != null) {
-      addChild(closeParenToken);
-    }
-    addChild(arrowToken);
-    addChild((AstNode) body);
   }
 
   @Override

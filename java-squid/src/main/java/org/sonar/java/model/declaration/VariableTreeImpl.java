@@ -20,9 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -41,7 +39,6 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
@@ -62,47 +59,29 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ArrayTypeTreeImpl nestedDimensions;
   private boolean vararg = false;
 
-  public VariableTreeImpl(IdentifierTreeImpl simpleName, @Nullable ArrayTypeTreeImpl nestedDimensions, List<AstNode> additionalChildren) {
+  public VariableTreeImpl(IdentifierTreeImpl simpleName, @Nullable ArrayTypeTreeImpl nestedDimensions) {
     super(Kind.VARIABLE);
 
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.simpleName = simpleName;
     this.nestedDimensions = nestedDimensions;
     this.initializer = null;
-
-    addChild((AstNode) modifiers);
-    addChild(simpleName);
-    for (AstNode child : additionalChildren) {
-      addChild(child);
-    }
   }
 
-  public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer, AstNode... children) {
+  public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer) {
     super(Kind.VARIABLE);
     this.equalToken = equalToken;
     this.initializer = initializer;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public VariableTreeImpl(IdentifierTreeImpl simpleName) {
-    this(simpleName, null, ImmutableList.<AstNode>of());
+    this(simpleName, null);
     this.type = new InferedTypeTree();
   }
 
   public VariableTreeImpl(Kind kind, ModifiersTree modifiers, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
     super(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.simpleName = Preconditions.checkNotNull(simpleName);
-    this.initializer = initializer;
-  }
-
-  public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, TypeTree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
-    super(astNode);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.type = Preconditions.checkNotNull(type);
     this.simpleName = Preconditions.checkNotNull(simpleName);
     this.initializer = initializer;
   }
@@ -232,6 +211,5 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   public void setEndToken(InternalSyntaxToken endToken) {
     this.endToken = endToken;
-    this.addChild(endToken);
   }
 }

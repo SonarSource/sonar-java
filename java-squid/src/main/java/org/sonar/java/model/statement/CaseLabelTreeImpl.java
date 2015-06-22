@@ -20,7 +20,6 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -45,12 +44,6 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
     this.caseOrDefaultKeyword = caseOrDefaultKeyword;
     this.expression = expression;
     this.colonToken = colonToken;
-
-    addChild(caseOrDefaultKeyword);
-    if (expression != null) {
-      addChild((AstNode) expression);
-    }
-    addChild(colonToken);
   }
 
   @Override

@@ -20,7 +20,6 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.StaticInitializerTree;
@@ -34,9 +33,8 @@ public class StaticInitializerTreeImpl extends BlockTreeImpl implements StaticIn
 
   private SyntaxToken staticKeyword;
 
-  public StaticInitializerTreeImpl(InternalSyntaxToken staticKeyword, InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken,
-    AstNode[] children) {
-    super(Tree.Kind.STATIC_INITIALIZER, openBraceToken, body, closeBraceToken, children);
+  public StaticInitializerTreeImpl(InternalSyntaxToken staticKeyword, InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken) {
+    super(Tree.Kind.STATIC_INITIALIZER, openBraceToken, body, closeBraceToken);
     this.staticKeyword = staticKeyword;
   }
 

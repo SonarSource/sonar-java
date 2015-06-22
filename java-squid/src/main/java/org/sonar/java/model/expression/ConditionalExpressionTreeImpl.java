@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -47,18 +46,11 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
     this.trueExpression = Preconditions.checkNotNull(trueExpression);
     this.colonToken = colonToken;
     this.falseExpression = Preconditions.checkNotNull(falseExpression);
-
-    addChild(queryToken);
-    addChild((AstNode) trueExpression);
-    addChild(colonToken);
-    addChild((AstNode) falseExpression);
   }
 
   public ConditionalExpressionTreeImpl complete(ExpressionTree condition) {
     Preconditions.checkState(this.condition == null);
     this.condition = condition;
-
-    prependChildren((AstNode) condition);
 
     return this;
   }

@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -47,24 +46,18 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   @Nullable
   private SyntaxToken closeCurlyBraceToken;
 
-  public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers, List<AstNode> children) {
+  public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers) {
     super(Kind.NEW_ARRAY);
 
     // TODO maybe type should not be null?
     this.type = null;
     this.dimensions = Preconditions.checkNotNull(dimensions);
     this.initializers = Preconditions.checkNotNull(initializers);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
-  public NewArrayTreeImpl complete(Tree type, AstNode... children) {
+  public NewArrayTreeImpl complete(Tree type) {
     Preconditions.checkState(this.type == null);
     this.type = type;
-
-    prependChildren(children);
 
     return this;
   }

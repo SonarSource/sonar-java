@@ -45,12 +45,6 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
     this.continueKeyword = continueKeyword;
     this.label = label;
     this.semicolonToken = semicolonToken;
-
-    addChild(continueKeyword);
-    if (label != null) {
-      addChild(label);
-    }
-    addChild(semicolonToken);
   }
 
   @Override

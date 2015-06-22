@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -35,7 +34,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
 
@@ -46,29 +44,21 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   private InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
 
-  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier, List<AstNode> children) {
+  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = nestedDimensions;
     this.dotToken = dotToken;
     this.identifier = identifier;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
-  public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier, AstNode... children) {
+  public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier) {
     super(Kind.MEMBER_SELECT);
 
     this.nestedDimensions = null;
     this.expression = Preconditions.checkNotNull(expression);
     this.dotToken = dotToken;
     this.identifier = Preconditions.checkNotNull(identifier);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
@@ -78,8 +68,6 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     if (nestedDimensions != null) {
       nestedDimensions.setLastChildType((TypeTree) expression);
       result = nestedDimensions;
-    } else {
-      prependChildren((AstNode) expression);
     }
 
     this.expression = result;

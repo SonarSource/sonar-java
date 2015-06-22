@@ -20,7 +20,6 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -40,21 +39,15 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   @Nullable
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_PARAMETERS, typeParameters, ImmutableList.<AstNode>of());
+  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters, InternalSyntaxToken closeBracketToken) {
+    super(JavaLexer.TYPE_PARAMETERS, typeParameters);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
-
-    addChild(openBracketToken);
-    for (AstNode child : children) {
-      addChild(child);
-    }
-    addChild(closeBracketToken);
   }
 
   public TypeParameterListTreeImpl(){
-    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<AstNode>of());
+    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of());
     this.openBracketToken = null;
     this.closeBracketToken = null;
   }

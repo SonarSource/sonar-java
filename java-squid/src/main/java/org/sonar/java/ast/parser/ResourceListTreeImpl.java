@@ -19,15 +19,14 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import java.util.List;
 
 public class ResourceListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
-  public ResourceListTreeImpl(List<VariableTreeImpl> resources, List<AstNode> children) {
-    super(JavaLexer.RESOURCE_SPECIFICATION, resources, children);
+  public ResourceListTreeImpl(List<VariableTreeImpl> resources) {
+    super(JavaLexer.RESOURCE_SPECIFICATION, resources);
   }
 
 }

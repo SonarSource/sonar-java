@@ -21,7 +21,6 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -53,7 +52,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   }
 
   public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
-    super(JavaLexer.MODIFIERS, javaTrees, ImmutableList.<AstNode>of());
+    super(JavaLexer.MODIFIERS, javaTrees);
     ImmutableList.Builder<ModifierKeywordTree> modifierBuilder = ImmutableList.builder();
     ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
     for (ModifierTree modifierTree : this) {
@@ -62,7 +61,6 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
       } else {
         modifierBuilder.add((ModifierKeywordTree) modifierTree);
       }
-      addChild((AstNode) modifierTree);
     }
     this.annotations = annotationBuilder.build();
     this.modifiers = modifierBuilder.build();

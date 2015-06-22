@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -54,14 +53,6 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
     this.expression = Preconditions.checkNotNull(expression);
     this.closeParenToken = closeParenToken;
     this.statement = Preconditions.checkNotNull(statement);
-
-    addChild(forKeyword);
-    addChild(openParenToken);
-    addChild(variable);
-    addChild(colonToken);
-    addChild((AstNode) expression);
-    addChild(closeParenToken);
-    addChild((AstNode) statement);
   }
 
   @Override

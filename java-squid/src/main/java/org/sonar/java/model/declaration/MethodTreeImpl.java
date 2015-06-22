@@ -21,7 +21,6 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.JavaTree;
@@ -85,14 +84,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.throwsClauses = ImmutableList.of();
     this.defaultToken = defaultToken;
     this.defaultValue = defaultValue;
-
-    addChild(parameters);
-    if (defaultToken != null) {
-      addChild((AstNode) defaultToken);
-    }
-    if (defaultValue != null) {
-      addChild((AstNode) defaultValue);
-    }
   }
 
   public MethodTreeImpl(
@@ -127,9 +118,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.simpleName = simpleName;
     this.semicolonToken = semicolonToken;
 
-    prependChildren((AstNode) returnType, (AstNode) simpleName);
-    addChild((AstNode) semicolonToken);
-
     return this;
   }
 
@@ -141,8 +129,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   public MethodTreeImpl completeWithModifiers(ModifiersTreeImpl modifiers) {
     Preconditions.checkState(this.modifiers == null);
     this.modifiers = modifiers;
-
-    prependChildren(modifiers);
 
     return this;
   }

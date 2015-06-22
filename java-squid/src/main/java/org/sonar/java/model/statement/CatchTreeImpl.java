@@ -49,12 +49,6 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
     this.parameter = Preconditions.checkNotNull(parameter);
     this.closeParenToken = closeParenToken;
     this.block = Preconditions.checkNotNull(block);
-
-    addChild(catchToken);
-    addChild(openParenToken);
-    addChild(parameter);
-    addChild(closeParenToken);
-    addChild(block);
   }
 
   @Override

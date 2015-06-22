@@ -44,12 +44,6 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
     this.breakToken = breakToken;
     this.label = label;
     this.semicolonToken = semicolonToken;
-
-    addChild(breakToken);
-    if (label != null) {
-      addChild(label);
-    }
-    addChild(semicolonToken);
   }
 
   @Override

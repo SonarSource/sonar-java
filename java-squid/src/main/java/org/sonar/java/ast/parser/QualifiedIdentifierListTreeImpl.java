@@ -19,15 +19,14 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public QualifiedIdentifierListTreeImpl(List<? extends TypeTree> qualifiedIdentifiers, List<AstNode> children) {
-    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, (List<TypeTree>) qualifiedIdentifiers, children);
+  public QualifiedIdentifierListTreeImpl(List<? extends TypeTree> qualifiedIdentifiers) {
+    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, (List<TypeTree>) qualifiedIdentifiers);
   }
 
 }

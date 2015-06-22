@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,10 +41,6 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
     this.openParenToken = openParenToken;
     this.expression = Preconditions.checkNotNull(expression);
     this.closeParenToken = closeParenToken;
-
-    addChild(openParenToken);
-    addChild((AstNode) expression);
-    addChild(closeParenToken);
   }
 
   @Override

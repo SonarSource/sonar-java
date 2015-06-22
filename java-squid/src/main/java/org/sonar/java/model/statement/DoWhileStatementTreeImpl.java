@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -54,14 +53,6 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
     this.openParenToken = openParenToken;
     this.semicolonToken = semicolonToken;
     this.closeParenToken = closeParenToken;
-
-    addChild(doKeyword);
-    addChild((AstNode) statement);
-    addChild(whileKeyword);
-    addChild(openParenToken);
-    addChild((AstNode) condition);
-    addChild(closeParenToken);
-    addChild(semicolonToken);
   }
 
   @Override

@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -48,12 +47,6 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
     this.synchronizedKeyword = synchronizedKeyword;
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    addChild(synchronizedKeyword);
-    addChild(openParenToken);
-    addChild((AstNode) expression);
-    addChild(closeParenToken);
-    addChild(block);
   }
 
   @Override

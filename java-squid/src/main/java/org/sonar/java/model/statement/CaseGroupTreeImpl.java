@@ -42,11 +42,6 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
     super(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP);
     this.labels = ImmutableList.<CaseLabelTree>builder().addAll(Preconditions.checkNotNull(labels)).build();
     this.body = Preconditions.checkNotNull(body);
-
-    for (CaseLabelTreeImpl label : labels) {
-      addChild(label);
-    }
-    addChild(body);
   }
 
   @Override

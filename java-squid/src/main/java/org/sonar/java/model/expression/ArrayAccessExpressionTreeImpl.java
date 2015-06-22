@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -49,16 +48,10 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
     this.openBracketToken = openBracketToken;
     this.index = index;
     this.closeBracketToken = closeBracketToken;
-
-    addChild(openBracketToken);
-    addChild((AstNode) index);
-    addChild(closeBracketToken);
   }
 
   public ArrayAccessExpressionTreeImpl complete(ExpressionTree expression) {
     this.expression = expression;
-
-    prependChildren((AstNode) expression);
 
     return this;
   }

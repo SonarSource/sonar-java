@@ -47,24 +47,17 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
     this.identifier = identifier;
     this.extendsToken = null;
     this.bounds = null;
-
-    addChild(identifier);
   }
 
   public TypeParameterTreeImpl(InternalSyntaxToken extendsToken, BoundListTreeImpl bounds) {
     super(Kind.TYPE_PARAMETER);
     this.extendsToken = extendsToken;
     this.bounds = bounds;
-
-    addChild(extendsToken);
-    addChild(bounds);
   }
 
   public TypeParameterTreeImpl complete(IdentifierTreeImpl identifier) {
     Preconditions.checkState(this.identifier == null);
     this.identifier = identifier;
-
-    prependChildren(identifier);
 
     return this;
   }

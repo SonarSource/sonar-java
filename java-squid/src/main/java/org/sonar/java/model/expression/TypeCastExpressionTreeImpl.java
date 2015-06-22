@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -49,29 +48,19 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
     this.bounds = Collections.emptyList();
     this.closeParenToken = closeParenToken;
     this.expression = Preconditions.checkNotNull(expression);
-
-    addChild((AstNode) type);
-    addChild(closeParenToken);
-    addChild((AstNode) expression);
   }
 
-  public TypeCastExpressionTreeImpl(TypeTree type, List<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression, List<AstNode> children) {
+  public TypeCastExpressionTreeImpl(TypeTree type, List<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
     this.bounds = bounds;
     this.closeParenToken = closeParenToken;
     this.expression = Preconditions.checkNotNull(expression);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public TypeCastExpressionTreeImpl complete(InternalSyntaxToken openParenToken) {
     Preconditions.checkState(this.openParenToken == null && closeParenToken != null);
     this.openParenToken = openParenToken;
-
-    prependChildren(openParenToken);
 
     return this;
   }

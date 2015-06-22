@@ -20,7 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -120,14 +120,18 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.<Tree>forArray(forKeyword, openParenToken),
-      initializer.iterator(),
-      Iterators.<Tree>singletonIterator(firstSemicolonToken),
-      condition != null ? Iterators.<Tree>singletonIterator(condition) : Iterators.<Tree>emptyIterator(),
-      Iterators.<Tree>singletonIterator(secondSemicolonToken),
-      update.iterator(),
-      Iterators.<Tree>forArray(closeParenToken, statement));
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    iteratorBuilder.add(forKeyword, openParenToken);
+    iteratorBuilder.addAll(initializer);
+    iteratorBuilder.add(firstSemicolonToken);
+    if (condition != null) {
+      iteratorBuilder.add(condition);
+    }
+    iteratorBuilder.add(secondSemicolonToken);
+    iteratorBuilder.addAll(update);
+    iteratorBuilder.add(closeParenToken, statement);
+
+    return iteratorBuilder.build().iterator();
   }
 
 }

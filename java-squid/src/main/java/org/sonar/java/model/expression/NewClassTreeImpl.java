@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -59,17 +58,13 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   @Nullable
   private final ClassTree classBody;
 
-  public NewClassTreeImpl(@Nullable SyntaxToken openParenToken, List arguments, @Nullable SyntaxToken closeParenToken, @Nullable ClassTreeImpl classBody, AstNode... children) {
+  public NewClassTreeImpl(@Nullable SyntaxToken openParenToken, List arguments, @Nullable SyntaxToken closeParenToken, @Nullable ClassTreeImpl classBody) {
     super(Kind.NEW_CLASS);
     this.enclosingExpression = null;
     this.openParenToken = openParenToken;
     this.arguments = Preconditions.checkNotNull(arguments);
     this.closeParenToken = closeParenToken;
     this.classBody = classBody;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public NewClassTreeImpl completeWithIdentifier(TypeTree identifier) {
@@ -176,7 +171,6 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   public void completeWithDotToken(InternalSyntaxToken dotToken) {
     this.dotToken = dotToken;
-    prependChildren(dotToken);
   }
 
   @Nullable

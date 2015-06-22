@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -42,14 +43,10 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
     this.list = Lists.newArrayList();
   }
 
-  public ListTreeImpl(AstNodeType type, List<T> list, List<AstNode> children) {
+  public ListTreeImpl(AstNodeType type, List<T> list) {
     super(type);
 
     this.list = list;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override

@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,10 +41,6 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
     this.throwKeyword = throwKeyword;
     this.expression = Preconditions.checkNotNull(expression);
     this.semicolonToken = semicolonToken;
-
-    addChild(throwKeyword);
-    addChild((AstNode) expression);
-    addChild(semicolonToken);
   }
 
   @Override

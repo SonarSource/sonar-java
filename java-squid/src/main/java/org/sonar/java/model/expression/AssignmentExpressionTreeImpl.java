@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -47,10 +46,6 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
     this.variable = variable;
     this.operatorToken = operatorToken;
     this.expression = Preconditions.checkNotNull(expression);
-
-    addChild((AstNode) variable);
-    addChild(operatorToken);
-    addChild((AstNode) expression);
   }
 
   @Override

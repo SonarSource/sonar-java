@@ -21,7 +21,6 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -66,7 +65,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private List<TypeTree> superInterfaces;
   private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
 
-  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken, List<? extends AstNode> children) {
+  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     super(kind);
 
     this.kind = kind;
@@ -76,13 +75,9 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.modifiers = ModifiersTreeImpl.EMPTY;
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superInterfaces = ImmutableList.of();
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
-  public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken, List<AstNode> children) {
+  public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     super(Kind.ANNOTATION_TYPE);
     this.kind = Preconditions.checkNotNull(Kind.ANNOTATION_TYPE);
     this.modifiers = modifiers;
@@ -92,10 +87,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.openBraceToken = openBraceToken;
     this.members = Preconditions.checkNotNull(members);
     this.closeBraceToken = closeBraceToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public ClassTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
@@ -136,9 +127,6 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     completeIdentifier(simpleName);
     this.atToken = atToken;
     completeDeclarationKeyword(interfaceToken);
-
-    prependChildren(atToken, interfaceToken, (AstNode) simpleName);
-
     return this;
   }
 

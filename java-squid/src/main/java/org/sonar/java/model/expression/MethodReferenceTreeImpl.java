@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -46,23 +45,11 @@ public class MethodReferenceTreeImpl extends AbstractTypedTree implements Method
     super(JavaLexer.METHOD_REFERENCE);
     this.expression = expression;
     this.doubleColon = doubleColon;
-
-    addChild((AstNode) expression);
-    addChild(doubleColon);
   }
 
   public void complete(@Nullable TypeArguments typeArgument, IdentifierTreeImpl method) {
     this.typeArgument = typeArgument;
     this.method = method;
-
-    if (typeArgument != null) {
-      addChild((AstNode) typeArgument.openBracketToken());
-      for (Tree tree : typeArgument) {
-        addChild((AstNode) tree);
-      }
-      addChild((AstNode) typeArgument.closeBracketToken());
-    }
-    addChild(method);
   }
 
   @Override

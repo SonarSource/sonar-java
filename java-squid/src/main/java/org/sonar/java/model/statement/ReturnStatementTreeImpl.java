@@ -20,7 +20,6 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,12 +43,6 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
     this.returnKeyword = returnKeyword;
     this.expression = expression;
     this.semicolonToken = semicolonToken;
-
-    addChild(returnKeyword);
-    if (expression != null) {
-      addChild((AstNode) expression);
-    }
-    addChild(semicolonToken);
   }
 
   @Override

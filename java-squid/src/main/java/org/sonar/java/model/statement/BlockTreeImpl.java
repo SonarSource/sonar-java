@@ -51,10 +51,6 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
     this.openBraceToken = openBraceToken;
     this.body = Preconditions.checkNotNull(body);
     this.closeBraceToken = closeBraceToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public BlockTreeImpl(AstNode astNode, Kind newKind, BlockTreeImpl block) {
