@@ -236,7 +236,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
       if(initializer == null) {
         scan(tree.simpleName());
       } else {
-        scan(tree.initializer());
+        scan(initializer);
       }
     } else {
       lastSyntaxToken = endToken;

@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -230,27 +228,17 @@ public class TreeFactory {
     }
   }
 
-  public TypeArgumentListTreeImpl newTypeArgumentList(InternalSyntaxToken openBracketToken, Tree typeArgument, Optional<List<AstNode>> rests, InternalSyntaxToken closeBracketToken) {
+  public TypeArgumentListTreeImpl newTypeArgumentList(InternalSyntaxToken openBracketToken, Tree typeArgument, Optional<List<Tuple<InternalSyntaxToken, Tree>>> rests, InternalSyntaxToken closeBracketToken) {
     ImmutableList.Builder<Tree> typeArguments = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
-
     typeArguments.add(typeArgument);
-    children.add((AstNode) typeArgument);
 
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          // FIXME SONARJAVA-547 comma should be part of the ArgumentList as token
-          if (!child.is(JavaPunctuator.COMMA)) {
-            typeArguments.add((Tree) child);
-          }
-
-          children.add(child);
-        }
+      for (Tuple<InternalSyntaxToken, Tree> rest : rests.get()) {
+        // FIXME SONARJAVA-547 comma (rest.first()) should be part of the ArgumentList as token
+        typeArguments.add(rest.second());
       }
     }
-
-    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), closeBracketToken, children);
+    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), closeBracketToken, Lists.<AstNode>newArrayList());
   }
 
   public TypeArgumentListTreeImpl newDiamondTypeArgument(InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
@@ -284,27 +272,18 @@ public class TreeFactory {
       type);
   }
 
-  public TypeParameterListTreeImpl newTypeParameterList(InternalSyntaxToken openBracketToken, TypeParameterTreeImpl typeParameter, Optional<List<AstNode>> rests,
-                                                        InternalSyntaxToken closeBracketToken) {
+  public TypeParameterListTreeImpl newTypeParameterList(InternalSyntaxToken openBracketToken, TypeParameterTreeImpl typeParameter, Optional<List<Tuple<InternalSyntaxToken,
+      TypeParameterTreeImpl>>> rests, InternalSyntaxToken closeBracketToken) {
     ImmutableList.Builder<TypeParameterTree> typeParameters = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
-
     typeParameters.add(typeParameter);
-    children.add(typeParameter);
 
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          if (!child.is(JavaPunctuator.COMMA)) {
-            typeParameters.add((TypeParameterTreeImpl) child);
-          }
-
-          children.add(child);
-        }
+      for (Tuple<InternalSyntaxToken, TypeParameterTreeImpl> rest : rests.get()) {
+        //FIXME SONARJAVA-547 commas should be handled rest.first()
+        typeParameters.add(rest.second());
       }
     }
-
-    return new TypeParameterListTreeImpl(openBracketToken, typeParameters.build(), children, closeBracketToken);
+    return new TypeParameterListTreeImpl(openBracketToken, typeParameters.build(), Lists.<AstNode>newArrayList(), closeBracketToken);
   }
 
   public TypeParameterTreeImpl completeTypeParameter(Optional<List<AnnotationTreeImpl>> annotations, JavaTree identifierToken, Optional<TypeParameterTreeImpl> partial) {
@@ -322,26 +301,18 @@ public class TreeFactory {
     return new TypeParameterTreeImpl((InternalSyntaxToken) extendsToken, bounds);
   }
 
-  public BoundListTreeImpl newBounds(TypeTree classType, Optional<List<AstNode>> rests) {
+  public BoundListTreeImpl newBounds(TypeTree classType, Optional<List<Tuple<InternalSyntaxToken, Tree>>> rests) {
     ImmutableList.Builder<Tree> classTypes = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
 
     classTypes.add(classType);
-    children.add((AstNode) classType);
 
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          if (!child.is(JavaPunctuator.AND)) {
-            classTypes.add((Tree) child);
-          }
-
-          children.add(child);
-        }
+      for (Tuple<InternalSyntaxToken, Tree> rest : rests.get()) {
+        //FIXME SONARJAVA-547 comma should be handled (rest.first())
+          classTypes.add(rest.second());
       }
     }
-
-    return new BoundListTreeImpl(classTypes.build(), children);
+    return new BoundListTreeImpl(classTypes.build(), Lists.<AstNode>newArrayList());
   }
 
   // End of types
@@ -698,7 +669,7 @@ public class TreeFactory {
       new IdentifierTreeImpl((InternalSyntaxToken) identifier));
   }
 
-  public ClassTreeImpl newAnnotationType(InternalSyntaxToken openBraceToken, Optional<List<AstNode>> annotationTypeElementDeclarations, InternalSyntaxToken closeBraceToken) {
+  public ClassTreeImpl newAnnotationType(InternalSyntaxToken openBraceToken, Optional<List<JavaTree>> annotationTypeElementDeclarations, InternalSyntaxToken closeBraceToken) {
     // TODO
     ModifiersTreeImpl emptyModifiers = ModifiersTreeImpl.emptyModifiers();
 
@@ -708,14 +679,14 @@ public class TreeFactory {
     children.add(openBraceToken);
 
     if (annotationTypeElementDeclarations.isPresent()) {
-      for (AstNode annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
+      for (JavaTree annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
         children.add(annotationTypeElementDeclaration);
         if (annotationTypeElementDeclaration.is(JavaLexer.VARIABLE_DECLARATORS)) {
           for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) annotationTypeElementDeclaration) {
             members.add(variable);
           }
         } else if (!annotationTypeElementDeclaration.is(JavaPunctuator.SEMI)) {
-          members.add((Tree) annotationTypeElementDeclaration);
+          members.add(annotationTypeElementDeclaration);
         }
       }
     }
@@ -725,8 +696,7 @@ public class TreeFactory {
     return new ClassTreeImpl(emptyModifiers, openBraceToken, members.build(), closeBraceToken, children);
   }
 
-  public AstNode completeAnnotationTypeMember(ModifiersTreeImpl modifiers, AstNode partialAstNode) {
-    JavaTree partial = (JavaTree) partialAstNode;
+  public JavaTree completeAnnotationTypeMember(ModifiersTreeImpl modifiers, JavaTree partial) {
     partial.prependChildren(modifiers);
 
     if (partial.is(JavaLexer.VARIABLE_DECLARATORS)) {
@@ -744,7 +714,7 @@ public class TreeFactory {
     return partial;
   }
 
-  public AstNode completeAnnotationMethod(TypeTree type, JavaTree identifierToken, MethodTreeImpl partial, InternalSyntaxToken semiToken) {
+  public MethodTreeImpl completeAnnotationMethod(TypeTree type, JavaTree identifierToken, MethodTreeImpl partial, InternalSyntaxToken semiToken) {
     partial.complete(type, new IdentifierTreeImpl(((InternalSyntaxToken) identifierToken)), semiToken);
     return partial;
   }
@@ -786,25 +756,16 @@ public class TreeFactory {
     return elementValuePairs;
   }
 
-  public ArgumentListTreeImpl newNormalAnnotation(AssignmentExpressionTreeImpl elementValuePair, Optional<List<AstNode>> rests) {
+  public ArgumentListTreeImpl newNormalAnnotation(AssignmentExpressionTreeImpl elementValuePair, Optional<List<Tuple<InternalSyntaxToken, AssignmentExpressionTreeImpl>>> rests) {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
-
     expressions.add(elementValuePair);
-    children.add(elementValuePair);
 
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          if (!child.is(JavaPunctuator.COMMA)) {
-            expressions.add((ExpressionTree) child);
-          }
-          children.add(child);
-        }
+      for (Tuple<InternalSyntaxToken, AssignmentExpressionTreeImpl> rest : rests.get()) {
+        expressions.add(rest.second());
       }
     }
-
-    return new ArgumentListTreeImpl(expressions.build(), children);
+    return new ArgumentListTreeImpl(expressions.build(), Lists.<AstNode>newArrayList());
   }
 
   public AssignmentExpressionTreeImpl newElementValuePair(JavaTree identifierAstNode, InternalSyntaxToken operator, ExpressionTree elementValue) {
@@ -833,25 +794,15 @@ public class TreeFactory {
     return elementValues.completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
-  public NewArrayTreeImpl newElementValueArrayInitializer(ExpressionTree elementValue, Optional<List<AstNode>> rests) {
+  public NewArrayTreeImpl newElementValueArrayInitializer(ExpressionTree elementValue, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
-
     expressions.add(elementValue);
-    children.add((AstNode) elementValue);
-
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        for (AstNode child : rest.getChildren()) {
-          if (!child.is(JavaPunctuator.COMMA)) {
-            expressions.add((ExpressionTree) child);
-          }
-          children.add(child);
-        }
+      for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
+        expressions.add(rest.second());
       }
     }
-
-    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), expressions.build(), children);
+    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), expressions.build(), Lists.<AstNode>newArrayList());
   }
 
   public ArgumentListTreeImpl newSingleElementAnnotation(InternalSyntaxToken openParenToken, ExpressionTree elementValue, InternalSyntaxToken closeParenToken) {
@@ -1072,26 +1023,21 @@ public class TreeFactory {
     return result;
   }
 
-  public StatementExpressionListTreeImpl newStatementExpressions(ExpressionTree expression, Optional<List<AstNode>> rests) {
-    List<AstNode> children = Lists.newArrayList();
+  public StatementExpressionListTreeImpl newStatementExpressions(ExpressionTree expression, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
 
     ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(expression, null);
     statements.add(statement);
-    children.add(statement);
 
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        children.add(rest.getFirstChild());
-
-        statement = new ExpressionStatementTreeImpl((ExpressionTree) rest.getLastChild(), null);
+      for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
+        statement = new ExpressionStatementTreeImpl(rest.second(), null);
         statements.add(statement);
-        children.add(statement);
       }
     }
 
     StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements.build());
-    result.prependChildren(children);
+    result.prependChildren(Lists.<AstNode>newArrayList());
 
     return result;
   }
@@ -1147,27 +1093,16 @@ public class TreeFactory {
     return parameter.completeType(type);
   }
 
-  public TypeTree newCatchType(TypeTree qualifiedIdentifier, Optional<List<AstNode>> rests) {
+  public TypeTree newCatchType(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {
     if (!rests.isPresent()) {
       return qualifiedIdentifier;
     }
-
-    List<AstNode> children = Lists.newArrayList();
     ImmutableList.Builder<TypeTree> types = ImmutableList.builder();
-
-    children.add((AstNode) qualifiedIdentifier);
     types.add(qualifiedIdentifier);
-
-    for (AstNode rest : rests.get()) {
-      children.add(rest.getFirstChild());
-
-      TypeTree qualifiedIdentifier2 = (TypeTree) rest.getLastChild();
-      types.add(qualifiedIdentifier2);
-
-      children.add((AstNode) qualifiedIdentifier2);
+    for (Tuple<InternalSyntaxToken, TypeTree> rest : rests.get()) {
+      types.add(rest.second());
     }
-
-    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), children));
+    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), Lists.<AstNode>newArrayList()));
   }
 
   public TryStatementTreeImpl newFinallyBlock(JavaTree finallyToken, BlockTreeImpl block) {
@@ -1188,21 +1123,16 @@ public class TreeFactory {
     }
   }
 
-  public ResourceListTreeImpl newResources(List<AstNode> rests) {
-    List<AstNode> children = Lists.newArrayList();
+  public ResourceListTreeImpl newResources(List<Tuple<VariableTreeImpl, Optional<InternalSyntaxToken>>> rests) {
     ImmutableList.Builder<VariableTreeImpl> resources = ImmutableList.builder();
 
-    for (AstNode rest : rests) {
-      VariableTreeImpl resource = (VariableTreeImpl) rest.getFirstChild();
-      children.add(resource);
+    for (Tuple<VariableTreeImpl, Optional<InternalSyntaxToken>> rest : rests) {
+      VariableTreeImpl resource = rest.first();
       resources.add(resource);
-
-      if (rest.getNumberOfChildren() == 2) {
-        children.add(rest.getLastChild());
-      }
+      //FIXME SONARJAVA-547 handle semi colon separator
     }
 
-    return new ResourceListTreeImpl(resources.build(), children);
+    return new ResourceListTreeImpl(resources.build(), Lists.<AstNode>newArrayList());
   }
 
   public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, TypeTree classType, VariableTreeImpl partial, AstNode equalTokenAstNode, ExpressionTree expression) {
@@ -1695,7 +1625,7 @@ public class TreeFactory {
 
   public NewArrayTreeImpl newArrayCreatorWithDimension(AstNode openBracketToken, ExpressionTree expression, AstNode closeBracketToken,
     Optional<List<ArrayAccessExpressionTreeImpl>> arrayAccesses,
-    Optional<List<AstNode>> dims) {
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dims) {
 
     ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
     dimensions.add(expression);
@@ -1704,21 +1634,8 @@ public class TreeFactory {
         dimensions.add(arrayAccess.index());
       }
     }
-
-    List<AstNode> children = Lists.newArrayList();
-    // TODO SONARJAVA-547 brackets should be stored
-    children.add(openBracketToken);
-    children.add((AstNode) expression);
-    children.add(closeBracketToken);
-    if (arrayAccesses.isPresent()) {
-      children.addAll(arrayAccesses.get());
-    }
-    if (dims.isPresent()) {
-      children.addAll(dims.get());
-    }
-
-    return new NewArrayTreeImpl(dimensions.build(), ImmutableList.<ExpressionTree>of(),
-      children);
+    // TODO SONARJAVA-547 brackets should be stored (dims parameter should be used).
+    return new NewArrayTreeImpl(dimensions.build(), ImmutableList.<ExpressionTree>of(), Lists.<AstNode>newArrayList());
   }
 
   public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dimensions,
@@ -1759,21 +1676,17 @@ public class TreeFactory {
       new ArgumentListTreeImpl(openParenthesisToken, closeParenthesisToken);
   }
 
-  public ArgumentListTreeImpl newArguments(ExpressionTree expression, Optional<List<AstNode>> rests) {
-    List<AstNode> children = Lists.newArrayList();
+  public ArgumentListTreeImpl newArguments(ExpressionTree expression, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
-
-    children.add((AstNode) expression);
     expressions.add(expression);
-
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        children.addAll(rest.getChildren());
-        expressions.add((ExpressionTree) rest.getLastChild());
+      for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
+        //FIXME : SONARJAVA-547 Comma should be handled : rest.first()
+        expressions.add(rest.second());
       }
     }
 
-    return new ArgumentListTreeImpl(expressions.build(), children);
+    return new ArgumentListTreeImpl(expressions.build(), Lists.<AstNode>newArrayList());
   }
 
   public TypeTree annotationIdentifier(JavaTree firstIdentifier, Optional<List<Tuple<InternalSyntaxToken, JavaTree>>> rests) {
@@ -1858,24 +1771,15 @@ public class TreeFactory {
     return result;
   }
 
-  public NewArrayTreeImpl newArrayInitializer(InternalSyntaxToken openBraceToken, Optional<List<AstNode>> rests, InternalSyntaxToken closeBraceToken) {
+  public NewArrayTreeImpl newArrayInitializer(InternalSyntaxToken openBraceToken, Optional<List<Tuple<ExpressionTree, Optional<InternalSyntaxToken>>>> rests, InternalSyntaxToken closeBraceToken) {
     ImmutableList.Builder<ExpressionTree> initializers = ImmutableList.builder();
-    List<AstNode> children = Lists.newArrayList();
-
-    children.add(openBraceToken);
     if (rests.isPresent()) {
-      for (AstNode rest : rests.get()) {
-        initializers.add((ExpressionTree) rest.getFirstChild());
-        children.add(rest.getFirstChild());
-
-        if (rest.getNumberOfChildren() == 2) {
-          children.add(rest.getLastChild());
-        }
+      for (Tuple<ExpressionTree, Optional<InternalSyntaxToken>> rest : rests.get()) {
+        //FIXME SONARJAVA-547 commas should be handled.
+        initializers.add(rest.first());
       }
     }
-    children.add(closeBraceToken);
-
-    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), children).completeWithCurlyBraces(openBraceToken, closeBraceToken);
+    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build(), Lists.<AstNode>newArrayList()).completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {
@@ -2008,101 +1912,13 @@ public class TreeFactory {
 
   // Helpers
 
-  public static final AstNodeType WRAPPER_AST_NODE = new AstNodeType() {
-    @Override
-    public String toString() {
-      return "WRAPPER_AST_NODE";
-    }
-  };
-
-  public AstNode newWrapperAstNode(Optional<List<AstNode>> e1, AstNode e2) {
-    if (e1.isPresent()) {
-      AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-      for (AstNode child : e1.get()) {
-        astNode.addChild(child);
-      }
-      astNode.addChild(e2);
-      return astNode;
-    } else {
-      return e2;
-    }
-  }
-
-  public AstNode newWrapperAstNode(AstNode e1, AstNode e2) {
-    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-    astNode.addChild(e1);
-    astNode.addChild(e2);
-    return astNode;
-  }
-
-  public AstNode newWrapperAstNode(AstNode e1, Optional<? extends JavaTree> e2) {
-    AstNode astNode = new AstNode(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-    astNode.addChild(e1);
-    if (e2.isPresent()) {
-      astNode.addChild(e2.get());
-    }
-    return astNode;
-  }
-
-  // TODO Enable the same method call multiple times
-
-  public AstNode newWrapperAstNode2(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode4(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode6(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode7(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode8(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode9(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode10(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode12(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode13(AstNode e1, AstNode e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode14(AstNode e1, Optional<InternalSyntaxToken> e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public AstNode newWrapperAstNode15(AstNode e1, Optional<InternalSyntaxToken> e2) {
-    return newWrapperAstNode(e1, e2);
-  }
-
-  public static class Tuple<T, U> extends AstNode {
-
+  public static class Tuple<T, U>{
     private final T first;
     private final U second;
 
     public Tuple(T first, U second) {
-      super(WRAPPER_AST_NODE, WRAPPER_AST_NODE.toString(), null);
-
       this.first = first;
       this.second = second;
-
-      add(first);
-      add(second);
     }
 
     public T first() {
@@ -2112,30 +1928,6 @@ public class TreeFactory {
     public U second() {
       return second;
     }
-
-    private void add(Object o) {
-      if (o instanceof AstNode) {
-        addChild((AstNode) o);
-      } else if (o instanceof Optional) {
-        Optional opt = (Optional) o;
-        if (opt.isPresent()) {
-          Object o2 = opt.get();
-          if (o2 instanceof AstNode) {
-            addChild((AstNode) o2);
-          } else if (o2 instanceof List) {
-            for (Object o3 : (List) o2) {
-              Preconditions.checkArgument(o3 instanceof AstNode, "Unsupported type: " + o3.getClass().getSimpleName());
-              addChild((AstNode) o3);
-            }
-          } else {
-            throw new IllegalArgumentException("Unsupported type: " + o2.getClass().getSimpleName());
-          }
-        }
-      } else {
-        throw new IllegalStateException("Unsupported argument type: " + o.getClass().getSimpleName());
-      }
-    }
-
   }
 
   private <T, U> Tuple<T, U> newTuple(T first, U second) {
@@ -2197,7 +1989,52 @@ public class TreeFactory {
   public <T, U> Tuple<T, U> newTuple17(T first, U second) {
     return newTuple(first, second);
   }
+
   public <T, U> Tuple<T, U> newTuple18(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple19(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple20(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple21(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple22(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple23(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple24(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple25(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple26(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple27(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple28(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple29(T first, U second) {
     return newTuple(first, second);
   }
 

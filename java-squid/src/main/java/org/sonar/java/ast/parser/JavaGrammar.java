@@ -19,7 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -152,7 +151,7 @@ public class JavaGrammar {
   }
 
   private ExpressionTree EXPRESSION_QUALIFIED_IDENTIFIER() {
-    return this.<ExpressionTree>QUALIFIED_IDENTIFIER();
+    return this.QUALIFIED_IDENTIFIER();
   }
 
   public ImportClauseTree IMPORT_DECLARATION() {
@@ -204,7 +203,7 @@ public class JavaGrammar {
           f.newTypeArgumentList(
             b.invokeRule(JavaPunctuator.LPOINT),
             TYPE_ARGUMENT(),
-            b.zeroOrMore(f.newWrapperAstNode4(b.invokeRule(JavaPunctuator.COMMA), (AstNode) TYPE_ARGUMENT())),
+            b.zeroOrMore(f.newTuple19(b.invokeRule(JavaPunctuator.COMMA), TYPE_ARGUMENT())),
             b.invokeRule(JavaPunctuator.RPOINT)),
           f.newDiamondTypeArgument(b.invokeRule(JavaPunctuator.LPOINT), b.invokeRule(JavaPunctuator.RPOINT))));
   }
@@ -233,7 +232,7 @@ public class JavaGrammar {
         f.newTypeParameterList(
           b.invokeRule(JavaPunctuator.LPOINT),
           TYPE_PARAMETER(),
-          b.zeroOrMore(f.newWrapperAstNode7(b.invokeRule(JavaPunctuator.COMMA), TYPE_PARAMETER())),
+          b.zeroOrMore(f.newTuple22(b.invokeRule(JavaPunctuator.COMMA), TYPE_PARAMETER())),
           b.invokeRule(JavaPunctuator.RPOINT)));
   }
 
@@ -252,7 +251,7 @@ public class JavaGrammar {
       .is(
         f.newBounds(
             TYPE_QUALIFIED_IDENTIFIER(),
-            b.zeroOrMore(f.newWrapperAstNode6(b.invokeRule(JavaPunctuator.AND), (AstNode) QUALIFIED_IDENTIFIER()))));
+            b.zeroOrMore(f.newTuple21(b.invokeRule(JavaPunctuator.AND), QUALIFIED_IDENTIFIER()))));
   }
 
   // End of types
@@ -392,16 +391,16 @@ public class JavaGrammar {
           b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION()), b.invokeRule(JavaPunctuator.RWING)));
   }
 
-  public AstNode ANNOTATION_TYPE_ELEMENT_DECLARATION() {
-    return b.<AstNode>nonterminal(JavaLexer.ANNOTATION_TYPE_ELEMENT_DECLARATION)
+  public JavaTree ANNOTATION_TYPE_ELEMENT_DECLARATION() {
+    return b.<JavaTree>nonterminal(JavaLexer.ANNOTATION_TYPE_ELEMENT_DECLARATION)
       .is(
         b.firstOf(
           f.completeAnnotationTypeMember(MODIFIERS(), ANNOTATION_TYPE_ELEMENT_REST()),
           b.invokeRule(JavaPunctuator.SEMI)));
   }
 
-  public AstNode ANNOTATION_TYPE_ELEMENT_REST() {
-    return b.<AstNode>nonterminal(JavaLexer.ANNOTATION_TYPE_ELEMENT_REST)
+  public JavaTree ANNOTATION_TYPE_ELEMENT_REST() {
+    return b.<JavaTree>nonterminal(JavaLexer.ANNOTATION_TYPE_ELEMENT_REST)
       .is(
         b.firstOf(
           f.completeAnnotationMethod(
@@ -460,7 +459,7 @@ public class JavaGrammar {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUE_PAIRS)
       .is(
         f.newNormalAnnotation(
-          ELEMENT_VALUE_PAIR(), b.zeroOrMore(f.newWrapperAstNode9(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE_PAIR()))));
+          ELEMENT_VALUE_PAIR(), b.zeroOrMore(f.newTuple24(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE_PAIR()))));
   }
 
   public AssignmentExpressionTreeImpl ELEMENT_VALUE_PAIR() {
@@ -495,7 +494,7 @@ public class JavaGrammar {
     return b.<NewArrayTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUES)
       .is(
         f.newElementValueArrayInitializer(
-          ELEMENT_VALUE(), b.zeroOrMore(f.newWrapperAstNode8(b.invokeRule(JavaPunctuator.COMMA), (AstNode) ELEMENT_VALUE()))));
+          ELEMENT_VALUE(), b.zeroOrMore(f.newTuple23(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE()))));
   }
 
   public ArgumentListTreeImpl SINGLE_ELEMENT_ANNOTATION_REST() {
@@ -668,7 +667,7 @@ public class JavaGrammar {
     return b.<StatementExpressionListTreeImpl>nonterminal()
       .is(
         f.newStatementExpressions(
-          EXPRESSION(), b.zeroOrMore(f.newWrapperAstNode12(b.invokeRule(JavaPunctuator.COMMA), (AstNode) EXPRESSION()))));
+          EXPRESSION(), b.zeroOrMore(f.newTuple25(b.invokeRule(JavaPunctuator.COMMA), EXPRESSION()))));
   }
 
   public ForEachStatementImpl FOREACH_STATEMENT() {
@@ -729,7 +728,7 @@ public class JavaGrammar {
   public TypeTree CATCH_TYPE() {
     return b.<TypeTree>nonterminal()
       .is(
-        f.newCatchType(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newWrapperAstNode13(b.invokeRule(JavaPunctuator.OR), (AstNode) QUALIFIED_IDENTIFIER()))));
+        f.newCatchType(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newTuple26(b.invokeRule(JavaPunctuator.OR), TYPE_QUALIFIED_IDENTIFIER()))));
   }
 
   public TryStatementTreeImpl FINALLY() {
@@ -754,7 +753,7 @@ public class JavaGrammar {
   public ResourceListTreeImpl RESOURCES() {
     return b.<ResourceListTreeImpl>nonterminal()
       .is(
-        f.newResources(b.oneOrMore(f.newWrapperAstNode14(RESOURCE(), b.optional(b.invokeRule(JavaPunctuator.SEMI))))));
+        f.newResources(b.oneOrMore(f.newTuple27(RESOURCE(), b.optional(b.invokeRule(JavaPunctuator.SEMI))))));
   }
 
   public VariableTreeImpl RESOURCE() {
@@ -1172,7 +1171,7 @@ public class JavaGrammar {
             f.newArrayCreatorWithDimension(
               b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK),
               b.zeroOrMore(ARRAY_ACCESS_EXPRESSION()),
-              b.zeroOrMore(f.newWrapperAstNode(b.zeroOrMore((AstNode) ANNOTATION()), DIMENSION()))))));
+              b.zeroOrMore(f.newTuple29(b.zeroOrMore(ANNOTATION()), DIMENSION()))))));
   }
 
   // TODO This method should go away
@@ -1204,12 +1203,12 @@ public class JavaGrammar {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.ARGUMENTS)
       .is(
         f.completeArguments(
-          b.invokeRule(JavaPunctuator.LPAR),
-          b.optional(
-            f.newArguments(
-              EXPRESSION(),
-              b.zeroOrMore(f.newWrapperAstNode2(b.invokeRule(JavaPunctuator.COMMA), (AstNode) EXPRESSION())))),
-          b.invokeRule(JavaPunctuator.RPAR)));
+            b.invokeRule(JavaPunctuator.LPAR),
+            b.optional(
+                f.newArguments(
+                    EXPRESSION(),
+                    b.zeroOrMore(f.newTuple20(b.invokeRule(JavaPunctuator.COMMA), EXPRESSION())))),
+            b.invokeRule(JavaPunctuator.RPAR)));
   }
 
   public <T extends Tree> T QUALIFIED_IDENTIFIER() {
@@ -1241,7 +1240,7 @@ public class JavaGrammar {
       .is(
         f.newArrayInitializer(
           b.invokeRule(JavaPunctuator.LWING),
-          b.zeroOrMore(f.newWrapperAstNode15((AstNode) VARIABLE_INITIALIZER(), b.optional(b.invokeRule(JavaPunctuator.COMMA)))),
+          b.zeroOrMore(f.newTuple28(VARIABLE_INITIALIZER(), b.optional(b.invokeRule(JavaPunctuator.COMMA)))),
           b.invokeRule(JavaPunctuator.RWING)));
   }
 

@@ -21,8 +21,6 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -241,8 +239,7 @@ public class PublicApiChecker extends BaseTreeVisitor {
       }
       return getCommentFromTree(tokenTree);
     } else {
-      SyntaxToken syntaxToken = ((TypeParameterListTreeImpl) ((JavaTree) methodTree.typeParameters().get(0)).getAstNode().getParent()).openBracketToken();
-      return getCommentFromSyntaxToken(syntaxToken);
+      return getCommentFromSyntaxToken(methodTree.typeParameters().openBracketToken());
     }
   }
 
