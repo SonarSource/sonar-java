@@ -101,10 +101,6 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
     // External visitors (typically Check ones):
     for (CodeVisitor visitor : visitors) {
-      if (visitor instanceof CharsetAwareVisitor) {
-        ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
-      }
-      astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
     }
 
