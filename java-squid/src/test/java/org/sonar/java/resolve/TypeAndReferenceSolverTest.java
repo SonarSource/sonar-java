@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -481,8 +480,7 @@ public class TypeAndReferenceSolverTest {
     TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { " + input + "; } }";
-    AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
-    CompilationUnitTree tree = (CompilationUnitTree) node;
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
     tree.accept(visitor);
 
     TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(false);
@@ -495,8 +493,7 @@ public class TypeAndReferenceSolverTest {
     TypeAndReferenceSolver visitor = new TypeAndReferenceSolver(semanticModel, symbols, new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache), parametrizedTypeCache);
 
     String p = "class Test { void wrapperMethod() { Object o = " + input + "; } }";
-    AstNode node = JavaParser.createParser(Charsets.UTF_8).parse(p);
-    CompilationUnitTree tree = (CompilationUnitTree) node;
+    CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
     tree.accept(visitor);
 
     TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(true);

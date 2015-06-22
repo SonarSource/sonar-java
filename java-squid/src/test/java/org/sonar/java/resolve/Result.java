@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
@@ -48,8 +47,8 @@ class Result {
 
   public static Result createForJavaFile(String filePath) {
     File file = new File(filePath + ".java");
-    AstNode astNode = parser.parse(file);
-    return new Result(SemanticModel.createFor((CompilationUnitTree) astNode, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) parser.parse(file);
+    return new Result(SemanticModel.createFor(compilationUnitTree, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
   public JavaSymbol symbol(String name) {
