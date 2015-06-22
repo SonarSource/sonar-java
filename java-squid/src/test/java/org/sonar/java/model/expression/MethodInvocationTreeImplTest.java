@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
@@ -54,8 +53,7 @@ public class MethodInvocationTreeImplTest {
   }
 
   private CompilationUnitTree createTree(String code) {
-    AstNode astNode = p.parse(code);
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) astNode;
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
     SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
     return compilationUnitTree;
   }

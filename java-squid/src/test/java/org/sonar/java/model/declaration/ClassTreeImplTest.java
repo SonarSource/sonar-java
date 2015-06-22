@@ -21,7 +21,6 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -40,8 +39,7 @@ public class ClassTreeImplTest {
   private final Parser p = JavaParser.createParser(Charsets.UTF_8);
 
   private CompilationUnitTree createTree(String code) {
-    AstNode astNode = p.parse(code);
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) astNode;
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
     SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
     return compilationUnitTree;
   }

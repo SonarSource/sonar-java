@@ -809,7 +809,7 @@ public class TreeFactory {
   }
 
   public BlockTreeImpl block(InternalSyntaxToken openBraceToken, BlockStatementListTreeImpl blockStatements, InternalSyntaxToken closeBraceToken) {
-    return new BlockTreeImpl(openBraceToken, blockStatements, closeBraceToken, openBraceToken, blockStatements, closeBraceToken);
+    return new BlockTreeImpl(openBraceToken, blockStatements, closeBraceToken);
   }
 
   public AssertStatementTreeImpl completeAssertStatement(

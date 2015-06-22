@@ -21,13 +21,12 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
@@ -94,8 +93,7 @@ public class MethodTreeImplTest {
 
   @Test
   public void symbol_not_set_should_lead_to_null_result() throws Exception {
-    AstNode astNode = p.parse("class A { String toString(){return \"\";}}");
-    CompilationUnitTree cut = (CompilationUnitTree) astNode;
+    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { String toString(){return \"\";}}");
     MethodTreeImpl methodTree = (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
     assertThat(methodTree.isOverriding()).isNull();
   }
@@ -172,8 +170,7 @@ public class MethodTreeImplTest {
   }
 
   private CompilationUnitTree createTree(String code) {
-    AstNode astNode = p.parse(code);
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) astNode;
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
     SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
     return compilationUnitTree;
   }
