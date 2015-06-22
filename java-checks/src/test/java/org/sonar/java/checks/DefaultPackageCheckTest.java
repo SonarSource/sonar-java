@@ -46,7 +46,6 @@ public class DefaultPackageCheckTest {
   public void with_package() {
     SourceFile file = JavaAstScanner.scanSingleFile(
         new File("src/test/files/checks/DefaultPackageCheck/WithPackage.java"),
-        new File("src/test/files/"),
         new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages());
   }
