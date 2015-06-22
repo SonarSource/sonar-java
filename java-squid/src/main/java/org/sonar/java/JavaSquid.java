@@ -70,7 +70,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
 
-    astScanner = JavaAstScanner.create(conf);
+    astScanner = JavaAstScanner.create(conf, null);
 
     Iterable<CodeVisitor> visitorsToBridge = Iterables.concat(Arrays.asList(javaResourceLocator), Arrays.asList(visitors));
     if (measurer != null) {

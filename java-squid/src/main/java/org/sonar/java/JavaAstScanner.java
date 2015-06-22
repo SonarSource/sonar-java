@@ -24,12 +24,14 @@ import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
@@ -44,19 +46,11 @@ public final class JavaAstScanner {
    * Helper method for testing checks without having to deploy them on a Sonar instance.
    */
   @VisibleForTesting
-  public static SourceFile scanSingleFile(File file, SquidAstVisitor<LexerlessGrammar>... visitors) {
-    return scanSingleFile(file, file.getParentFile(), visitors);
-  }
-
-  /**
-   * Helper method for testing checks without having to deploy them on a Sonar instance.
-   */
-  @VisibleForTesting
-  public static SourceFile scanSingleFile(File file, File parentFile, SquidAstVisitor<LexerlessGrammar>... visitors) {
+  public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitors);
+    org.sonar.java.ast.AstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitorsBridge);
 
     scanner.scan(Collections.singleton(file));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
@@ -66,23 +60,17 @@ public final class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  public static AstScanner create(JavaConfiguration conf, SquidAstVisitor<LexerlessGrammar>... visitors) {
+  public static AstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
     final Parser parser = JavaParser.createParser(conf.getCharset());
 
-    AstScanner builder = new AstScanner(parser);
-
+    AstScanner astScanner = new AstScanner(parser);
     /* Comments */
-    builder.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
-
-    /* External visitors (typically Check ones) */
-    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
-      if (visitor instanceof CharsetAwareVisitor) {
-        ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
-      }
-      builder.withSquidAstVisitor(visitor);
+    astScanner.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
+    if(visitorsBridge != null) {
+      visitorsBridge.setCharset(conf.getCharset());
+      astScanner.withSquidAstVisitor(visitorsBridge);
     }
-
-    return builder;
+    return astScanner;
   }
 
 }

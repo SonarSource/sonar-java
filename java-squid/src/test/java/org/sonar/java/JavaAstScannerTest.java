@@ -71,7 +71,7 @@ public class JavaAstScannerTest {
     expectedException.expect(IllegalArgumentException.class);
     String filename = "!!dummy";
     expectedException.expectMessage(filename);
-    JavaAstScanner.scanSingleFile(new File(filename));
+    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(null));
 
   }
 }
