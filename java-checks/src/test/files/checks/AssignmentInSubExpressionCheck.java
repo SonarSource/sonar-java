@@ -17,7 +17,7 @@ class Foo {
     while ((foo = bar()) != null) { // Compliant
     }
 
-    if ((astNode = something) != null) { // Compliant
+    if ((plop = something) != null) { // Compliant
     }
 
     if ((a = b = 0) != null) { // Noncompliant

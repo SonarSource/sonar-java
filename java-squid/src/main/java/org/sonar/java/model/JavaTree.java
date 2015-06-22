@@ -247,7 +247,7 @@ public abstract class JavaTree extends AstNode implements Tree {
       if (tree == null) {
         return "";
       }
-      Deque<String> pieces = new LinkedList<String>();
+      Deque<String> pieces = new LinkedList<>();
       ExpressionTree expr = tree.packageName();
       while (expr.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
@@ -395,7 +395,7 @@ public abstract class JavaTree extends AstNode implements Tree {
           Iterators.singletonIterator(extendsOrSuperToken), 
           annotations.iterator(),
           Iterators.singletonIterator(bound));
-      return Iterators.<Tree>concat(
+      return Iterators.concat(
         Iterators.<Tree>singletonIterator(queryToken),
         boundIterator
         );

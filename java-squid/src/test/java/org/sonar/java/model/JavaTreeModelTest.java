@@ -1548,12 +1548,6 @@ public class JavaTreeModelTest {
   public void field_access_expression() {
     MemberSelectExpressionTree tree;
 
-    // TODO greedily consumed by QUALIFIED_IDENTIFIER?:
-    // AstNode astNode = p.parse("class T { int m() { return primary.identifier; } }").getFirstDescendant(JavaGrammar.EXPRESSION);
-    // MemberSelectExpressionTree tree = (MemberSelectExpressionTree) maker.makeFrom(astNode);
-    // assertThat(tree.expression()).isNotNull();
-    // assertThat(tree.identifier()).isNotNull();
-
     tree = (MemberSelectExpressionTree) expressionOfReturnStatement("class T { int m() { return super.identifier; } }");
     assertThat(tree.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(tree.expression()).isNotNull();

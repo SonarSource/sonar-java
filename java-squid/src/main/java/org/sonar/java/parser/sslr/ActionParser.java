@@ -60,7 +60,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-public class ActionParser2 extends Parser {
+public class ActionParser extends Parser {
 
   private final Charset charset;
 
@@ -70,7 +70,7 @@ public class ActionParser2 extends Parser {
   private final Grammar grammar;
   private final ParseRunner parseRunner;
 
-  public ActionParser2(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
+  public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
     super(null);
 
     this.charset = charset;

@@ -30,7 +30,7 @@ import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.parser.sslr.ActionParser2;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
@@ -46,7 +46,7 @@ public class Assertions {
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {
-    return new ParserAssert(new ActionParser2(
+    return new ParserAssert(new ActionParser(
       Charsets.UTF_8,
       b,
       JavaGrammar.class,
@@ -54,9 +54,9 @@ public class Assertions {
       rule));
   }
 
-  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser2> {
+  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser> {
 
-    public ParserAssert(ActionParser2 actual) {
+    public ParserAssert(ActionParser actual) {
       super(ParserAssert.class, actual);
     }
 
