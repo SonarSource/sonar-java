@@ -39,6 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -109,12 +110,13 @@ public class RedundantThrowsDeclarationCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkRuntimeExceptions(Tree tree, List<TypeTree> exceptionsTree) {
-    for (int i = exceptionsTree.size() - 1; i >= 0; i--) {
-      TypeTree exceptionTree = exceptionsTree.get(i);
+    Iterator<TypeTree> exceptionsIterator = exceptionsTree.iterator();
+    while (exceptionsIterator.hasNext()) {
+      TypeTree exceptionTree = exceptionsIterator.next();
       Type exceptionType = exceptionTree.symbolType();
       if (exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
         addIssue(tree, ERROR_MESSAGE + exceptionType.fullyQualifiedName() + "' which is a runtime exception.");
-        exceptionsTree.remove(i);
+        exceptionsIterator.remove();
       }
     }
   }
@@ -135,8 +137,7 @@ public class RedundantThrowsDeclarationCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkOtherExceptions(MethodTree tree, List<TypeTree> exceptionsTree) {
-    for (int i1 = exceptionsTree.size() - 1; i1 >= 0; i1--) {
-      TypeTree exceptionTree = exceptionsTree.get(i1);
+    for (TypeTree exceptionTree : exceptionsTree) {
       Type exceptionType = exceptionTree.symbolType();
       if (!exceptionType.symbol().equals(Symbols.unknownSymbol)
         && !checkRelatedExceptions(tree, exceptionTree, exceptionsTree)
@@ -149,16 +150,12 @@ public class RedundantThrowsDeclarationCheck extends SubscriptionBaseVisitor {
 
   private static boolean shouldCheckExceptionsInBody(MethodTree methodTree) {
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
-    if (!methodSymbol.isMethodSymbol()) {
-      return false;
-    }
     return methodSymbol.owner().isFinal() || methodSymbol.isPrivate() || methodSymbol.isStatic() || methodSymbol.isFinal();
   }
 
   private boolean checkRelatedExceptions(MethodTree tree, TypeTree exceptionTree, List<TypeTree> exceptionsTree) {
     Type exceptionType = exceptionTree.symbolType();
-    for (int i = exceptionsTree.size() - 1; i >= 0; i--) {
-      TypeTree otherExceptionTree = exceptionsTree.get(i);
+    for (TypeTree otherExceptionTree : exceptionsTree) {
       Type otherExceptionType = otherExceptionTree.symbolType();
       if (!exceptionTree.equals(otherExceptionTree) && exceptionType.isSubtypeOf(otherExceptionType)) {
         addIssue(tree, ERROR_MESSAGE + exceptionType.fullyQualifiedName() + "' which is a subclass of '" +

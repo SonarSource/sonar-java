@@ -90,6 +90,9 @@ class NonfinalClass {
   public NonfinalClass() throws Exception { // Compliant, could be called from a derived class
   }
 
+  final finalMethod() throws Exception { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.Exception' which cannot be thrown from the body.}}
+  }
+
   private privateMethod() throws Exception { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.Exception' which cannot be thrown from the body.}}
   }
 
