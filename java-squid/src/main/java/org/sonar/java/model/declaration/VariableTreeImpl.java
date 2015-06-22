@@ -110,8 +110,9 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
       completeType(type);
   }
 
-  public VariableTreeImpl completeTypeAndInitializer(TypeTree type, ExpressionTree initializer) {
+  public VariableTreeImpl completeTypeAndInitializer(TypeTree type, InternalSyntaxToken equalToken, ExpressionTree initializer) {
     this.initializer = initializer;
+    this.equalToken = equalToken;
 
     return completeType(type);
   }
