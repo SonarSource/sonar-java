@@ -40,7 +40,7 @@ public class EnumConstantTest {
 
     assertThat(b, JavaLexer.ENUM_CONSTANT)
       .matches("identifier")
-      .notMatches("identifier,") // FIXME missing comma token
+      .matches("identifier,")
       .matches("@Foo identifier")
       .matches("@Foo identifier()")
       .matches("@Foo identifier {}")

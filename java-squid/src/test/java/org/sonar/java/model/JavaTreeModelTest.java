@@ -648,7 +648,8 @@ public class JavaTreeModelTest {
     EnumConstantTree tree = (EnumConstantTree) declarations.get(0);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("C1");
-    assertThatChildrenIteratorHasSize(tree, 2);
+    assertThat(tree.separatorToken().text()).isEqualTo(",");
+    assertThatChildrenIteratorHasSize(tree, 3);
     NewClassTree newClassTree = tree.initializer();
     assertThat(newClassTree.openParenToken()).isNull();
     assertThat(newClassTree.arguments()).isEmpty();
@@ -660,7 +661,8 @@ public class JavaTreeModelTest {
     tree = (EnumConstantTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.ENUM_CONSTANT)).isTrue();
     assertThat(tree.simpleName().name()).isEqualTo("C2");
-    assertThatChildrenIteratorHasSize(tree, 2);
+    assertThat(tree.separatorToken().text()).isEqualTo(";");
+    assertThatChildrenIteratorHasSize(tree, 3);
     newClassTree = tree.initializer();
     assertThat(newClassTree.openParenToken()).isNotNull();
     assertThat(newClassTree.arguments()).hasSize(1);
@@ -674,9 +676,11 @@ public class JavaTreeModelTest {
   @Test
   public void enum_field() {
     List<Tree> declarations = firstType("enum T { ; public int f1 = 42, f2[]; }").members();
-    assertThat(declarations).hasSize(2);
+    assertThat(declarations).hasSize(3);
 
-    VariableTree tree = (VariableTree) declarations.get(0);
+    assertThat(declarations.get(0).is(Tree.Kind.EMPTY_STATEMENT)).isTrue();
+
+    VariableTree tree = (VariableTree) declarations.get(1);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
@@ -685,7 +689,7 @@ public class JavaTreeModelTest {
     assertThat(tree.initializer()).isNotNull();
     assertThatChildrenIteratorHasSize(tree, 6);
 
-    tree = (VariableTree) declarations.get(1);
+    tree = (VariableTree) declarations.get(2);
     assertThat(tree.is(Tree.Kind.VARIABLE)).isTrue();
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.PUBLIC);
@@ -697,7 +701,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void enum_constructor() {
-    MethodTree tree = (MethodTree) firstTypeMember("enum T { ; T(int p1, int... p2) throws Exception1, Exception2 {} }");
+    MethodTree tree = (MethodTree) firstType("enum T { ; T(int p1, int... p2) throws Exception1, Exception2 {} }").members().get(1);
     assertThat(tree.is(Tree.Kind.CONSTRUCTOR)).isTrue();
     assertThat(tree.returnType()).isNull();
     assertThat(tree.simpleName().name()).isEqualTo("T");
@@ -712,7 +716,7 @@ public class JavaTreeModelTest {
 
   @Test
   public void enum_method() {
-    MethodTree tree = (MethodTree) firstTypeMember("enum T { ; int m(int p1, int... p2) throws Exception1, Exception2 {} }");
+    MethodTree tree = (MethodTree) firstType("enum T { ; int m(int p1, int... p2) throws Exception1, Exception2 {} }").members().get(1);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -725,7 +729,7 @@ public class JavaTreeModelTest {
     assertThatChildrenIteratorHasSize(tree, 12);
 
     // void method
-    tree = (MethodTree) firstTypeMember("enum T { ; void m(int p) throws Exception1, Exception2; }");
+    tree = (MethodTree) firstType("enum T { ; void m(int p) throws Exception1, Exception2; }").members().get(1);
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
     assertThat(tree.returnType()).isNotNull();
     assertThat(tree.simpleName().name()).isEqualTo("m");
@@ -918,8 +922,7 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.STATIC);
     assertThat(tree).isNotNull();
-    // TODO SONARJAVA-547 empty statements in class members are ignored as members
-    assertThatChildrenIteratorHasSize(tree, 6);
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   /**

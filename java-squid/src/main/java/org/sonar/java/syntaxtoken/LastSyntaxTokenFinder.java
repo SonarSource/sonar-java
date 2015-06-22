@@ -245,7 +245,11 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    scan(tree.initializer());
+    if (tree.separatorToken() != null) {
+      lastSyntaxToken = tree.separatorToken();
+    } else {
+      scan(tree.initializer());
+    }
   }
 
   @Override

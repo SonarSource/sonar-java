@@ -27,8 +27,8 @@ interface I3 { int op(int a, int b); }
 enum E1 {}
 enum E2 {
    /* comment */ A, 
-   B /* comment FIXME separators of enum constants are ignored */, 
-   C /* comment FIXME separators of enum constants are ignored */;
+   B /* comment */, 
+   C /* comment */;
 }
 enum E3 {
   A /* comment */ (

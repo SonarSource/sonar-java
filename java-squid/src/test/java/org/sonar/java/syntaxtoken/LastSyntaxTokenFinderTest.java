@@ -99,13 +99,29 @@ public class LastSyntaxTokenFinderTest {
 
     compilationUnit = getCompilationUnit("enum Test { A; }");
     lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    compilationUnit = getCompilationUnit("enum Test { A, B; }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(",");
+
+    compilationUnit = getCompilationUnit("enum Test { A }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
     assertThat(lastToken.text()).isEqualTo("A");
 
     compilationUnit = getCompilationUnit("enum Test { A (4); }");
     lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    compilationUnit = getCompilationUnit("enum Test { A (4) }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
     assertThat(lastToken.text()).isEqualTo(")");
 
     compilationUnit = getCompilationUnit("enum Test { A (4) { }; }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    compilationUnit = getCompilationUnit("enum Test { A (4) { } }");
     lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
     assertThat(lastToken.text()).isEqualTo("}");
   }

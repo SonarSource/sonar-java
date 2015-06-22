@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 /**
  * Enum constant.
  *
@@ -36,5 +38,8 @@ public interface EnumConstantTree extends Tree {
   IdentifierTree simpleName();
 
   NewClassTree initializer();
+
+  @Nullable
+  SyntaxToken separatorToken();
 
 }

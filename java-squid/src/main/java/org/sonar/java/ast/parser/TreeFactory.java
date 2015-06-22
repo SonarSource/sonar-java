@@ -359,16 +359,23 @@ public class TreeFactory {
     Optional<InternalSyntaxToken> semicolonToken,
     Optional<List<JavaTree>> enumDeclarations,
     InternalSyntaxToken closeBraceToken) {
-
-    ImmutableList.Builder<JavaTree> members = ImmutableList.builder();
+    
+    List<JavaTree> members = Lists.newLinkedList();
+    EnumConstantTreeImpl lastEnumConstant = null;
     if (enumConstants.isPresent()) {
       for (EnumConstantTreeImpl enumConstant : enumConstants.get()) {
         members.add(enumConstant);
+        lastEnumConstant = enumConstant;
       }
     }
     if (semicolonToken.isPresent()) {
-      // TODO This is a hack
-//      members.add(semicolonToken.get());
+      InternalSyntaxToken semicolon = semicolonToken.get();
+      // add the semicolon as endToken of the last enumConstant, or as empty statement in the enum members
+      if (lastEnumConstant != null) {
+        lastEnumConstant.setEndToken(semicolon);
+      } else {
+        members.add(newEmptyMember(semicolon));
+      }
     }
     if (enumDeclarations.isPresent()) {
       for (JavaTree enumDeclaration : enumDeclarations.get()) {
@@ -376,7 +383,7 @@ public class TreeFactory {
       }
     }
 
-    ClassTreeImpl result = newClassBody(Kind.ENUM, openBraceToken, Optional.of((List<JavaTree>) members.build()), closeBraceToken);
+    ClassTreeImpl result = newClassBody(Kind.ENUM, openBraceToken, Optional.of((List<JavaTree>) ImmutableList.<JavaTree>builder().addAll(members).build()), closeBraceToken);
 
     result.completeDeclarationKeyword((SyntaxToken) enumToken);
 
@@ -396,7 +403,7 @@ public class TreeFactory {
     Optional<List<AnnotationTreeImpl>> annotations, JavaTree identifierToken,
     Optional<ArgumentListTreeImpl> arguments,
     Optional<ClassTreeImpl> classBody,
-    Optional<InternalSyntaxToken> semicolonToken) {
+    Optional<InternalSyntaxToken> commaToken) {
 
     // FIXME SONARJAVA-547 Handle annotations
     IdentifierTreeImpl identifier = new IdentifierTreeImpl((InternalSyntaxToken) identifierToken);
@@ -419,10 +426,7 @@ public class TreeFactory {
       );
     newClass.completeWithIdentifier(identifier);
 
-    @SuppressWarnings("unchecked")
-    EnumConstantTreeImpl result = new EnumConstantTreeImpl(modifiers((Optional<List<ModifierTree>>) (Optional<?>) annotations), identifier, newClass);
-
-    return result;
+    return new EnumConstantTreeImpl(modifiers((Optional<List<ModifierTree>>) (Optional<?>) annotations), identifier, newClass, commaToken.orNull());
   }
 
   public ClassTreeImpl completeInterfaceDeclaration(
