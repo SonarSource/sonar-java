@@ -35,6 +35,7 @@ import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
+import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
@@ -94,15 +95,18 @@ public class AstScanner {
     progressReport.start(Lists.newArrayList(files));
     for (File file : files) {
       context.setFile(file);
+      context.addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
       try {
         AstNode ast = parser.parse(file);
         astWalker.walkAndVisit(ast);
         progressReport.nextFile();
+        context.popSourceCode();
       } catch (RecognitionException e) {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
         LOG.error(e.getMessage());
 
         parseErrorWalkAndVisit(e, file);
+        context.popSourceCode();
       } catch (Exception e) {
         throw new AnalysisException(getAnalyisExceptionMessage(file), e);
       }
