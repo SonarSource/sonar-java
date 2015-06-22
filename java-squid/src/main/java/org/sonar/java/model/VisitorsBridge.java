@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
+import com.sonar.sslr.api.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.utils.AnnotationUtils;
@@ -37,8 +38,10 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
@@ -55,7 +58,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements CharsetAwareVisitor {
+public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements CharsetAwareVisitor, AstScannerExceptionHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
@@ -103,8 +106,9 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
   @Override
   public void visitFile(@Nullable AstNode astNode) {
     semanticModel = null;
+    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
     if (astNode != null) {
-      CompilationUnitTree tree = (CompilationUnitTree) astNode;
+      tree = (CompilationUnitTree) astNode;
       if (isNotJavaLangOrSerializable()) {
         try {
           semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
@@ -116,14 +120,16 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
       } else {
         SemanticModel.handleMissingTypes(tree);
       }
-      JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
-      for (JavaFileScanner scanner : scanners) {
+    }
+    JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
+    for (JavaFileScanner scanner : scanners) {
+      if (astNode != null || scanner instanceof AstScannerExceptionHandler) {
         scanner.scanFile(context);
       }
-      if (semanticModel != null) {
-        // Close class loader after all the checks.
-        semanticModel.done();
-      }
+    }
+    if (semanticModel != null) {
+      // Close class loader after all the checks.
+      semanticModel.done();
     }
   }
 
@@ -144,6 +150,24 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     if (sonarComponents != null) {
       SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(getContext().getFile()), semanticModel);
       symVisitor.visitCompilationUnit(tree);
+    }
+  }
+
+  @Override
+  public void processRecognitionException(RecognitionException e) {
+    for (JavaFileScanner scanner : scanners) {
+      if (scanner instanceof AstScannerExceptionHandler) {
+        ((AstScannerExceptionHandler) scanner).processRecognitionException(e);
+      }
+    }
+  }
+
+  @Override
+  public void processException(Exception e) {
+    for (JavaFileScanner scanner : scanners) {
+      if (scanner instanceof AstScannerExceptionHandler) {
+        ((AstScannerExceptionHandler) scanner).processException(e);
+      }
     }
   }
 
@@ -200,7 +224,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
       if (cost == null) {
         Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
         Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
-        if(linear != null || linearWithOffset != null) {
+        if (linear != null || linearWithOffset != null) {
           throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
         }
       } else {

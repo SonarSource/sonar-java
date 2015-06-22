@@ -24,7 +24,6 @@ import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
-import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
@@ -71,9 +70,6 @@ public final class JavaAstScanner {
     final Parser parser = JavaParser.createParser(conf.getCharset());
 
     AstScanner builder = new AstScanner(parser);
-
-    /* Files */
-    builder.withSquidAstVisitor(new FileVisitor());
 
     /* Comments */
     builder.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
