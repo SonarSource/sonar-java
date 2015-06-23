@@ -21,7 +21,7 @@ package org.sonar.java.checks;
 
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 

@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.sonar.check.BelongsToProfile;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 

@@ -30,7 +30,7 @@ import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
-import org.sonar.java.ast.AstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
@@ -55,8 +55,8 @@ public class JavaSquid implements SourceCodeSearchEngine {
   private static final Logger LOG = LoggerFactory.getLogger(JavaSquid.class);
 
   private final SquidIndex squidIndex;
-  private final AstScanner astScanner;
-  private final AstScanner astScannerForTests;
+  private final JavaAstScanner astScanner;
+  private final JavaAstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
   private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<>();
 
@@ -95,11 +95,11 @@ public class JavaSquid implements SourceCodeSearchEngine {
     }
 
     //AstScanner for main files
-    astScanner = new AstScanner(JavaParser.createParser(conf.getCharset()));
+    astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
     astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents));
 
     //AstScanner for test files
-    astScannerForTests = new AstScanner(astScanner);
+    astScannerForTests = new JavaAstScanner(astScanner);
     astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents));
 
     //Bytecode scanner
@@ -112,8 +112,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
   }
 
-  private static VisitorsBridge createVisitorBridge(Iterable<CodeVisitor> codeVisitors,
-                                                    List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
+  private static VisitorsBridge createVisitorBridge(Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
