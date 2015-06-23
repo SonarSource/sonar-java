@@ -20,13 +20,13 @@
 package org.sonar.java.ast;
 
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.impl.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.parser.sslr.ActionParser;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -34,7 +34,6 @@ import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.SquidIndex;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
 import java.util.concurrent.TimeUnit;
@@ -44,11 +43,11 @@ public class AstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
 
   private final SquidIndex index;
-  private final Parser<LexerlessGrammar> parser;
+  private final ActionParser parser;
   private CommentAnalyser commentAnalyser;
   private VisitorsBridge visitor;
 
-  public AstScanner(Parser<LexerlessGrammar> parser) {
+  public AstScanner(ActionParser parser) {
     this.parser = parser;
     this.index = new SquidIndex();
   }
@@ -86,7 +85,8 @@ public class AstScanner {
       context.setFile(file);
       context.addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
       try {
-        AstNode ast = parser.parse(file);
+        Tree ast = parser.parse(file);
+//        AstNode ast =  parser.parse(file);
         visitor.visitFile(ast);
         progressReport.nextFile();
         context.popSourceCode();

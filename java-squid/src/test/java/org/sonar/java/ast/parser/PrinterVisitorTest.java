@@ -20,8 +20,8 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.base.Charsets;
-import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -30,7 +30,7 @@ public class PrinterVisitorTest {
 
   @Test
   public void testName() throws Exception {
-    final Parser p = JavaParser.createParser(Charsets.UTF_8);
+    final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { void foo(){}}");
     String expectedOutput = "CompilationUnitTree 1 : [\n" +
         "  ClassTree 1\n" +

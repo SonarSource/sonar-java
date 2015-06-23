@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +48,6 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
@@ -103,11 +101,11 @@ public class VisitorsBridge {
     }
   }
 
-  public void visitFile(@Nullable AstNode astNode) {
+  public void visitFile(@Nullable Tree parsedTree) {
     semanticModel = null;
     CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
-    if (astNode != null && astNode instanceof Tree) {
-      tree = (CompilationUnitTree) astNode;
+    if (parsedTree != null && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
+      tree = (CompilationUnitTree) parsedTree;
       if (isNotJavaLangOrSerializable()) {
         try {
           semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
