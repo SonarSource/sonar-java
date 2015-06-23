@@ -31,9 +31,9 @@ import org.junit.Test;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JaCoCoTest {
-
   @ClassRule
   public static Orchestrator orchestrator = JavaTestSuite.ORCHESTRATOR;
+
   private static MavenBuild build;
 
   @BeforeClass

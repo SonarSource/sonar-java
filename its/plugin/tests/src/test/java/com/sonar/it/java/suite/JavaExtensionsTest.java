@@ -30,7 +30,6 @@ import org.sonar.wsclient.issue.IssueQuery;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class JavaExtensionsTest {
 
