@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
@@ -33,7 +32,7 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   private final int column;
 
   public InternalSyntaxTrivia(String comment, int startLine, int column) {
-    super((AstNode)null);
+    super(null);
     this.comment = comment;
     this.startLine = startLine;
     this.column = column;

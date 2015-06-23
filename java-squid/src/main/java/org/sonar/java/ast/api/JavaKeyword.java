@@ -79,7 +79,7 @@ public enum JavaKeyword implements TokenType, GrammarRuleKey {
 
   private final String value;
 
-  private JavaKeyword(String value) {
+  JavaKeyword(String value) {
     this.value = value;
   }
 

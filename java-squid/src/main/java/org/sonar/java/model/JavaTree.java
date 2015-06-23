@@ -57,44 +57,9 @@ import java.util.List;
 
 public abstract class JavaTree extends AstNode implements Tree {
 
-  private static final AstNodeType NULL_NODE = new AstNodeType() {
-
-    @Override
-    public String toString() {
-      return "[null]";
-    }
-
-  };
-
-  private final AstNode astNode;
-
   public JavaTree(AstNodeType type) {
-    super(type, type.toString(), null);
-    this.astNode = this;
+    super(type, type == null ? "" : type.toString(), null);
   }
-
-  public JavaTree(@Nullable AstNode astNode) {
-    super(
-      astNode == null ? NULL_NODE : astNode.getType(),
-      astNode == null ? NULL_NODE.toString() : astNode.getType().toString(),
-      astNode == null ? null : astNode.getToken());
-    this.astNode = astNode;
-  }
-
-  public boolean isLegacy() {
-    return astNode != this;
-  }
-
-  @Override
-  public void addChild(AstNode child) {
-    Preconditions.checkState(!isLegacy(), "Children should not be added to legacy nodes");
-    super.addChild(child);
-  }
-
-  public AstNode getAstNode() {
-    return astNode;
-  }
-
   public int getLine() {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(this);
     if (firstSyntaxToken == null) {
@@ -452,11 +417,6 @@ public abstract class JavaTree extends AstNode implements Tree {
     public NotImplementedTreeImpl() {
       super(Kind.OTHER);
       this.name = "TODO";
-    }
-
-    public NotImplementedTreeImpl(AstNode astNode, String name) {
-      super(astNode);
-      this.name = name;
     }
 
     @Override

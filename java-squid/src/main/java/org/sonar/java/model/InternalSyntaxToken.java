@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
@@ -44,7 +43,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   }
 
   public InternalSyntaxToken(Token token, int startIndex, int endIndex) {
-    super((AstNode)null);
+    super(null);
     this.token = token;
     this.trivias = createTrivias(token);
     setFromIndex(startIndex);

@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
@@ -101,7 +100,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -132,7 +130,7 @@ public class TreeFactory {
   // Compilation unit
 
   public CompilationUnitTreeImpl newCompilationUnit(
-    AstNode spacing,
+    JavaTree spacing,
     Optional<PackageDeclarationTree> packageDeclaration,
     Optional<List<ImportClauseTree>> importDeclarations,
     Optional<List<Tree>> typeDeclarations,
