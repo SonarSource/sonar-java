@@ -22,11 +22,11 @@ package org.sonar.java.ast.parser;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.impl.Parser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -154,7 +154,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
   }
 
   public static String printFile(String file, String bytecodePath) {
-    final Parser p = JavaParser.createParser(Charsets.UTF_8);
+    final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(file));
     List<File> bytecodeFiles = Lists.newArrayList();
     if (!bytecodePath.isEmpty()) {

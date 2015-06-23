@@ -21,10 +21,10 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.impl.Parser;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -46,7 +46,7 @@ public class PublicApiCheckerTest {
 
   @Before
   public void setUp() {
-    Parser p = JavaParser.createParser(Charsets.UTF_8);
+    ActionParser p = JavaParser.createParser(Charsets.UTF_8);
     publicApiChecker = PublicApiChecker.newInstanceWithAccessorsHandledAsMethods();
     cut = (CompilationUnitTree) p.parse(new File("src/test/files/ast/PublicApi.java"));
   }

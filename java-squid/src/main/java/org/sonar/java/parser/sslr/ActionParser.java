@@ -28,15 +28,13 @@ import com.google.common.io.Files;
 import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.api.Rule;
-import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.impl.matcher.RuleDefinition;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.matchers.InputBuffer;
@@ -60,19 +58,17 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-public class ActionParser extends Parser {
+public class ActionParser {
 
   private final Charset charset;
 
   private final GrammarBuilderInterceptor grammarBuilderInterceptor;
-  private final SyntaxTreeCreator<JavaTree> syntaxTreeCreator;
+  private final SyntaxTreeCreator<Tree> syntaxTreeCreator;
   private final GrammarRuleKey rootRule;
   private final Grammar grammar;
   private final ParseRunner parseRunner;
 
   public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
-    super(null);
-
     this.charset = charset;
 
     this.grammarBuilderInterceptor = new GrammarBuilderInterceptor(b);
@@ -111,13 +107,7 @@ public class ActionParser extends Parser {
     this.parseRunner = new ParseRunner(this.grammar.getRootRule());
   }
 
-  @Override
-  public AstNode parse(List tokens) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public AstNode parse(File file) {
+  public Tree parse(File file) {
     try {
       return parse(new Input(Files.toString(file, charset).toCharArray(), file.toURI()));
     } catch (IOException e) {
@@ -125,12 +115,11 @@ public class ActionParser extends Parser {
     }
   }
 
-  @Override
-  public AstNode parse(String source) {
+  public Tree parse(String source) {
     return parse(new Input(source.toCharArray()));
   }
 
-  private JavaTree parse(Input input) {
+  private Tree parse(Input input) {
     ParsingResult result = parseRunner.parse(input.input());
 
     if (!result.isMatched()) {
@@ -141,21 +130,6 @@ public class ActionParser extends Parser {
       throw new RecognitionException(line, message);
     }
     return syntaxTreeCreator.create(result.getParseTreeRoot(), input);
-  }
-
-  @Override
-  public Grammar getGrammar() {
-    return grammar;
-  }
-
-  @Override
-  public void setRootRule(Rule rootRule) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public RuleDefinition getRootRule() {
-    throw new UnsupportedOperationException();
   }
 
   public GrammarRuleKey rootRule() {

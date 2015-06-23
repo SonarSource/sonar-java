@@ -28,14 +28,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.parser.sslr.ActionParser;
+import org.sonar.java.parser.sslr.GrammarBuilder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
-import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
 
@@ -50,8 +54,8 @@ public class AstScannerTest {
   @Test
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-
-    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeGrammar.builder().build()));
+    AstScanner scanner = new AstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
+//    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeLexer.builder().build()));
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
@@ -60,7 +64,8 @@ public class AstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
-    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeGrammar.builder().build()));
+    AstScanner scanner = new AstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
+//    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeLexer.builder().build()));
     scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
@@ -89,7 +94,8 @@ public class AstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_no_parse_error() {
-    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeGrammar.builder().build()));
+//    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeLexer.builder().build()));
+    AstScanner scanner = new AstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
@@ -133,13 +139,44 @@ public class AstScannerTest {
     }
   }
 
-  private enum FakeGrammar implements GrammarRuleKey {
-    ROOT;
+  public static class FakeTreeFactory {
+    public FakeTreeFactory(){}
+    public Tree root(JavaTree javaTree) {
+      return new Tree() {
+        @Override
+        public boolean is(Kind... kind) {
+          return false;
+        }
+
+        @Override
+        public void accept(TreeVisitor visitor) {
+
+        }
+      };
+    }
+  }
+
+  public static class FakeGrammar {
+    final GrammarBuilder b;
+    final FakeTreeFactory f;
+
+    public FakeGrammar(GrammarBuilder b, FakeTreeFactory f) {
+      this.b = b;
+      this.f = f;
+    }
+
+    public Tree ROOT() {
+      return b.<Tree>nonterminal(FakeLexer.ROOT).is(f.root(b.invokeRule(FakeLexer.TOKEN)));
+    }
+  }
+
+  public enum FakeLexer implements GrammarRuleKey {
+    ROOT, TOKEN;
 
     public static LexerlessGrammarBuilder builder() {
       LexerlessGrammarBuilder b = LexerlessGrammarBuilder.create();
 
-      b.rule(ROOT).is("foo");
+      b.rule(TOKEN).is("foo");
       b.setRootRule(ROOT);
 
       return b;

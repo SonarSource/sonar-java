@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
@@ -59,9 +58,8 @@ public final class JavaAstScanner {
   }
 
   public static AstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
-    final Parser parser = JavaParser.createParser(conf.getCharset());
 
-    AstScanner astScanner = new AstScanner(parser);
+    AstScanner astScanner = new AstScanner(JavaParser.createParser(conf.getCharset()));
     /* Comments */
     astScanner.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
     if(visitorsBridge != null) {
