@@ -39,10 +39,6 @@ public class TestUtils {
     return home;
   }
 
-  public static File pluginDir(String artifactId) {
-    return new File(homeDir(), "plugins/" + artifactId);
-  }
-
   public static File pluginJar(String artifactId) {
     return new File(homeDir(), "plugins/" + artifactId + "/target/" + artifactId + "-1.0-SNAPSHOT.jar");
   }
