@@ -27,7 +27,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Fail;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;

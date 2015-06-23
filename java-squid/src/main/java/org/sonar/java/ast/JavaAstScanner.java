@@ -19,40 +19,50 @@
  */
 package org.sonar.java.ast;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.java.JavaConfiguration;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
+import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
+import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
+import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class AstScanner {
+public class JavaAstScanner {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
 
   private final SquidIndex index;
   private final ActionParser parser;
   private VisitorsBridge visitor;
 
-  public AstScanner(ActionParser parser) {
+  public JavaAstScanner(ActionParser parser) {
     this.parser = parser;
     this.index = new SquidIndex();
   }
 
   /**
-   * Takes parser and index from another instance of {@link AstScanner}
+   * Takes parser and index from another instance of {@link JavaAstScanner}
    */
-  public AstScanner(AstScanner astScanner) {
+  public JavaAstScanner(JavaAstScanner astScanner) {
     this.parser = astScanner.parser;
     this.index = astScanner.index;
   }
@@ -115,6 +125,33 @@ public class AstScanner {
 
   public SourceCodeSearchEngine getIndex() {
     return index;
+  }
+
+  /**
+   * Helper method for testing checks without having to deploy them on a Sonar instance.
+   */
+  @VisibleForTesting
+  public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
+    if (!file.isFile()) {
+      throw new IllegalArgumentException("File '" + file + "' not found.");
+    }
+    JavaAstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitorsBridge);
+
+    scanner.scan(Collections.singleton(file));
+    Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
+    if (sources.size() != 1) {
+      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
+    }
+    return (SourceFile) sources.iterator().next();
+  }
+
+  private static JavaAstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
+    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
+    if(visitorsBridge != null) {
+      visitorsBridge.setCharset(conf.getCharset());
+      astScanner.setVisitorBridge(visitorsBridge);
+    }
+    return astScanner;
   }
 
 }

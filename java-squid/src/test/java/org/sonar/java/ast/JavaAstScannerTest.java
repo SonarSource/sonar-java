@@ -24,10 +24,15 @@ import com.google.common.collect.ImmutableList;
 import com.sonar.sslr.api.RecognitionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.resources.Project;
+import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.java.Measurer;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.parser.sslr.ActionParser;
@@ -38,24 +43,61 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.api.AnalysisException;
+import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-public class AstScannerTest {
+public class JavaAstScannerTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
+  SensorContext context;
+  Project sonarProject;
+
+  @Before
+  public void setUp() throws Exception {
+    context = mock(SensorContext.class);
+    sonarProject = mock(Project.class);
+    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
+    File baseDir = new File("src/test/files/metrics");
+    when(sonarProject.getFileSystem()).thenReturn(pfs);
+    when(pfs.getBasedir()).thenReturn(baseDir);
+  }
+
+  @Test
+  public void comments() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"), new VisitorsBridge(new Measurer(sonarProject, context, false)));
+    assertThat(file.getNoSonarTagLines()).contains(15).hasSize(1);
+  }
+
+  @Test
+  public void noSonarLines() throws Exception {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"), new VisitorsBridge(new Measurer(sonarProject, context, false)));
+    assertThat(file.getNoSonarTagLines()).hasSize(1);
+    assertThat(file.getNoSonarTagLines()).contains(8);
+  }
+
+  @Test
+  public void scan_single_file_with_dumb_file_should_fail() throws Exception {
+    thrown.expect(IllegalArgumentException.class);
+    String filename = "!!dummy";
+    thrown.expectMessage(filename);
+    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(null));
+  }
+
   @Test
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-    AstScanner scanner = new AstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
-//    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeLexer.builder().build()));
+    JavaAstScanner scanner = new JavaAstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
@@ -64,8 +106,7 @@ public class AstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
-    AstScanner scanner = new AstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
-//    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeLexer.builder().build()));
+    JavaAstScanner scanner = new JavaAstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
@@ -94,8 +135,7 @@ public class AstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_no_parse_error() {
-//    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeLexer.builder().build()));
-    AstScanner scanner = new AstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
+    JavaAstScanner scanner = new JavaAstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override

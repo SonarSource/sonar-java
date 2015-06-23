@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleParam;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.squidbridge.SquidAstVisitor;

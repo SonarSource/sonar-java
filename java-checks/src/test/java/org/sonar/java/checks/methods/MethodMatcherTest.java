@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;

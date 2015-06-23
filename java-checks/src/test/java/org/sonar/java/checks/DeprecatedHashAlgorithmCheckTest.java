@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
