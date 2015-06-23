@@ -33,7 +33,6 @@ import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
-import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
@@ -155,12 +154,6 @@ public class AstScanner {
 
   public void setCommentAnalyser(CommentAnalyser commentAnalyser) {
     this.commentAnalyser = commentAnalyser;
-  }
-
-  public void accept(CodeVisitor visitor) {
-    if (visitor instanceof SquidAstVisitor) {
-      withSquidAstVisitor((SquidAstVisitor<LexerlessGrammar>) visitor);
-    }
   }
 
 }

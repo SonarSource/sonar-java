@@ -130,7 +130,7 @@ public class ActionParser extends Parser {
     return parse(new Input(source.toCharArray()));
   }
 
-  private AstNode parse(Input input) {
+  private JavaTree parse(Input input) {
     ParsingResult result = parseRunner.parse(input.input());
 
     if (!result.isMatched()) {
