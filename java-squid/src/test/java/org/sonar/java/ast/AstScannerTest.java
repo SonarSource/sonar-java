@@ -21,7 +21,6 @@ package org.sonar.java.ast;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.RecognitionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -29,12 +28,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
-import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
-import org.sonar.sslr.parser.LexerlessGrammar;
 import org.sonar.sslr.parser.ParserAdapter;
 
 import java.io.File;
@@ -51,8 +51,8 @@ public class AstScannerTest {
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
 
-    AstScanner scanner = new AstScanner(new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, FakeGrammar.builder().build()));
-    scanner.withSquidAstVisitor(listener);
+    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeGrammar.builder().build()));
+    scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
     verify(listener).processRecognitionException(Mockito.any(RecognitionException.class));
@@ -60,15 +60,14 @@ public class AstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
-    AstScanner scanner = new AstScanner(new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, FakeGrammar.builder().build()));
-    scanner.withSquidAstVisitor(new SquidAstVisitor<LexerlessGrammar>() {
+    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeGrammar.builder().build()));
+    scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
-      public void visitFile(AstNode node) {
+      public void scanFile(JavaFileScannerContext context) {
         throw new NullPointerException("foo");
       }
-
-    });
+    }));
 
     thrown.expectMessage("SonarQube is unable to analyze file");
     thrown.expect(new BaseMatcher() {
@@ -90,15 +89,15 @@ public class AstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_no_parse_error() {
-    AstScanner scanner = new AstScanner(new ParserAdapter<LexerlessGrammar>(Charsets.UTF_8, FakeGrammar.builder().build()));
-    scanner.withSquidAstVisitor(new SquidAstVisitor<LexerlessGrammar>() {
+    AstScanner scanner = new AstScanner(new ParserAdapter<>(Charsets.UTF_8, FakeGrammar.builder().build()));
+    scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
-      public void visitFile(AstNode node) {
+      public void scanFile(JavaFileScannerContext context) {
         throw new NullPointerException("foo");
       }
+    }));
 
-    });
 
     thrown.expectMessage("SonarQube is unable to analyze file");
     thrown.expect(new BaseMatcher() {
@@ -118,7 +117,7 @@ public class AstScannerTest {
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
   }
 
-  private static class FakeAuditListener extends SquidAstVisitor<LexerlessGrammar> implements AstScannerExceptionHandler {
+  private static class FakeAuditListener implements JavaFileScanner, AstScannerExceptionHandler {
 
     @Override
     public void processRecognitionException(RecognitionException e) {
@@ -128,9 +127,13 @@ public class AstScannerTest {
     public void processException(Exception e) {
     }
 
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+
+    }
   }
 
-  private static enum FakeGrammar implements GrammarRuleKey {
+  private enum FakeGrammar implements GrammarRuleKey {
     ROOT;
 
     public static LexerlessGrammarBuilder builder() {

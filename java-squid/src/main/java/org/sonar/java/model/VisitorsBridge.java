@@ -32,6 +32,7 @@ import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
+import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -42,14 +43,13 @@ import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
-import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements CharsetAwareVisitor, AstScannerExceptionHandler {
+public class VisitorsBridge {
 
   private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
 
@@ -67,6 +67,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
   private SemanticModel semanticModel;
   private List<File> projectClasspath;
   private boolean analyseAccessors;
+  private VisitorContext context;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
@@ -94,7 +95,6 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     this.analyseAccessors = analyseAccessors;
   }
 
-  @Override
   public void setCharset(Charset charset) {
     for (JavaFileScanner scanner : scanners) {
       if (scanner instanceof CharsetAwareVisitor) {
@@ -103,11 +103,10 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
   }
 
-  @Override
   public void visitFile(@Nullable AstNode astNode) {
     semanticModel = null;
     CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
-    if (astNode != null) {
+    if (astNode != null && astNode instanceof Tree) {
       tree = (CompilationUnitTree) astNode;
       if (isNotJavaLangOrSerializable()) {
         try {
@@ -123,9 +122,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
     JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
     for (JavaFileScanner scanner : scanners) {
-      if (astNode != null || scanner instanceof AstScannerExceptionHandler) {
-        scanner.scanFile(context);
-      }
+      scanner.scanFile(context);
     }
     if (semanticModel != null) {
       // Close class loader after all the checks.
@@ -137,7 +134,7 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     String[] path = getContext().peekSourceCode().getName().split(Pattern.quote(File.separator));
     boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
     boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
-        && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
+      && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
     boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 3]) && "io".equals(path[path.length - 2]);
     return !(isJavaLang || isJavaLangAnnotation || isSerializable);
   }
@@ -153,7 +150,6 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
   }
 
-  @Override
   public void processRecognitionException(RecognitionException e) {
     for (JavaFileScanner scanner : scanners) {
       if (scanner instanceof AstScannerExceptionHandler) {
@@ -162,13 +158,12 @@ public class VisitorsBridge extends SquidAstVisitor<LexerlessGrammar> implements
     }
   }
 
-  @Override
-  public void processException(Exception e) {
-    for (JavaFileScanner scanner : scanners) {
-      if (scanner instanceof AstScannerExceptionHandler) {
-        ((AstScannerExceptionHandler) scanner).processException(e);
-      }
-    }
+  public VisitorContext getContext() {
+    return context;
+  }
+
+  public void setContext(VisitorContext context) {
+    this.context = context;
   }
 
   @VisibleForTesting
