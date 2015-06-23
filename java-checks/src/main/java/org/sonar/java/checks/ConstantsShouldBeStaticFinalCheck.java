@@ -101,7 +101,8 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     if (init != null) {
       if (init.is(Tree.Kind.NEW_ARRAY)) {
         //exclude allocations : new int[6] but allow initialization new int[]{1,2};
-        return ((NewArrayTree) init).dimensions().isEmpty();
+        NewArrayTree newArrayTree = (NewArrayTree) init;
+        return newArrayTree.dimensions().isEmpty() || newArrayTree.openBraceToken() != null;
       }
       return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }

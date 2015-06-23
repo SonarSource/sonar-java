@@ -219,7 +219,7 @@ public class SymbolicEvaluator {
     @Override
     public final void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
       evaluateExpression(currentState, tree.expression());
-      evaluateExpression(currentState, tree.index());
+      evaluateExpression(currentState, tree.dimension().expression());
       currentResult.unknownStates.add(currentState);
     }
 
