@@ -25,7 +25,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
 import net.sf.cglib.proxy.Enhancer;
@@ -41,7 +40,6 @@ import org.sonar.sslr.internal.matchers.InputBuffer;
 import org.sonar.sslr.internal.vm.FirstOfExpression;
 import org.sonar.sslr.internal.vm.ParsingExpression;
 import org.sonar.sslr.internal.vm.SequenceExpression;
-import org.sonar.sslr.internal.vm.StringExpression;
 import org.sonar.sslr.parser.ParseError;
 import org.sonar.sslr.parser.ParseErrorFormatter;
 import org.sonar.sslr.parser.ParseRunner;
@@ -240,12 +238,6 @@ public class ActionParser {
     @Override
     public InternalSyntaxToken invokeRule(JavaPunctuator ruleKey) {
       push(new DelayedRuleInvocationExpression(b, ruleKey));
-      return null;
-    }
-
-    @Override
-    public AstNode token(String value) {
-      expressionStack.push(new StringExpression(value));
       return null;
     }
 

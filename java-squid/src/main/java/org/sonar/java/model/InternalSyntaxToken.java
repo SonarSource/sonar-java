@@ -20,7 +20,6 @@
 package org.sonar.java.model;
 
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNodeType;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.Trivia;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.Iterator;
 import java.util.List;
@@ -125,7 +125,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     throw new UnsupportedOperationException();
   }
 
-  public void setType(AstNodeType type) {
-    this.type = type;
+  public void setGrammarRuleKey(GrammarRuleKey grammarRuleKey) {
+    this.grammarRuleKey = grammarRuleKey;
   }
 }

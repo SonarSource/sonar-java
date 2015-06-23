@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -45,6 +44,7 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -56,10 +56,10 @@ import java.util.List;
 public abstract class JavaTree implements Tree {
 
 
-  protected AstNodeType type;
+  protected GrammarRuleKey grammarRuleKey;
 
-  public JavaTree(AstNodeType type) {
-    this.type = type;
+  public JavaTree(GrammarRuleKey grammarRuleKey) {
+    this.grammarRuleKey = grammarRuleKey;
   }
   public int getLine() {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(this);
@@ -95,8 +95,8 @@ public abstract class JavaTree implements Tree {
     return false;
   }
 
-  public AstNodeType getType() {
-    return type;
+  public GrammarRuleKey getGrammarRuleKey() {
+    return grammarRuleKey;
   }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {

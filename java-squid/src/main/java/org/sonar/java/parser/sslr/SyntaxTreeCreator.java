@@ -136,7 +136,7 @@ public class SyntaxTreeCreator<T> {
       for (Object child : convertedChildren) {
         if (child instanceof InternalSyntaxToken) {
           InternalSyntaxToken syntaxToken = (InternalSyntaxToken) child;
-          syntaxToken.setType(rule.getRealAstNodeType());
+          syntaxToken.setGrammarRuleKey(rule.getRuleKey());
           return child;
         }
       }

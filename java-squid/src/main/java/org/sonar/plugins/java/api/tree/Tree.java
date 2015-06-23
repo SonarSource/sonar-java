@@ -20,7 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-import com.sonar.sslr.api.AstNodeType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
  * Common interface for all nodes in a syntax tree.
@@ -34,7 +34,7 @@ public interface Tree {
 
   void accept(TreeVisitor visitor);
 
-  public enum Kind implements AstNodeType {
+  enum Kind implements GrammarRuleKey {
     /**
      * {@link CompilationUnitTree}
      */

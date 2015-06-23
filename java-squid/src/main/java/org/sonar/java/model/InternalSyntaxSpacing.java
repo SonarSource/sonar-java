@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
@@ -38,7 +37,7 @@ public class InternalSyntaxSpacing extends JavaTree {
 
   @Override
   public Kind getKind() {
-    //FIXME should have a dedicated kind associated with a dedicated interface.
+    // FIXME should have a dedicated kind associated with a dedicated interface.
     return Tree.Kind.TRIVIA;
   }
 

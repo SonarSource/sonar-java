@@ -115,14 +115,14 @@ public class TreeFactory {
   }
 
   public ModifierKeywordTreeImpl modifierKeyword(JavaTree javaTree) {
-    JavaKeyword keyword = (JavaKeyword) javaTree.getType();
+    JavaKeyword keyword = (JavaKeyword) javaTree.getGrammarRuleKey();
     return new ModifierKeywordTreeImpl(kindMaps.getModifier(keyword), ((InternalSyntaxToken) javaTree));
   }
 
   // Literals
 
   public ExpressionTree literal(JavaTree tree) {
-    return new LiteralTreeImpl(kindMaps.getLiteral(tree.getType()), (InternalSyntaxToken) tree);
+    return new LiteralTreeImpl(kindMaps.getLiteral(tree.getGrammarRuleKey()), (InternalSyntaxToken) tree);
   }
 
   // End of literals
@@ -574,7 +574,7 @@ public class TreeFactory {
 
     if (annotationTypeElementDeclarations.isPresent()) {
       for (JavaTree annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
-        if (annotationTypeElementDeclaration.getType().equals(JavaLexer.VARIABLE_DECLARATORS)) {
+        if (annotationTypeElementDeclaration.getGrammarRuleKey().equals(JavaLexer.VARIABLE_DECLARATORS)) {
           for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) annotationTypeElementDeclaration) {
             members.add(variable);
           }
@@ -589,7 +589,7 @@ public class TreeFactory {
 
   public JavaTree completeAnnotationTypeMember(ModifiersTreeImpl modifiers, JavaTree partial) {
 
-    if (partial.getType().equals(JavaLexer.VARIABLE_DECLARATORS)) {
+    if (partial.getGrammarRuleKey().equals(JavaLexer.VARIABLE_DECLARATORS)) {
       for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) partial) {
         variable.completeModifiers(modifiers);
       }
@@ -659,7 +659,7 @@ public class TreeFactory {
 
   public AssignmentExpressionTreeImpl newElementValuePair(JavaTree identifierToken, InternalSyntaxToken operator, ExpressionTree elementValue) {
     return new AssignmentExpressionTreeImpl(
-      kindMaps.getAssignmentOperator((JavaPunctuator) operator.getType()),
+      kindMaps.getAssignmentOperator((JavaPunctuator) operator.getGrammarRuleKey()),
       new IdentifierTreeImpl((InternalSyntaxToken) identifierToken),
       operator,
       elementValue);
@@ -1091,7 +1091,7 @@ public class TreeFactory {
         result = operatorAndOperand.operand();
       } else {
         result = new AssignmentExpressionTreeImpl(
-          kindMaps.getAssignmentOperator((JavaPunctuator) lastOperator.getType()),
+          kindMaps.getAssignmentOperator((JavaPunctuator) lastOperator.getGrammarRuleKey()),
           operatorAndOperand.operand(),
           lastOperator,
           result);
@@ -1101,7 +1101,7 @@ public class TreeFactory {
     }
 
     result = new AssignmentExpressionTreeImpl(
-      kindMaps.getAssignmentOperator((JavaPunctuator) lastOperator.getType()),
+      kindMaps.getAssignmentOperator((JavaPunctuator) lastOperator.getGrammarRuleKey()),
       expression,
       lastOperator,
       result);
@@ -1157,7 +1157,7 @@ public class TreeFactory {
     ExpressionTree result = expression;
     for (OperatorAndOperand operatorAndOperand : operatorAndOperands.get()) {
       result = new BinaryExpressionTreeImpl(
-        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getType()),
+        kindMaps.getBinaryOperator((JavaPunctuator) operatorAndOperand.operator().getGrammarRuleKey()),
         result,
         operatorAndOperand.operator(),
         operatorAndOperand.operand());
@@ -1256,7 +1256,7 @@ public class TreeFactory {
   }
 
   public ExpressionTree newPrefixedExpression(InternalSyntaxToken operatorToken, ExpressionTree expression) {
-    return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorToken.getType()), operatorToken, expression);
+    return new InternalPrefixUnaryExpression(kindMaps.getPrefixOperator((JavaPunctuator) operatorToken.getGrammarRuleKey()), operatorToken, expression);
   }
 
   public ExpressionTree newPostfixExpression(ExpressionTree expression, Optional<InternalSyntaxToken> postfixOperator) {
@@ -1264,7 +1264,7 @@ public class TreeFactory {
 
     if (postfixOperator.isPresent()) {
       InternalSyntaxToken postfixOperatorToken = postfixOperator.get();
-      result = new InternalPostfixUnaryExpression(kindMaps.getPostfixOperator((JavaPunctuator) postfixOperator.get().getType()), result, postfixOperatorToken);
+      result = new InternalPostfixUnaryExpression(kindMaps.getPostfixOperator((JavaPunctuator) postfixOperator.get().getGrammarRuleKey()), result, postfixOperatorToken);
     }
 
     return result;
@@ -1483,7 +1483,7 @@ public class TreeFactory {
 
     InternalSyntaxToken dotToken = null;
     for (JavaTree child : children) {
-      if (!child.getType().equals(JavaTokenType.IDENTIFIER)) {
+      if (!child.getGrammarRuleKey().equals(JavaTokenType.IDENTIFIER)) {
         dotToken = (InternalSyntaxToken) child;
       } else {
         InternalSyntaxToken identifierToken = (InternalSyntaxToken) child;

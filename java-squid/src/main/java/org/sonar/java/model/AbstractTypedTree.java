@@ -20,8 +20,8 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
  * This class is intended for internal use during semantic analysis and should not be used in checks.
@@ -34,8 +34,8 @@ public abstract class AbstractTypedTree extends JavaTree {
   // TODO(Godin): never should be null, i.e. better to assign default value
   private Type type;
 
-  public AbstractTypedTree(AstNodeType astNodeType) {
-    super(astNodeType);
+  public AbstractTypedTree(GrammarRuleKey grammarRuleKey) {
+    super(grammarRuleKey);
   }
 
   /**
