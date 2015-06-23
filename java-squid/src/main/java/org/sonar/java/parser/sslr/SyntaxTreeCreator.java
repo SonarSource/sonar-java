@@ -22,15 +22,15 @@ package org.sonar.java.parser.sslr;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.api.Trivia.TriviaKind;
 import org.sonar.java.model.InternalSyntaxSpacing;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.java.parser.sslr.ActionParser.GrammarBuilderInterceptor;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.internal.grammar.MutableParsingRule;
 import org.sonar.sslr.internal.matchers.ParseNode;
@@ -43,30 +43,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class SyntaxTreeCreator<T> {
-
-  private static final TokenType UNDEFINED_TOKEN_TYPE = new TokenType() {
-
-    @Override
-    public String getName() {
-      return "TOKEN";
-    }
-
-    @Override
-    public String getValue() {
-      return getName();
-    }
-
-    @Override
-    public boolean hasToBeSkippedFromAst(AstNode node) {
-      return false;
-    }
-
-    @Override
-    public String toString() {
-      return SyntaxTreeCreator.class.getSimpleName();
-    }
-
-  };
 
   private final Object treeFactory;
   private final GrammarBuilderInterceptor mapping;
@@ -155,6 +131,7 @@ public class SyntaxTreeCreator<T> {
   }
 
   private InternalSyntaxToken visitTerminal(ParseNode node) {
+    boolean isEof = false;
     if (node.getMatcher() instanceof TriviaExpression) {
       TriviaExpression ruleMatcher = (TriviaExpression) node.getMatcher();
       if (ruleMatcher.getTriviaKind() == TriviaKind.SKIPPED_TEXT) {
@@ -172,18 +149,28 @@ public class SyntaxTreeCreator<T> {
       updateTokenPositionAndValue(node);
       TokenExpression ruleMatcher = (TokenExpression) node.getMatcher();
       tokenBuilder.setType(ruleMatcher.getTokenType());
+      isEof = ruleMatcher.getTokenType() == GenericTokenType.EOF;
       if (ruleMatcher.getTokenType() == GenericTokenType.COMMENT) {
         tokenBuilder.setTrivia(Collections.<Trivia>emptyList());
         trivias.add(Trivia.createComment(tokenBuilder.build()));
         return null;
       }
-    } else {
-      updateTokenPositionAndValue(node);
-      tokenBuilder.setType(UNDEFINED_TOKEN_TYPE);
     }
-    Token token = tokenBuilder.setTrivia(trivias).build();
+    LineColumnValue lineColumnValue = tokenPosition(node);
+    InternalSyntaxToken internalSyntaxToken = new InternalSyntaxToken(lineColumnValue.line, lineColumnValue.column, lineColumnValue.value,
+        createTrivias(trivias), node.getStartIndex(), node.getEndIndex(), isEof);
     trivias.clear();
-    return new InternalSyntaxToken(token, node.getStartIndex(), node.getEndIndex());
+    return internalSyntaxToken;
+  }
+
+
+  private static List<SyntaxTrivia> createTrivias(List<Trivia> trivias) {
+    List<SyntaxTrivia> result = Lists.newArrayList();
+    for (Trivia trivia : trivias) {
+      Token trivialToken = trivia.getToken();
+      result.add(InternalSyntaxTrivia.create(trivialToken.getValue(), trivialToken.getLine(), trivialToken.getColumn()));
+    }
+    return result;
   }
 
   private void updateTokenPositionAndValue(ParseNode node) {
@@ -194,6 +181,24 @@ public class SyntaxTreeCreator<T> {
     tokenBuilder.setURI(input.uri());
     String value = input.substring(node.getStartIndex(), node.getEndIndex());
     tokenBuilder.setValueAndOriginalValue(value);
+  }
+
+  private LineColumnValue tokenPosition(ParseNode node) {
+    int[] lineAndColumn = input.lineAndColumnAt(node.getStartIndex());
+    String value = input.substring(node.getStartIndex(), node.getEndIndex());
+    return new LineColumnValue(lineAndColumn[0], lineAndColumn[1] -1, value);
+  }
+
+  private static class LineColumnValue {
+    final int line;
+    final int column;
+    final String value;
+
+    private LineColumnValue(int line, int column, String value) {
+      this.line = line;
+      this.column = column;
+      this.value = value;
+    }
   }
 
 }

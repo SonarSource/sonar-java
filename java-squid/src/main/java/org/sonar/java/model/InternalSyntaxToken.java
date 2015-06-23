@@ -19,10 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.GenericTokenType;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,56 +30,48 @@ import java.util.List;
 
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
-  private final Token token;
   private List<SyntaxTrivia> trivias;
   private int startIndex;
   private int endIndex;
-
+  private final int line;
+  private final int column;
+  private final String value;
+  private final boolean isEOF;
 
   protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
-    this(internalSyntaxToken.token, internalSyntaxToken.fromIndex(), internalSyntaxToken.toIndex());
-  }
-
-  public InternalSyntaxToken(Token token, int startIndex, int endIndex) {
     super(null);
-    this.token = token;
-    this.trivias = createTrivias(token);
-    setFromIndex(startIndex);
-    setToIndex(endIndex);
-
+    this.value = internalSyntaxToken.value;
+    this.line = internalSyntaxToken.line;
+    this.column = internalSyntaxToken.column;
+    this.trivias = internalSyntaxToken.trivias;
+    this.startIndex = internalSyntaxToken.startIndex;
+    this.endIndex = internalSyntaxToken.endIndex;
+    this.isEOF = internalSyntaxToken.isEOF;
   }
 
-  public int toIndex() {
-    return endIndex;
+  public InternalSyntaxToken(int line, int column, String value, List<SyntaxTrivia> trivias, int startIndex, int endIndex, boolean isEOF) {
+    super(null);
+    this.value = value;
+    this.line = line;
+    this.column = column;
+    this.trivias = trivias;
+    this.startIndex = startIndex;
+    this.endIndex = endIndex;
+    this.isEOF = isEOF;
   }
+
   public int fromIndex() {
     return startIndex;
-  }
-  private void setToIndex(int endIndex) {
-    this.endIndex = endIndex;
-  }
-
-  private void setFromIndex(int startIndex) {
-    this.startIndex = startIndex;
   }
 
   @Override
   public String text() {
-    return token.getValue();
+    return value;
   }
 
   @Override
   public List<SyntaxTrivia> trivias() {
     return trivias;
-  }
-
-  private static List<SyntaxTrivia> createTrivias(Token token) {
-    List<SyntaxTrivia> result = Lists.newArrayList();
-    for (Trivia trivia : token.getTrivia()) {
-      Token trivialToken = trivia.getToken();
-      result.add(InternalSyntaxTrivia.create(trivialToken.getValue(), trivialToken.getLine(), trivialToken.getColumn()));
-    }
-    return result;
   }
 
   @Override
@@ -93,17 +81,17 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   @Override
   public int getLine() {
-    return token.getLine();
+    return line;
   }
 
   @Override
   public int line() {
-    return token.getLine();
+    return line;
   }
 
   @Override
   public int column() {
-    return token.getColumn();
+    return column;
   }
 
   @Override
@@ -116,8 +104,8 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     return true;
   }
 
-  public boolean isEOF(){
-    return token.getType() == GenericTokenType.EOF;
+  public boolean isEOF() {
+    return isEOF;
   }
 
   @Override
