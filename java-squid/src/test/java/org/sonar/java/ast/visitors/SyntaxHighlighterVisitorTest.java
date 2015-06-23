@@ -43,6 +43,9 @@ import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 public class SyntaxHighlighterVisitorTest {
@@ -52,7 +55,7 @@ public class SyntaxHighlighterVisitorTest {
 
   private final SonarComponents sonarComponents = mock(SonarComponents.class);
   private final Highlightable highlightable = mock(Highlightable.class);
-  private final HighlightingBuilderTester highlighting = new HighlightingBuilderTester();
+  private final HighlightingBuilderTester highlighting = spy(new HighlightingBuilderTester());
 
   private final SyntaxHighlighterVisitor syntaxHighlighterVisitor = new SyntaxHighlighterVisitor(sonarComponents, Charsets.UTF_8);
 
@@ -70,7 +73,10 @@ public class SyntaxHighlighterVisitorTest {
     File file = temp.newFile();
     Files.write("ParseError", file, Charsets.UTF_8);
     scan(file);
-    Mockito.verifyZeroInteractions(highlightable);
+    Mockito.verify(highlightable, times(1)).newHighlighting();
+    Mockito.verify(highlighting, never()).highlight(Mockito.anyInt(), Mockito.anyInt(), Mockito.anyString());
+    assertThat(highlighting.done).isTrue();
+    assertThat(highlighting.entries).isEmpty();
   }
 
   @Test

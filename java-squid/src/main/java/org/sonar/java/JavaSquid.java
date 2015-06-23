@@ -113,7 +113,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
     VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
-    astScanner.withSquidAstVisitor(visitorsBridge);
+    astScanner.setVisitorBridge(visitorsBridge);
   }
 
 

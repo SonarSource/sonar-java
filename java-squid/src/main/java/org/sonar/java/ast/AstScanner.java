@@ -21,17 +21,14 @@ package org.sonar.java.ast;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.impl.ast.AstWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.squidbridge.AstScannerExceptionHandler;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.ProgressReport;
-import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
 import org.sonar.squidbridge.api.SourceFile;
@@ -40,7 +37,6 @@ import org.sonar.squidbridge.indexer.SquidIndex;
 import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class AstScanner {
@@ -48,10 +44,9 @@ public class AstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
 
   private final SquidIndex index;
-  private final List<SquidAstVisitor<LexerlessGrammar>> visitors = Lists.newArrayList();
-  private final List<AstScannerExceptionHandler> astScannerExceptionHandlers = Lists.newArrayList();
   private final Parser<LexerlessGrammar> parser;
   private CommentAnalyser commentAnalyser;
+  private VisitorsBridge visitor;
 
   public AstScanner(Parser<LexerlessGrammar> parser) {
     this.parser = parser;
@@ -83,13 +78,8 @@ public class AstScanner {
     SourceProject project = (SourceProject) index.search("Java Project");
     VisitorContext context = new VisitorContext(project);
     context.setCommentAnalyser(commentAnalyser);
+    visitor.setContext(context);
 
-    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
-      visitor.setContext(context);
-      visitor.init();
-    }
-
-    AstWalker astWalker = new AstWalker(visitors);
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(Lists.newArrayList(files));
     for (File file : files) {
@@ -97,7 +87,7 @@ public class AstScanner {
       context.addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
       try {
         AstNode ast = parser.parse(file);
-        astWalker.walkAndVisit(ast);
+        visitor.visitFile(ast);
         progressReport.nextFile();
         context.popSourceCode();
       } catch (RecognitionException e) {
@@ -111,27 +101,13 @@ public class AstScanner {
       }
     }
     progressReport.stop();
-
-    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
-      visitor.destroy();
-    }
   }
 
   private void parseErrorWalkAndVisit(RecognitionException e, File file) {
     try {
       // Process the exception
-      for (SquidAstVisitor<? extends Grammar> visitor : visitors) {
-        visitor.visitFile(null);
-      }
-
-      for (AstScannerExceptionHandler astScannerExceptionHandler : astScannerExceptionHandlers) {
-        astScannerExceptionHandler.processRecognitionException(e);
-      }
-
-      for (SquidAstVisitor<? extends Grammar> visitor : Lists.reverse(visitors)) {
-        visitor.leaveFile(null);
-      }
-
+      visitor.visitFile(null);
+      visitor.processRecognitionException(e);
     } catch (Exception e2) {
       throw new AnalysisException(getAnalyisExceptionMessage(file), e2);
     }
@@ -141,11 +117,8 @@ public class AstScanner {
     return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
   }
 
-  public void withSquidAstVisitor(SquidAstVisitor<LexerlessGrammar> visitor) {
-    if (visitor instanceof AstScannerExceptionHandler) {
-      astScannerExceptionHandlers.add((AstScannerExceptionHandler) visitor);
-    }
-    this.visitors.add(visitor);
+  public void setVisitorBridge(VisitorsBridge visitor) {
+    this.visitor = visitor;
   }
 
   public SourceCodeSearchEngine getIndex() {
