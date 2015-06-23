@@ -27,11 +27,9 @@ import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.CommentAnalyser;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
-import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
@@ -44,7 +42,6 @@ public class AstScanner {
 
   private final SquidIndex index;
   private final ActionParser parser;
-  private CommentAnalyser commentAnalyser;
   private VisitorsBridge visitor;
 
   public AstScanner(ActionParser parser) {
@@ -76,26 +73,21 @@ public class AstScanner {
   public void simpleScan(Iterable<File> files) {
     SourceProject project = (SourceProject) index.search("Java Project");
     VisitorContext context = new VisitorContext(project);
-    context.setCommentAnalyser(commentAnalyser);
     visitor.setContext(context);
 
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(Lists.newArrayList(files));
     for (File file : files) {
       context.setFile(file);
-      context.addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
       try {
         Tree ast = parser.parse(file);
-//        AstNode ast =  parser.parse(file);
         visitor.visitFile(ast);
         progressReport.nextFile();
-        context.popSourceCode();
       } catch (RecognitionException e) {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
         LOG.error(e.getMessage());
 
         parseErrorWalkAndVisit(e, file);
-        context.popSourceCode();
       } catch (Exception e) {
         throw new AnalysisException(getAnalyisExceptionMessage(file), e);
       }
@@ -123,10 +115,6 @@ public class AstScanner {
 
   public SourceCodeSearchEngine getIndex() {
     return index;
-  }
-
-  public void setCommentAnalyser(CommentAnalyser commentAnalyser) {
-    this.commentAnalyser = commentAnalyser;
   }
 
 }

@@ -22,7 +22,6 @@ package org.sonar.java;
 import com.google.common.annotations.VisibleForTesting;
 import org.sonar.java.ast.AstScanner;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
@@ -57,11 +56,9 @@ public final class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  public static AstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
+  private static AstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
 
     AstScanner astScanner = new AstScanner(JavaParser.createParser(conf.getCharset()));
-    /* Comments */
-    astScanner.setCommentAnalyser(new CommentLinesVisitor.JavaCommentAnalyser());
     if(visitorsBridge != null) {
       visitorsBridge.setCharset(conf.getCharset());
       astScanner.setVisitorBridge(visitorsBridge);
