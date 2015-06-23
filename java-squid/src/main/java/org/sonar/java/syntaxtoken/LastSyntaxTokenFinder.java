@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -312,7 +313,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    lastSyntaxToken = tree.closeBracketToken();
+    scan(tree.dimension());
   }
 
   @Override
@@ -459,5 +460,10 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitPackage(PackageDeclarationTree tree) {
     lastSyntaxToken = tree.semicolonToken();
+  }
+
+  @Override
+  public void visitArrayDimension(ArrayDimensionTree tree) {
+    lastSyntaxToken = tree.closeBracketToken();
   }
 }

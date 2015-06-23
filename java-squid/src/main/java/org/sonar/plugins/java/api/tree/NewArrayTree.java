@@ -45,7 +45,7 @@ public interface NewArrayTree extends ExpressionTree {
   @Nullable
   SyntaxToken newKeyword();
 
-  List<ExpressionTree> dimensions();
+  List<ArrayDimensionTree> dimensions();
 
   @Nullable
   SyntaxToken openBraceToken();

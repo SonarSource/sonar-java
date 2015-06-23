@@ -610,6 +610,11 @@ public interface Tree {
     PACKAGE(PackageDeclarationTree.class),
 
     /**
+     * {@link ArrayDimensionTree}
+     */
+    ARRAY_DIMENSION(ArrayDimensionTree.class),
+
+    /**
      *An implementation-reserved node.
      *
      */

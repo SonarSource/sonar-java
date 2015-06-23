@@ -626,7 +626,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new int[3];"
         + "  }"
         + "}";
-    assertLastStatementlastTokenValue(p, "3");
+    assertLastStatementlastTokenValue(p, "]");
 
     p =
       "class Foo {"

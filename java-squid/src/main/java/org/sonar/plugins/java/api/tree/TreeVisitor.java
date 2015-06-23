@@ -135,4 +135,6 @@ public interface TreeVisitor {
   void visitMethodReference(MethodReferenceTree methodReferenceTree);
 
   void visitPackage(PackageDeclarationTree tree);
+
+  void visitArrayDimension(ArrayDimensionTree tree);
 }

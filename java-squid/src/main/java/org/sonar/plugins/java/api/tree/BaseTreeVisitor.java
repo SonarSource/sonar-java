@@ -219,7 +219,7 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
     scan(tree.expression());
-    scan(tree.index());
+    scan(tree.dimension());
   }
 
   @Override
@@ -372,6 +372,12 @@ public class BaseTreeVisitor implements TreeVisitor {
   public void visitPackage(PackageDeclarationTree tree) {
     scan(tree.annotations());
     scan(tree.packageName());
+  }
+
+  @Override
+  public void visitArrayDimension(ArrayDimensionTree tree) {
+    scan(tree.annotations());
+    scan(tree.expression());
   }
 
 }

@@ -119,10 +119,10 @@ abstract class Rest<T> {
   int[] c07 [/* comment*/];
   int[] c08 = /* comment */ new int[0];
   int[] c09 = new /* comment */ int[0];
-  int[] c10 = new int /* comment FIXME brackets of dimension initializers are ignored */[0];
-  int[] c11 = new int[/* comment */0];
-  int[] c12 = new int[0/* comment FIXME brackets of dimension initializers are ignored */];
-  int[] c13 = new int /* comment FIXME annotations of dimension initializers are ignored */ @A01 [0];
+  int[] c10 = new int /* comment */[0];
+  int[] c11 = new int[/* comment */ 0];
+  int[] c12 = new int[0/* comment */ ];
+  int[] c13 = new int /* comment */ @A01 [0];
   int[] c14 = new int[] /* comment */{};
   int[] c15 = new int[] {/* comment */};
   int[] c16 = new int[] {/* comment */0, 1};

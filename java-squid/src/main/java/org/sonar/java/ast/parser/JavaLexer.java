@@ -121,6 +121,7 @@ public enum JavaLexer implements GrammarRuleKey {
   CONSTRUCTOR_DECLARATOR_REST,
 
   FORMAL_PARAMETERS,
+  ANNOTATED_DIM,
   DIM,
   METHOD_BODY,
 

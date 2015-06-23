@@ -22,6 +22,9 @@ package org.sonar.java.model.expression;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.ArrayDimensionTreeImpl;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -39,14 +42,14 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   private Tree type;
   @Nullable
   private SyntaxToken newKeyword;
-  private final List<ExpressionTree> dimensions;
+  private List<ArrayDimensionTree> dimensions;
   @Nullable
   private SyntaxToken openCurlyBraceToken;
   private final List<ExpressionTree> initializers;
   @Nullable
   private SyntaxToken closeCurlyBraceToken;
 
-  public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers) {
+  public NewArrayTreeImpl(List<ArrayDimensionTree> dimensions, List<ExpressionTree> initializers) {
     super(Kind.NEW_ARRAY);
 
     // TODO maybe type should not be null?
@@ -73,6 +76,16 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     return this;
   }
 
+  public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
+    this.dimensions = ImmutableList.<ArrayDimensionTree>builder().addAll(arrayDimensions).addAll(dimensions).build();
+    return this;
+  }
+
+  public NewArrayTreeImpl completeFirstDimension(List<AnnotationTreeImpl> annotations) {
+    ((ArrayDimensionTreeImpl) this.dimensions.get(0)).completeAnnotations(annotations);
+    return this;
+  }
+
   @Override
   public Kind getKind() {
     return Kind.NEW_ARRAY;
@@ -84,7 +97,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   @Override
-  public List<ExpressionTree> dimensions() {
+  public List<ArrayDimensionTree> dimensions() {
     return dimensions;
   }
 
@@ -115,7 +128,6 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
     addIfNotNull(iteratorBuilder, newKeyword);
     addIfNotNull(iteratorBuilder, type);
-    // TODO SONARJAVA-547 Brackets of dimensions are missing
     iteratorBuilder.addAll(dimensions);
     addIfNotNull(iteratorBuilder, openCurlyBraceToken);
     iteratorBuilder.addAll(initializers);

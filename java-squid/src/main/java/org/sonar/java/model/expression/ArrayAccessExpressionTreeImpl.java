@@ -21,10 +21,9 @@ package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
@@ -33,26 +32,15 @@ import java.util.Iterator;
 public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements ArrayAccessExpressionTree {
 
   private ExpressionTree expression;
-  private final InternalSyntaxToken openBracketToken;
-  private final ExpressionTree index;
-  private final InternalSyntaxToken closeBracketToken;
+  private final ArrayDimensionTree dimension;
 
-  public ArrayAccessExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken openBracketToken, ExpressionTree index, InternalSyntaxToken closeBracketToken) {
-    this(openBracketToken, index, closeBracketToken);
-    complete(expression);
-  }
-
-  public ArrayAccessExpressionTreeImpl(InternalSyntaxToken openBracketToken, ExpressionTree index, InternalSyntaxToken closeBracketToken) {
+  public ArrayAccessExpressionTreeImpl(ArrayDimensionTree dimension) {
     super(Kind.ARRAY_ACCESS_EXPRESSION);
-
-    this.openBracketToken = openBracketToken;
-    this.index = index;
-    this.closeBracketToken = closeBracketToken;
+    this.dimension = dimension;
   }
 
   public ArrayAccessExpressionTreeImpl complete(ExpressionTree expression) {
     this.expression = expression;
-
     return this;
   }
 
@@ -67,31 +55,17 @@ public class ArrayAccessExpressionTreeImpl extends AbstractTypedTree implements 
   }
 
   @Override
-  public SyntaxToken openBracketToken() {
-    return openBracketToken;
-  }
-
-  @Override
-  public ExpressionTree index() {
-    return index;
-  }
-
-  @Override
-  public SyntaxToken closeBracketToken() {
-    return closeBracketToken;
-  }
-
-  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitArrayAccessExpression(this);
   }
 
   @Override
+  public ArrayDimensionTree dimension() {
+    return dimension;
+  }
+
+  @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
-      expression,
-      openBracketToken,
-      index,
-      closeBracketToken);
+    return Iterators.<Tree>forArray(expression, dimension);
   }
 }

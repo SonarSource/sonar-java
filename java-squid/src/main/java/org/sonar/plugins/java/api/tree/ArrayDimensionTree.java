@@ -19,15 +19,31 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import org.junit.Test;
+import com.google.common.annotations.Beta;
 
-import static org.fest.assertions.Assertions.assertThat;
+import javax.annotation.Nullable;
 
-public class TreeTest {
+import java.util.List;
 
-  @Test
-  public void test() {
-    assertThat(Tree.Kind.values()).hasSize(109);
-  }
+/**
+ * Describe an array dimension.
+ * 
+ * JLS 15.10.1
+ * 
+ * <pre>
+ *   {@link #annotations()} [ {@link #expression()} ]
+ * </pre>
+ *
+ */
+@Beta
+public interface ArrayDimensionTree extends Tree {
 
+  List<AnnotationTree> annotations();
+
+  SyntaxToken openBracketToken();
+
+  @Nullable
+  ExpressionTree expression();
+
+  SyntaxToken closeBracketToken();
 }

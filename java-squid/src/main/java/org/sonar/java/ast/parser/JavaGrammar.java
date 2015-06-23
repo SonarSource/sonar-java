@@ -71,6 +71,8 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.util.List;
+
 import static org.sonar.java.ast.api.JavaPunctuator.COLON;
 import static org.sonar.java.ast.api.JavaTokenType.IDENTIFIER;
 
@@ -193,7 +195,7 @@ public class JavaGrammar {
           b.firstOf(
             BASIC_TYPE(),
             TYPE_QUALIFIED_IDENTIFIER()),
-          b.zeroOrMore(f.newAnnotatedDimensionFromType(b.zeroOrMore(ANNOTATION()), DIMENSION()))));
+          b.zeroOrMore(ANNOTATED_DIMENSION())));
   }
 
   public TypeArgumentListTreeImpl TYPE_ARGUMENTS() {
@@ -299,7 +301,7 @@ public class JavaGrammar {
           f.completeGenericMethodOrConstructorDeclaration(TYPE_PARAMETERS(), METHOD_OR_CONSTRUCTOR_DECLARATION()),
           f.newMethod(
             TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
-            b.zeroOrMore(f.newAnnotatedDimensionFromMethod(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+            b.zeroOrMore(ANNOTATED_DIMENSION()),
             b.optional(f.newTuple10(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
             b.firstOf(
               BLOCK(),
@@ -307,7 +309,7 @@ public class JavaGrammar {
           // TODO Largely duplicated with method, but there is a prefix capture on the TYPE, it can be improved
           f.newConstructor(
             b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
-            b.zeroOrMore(f.newAnnotatedDimensionFromConstructor(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+            b.zeroOrMore(ANNOTATED_DIMENSION()),
             b.optional(f.newTuple16(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
             b.firstOf(
               BLOCK(),
@@ -537,7 +539,7 @@ public class JavaGrammar {
       .is(
         f.newVariableDeclaratorId(
           b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.zeroOrMore(f.newAnnotatedDimensionFromVariableDeclaratorId(b.zeroOrMore(ANNOTATION()), DIMENSION()))));
+          b.zeroOrMore(ANNOTATED_DIMENSION())));
   }
 
   public VariableTreeImpl FORMAL_PARAMETER() {
@@ -568,7 +570,7 @@ public class JavaGrammar {
     return b.<VariableTreeImpl>nonterminal(JavaLexer.VARIABLE_DECLARATOR)
       .is(
         f.completeVariableDeclarator(
-          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(f.newAnnotatedDimensionFromVariableDeclarator(b.zeroOrMore(ANNOTATION()), DIMENSION())),
+          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(ANNOTATED_DIMENSION()),
           b.optional(
             f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), VARIABLE_INITIALIZER()))));
   }
@@ -1167,11 +1169,11 @@ public class JavaGrammar {
           b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             f.newArrayCreatorWithInitializer(
-              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(DIMENSION()), ARRAY_INITIALIZER()),
+              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(ANNOTATED_DIMENSION()), ARRAY_INITIALIZER()),
             f.newArrayCreatorWithDimension(
               b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK),
               b.zeroOrMore(ARRAY_ACCESS_EXPRESSION()),
-              b.zeroOrMore(f.newTuple29(b.zeroOrMore(ANNOTATION()), DIMENSION()))))));
+              b.zeroOrMore(ANNOTATED_DIMENSION())))));
   }
 
   // TODO This method should go away
@@ -1257,6 +1259,11 @@ public class JavaGrammar {
   public NewClassTreeImpl CLASS_CREATOR_REST() {
     return b.<NewClassTreeImpl>nonterminal(JavaLexer.CLASS_CREATOR_REST)
       .is(f.newClassCreatorRest(ARGUMENTS(), b.optional(CLASS_BODY())));
+  }
+
+  public Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>> ANNOTATED_DIMENSION() {
+    return b.<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>nonterminal(JavaLexer.ANNOTATED_DIM)
+      .is(f.newAnnotatedDimension(b.zeroOrMore(ANNOTATION()), DIMENSION()));
   }
 
   public Tuple<InternalSyntaxToken, InternalSyntaxToken> DIMENSION() {

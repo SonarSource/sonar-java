@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
+import org.sonar.java.model.ArrayDimensionTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.JavaTree.ArrayTypeTreeImpl;
@@ -84,6 +85,7 @@ import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
 import org.sonar.java.parser.sslr.Optional;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
@@ -100,6 +102,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -672,11 +675,11 @@ public class TreeFactory {
   public NewArrayTreeImpl completeElementValueArrayInitializer(
       InternalSyntaxToken openBraceToken, Optional<NewArrayTreeImpl> partial, Optional<InternalSyntaxToken> commaTokenOptional, InternalSyntaxToken closeBraceToken) {
 
-    InternalSyntaxToken commaToken = commaTokenOptional.orNull();
+    // FIXME SONARJAVA-547 commas should be handled.
 
     NewArrayTreeImpl elementValues = partial.isPresent() ?
       partial.get() :
-      new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), ImmutableList.<ExpressionTree>of());
+      new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), ImmutableList.<ExpressionTree>of());
 
     return elementValues.completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
@@ -689,7 +692,7 @@ public class TreeFactory {
         expressions.add(rest.second());
       }
     }
-    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), expressions.build());
+    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), expressions.build());
   }
 
   public ArgumentListTreeImpl newSingleElementAnnotation(InternalSyntaxToken openParenToken, ExpressionTree elementValue, InternalSyntaxToken closeParenToken) {
@@ -869,9 +872,7 @@ public class TreeFactory {
       variable.completeModifiersAndType(modifiers, type);
     }
 
-    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(variables);
-
-    return result;
+    return new StatementExpressionListTreeImpl(variables);
   }
 
   public StatementExpressionListTreeImpl newStatementExpressions(ExpressionTree expression, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
@@ -887,9 +888,7 @@ public class TreeFactory {
       }
     }
 
-    StatementExpressionListTreeImpl result = new StatementExpressionListTreeImpl(statements.build());
-
-    return result;
+    return new StatementExpressionListTreeImpl(statements.build());
   }
 
   public ForEachStatementImpl newForeachStatement(
@@ -1408,31 +1407,50 @@ public class TreeFactory {
   }
 
   public NewArrayTreeImpl completeArrayCreator(Optional<List<AnnotationTreeImpl>> annotations, NewArrayTreeImpl partial) {
-    // FIXME SONARJAVA-547 Handle annotations
+    if (annotations.isPresent()) {
+      partial.completeFirstDimension(annotations.get());
+    }
     return partial;
   }
 
   public NewArrayTreeImpl newArrayCreatorWithInitializer(
     InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken,
-    Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dimensions,
+    Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dimensions,
     NewArrayTreeImpl partial) {
+    
+    ImmutableList.Builder<ArrayDimensionTree> dDimensionsBuilder = ImmutableList.builder();
+    dDimensionsBuilder.add(new ArrayDimensionTreeImpl(openBracketToken, null, closeBracketToken));
+    if (dimensions.isPresent()) {
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>> dim : dimensions.get()) {
+        List<AnnotationTreeImpl> annotations = dim.first().isPresent() ? dim.first().get() : ImmutableList.<AnnotationTreeImpl>of();
+        Tuple<InternalSyntaxToken, InternalSyntaxToken> brackets = dim.second();
+        dDimensionsBuilder.add(new ArrayDimensionTreeImpl(annotations, brackets.first(), null, brackets.second()));
+      }
+    }
 
-    // FIXME SONARJAVA-547 Handle brackets for dimensions
-    return partial;
+    return partial.completeDimensions(dDimensionsBuilder.build());
   }
 
   public NewArrayTreeImpl newArrayCreatorWithDimension(InternalSyntaxToken openBracketToken, ExpressionTree expression, InternalSyntaxToken closeBracketToken,
     Optional<List<ArrayAccessExpressionTreeImpl>> arrayAccesses,
     Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> dims) {
 
-    ImmutableList.Builder<ExpressionTree> dimensions = ImmutableList.builder();
-    dimensions.add(expression);
+    ImmutableList.Builder<ArrayDimensionTree> dimensions = ImmutableList.builder();
+
+    dimensions.add(new ArrayDimensionTreeImpl(openBracketToken, expression, closeBracketToken));
     if (arrayAccesses.isPresent()) {
       for (ArrayAccessExpressionTreeImpl arrayAccess : arrayAccesses.get()) {
-        dimensions.add(arrayAccess.index());
+        dimensions.add(arrayAccess.dimension());
       }
     }
-    // TODO SONARJAVA-547 brackets should be stored (dims parameter should be used).
+    if (dims.isPresent()) {
+      for (Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>> dim : dims.get()) {
+        Optional<List<AnnotationTreeImpl>> optionalAnnotations = dim.first();
+        Tuple<InternalSyntaxToken, InternalSyntaxToken> brackets = dim.second();
+        List<AnnotationTreeImpl> annotations = optionalAnnotations.isPresent() ? optionalAnnotations.get() : ImmutableList.<AnnotationTreeImpl>of();
+        dimensions.add(new ArrayDimensionTreeImpl(annotations, brackets.first(), null, brackets.second()));
+      }
+    }
     return new NewArrayTreeImpl(dimensions.build(), ImmutableList.<ExpressionTree>of());
   }
 
@@ -1549,7 +1567,7 @@ public class TreeFactory {
         initializers.add(rest.first());
       }
     }
-    return new NewArrayTreeImpl(ImmutableList.<ExpressionTree>of(), initializers.build()).completeWithCurlyBraces(openBraceToken, closeBraceToken);
+    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), initializers.build()).completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {
@@ -1568,8 +1586,11 @@ public class TreeFactory {
 
   public ArrayAccessExpressionTreeImpl newArrayAccessExpression(Optional<List<AnnotationTreeImpl>> annotations, InternalSyntaxToken openBracketToken, ExpressionTree index,
                                                                 InternalSyntaxToken closeBracketToken) {
-    // FIXME SONARJAVA-547 Handle annotations
-    return new ArrayAccessExpressionTreeImpl(openBracketToken, index, closeBracketToken);
+    return new ArrayAccessExpressionTreeImpl(new ArrayDimensionTreeImpl(
+      annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(),
+      openBracketToken,
+      index,
+      closeBracketToken));
   }
 
   public NewClassTreeImpl newClassCreatorRest(ArgumentListTreeImpl arguments, Optional<ClassTreeImpl> classBody) {
@@ -1775,7 +1796,7 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
-  public <T, U> Tuple<T, U> newTuple29(T first, U second) {
+  public <T, U> Tuple<T, U> newAnnotatedDimension(T first, U second) {
     return newTuple(first, second);
   }
 
@@ -1785,26 +1806,6 @@ public class TreeFactory {
 
   public <U> Tuple<Optional<InternalSyntaxToken>, U> newTupleAbsent2(U expression) {
     return newTuple(Optional.<InternalSyntaxToken>absent(), expression);
-  }
-
-  public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariableDeclarator(T first, U second) {
-    return newTuple(first, second);
-  }
-
-  public <T, U> Tuple<T, U> newAnnotatedDimensionFromVariableDeclaratorId(T first, U second) {
-    return newTuple(first, second);
-  }
-
-  public <T, U> Tuple<T, U> newAnnotatedDimensionFromType(T first, U second) {
-    return newTuple(first, second);
-  }
-
-  public <T, U> Tuple<T, U> newAnnotatedDimensionFromMethod(T first, U second) {
-    return newTuple(first, second);
-  }
-
-  public <T, U> Tuple<T, U> newAnnotatedDimensionFromConstructor(T first, U second) {
-    return newTuple(first, second);
   }
 
   public Tuple<InternalSyntaxToken, Tree> newAdditionalBound(InternalSyntaxToken andSyntaxToken, Tree type) {
@@ -1851,5 +1852,10 @@ public class TreeFactory {
       }
     }
     return result;
+  }
+
+  public ArrayDimensionTreeImpl newArrayDimension(Optional<List<AnnotationTreeImpl>> annotations, InternalSyntaxToken openBracketToken, ExpressionTree expression,
+    InternalSyntaxToken closeBracketToken) {
+    return new ArrayDimensionTreeImpl(annotations.isPresent() ? annotations.get() : ImmutableList.<AnnotationTreeImpl>of(), openBracketToken, expression, closeBracketToken);
   }
 }
