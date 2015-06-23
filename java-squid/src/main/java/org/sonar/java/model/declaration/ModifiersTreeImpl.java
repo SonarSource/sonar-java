@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,7 +47,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   private final List<AnnotationTree> annotations;
 
   private ModifiersTreeImpl() {
-    super(null);
+    super(null, Collections.<ModifierTree>emptyList());
     this.annotations = Lists.newArrayList();
     modifiers = Lists.newArrayList();
   }

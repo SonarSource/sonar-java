@@ -28,6 +28,7 @@ import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.api.Trivia.TriviaKind;
+import org.sonar.java.model.InternalSyntaxSpacing;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.parser.sslr.ActionParser.GrammarBuilderInterceptor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
@@ -132,28 +133,14 @@ public class SyntaxTreeCreator<T> {
 
     Method method = mapping.actionForRuleKey(ruleKey);
     if (method == null) {
-      Token token = null;
-
       for (Object child : convertedChildren) {
-        if(child instanceof InternalSyntaxToken) {
+        if (child instanceof InternalSyntaxToken) {
           InternalSyntaxToken syntaxToken = (InternalSyntaxToken) child;
           syntaxToken.setType(rule.getRealAstNodeType());
           return child;
         }
-        if (child instanceof AstNode && ((AstNode) child).hasToken()) {
-          token = ((AstNode) child).getToken();
-          break;
-        }
       }
-      AstNode astNode = new AstNode(rule.getRealAstNodeType(), rule.getName(), token);
-      for (Object child : convertedChildren) {
-        astNode.addChild((AstNode) child);
-      }
-
-      astNode.setFromIndex(node.getStartIndex());
-      astNode.setToIndex(node.getEndIndex());
-
-      return astNode;
+      return new InternalSyntaxSpacing(node.getStartIndex(), node.getEndIndex());
     }
 
     try {

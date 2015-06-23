@@ -17,22 +17,29 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.model;
 
-import org.sonar.java.model.AbstractTypedTree;
+import com.sonar.sslr.api.AstNode;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Iterator;
 
-public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
+public class InternalSyntaxSpacing extends JavaTree {
 
+  private final int start;
+  private final int end;
 
-  public InferedTypeTree(){
+  public InternalSyntaxSpacing(int start, int end) {
     super(null);
+    this.start = start;
+    this.end = end;
   }
 
   @Override
   public Kind getKind() {
-    return Kind.INFERED_TYPE;
+    //FIXME should have a dedicated kind associated with a dedicated interface.
+    return Tree.Kind.TRIVIA;
   }
 
   @Override
@@ -47,7 +54,14 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
 
   @Override
   public void accept(TreeVisitor visitor) {
-    //Do nothing.
+
   }
 
+  public int start() {
+    return start;
+  }
+
+  public int end() {
+    return end;
+  }
 }
