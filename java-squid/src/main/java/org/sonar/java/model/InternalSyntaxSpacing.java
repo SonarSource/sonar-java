@@ -17,28 +17,50 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.visitors;
+package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.SquidAstVisitor;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.io.File;
+import java.util.Iterator;
 
-public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
+public class InternalSyntaxSpacing extends JavaTree {
 
-  @Override
-  public void visitFile(AstNode astNode) {
-    File file = getContext().getFile();
-    getContext().addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
+  private final int start;
+  private final int end;
+
+  public InternalSyntaxSpacing(int start, int end) {
+    super(null);
+    this.start = start;
+    this.end = end;
   }
 
   @Override
-  public void leaveFile(AstNode astNode) {
-    Preconditions.checkState(getContext().peekSourceCode().isType(SourceFile.class));
-    getContext().popSourceCode();
+  public Kind getKind() {
+    // FIXME should have a dedicated kind associated with a dedicated interface.
+    return Tree.Kind.TRIVIA;
   }
 
+  @Override
+  public boolean isLeaf() {
+    return true;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void accept(TreeVisitor visitor) {
+
+  }
+
+  public int start() {
+    return start;
+  }
+
+  public int end() {
+    return end;
+  }
 }

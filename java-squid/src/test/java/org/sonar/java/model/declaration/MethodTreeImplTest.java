@@ -21,9 +21,9 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.java.resolve.Flags;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
@@ -36,7 +36,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodTreeImplTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
 
   @Test
   public void override_without_annotation_should_be_detected() {

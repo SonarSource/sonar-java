@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 
@@ -46,7 +46,6 @@ public class DefaultPackageCheckTest {
   public void with_package() {
     SourceFile file = JavaAstScanner.scanSingleFile(
         new File("src/test/files/checks/DefaultPackageCheck/WithPackage.java"),
-        new File("src/test/files/"),
         new VisitorsBridge(check));
     checkMessagesVerifier.verify(file.getCheckMessages());
   }

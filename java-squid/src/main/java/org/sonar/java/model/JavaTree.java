@@ -22,8 +22,6 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -46,55 +44,23 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class JavaTree extends AstNode implements Tree {
+public abstract class JavaTree implements Tree {
 
-  private static final AstNodeType NULL_NODE = new AstNodeType() {
 
-    @Override
-    public String toString() {
-      return "[null]";
-    }
+  protected GrammarRuleKey grammarRuleKey;
 
-  };
-
-  private final AstNode astNode;
-
-  public JavaTree(AstNodeType type) {
-    super(type, type.toString(), null);
-    this.astNode = this;
+  public JavaTree(GrammarRuleKey grammarRuleKey) {
+    this.grammarRuleKey = grammarRuleKey;
   }
-
-  public JavaTree(@Nullable AstNode astNode) {
-    super(
-      astNode == null ? NULL_NODE : astNode.getType(),
-      astNode == null ? NULL_NODE.toString() : astNode.getType().toString(),
-      astNode == null ? null : astNode.getToken());
-    this.astNode = astNode;
-  }
-
-  public boolean isLegacy() {
-    return astNode != this;
-  }
-
-  @Override
-  public void addChild(AstNode child) {
-    Preconditions.checkState(!isLegacy(), "Children should not be added to legacy nodes");
-    super.addChild(child);
-  }
-
-  public AstNode getAstNode() {
-    return astNode;
-  }
-
   public int getLine() {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(this);
     if (firstSyntaxToken == null) {
@@ -127,6 +93,10 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public boolean isLeaf() {
     return false;
+  }
+
+  public GrammarRuleKey getGrammarRuleKey() {
+    return grammarRuleKey;
   }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
@@ -454,11 +424,6 @@ public abstract class JavaTree extends AstNode implements Tree {
       this.name = "TODO";
     }
 
-    public NotImplementedTreeImpl(AstNode astNode, String name) {
-      super(astNode);
-      this.name = name;
-    }
-
     @Override
     public Kind getKind() {
       return Kind.OTHER;
@@ -467,11 +432,6 @@ public abstract class JavaTree extends AstNode implements Tree {
     @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitOther(this);
-    }
-
-    @Override
-    public String getName() {
-      return name;
     }
 
     @Override
@@ -636,7 +596,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     private static ImmutableList<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
       ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
       for (AnnotationTreeImpl annotation : annotations) {
-        annotationBuilder.add((AnnotationTree) annotation);
+        annotationBuilder.add(annotation);
       }
       return annotationBuilder.build();
     }

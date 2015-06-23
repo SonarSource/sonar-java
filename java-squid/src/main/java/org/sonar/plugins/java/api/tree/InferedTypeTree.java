@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 
 import java.util.Iterator;
@@ -28,7 +27,7 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
 
 
   public InferedTypeTree(){
-    super((AstNode) null);
+    super(null);
   }
 
   @Override
