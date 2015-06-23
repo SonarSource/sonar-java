@@ -110,10 +110,10 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
   private static void setupAstScanner(AstScanner astScanner, Iterable<CodeVisitor> visitorsToBridge,
                                       List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
-    VisitorsBridge visitorsBridgeTest = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
-    visitorsBridgeTest.setCharset(conf.getCharset());
-    visitorsBridgeTest.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
-    astScanner.accept(visitorsBridgeTest);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
+    visitorsBridge.setCharset(conf.getCharset());
+    visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
+    astScanner.withSquidAstVisitor(visitorsBridge);
   }
 
 
