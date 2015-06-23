@@ -117,7 +117,7 @@ public class JavaTreeModelTest {
     );
     BaseTreeVisitor visitor = new BaseTreeVisitor();
     for (File file : files) {
-      Tree tree = (CompilationUnitTree) p.parse(file);
+      Tree tree = p.parse(file);
       tree.accept(visitor);
     }
   }
