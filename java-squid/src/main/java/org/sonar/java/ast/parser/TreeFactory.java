@@ -574,11 +574,11 @@ public class TreeFactory {
 
     if (annotationTypeElementDeclarations.isPresent()) {
       for (JavaTree annotationTypeElementDeclaration : annotationTypeElementDeclarations.get()) {
-        if (annotationTypeElementDeclaration.is(JavaLexer.VARIABLE_DECLARATORS)) {
+        if (annotationTypeElementDeclaration.getType().equals(JavaLexer.VARIABLE_DECLARATORS)) {
           for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) annotationTypeElementDeclaration) {
             members.add(variable);
           }
-        } else if (!annotationTypeElementDeclaration.is(JavaPunctuator.SEMI)) {
+        } else if (!annotationTypeElementDeclaration.is(Kind.TOKEN)) {
           members.add(annotationTypeElementDeclaration);
         }
       }
@@ -589,7 +589,7 @@ public class TreeFactory {
 
   public JavaTree completeAnnotationTypeMember(ModifiersTreeImpl modifiers, JavaTree partial) {
 
-    if (partial.is(JavaLexer.VARIABLE_DECLARATORS)) {
+    if (partial.getType().equals(JavaLexer.VARIABLE_DECLARATORS)) {
       for (VariableTreeImpl variable : (VariableDeclaratorListTreeImpl) partial) {
         variable.completeModifiers(modifiers);
       }
@@ -1483,7 +1483,7 @@ public class TreeFactory {
 
     InternalSyntaxToken dotToken = null;
     for (JavaTree child : children) {
-      if (!child.is(JavaTokenType.IDENTIFIER)) {
+      if (!child.getType().equals(JavaTokenType.IDENTIFIER)) {
         dotToken = (InternalSyntaxToken) child;
       } else {
         InternalSyntaxToken identifierToken = (InternalSyntaxToken) child;
