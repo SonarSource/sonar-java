@@ -22,7 +22,6 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
@@ -48,17 +47,19 @@ import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class JavaTree extends AstNode implements Tree {
+public abstract class JavaTree implements Tree {
+
+
+  protected AstNodeType type;
 
   public JavaTree(AstNodeType type) {
-    super(type, type == null ? "" : type.toString(), null);
+    this.type = type;
   }
   public int getLine() {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(this);
@@ -92,6 +93,10 @@ public abstract class JavaTree extends AstNode implements Tree {
 
   public boolean isLeaf() {
     return false;
+  }
+
+  public AstNodeType getType() {
+    return type;
   }
 
   public static class CompilationUnitTreeImpl extends JavaTree implements CompilationUnitTree {
@@ -430,11 +435,6 @@ public abstract class JavaTree extends AstNode implements Tree {
     }
 
     @Override
-    public String getName() {
-      return name;
-    }
-
-    @Override
     public boolean isLeaf() {
       return true;
     }
@@ -596,7 +596,7 @@ public abstract class JavaTree extends AstNode implements Tree {
     private static ImmutableList<AnnotationTree> getAnnotations(List<AnnotationTreeImpl> annotations) {
       ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
       for (AnnotationTreeImpl annotation : annotations) {
-        annotationBuilder.add((AnnotationTree) annotation);
+        annotationBuilder.add(annotation);
       }
       return annotationBuilder.build();
     }

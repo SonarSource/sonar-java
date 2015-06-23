@@ -137,11 +137,11 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
   }
 
   private static int startOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex();
+    return ((InternalSyntaxToken) tree.identifierToken()).fromIndex();
   }
 
   private static int endOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex() + tree.identifierToken().text().length();
+    return ((InternalSyntaxToken) tree.identifierToken()).fromIndex() + tree.identifierToken().text().length();
   }
 
 }

@@ -36,10 +36,12 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   private final Token token;
   private List<SyntaxTrivia> trivias;
+  private int startIndex;
+  private int endIndex;
 
 
   protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
-    this(internalSyntaxToken.token, internalSyntaxToken.getFromIndex(), internalSyntaxToken.getToIndex());
+    this(internalSyntaxToken.token, internalSyntaxToken.fromIndex(), internalSyntaxToken.toIndex());
   }
 
   public InternalSyntaxToken(Token token, int startIndex, int endIndex) {
@@ -49,6 +51,20 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     setFromIndex(startIndex);
     setToIndex(endIndex);
 
+  }
+
+  public int toIndex() {
+    return endIndex;
+  }
+  public int fromIndex() {
+    return startIndex;
+  }
+  private void setToIndex(int endIndex) {
+    this.endIndex = endIndex;
+  }
+
+  private void setFromIndex(int startIndex) {
+    this.startIndex = startIndex;
   }
 
   @Override
