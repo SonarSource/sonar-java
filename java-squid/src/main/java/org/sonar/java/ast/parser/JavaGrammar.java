@@ -344,7 +344,6 @@ public class JavaGrammar {
     return b.<EnumConstantTreeImpl>nonterminal(JavaLexer.ENUM_CONSTANT)
       .is(
         f.newEnumConstant(
-          // TODO Annotated identifier?
           b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER),
           b.optional(ARGUMENTS()),
           b.optional(CLASS_BODY()),
@@ -724,7 +723,7 @@ public class JavaGrammar {
   public VariableTreeImpl CATCH_FORMAL_PARAMETER() {
     return b.<VariableTreeImpl>nonterminal()
       .is(
-        f.newCatchFormalParameter(b.optional(MODIFIERS()), CATCH_TYPE(), VARIABLE_DECLARATOR_ID()));
+        f.newCatchFormalParameter(MODIFIERS(), CATCH_TYPE(), VARIABLE_DECLARATOR_ID()));
   }
 
   public TypeTree CATCH_TYPE() {

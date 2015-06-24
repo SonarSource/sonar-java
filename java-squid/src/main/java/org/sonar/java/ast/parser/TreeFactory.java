@@ -406,7 +406,6 @@ public class TreeFactory {
     Optional<ClassTreeImpl> classBody,
     Optional<InternalSyntaxToken> commaToken) {
 
-    // FIXME SONARJAVA-547 Handle annotations
     IdentifierTreeImpl identifier = new IdentifierTreeImpl((InternalSyntaxToken) identifierToken);
 
     SyntaxToken openParenToken = null;
@@ -938,8 +937,10 @@ public class TreeFactory {
     return new CatchTreeImpl(catchKeyword, openParenToken, parameter, closeParenToken, block);
   }
 
-  public VariableTreeImpl newCatchFormalParameter(Optional<ModifiersTreeImpl> modifiers, TypeTree type, VariableTreeImpl parameter) {
-    // FIXME SONARJAVA-547 keep annotations from modifiers
+  public VariableTreeImpl newCatchFormalParameter(ModifiersTreeImpl modifiers, TypeTree type, VariableTreeImpl parameter) {
+    if (!modifiers.isEmpty()) {
+      parameter.completeModifiers(modifiers);
+    }
     return parameter.completeType(type);
   }
 
@@ -987,7 +988,9 @@ public class TreeFactory {
   }
 
   public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, TypeTree classType, VariableTreeImpl partial, InternalSyntaxToken equalToken, ExpressionTree expression) {
-    // FIXME SONARJAVA-547 handle modifiers
+    if (!modifiers.isEmpty()) {
+      partial.completeModifiers(modifiers);
+    }
     return partial.completeTypeAndInitializer(classType, equalToken, expression);
   }
 
@@ -1560,7 +1563,7 @@ public class TreeFactory {
 
     ExpressionTree result = new IdentifierTreeImpl((InternalSyntaxToken) identifierToken);
 
-    // FIXME SONARJAVA-547 Handle dimensions
+    // FIXME SONARJAVA-547 Handle annotations
 
     if (typeArguments.isPresent()) {
       result = new ParameterizedTypeTreeImpl((TypeTree) result, typeArguments.get());

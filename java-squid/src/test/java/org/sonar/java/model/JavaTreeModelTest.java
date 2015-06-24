@@ -1350,6 +1350,39 @@ public class JavaTreeModelTest {
     assertThat(tree.finallyBlock()).isNotNull();
     assertThatChildrenIteratorHasSize(tree, 5);
 
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (final @Foo Exception e) { } } }");
+    assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
+    assertThat(tree.resources()).isEmpty();
+    assertThat(tree.block()).isNotNull();
+    assertThat(tree.catches()).hasSize(1);
+    assertThat(tree.finallyKeyword()).isNull();
+    assertThat(tree.finallyBlock()).isNull();
+    assertThatChildrenIteratorHasSize(tree, 3);
+    catchTree = tree.catches().get(0);
+    assertThatChildrenIteratorHasSize(catchTree, 5);
+    parameterTree = catchTree.parameter();
+    assertThat(parameterTree.modifiers()).hasSize(2);
+    assertThat(parameterTree.simpleName().identifierToken().text()).isEqualTo("e");
+    assertThat(parameterTree.type().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(parameterTree.endToken()).isNull();
+    assertThat(parameterTree.initializer()).isNull();
+    assertThatChildrenIteratorHasSize(parameterTree, 3);
+
+    tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (final @Foo Resource r = open()) { } } }");
+    assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
+    assertThat(tree.block()).isNotNull();
+    assertThat(tree.catches()).isEmpty();
+    assertThat(tree.finallyKeyword()).isNull();
+    assertThat(tree.finallyBlock()).isNull();
+    assertThat(tree.openParenToken().text()).isEqualTo("(");
+    assertThat(tree.resources()).hasSize(1);
+    assertThat(tree.closeParenToken().text()).isEqualTo(")");
+    assertThatChildrenIteratorHasSize(tree, 5);
+    VariableTree resource = tree.resources().get(0);
+    assertThat(resource.simpleName().name()).isEqualTo("r");
+    assertThat(resource.initializer()).isNotNull();
+    assertThat(resource.modifiers()).hasSize(2);
+
     tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try (Resource r1 = open(); Resource r2 = open()) { } catch (Exception e) { } finally { } } }");
     assertThat(tree.is(Tree.Kind.TRY_STATEMENT)).isTrue();
     assertThat(tree.block()).isNotNull();
@@ -1360,7 +1393,7 @@ public class JavaTreeModelTest {
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.resources()).hasSize(2);
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
-    VariableTree resource = tree.resources().get(0);
+    resource = tree.resources().get(0);
     assertThat(resource.simpleName().name()).isEqualTo("r1");
     assertThat(resource.initializer()).isNotNull();
     resource = tree.resources().get(1);
