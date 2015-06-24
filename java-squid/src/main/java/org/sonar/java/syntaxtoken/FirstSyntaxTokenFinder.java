@@ -273,7 +273,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
-    scan(tree.type());
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      scan(tree.type());
+    }
   }
 
   @Override
@@ -297,12 +301,20 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    scan(tree.expression());
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      scan(tree.expression());
+    }
   }
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    firstSyntaxToken = tree.identifierToken();
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      firstSyntaxToken = tree.identifierToken();
+    }
   }
 
   @Override
@@ -312,7 +324,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    firstSyntaxToken = tree.keyword();
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      firstSyntaxToken = tree.keyword();
+    }
   }
 
   @Override
@@ -384,7 +400,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitWildcard(WildcardTree tree) {
-    firstSyntaxToken = tree.queryToken();
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      firstSyntaxToken = tree.queryToken();
+    }
   }
 
   @Override

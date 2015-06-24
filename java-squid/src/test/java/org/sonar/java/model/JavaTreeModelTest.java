@@ -85,6 +85,7 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -351,6 +352,19 @@ public class JavaTreeModelTest {
 
     assertThat(typeArguments.get(3)).isInstanceOf(IdentifierTree.class);
 
+    variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<@Foo ? extends A> var; } }");
+    parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
+    assertThatChildrenIteratorHasSize(parameterizedTypeTree, 2);
+    typeArguments = parameterizedTypeTree.typeArguments();
+    assertThatChildrenIteratorHasSize(typeArguments, 3);
+    wildcard = (WildcardTree) typeArguments.get(0);
+    assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
+    assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
+    assertThat(wildcard.queryToken().text()).isEqualTo("?");
+    assertThat(wildcard.annotations()).hasSize(1);
+    assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("extends");
+    assertThatChildrenIteratorHasSize(wildcard, 4);
+
     variableTree = (VariableTree) firstMethodFirstStatement("public class T { void m() { ClassType<? extends @Foo @Bar A> var; } }");
     parameterizedTypeTree = (ParameterizedTypeTree) variableTree.type();
     assertThatChildrenIteratorHasSize(parameterizedTypeTree, 2);
@@ -359,12 +373,10 @@ public class JavaTreeModelTest {
     wildcard = (WildcardTree) typeArguments.get(0);
     assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
     assertThat(wildcard.bound()).isInstanceOf(IdentifierTree.class);
-    assertThat(wildcard.queryToken()).isNotNull();
+    assertThat(wildcard.annotations()).isEmpty();
     assertThat(wildcard.queryToken().text()).isEqualTo("?");
-    assertThat(wildcard.extendsOrSuperToken()).isNotNull();
     assertThat(wildcard.extendsOrSuperToken().text()).isEqualTo("extends");
-    // FIXME SONARJAVA-547 annotations should be present in the wildcard tree
-    assertThatChildrenIteratorHasSize(wildcard, 5);
+    assertThatChildrenIteratorHasSize(wildcard, 3);
   }
 
   /*
@@ -481,6 +493,97 @@ public class JavaTreeModelTest {
     assertThat(annotation.openParenToken()).isNull();
     assertThat(annotation.closeParenToken()).isNull();
     assertThatChildrenIteratorHasSize(annotation, 2);
+    
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { @Foo Integer foo; } }");
+    assertThat(variable.modifiers().annotations()).hasSize(1);
+    assertThat(variable.type().is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(variable.type().annotations()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 4);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { @Foo java.lang.Integer foo; } }");
+    assertThat(variable.modifiers().annotations()).hasSize(1);
+    assertThat(variable.type().is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(variable.type().annotations()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 4);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { java.lang.@Foo Integer foo; } }");
+    assertThat(variable.modifiers()).isEmpty();
+    assertThat(variable.type().is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(variable.type().annotations()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 4);
+    assertThat(((MemberSelectExpressionTree) variable.type()).identifier().annotations()).hasSize(1);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { a.B.C foo = a.B.new @Foo C(); } }");
+    assertThat(variable.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 6);
+    TypeTree type = ((NewClassTree) variable.initializer()).identifier();
+    assertThat(type.is(Tree.Kind.IDENTIFIER)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 2);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { a.b.C<Integer> foo = a.B.new @Foo C<Integer>(); } }");
+    assertThat(variable.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 6);
+    type = ((NewClassTree) variable.initializer()).identifier();
+    assertThat(type.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 3);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { a.B.C foo = new @Foo a.B.C(); } }");
+    assertThat(variable.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 6);
+    type = ((NewClassTree) variable.initializer()).identifier();
+    assertThat(type.is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 4);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { a.b.C<Integer> foo = new @Foo a.b.C<Integer>(); } }");
+    assertThat(variable.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 6);
+    type = ((NewClassTree) variable.initializer()).identifier();
+    assertThat(type.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 3);
+
+    variable = (VariableTree) firstMethodFirstStatement("class T { private void m() { int[] foo = new @Foo int[42]; } }");
+    assertThat(variable.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(variable, 6);
+    type = ((NewArrayTree) variable.initializer()).type();
+    assertThat(type.is(Tree.Kind.PRIMITIVE_TYPE)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 2);
+
+    variable = (VariableTree) ((TryStatementTree) firstMethodFirstStatement("class T { private void m() { try{ } catch (@Foo E1 | E2 e) {}; } }")).catches().get(0).parameter();
+    assertThat(variable.modifiers()).hasSize(1);
+    assertThatChildrenIteratorHasSize(variable, 3);
+    type = variable.type();
+    assertThat(type.is(Tree.Kind.UNION_TYPE)).isTrue();
+    assertThat(type.annotations()).isEmpty();
+    assertThatChildrenIteratorHasSize(type, 2);
+
+    ClassTree classTree = (ClassTree) firstType("class T extends @Foo a.b.C {}");
+    assertThat(classTree.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(classTree, 8);
+    type = classTree.superClass();
+    assertThat(type.is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 4);
+
+    classTree = (ClassTree) firstType("class T extends @Foo a.b.C<Integer> {}");
+    assertThat(classTree.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(classTree, 8);
+    type = classTree.superClass();
+    assertThat(type.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 3);
+
+    TypeCastTree typeCast = (TypeCastTree) ((ReturnStatementTree) firstMethodFirstStatement("class T { private long m(int a) { return (@Foo long) a; } }")).expression();
+    assertThat(typeCast.type()).isNotNull();
+    assertThatChildrenIteratorHasSize(typeCast, 4);
+    type = typeCast.type();
+    assertThat(type.is(Tree.Kind.PRIMITIVE_TYPE)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 2);
   }
 
   @Test

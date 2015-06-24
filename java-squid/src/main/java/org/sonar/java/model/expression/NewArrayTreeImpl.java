@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 
@@ -39,7 +40,7 @@ import java.util.List;
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
   @Nullable
-  private Tree type;
+  private TypeTree type;
   @Nullable
   private SyntaxToken newKeyword;
   private List<ArrayDimensionTree> dimensions;
@@ -58,7 +59,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     this.initializers = Preconditions.checkNotNull(initializers);
   }
 
-  public NewArrayTreeImpl complete(Tree type) {
+  public NewArrayTreeImpl complete(TypeTree type) {
     Preconditions.checkState(this.type == null);
     this.type = type;
 
@@ -92,7 +93,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 

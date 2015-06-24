@@ -224,6 +224,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    scan(tree.annotations());
     scan(tree.expression());
     scan(tree.identifier());
   }
@@ -281,7 +282,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    // no subtrees
+    scan(tree.annotations());
   }
 
   @Override
@@ -293,7 +294,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    // no subtrees
+    scan(tree.annotations());
   }
 
   @Override
@@ -309,12 +310,14 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
+    scan(tree.annotations());
     scan(tree.type());
     scan(tree.typeArguments());
   }
 
   @Override
   public void visitWildcard(WildcardTree tree) {
+    scan(tree.annotations());
     scan(tree.bound());
   }
 

@@ -20,26 +20,36 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
 
   private final InternalSyntaxToken nameToken;
   private Symbol symbol = Symbols.unknownSymbol;
+  private List<AnnotationTree> annotations;
 
   public IdentifierTreeImpl(InternalSyntaxToken nameToken) {
     super(Kind.IDENTIFIER);
     this.nameToken = Preconditions.checkNotNull(nameToken);
+    this.annotations = ImmutableList.<AnnotationTree>of();
+  }
+
+  public IdentifierTreeImpl complete(List<AnnotationTree> annotations) {
+    this.annotations = Preconditions.checkNotNull(annotations);
+    return this;
   }
 
   @Override
@@ -78,7 +88,12 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(nameToken);
+    return Iterators.concat(annotations.iterator(), Iterators.singletonIterator(nameToken));
+  }
+
+  @Override
+  public List<AnnotationTree> annotations() {
+    return annotations;
   }
 
 }

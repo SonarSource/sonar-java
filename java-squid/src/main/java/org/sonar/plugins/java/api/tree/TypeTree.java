@@ -21,6 +21,10 @@ package org.sonar.plugins.java.api.tree;
 
 import org.sonar.plugins.java.api.semantic.Type;
 
+import java.util.List;
+
 public interface TypeTree extends Tree {
   Type symbolType();
+
+  List<AnnotationTree> annotations();
 }

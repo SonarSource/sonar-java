@@ -20,9 +20,11 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -34,6 +36,7 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
 
@@ -43,6 +46,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   private final ArrayTypeTreeImpl nestedDimensions;
   private InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
+  private List<AnnotationTree> annotations;
 
   public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
     super(Kind.MEMBER_SELECT);
@@ -50,6 +54,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     this.nestedDimensions = nestedDimensions;
     this.dotToken = dotToken;
     this.identifier = identifier;
+    this.annotations = ImmutableList.<AnnotationTree>of();
   }
 
   public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier) {
@@ -59,6 +64,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     this.expression = Preconditions.checkNotNull(expression);
     this.dotToken = dotToken;
     this.identifier = Preconditions.checkNotNull(identifier);
+    this.annotations = ImmutableList.<AnnotationTree>of();
   }
 
   public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
@@ -75,9 +81,19 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
     return this;
   }
 
+  public MemberSelectExpressionTreeImpl complete(List<AnnotationTree> annotations) {
+    this.annotations = annotations;
+    return this;
+  }
+
   @Override
   public Kind getKind() {
     return Kind.MEMBER_SELECT;
+  }
+
+  @Override
+  public List<AnnotationTree> annotations() {
+    return annotations;
   }
 
   @Override
@@ -102,10 +118,12 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
-      expression,
-      dotToken,
-      identifier);
-  }
 
+    return Iterators.<Tree>concat(
+      annotations.iterator(),
+      Iterators.<Tree>forArray(
+        expression,
+        dotToken,
+        identifier));
+  }
 }

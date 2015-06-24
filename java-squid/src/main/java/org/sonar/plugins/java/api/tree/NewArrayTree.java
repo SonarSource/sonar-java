@@ -40,7 +40,7 @@ import java.util.List;
 public interface NewArrayTree extends ExpressionTree {
 
   @Nullable
-  Tree type();
+  TypeTree type();
 
   @Nullable
   SyntaxToken newKeyword();

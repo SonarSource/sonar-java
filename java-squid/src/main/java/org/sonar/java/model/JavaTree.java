@@ -47,6 +47,7 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
+
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -308,8 +309,7 @@ public abstract class JavaTree implements Tree {
     private final Kind kind;
     @Nullable
     private final TypeTree bound;
-    // FIXME annotations can only by accessed through the children iterator
-    private final List<AnnotationTree> annotations;
+    private List<AnnotationTree> annotations;
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
       super(kind);
@@ -317,33 +317,53 @@ public abstract class JavaTree implements Tree {
       Preconditions.checkArgument(kind == Kind.UNBOUNDED_WILDCARD);
 
       this.kind = Preconditions.checkNotNull(kind);
+      this.annotations = Collections.emptyList();
       this.queryToken = queryToken;
       this.extendsOrSuperToken = null;
-      this.annotations = Collections.emptyList();
       this.bound = null;
     }
 
-    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, List<AnnotationTreeImpl> annotations, TypeTree bound) {
+    public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, TypeTree bound) {
       super(kind);
 
       Preconditions.checkArgument(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
 
       this.kind = Preconditions.checkNotNull(kind);
+      this.annotations = Collections.emptyList();
       this.extendsOrSuperToken = extendsOrSuperToken;
-      this.annotations = ImmutableList.<AnnotationTree>builder().addAll(annotations).build();
       this.bound = bound;
     }
 
     public WildcardTreeImpl complete(InternalSyntaxToken queryToken) {
       Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
       this.queryToken = queryToken;
+      return this;
+    }
 
+    public WildcardTreeImpl complete(List<AnnotationTree> annotations) {
+      this.annotations = annotations;
       return this;
     }
 
     @Override
     public Kind getKind() {
       return kind;
+    }
+
+    @Override
+    public List<AnnotationTree> annotations() {
+      return annotations;
+    }
+
+    @Override
+    public SyntaxToken queryToken() {
+      return queryToken;
+    }
+
+    @Nullable
+    @Override
+    public SyntaxToken extendsOrSuperToken() {
+      return extendsOrSuperToken;
     }
 
     @Nullable
@@ -359,27 +379,14 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      Iterator<Tree> boundIterator = bound == null ?
-        Iterators.<Tree>emptyIterator() :
-        Iterators.concat(
-          Iterators.singletonIterator(extendsOrSuperToken), 
-          annotations.iterator(),
-          Iterators.singletonIterator(bound));
-      return Iterators.concat(
-        Iterators.<Tree>singletonIterator(queryToken),
-        boundIterator
-        );
-    }
-
-    @Override
-    public SyntaxToken queryToken() {
-      return queryToken;
-    }
-
-    @Nullable
-    @Override
-    public SyntaxToken extendsOrSuperToken() {
-      return extendsOrSuperToken;
+      ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+      iteratorBuilder.addAll(annotations);
+      iteratorBuilder.add(queryToken);
+      if (bound != null) {
+        iteratorBuilder.add(extendsOrSuperToken);
+        iteratorBuilder.add(bound);
+      }
+      return iteratorBuilder.build().iterator();
     }
   }
 
@@ -408,11 +415,12 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.concat(
-        // (Godin): workaround for generics
-        Iterators.<Tree>emptyIterator(),
-        typeAlternatives.iterator()
-        );
+      return ImmutableList.<Tree>builder().addAll(typeAlternatives).build().iterator();
+    }
+
+    @Override
+    public List<AnnotationTree> annotations() {
+      return ImmutableList.<AnnotationTree>of();
     }
   }
 
@@ -446,10 +454,17 @@ public abstract class JavaTree implements Tree {
   public static class PrimitiveTypeTreeImpl extends AbstractTypedTree implements PrimitiveTypeTree {
 
     private final InternalSyntaxToken token;
+    private List<AnnotationTree> annotations;
 
     public PrimitiveTypeTreeImpl(InternalSyntaxToken token) {
       super(Kind.PRIMITIVE_TYPE);
       this.token = token;
+      this.annotations = ImmutableList.<AnnotationTree>of();
+    }
+
+    public PrimitiveTypeTreeImpl complete(List<AnnotationTree> annotations) {
+      this.annotations = annotations;
+      return this;
     }
 
     @Override
@@ -469,7 +484,12 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.<Tree>singletonIterator(token);
+      return Iterators.concat(annotations.iterator(), Iterators.singletonIterator(token));
+    }
+
+    @Override
+    public List<AnnotationTree> annotations() {
+      return annotations;
     }
   }
 
@@ -477,11 +497,18 @@ public abstract class JavaTree implements Tree {
 
     private final TypeTree type;
     private final TypeArguments typeArguments;
+    private List<AnnotationTree> annotations;
 
     public ParameterizedTypeTreeImpl(TypeTree type, TypeArgumentListTreeImpl typeArguments) {
       super(Kind.PARAMETERIZED_TYPE);
       this.type = Preconditions.checkNotNull(type);
       this.typeArguments = Preconditions.checkNotNull(typeArguments);
+      this.annotations = ImmutableList.<AnnotationTree>of();
+    }
+
+    public ParameterizedTypeTreeImpl complete(List<AnnotationTree> annotations) {
+      this.annotations = annotations;
+      return this;
     }
 
     @Override
@@ -500,13 +527,18 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
+    public List<AnnotationTree> annotations() {
+      return annotations;
+    }
+
+    @Override
     public void accept(TreeVisitor visitor) {
       visitor.visitParameterizedType(this);
     }
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return Iterators.forArray(type, typeArguments);
+      return Iterators.concat(annotations.iterator(), Iterators.forArray(type, typeArguments));
     }
   }
 
@@ -566,7 +598,7 @@ public abstract class JavaTree implements Tree {
     public Iterator<Tree> childrenIterator() {
       boolean hasBrackets = ellipsisToken == null;
       return Iterators.concat(
-        Iterators.<Tree>singletonIterator(type),
+        Iterators.singletonIterator(type),
         annotations.iterator(),
         hasBrackets ? Iterators.forArray(openBracketToken, closeBracketToken) : Iterators.singletonIterator(ellipsisToken));
     }

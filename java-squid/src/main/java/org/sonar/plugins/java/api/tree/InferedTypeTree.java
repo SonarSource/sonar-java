@@ -19,12 +19,13 @@
  */
 package org.sonar.plugins.java.api.tree;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
-
 
   public InferedTypeTree(){
     super(null);
@@ -48,6 +49,11 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
   @Override
   public void accept(TreeVisitor visitor) {
     //Do nothing.
+  }
+
+  @Override
+  public List<AnnotationTree> annotations() {
+    return ImmutableList.<AnnotationTree>of();
   }
 
 }

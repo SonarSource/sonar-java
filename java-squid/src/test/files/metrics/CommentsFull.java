@@ -59,11 +59,11 @@ class A03 /* comment */ {}
 class A05 /* comment */ <T> {}
 class A06 </* comment */ T> {}
 class A07 <T /* comment */> {}
-class A08 </* comment FIXME annotations on type parameters are ignored */ @A01 T> {}
+class A08 </* comment */ @A01 T> {}
 class A09 <T /* comment FIXME separators of type parameters are ignored */, G> {}
 class A10 <T /* comment */ extends I> {}
 class A11 <T extends /* comment */ I> {}
-class A12 <T extends /* comment FIXME annotations on type parameters are ignored */ @A01 I> {}
+class A12 <T extends /* comment */ @A01 I> {}
 class A13 <T extends I1 /* comment FIXME separators of bound are ignored */ & I2> {}
 class A14 <T extends I1 & /* comment */ I2> {}
 class A15 /* comment */ implements I {}
