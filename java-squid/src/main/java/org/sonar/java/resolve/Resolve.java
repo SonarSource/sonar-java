@@ -542,7 +542,7 @@ public class Resolve {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
-        result = (env.enclosingClass().outermostClass() == c.owner().outermostClass());
+        result = env.enclosingClass().outermostClass() == c.owner().outermostClass();
         break;
       case 0:
         result = env.packge() == c.packge();

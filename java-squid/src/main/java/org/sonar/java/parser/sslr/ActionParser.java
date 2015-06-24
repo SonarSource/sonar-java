@@ -25,7 +25,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
@@ -60,16 +59,14 @@ public class ActionParser {
 
   private final Charset charset;
 
-  private final GrammarBuilderInterceptor grammarBuilderInterceptor;
   private final SyntaxTreeCreator<Tree> syntaxTreeCreator;
   private final GrammarRuleKey rootRule;
-  private final Grammar grammar;
   private final ParseRunner parseRunner;
 
   public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
     this.charset = charset;
 
-    this.grammarBuilderInterceptor = new GrammarBuilderInterceptor(b);
+    GrammarBuilderInterceptor grammarBuilderInterceptor = new GrammarBuilderInterceptor(b);
     Enhancer grammarEnhancer = new Enhancer();
     grammarEnhancer.setSuperclass(grammarClass);
     grammarEnhancer.setCallback(grammarBuilderInterceptor);
@@ -90,9 +87,7 @@ public class ActionParser {
 
       try {
         method.invoke(grammar);
-      } catch (InvocationTargetException e) {
-        throw Throwables.propagate(e);
-      } catch (IllegalAccessException e) {
+      } catch (InvocationTargetException | IllegalAccessException e) {
         throw Throwables.propagate(e);
       }
     }
@@ -101,8 +96,7 @@ public class ActionParser {
 
     b.setRootRule(rootRule);
     this.rootRule = rootRule;
-    this.grammar = b.build();
-    this.parseRunner = new ParseRunner(this.grammar.getRootRule());
+    this.parseRunner = new ParseRunner(b.build().getRootRule());
   }
 
   public Tree parse(File file) {
@@ -230,22 +224,21 @@ public class ActionParser {
     }
 
     @Override
-    public JavaTree invokeRule(GrammarRuleKey ruleKey) {
-      push(new DelayedRuleInvocationExpression(b, ruleKey));
+    public JavaTree invokeRule(GrammarRuleKey grammarRuleKey) {
+      push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
       return null;
     }
 
     @Override
-    public InternalSyntaxToken invokeRule(JavaPunctuator ruleKey) {
-      push(new DelayedRuleInvocationExpression(b, ruleKey));
+    public InternalSyntaxToken invokeRule(JavaPunctuator javaPunctuator) {
+      push(new DelayedRuleInvocationExpression(b, javaPunctuator));
       return null;
     }
 
-    public void replaceByRule(GrammarRuleKey ruleKey, int stackElements) {
+    public void replaceByRule(GrammarRuleKey grammarRuleKey, int stackElements) {
       ParsingExpression expression = stackElements == 1 ? pop() : new SequenceExpression(pop(stackElements));
-      b.rule(ruleKey).is(expression);
-
-      invokeRule(ruleKey);
+      b.rule(grammarRuleKey).is(expression);
+      invokeRule(grammarRuleKey);
     }
 
     private ParsingExpression[] pop(int n) {
@@ -265,14 +258,13 @@ public class ActionParser {
     }
 
     public GrammarRuleKey ruleKeyForAction(Method method) {
-      GrammarRuleKey ruleKey = actions.get(method);
-      if (ruleKey == null) {
+      GrammarRuleKey grammarRuleKey = actions.get(method);
+      if (grammarRuleKey == null) {
         method.setAccessible(true);
-        ruleKey = new DummyGrammarRuleKey(method);
-        actions.put(method, ruleKey);
+        grammarRuleKey = new DummyGrammarRuleKey(method);
+        actions.put(method, grammarRuleKey);
       }
-
-      return ruleKey;
+      return grammarRuleKey;
     }
 
     @Nullable
