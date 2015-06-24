@@ -53,7 +53,7 @@ public class InternalSyntaxSpacing extends JavaTree {
 
   @Override
   public void accept(TreeVisitor visitor) {
-
+    // Do nothing at the moment. Spacings are dropped anyway.
   }
 
   public int start() {

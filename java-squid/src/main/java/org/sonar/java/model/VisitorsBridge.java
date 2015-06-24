@@ -118,9 +118,9 @@ public class VisitorsBridge {
         SemanticModel.handleMissingTypes(tree);
       }
     }
-    JavaFileScannerContext context = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
+    JavaFileScannerContext javaFileScannerContext = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
     for (JavaFileScanner scanner : scanners) {
-      scanner.scanFile(context);
+      scanner.scanFile(javaFileScannerContext);
     }
     if (semanticModel != null) {
       // Close class loader after all the checks.

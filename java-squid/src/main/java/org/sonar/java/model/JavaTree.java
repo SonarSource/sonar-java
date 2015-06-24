@@ -417,11 +417,9 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class NotImplementedTreeImpl extends AbstractTypedTree implements ExpressionTree {
-    private final String name;
 
     public NotImplementedTreeImpl() {
       super(Kind.OTHER);
-      this.name = "TODO";
     }
 
     @Override
