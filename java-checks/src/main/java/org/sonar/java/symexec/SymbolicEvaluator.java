@@ -125,7 +125,7 @@ public class SymbolicEvaluator {
     return new ExecutionState(parentState);
   }
 
-  abstract class BaseExpressionVisitor extends BaseTreeVisitor {
+  abstract static class BaseExpressionVisitor extends BaseTreeVisitor {
     @Override
     public final void visitBinaryExpression(BinaryExpressionTree tree) {
       if (tree.is(Tree.Kind.CONDITIONAL_AND)) {

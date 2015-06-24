@@ -121,7 +121,7 @@ public class FirstPass extends BaseTreeVisitor {
     completeSymbols();
   }
 
-  private class PackageResolverVisitor extends BaseTreeVisitor {
+  private static class PackageResolverVisitor extends BaseTreeVisitor {
     private String packageName;
 
     public PackageResolverVisitor() {

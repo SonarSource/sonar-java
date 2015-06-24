@@ -196,30 +196,30 @@ public class ActionParser {
     @Override
     public <T> Optional<T> optional(T method) {
       ParsingExpression expression = pop();
-      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("optional", expression);
-      optionals.add(ruleKey);
-      b.rule(ruleKey).is(b.optional(expression));
-      invokeRule(ruleKey);
+      GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("optional", expression);
+      optionals.add(grammarRuleKey);
+      b.rule(grammarRuleKey).is(b.optional(expression));
+      invokeRule(grammarRuleKey);
       return null;
     }
 
     @Override
     public <T> List<T> oneOrMore(T method) {
       ParsingExpression expression = pop();
-      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("oneOrMore", expression);
-      oneOrMores.add(ruleKey);
-      b.rule(ruleKey).is(b.oneOrMore(expression));
-      invokeRule(ruleKey);
+      GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("oneOrMore", expression);
+      oneOrMores.add(grammarRuleKey);
+      b.rule(grammarRuleKey).is(b.oneOrMore(expression));
+      invokeRule(grammarRuleKey);
       return null;
     }
 
     @Override
     public <T> Optional<List<T>> zeroOrMore(T method) {
       ParsingExpression expression = pop();
-      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
-      zeroOrMores.add(ruleKey);
-      b.rule(ruleKey).is(b.zeroOrMore(expression));
-      invokeRule(ruleKey);
+      GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
+      zeroOrMores.add(grammarRuleKey);
+      b.rule(grammarRuleKey).is(b.zeroOrMore(expression));
+      invokeRule(grammarRuleKey);
       return null;
     }
 
