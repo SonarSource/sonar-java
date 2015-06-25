@@ -99,25 +99,42 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private void checkSymbol(Symbol symbol) {
-    if (!atLeastOneReference.isEmpty() && !atLeastOneReference.peek() && referenceInstance(symbol)) {
-      atLeastOneReference.pop();
-      atLeastOneReference.push(Boolean.TRUE);
-    }
-  }
-
-  private boolean referenceInstance(Symbol symbol) {
-    Symbol owner = symbol.owner();
-    return !outerClasses.peek().equals(owner) && (symbol.isUnknown() || (!symbol.isStatic() && fromInstance(owner)));
-  }
-
-  private boolean fromInstance(Symbol owner) {
-    for (Symbol outerClass : outerClasses) {
-      Type ownerType = owner.type();
-      if (owner.equals(outerClass) || (ownerType != null && outerClass.type().isSubtypeOf(ownerType))) {
-        return true;
+    if (!atLeastOneReference.isEmpty()) {
+      int level = referenceInstance(symbol);
+      if (level >= 0) {
+        for (int i = 0; i < level; i++) {
+          atLeastOneReference.pop();
+        }
+        while (atLeastOneReference.size() != outerClasses.size()) {
+          atLeastOneReference.push(Boolean.TRUE);
+        }
       }
     }
-    return false;
+  }
+
+  private int referenceInstance(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    int result = -1;
+    if (owner != null && !outerClasses.peek().equals(owner)) {
+      if (symbol.isUnknown()) {
+        result = atLeastOneReference.size() - 1;
+      } else if (!symbol.isStatic()) {
+        result = fromInstance(owner);
+      }
+    }
+    return result;
+  }
+
+  private int fromInstance(Symbol owner) {
+    int i = -1;
+    Type ownerType = owner.type();
+    for (Symbol outerClass : outerClasses) {
+      i++;
+      if (owner.equals(outerClass) || (ownerType != null && owner.isTypeSymbol() && outerClass.type().isSubtypeOf(ownerType))) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   @Override
