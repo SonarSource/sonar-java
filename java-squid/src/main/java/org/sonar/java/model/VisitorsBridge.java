@@ -48,6 +48,7 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
@@ -118,7 +119,8 @@ public class VisitorsBridge {
         SemanticModel.handleMissingTypes(tree);
       }
     }
-    JavaFileScannerContext javaFileScannerContext = new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
+    JavaFileScannerContext javaFileScannerContext =
+      new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
     for (JavaFileScanner scanner : scanners) {
       scanner.scanFile(javaFileScannerContext);
     }

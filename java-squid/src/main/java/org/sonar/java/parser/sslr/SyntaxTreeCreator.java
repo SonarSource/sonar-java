@@ -149,8 +149,8 @@ public class SyntaxTreeCreator<T> {
       updateTokenPositionAndValue(node);
       TokenExpression ruleMatcher = (TokenExpression) node.getMatcher();
       tokenBuilder.setType(ruleMatcher.getTokenType());
-      isEof = ruleMatcher.getTokenType() == GenericTokenType.EOF;
-      if (ruleMatcher.getTokenType() == GenericTokenType.COMMENT) {
+      isEof = GenericTokenType.EOF == ruleMatcher.getTokenType();
+      if (GenericTokenType.COMMENT == ruleMatcher.getTokenType()) {
         tokenBuilder.setTrivia(Collections.<Trivia>emptyList());
         trivias.add(Trivia.createComment(tokenBuilder.build()));
         return null;
