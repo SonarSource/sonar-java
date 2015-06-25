@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
@@ -51,11 +52,7 @@ public class UselessImportCheckTest {
 
   @Test
   public void detected_without_package() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/UselessImportCheck/WithoutPackage.java"),
-      new VisitorsBridge(new UselessImportCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2);
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithoutPackage.java", new UselessImportCheck());
   }
 
 }

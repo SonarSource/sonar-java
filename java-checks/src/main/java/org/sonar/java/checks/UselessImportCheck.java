@@ -71,7 +71,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     CompilationUnitTree cut = context.getTree();
-    ExpressionTree packageName = cut.packageDeclaration() != null ? cut.packageDeclaration().packageName() : null;
+    ExpressionTree packageName = getPackageName(cut);
 
     pendingReferences.clear();
     lineByImportReference.clear();
@@ -110,6 +110,10 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     leaveFile();
   }
 
+  private static ExpressionTree getPackageName(CompilationUnitTree cut) {
+    return cut.packageDeclaration() != null ? cut.packageDeclaration().packageName() : null;
+  }
+
   private static boolean isImportOnDemand(String name) {
     return name.endsWith("*");
   }
@@ -125,11 +129,13 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
+    scan(tree.annotations());
     pendingReferences.add(tree.name());
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    scan(tree.annotations());
     pendingReferences.add(concatenate(tree));
     //Don't visit identifiers of a member select expression.
     if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
@@ -140,7 +146,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   private boolean isImportFromSamePackage(String reference) {
     String importName = reference;
     if (isImportOnDemand(reference)) {
-      //strip out .* to compare lenght with current package.
+      //strip out .* to compare length with current package.
       importName = reference.substring(0, reference.length() - 2);
     }
     return !currentPackage.isEmpty() &&
