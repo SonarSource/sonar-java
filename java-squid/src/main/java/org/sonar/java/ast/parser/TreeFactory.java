@@ -91,6 +91,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
+import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -737,7 +738,8 @@ public class TreeFactory {
     }
   }
 
-  public FormalParametersListTreeImpl newVariableArgumentFormalParameter(Optional<List<AnnotationTreeImpl>> annotations, InternalSyntaxToken ellipsisToken, VariableTreeImpl variable) {
+  public FormalParametersListTreeImpl newVariableArgumentFormalParameter(Optional<List<AnnotationTreeImpl>> annotations,
+    InternalSyntaxToken ellipsisToken, VariableTreeImpl variable) {
     variable.addEllipsisDimension(new ArrayTypeTreeImpl(null, annotations.or(ImmutableList.<AnnotationTreeImpl>of()), ellipsisToken));
 
     return new FormalParametersListTreeImpl(
@@ -1559,20 +1561,35 @@ public class TreeFactory {
           throw new IllegalArgumentException();
         }
       }
-      TypeTree typeTree = (TypeTree) firstIdentifier;
-      // move the annotations from the first identifier to the member select or the parameterized type
-      List<AnnotationTree> firstIdentifierAnnotations = typeTree.annotations();
-      if (!firstIdentifierAnnotations.isEmpty()) {
-        if (result.is(Tree.Kind.MEMBER_SELECT)) {
-          ((MemberSelectExpressionTreeImpl) result).complete(firstIdentifierAnnotations);
-        } else {
-          ((ParameterizedTypeTreeImpl) result).complete(firstIdentifierAnnotations);
-        }
-        completeTypeTreeWithAnnotations(typeTree, ImmutableList.<AnnotationTree>of());
-      }
+      moveAnnotations(result, firstIdentifier);
     }
 
     return (T) result;
+  }
+
+  private static void moveAnnotations(ExpressionTree result, ExpressionTree firstIdentifier) {
+    List<AnnotationTree> firstIdentifierAnnotations;
+    boolean isParameterizedType = firstIdentifier.is(Tree.Kind.PARAMETERIZED_TYPE);
+
+    if (isParameterizedType) {
+      firstIdentifierAnnotations = ((ParameterizedTypeTree) firstIdentifier).annotations();
+    } else {
+      firstIdentifierAnnotations = ((IdentifierTree) firstIdentifier).annotations();
+    }
+    // move the annotations from the first identifier to the member select or the parameterized type
+    if (!firstIdentifierAnnotations.isEmpty()) {
+      if (result.is(Tree.Kind.MEMBER_SELECT)) {
+        ((MemberSelectExpressionTreeImpl) result).complete(firstIdentifierAnnotations);
+      } else {
+        ((ParameterizedTypeTreeImpl) result).complete(firstIdentifierAnnotations);
+      }
+      if (isParameterizedType) {
+        ((ParameterizedTypeTreeImpl) firstIdentifier).complete(ImmutableList.<AnnotationTree>of());
+      } else {
+        ((IdentifierTreeImpl) firstIdentifier).complete(ImmutableList.<AnnotationTree>of());
+      }
+    }
+
   }
 
   public ExpressionTree newAnnotatedParameterizedIdentifier(

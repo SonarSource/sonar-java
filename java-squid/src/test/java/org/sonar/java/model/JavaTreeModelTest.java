@@ -577,6 +577,17 @@ public class JavaTreeModelTest {
     assertThat(type.annotations()).hasSize(1);
     assertThatChildrenIteratorHasSize(type, 3);
 
+    classTree = (ClassTree) firstMethodFirstStatement("class MyClass<A, B, C> { void foo() { class MyOtherClass extends @Foo MyClass<A, B, C>.MyInnerClass {} } public class MyInnerClass {}}");
+    assertThat(classTree.modifiers()).isEmpty();
+    assertThatChildrenIteratorHasSize(classTree, 8);
+    type = classTree.superClass();
+    assertThat(type.is(Tree.Kind.MEMBER_SELECT)).isTrue();
+    assertThat(type.annotations()).hasSize(1);
+    type = (ParameterizedTypeTree) ((MemberSelectExpressionTree) type).expression();
+    assertThat(type.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
+    assertThat(type.annotations()).hasSize(0);
+    assertThatChildrenIteratorHasSize(type, 2);
+
     TypeCastTree typeCast = (TypeCastTree) ((ReturnStatementTree) firstMethodFirstStatement("class T { private long m(int a) { return (@Foo long) a; } }")).expression();
     assertThat(typeCast.type()).isNotNull();
     assertThatChildrenIteratorHasSize(typeCast, 4);
