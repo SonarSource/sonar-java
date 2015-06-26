@@ -62,7 +62,7 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
       Kind.FOR_STATEMENT,
       Kind.IF_STATEMENT,
       Kind.LAMBDA_EXPRESSION,
-      Kind.METHOD_INVOCATION,
+      Kind.ARGUMENTS,
       Kind.METHOD,
       Kind.NEW_ARRAY,
       Kind.NEW_CLASS,
