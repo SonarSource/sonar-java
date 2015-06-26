@@ -19,19 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
 
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -43,83 +52,126 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
+public class RedundantThrowsDeclarationCheck extends SubscriptionBaseVisitor {
 
-  private AsmClass asmClass;
+  private static final String ERROR_MESSAGE = "Remove the declaration of thrown exception '";
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(
+      Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE,
+      Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD, Tree.Kind.NEW_CLASS,
+      Tree.Kind.METHOD_INVOCATION, Tree.Kind.THROW_STATEMENT);
+  }
+
+  private final Deque<Set<Type>> thrownExceptions = new LinkedList<>();
+
+  @Override
+  public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+    if (tree.is(Tree.Kind.THROW_STATEMENT)) {
+      registerThrownType(((ThrowStatementTree) tree).expression().symbolType());
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      Symbol methodSymbol = ((MethodInvocationTree) tree).symbol();
+      processMethodCall(methodSymbol);
+    } else if (tree.is(Tree.Kind.NEW_CLASS)) {
+      Symbol constructorSymbol = ((NewClassTree) tree).constructorSymbol();
+      processMethodCall(constructorSymbol);
+    } else {
+      thrownExceptions.push(new HashSet<Type>());
+    }
+  }
+
+  private void processMethodCall(Symbol methodSymbol) {
+    if (methodSymbol.isMethodSymbol()) {
+      for (Type thrownType : ((Symbol.MethodSymbol) methodSymbol).thrownTypes()) {
+        registerThrownType(thrownType);
+      }
+    }
   }
 
   @Override
-  public void visitMethod(AsmMethod asmMethod) {
-    int line = getMethodLineNumber(asmMethod);
-    if (line > 0) {
-      Set<String> reportedExceptions = Sets.newHashSet();
+  public void leaveNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
+    if (tree.is(Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD)) {
+      MethodTree methodTree = (MethodTree) tree;
+      List<TypeTree> exceptionsTree = new ArrayList<>(methodTree.throwsClauses());
+      checkRuntimeExceptions(methodTree, exceptionsTree);
+      checkRedundantExceptions(methodTree, exceptionsTree);
+      checkOtherExceptions(methodTree, exceptionsTree);
+    }
+    if (tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.CONSTRUCTOR, Tree.Kind.METHOD)) {
+      thrownExceptions.pop();
+    }
+  }
 
-      List<AsmClass> thrownClasses = asmMethod.getThrows();
-      for (AsmClass thrownClass : thrownClasses) {
-        String thrownClassName = thrownClass.getDisplayName();
+  private void checkRuntimeExceptions(Tree tree, List<TypeTree> exceptionsTree) {
+    Iterator<TypeTree> exceptionsIterator = exceptionsTree.iterator();
+    while (exceptionsIterator.hasNext()) {
+      TypeTree exceptionTree = exceptionsIterator.next();
+      Type exceptionType = exceptionTree.symbolType();
+      if (exceptionType.isSubtypeOf("java.lang.RuntimeException")) {
+        addIssue(tree, ERROR_MESSAGE + exceptionType.fullyQualifiedName() + "' which is a runtime exception.");
+        exceptionsIterator.remove();
+      }
+    }
+  }
 
-        if (!reportedExceptions.contains(thrownClassName)) {
-          String issueMessage = getIssueMessage(thrownClasses, thrownClass);
-
-          if (issueMessage != null) {
-            reportedExceptions.add(thrownClassName);
-
-            CheckMessage message = new CheckMessage(this, issueMessage);
-            message.setLine(line);
-            SourceFile file = getSourceFile(asmClass);
-            file.log(message);
-          }
+  private void checkRedundantExceptions(MethodTree tree, List<TypeTree> exceptionsTree) {
+    for (int i1 = exceptionsTree.size() - 1; i1 >= 0; i1--) {
+      TypeTree exceptionTree = exceptionsTree.get(i1);
+      Type exceptionType = exceptionTree.symbolType();
+      for (int i2 = i1 - 1; i2 >= 0; i2--) {
+        Type secondExceptionType = exceptionsTree.get(i2).symbolType();
+        if (exceptionType.equals(secondExceptionType) && !exceptionType.symbol().equals(Symbols.unknownSymbol)) {
+          addIssue(tree, "Remove the redundant '" + exceptionType.fullyQualifiedName() + "' thrown exception declaration(s).");
+          exceptionsTree.remove(i1);
+          break;
         }
       }
     }
   }
 
-  private static String getIssueMessage(List<AsmClass> thrownClasses, AsmClass thrownClass) {
-    String thrownClassName = thrownClass.getDisplayName();
-    if (isSubClassOfAny(thrownClass, thrownClasses)) {
-      return "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";
-    } else if (isSubClassOfRuntimeException(thrownClass)) {
-      return "Remove the declaration of thrown exception '" + thrownClassName + "' which is a runtime exception.";
-    } else if (isDeclaredMoreThanOnce(thrownClass, thrownClasses)) {
-      return "Remove the redundant '" + thrownClassName + "' thrown exception declaration(s).";
-    }
-    return null;
-  }
-
-  private static boolean isDeclaredMoreThanOnce(AsmClass thrownClass, List<AsmClass> thrownClassCandidates) {
-    int matches = 0;
-
-    for (AsmClass thrownClassCandidate : thrownClassCandidates) {
-      if (thrownClass.equals(thrownClassCandidate)) {
-        matches++;
+  private void checkOtherExceptions(MethodTree tree, List<TypeTree> exceptionsTree) {
+    for (TypeTree exceptionTree : exceptionsTree) {
+      Type exceptionType = exceptionTree.symbolType();
+      if (!exceptionType.symbol().equals(Symbols.unknownSymbol)
+        && !checkRelatedExceptions(tree, exceptionTree, exceptionsTree)
+        && shouldCheckExceptionsInBody(tree)
+        && !isThrownFromBody(exceptionType)) {
+        addIssue(tree, ERROR_MESSAGE + exceptionType.fullyQualifiedName() + "' which cannot be thrown from the body.");
       }
     }
-
-    return matches > 1;
   }
 
-  private static boolean isSubClassOfAny(AsmClass thrownClass, List<AsmClass> thrownClassCandidates) {
-    for (AsmClass current = thrownClass.getSuperClass(); current != null; current = current.getSuperClass()) {
-      for (AsmClass thrownClassCandidate : thrownClassCandidates) {
-        if (current.equals(thrownClassCandidate)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  private static boolean shouldCheckExceptionsInBody(MethodTree methodTree) {
+    Symbol.MethodSymbol methodSymbol = methodTree.symbol();
+    return methodSymbol.owner().isFinal() || methodSymbol.isPrivate() || methodSymbol.isStatic() || methodSymbol.isFinal();
   }
 
-  private static boolean isSubClassOfRuntimeException(AsmClass thrownClass) {
-    for (AsmClass current = thrownClass; current != null; current = current.getSuperClass()) {
-      if ("java/lang/RuntimeException".equals(current.getInternalName())) {
+  private boolean checkRelatedExceptions(MethodTree tree, TypeTree exceptionTree, List<TypeTree> exceptionsTree) {
+    Type exceptionType = exceptionTree.symbolType();
+    for (TypeTree otherExceptionTree : exceptionsTree) {
+      Type otherExceptionType = otherExceptionTree.symbolType();
+      if (!exceptionTree.equals(otherExceptionTree) && exceptionType.isSubtypeOf(otherExceptionType)) {
+        addIssue(tree, ERROR_MESSAGE + exceptionType.fullyQualifiedName() + "' which is a subclass of '" +
+          otherExceptionType.fullyQualifiedName() + "'.");
         return true;
       }
     }
     return false;
+  }
+
+  private boolean isThrownFromBody(Type exceptionType) {
+    return thrownExceptions.peek().contains(exceptionType);
+  }
+
+  private void registerThrownType(Type thrownException) {
+    thrownExceptions.peek().add(thrownException);
   }
 
 }
