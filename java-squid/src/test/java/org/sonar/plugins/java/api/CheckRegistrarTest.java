@@ -26,16 +26,16 @@ import com.google.common.collect.Lists;
 
 public class CheckRegistrarTest {
 
-    @Test
-    public void repository_key_is_mandatory() throws Exception {
-        try {
-            new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", Lists.<Class<? extends JavaCheck>> newArrayList());
-            fail();
-        } catch (final IllegalArgumentException e) {
-            Assertions.assertThat(e)
-                .hasMessage("Please specify a valid repository key to register your custom rules");
-        } catch (final Exception e) {
-            fail();
-        }
+  @Test
+  public void repository_key_is_mandatory() throws Exception {
+    try {
+      new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", Lists.<Class<? extends JavaCheck>>newArrayList());
+      fail();
+    } catch (final IllegalArgumentException e) {
+      Assertions.assertThat(e)
+        .hasMessage("Please specify a valid repository key to register your custom rules");
+    } catch (final Exception e) {
+      fail();
     }
+  }
 }

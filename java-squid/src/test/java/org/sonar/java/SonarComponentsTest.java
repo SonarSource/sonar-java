@@ -43,127 +43,127 @@ import com.google.common.collect.Lists;
 @RunWith(MockitoJUnitRunner.class)
 public class SonarComponentsTest {
 
-    @Mock
-    private FileLinesContextFactory fileLinesContextFactory;
+  @Mock
+  private FileLinesContextFactory fileLinesContextFactory;
 
-    @Mock
-    private ResourcePerspectives resourcePerspectives;
+  @Mock
+  private ResourcePerspectives resourcePerspectives;
 
-    @Mock
-    private CheckFactory checkFactory;
+  @Mock
+  private CheckFactory checkFactory;
 
-    @Mock
-    private Checks<JavaCheck> checks;
+  @Mock
+  private Checks<JavaCheck> checks;
 
-    @Before
-    public void setUp() {
-        when(this.checkFactory.<JavaCheck> create(anyString())).thenReturn(this.checks);
-        when(this.checks.addAnnotatedChecks(anyCollectionOf(Class.class))).thenReturn(this.checks);
+  @Before
+  public void setUp() {
+    when(this.checkFactory.<JavaCheck>create(anyString())).thenReturn(this.checks);
+    when(this.checks.addAnnotatedChecks(anyCollectionOf(Class.class))).thenReturn(this.checks);
+  }
+
+  @Test
+  public void creation_of_custom_checks() {
+    final JavaCheck expectedCheck = new CustomCheck();
+    final CheckRegistrar expectedRegistrar = new MyCheckRegistrer();
+
+    when(this.checks.all()).thenReturn(Lists.<JavaCheck>newArrayList(expectedCheck));
+    final SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    final CodeVisitor[] visitors = sonarComponents.checkClasses();
+    assertThat(visitors).hasSize(1);
+    assertThat(visitors[0]).isSameAs(expectedCheck);
+    final Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    assertThat(testChecks).hasSize(0);
+    verify(this.checkFactory, times(1)).create("myRepo");
+    verify(this.checks, times(1)).addAnnotatedChecks(anyCollectionOf(Class.class));
+    verify(this.checks, times(1)).all();
+  }
+
+  @Test
+  public void creation_of_custom_test_checks() {
+    final JavaCheck expectedCheck = new CustomTestCheck();
+    final CheckRegistrar expectedRegistrar = new MyTestCheckRegistrer();
+
+    when(this.checks.all()).thenReturn(Lists.<JavaCheck>newArrayList(expectedCheck));
+    final SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    final CodeVisitor[] visitors = sonarComponents.checkClasses();
+    assertThat(visitors).hasSize(0);
+    final Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    assertThat(testChecks).hasSize(1);
+    assertThat(testChecks.iterator()
+      .next()).isSameAs(expectedCheck);
+    verify(this.checkFactory, times(1)).create("myTestRepo");
+    verify(this.checks, times(1)).addAnnotatedChecks(anyCollectionOf(Class.class));
+    verify(this.checks, times(1)).all();
+  }
+
+  @Test
+  public void creation_of_both_types_test_checks() {
+    final JavaCheck expectedCheck = new CustomCheck();
+    final CheckRegistrar expectedRegistrar = new MyCheckRegistrer();
+    final JavaCheck expectedTestCheck = new CustomTestCheck();
+    final CheckRegistrar expectedTestRegistrar = new MyTestCheckRegistrer();
+
+    when(this.checks.all()).thenReturn(Lists.<JavaCheck>newArrayList(expectedCheck))
+      .thenReturn(Lists.<JavaCheck>newArrayList(expectedTestCheck));
+    final SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
+      expectedRegistrar,
+      expectedTestRegistrar
+    });
+
+    final CodeVisitor[] visitors = sonarComponents.checkClasses();
+    assertThat(visitors).hasSize(1);
+    assertThat(visitors[0]).isSameAs(expectedCheck);
+    verify(this.checkFactory, times(1)).create("myRepo");
+
+    final Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    assertThat(testChecks).hasSize(1);
+    assertThat(testChecks.iterator()
+      .next()).isSameAs(expectedTestCheck);
+    verify(this.checkFactory, times(1)).create("myTestRepo");
+
+    verify(this.checks, times(2)).addAnnotatedChecks(anyCollectionOf(Class.class));
+    verify(this.checks, times(2)).all();
+  }
+
+  private static class MyCheckRegistrer implements CheckRegistrar {
+
+    @Override
+    public void register(final RegistrarContext registrarContext) {
+      registrarContext.registerClassesForRepository("myRepo", Lists.<Class<? extends JavaCheck>>newArrayList(CustomCheck.class));
     }
 
-    @Test
-    public void creation_of_custom_checks() {
-        final JavaCheck expectedCheck = new CustomCheck();
-        final CheckRegistrar expectedRegistrar = new MyCheckRegistrer();
-
-        when(this.checks.all()).thenReturn(Lists.<JavaCheck> newArrayList(expectedCheck));
-        final SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
-            expectedRegistrar
-        });
-
-        final CodeVisitor[] visitors = sonarComponents.checkClasses();
-        assertThat(visitors).hasSize(1);
-        assertThat(visitors[0]).isSameAs(expectedCheck);
-        final Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
-        assertThat(testChecks).hasSize(0);
-        verify(this.checkFactory, times(1)).create("myRepo");
-        verify(this.checks, times(1)).addAnnotatedChecks(anyCollectionOf(Class.class));
-        verify(this.checks, times(1)).all();
+    @Override
+    public Type type() {
+      return Type.SOURCE_CHECKS;
     }
 
-    @Test
-    public void creation_of_custom_test_checks() {
-        final JavaCheck expectedCheck = new CustomTestCheck();
-        final CheckRegistrar expectedRegistrar = new MyTestCheckRegistrer();
+  }
 
-        when(this.checks.all()).thenReturn(Lists.<JavaCheck> newArrayList(expectedCheck));
-        final SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
-            expectedRegistrar
-        });
+  private static class MyTestCheckRegistrer implements CheckRegistrar {
 
-        final CodeVisitor[] visitors = sonarComponents.checkClasses();
-        assertThat(visitors).hasSize(0);
-        final Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
-        assertThat(testChecks).hasSize(1);
-        assertThat(testChecks.iterator()
-            .next()).isSameAs(expectedCheck);
-        verify(this.checkFactory, times(1)).create("myTestRepo");
-        verify(this.checks, times(1)).addAnnotatedChecks(anyCollectionOf(Class.class));
-        verify(this.checks, times(1)).all();
+    @Override
+    public void register(final RegistrarContext registrarContext) {
+      registrarContext.registerClassesForRepository("myTestRepo", Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class));
     }
 
-    @Test
-    public void creation_of_both_types_test_checks() {
-        final JavaCheck expectedCheck = new CustomCheck();
-        final CheckRegistrar expectedRegistrar = new MyCheckRegistrer();
-        final JavaCheck expectedTestCheck = new CustomTestCheck();
-        final CheckRegistrar expectedTestRegistrar = new MyTestCheckRegistrer();
-
-        when(this.checks.all()).thenReturn(Lists.<JavaCheck> newArrayList(expectedCheck))
-            .thenReturn(Lists.<JavaCheck> newArrayList(expectedTestCheck));
-        final SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
-            expectedRegistrar,
-            expectedTestRegistrar
-        });
-
-        final CodeVisitor[] visitors = sonarComponents.checkClasses();
-        assertThat(visitors).hasSize(1);
-        assertThat(visitors[0]).isSameAs(expectedCheck);
-        verify(this.checkFactory, times(1)).create("myRepo");
-
-        final Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
-        assertThat(testChecks).hasSize(1);
-        assertThat(testChecks.iterator()
-            .next()).isSameAs(expectedTestCheck);
-        verify(this.checkFactory, times(1)).create("myTestRepo");
-
-        verify(this.checks, times(2)).addAnnotatedChecks(anyCollectionOf(Class.class));
-        verify(this.checks, times(2)).all();
+    @Override
+    public Type type() {
+      return Type.TEST_CHECKS;
     }
 
-    private static class MyCheckRegistrer implements CheckRegistrar {
+  }
 
-        @Override
-        public void register(final RegistrarContext registrarContext) {
-            registrarContext.registerClassesForRepository("myRepo", Lists.<Class<? extends JavaCheck>> newArrayList(CustomCheck.class));
-        }
+  private static class CustomCheck implements JavaCheck {
 
-        @Override
-        public Type type() {
-            return Type.SOURCE_CHECKS;
-        }
+  }
 
-    }
+  private static class CustomTestCheck implements JavaCheck {
 
-    private static class MyTestCheckRegistrer implements CheckRegistrar {
-
-        @Override
-        public void register(final RegistrarContext registrarContext) {
-            registrarContext.registerClassesForRepository("myTestRepo", Lists.<Class<? extends JavaCheck>> newArrayList(CustomTestCheck.class));
-        }
-
-        @Override
-        public Type type() {
-            return Type.TEST_CHECKS;
-        }
-
-    }
-
-    private static class CustomCheck implements JavaCheck {
-
-    }
-
-    private static class CustomTestCheck implements JavaCheck {
-
-    }
+  }
 }
