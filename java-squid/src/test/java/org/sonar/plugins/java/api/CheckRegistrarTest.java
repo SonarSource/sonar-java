@@ -30,7 +30,7 @@ public class CheckRegistrarTest {
   @Test
   public void repository_key_is_mandatory() throws Exception {
     try {
-      new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", Lists.<Class<? extends JavaCheck>>newArrayList());
+      new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", Lists.<Class<? extends JavaCheck>>newArrayList(), Lists.<Class<? extends JavaCheck>>newArrayList());
       fail();
     } catch (IllegalArgumentException e) {
       Assertions.assertThat(e).hasMessage("Please specify a valid repository key to register your custom rules");

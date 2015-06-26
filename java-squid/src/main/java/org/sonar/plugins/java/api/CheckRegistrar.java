@@ -27,6 +27,7 @@ import org.sonar.api.BatchExtension;
 /**
  * This batch extension should be extended to provide the classes to be used to instantiate checks.
  * The register method has to be implemented and the registrarContext should register the repository keys.
+ *
  * <pre>
  *   {@code
  *   public void register(RegistrarContext registrarContext) {
@@ -47,11 +48,13 @@ public interface CheckRegistrar extends BatchExtension {
   class RegistrarContext {
     private String repositoryKey;
     private Iterable<Class<? extends JavaCheck>> checkClasses;
+    private Iterable<Class<? extends JavaCheck>> testCheckClasses;
 
-    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses){
+    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
       Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.checkClasses = checkClasses;
+      this.testCheckClasses = testCheckClasses;
     }
 
     public String repositoryKey() {
@@ -60,6 +63,10 @@ public interface CheckRegistrar extends BatchExtension {
 
     public Iterable<Class<? extends JavaCheck>> checkClasses() {
       return checkClasses;
+    }
+
+    public Iterable<Class<? extends JavaCheck>> testCheckClasses() {
+      return testCheckClasses;
     }
 
   }

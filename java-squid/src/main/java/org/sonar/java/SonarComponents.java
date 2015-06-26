@@ -37,6 +37,7 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,30 +50,34 @@ public class SonarComponents implements BatchExtension {
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
-  private Checks<JavaCheck> testChecks;
+  private final List<Checks<JavaCheck>> testChecks;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory) {
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+    CheckFactory checkFactory) {
     this(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars) {
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+    @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
-    checks = Lists.newArrayList();
+    this.checks = Lists.newArrayList();
+    this.testChecks = Lists.newArrayList();
 
-    if(checkRegistrars != null) {
+    if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
       for (CheckRegistrar checkClassesRegister : checkRegistrars) {
         checkClassesRegister.register(registrarContext);
-        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(registrarContext.checkClasses()));
+        Iterable<Class<? extends JavaCheck>> checkClasses = registrarContext.checkClasses();
+        Iterable<Class<? extends JavaCheck>> testCheckClasses = registrarContext.testCheckClasses();
+        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(checkClasses != null ? checkClasses : new ArrayList<Class<? extends JavaCheck>>()));
+        registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(testCheckClasses != null ? testCheckClasses : new ArrayList<Class<? extends JavaCheck>>()));
       }
     }
   }
@@ -108,14 +113,17 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives;
   }
 
-  public void registerCheckClasses(String repositoryKey, Collection<Class<? extends JavaCheck>> checkClasses) {
+  public void registerCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> checkClasses) {
     checks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
   }
 
   public CodeVisitor[] checkClasses() {
     List<CodeVisitor> visitors = Lists.newArrayList();
-    for (Checks<JavaCheck> check : checks) {
-      visitors.addAll(check.all());
+    for (Checks<JavaCheck> checksElement : checks) {
+      Collection<JavaCheck> checksCollection = checksElement.all();
+      if (!checksCollection.isEmpty()) {
+        visitors.addAll(checksCollection);
+      }
     }
     return visitors.toArray(new CodeVisitor[visitors.size()]);
   }
@@ -124,17 +132,19 @@ public class SonarComponents implements BatchExtension {
     return Iterables.concat(checks, Lists.newArrayList(testChecks));
   }
 
-  public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> javaTestChecks) {
-    testChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaTestChecks);
+  public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> checkClasses) {
+    testChecks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
   }
 
   public Collection<JavaCheck> testCheckClasses() {
-    if(testChecks == null) {
-      return Lists.newArrayList();
+    List<JavaCheck> visitors = Lists.newArrayList();
+    for (Checks<JavaCheck> checksElement : testChecks) {
+      Collection<JavaCheck> checksCollection = checksElement.all();
+      if (!checksCollection.isEmpty()) {
+        visitors.addAll(checksCollection);
+      }
     }
-    return testChecks.all();
+    return visitors;
   }
-
-
 
 }

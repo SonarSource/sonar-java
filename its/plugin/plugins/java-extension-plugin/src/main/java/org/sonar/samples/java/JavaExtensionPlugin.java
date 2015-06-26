@@ -20,15 +20,16 @@
 package org.sonar.samples.java;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
-
 import java.util.List;
+import org.sonar.api.SonarPlugin;
 
 public class JavaExtensionPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
-    return ImmutableList.of(JavaExtensionRulesDefinition.class, JavaExtensionsCheckRegistrar.class);
+    return ImmutableList.of(
+      JavaExtensionRulesDefinition.class,
+      JavaExtensionsCheckRegistrar.class);
   }
 
 }
