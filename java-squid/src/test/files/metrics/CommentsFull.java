@@ -64,7 +64,7 @@ class A09 <T /* comment */, G> {}
 class A10 <T /* comment */ extends I> {}
 class A11 <T extends /* comment */ I> {}
 class A12 <T extends /* comment */ @A01 I> {}
-class A13 <T extends I1 /* comment FIXME separators of bound are ignored */ & I2> {}
+class A13 <T extends I1 /* comment separators of bound*/ & I2> {}
 class A14 <T extends I1 & /* comment */ I2> {}
 class A15 /* comment */ implements I {}
 class A16 implements /* comment */ I {}

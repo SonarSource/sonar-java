@@ -104,7 +104,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -301,16 +300,16 @@ public class TreeFactory {
 
   public BoundListTreeImpl newBounds(TypeTree classType, Optional<List<Tuple<InternalSyntaxToken, Tree>>> rests) {
     ImmutableList.Builder<Tree> classTypes = ImmutableList.builder();
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
 
     classTypes.add(classType);
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, Tree> rest : rests.get()) {
-        // FIXME SONARJAVA-547 comma should be handled (rest.first())
+        separators.add(rest.first());
         classTypes.add(rest.second());
       }
     }
-
-    return new BoundListTreeImpl(classTypes.build());
+    return new BoundListTreeImpl(classTypes.build(), separators.build());
   }
 
   // End of types
@@ -1293,18 +1292,15 @@ public class TreeFactory {
     return new TypeCastExpressionTreeImpl(basicType, closeParenToken, expression);
   }
 
-  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<List<Tuple<InternalSyntaxToken, Tree>>> classTypes, InternalSyntaxToken closeParenToken,
+  public TypeCastExpressionTreeImpl newClassCastExpression(TypeTree type, Optional<Tuple<InternalSyntaxToken, BoundListTreeImpl>> classTypes, InternalSyntaxToken closeParenToken,
     ExpressionTree expression) {
-    ImmutableList.Builder<Tree> boundsBuilder = ImmutableList.builder();
-    if (classTypes.isPresent()) {
-      for (Tuple<InternalSyntaxToken, Tree> tuple : classTypes.get()) {
-        // TODO SONARJAVA-547 andOperator should be present in the tree
-        InternalSyntaxToken andOperator = tuple.first();
-        boundsBuilder.add(tuple.second());
-      }
+    BoundListTreeImpl bounds = BoundListTreeImpl.emptyList();
+    InternalSyntaxToken andToken = null;
+    if(classTypes.isPresent()) {
+      andToken = classTypes.get().first();
+      bounds = classTypes.get().second();
     }
-
-    return new TypeCastExpressionTreeImpl(type, boundsBuilder.build(), closeParenToken, expression);
+    return new TypeCastExpressionTreeImpl(type,andToken, bounds, closeParenToken, expression);
   }
 
   public ExpressionTree completeMethodReference(MethodReferenceTreeImpl partial, Optional<TypeArgumentListTreeImpl> typeArguments, JavaTree newOrIdentifierToken) {
@@ -1836,6 +1832,10 @@ public class TreeFactory {
     return newTuple(first, second);
   }
 
+  public <T, U> Tuple<T, U> newTuple29(T first, U second) {
+    return newTuple(first, second);
+  }
+
   public <T, U> Tuple<T, U> newAnnotatedDimension(T first, U second) {
     return newTuple(first, second);
   }
@@ -1847,11 +1847,6 @@ public class TreeFactory {
   public <U> Tuple<Optional<InternalSyntaxToken>, U> newTupleAbsent2(U expression) {
     return newTuple(Optional.<InternalSyntaxToken>absent(), expression);
   }
-
-  public Tuple<InternalSyntaxToken, Tree> newAdditionalBound(InternalSyntaxToken andSyntaxToken, Tree type) {
-    return newTuple(andSyntaxToken, type);
-  }
-
   // End
 
   private static TypeTree applyDim(TypeTree expression, @Nullable ArrayTypeTreeImpl dim) {

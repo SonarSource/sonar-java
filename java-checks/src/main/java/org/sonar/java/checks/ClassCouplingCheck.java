@@ -126,7 +126,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-    checkTypes(typeParameter.bounds());
+    checkTypes((List<? extends Tree>) typeParameter.bounds());
     checkTypes(typeParameter.identifier());
     super.visitTypeParameter(typeParameter);
   }

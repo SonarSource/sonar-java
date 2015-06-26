@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 /**
  * Cast expression.
  *
@@ -38,6 +40,11 @@ public interface TypeCastTree extends ExpressionTree {
   SyntaxToken openParenToken();
 
   TypeTree type();
+
+  @Nullable
+  SyntaxToken andToken();
+
+  ListTree<Tree> bounds();
 
   SyntaxToken closeParenToken();
 

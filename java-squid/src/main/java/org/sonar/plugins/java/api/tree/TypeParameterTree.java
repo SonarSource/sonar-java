@@ -21,7 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Type parameter.
@@ -40,6 +40,9 @@ public interface TypeParameterTree extends Tree {
 
   IdentifierTree identifier();
 
-  List<Tree> bounds();
+  @Nullable
+  SyntaxToken extendToken();
+
+  ListTree<Tree> bounds();
 
 }

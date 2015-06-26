@@ -1062,10 +1062,10 @@ public class JavaGrammar {
           b.firstOf(
             f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
             f.newClassCastExpression(
-              TYPE(),
-              b.zeroOrMore(f.newAdditionalBound(b.invokeRule(JavaPunctuator.AND), QUALIFIED_IDENTIFIER())),
-              b.invokeRule(JavaPunctuator.RPAR),
-              UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
+                TYPE(),
+                b.optional(f.newTuple29(b.invokeRule(JavaPunctuator.AND), BOUND())),
+                b.invokeRule(JavaPunctuator.RPAR),
+                UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
   }
 
   public ExpressionTree METHOD_REFERENCE() {

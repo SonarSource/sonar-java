@@ -596,7 +596,7 @@ public class JavaTreeModelTest {
 
     TypeCastTree typeCast = (TypeCastTree) ((ReturnStatementTree) firstMethodFirstStatement("class T { private long m(int a) { return (@Foo long) a; } }")).expression();
     assertThat(typeCast.type()).isNotNull();
-    assertThatChildrenIteratorHasSize(typeCast, 4);
+    assertThatChildrenIteratorHasSize(typeCast, 5);
     type = typeCast.type();
     assertThat(type.is(Tree.Kind.PRIMITIVE_TYPE)).isTrue();
     assertThat(type.annotations()).hasSize(1);
@@ -2255,23 +2255,39 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isNotNull();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.expression()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 4);
+    assertThatChildrenIteratorHasSize(tree, 5);
 
     tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Foo<T> & Bar) true; } }");
     assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.type()).isNotNull();
+    assertThat(tree.andToken()).isNotNull();
+    assertThat(tree.bounds()).hasSize(1);
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.expression()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 5);
+    assertThatChildrenIteratorHasSize(tree, 6);
 
     tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Foo<T> & @Gul Bar) true; } }");
     assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.type()).isNotNull();
+    assertThat(tree.andToken()).isNotNull();
+    assertThat(tree.bounds()).hasSize(1);
+    assertThat(tree.bounds().separators()).isEmpty();
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     assertThat(tree.expression()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 5);
+    assertThatChildrenIteratorHasSize(tree, 6);
+
+    tree = (TypeCastTree) expressionOfReturnStatement("class T { boolean m() { return (Foo<T> & @Gul Bar & Qix & Plop) true; } }");
+    assertThat(tree.is(Tree.Kind.TYPE_CAST)).isTrue();
+    assertThat(tree.openParenToken().text()).isEqualTo("(");
+    assertThat(tree.type()).isNotNull();
+    assertThat(tree.andToken()).isNotNull();
+    assertThat(tree.bounds()).hasSize(3);
+    assertThat(tree.bounds().separators()).hasSize(2);
+    assertThat(tree.closeParenToken().text()).isEqualTo(")");
+    assertThat(tree.expression()).isNotNull();
+    assertThatChildrenIteratorHasSize(tree, 6);
   }
 
   /**
@@ -2627,15 +2643,16 @@ public class JavaTreeModelTest {
     TypeParameterTree param = tree.get(0);
     assertThat(param.identifier().name()).isEqualTo("T");
     assertThat(param.bounds()).isEmpty();
+    assertThat(param.bounds().separators()).isEmpty();
     assertThatChildrenIteratorHasSize(param, 1);
 
     param = tree.get(1);
     assertThat(param.identifier().name()).isEqualTo("U");
     assertThat(param.bounds()).hasSize(2);
+    assertThat(param.bounds().separators()).hasSize(1);
     assertThat(((IdentifierTree) param.bounds().get(0)).name()).isEqualTo("Object");
     assertThat(((IdentifierTree) param.bounds().get(1)).name()).isEqualTo("Number");
-    // TODO SONARJAVA-547 ampersand is missing in bounds
-    assertThatChildrenIteratorHasSize(param, 4);
+    assertThatChildrenIteratorHasSize(param, 3);
   }
 
   private ExpressionTree expressionOfReturnStatement(String code) {
