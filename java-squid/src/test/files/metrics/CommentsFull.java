@@ -60,7 +60,7 @@ class A05 /* comment */ <T> {}
 class A06 </* comment */ T> {}
 class A07 <T /* comment */> {}
 class A08 </* comment */ @A01 T> {}
-class A09 <T /* comment FIXME separators of type parameters are ignored */, G> {}
+class A09 <T /* comment */, G> {}
 class A10 <T /* comment */ extends I> {}
 class A11 <T extends /* comment */ I> {}
 class A12 <T extends /* comment */ @A01 I> {}

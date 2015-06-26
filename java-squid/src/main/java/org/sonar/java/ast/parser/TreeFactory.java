@@ -275,14 +275,15 @@ public class TreeFactory {
     ImmutableList.Builder<TypeParameterTree> typeParameters = ImmutableList.builder();
     typeParameters.add(typeParameter);
 
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, TypeParameterTreeImpl> rest : rests.get()) {
-        // FIXME SONARJAVA-547 commas should be handled rest.first()
+        separators.add(rest.first());
         typeParameters.add(rest.second());
       }
     }
 
-    return new TypeParameterListTreeImpl(openBracketToken, typeParameters.build(), closeBracketToken);
+    return new TypeParameterListTreeImpl(openBracketToken, typeParameters.build(), separators.build(), closeBracketToken);
   }
 
   public TypeParameterTreeImpl completeTypeParameter(Optional<List<AnnotationTreeImpl>> annotations, JavaTree identifierToken, Optional<TypeParameterTreeImpl> partial) {

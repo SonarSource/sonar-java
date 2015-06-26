@@ -395,6 +395,7 @@ public class JavaTreeModelTest {
     assertThat(tree.simpleName().name()).isEqualTo("T");
     TypeParameters typeParameters = tree.typeParameters();
     assertThat(typeParameters).isNotEmpty();
+    assertThat(typeParameters.separators()).isEmpty();
     assertThatChildrenIteratorHasSize(typeParameters, 3);
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.superClass()).isNotNull();
@@ -417,9 +418,9 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers()).isEmpty();
     assertThat(tree.simpleName().name()).isEqualTo("T");
     typeParameters = tree.typeParameters();
-    assertThat(typeParameters).isNotEmpty();
-    // FIXME SONARJAVA-547 separators should be present in children iterator of type parameters
-    assertThatChildrenIteratorHasSize(typeParameters, 4);
+    assertThat(typeParameters).hasSize(2);
+    assertThat(typeParameters.separators()).hasSize(1);
+    assertThatChildrenIteratorHasSize(typeParameters, 5);
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("class");
@@ -2605,9 +2606,9 @@ public class JavaTreeModelTest {
     TypeParameterListTreeImpl tree = (TypeParameterListTreeImpl) firstType("class Foo<T, U extends Object & Number> {}").typeParameters();
     assertThat(tree.openBracketToken().text()).isEqualTo("<");
     assertThat(tree.closeBracketToken().text()).isEqualTo(">");
-    // TODO SONARJAVA-547 comma is missing
-    assertThatChildrenIteratorHasSize(tree, 4);
     assertThat(tree).hasSize(2);
+    assertThat(tree.separators()).hasSize(1);
+    assertThatChildrenIteratorHasSize(tree, 5);
 
     TypeParameterTree param = tree.get(0);
     assertThat(param.identifier().name()).isEqualTo("T");
