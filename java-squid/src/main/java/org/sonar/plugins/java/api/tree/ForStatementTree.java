@@ -22,7 +22,6 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * 'for' statement.
@@ -42,7 +41,7 @@ public interface ForStatementTree extends StatementTree {
 
   SyntaxToken openParenToken();
 
-  List<StatementTree> initializer();
+  ListTree<StatementTree> initializer();
 
   SyntaxToken firstSemicolonToken();
 
@@ -51,7 +50,7 @@ public interface ForStatementTree extends StatementTree {
 
   SyntaxToken secondSemicolonToken();
 
-  List<StatementTree> update();
+  ListTree<StatementTree> update();
 
   SyntaxToken closeParenToken();
 

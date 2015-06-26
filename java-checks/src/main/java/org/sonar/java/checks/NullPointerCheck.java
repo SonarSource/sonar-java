@@ -168,7 +168,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     scan(tree.initializer());
     ConditionalState conditionalState = visitCondition(tree.condition());
     Set<VariableSymbol> assignedVariables = new AssignmentVisitor().findAssignedVariables(tree.statement());
-    assignedVariables.addAll(new AssignmentVisitor().findAssignedVariables(tree.update()));
+    assignedVariables.addAll(new AssignmentVisitor().findAssignedVariables((List<? extends Tree>) tree.update()));
     currentState = conditionalState.trueState;
     currentState.invalidateVariables(assignedVariables);
     scan(tree.statement());

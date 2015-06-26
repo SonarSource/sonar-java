@@ -25,6 +25,7 @@ import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -33,23 +34,22 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   private final InternalSyntaxToken forKeyword;
   private final InternalSyntaxToken openParenToken;
-  private final List<StatementTree> initializer;
+  private final ListTree<StatementTree> initializer;
   private final InternalSyntaxToken firstSemicolonToken;
   @Nullable
   private final ExpressionTree condition;
   private final InternalSyntaxToken secondSemicolonToken;
-  private final List<StatementTree> update;
+  private final ListTree<StatementTree> update;
   private final InternalSyntaxToken closeParenToken;
   private final StatementTree statement;
 
-  public ForStatementTreeImpl(InternalSyntaxToken forKeyword, InternalSyntaxToken openParenToken, List<StatementTree> initializer,
-    InternalSyntaxToken firstSemicolonToken, ExpressionTree condition, InternalSyntaxToken secondSemicolonToken, List<StatementTree> update, InternalSyntaxToken closeParenToken,
-    StatementTree statement) {
+  public ForStatementTreeImpl(InternalSyntaxToken forKeyword, InternalSyntaxToken openParenToken, ListTree<StatementTree> initializer,
+    InternalSyntaxToken firstSemicolonToken, ExpressionTree condition, InternalSyntaxToken secondSemicolonToken, ListTree<StatementTree> update,
+    InternalSyntaxToken closeParenToken, StatementTree statement) {
     super(Kind.FOR_STATEMENT);
     this.forKeyword = forKeyword;
     this.openParenToken = openParenToken;
@@ -78,7 +78,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
-  public List<StatementTree> initializer() {
+  public ListTree<StatementTree> initializer() {
     return initializer;
   }
 
@@ -99,7 +99,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
-  public List<StatementTree> update() {
+  public ListTree<StatementTree> update() {
     return update;
   }
 
@@ -122,13 +122,13 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   public Iterator<Tree> childrenIterator() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     iteratorBuilder.add(forKeyword, openParenToken);
-    iteratorBuilder.addAll(initializer);
+    iteratorBuilder.add(initializer);
     iteratorBuilder.add(firstSemicolonToken);
     if (condition != null) {
       iteratorBuilder.add(condition);
     }
     iteratorBuilder.add(secondSemicolonToken);
-    iteratorBuilder.addAll(update);
+    iteratorBuilder.add(update);
     iteratorBuilder.add(closeParenToken, statement);
 
     return iteratorBuilder.build().iterator();

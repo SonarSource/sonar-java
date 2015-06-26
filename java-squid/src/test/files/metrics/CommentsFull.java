@@ -171,7 +171,7 @@ abstract class Rest<T> {
     assert test : /* comment */ m09();
     
     /* comment */ ;
-    
+    for (i/* comment */, j;;) {}
     /* comment */ for (;;) {
       /* comment */ break;
     }

@@ -20,13 +20,12 @@
 package org.sonar.java.ast.parser;
 
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import java.util.List;
 
 public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
-
-  public StatementExpressionListTreeImpl(List<? extends StatementTree> statements) {
-    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statements);
+  public StatementExpressionListTreeImpl(List<? extends StatementTree> statementTrees, List<SyntaxToken> separators) {
+    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statementTrees, separators);
   }
-
 }

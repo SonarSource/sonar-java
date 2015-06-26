@@ -862,19 +862,19 @@ public class TreeFactory {
     Optional<StatementExpressionListTreeImpl> forUpdate, InternalSyntaxToken closeParenToken,
     StatementTree statement) {
 
-    StatementExpressionListTreeImpl forInit2 = forInit.or(new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of()));
-    StatementExpressionListTreeImpl forUpdate2 = forUpdate.or(new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of()));
+    StatementExpressionListTreeImpl forInitStatement = forInit.or(new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of(), ImmutableList.<SyntaxToken>of()));
+    StatementExpressionListTreeImpl forUpdateStatement = forUpdate.or(new StatementExpressionListTreeImpl(ImmutableList.<StatementTree>of(), ImmutableList.<SyntaxToken>of()));
 
     InternalSyntaxToken forKeyword = (InternalSyntaxToken) forTokenKeyword;
 
     return new ForStatementTreeImpl(
       forKeyword,
       openParenToken,
-      forInit2,
+      forInitStatement,
       forInitSemicolonToken,
       expression.orNull(),
       expressionSemicolonToken,
-      forUpdate2,
+      forUpdateStatement,
       closeParenToken,
       statement);
   }
@@ -883,24 +883,20 @@ public class TreeFactory {
     for (VariableTreeImpl variable : variables) {
       variable.completeModifiersAndType(modifiers, type);
     }
-
-    return new StatementExpressionListTreeImpl(variables);
+    return new StatementExpressionListTreeImpl(variables, ImmutableList.<SyntaxToken>of());
   }
 
   public StatementExpressionListTreeImpl newStatementExpressions(ExpressionTree expression, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ImmutableList.Builder<StatementTree> statements = ImmutableList.builder();
-
-    ExpressionStatementTreeImpl statement = new ExpressionStatementTreeImpl(expression, null);
-    statements.add(statement);
-
+    statements.add(new ExpressionStatementTreeImpl(expression, null));
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
-        statement = new ExpressionStatementTreeImpl(rest.second(), null);
-        statements.add(statement);
+        separators.add(rest.first());
+        statements.add(new ExpressionStatementTreeImpl(rest.second(), null));
       }
     }
-
-    return new StatementExpressionListTreeImpl(statements.build());
+    return new StatementExpressionListTreeImpl(statements.build(), separators.build());
   }
 
   public ForEachStatementImpl newForeachStatement(
