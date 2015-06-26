@@ -220,19 +220,21 @@ public class TreeFactory {
   public TypeArgumentListTreeImpl newTypeArgumentList(InternalSyntaxToken openBracketToken,
     Tree typeArgument, Optional<List<Tuple<InternalSyntaxToken, Tree>>> rests, InternalSyntaxToken closeBracketToken) {
     ImmutableList.Builder<Tree> typeArguments = ImmutableList.builder();
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
+
     typeArguments.add(typeArgument);
 
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, Tree> rest : rests.get()) {
-        // FIXME SONARJAVA-547 comma (rest.first()) should be part of the ArgumentList as token
+        separators.add(rest.first());
         typeArguments.add(rest.second());
       }
     }
-    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), closeBracketToken);
+    return new TypeArgumentListTreeImpl(openBracketToken, typeArguments.build(), separators.build(), closeBracketToken);
   }
 
   public TypeArgumentListTreeImpl newDiamondTypeArgument(InternalSyntaxToken openBracketToken, InternalSyntaxToken closeBracketToken) {
-    return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), closeBracketToken);
+    return new TypeArgumentListTreeImpl(openBracketToken, ImmutableList.<Tree>of(), ImmutableList.<SyntaxToken>of(), closeBracketToken);
   }
 
   public Tree completeTypeArgument(Optional<List<AnnotationTreeImpl>> annotations, Tree partial) {

@@ -80,7 +80,7 @@ abstract class Rest<T> {
   List/* comment */<Integer> a04;
   List</* comment */Integer> a05;
   List<Integer /* comment */> a06;
-  Map<Integer /* comment FIXME separators of type parameters are ignored */, Integer> a07;
+  Map<Integer /* comment */, Integer> a07;
   List</* comment */ ?> a8;
   List</* comment */ ? extends I> a9;
   List<? /* comment */ extends I> a10;

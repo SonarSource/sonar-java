@@ -322,7 +322,8 @@ public class JavaTreeModelTest {
     assertThatChildrenIteratorHasSize(parameterizedTypeTree, 2);
     TypeArguments typeArguments = parameterizedTypeTree.typeArguments();
     assertThat(typeArguments).hasSize(4);
-    assertThatChildrenIteratorHasSize(typeArguments, 6);
+    assertThat(typeArguments.separators()).hasSize(3);
+    assertThatChildrenIteratorHasSize(typeArguments, 9);
 
     WildcardTree wildcard = (WildcardTree) typeArguments.get(0);
     assertThat(wildcard.is(Tree.Kind.EXTENDS_WILDCARD)).isTrue();
@@ -2582,6 +2583,7 @@ public class JavaTreeModelTest {
     TypeArguments typeArguments = tree.typeArguments();
     assertThat(typeArguments).isNotNull();
     assertThat(typeArguments).hasSize(1);
+    assertThat(typeArguments.separators()).isEmpty();
     assertThat(typeArguments.openBracketToken()).isNotNull();
     assertThat(typeArguments.closeBracketToken()).isNotNull();
     assertThatChildrenIteratorHasSize(typeArguments, 3);
@@ -2592,9 +2594,10 @@ public class JavaTreeModelTest {
     typeArguments = tree.typeArguments();
     assertThat(typeArguments).isNotNull();
     assertThat(typeArguments).hasSize(2);
+    assertThat(typeArguments.separators()).hasSize(1);
     assertThat(typeArguments.openBracketToken()).isNotNull();
     assertThat(typeArguments.closeBracketToken()).isNotNull();
-    assertThatChildrenIteratorHasSize(typeArguments, 4);
+    assertThatChildrenIteratorHasSize(typeArguments, 5);
   }
 
   @Test

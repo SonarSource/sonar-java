@@ -58,7 +58,7 @@ public class TreeTokenCompletenessTest {
     // printListString(basedOnSyntaxTree);
     // printDifferences(differences);
 
-    assertThat(differences).hasSize(10);
+    assertThat(differences).hasSize(7);
   }
 
   private static Map<Integer, String> getDifferences(List<String> basedOnSyntaxTree, List<String> basedOnFileLine) {

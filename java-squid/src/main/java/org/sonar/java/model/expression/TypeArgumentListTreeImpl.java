@@ -36,8 +36,8 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken openBracketToken;
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_ARGUMENTS, expressions);
+  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
+    super(JavaLexer.TYPE_ARGUMENTS, expressions, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
