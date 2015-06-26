@@ -19,32 +19,43 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.google.common.collect.AbstractIterator;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
 public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   private final List<T> list;
+  private final List<SyntaxToken> separators;
 
   public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list) {
     super(grammarRuleKey);
-
     this.list = list;
+    this.separators = Lists.newArrayList();
+  }
+  public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list, List<SyntaxToken> separators) {
+    super(grammarRuleKey);
+    this.list = list;
+    this.separators = separators;
   }
 
   @Override
-  public boolean isLeaf() {
-    // TODO
-    return true;
+  public List<SyntaxToken> separators() {
+    return separators;
   }
+
 
   @Override
   public void accept(TreeVisitor visitor) {
@@ -61,10 +72,35 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    // TODO
-    throw new UnsupportedOperationException();
+    //FIXME SONARJAVA-547 Separators
+    Iterator<Tree> iterator = (Iterator<Tree>) ((Iterable<? extends Tree>) list).iterator();
+    if(separators.isEmpty()) {
+      return iterator;
+    }
+    return new InterleaveIterator<>(ImmutableList.of(iterator, separators.iterator()));
   }
+  private static class InterleaveIterator<E> extends AbstractIterator<E>{
 
+    private final LinkedList<Iterator<? extends E>> iterables;
+
+    public InterleaveIterator(List<Iterator<? extends E>> iterables) {
+      super();
+      this.iterables = new LinkedList<>(iterables);
+    }
+
+    @Override
+    protected E computeNext() {
+      while(!iterables.isEmpty()) {
+        Iterator<? extends E> topIter = iterables.poll();
+        if(topIter.hasNext()) {
+          E result = topIter.next();
+          iterables.offer(topIter);
+          return result;
+        }
+      }
+      return endOfData();
+    }
+  }
   @Override
   public int size() {
     return list.size();

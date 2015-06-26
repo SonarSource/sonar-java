@@ -20,6 +20,7 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -71,22 +72,10 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iterator = ImmutableList.<Tree>builder();
-    if (openBracketToken != null) {
-      iterator.add(openBracketToken);
-    }
-    // FIXME SONARJAVA-547 separators between parameters are currently ignored
-    iterator.addAll(this);
-    if (closeBracketToken != null) {
-      iterator.add(closeBracketToken);
-    }
-
-    return iterator.build().iterator();
-  }
-
-  @Override
-  public boolean isLeaf() {
-    return false;
+    return Iterators.concat(
+        Iterators.singletonIterator(openBracketToken),
+        super.childrenIterator(),
+        Iterators.singletonIterator(closeBracketToken));
   }
 
   @Override
