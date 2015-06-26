@@ -19,9 +19,15 @@
  */
 package org.sonar.java.checks;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.check.RuleProperty;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -36,10 +42,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-
 @Rule(
   key = "S109",
   name = "Magic numbers should not be used",
@@ -49,11 +51,23 @@ import java.text.ParseException;
 @SqaleConstantRemediation("5min")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String DEFAULT_AUTHORIZED_NUMBERS = "-1,0,1";
+
+  @RuleProperty(
+    key = "Authorized numbers",
+    description = "Comma separated list of authorized numbers. Example: -1,0,1,2",
+    defaultValue = "" + DEFAULT_AUTHORIZED_NUMBERS)
+  public String authorizedNumbers = DEFAULT_AUTHORIZED_NUMBERS;
+  private List<BigDecimal> authorizedNumbersList = null;
   private JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
+    this.authorizedNumbersList = new ArrayList<>();
+    for (String s : authorizedNumbers.split(",")) {
+      authorizedNumbersList.add(new BigDecimal(s));
+    }
     scan(context.getTree());
   }
 
@@ -83,10 +97,13 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
     return tree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.INT_LITERAL);
   }
 
-  private static boolean isExcluded(BigDecimal bigDecimal) {
-    return bigDecimal.compareTo(BigDecimal.ONE) == 0
-      || bigDecimal.compareTo(BigDecimal.ZERO) == 0
-      || bigDecimal.compareTo(BigDecimal.ONE.negate()) == 0;
+  private boolean isExcluded(BigDecimal bigDecimal) {
+    for (BigDecimal bd : this.authorizedNumbersList) {
+      if (bigDecimal.compareTo(bd) == 0) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

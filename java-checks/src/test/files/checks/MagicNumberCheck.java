@@ -5,7 +5,9 @@ class A {
   int b = 1;
   int c = -1;
 
-  int d = 42; // Noncompliant {{Assign this magic number 42 to a well-named constant, and use the constant instead.}}
+  int d = 2; // Noncompliant {{Assign this magic number 2 to a well-named constant, and use the constant instead.}}
+  int e = 42; // Noncompliant {{Assign this magic number 42 to a well-named constant, and use the constant instead.}}
+
   long aLong = 12L; // Noncompliant {{Assign this magic number 12L to a well-named constant, and use the constant instead.}}
   double aDouble = 12.3d; // Noncompliant {{Assign this magic number 12.3d to a well-named constant, and use the constant instead.}}
   float aFloat = 12.3F; // Noncompliant {{Assign this magic number 12.3F to a well-named constant, and use the constant instead.}}
