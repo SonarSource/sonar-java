@@ -25,10 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
 
 /**
- * This batch extension should be extended to provide the classes to be used to
- * instantiate checks.
- * The register method has to be implemented and the registrarContext should
- * register the repository keys.
+ * This batch extension should be extended to provide the classes to be used to instantiate checks.
+ * The register method has to be implemented and the registrarContext should register the repository keys.
  *
  * <pre>
  *   {@code
@@ -42,12 +40,8 @@ import org.sonar.api.BatchExtension;
 public interface CheckRegistrar extends BatchExtension {
 
   /**
-   * This method is called during an analysis to get the classes to use to
-   * instantiate checks.
-   *
-   * @param registrarContext
-   *            the context that will be used by the java-plugin to retrieve
-   *            the classes for checks.
+   * This method is called during an analysis to get the classes to use to instantiate checks.
+   * @param registrarContext the context that will be used by the java-plugin to retrieve the classes for checks.
    */
   void register(RegistrarContext registrarContext);
 
@@ -58,26 +52,21 @@ public interface CheckRegistrar extends BatchExtension {
   Type type();
 
   /**
-   * The Type enum is to be used to indicate if checks it helds are to be
-   * applied on source or test files.
+   * The Type enum is to be used to indicate if checks it helds are to be applied on source or test files.
    */
   public enum Type {
     /**
-     * Indicates that checks held by the CheckRegistrar need to be applied
-     * to source files.
+     * Indicates that checks held by the CheckRegistrar need to be applied to source files.
      */
     SOURCE_CHECKS,
     /**
-     * Indicates that checks held by the CheckRegistrar need to be applied
-     * to test files.
+     * Indicates that checks held by the CheckRegistrar need to be applied to test files.
      */
     TEST_CHECKS;
   }
 
   class RegistrarContext {
-
     private String repositoryKey;
-
     private Iterable<Class<? extends JavaCheck>> checkClasses;
 
     public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {

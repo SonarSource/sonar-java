@@ -41,20 +41,13 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 public class SonarComponents implements BatchExtension {
 
-  private FileLinesContextFactory fileLinesContextFactory;
-
-  private ResourcePerspectives resourcePerspectives;
-
-  private JavaTestClasspath javaTestClasspath;
-
-  private CheckFactory checkFactory;
-
-  private JavaClasspath javaClasspath;
-
-  private Project project;
-
-  private List<Checks<JavaCheck>> checks;
-
+  private final FileLinesContextFactory fileLinesContextFactory;
+  private final ResourcePerspectives resourcePerspectives;
+  private final JavaTestClasspath javaTestClasspath;
+  private final CheckFactory checkFactory;
+  private final JavaClasspath javaClasspath;
+  private final Project project;
+  private final List<Checks<JavaCheck>> checks;
   private Checks<JavaCheck> testChecks;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
@@ -63,8 +56,7 @@ public class SonarComponents implements BatchExtension {
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-    JavaClasspath javaClasspath,
-    JavaTestClasspath javaTestClasspath, CheckFactory checkFactory, @Nullable CheckRegistrar[] checkRegistrars) {
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory, @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
     this.project = project;
