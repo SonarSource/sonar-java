@@ -45,23 +45,35 @@ public interface CheckRegistrar extends BatchExtension {
   void register(RegistrarContext registrarContext);
 
   class RegistrarContext {
+    
     private String repositoryKey;
     private Iterable<Class<? extends JavaCheck>> checkClasses;
+    private Type type;
 
-    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses){
+    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Type type){
       Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.checkClasses = checkClasses;
+      this.type = type;
     }
 
     public String repositoryKey() {
       return repositoryKey;
     }
 
+    public Type type() {
+      return type;
+    }
+
     public Iterable<Class<? extends JavaCheck>> checkClasses() {
       return checkClasses;
     }
 
+    public enum Type {
+      SOURCE_CHECKS,
+      TEST_CHECKS;
+    }
+    
   }
 
 }
