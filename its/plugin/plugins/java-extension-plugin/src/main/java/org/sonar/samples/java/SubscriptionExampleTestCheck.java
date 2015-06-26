@@ -16,7 +16,7 @@ public class SubscriptionExampleTestCheck extends IssuableSubscriptionVisitor {
   }
 
   @Override
-  public void visitNode(final Tree tree) {
+  public void visitNode(Tree tree) {
     addIssue(tree, "Issue on test methods");
   }
 }

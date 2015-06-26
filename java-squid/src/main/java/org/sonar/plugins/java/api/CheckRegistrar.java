@@ -19,10 +19,10 @@
  */
 package org.sonar.plugins.java.api;
 
-import org.apache.commons.lang.StringUtils;
-import org.sonar.api.BatchExtension;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang.StringUtils;
+import org.sonar.api.BatchExtension;
 
 /**
  * This batch extension should be extended to provide the classes to be used to
@@ -58,17 +58,17 @@ public interface CheckRegistrar extends BatchExtension {
   Type type();
 
   /**
-   * The Type enum is to be used to indicate if checks it helds are to be 
+   * The Type enum is to be used to indicate if checks it helds are to be
    * applied on source or test files.
    */
   public enum Type {
     /**
-     * Indicates that checks held by the CheckRegistrar need to be applied 
+     * Indicates that checks held by the CheckRegistrar need to be applied
      * to source files.
      */
     SOURCE_CHECKS,
     /**
-     * Indicates that checks held by the CheckRegistrar need to be applied 
+     * Indicates that checks held by the CheckRegistrar need to be applied
      * to test files.
      */
     TEST_CHECKS;
@@ -80,7 +80,7 @@ public interface CheckRegistrar extends BatchExtension {
 
     private Iterable<Class<? extends JavaCheck>> checkClasses;
 
-    public void registerClassesForRepository(final String repositoryKey, final Iterable<Class<? extends JavaCheck>> checkClasses) {
+    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
       Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.checkClasses = checkClasses;

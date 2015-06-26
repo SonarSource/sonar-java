@@ -19,10 +19,11 @@
  */
 package org.sonar.plugins.java.api;
 
-import static org.fest.assertions.Fail.fail;
+import com.google.common.collect.Lists;
 import org.fest.assertions.Assertions;
 import org.junit.Test;
-import com.google.common.collect.Lists;
+
+import static org.fest.assertions.Fail.fail;
 
 public class CheckRegistrarTest {
 
@@ -31,10 +32,9 @@ public class CheckRegistrarTest {
     try {
       new CheckRegistrar.RegistrarContext().registerClassesForRepository("  ", Lists.<Class<? extends JavaCheck>>newArrayList());
       fail();
-    } catch (final IllegalArgumentException e) {
-      Assertions.assertThat(e)
-        .hasMessage("Please specify a valid repository key to register your custom rules");
-    } catch (final Exception e) {
+    } catch (IllegalArgumentException e) {
+      Assertions.assertThat(e).hasMessage("Please specify a valid repository key to register your custom rules");
+    } catch (Exception e) {
       fail();
     }
   }
