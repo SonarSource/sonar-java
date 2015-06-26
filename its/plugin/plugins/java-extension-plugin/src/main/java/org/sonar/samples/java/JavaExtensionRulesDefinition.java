@@ -10,18 +10,25 @@ import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 
 public class JavaExtensionRulesDefinition implements RulesDefinition {
 
-  public static final String REPOSITORY_KEY = "java-extension";
+    public static final String REPOSITORY_KEY = "java-extension";
 
-  @Override
-  public void define(Context context) {
-    NewRepository repo = context.createRepository(REPOSITORY_KEY, "java");
-    repo.setName(REPOSITORY_KEY);
+    public static final String TEST_REPOSITORY_KEY = "java-extension-test";
 
-    // We could use a XML or JSON file to load all rule metadata, but
-    // we prefer use annotations in order to have all information in a single place
-    RulesDefinitionAnnotationLoader annotationLoader = new RulesDefinitionAnnotationLoader();
-    annotationLoader.load(repo, JavaExtensionsCheckRegistrar.checkClasses());
-    repo.done();
-  }
+    @Override
+    public void define(final Context context) {
+        final NewRepository repo = context.createRepository(REPOSITORY_KEY, "java");
+        repo.setName(REPOSITORY_KEY);
+
+        final NewRepository testRepo = context.createRepository(TEST_REPOSITORY_KEY, "java");
+        testRepo.setName(TEST_REPOSITORY_KEY);
+
+        // We could use a XML or JSON file to load all rule metadata, but
+        // we prefer use annotations in order to have all information in a
+        // single place
+        final RulesDefinitionAnnotationLoader annotationLoader = new RulesDefinitionAnnotationLoader();
+        annotationLoader.load(repo, JavaExtensionsCheckRegistrar.checkClasses());
+        annotationLoader.load(testRepo, JavaExtensionsTestCheckRegistrar.checkClasses());
+        repo.done();
+        testRepo.done();
+    }
 }
-

@@ -4,15 +4,14 @@ import java.util.Arrays;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 
-public class JavaExtensionsCheckRegistrar implements CheckRegistrar {
+public class JavaExtensionsTestCheckRegistrar implements CheckRegistrar {
 
     /**
      * Lists all the checks provided by the plugin
      */
     public static Class<? extends JavaCheck>[] checkClasses() {
         return new Class[] {
-            ExampleCheck.class,
-            SubscriptionExampleCheck.class
+            SubscriptionExampleTestCheck.class
         };
     }
 
@@ -23,7 +22,7 @@ public class JavaExtensionsCheckRegistrar implements CheckRegistrar {
 
     @Override
     public Type type() {
-        return Type.SOURCE_CHECKS;
+        return Type.TEST_CHECKS;
     }
 
 }
