@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.model.VisitorsBridge;
 

@@ -40,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
   tags = {"bug"},
   priority = Priority.BLOCKER)
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.FAULT_TOLERANCE)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
@@ -69,7 +69,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     super.visitBinaryExpression(tree);
   }
 
-  private IdentifierTree getIdentifier(Tree nonNullOperand) {
+  private static IdentifierTree getIdentifier(Tree nonNullOperand) {
     if (nonNullOperand.is(Tree.Kind.IDENTIFIER)) {
       return (IdentifierTree) nonNullOperand;
     } else if (nonNullOperand.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -78,11 +78,11 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     return null;
   }
 
-  private boolean isAndWithNullComparison(BinaryExpressionTree tree) {
+  private static boolean isAndWithNullComparison(BinaryExpressionTree tree) {
     return tree.is(Tree.Kind.CONDITIONAL_AND) && isEqualNullComparison(tree.leftOperand());
   }
 
-  private boolean isOrWithNullExclusion(BinaryExpressionTree tree) {
+  private static boolean isOrWithNullExclusion(BinaryExpressionTree tree) {
     return tree.is(Tree.Kind.CONDITIONAL_OR) && isNotEqualNullComparison(tree.leftOperand());
   }
 
@@ -141,15 +141,15 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     }
   }
 
-  private boolean isEqualNullComparison(Tree tree) {
+  private static boolean isEqualNullComparison(Tree tree) {
     return isNullComparison(tree, Tree.Kind.EQUAL_TO);
   }
 
-  private boolean isNotEqualNullComparison(Tree tree) {
+  private static boolean isNotEqualNullComparison(Tree tree) {
     return isNullComparison(tree, Tree.Kind.NOT_EQUAL_TO);
   }
 
-  private boolean isNullComparison(Tree tree, Tree.Kind comparatorKind) {
+  private static boolean isNullComparison(Tree tree, Tree.Kind comparatorKind) {
     boolean result = false;
     if (tree.is(comparatorKind)) {
       BinaryExpressionTree binary = (BinaryExpressionTree) tree;
@@ -160,7 +160,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     return result;
   }
 
-  private Tree getNonNullOperand(Tree tree) {
+  private static Tree getNonNullOperand(Tree tree) {
     if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       return getNonNullOperand(((ParenthesizedTree) tree).expression());
     }

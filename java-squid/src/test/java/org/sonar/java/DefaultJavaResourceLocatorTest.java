@@ -51,7 +51,7 @@ public class DefaultJavaResourceLocatorTest {
     SensorContext sensorContext = mock(SensorContext.class);
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(project, javaClasspath, new SuppressWarningsFilter());
     jrl.setSensorContext(sensorContext);
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(jrl));
+    org.sonar.java.ast.JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(jrl));
     javaResourceLocator = jrl;
   }
 

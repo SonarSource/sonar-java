@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -31,6 +30,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -38,36 +38,29 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   private InternalSyntaxToken openParenToken;
   private final TypeTree type;
+  private final List<Tree> bounds;
   private final InternalSyntaxToken closeParenToken;
   private final ExpressionTree expression;
 
   public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
+    this.bounds = Collections.emptyList();
     this.closeParenToken = closeParenToken;
     this.expression = Preconditions.checkNotNull(expression);
-
-    addChild((AstNode) type);
-    addChild(closeParenToken);
-    addChild((AstNode) expression);
   }
 
-  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression, List<AstNode> children) {
+  public TypeCastExpressionTreeImpl(TypeTree type, List<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
+    this.bounds = bounds;
     this.closeParenToken = closeParenToken;
     this.expression = Preconditions.checkNotNull(expression);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public TypeCastExpressionTreeImpl complete(InternalSyntaxToken openParenToken) {
     Preconditions.checkState(this.openParenToken == null && closeParenToken != null);
     this.openParenToken = openParenToken;
-
-    prependChildren(openParenToken);
 
     return this;
   }
@@ -104,9 +97,11 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      type,
-      expression
+    Iterator<Tree> boundIterators = bounds.isEmpty() ? Iterators.<Tree>emptyIterator() : bounds.iterator();
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(openParenToken, type),
+      boundIterators,
+      Iterators.<Tree>forArray(closeParenToken, expression)
       );
   }
 

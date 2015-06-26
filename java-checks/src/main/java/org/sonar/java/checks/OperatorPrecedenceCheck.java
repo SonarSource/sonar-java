@@ -141,7 +141,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
     scan(tree.expression());
     stack.push(null);
-    scan(tree.index());
+    scan(tree.dimension());
     stack.pop();
   }
 

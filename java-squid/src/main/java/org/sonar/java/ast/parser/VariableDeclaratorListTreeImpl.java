@@ -19,15 +19,14 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import java.util.List;
 
 public class VariableDeclaratorListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
 
-  public VariableDeclaratorListTreeImpl(List<VariableTreeImpl> variables, List<AstNode> children) {
-    super(JavaLexer.VARIABLE_DECLARATORS, variables, children);
+  public VariableDeclaratorListTreeImpl(List<VariableTreeImpl> variables) {
+    super(JavaLexer.VARIABLE_DECLARATORS, variables);
   }
 
 }

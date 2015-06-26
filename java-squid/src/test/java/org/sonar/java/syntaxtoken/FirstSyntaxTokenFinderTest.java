@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -50,11 +52,15 @@ public class FirstSyntaxTokenFinderTest {
 
     compilationUnit = getCompilationUnit("package myPackage; import A; class Test {}");
     firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken.text()).isEqualTo("myPackage");
+    assertThat(firstToken.text()).isEqualTo("package");
+
+    compilationUnit = getCompilationUnit("@Foo package myPackage; import A; class Test {}");
+    firstToken = getFirstSyntaxToken(compilationUnit);
+    assertThat(firstToken.text()).isEqualTo("@");
 
     compilationUnit = getCompilationUnit("");
     firstToken = getFirstSyntaxToken(compilationUnit);
-    assertThat(firstToken).isNull();
+    assertThat(firstToken).isNotNull();
   }
 
   @Test
@@ -169,19 +175,15 @@ public class FirstSyntaxTokenFinderTest {
         + "  }"
         + "}";
     MethodTree m = getFirstMethod(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments().get(0));
-    assertThat(firstToken.text()).isEqualTo("?");
+    assertFirstTokenValue(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments().get(0), "?");
   }
 
   @Test
   public void type_parameters() {
     String p = "class Foo<T> {}";
     ClassTree c = getFirstClass(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(c.typeParameters());
-    assertThat(firstToken.text()).isEqualTo("<");
-
-    firstToken = getFirstSyntaxToken(c.typeParameters().get(0));
-    assertThat(firstToken.text()).isEqualTo("T");
+    assertFirstTokenValue(c.typeParameters(), "<");
+    assertFirstTokenValue(c.typeParameters().get(0), "T");
   }
 
   @Test
@@ -190,9 +192,7 @@ public class FirstSyntaxTokenFinderTest {
       + "  void foo(Collection<Foo> c) {"
       + "  }"
       + "}";
-    MethodTree m = getFirstMethod(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments());
-    assertThat(firstToken.text()).isEqualTo("<");
+    assertFirstTokenValue(((ParameterizedTypeTree) getFirstMethod(getCompilationUnit(p)).parameters().get(0).type()).typeArguments(), "<");
   }
 
   @Test
@@ -202,9 +202,7 @@ public class FirstSyntaxTokenFinderTest {
         + "  static {"
         + "  }"
         + "}";
-    ClassTree classTree = getFirstClass(getCompilationUnit(p));
-    SyntaxToken firstToken = getFirstSyntaxToken(classTree.members().get(0));
-    assertThat(firstToken.text()).isEqualTo("static");
+    assertFirstTokenValue(getFirstClass(getCompilationUnit(p)).members().get(0), "static");
   }
 
   @Test
@@ -218,11 +216,8 @@ public class FirstSyntaxTokenFinderTest {
         + "}");
 
     TryStatementTree tryStatementTree = (TryStatementTree) getFirstMethod(compilationUnit).block().body().get(0);
-    SyntaxToken firstToken = getFirstSyntaxToken(tryStatementTree);
-    assertThat(firstToken.text()).isEqualTo("try");
-
-    firstToken = getFirstSyntaxToken(tryStatementTree.catches().get(0));
-    assertThat(firstToken.text()).isEqualTo("catch");
+    assertFirstTokenValue(tryStatementTree, "try");
+    assertFirstTokenValue(tryStatementTree.catches().get(0), "catch");
   }
 
   @Test
@@ -235,9 +230,7 @@ public class FirstSyntaxTokenFinderTest {
         + "    }"
         + "  }"
         + "}";
-    TryStatementTree t = (TryStatementTree) getFirstStatement(p);
-    SyntaxToken firstToken = getFirstSyntaxToken(t.catches().get(0).parameter());
-    assertThat(firstToken.text()).isEqualTo("IOException");
+    assertFirstTokenValue(((TryStatementTree) getFirstStatement(p)).catches().get(0).parameter(), "IOException");
   }
 
   @Test
@@ -295,10 +288,7 @@ public class FirstSyntaxTokenFinderTest {
         + "  }"
         + "}";
     assertFirstStatementFirstTokenValue(p, "switch");
-
-    SwitchStatementTree switchStatementTree = (SwitchStatementTree) getFirstStatement(p);
-    SyntaxToken firstToken = getFirstSyntaxToken(switchStatementTree.cases().get(0));
-    assertThat(firstToken.text()).isEqualTo("case");
+    assertFirstTokenValue(((SwitchStatementTree) getFirstStatement(p)).cases().get(0), "case");
   }
 
   @Test
@@ -543,6 +533,33 @@ public class FirstSyntaxTokenFinderTest {
   }
 
   @Test
+  public void annotations() {
+    String p =
+      "class Foo {"
+        + "  void foo(int f) {"
+        + "    (@Bar long) f;"
+        + "  }"
+        + "}";
+    assertFirstTokenValue(((TypeCastTree) ((ExpressionStatementTree) getFirstStatement(p)).expression()).type(), "@");
+    
+    p = "class Foo {"
+        + "  void foo(Collection<@Bar ?> c) {"
+        + "  }"
+        + "}";
+    MethodTree m = getFirstMethod(getCompilationUnit(p));
+    assertFirstTokenValue(((ParameterizedTypeTree) m.parameters().get(0).type()).typeArguments().get(0), "@");
+    
+    p = "class Foo extends @Foo List<Object> { }";
+    assertFirstTokenValue(getFirstClass(getCompilationUnit(p)).superClass(), "@");
+
+    p = "class Foo extends @Foo Object { }";
+    assertFirstTokenValue(getFirstClass(getCompilationUnit(p)).superClass(), "@");
+
+    p = "class Foo extends @Foo java.lang.List { }";
+    assertFirstTokenValue(getFirstClass(getCompilationUnit(p)).superClass(), "@");
+  }
+
+  @Test
   public void instance_of() {
     String p =
       "class Foo {"
@@ -587,42 +604,42 @@ public class FirstSyntaxTokenFinderTest {
   public void syntax_token() {
     String p = "class Foo {}";
     ClassTree firstClass = getFirstClass(getCompilationUnit(p));
-    assertFirstStatementFirstTokenValue(firstClass.declarationKeyword(), "class");
+    assertFirstTokenValue(firstClass.declarationKeyword(), "class");
   }
 
-  private void assertFirstStatementFirstTokenValue(Tree tree, String expected) {
+  private static void assertFirstTokenValue(Tree tree, String expected) {
     assertThat(getFirstSyntaxToken(tree).text()).isEqualTo(expected);
   }
 
-  private void assertFirstStatementFirstTokenValue(String p, String expected) {
+  private static void assertFirstStatementFirstTokenValue(String p, String expected) {
     assertThat(getFirstSyntaxToken(getFirstStatement(p)).text()).isEqualTo(expected);
   }
 
-  private SyntaxToken getFirstSyntaxToken(Tree tree) {
+  private static SyntaxToken getFirstSyntaxToken(Tree tree) {
     return FirstSyntaxTokenFinder.firstSyntaxToken(tree);
   }
 
-  private CompilationUnitTree getCompilationUnit(String p) {
+  private static CompilationUnitTree getCompilationUnit(String p) {
     return (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(p);
   }
 
-  private MethodTree getFirstMethod(CompilationUnitTree compilationUnitTree) {
+  private static MethodTree getFirstMethod(CompilationUnitTree compilationUnitTree) {
     return getFirstMethod(getFirstClass(compilationUnitTree));
   }
 
-  private ClassTree getFirstClass(CompilationUnitTree compilationUnitTree) {
+  private static ClassTree getFirstClass(CompilationUnitTree compilationUnitTree) {
     return ((ClassTree) compilationUnitTree.types().get(0));
   }
 
-  private MethodTree getFirstMethod(ClassTree classTree) {
+  private static MethodTree getFirstMethod(ClassTree classTree) {
     return (MethodTree) classTree.members().get(0);
   }
 
-  private VariableTree getFirstVariable(ClassTree classTree) {
+  private static VariableTree getFirstVariable(ClassTree classTree) {
     return (VariableTree) classTree.members().get(0);
   }
 
-  private StatementTree getFirstStatement(String p) {
+  private static StatementTree getFirstStatement(String p) {
     CompilationUnitTree compilationUnit = getCompilationUnit(p);
     return getFirstMethod(getFirstClass(compilationUnit)).block().body().get(0);
   }

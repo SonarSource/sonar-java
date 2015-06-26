@@ -24,9 +24,12 @@ import com.google.common.collect.Iterators;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+
+import javax.annotation.Nullable;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -35,30 +38,26 @@ import java.util.List;
 public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree {
 
   private IdentifierTreeImpl identifier;
-  private final List<Tree> bounds;
+  @Nullable
+  private final SyntaxToken extendsToken;
+  private final BoundListTreeImpl bounds;
 
   public TypeParameterTreeImpl(IdentifierTreeImpl identifier) {
     super(Kind.TYPE_PARAMETER);
     this.identifier = identifier;
-    this.bounds = Collections.emptyList();
-
-    addChild(identifier);
+    this.extendsToken = null;
+    this.bounds = null;
   }
 
   public TypeParameterTreeImpl(InternalSyntaxToken extendsToken, BoundListTreeImpl bounds) {
     super(Kind.TYPE_PARAMETER);
-
+    this.extendsToken = extendsToken;
     this.bounds = bounds;
-
-    addChild(extendsToken);
-    addChild(bounds);
   }
 
   public TypeParameterTreeImpl complete(IdentifierTreeImpl identifier) {
     Preconditions.checkState(this.identifier == null);
     this.identifier = identifier;
-
-    prependChildren(identifier);
 
     return this;
   }
@@ -75,7 +74,7 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
 
   @Override
   public List<Tree> bounds() {
-    return bounds;
+    return bounds == null ? Collections.<Tree>emptyList() : bounds;
   }
 
   @Override
@@ -85,9 +84,10 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    Iterator<Tree> boundsIterator = bounds == null ? Iterators.<Tree>emptyIterator() : Iterators.concat(Iterators.singletonIterator(extendsToken), bounds.iterator());
     return Iterators.concat(
-      Iterators.singletonIterator(identifier()),
-      bounds().iterator());
+      Iterators.singletonIterator(identifier),
+      boundsIterator);
   }
 
 }

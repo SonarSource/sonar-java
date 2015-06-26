@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -43,16 +42,11 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
     super(Kind.INSTANCE_OF);
     this.instanceofToken = instanceofToken;
     this.type = Preconditions.checkNotNull(type);
-
-    addChild(instanceofToken);
-    addChild((AstNode) type);
   }
 
   public InstanceOfTreeImpl complete(ExpressionTree expression) {
     Preconditions.checkState(this.expression == null);
     this.expression = expression;
-
-    prependChildren((AstNode) expression);
 
     return this;
   }
@@ -86,6 +80,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       expression,
+      instanceofToken,
       type
       );
   }

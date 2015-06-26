@@ -37,8 +37,8 @@ import java.util.Set;
 
 @Rule(
   key = "RedundantThrowsDeclarationCheck",
-  name = "Throws declarations should not be redundant",
-  tags = {"error-handling"},
+  name = "Throws declarations should not be superfluous",
+  tags = {"error-handling", "security"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

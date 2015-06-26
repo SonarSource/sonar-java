@@ -72,5 +72,17 @@
 
                             switch (myVariable) {
                               case 0: System.out.println(); default: System.out.println(); }
+
+                            switch (myVariable) {
+                              case 0: // foo
+                                System.out.println();
+                                System.out.println();
+                                System.out.println();
+                                System.out.println();
+                                break;
+                              case 1:
+                                System.out.println();
+                            }
+
                           }
                         }

@@ -25,7 +25,10 @@ public final class UnitTestResult {
   public static final String STATUS_FAILURE = "failure";
   public static final String STATUS_SKIPPED = "skipped";
 
-  private String name, status, stackTrace, message;
+  private String name;
+  private String status;
+  private String stackTrace;
+  private String message;
   private long durationMilliseconds = 0L;
 
   public String getName() {

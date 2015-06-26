@@ -20,7 +20,6 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -58,12 +57,6 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
       this.arguments = arguments;
       this.closeParenToken = arguments.closeParenToken();
     }
-
-    addChild(atToken);
-    addChild((AstNode) annotationType);
-    if (arguments != null) {
-      addChild(arguments);
-    }
   }
 
   @Override
@@ -88,9 +81,12 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    boolean hasParenthesis = openParenToken != null;
     return Iterators.concat(
-      Iterators.singletonIterator(annotationType),
-      arguments.iterator());
+      Iterators.forArray(atToken, annotationType),
+      hasParenthesis ? Iterators.singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
+      arguments.iterator(),
+      hasParenthesis ? Iterators.singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator());
   }
 
   @Override

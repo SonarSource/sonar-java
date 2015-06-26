@@ -25,23 +25,20 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.api.Rule;
-import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.impl.matcher.RuleDefinition;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.sonar.java.ast.parser.AstNodeSanitizer;
+import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.matchers.InputBuffer;
 import org.sonar.sslr.internal.vm.FirstOfExpression;
 import org.sonar.sslr.internal.vm.ParsingExpression;
 import org.sonar.sslr.internal.vm.SequenceExpression;
-import org.sonar.sslr.internal.vm.StringExpression;
 import org.sonar.sslr.parser.ParseError;
 import org.sonar.sslr.parser.ParseErrorFormatter;
 import org.sonar.sslr.parser.ParseRunner;
@@ -58,23 +55,18 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-public class ActionParser2 extends Parser {
+public class ActionParser {
 
   private final Charset charset;
 
-  private final AstNodeSanitizer astNodeSanitzer = new AstNodeSanitizer();
-  private final GrammarBuilderInterceptor grammarBuilderInterceptor;
-  private final SyntaxTreeCreator<AstNode> syntaxTreeCreator;
+  private final SyntaxTreeCreator<Tree> syntaxTreeCreator;
   private final GrammarRuleKey rootRule;
-  private final Grammar grammar;
   private final ParseRunner parseRunner;
 
-  public ActionParser2(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
-    super(null);
-
+  public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
     this.charset = charset;
 
-    this.grammarBuilderInterceptor = new GrammarBuilderInterceptor(b);
+    GrammarBuilderInterceptor grammarBuilderInterceptor = new GrammarBuilderInterceptor(b);
     Enhancer grammarEnhancer = new Enhancer();
     grammarEnhancer.setSuperclass(grammarClass);
     grammarEnhancer.setCallback(grammarBuilderInterceptor);
@@ -95,28 +87,19 @@ public class ActionParser2 extends Parser {
 
       try {
         method.invoke(grammar);
-      } catch (InvocationTargetException e) {
-        throw Throwables.propagate(e);
-      } catch (IllegalAccessException e) {
+      } catch (InvocationTargetException | IllegalAccessException e) {
         throw Throwables.propagate(e);
       }
     }
 
-    this.syntaxTreeCreator = new SyntaxTreeCreator<AstNode>(treeFactory, grammarBuilderInterceptor);
+    this.syntaxTreeCreator = new SyntaxTreeCreator<>(treeFactory, grammarBuilderInterceptor);
 
     b.setRootRule(rootRule);
     this.rootRule = rootRule;
-    this.grammar = b.build();
-    this.parseRunner = new ParseRunner(this.grammar.getRootRule());
+    this.parseRunner = new ParseRunner(b.build().getRootRule());
   }
 
-  @Override
-  public AstNode parse(List tokens) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public AstNode parse(File file) {
+  public Tree parse(File file) {
     try {
       return parse(new Input(Files.toString(file, charset).toCharArray(), file.toURI()));
     } catch (IOException e) {
@@ -124,12 +107,11 @@ public class ActionParser2 extends Parser {
     }
   }
 
-  @Override
-  public AstNode parse(String source) {
+  public Tree parse(String source) {
     return parse(new Input(source.toCharArray()));
   }
 
-  private AstNode parse(Input input) {
+  private Tree parse(Input input) {
     ParsingResult result = parseRunner.parse(input.input());
 
     if (!result.isMatched()) {
@@ -139,25 +121,7 @@ public class ActionParser2 extends Parser {
       String message = new ParseErrorFormatter().format(parseError);
       throw new RecognitionException(line, message);
     }
-
-    AstNode astNode = syntaxTreeCreator.create(result.getParseTreeRoot(), input);
-    astNodeSanitzer.sanitize(astNode);
-    return astNode;
-  }
-
-  @Override
-  public Grammar getGrammar() {
-    return grammar;
-  }
-
-  @Override
-  public void setRootRule(Rule rootRule) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public RuleDefinition getRootRule() {
-    throw new UnsupportedOperationException();
+    return syntaxTreeCreator.create(result.getParseTreeRoot(), input);
   }
 
   public GrammarRuleKey rootRule() {
@@ -232,50 +196,49 @@ public class ActionParser2 extends Parser {
     @Override
     public <T> Optional<T> optional(T method) {
       ParsingExpression expression = pop();
-      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("optional", expression);
-      optionals.add(ruleKey);
-      b.rule(ruleKey).is(b.optional(expression));
-      invokeRule(ruleKey);
+      GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("optional", expression);
+      optionals.add(grammarRuleKey);
+      b.rule(grammarRuleKey).is(b.optional(expression));
+      invokeRule(grammarRuleKey);
       return null;
     }
 
     @Override
     public <T> List<T> oneOrMore(T method) {
       ParsingExpression expression = pop();
-      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("oneOrMore", expression);
-      oneOrMores.add(ruleKey);
-      b.rule(ruleKey).is(b.oneOrMore(expression));
-      invokeRule(ruleKey);
+      GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("oneOrMore", expression);
+      oneOrMores.add(grammarRuleKey);
+      b.rule(grammarRuleKey).is(b.oneOrMore(expression));
+      invokeRule(grammarRuleKey);
       return null;
     }
 
     @Override
     public <T> Optional<List<T>> zeroOrMore(T method) {
       ParsingExpression expression = pop();
-      GrammarRuleKey ruleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
-      zeroOrMores.add(ruleKey);
-      b.rule(ruleKey).is(b.zeroOrMore(expression));
-      invokeRule(ruleKey);
+      GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
+      zeroOrMores.add(grammarRuleKey);
+      b.rule(grammarRuleKey).is(b.zeroOrMore(expression));
+      invokeRule(grammarRuleKey);
       return null;
     }
 
     @Override
-    public AstNode invokeRule(GrammarRuleKey ruleKey) {
-      push(new DelayedRuleInvocationExpression(b, ruleKey));
+    public JavaTree invokeRule(GrammarRuleKey grammarRuleKey) {
+      push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
       return null;
     }
 
     @Override
-    public AstNode token(String value) {
-      expressionStack.push(new StringExpression(value));
+    public InternalSyntaxToken invokeRule(JavaPunctuator javaPunctuator) {
+      push(new DelayedRuleInvocationExpression(b, javaPunctuator));
       return null;
     }
 
-    public void replaceByRule(GrammarRuleKey ruleKey, int stackElements) {
+    public void replaceByRule(GrammarRuleKey grammarRuleKey, int stackElements) {
       ParsingExpression expression = stackElements == 1 ? pop() : new SequenceExpression(pop(stackElements));
-      b.rule(ruleKey).is(expression);
-
-      invokeRule(ruleKey);
+      b.rule(grammarRuleKey).is(expression);
+      invokeRule(grammarRuleKey);
     }
 
     private ParsingExpression[] pop(int n) {
@@ -295,14 +258,13 @@ public class ActionParser2 extends Parser {
     }
 
     public GrammarRuleKey ruleKeyForAction(Method method) {
-      GrammarRuleKey ruleKey = actions.get(method);
-      if (ruleKey == null) {
+      GrammarRuleKey grammarRuleKey = actions.get(method);
+      if (grammarRuleKey == null) {
         method.setAccessible(true);
-        ruleKey = new DummyGrammarRuleKey(method);
-        actions.put(method, ruleKey);
+        grammarRuleKey = new DummyGrammarRuleKey(method);
+        actions.put(method, grammarRuleKey);
       }
-
-      return ruleKey;
+      return grammarRuleKey;
     }
 
     @Nullable

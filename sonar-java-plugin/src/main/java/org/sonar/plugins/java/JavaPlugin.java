@@ -65,7 +65,7 @@ public class JavaPlugin extends SonarPlugin {
             .onQualifiers(Qualifiers.PROJECT)
             .build(),
         PropertyDefinition.builder(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
-            .defaultValue(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
+            .defaultValue(Boolean.toString(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE))
             .category(JAVA_CATEGORY)
             .subCategory(GENERAL_SUBCATEGORY)
             .name("Separate Accessors")
@@ -75,7 +75,7 @@ public class JavaPlugin extends SonarPlugin {
             .onQualifiers(Qualifiers.PROJECT)
             .build(),
         PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
-            .defaultValue(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE + "")
+            .defaultValue(Boolean.toString(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE))
             .category(JAVA_CATEGORY)
             .subCategory(GENERAL_SUBCATEGORY)
             .name("Skip design analysis")

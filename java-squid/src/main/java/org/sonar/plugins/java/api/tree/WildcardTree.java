@@ -23,6 +23,8 @@ import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
 
+import java.util.List;
+
 /**
  * Wildcard type argument.
  *
@@ -46,6 +48,8 @@ import javax.annotation.Nullable;
  */
 @Beta
 public interface WildcardTree extends Tree {
+
+  List<AnnotationTree> annotations();
 
   SyntaxToken queryToken();
 

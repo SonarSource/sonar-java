@@ -38,7 +38,7 @@ import java.util.List;
 @Rule(
   key = "S2885",
   name = "\"Calendars\" and \"DateFormats\" should not be static",
-  tags = {"bug", "multithreading"},
+  tags = {"bug", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)

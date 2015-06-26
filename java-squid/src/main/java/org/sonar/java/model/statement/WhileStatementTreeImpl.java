@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -42,19 +41,12 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
 
   public WhileStatementTreeImpl(InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
     StatementTree statement) {
-
     super(Kind.WHILE_STATEMENT);
     this.whileKeyword = whileKeyword;
     this.openParenToken = openParenToken;
     this.condition = Preconditions.checkNotNull(condition);
     this.closeParenToken = closeParenToken;
     this.statement = Preconditions.checkNotNull(statement);
-
-    addChild(whileKeyword);
-    addChild(openParenToken);
-    addChild((AstNode) condition);
-    addChild(closeParenToken);
-    addChild((AstNode) statement);
   }
 
   @Override
@@ -95,7 +87,10 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      whileKeyword,
+      openParenToken,
       condition,
+      closeParenToken,
       statement);
   }
 

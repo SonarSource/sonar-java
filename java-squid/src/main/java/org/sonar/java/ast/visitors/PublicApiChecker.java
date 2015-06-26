@@ -20,12 +20,9 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.Token;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -243,14 +240,12 @@ public class PublicApiChecker extends BaseTreeVisitor {
       }
       return getCommentFromTree(tokenTree);
     } else {
-      SyntaxToken syntaxToken = ((TypeParameterListTreeImpl) ((JavaTree) methodTree.typeParameters().get(0)).getAstNode().getParent()).openBracketToken();
-      return getCommentFromSyntaxToken(syntaxToken);
+      return getCommentFromSyntaxToken(methodTree.typeParameters().openBracketToken());
     }
   }
 
   private static String getCommentFromTree(Tree tokenTree) {
-    Token token = ((JavaTree) tokenTree).getToken();
-    return getCommentFromToken(token);
+    return getCommentFromSyntaxToken(FirstSyntaxTokenFinder.firstSyntaxToken(tokenTree));
   }
 
   private static ModifiersTree getModifierTrees(Tree tree) {
@@ -263,11 +258,6 @@ public class PublicApiChecker extends BaseTreeVisitor {
       modifiersTree = ((VariableTree) tree).modifiers();
     }
     return modifiersTree;
-  }
-
-  public static String getCommentFromToken(Token token) {
-    SyntaxToken syntaxToken = new InternalSyntaxToken(token);
-    return getCommentFromSyntaxToken(syntaxToken);
   }
 
   private static String getCommentFromSyntaxToken(SyntaxToken syntaxToken) {

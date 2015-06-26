@@ -20,11 +20,11 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.base.Charsets;
-import com.sonar.sslr.impl.Parser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.sonar.java.parser.sslr.ActionParser;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,7 @@ import java.util.Collection;
 @RunWith(value = Parameterized.class)
 public class JavaParserIntegrationTest {
 
-  private final Parser parser = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser parser = JavaParser.createParser(Charsets.UTF_8);
 
   private File file = null;
 

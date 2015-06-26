@@ -22,7 +22,7 @@ class Fruit {
     }
   }
 
-  public static class StaticSeed {
+  public static class StaticSeed    {
     int germinationDays = 0;
     public StaticSeed(int germinationDays) {
       this.germinationDays = germinationDays;
@@ -102,4 +102,55 @@ class Fruit {
     };
   }
 
+}
+public class Bar {
+  public int plop() {return 1;}
+}
+
+
+public class A {
+  private int fielda;
+
+  class B { // Compliant inner class refers to field.
+    Bar foo() {
+      return new String() {
+        public String toString() { return ""+fielda;}
+      };
+    }
+  }
+  class C { // Noncompliant
+    Object foo() {
+      return new Object();
+    }
+  }
+
+}
+
+public class Extendable {
+  protected int field;
+}
+
+public class Foo extends Extendable {
+
+  class Inner { // Compliant field is refered.
+    void plop(){
+      System.out.println(field);
+    }
+  }
+}
+public class A1 {
+  private int field;
+
+  class B { // Noncompliant
+    int foo;
+    class C {
+      Bar foo() {
+        return new String() {
+          public String toString() {
+            return "" + foo;
+          }
+        };
+      }
+    }
+  }
 }

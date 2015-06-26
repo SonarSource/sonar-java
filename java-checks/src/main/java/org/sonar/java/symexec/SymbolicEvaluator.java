@@ -125,7 +125,7 @@ public class SymbolicEvaluator {
     return new ExecutionState(parentState);
   }
 
-  abstract class BaseExpressionVisitor extends BaseTreeVisitor {
+  abstract static class BaseExpressionVisitor extends BaseTreeVisitor {
     @Override
     public final void visitBinaryExpression(BinaryExpressionTree tree) {
       if (tree.is(Tree.Kind.CONDITIONAL_AND)) {
@@ -219,7 +219,7 @@ public class SymbolicEvaluator {
     @Override
     public final void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
       evaluateExpression(currentState, tree.expression());
-      evaluateExpression(currentState, tree.index());
+      evaluateExpression(currentState, tree.dimension().expression());
       currentResult.unknownStates.add(currentState);
     }
 

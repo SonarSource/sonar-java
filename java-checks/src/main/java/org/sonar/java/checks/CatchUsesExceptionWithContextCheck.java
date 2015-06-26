@@ -52,7 +52,7 @@ import java.util.List;
 @Rule(
   key = "S1166",
   name = "Exception handlers should preserve the original exception",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)

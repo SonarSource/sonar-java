@@ -21,7 +21,6 @@ package org.sonar.java.checks.methods;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -97,8 +96,7 @@ public class MethodMatcher {
   }
 
   public boolean matches(NewClassTree newClassTree) {
-    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
-    return matches(newClassTreeImpl.getConstructorIdentifier().symbol(), null);
+    return matches(newClassTree.constructorSymbol(), null);
   }
 
   public boolean matches(MethodInvocationTree mit) {

@@ -38,7 +38,7 @@ import java.util.List;
 @Rule(
   key = "S1165",
   name = "Exception classes should be immutable",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)

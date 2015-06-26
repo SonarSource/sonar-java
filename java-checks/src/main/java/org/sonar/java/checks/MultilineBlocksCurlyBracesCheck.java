@@ -50,8 +50,8 @@ import java.util.Locale;
 @SqaleConstantRemediation("5min")
 public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static String LOOP_MESSAGE = "Only the first line of this %d-line block will be executed in a loop. The rest will execute only once.";
-  private static String IF_MESSAGE = "Only the first line of this %d-line block will be executed conditionally. The rest will execute unconditionally.";
+  private static final String LOOP_MESSAGE = "Only the first line of this %d-line block will be executed in a loop. The rest will execute only once.";
+  private static final String IF_MESSAGE = "Only the first line of this %d-line block will be executed conditionally. The rest will execute unconditionally.";
   private JavaFileScannerContext context;
 
   @Override

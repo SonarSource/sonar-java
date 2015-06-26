@@ -44,7 +44,7 @@ import java.util.Map;
 @SqaleConstantRemediation("2min")
 public class BooleanInversionCheck extends SubscriptionBaseVisitor {
 
-  private static Map<String, String> OPERATORS = ImmutableMap.<String, String>builder()
+  private static final Map<String, String> OPERATORS = ImmutableMap.<String, String>builder()
     .put("==", "!=")
     .put("!=", "==")
     .put("<", ">=")

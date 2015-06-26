@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -44,12 +43,6 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
     this.returnKeyword = returnKeyword;
     this.expression = expression;
     this.semicolonToken = semicolonToken;
-
-    addChild(returnKeyword);
-    if (expression != null) {
-      addChild((AstNode) expression);
-    }
-    addChild(semicolonToken);
   }
 
   @Override
@@ -80,8 +73,12 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder().add(returnKeyword);
+    if (expression != null) {
+      iteratorBuilder.add(expression);
+    }
+    iteratorBuilder.add(semicolonToken);
+    return iteratorBuilder.build().iterator();
   }
 
 }

@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2442",
   name = "\"Lock\" objects should not be \"synchronized\"",
-  tags = {"multi-threading", "clumsy"},
+  tags = {"clumsy", "multi-threading"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

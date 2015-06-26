@@ -34,7 +34,7 @@ import java.util.List;
 @Rule(
   key = "S1162",
   name = "Checked Exception should not be thrown",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1h")

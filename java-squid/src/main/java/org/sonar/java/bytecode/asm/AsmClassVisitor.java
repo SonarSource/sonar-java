@@ -110,7 +110,7 @@ public class AsmClassVisitor extends ClassVisitor {
     return asmClasses;
   }
 
-  private boolean isInheritedMethodSignature(AsmClass parent, String key) {
+  private static boolean isInheritedMethodSignature(AsmClass parent, String key) {
     if (parent.getSuperClass() != null
       && (parent.getSuperClass().getMethod(key) != null || isInheritedMethodSignature(parent.getSuperClass(), key))) {
       return true;

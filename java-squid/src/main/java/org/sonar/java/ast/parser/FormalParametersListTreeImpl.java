@@ -21,7 +21,6 @@ package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -34,38 +33,23 @@ public class FormalParametersListTreeImpl extends ListTreeImpl<VariableTreeImpl>
   private InternalSyntaxToken closeParenToken;
 
   public FormalParametersListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.FORMAL_PARAMETERS, ImmutableList.<VariableTreeImpl>of(), ImmutableList.<AstNode>of());
+    super(JavaLexer.FORMAL_PARAMETERS, ImmutableList.<VariableTreeImpl>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    addChild(openParenToken);
-    addChild(closeParenToken);
   }
 
   public FormalParametersListTreeImpl(VariableTreeImpl variable) {
-    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable), ImmutableList.<AstNode>of());
-
-    addChild(variable);
+    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable));
   }
 
   public FormalParametersListTreeImpl(List<AnnotationTreeImpl> annotations, InternalSyntaxToken ellipsisToken, VariableTreeImpl variable) {
-    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable), ImmutableList.<AstNode>of());
-
-    for (AstNode annotation : annotations) {
-      addChild(annotation);
-    }
-    addChild(ellipsisToken);
-    addChild(variable);
+    super(JavaLexer.FORMAL_PARAMETERS, Lists.newArrayList(variable));
   }
 
   public FormalParametersListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    prependChildren(openParenToken);
-    addChild(closeParenToken);
-
     return this;
   }
 

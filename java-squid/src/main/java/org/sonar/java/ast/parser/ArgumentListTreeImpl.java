@@ -20,7 +20,6 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -33,36 +32,26 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
   private InternalSyntaxToken closeParenToken;
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, ImmutableList.<ExpressionTree>of(), ImmutableList.<AstNode>of());
+    super(JavaLexer.ARGUMENTS, ImmutableList.<ExpressionTree>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    addChild(openParenToken);
-    addChild(closeParenToken);
   }
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, ImmutableList.of(expression), ImmutableList.<AstNode>of());
+    super(JavaLexer.ARGUMENTS, ImmutableList.of(expression));
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    addChild(openParenToken);
-    addChild((AstNode) expression);
-    addChild(closeParenToken);
   }
 
-  public ArgumentListTreeImpl(List<ExpressionTree> expressions, List<AstNode> children) {
-    super(JavaLexer.ARGUMENTS, expressions, children);
+  public ArgumentListTreeImpl(List<ExpressionTree> expressions) {
+    super(JavaLexer.ARGUMENTS, expressions);
   }
 
   public ArgumentListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    prependChildren(openParenToken);
-    addChild(closeParenToken);
 
     return this;
   }

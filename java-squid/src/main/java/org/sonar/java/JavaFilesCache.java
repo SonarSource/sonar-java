@@ -26,6 +26,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
@@ -84,7 +85,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void scanFile(JavaFileScannerContext context) {
     JavaTree.CompilationUnitTreeImpl tree = (JavaTree.CompilationUnitTreeImpl) context.getTree();
-    currentPackage = tree.packageNameAsString().replace('.', '/');
+    currentPackage = PackageDeclarationTreeImpl.packageNameAsString(tree.packageDeclaration()).replace('.', '/');
     currentFile = context.getFile();
     currentClassKey.clear();
     parent.clear();
@@ -180,11 +181,11 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     return suppressWarningsType;
   }
 
-  private List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
+  private static List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
     return getValueFromExpression(annotationTree.arguments().get(0));
   }
 
-  private List<String> getValueFromExpression(ExpressionTree expression) {
+  private static List<String> getValueFromExpression(ExpressionTree expression) {
     List<String> args = Lists.newArrayList();
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));

@@ -20,19 +20,30 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import java.util.Iterator;
 
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
 
-  public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer) {
+  public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer,
+    @Nullable InternalSyntaxToken separatorToken) {
     super(Kind.ENUM_CONSTANT, modifiers, simpleName, Preconditions.checkNotNull(initializer));
+    if (separatorToken != null) {
+      this.setEndToken(separatorToken);
+    }
   }
 
   @Override
@@ -49,6 +60,24 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitEnumConstant(this);
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    // the identifierTree simpleName is also present in initializer
+    iteratorBuilder.add(modifiers(), initializer());
+    SyntaxToken endToken = endToken();
+    if (endToken != null) {
+      iteratorBuilder.add(endToken);
+    }
+    return iteratorBuilder.build().iterator();
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken separatorToken() {
+    return endToken();
   }
 
 }

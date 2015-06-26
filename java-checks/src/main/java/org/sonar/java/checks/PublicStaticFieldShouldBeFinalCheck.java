@@ -36,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S1444",
-  name = "\"public static\" fields should always be constant",
+  name = ":",
   tags = {"cert", "cwe", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
@@ -65,7 +65,9 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
   }
 
   private static boolean isPublicStaticNotFinal(VariableTree tree) {
-    boolean isPublic = false, isStatic = false, isFinal = false;
+    boolean isPublic = false;
+    boolean isStatic = false;
+    boolean isFinal = false;
 
     for (ModifierKeywordTree modifierKeywordTree : tree.modifiers().modifiers()) {
       Modifier modifier = modifierKeywordTree.modifier();

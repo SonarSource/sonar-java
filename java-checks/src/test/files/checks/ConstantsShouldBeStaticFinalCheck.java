@@ -31,6 +31,7 @@ class A {
     }
   }
   private final String[] NOT_POSSIBLE = {}; // Noncompliant
+  protected final Object [] a = new Object[] {"UTF-8", null}; // Noncompliant
 }
 
 interface B {

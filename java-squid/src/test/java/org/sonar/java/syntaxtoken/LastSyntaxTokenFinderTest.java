@@ -22,6 +22,7 @@ package org.sonar.java.syntaxtoken;
 import com.google.common.base.Charsets;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -42,20 +43,20 @@ public class LastSyntaxTokenFinderTest {
   @Test
   public void compilationUnit() {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test {}");
-    SyntaxToken lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo("}");
+    InternalSyntaxToken lastToken = (InternalSyntaxToken) getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.isEOF()).isTrue();
 
     compilationUnit = getCompilationUnit("package myPackage; import A;");
-    lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo(";");
+    lastToken = (InternalSyntaxToken) getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.isEOF()).isTrue();
 
     compilationUnit = getCompilationUnit("package myPackage;");
-    lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken.text()).isEqualTo("myPackage");
+    lastToken = (InternalSyntaxToken) getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.isEOF()).isTrue();
 
     compilationUnit = getCompilationUnit("");
-    lastToken = getLastSyntaxToken(compilationUnit);
-    assertThat(lastToken).isNull();
+    lastToken = (InternalSyntaxToken) getLastSyntaxToken(compilationUnit);
+    assertThat(lastToken.isEOF()).isTrue();
   }
 
   @Test
@@ -70,6 +71,9 @@ public class LastSyntaxTokenFinderTest {
     CompilationUnitTree compilationUnit = getCompilationUnit("class Test { Integer i; }");
     SyntaxToken lastToken = getLastSyntaxToken(getFirstVariable(getFirstClass(compilationUnit)));
     assertThat(lastToken.text()).isEqualTo(";");
+    compilationUnit = getCompilationUnit("interface Test { void foo(Integer i);}");
+    lastToken = getLastSyntaxToken(((MethodTree) getFirstClass(compilationUnit).members().get(0)).parameters().get(0));
+    assertThat(lastToken.text()).isEqualTo("i");
   }
 
   @Test
@@ -95,13 +99,29 @@ public class LastSyntaxTokenFinderTest {
 
     compilationUnit = getCompilationUnit("enum Test { A; }");
     lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    compilationUnit = getCompilationUnit("enum Test { A, B; }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(",");
+
+    compilationUnit = getCompilationUnit("enum Test { A }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
     assertThat(lastToken.text()).isEqualTo("A");
 
     compilationUnit = getCompilationUnit("enum Test { A (4); }");
     lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    compilationUnit = getCompilationUnit("enum Test { A (4) }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
     assertThat(lastToken.text()).isEqualTo(")");
 
     compilationUnit = getCompilationUnit("enum Test { A (4) { }; }");
+    lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
+    assertThat(lastToken.text()).isEqualTo(";");
+
+    compilationUnit = getCompilationUnit("enum Test { A (4) { } }");
     lastToken = getLastSyntaxToken(getFirstClass(compilationUnit).members().get(0));
     assertThat(lastToken.text()).isEqualTo("}");
   }
@@ -606,7 +626,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new int[3];"
         + "  }"
         + "}";
-    assertLastStatementlastTokenValue(p, "3");
+    assertLastStatementlastTokenValue(p, "]");
 
     p =
       "class Foo {"
@@ -614,7 +634,7 @@ public class LastSyntaxTokenFinderTest {
         + "    new int[] {1, 2, 3};"
         + "  }"
         + "}";
-    assertLastStatementlastTokenValue(p, "3");
+    assertLastStatementlastTokenValue(p, "}");
   }
 
   @Test

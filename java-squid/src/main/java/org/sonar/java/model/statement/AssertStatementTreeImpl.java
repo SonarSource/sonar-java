@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -51,29 +50,18 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
     this.colonToken = null;
     this.detail = null;
     this.semicolonToken = semicolonToken;
-
-    addChild(assertToken);
-    addChild((AstNode) condition);
-    addChild(semicolonToken);
   }
 
   public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
     super(Kind.ASSERT_STATEMENT);
     this.colonToken = colonToken;
     this.detail = Preconditions.checkNotNull(detail);
-
-    addChild(colonToken);
-    addChild((AstNode) detail);
   }
 
   public AssertStatementTreeImpl complete(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     this.assertToken = assertToken;
     this.condition = Preconditions.checkNotNull(condition);
     this.semicolonToken = semicolonToken;
-
-    prependChildren(assertToken, (AstNode) condition);
-    // optional: colonToken, detail
-    addChild(semicolonToken);
 
     return this;
   }
@@ -117,9 +105,11 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
-      condition,
-      detail);
+    Iterator<Tree> detailIterator = colonToken != null ? Iterators.<Tree>forArray(colonToken, detail) : Iterators.<Tree>emptyIterator();
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(assertToken, condition),
+      detailIterator,
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }

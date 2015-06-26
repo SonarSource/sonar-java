@@ -19,15 +19,12 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -37,19 +34,10 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   private final List<T> list;
 
-  public ListTreeImpl(@Nullable AstNode astNode) {
-    super(astNode);
-    this.list = Lists.newArrayList();
-  }
-
-  public ListTreeImpl(AstNodeType type, List<T> list, List<AstNode> children) {
-    super(type);
+  public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list) {
+    super(grammarRuleKey);
 
     this.list = list;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -60,14 +48,15 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   @Override
   public void accept(TreeVisitor visitor) {
-    // TODO
-    throw new UnsupportedOperationException("On class: " + getClass().getSimpleName());
+    for (T t : list) {
+      ((Tree) t).accept(visitor);
+    }
   }
 
   @Override
   public Kind getKind() {
     // TODO
-    throw new UnsupportedOperationException();
+    return Kind.OTHER;
   }
 
   @Override

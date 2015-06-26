@@ -19,49 +19,50 @@
  */
 package org.sonar.java.ast;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Grammar;
 import com.sonar.sslr.api.RecognitionException;
-import com.sonar.sslr.impl.Parser;
-import com.sonar.sslr.impl.ast.AstWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.java.JavaConfiguration;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.squidbridge.AstScannerExceptionHandler;
-import org.sonar.squidbridge.CommentAnalyser;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.parser.sslr.ActionParser;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
-import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.AnalysisException;
-import org.sonar.squidbridge.api.CodeVisitor;
+import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceCodeSearchEngine;
+import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
+import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
+import javax.annotation.Nullable;
 import java.io.File;
-import java.util.List;
+import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-public class AstScanner {
+public class JavaAstScanner {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AstScanner.class);
+  private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
 
   private final SquidIndex index;
-  private final List<SquidAstVisitor<LexerlessGrammar>> visitors = Lists.newArrayList();
-  private final List<AstScannerExceptionHandler> astScannerExceptionHandlers = Lists.newArrayList();
-  private final Parser<LexerlessGrammar> parser;
-  private CommentAnalyser commentAnalyser;
+  private final ActionParser parser;
+  private VisitorsBridge visitor;
 
-  public AstScanner(Parser<LexerlessGrammar> parser) {
+  public JavaAstScanner(ActionParser parser) {
     this.parser = parser;
     this.index = new SquidIndex();
   }
 
   /**
-   * Takes parser and index from another instance of {@link AstScanner}
+   * Takes parser and index from another instance of {@link JavaAstScanner}
    */
-  public AstScanner(AstScanner astScanner) {
+  public JavaAstScanner(JavaAstScanner astScanner) {
     this.parser = astScanner.parser;
     this.index = astScanner.index;
   }
@@ -82,21 +83,15 @@ public class AstScanner {
   public void simpleScan(Iterable<File> files) {
     SourceProject project = (SourceProject) index.search("Java Project");
     VisitorContext context = new VisitorContext(project);
-    context.setCommentAnalyser(commentAnalyser);
+    visitor.setContext(context);
 
-    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
-      visitor.setContext(context);
-      visitor.init();
-    }
-
-    AstWalker astWalker = new AstWalker(visitors);
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(Lists.newArrayList(files));
     for (File file : files) {
       context.setFile(file);
       try {
-        AstNode ast = parser.parse(file);
-        astWalker.walkAndVisit(ast);
+        Tree ast = parser.parse(file);
+        visitor.visitFile(ast);
         progressReport.nextFile();
       } catch (RecognitionException e) {
         LOG.error("Unable to parse source file : " + file.getAbsolutePath());
@@ -108,27 +103,13 @@ public class AstScanner {
       }
     }
     progressReport.stop();
-
-    for (SquidAstVisitor<LexerlessGrammar> visitor : visitors) {
-      visitor.destroy();
-    }
   }
 
   private void parseErrorWalkAndVisit(RecognitionException e, File file) {
     try {
       // Process the exception
-      for (SquidAstVisitor<? extends Grammar> visitor : visitors) {
-        visitor.visitFile(null);
-      }
-
-      for (AstScannerExceptionHandler astScannerExceptionHandler : astScannerExceptionHandlers) {
-        astScannerExceptionHandler.processRecognitionException(e);
-      }
-
-      for (SquidAstVisitor<? extends Grammar> visitor : Lists.reverse(visitors)) {
-        visitor.leaveFile(null);
-      }
-
+      visitor.visitFile(null);
+      visitor.processRecognitionException(e);
     } catch (Exception e2) {
       throw new AnalysisException(getAnalyisExceptionMessage(file), e2);
     }
@@ -138,25 +119,39 @@ public class AstScanner {
     return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
   }
 
-  public void withSquidAstVisitor(SquidAstVisitor<LexerlessGrammar> visitor) {
-    if (visitor instanceof AstScannerExceptionHandler) {
-      astScannerExceptionHandlers.add((AstScannerExceptionHandler) visitor);
-    }
-    this.visitors.add(visitor);
+  public void setVisitorBridge(VisitorsBridge visitor) {
+    this.visitor = visitor;
   }
 
   public SourceCodeSearchEngine getIndex() {
     return index;
   }
 
-  public void setCommentAnalyser(CommentAnalyser commentAnalyser) {
-    this.commentAnalyser = commentAnalyser;
+  /**
+   * Helper method for testing checks without having to deploy them on a Sonar instance.
+   */
+  @VisibleForTesting
+  public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
+    if (!file.isFile()) {
+      throw new IllegalArgumentException("File '" + file + "' not found.");
+    }
+    JavaAstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitorsBridge);
+
+    scanner.scan(Collections.singleton(file));
+    Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
+    if (sources.size() != 1) {
+      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
+    }
+    return (SourceFile) sources.iterator().next();
   }
 
-  public void accept(CodeVisitor visitor) {
-    if (visitor instanceof SquidAstVisitor) {
-      withSquidAstVisitor((SquidAstVisitor<LexerlessGrammar>) visitor);
+  private static JavaAstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
+    JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
+    if(visitorsBridge != null) {
+      visitorsBridge.setCharset(conf.getCharset());
+      astScanner.setVisitorBridge(visitorsBridge);
     }
+    return astScanner;
   }
 
 }

@@ -17,28 +17,33 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.visitors;
+package org.sonar.plugins.java.api.tree;
 
-import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.squidbridge.SquidAstVisitor;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import com.google.common.annotations.Beta;
 
-import java.io.File;
+import javax.annotation.Nullable;
 
-public class FileVisitor extends SquidAstVisitor<LexerlessGrammar> {
+import java.util.List;
 
-  @Override
-  public void visitFile(AstNode astNode) {
-    File file = getContext().getFile();
-    getContext().addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
-  }
+/**
+ * Describe an array dimension.
+ * 
+ * JLS 15.10.1
+ * 
+ * <pre>
+ *   {@link #annotations()} [ {@link #expression()} ]
+ * </pre>
+ *
+ */
+@Beta
+public interface ArrayDimensionTree extends Tree {
 
-  @Override
-  public void leaveFile(AstNode astNode) {
-    Preconditions.checkState(getContext().peekSourceCode().isType(SourceFile.class));
-    getContext().popSourceCode();
-  }
+  List<AnnotationTree> annotations();
 
+  SyntaxToken openBracketToken();
+
+  @Nullable
+  ExpressionTree expression();
+
+  SyntaxToken closeBracketToken();
 }

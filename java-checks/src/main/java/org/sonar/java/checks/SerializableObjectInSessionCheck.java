@@ -37,7 +37,7 @@ import java.util.List;
 @Rule(
   key = "S2441",
   name = "Non-serializable objects should not be stored in \"HttpSessions\"",
-  tags = {"bug"},
+  tags = {"bug", "cwe"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)

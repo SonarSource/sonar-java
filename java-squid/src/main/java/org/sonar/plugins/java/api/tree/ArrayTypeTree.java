@@ -23,8 +23,6 @@ import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
-
 /**
  * Array type.
  *
@@ -41,8 +39,6 @@ import java.util.List;
 public interface ArrayTypeTree extends ExpressionTree, TypeTree {
 
   TypeTree type();
-
-  List<AnnotationTree> annotations();
 
   @Nullable
   SyntaxToken openBracketToken();

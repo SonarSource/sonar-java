@@ -19,8 +19,6 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.StatementTree;
 
 import java.util.List;
@@ -28,7 +26,7 @@ import java.util.List;
 public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
 
   public StatementExpressionListTreeImpl(List<? extends StatementTree> statements) {
-    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statements, ImmutableList.<AstNode>of());
+    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statements);
   }
 
 }

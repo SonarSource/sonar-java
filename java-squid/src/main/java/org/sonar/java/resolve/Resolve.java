@@ -542,16 +542,16 @@ public class Resolve {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
-        result = (env.enclosingClass().outermostClass() == c.owner().outermostClass());
+        result = env.enclosingClass().outermostClass() == c.owner().outermostClass();
         break;
       case 0:
-        result = (env.packge() == c.packge());
+        result = env.packge() == c.packge();
         break;
       case Flags.PUBLIC:
         result = true;
         break;
       case Flags.PROTECTED:
-        result = (env.packge() == c.packge()) || isInnerSubClass(env.enclosingClass(), c.owner());
+        result = env.packge() == c.packge() || isInnerSubClass(env.enclosingClass(), c.owner());
         break;
       default:
         throw new IllegalStateException();

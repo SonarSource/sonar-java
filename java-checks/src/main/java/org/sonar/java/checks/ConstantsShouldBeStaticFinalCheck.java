@@ -41,7 +41,7 @@ import java.util.List;
 
 @Rule(
   key = "S1170",
-  name = "Public constants should be declared \"static final\" rather than merely \"final\"",
+  name = "Public constants and fields initialized at declaration should be \"static final\" rather than merely \"final\"",
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
@@ -101,7 +101,8 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     if (init != null) {
       if (init.is(Tree.Kind.NEW_ARRAY)) {
         //exclude allocations : new int[6] but allow initialization new int[]{1,2};
-        return ((NewArrayTree) init).dimensions().isEmpty();
+        NewArrayTree newArrayTree = (NewArrayTree) init;
+        return newArrayTree.dimensions().isEmpty() || newArrayTree.openBraceToken() != null;
       }
       return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }

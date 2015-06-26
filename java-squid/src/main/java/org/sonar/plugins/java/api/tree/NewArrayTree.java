@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -37,12 +39,19 @@ import java.util.List;
 @Beta
 public interface NewArrayTree extends ExpressionTree {
 
-  Tree type();
+  @Nullable
+  TypeTree type();
 
+  @Nullable
   SyntaxToken newKeyword();
 
-  List<ExpressionTree> dimensions();
+  List<ArrayDimensionTree> dimensions();
+
+  @Nullable
+  SyntaxToken openBraceToken();
 
   List<ExpressionTree> initializers();
 
+  @Nullable
+  SyntaxToken closeBraceToken();
 }

@@ -51,6 +51,7 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
   private static final Kind[] PARENT_EXPRESSION =  {
       Kind.ANNOTATION,
       Kind.ARRAY_ACCESS_EXPRESSION,
+      Kind.ARRAY_DIMENSION,
       Kind.ASSERT_STATEMENT,
       Kind.ASSIGNMENT,
       Kind.CASE_LABEL,
@@ -95,7 +96,7 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
       return tree.expression().is(Kind.METHOD_INVOCATION, Kind.IDENTIFIER, Kind.MEMBER_SELECT) || tree.expression() instanceof LiteralTree;
     }
     //Exclude expression of array access expression
-    if(parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression()) ) {
+    if (parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression())) {
       return false;
     }
     return parentTree.is(PARENT_EXPRESSION);

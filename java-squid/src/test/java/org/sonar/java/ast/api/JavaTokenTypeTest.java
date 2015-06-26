@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class JavaTokenTypeTest {
 
@@ -31,11 +29,9 @@ public class JavaTokenTypeTest {
   public void test() {
     assertThat(JavaTokenType.values()).hasSize(7);
 
-    AstNode astNode = mock(AstNode.class);
     for (JavaTokenType tokenType : JavaTokenType.values()) {
       assertThat(tokenType.getName()).isEqualTo(tokenType.name());
       assertThat(tokenType.getValue()).isNotNull();
-      assertThat(tokenType.hasToBeSkippedFromAst(astNode)).isFalse();
     }
   }
 

@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.TokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum JavaKeyword implements TokenType, GrammarRuleKey {
+public enum JavaKeyword implements GrammarRuleKey {
 
   ASSERT("assert"),
   BREAK("break"),
@@ -79,23 +77,16 @@ public enum JavaKeyword implements TokenType, GrammarRuleKey {
 
   private final String value;
 
-  private JavaKeyword(String value) {
+  JavaKeyword(String value) {
     this.value = value;
   }
 
-  @Override
   public String getName() {
     return name();
   }
 
-  @Override
   public String getValue() {
     return value;
-  }
-
-  @Override
-  public boolean hasToBeSkippedFromAst(AstNode node) {
-    return false;
   }
 
   public static String[] keywordValues() {

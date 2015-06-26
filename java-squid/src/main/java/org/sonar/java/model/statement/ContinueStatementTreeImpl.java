@@ -45,12 +45,6 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
     this.continueKeyword = continueKeyword;
     this.label = label;
     this.semicolonToken = semicolonToken;
-
-    addChild(continueKeyword);
-    if (label != null) {
-      addChild(label);
-    }
-    addChild(semicolonToken);
   }
 
   @Override
@@ -81,8 +75,10 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      label);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(continueKeyword),
+      label != null ? Iterators.<Tree>singletonIterator(continueKeyword) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }

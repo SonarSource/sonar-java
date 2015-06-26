@@ -41,7 +41,7 @@ import java.util.LinkedList;
 @Rule(
   key = "S1148",
   name = "Throwable.printStackTrace(...) should not be called",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)

@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.fest.assertions.BooleanAssert;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;

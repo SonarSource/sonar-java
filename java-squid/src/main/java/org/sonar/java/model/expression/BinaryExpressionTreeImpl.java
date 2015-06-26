@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -45,18 +44,6 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
     this.kind = Preconditions.checkNotNull(kind);
     this.leftOperand = Preconditions.checkNotNull(leftOperand);
     this.operator = operator;
-    this.rightOperand = Preconditions.checkNotNull(rightOperand);
-
-    addChild((AstNode) leftOperand);
-    addChild(operator);
-    addChild((AstNode) rightOperand);
-  }
-
-  public BinaryExpressionTreeImpl(AstNode astNode, ExpressionTree leftOperand, Kind kind, ExpressionTree rightOperand) {
-    super(astNode);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.leftOperand = Preconditions.checkNotNull(leftOperand);
-    this.operator = InternalSyntaxToken.createLegacy(super.getAstNode());
     this.rightOperand = Preconditions.checkNotNull(rightOperand);
   }
 
@@ -86,26 +73,10 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   }
 
   @Override
-  public AstNode getAstNode() {
-    // TODO Dinesh: Do not override at all
-
-    // TODO(Godin): provides behavioral compatibility, because this method used by AnonymousClassesTooBigCheck, but should not
-    if (isLegacy()) {
-      return super.getAstNode().getParent();
-    } else {
-      return super.getAstNode();
-    }
-  }
-
-  @Override
-  public int getLine() {
-    return getAstNode().getTokenLine();
-  }
-
-  @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
+    return Iterators.forArray(
       leftOperand,
+      operator,
       rightOperand);
   }
 

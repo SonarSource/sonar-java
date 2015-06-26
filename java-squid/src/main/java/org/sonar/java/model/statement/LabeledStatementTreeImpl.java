@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.JavaSymbol;
@@ -46,10 +45,6 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
     this.label = Preconditions.checkNotNull(label);
     this.colonToken = colonToken;
     this.statement = Preconditions.checkNotNull(statement);
-
-    addChild((AstNode) label);
-    addChild(colonToken);
-    addChild((AstNode) statement);
   }
 
   @Override
@@ -86,6 +81,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       label,
+      colonToken,
       statement);
   }
 

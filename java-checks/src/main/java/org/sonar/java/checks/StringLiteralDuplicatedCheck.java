@@ -45,7 +45,7 @@ import java.util.Map;
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "number of duplicate instances")
+@SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "per duplicate instance" )
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_THRESHOLD = 3;

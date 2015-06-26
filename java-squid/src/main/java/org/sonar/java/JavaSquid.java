@@ -30,9 +30,9 @@ import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.utils.TimeProfiler;
 import org.sonar.graph.DirectedGraph;
-import org.sonar.java.ast.AstScanner;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
-import org.sonar.java.ast.visitors.FileVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
@@ -55,8 +55,8 @@ public class JavaSquid implements SourceCodeSearchEngine {
   private static final Logger LOG = LoggerFactory.getLogger(JavaSquid.class);
 
   private final SquidIndex squidIndex;
-  private final AstScanner astScanner;
-  private final AstScanner astScannerForTests;
+  private final JavaAstScanner astScanner;
+  private final JavaAstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
   private final DirectedGraph<Resource, Dependency> graph = new DirectedGraph<>();
 
@@ -71,57 +71,53 @@ public class JavaSquid implements SourceCodeSearchEngine {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
 
-    astScanner = JavaAstScanner.create(conf);
 
-    Iterable<CodeVisitor> visitorsToBridge = Iterables.concat(Arrays.asList(javaResourceLocator), Arrays.asList(visitors));
-    if(measurer != null) {
-      Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor)measurer);
-      visitorsToBridge =  Iterables.concat(visitorsToBridge, measurers);
+    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Arrays.asList(javaResourceLocator), Arrays.asList(visitors));
+    if (measurer != null) {
+      Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor) measurer);
+      codeVisitors = Iterables.concat(codeVisitors, measurers);
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();
-    Collection<CodeVisitor> testCheckClasses = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
-    if(sonarComponents != null) {
-      visitorsToBridge = Iterables.concat(
-        visitorsToBridge,
-        Arrays.asList(
-          new FileLinesVisitor(sonarComponents, conf.getCharset()),
-          new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset())
+    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+    if (sonarComponents != null) {
+      codeVisitors = Iterables.concat(
+          codeVisitors,
+          Arrays.asList(
+              new FileLinesVisitor(sonarComponents, conf.getCharset()),
+              new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset())
           )
-        );
+      );
+      testCodeVisitors.add(new SyntaxHighlighterVisitor(sonarComponents, conf.getCharset()));
       classpath = sonarComponents.getJavaClasspath();
       testClasspath = sonarComponents.getJavaTestClasspath();
-      testCheckClasses.addAll(sonarComponents.testCheckClasses());
+      testCodeVisitors.addAll(sonarComponents.testCheckClasses());
     }
-    setupAstScanner(astScanner, visitorsToBridge, classpath, conf, sonarComponents);
-    // TODO unchecked cast
-    squidIndex = (SquidIndex) astScanner.getIndex();
 
+    //AstScanner for main files
+    astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents));
+
+    //AstScanner for test files
+    astScannerForTests = new JavaAstScanner(astScanner);
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents));
+
+    //Bytecode scanner
+    squidIndex = (SquidIndex) astScanner.getIndex();
     bytecodeScanner = new BytecodeScanner(squidIndex, javaResourceLocator);
     bytecodeScanner.accept(new DependenciesVisitor(graph));
-
-    // External visitors (typically Check ones):
     for (CodeVisitor visitor : visitors) {
-      if (visitor instanceof CharsetAwareVisitor) {
-        ((CharsetAwareVisitor) visitor).setCharset(conf.getCharset());
-      }
-      astScanner.accept(visitor);
       bytecodeScanner.accept(visitor);
     }
 
-    astScannerForTests = new AstScanner(astScanner);
-    astScannerForTests.accept(new FileVisitor());
-    setupAstScanner(astScannerForTests, testCheckClasses, testClasspath, conf, sonarComponents);
   }
 
-  private static void setupAstScanner(AstScanner astScanner, Iterable<CodeVisitor> visitorsToBridge,
-                               List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
-    VisitorsBridge visitorsBridgeTest = new VisitorsBridge(visitorsToBridge, classpath, sonarComponents);
-    visitorsBridgeTest.setCharset(conf.getCharset());
-    visitorsBridgeTest.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
-    astScanner.accept(visitorsBridgeTest);
+  private static VisitorsBridge createVisitorBridge(Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
+    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
+    visitorsBridge.setCharset(conf.getCharset());
+    visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
+    return visitorsBridge;
   }
-
 
 
   public void scan(Iterable<File> sourceFiles, Iterable<File> testFiles, Collection<File> bytecodeFilesOrDirectories) {

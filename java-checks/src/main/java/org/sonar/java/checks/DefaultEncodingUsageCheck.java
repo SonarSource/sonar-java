@@ -27,12 +27,10 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
-import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -168,9 +166,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
-    IdentifierTree constructorIdentifier = newClassTreeImpl.getConstructorIdentifier();
-    Symbol symbol = constructorIdentifier.symbol();
+    Symbol symbol = newClassTree.constructorSymbol();
     if(symbol.isMethodSymbol()) {
       Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
       String signature = constructor.owner().name() + "(" + Joiner.on(',').join(constructor.parameterTypes()) + ")";

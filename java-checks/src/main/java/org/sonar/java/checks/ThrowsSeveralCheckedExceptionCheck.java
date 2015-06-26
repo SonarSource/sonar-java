@@ -39,7 +39,7 @@ import java.util.List;
 @Rule(
   key = "S1160",
   name = "Public methods should throw at most one checked exception",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

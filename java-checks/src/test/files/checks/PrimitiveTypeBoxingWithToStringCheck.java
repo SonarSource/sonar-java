@@ -42,6 +42,9 @@ class A {
     return Integer.valueOf(value);
   }
 
+  @Foo(value = "" + 12) // Compliant
   void bar(String s) {
+    s += "";
+    s += 12; // Noncompliant
   }
 }

@@ -21,8 +21,6 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.JavaTree;
@@ -47,6 +45,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,6 +63,8 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private final BlockTree block;
   @Nullable
   private SyntaxToken semicolonToken;
+  @Nullable
+  private final SyntaxToken throwsToken;
   private final List<TypeTree> throwsClauses;
   private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
@@ -79,26 +80,20 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.openParenToken = parameters.openParenToken();
     this.closeParenToken = parameters.closeParenToken();
     this.block = null;
+    this.throwsToken = null;
     this.throwsClauses = ImmutableList.of();
     this.defaultToken = defaultToken;
     this.defaultValue = defaultValue;
-
-    addChild(parameters);
-    if (defaultToken != null) {
-      addChild((AstNode) defaultToken);
-    }
-    if (defaultValue != null) {
-      addChild((AstNode) defaultValue);
-    }
   }
 
   public MethodTreeImpl(
-      @Nullable TypeTree returnType,
-      IdentifierTree simpleName,
-      FormalParametersListTreeImpl parameters,
-      List<TypeTree> throwsClauses,
-      @Nullable BlockTree block,
-      @Nullable SyntaxToken semicolonToken) {
+    @Nullable TypeTree returnType,
+    IdentifierTree simpleName,
+    FormalParametersListTreeImpl parameters,
+    @Nullable SyntaxToken throwsToken,
+    List<TypeTree> throwsClauses,
+    @Nullable BlockTree block,
+    @Nullable SyntaxToken semicolonToken) {
 
     super(returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD);
 
@@ -111,6 +106,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.closeParenToken = parameters.closeParenToken();
     this.block = block;
     this.semicolonToken = semicolonToken;
+    this.throwsToken = throwsToken;
     this.throwsClauses = Preconditions.checkNotNull(throwsClauses);
     this.defaultToken = null;
     this.defaultValue = null;
@@ -121,9 +117,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.returnType = returnType;
     this.simpleName = simpleName;
     this.semicolonToken = semicolonToken;
-
-    prependChildren((AstNode) returnType, (AstNode) simpleName);
-    addChild((AstNode) semicolonToken);
 
     return this;
   }
@@ -136,8 +129,6 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   public MethodTreeImpl completeWithModifiers(ModifiersTreeImpl modifiers) {
     Preconditions.checkState(this.modifiers == null);
     this.modifiers = modifiers;
-
-    prependChildren(modifiers);
 
     return this;
   }
@@ -234,18 +225,27 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-        Iterators.singletonIterator(modifiers),
-        typeParameters.iterator(),
-        Iterators.forArray(
-            returnType,
-            simpleName
-        ),
-        parameters.iterator(),
-        Iterators.singletonIterator(block),
-        throwsClauses.iterator(),
-        Iterators.singletonIterator(defaultValue)
-    );
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
+    iteratorBuilder.add(modifiers, typeParameters);
+    if (returnType != null) {
+      iteratorBuilder.add(returnType);
+    }
+    iteratorBuilder.add(simpleName, openParenToken);
+    iteratorBuilder.addAll(parameters.iterator());
+    iteratorBuilder.add(closeParenToken);
+    if (throwsToken != null) {
+      iteratorBuilder.add(throwsToken);
+      iteratorBuilder.addAll(throwsClauses.iterator());
+    }
+    if (defaultToken != null) {
+      iteratorBuilder.add(defaultToken, defaultValue);
+    }
+    if (block != null) {
+      iteratorBuilder.add(block);
+    } else {
+      iteratorBuilder.add(semicolonToken);
+    }
+    return iteratorBuilder.build().iterator();
   }
 
   /**

@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
-import org.sonar.java.parser.sslr.ActionParser2.GrammarBuilderInterceptor;
+import org.sonar.java.parser.sslr.ActionParser.GrammarBuilderInterceptor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.grammar.MutableParsingRule;

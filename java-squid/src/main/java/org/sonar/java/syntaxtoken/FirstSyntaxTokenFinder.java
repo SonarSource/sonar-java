@@ -58,6 +58,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -92,7 +93,6 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
    * @param tree the tree to visit to get the first syntax token
    * @return the first syntax token of the tree, or null if the provided tree is:
    * <ul>
-   *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
    *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
    *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
    * </ul>
@@ -273,7 +273,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
-    scan(tree.type());
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      scan(tree.type());
+    }
   }
 
   @Override
@@ -297,12 +301,20 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
-    scan(tree.expression());
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      scan(tree.expression());
+    }
   }
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    firstSyntaxToken = tree.identifierToken();
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      firstSyntaxToken = tree.identifierToken();
+    }
   }
 
   @Override
@@ -312,7 +324,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    firstSyntaxToken = tree.keyword();
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      firstSyntaxToken = tree.keyword();
+    }
   }
 
   @Override
@@ -336,15 +352,15 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageName() != null) {
-      // TODO(SONARJAVA-547) Should be the package token
-      scan(tree.packageName());
+    if (tree.packageDeclaration() != null) {
+      scan(tree.packageDeclaration());
     } else if (!tree.imports().isEmpty()) {
       scan(tree.imports().get(0));
     } else if (!tree.types().isEmpty()) {
       scan(tree.types().get(0));
+    } else {
+      firstSyntaxToken = tree.eofToken();
     }
-    // with empty files firstSyntaxToken will be null
   }
 
   @Override
@@ -384,7 +400,11 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitWildcard(WildcardTree tree) {
-    firstSyntaxToken = tree.queryToken();
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations());
+    } else {
+      firstSyntaxToken = tree.queryToken();
+    }
   }
 
   @Override
@@ -435,5 +455,14 @@ public class FirstSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitOther(Tree tree) {
     // firstSyntaxToken will be null
+  }
+
+  @Override
+  public void visitPackage(PackageDeclarationTree tree) {
+    if (!tree.annotations().isEmpty()) {
+      scan(tree.annotations().get(0));
+    } else {
+      firstSyntaxToken = tree.packageKeyword();
+    }
   }
 }

@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
   tags = {"convention"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("10min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
@@ -94,8 +94,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageName() != null) {
-      packageName = concatenate(tree.packageName());
+    if (tree.packageDeclaration() != null) {
+      packageName = concatenate(tree.packageDeclaration().packageName());
     }
     super.visitCompilationUnit(tree);
   }

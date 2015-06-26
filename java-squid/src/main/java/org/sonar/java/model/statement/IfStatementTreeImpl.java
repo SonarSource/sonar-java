@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -51,9 +50,6 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     super(Kind.IF_STATEMENT);
     this.elseKeyword = elseKeyword;
     this.elseStatement = Preconditions.checkNotNull(elseStatement);
-
-    addChild(elseKeyword);
-    addChild((AstNode) elseStatement);
   }
 
   public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
@@ -67,12 +63,6 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     this.thenStatement = Preconditions.checkNotNull(thenStatement);
     this.elseStatement = null;
     this.elseKeyword = null;
-
-    addChild(ifKeyword);
-    addChild(openParenToken);
-    addChild((AstNode) condition);
-    addChild(closeParenToken);
-    addChild((AstNode) thenStatement);
   }
 
   public IfStatementTreeImpl complete(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
@@ -83,8 +73,6 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     this.condition = Preconditions.checkNotNull(condition);
     this.closeParenToken = closeParenToken;
     this.thenStatement = Preconditions.checkNotNull(thenStatement);
-
-    prependChildren(ifKeyword, openParenToken, (AstNode) condition, closeParenToken, (AstNode) thenStatement);
 
     return this;
   }
@@ -138,10 +126,8 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      condition,
-      thenStatement,
-      elseStatement);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
+      elseKeyword != null ? Iterators.<Tree>forArray(elseKeyword, elseStatement) : Iterators.<Tree>emptyIterator());
   }
-
 }

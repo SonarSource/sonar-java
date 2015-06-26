@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -41,6 +42,7 @@ import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -59,6 +61,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -94,7 +97,6 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
    * @param tree the tree to visit to get its last syntax token
    * @return the last syntax token of the tree, or null if the provided tree is:
    * <ul>
-   *   <li>Empty compilation unit ({@link org.sonar.plugins.java.api.tree.CompilationUnitTree})</li>
    *   <li>Empty list of modifiers ({@link org.sonar.plugins.java.api.tree.ModifiersTree})</li>
    *   <li>Any tree of Kind "OTHER" ({@link org.sonar.plugins.java.api.tree.Tree.Kind.OTHER})</li>
    * </ul>
@@ -229,12 +231,26 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitVariable(VariableTree tree) {
-    lastSyntaxToken = tree.endToken();
+    SyntaxToken endToken = tree.endToken();
+    if(endToken == null) {
+      ExpressionTree initializer = tree.initializer();
+      if(initializer == null) {
+        scan(tree.simpleName());
+      } else {
+        scan(initializer);
+      }
+    } else {
+      lastSyntaxToken = endToken;
+    }
   }
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    scan(tree.initializer());
+    if (tree.separatorToken() != null) {
+      lastSyntaxToken = tree.separatorToken();
+    } else {
+      scan(tree.initializer());
+    }
   }
 
   @Override
@@ -259,15 +275,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (!tree.types().isEmpty()) {
-      scan(Iterables.getLast(tree.types()));
-    } else if (!tree.imports().isEmpty()) {
-      scan(Iterables.getLast(tree.imports()));
-    } else {
-      // TODO(SONARJAVA-547) Should be the semi-colon token
-      scan(tree.packageName());
-    }
-    // with empty files lastSyntaxToken will be null
+    lastSyntaxToken = tree.eofToken();
   }
 
   @Override
@@ -305,7 +313,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
-    lastSyntaxToken = tree.closeBracketToken();
+    scan(tree.dimension());
   }
 
   @Override
@@ -326,9 +334,9 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitNewArray(NewArrayTree tree) {
-    if (!tree.initializers().isEmpty()) {
-      // TODO(SONARJAVA-547) should be the close brace
-      scan(Iterables.getLast(tree.initializers()));
+    SyntaxToken closeBraceToken = tree.closeBraceToken();
+    if (closeBraceToken != null) {
+      lastSyntaxToken = closeBraceToken;
     } else {
       scan(Iterables.getLast(tree.dimensions()));
     }
@@ -447,5 +455,15 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
   @Override
   public void visitOther(Tree tree) {
     // lastSyntaxToken will be null
+  }
+
+  @Override
+  public void visitPackage(PackageDeclarationTree tree) {
+    lastSyntaxToken = tree.semicolonToken();
+  }
+
+  @Override
+  public void visitArrayDimension(ArrayDimensionTree tree) {
+    lastSyntaxToken = tree.closeBracketToken();
   }
 }

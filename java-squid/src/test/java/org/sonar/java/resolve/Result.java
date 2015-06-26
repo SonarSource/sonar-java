@@ -21,21 +21,20 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.impl.Parser;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.parser.sslr.ActionParser;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.io.File;
 
 class Result {
 
-  private static final Parser parser = JavaParser.createParser(Charsets.UTF_8);
+  private static final ActionParser parser = JavaParser.createParser(Charsets.UTF_8);
   private final SemanticModel semanticModel;
 
   private Result(SemanticModel semanticModel) {
@@ -48,8 +47,8 @@ class Result {
 
   public static Result createForJavaFile(String filePath) {
     File file = new File(filePath + ".java");
-    AstNode astNode = parser.parse(file);
-    return new Result(SemanticModel.createFor((CompilationUnitTree) astNode, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) parser.parse(file);
+    return new Result(SemanticModel.createFor(compilationUnitTree, Lists.newArrayList(new File("target/test-classes"), new File("target/classes"))));
   }
 
   public JavaSymbol symbol(String name) {
@@ -71,7 +70,7 @@ class Result {
   public JavaSymbol symbol(String name, int line) {
     Symbol result = null;
     for (Symbol symbol : semanticModel.getSymbolsTree().values()) {
-      if (name.equals(symbol.name()) && ((JavaTree) semanticModel.getTree(symbol)).getAstNode().getTokenLine() == line) {
+      if (name.equals(symbol.name()) && ((JavaTree) semanticModel.getTree(symbol)).getLine() == line) {
         if (result != null) {
           throw new IllegalArgumentException("Ambiguous coordinates of symbol");
         }
@@ -97,8 +96,8 @@ class Result {
     column -= 1;
     for (Symbol symbol : semanticModel.getSymbolUsed()) {
       for (IdentifierTree usage : symbol.usages()) {
-        Token token = ((JavaTree) usage.identifierToken()).getAstNode().getToken();
-        if (token.getLine() == line && token.getColumn() == column) {
+        SyntaxToken token = usage.identifierToken();
+        if (token.line() == line && token.column() == column) {
           if(searchSymbol) {
             return symbol;
           } else {

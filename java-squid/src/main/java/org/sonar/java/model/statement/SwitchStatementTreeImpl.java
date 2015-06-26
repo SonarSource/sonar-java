@@ -22,7 +22,6 @@ package org.sonar.java.model.statement;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -55,16 +54,6 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
     this.openBraceToken = openBraceToken;
     this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Preconditions.checkNotNull(groups)).build();
     this.closeBraceToken = closeBraceToken;
-
-    addChild(switchKeyword);
-    addChild(openParenToken);
-    addChild((AstNode) expression);
-    addChild(closeParenToken);
-    addChild(openBraceToken);
-    for (CaseGroupTreeImpl caseGroup : groups) {
-      addChild(caseGroup);
-    }
-    addChild(closeBraceToken);
   }
 
   @Override
@@ -115,8 +104,9 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(expression),
-      cases.iterator());
+      Iterators.forArray(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
+      cases.iterator(),
+      Iterators.singletonIterator(closeBraceToken));
   }
 
 }

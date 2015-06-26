@@ -34,6 +34,7 @@ import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -385,7 +386,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitNewArray(NewArrayTree tree) {
     resolveAs(tree.type(), JavaSymbol.TYP);
-    resolveAs(tree.dimensions(), JavaSymbol.VAR);
+    scan(tree.dimensions());
     resolveAs(tree.initializers(), JavaSymbol.VAR);
     JavaType type = getType(tree.type());
     int dimensions = tree.dimensions().size();
@@ -406,13 +407,19 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
     resolveAs(tree.expression(), JavaSymbol.VAR);
-    resolveAs(tree.index(), JavaSymbol.VAR);
+    scan(tree.dimension());
     JavaType type = getType(tree.expression());
     if (type != null && type.tag == JavaType.ARRAY) {
       registerType(tree, ((JavaType.ArrayJavaType) type).elementType);
     } else {
       registerType(tree, Symbols.unknownType);
     }
+  }
+
+  @Override
+  public void visitArrayDimension(ArrayDimensionTree tree) {
+    resolveAs(tree.expression(), JavaSymbol.VAR);
+    registerType(tree, getType(tree.expression()));
   }
 
   @Override
@@ -631,5 +638,4 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       symbol.addUsage(tree);
     }
   }
-
 }

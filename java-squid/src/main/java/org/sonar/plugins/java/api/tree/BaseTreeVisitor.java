@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -49,8 +50,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    scan(tree.packageAnnotations());
-    scan(tree.packageName());
+    scan(tree.packageDeclaration());
     scan(tree.imports());
     scan(tree.types());
   }
@@ -219,11 +219,12 @@ public class BaseTreeVisitor implements TreeVisitor {
   @Override
   public void visitArrayAccessExpression(ArrayAccessExpressionTree tree) {
     scan(tree.expression());
-    scan(tree.index());
+    scan(tree.dimension());
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    scan(tree.annotations());
     scan(tree.expression());
     scan(tree.identifier());
   }
@@ -281,7 +282,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
-    // no subtrees
+    scan(tree.annotations());
   }
 
   @Override
@@ -293,7 +294,7 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitPrimitiveType(PrimitiveTypeTree tree) {
-    // no subtrees
+    scan(tree.annotations());
   }
 
   @Override
@@ -309,12 +310,14 @@ public class BaseTreeVisitor implements TreeVisitor {
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
+    scan(tree.annotations());
     scan(tree.type());
     scan(tree.typeArguments());
   }
 
   @Override
   public void visitWildcard(WildcardTree tree) {
+    scan(tree.annotations());
     scan(tree.bound());
   }
 
@@ -366,6 +369,18 @@ public class BaseTreeVisitor implements TreeVisitor {
     scan(methodReferenceTree.expression());
     scan(methodReferenceTree.typeArguments());
     scan(methodReferenceTree.method());
+  }
+
+  @Override
+  public void visitPackage(PackageDeclarationTree tree) {
+    scan(tree.annotations());
+    scan(tree.packageName());
+  }
+
+  @Override
+  public void visitArrayDimension(ArrayDimensionTree tree) {
+    scan(tree.annotations());
+    scan(tree.expression());
   }
 
 }

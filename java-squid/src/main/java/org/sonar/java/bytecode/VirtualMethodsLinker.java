@@ -34,7 +34,7 @@ public class VirtualMethodsLinker {
     }
   }
 
-  private AsmMethod findImplementation(AsmClass asmClass, String methodKey) {
+  private static AsmMethod findImplementation(AsmClass asmClass, String methodKey) {
     AsmMethod method = asmClass.getMethod(methodKey);
     if (method != null && method.isBodyLoaded()) {
       return method;

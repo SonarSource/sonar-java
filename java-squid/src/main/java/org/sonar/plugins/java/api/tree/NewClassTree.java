@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 
@@ -74,5 +75,7 @@ public interface NewClassTree extends ExpressionTree {
 
   @Nullable
   ClassTree classBody();
+
+  Symbol constructorSymbol();
 
 }

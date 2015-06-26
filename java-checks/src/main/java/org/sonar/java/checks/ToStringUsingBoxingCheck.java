@@ -38,7 +38,7 @@ import java.util.Set;
 
 @Rule(
   key = "S1158",
-  name = "Primitive wrappers should not be instantiated only to perform a \"toString\" conversion",
+  name = "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
   tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault

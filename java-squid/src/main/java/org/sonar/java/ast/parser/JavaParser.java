@@ -19,7 +19,7 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.java.parser.sslr.ActionParser2;
+import org.sonar.java.parser.sslr.ActionParser;
 
 import java.nio.charset.Charset;
 
@@ -28,8 +28,8 @@ public class JavaParser {
   private JavaParser() {
   }
 
-  public static ActionParser2 createParser(Charset charset) {
-    return new ActionParser2(
+  public static ActionParser createParser(Charset charset) {
+    return new ActionParser(
       charset,
       JavaLexer.createGrammarBuilder(),
       JavaGrammar.class,

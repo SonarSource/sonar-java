@@ -36,11 +36,11 @@ import java.util.List;
 @Rule(
   key = "S2222",
   name = "Locks should be released",
-  tags = {"bug", "multi-threading"},
+  tags = {"bug", "cwe", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@SqaleConstantRemediation("20min")
 public class LocksNotUnlockedCheck extends SubscriptionBaseVisitor {
 
   @Override

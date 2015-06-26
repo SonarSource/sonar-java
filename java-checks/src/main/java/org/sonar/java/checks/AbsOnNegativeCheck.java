@@ -46,7 +46,7 @@ import java.util.List;
 
 @Rule(
   key = "S2676",
-  name = "Neither \"Math.abs\" nor negation should not be used on numbers that could be \"MIN_VALUE\"",
+  name = "Neither \"Math.abs\" nor negation should be used on numbers that could be \"MIN_VALUE\"",
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

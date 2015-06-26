@@ -19,15 +19,14 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
 public class BoundListTreeImpl extends ListTreeImpl<Tree> {
 
-  public BoundListTreeImpl(List<Tree> classTypes, List<AstNode> children) {
-    super(JavaLexer.BOUND, classTypes, children);
+  public BoundListTreeImpl(List<Tree> classTypes) {
+    super(JavaLexer.BOUND, classTypes);
   }
 
 }
