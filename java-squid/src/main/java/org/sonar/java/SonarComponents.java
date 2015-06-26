@@ -19,8 +19,10 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
+import javax.annotation.Nullable;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
@@ -34,107 +36,117 @@ import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
-
-import javax.annotation.Nullable;
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class SonarComponents implements BatchExtension {
 
-  private final FileLinesContextFactory fileLinesContextFactory;
-  private final ResourcePerspectives resourcePerspectives;
-  private final JavaTestClasspath javaTestClasspath;
-  private final CheckFactory checkFactory;
-  private final JavaClasspath javaClasspath;
-  private final Project project;
-  private final List<Checks<JavaCheck>> checks;
-  private Checks<JavaCheck> testChecks;
+    private final FileLinesContextFactory fileLinesContextFactory;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
-                         CheckFactory checkFactory) {
-    this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, javaTestClasspath, checkFactory, null);
-  }
+    private final ResourcePerspectives resourcePerspectives;
 
-  public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, Project project,
-                         JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
-                         @Nullable CheckRegistrar[] checkRegistrars) {
-    this.fileLinesContextFactory = fileLinesContextFactory;
-    this.resourcePerspectives = resourcePerspectives;
-    this.project = project;
-    this.javaClasspath = javaClasspath;
-    this.javaTestClasspath = javaTestClasspath;
-    this.checkFactory = checkFactory;
-    checks = Lists.newArrayList();
+    private final JavaTestClasspath javaTestClasspath;
 
-    if(checkRegistrars != null) {
-      CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
-      for (CheckRegistrar checkClassesRegister : checkRegistrars) {
-        checkClassesRegister.register(registrarContext);
-        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(registrarContext.checkClasses()));
-      }
+    private final CheckFactory checkFactory;
+
+    private final JavaClasspath javaClasspath;
+
+    private final Project project;
+
+    private final List<Checks<JavaCheck>> checks;
+
+    private Checks<JavaCheck> testChecks;
+
+    public SonarComponents(final FileLinesContextFactory fileLinesContextFactory, final ResourcePerspectives resourcePerspectives, final Project project, final JavaClasspath javaClasspath,
+        final JavaTestClasspath javaTestClasspath, final CheckFactory checkFactory) {
+        this(fileLinesContextFactory, resourcePerspectives, project, javaClasspath, javaTestClasspath, checkFactory, null);
     }
-  }
 
-  public Resource resourceFromIOFile(File file) {
-    return org.sonar.api.resources.File.fromIOFile(file, project);
-  }
+    public SonarComponents(final FileLinesContextFactory fileLinesContextFactory, final ResourcePerspectives resourcePerspectives, final Project project, final JavaClasspath javaClasspath,
+        final JavaTestClasspath javaTestClasspath, final CheckFactory checkFactory, @Nullable final CheckRegistrar[] checkRegistrars) {
+        this.fileLinesContextFactory = fileLinesContextFactory;
+        this.resourcePerspectives = resourcePerspectives;
+        this.project = project;
+        this.javaClasspath = javaClasspath;
+        this.javaTestClasspath = javaTestClasspath;
+        this.checkFactory = checkFactory;
+        this.checks = Lists.newArrayList();
 
-  public FileLinesContext fileLinesContextFor(File file) {
-    return fileLinesContextFactory.createFor(resourceFromIOFile(file));
-  }
+        if (checkRegistrars != null) {
+            final CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
+            for (final CheckRegistrar checkClassesRegister : checkRegistrars) {
+                checkClassesRegister.register(registrarContext);
+                switch (checkClassesRegister.type()) {
+                    case SOURCE_CHECKS:
+                        registerCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(registrarContext.checkClasses()));
+                        break;
+                    case TEST_CHECKS:
+                        registerTestCheckClasses(registrarContext.repositoryKey(), Lists.newArrayList(registrarContext.checkClasses()));
+                        break;
 
-  public Symbolizable symbolizableFor(File file) {
-    return resourcePerspectives.as(Symbolizable.class, resourceFromIOFile(file));
-  }
-
-  public Highlightable highlightableFor(File file) {
-    return resourcePerspectives.as(Highlightable.class, resourceFromIOFile(file));
-  }
-
-  public List<File> getJavaClasspath() {
-    if (javaClasspath == null) {
-      return Lists.newArrayList();
+                }
+            }
+        }
     }
-    return javaClasspath.getElements();
-  }
 
-  public List<File> getJavaTestClasspath() {
-    return javaTestClasspath.getElements();
-  }
-
-  public ResourcePerspectives getResourcePerspectives() {
-    return resourcePerspectives;
-  }
-
-  public void registerCheckClasses(String repositoryKey, Collection<Class<? extends JavaCheck>> checkClasses) {
-    checks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
-  }
-
-  public CodeVisitor[] checkClasses() {
-    List<CodeVisitor> visitors = Lists.newArrayList();
-    for (Checks<JavaCheck> check : checks) {
-      visitors.addAll(check.all());
+    public Resource resourceFromIOFile(final File file) {
+        return org.sonar.api.resources.File.fromIOFile(file, this.project);
     }
-    return visitors.toArray(new CodeVisitor[visitors.size()]);
-  }
 
-  public Iterable<Checks<JavaCheck>> checks() {
-    return Iterables.concat(checks, Lists.newArrayList(testChecks));
-  }
-
-  public void registerTestCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> javaTestChecks) {
-    testChecks = checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(javaTestChecks);
-  }
-
-  public Collection<JavaCheck> testCheckClasses() {
-    if(testChecks == null) {
-      return Lists.newArrayList();
+    public FileLinesContext fileLinesContextFor(final File file) {
+        return this.fileLinesContextFactory.createFor(resourceFromIOFile(file));
     }
-    return testChecks.all();
-  }
 
+    public Symbolizable symbolizableFor(final File file) {
+        return this.resourcePerspectives.as(Symbolizable.class, resourceFromIOFile(file));
+    }
 
+    public Highlightable highlightableFor(final File file) {
+        return this.resourcePerspectives.as(Highlightable.class, resourceFromIOFile(file));
+    }
+
+    public List<File> getJavaClasspath() {
+        if (this.javaClasspath == null) {
+            return Lists.newArrayList();
+        }
+        return this.javaClasspath.getElements();
+    }
+
+    public List<File> getJavaTestClasspath() {
+        return this.javaTestClasspath.getElements();
+    }
+
+    public ResourcePerspectives getResourcePerspectives() {
+        return this.resourcePerspectives;
+    }
+
+    public void registerCheckClasses(final String repositoryKey, final Collection<Class<? extends JavaCheck>> checkClasses) {
+        this.checks.add(this.checkFactory.<JavaCheck> create(repositoryKey)
+            .addAnnotatedChecks(checkClasses));
+    }
+
+    public CodeVisitor[] checkClasses() {
+        final List<CodeVisitor> visitors = Lists.newArrayList();
+        for (final Checks<JavaCheck> check : this.checks) {
+            visitors.addAll(check.all());
+        }
+        return visitors.toArray(new CodeVisitor[visitors.size()]);
+    }
+
+    public Iterable<Checks<JavaCheck>> checks() {
+        return Iterables.concat(this.checks, Lists.newArrayList(this.testChecks));
+    }
+
+    public void registerTestCheckClasses(final String repositoryKey, final List<Class<? extends JavaCheck>> javaTestChecks) {
+        this.testChecks = this.checkFactory.<JavaCheck> create(repositoryKey)
+            .addAnnotatedChecks(javaTestChecks);
+    }
+
+    public Collection<JavaCheck> testCheckClasses() {
+        if (this.testChecks == null) {
+            return Lists.newArrayList();
+        }
+        return this.testChecks.all();
+    }
 
 }

@@ -19,14 +19,17 @@
  */
 package org.sonar.plugins.java.api;
 
-import com.google.common.annotations.Beta;
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.BatchExtension;
+import com.google.common.annotations.Beta;
+import com.google.common.base.Preconditions;
 
 /**
- * This batch extension should be extended to provide the classes to be used to instantiate checks.
- * The register method has to be implemented and the registrarContext should register the repository keys.
+ * This batch extension should be extended to provide the classes to be used to
+ * instantiate checks.
+ * The register method has to be implemented and the registrarContext should
+ * register the repository keys.
+ *
  * <pre>
  *   {@code
  *   public void register(RegistrarContext registrarContext) {
@@ -38,42 +41,43 @@ import org.sonar.api.BatchExtension;
 @Beta
 public interface CheckRegistrar extends BatchExtension {
 
-  /**
-   * This method is called during an analysis to get the classes to use to instantiate checks.
-   * @param registrarContext the context that will be used by the java-plugin to retrieve the classes for checks.
-   */
-  void register(RegistrarContext registrarContext);
+    /**
+     * This method is called during an analysis to get the classes to use to
+     * instantiate checks.
+     *
+     * @param registrarContext
+     *            the context that will be used by the java-plugin to retrieve
+     *            the classes for checks.
+     */
+    void register(RegistrarContext registrarContext);
 
-  class RegistrarContext {
-    
-    private String repositoryKey;
-    private Iterable<Class<? extends JavaCheck>> checkClasses;
-    private Type type;
-
-    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Type type){
-      Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
-      this.repositoryKey = repositoryKey;
-      this.checkClasses = checkClasses;
-      this.type = type;
-    }
-
-    public String repositoryKey() {
-      return repositoryKey;
-    }
-
-    public Type type() {
-      return type;
-    }
-
-    public Iterable<Class<? extends JavaCheck>> checkClasses() {
-      return checkClasses;
-    }
+    Type type();
 
     public enum Type {
-      SOURCE_CHECKS,
-      TEST_CHECKS;
+        SOURCE_CHECKS,
+        TEST_CHECKS;
     }
-    
-  }
+
+    class RegistrarContext {
+
+        private String repositoryKey;
+
+        private Iterable<Class<? extends JavaCheck>> checkClasses;
+
+        public void registerClassesForRepository(final String repositoryKey, final Iterable<Class<? extends JavaCheck>> checkClasses) {
+            Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
+            this.repositoryKey = repositoryKey;
+            this.checkClasses = checkClasses;
+        }
+
+        public String repositoryKey() {
+            return repositoryKey;
+        }
+
+        public Iterable<Class<? extends JavaCheck>> checkClasses() {
+            return checkClasses;
+        }
+
+    }
 
 }
