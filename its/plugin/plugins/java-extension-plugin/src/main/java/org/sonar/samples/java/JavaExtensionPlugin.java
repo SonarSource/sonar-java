@@ -6,9 +6,8 @@
 package org.sonar.samples.java;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.SonarPlugin;
-
 import java.util.List;
+import org.sonar.api.SonarPlugin;
 
 public class JavaExtensionPlugin extends SonarPlugin {
 
