@@ -637,7 +637,11 @@ public interface Tree {
     /**
      * {@link TypeParameters}
      */
-    TYPE_PARAMETERS(TypeParameters.class);
+    TYPE_PARAMETERS(TypeParameters.class),
+    /**
+     * {@link Arguments}
+     */
+    ARGUMENTS(Arguments.class);
 
     final Class<? extends Tree> associatedInterface;
 

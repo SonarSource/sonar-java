@@ -19,27 +19,14 @@
  */
 package org.sonar.plugins.java.api.tree;
 
-import com.google.common.annotations.Beta;
+import javax.annotation.Nullable;
 
-/**
- * Annotation.
- *
- * JLS 9.7
- *
- * <pre>
- *   {@code @}{@link #annotationType()}
- *   {@code @}{@link #annotationType()} ( {@link #arguments()} )
- * </pre>
- *
- * @since Java 1.5
- */
-@Beta
-public interface AnnotationTree extends ExpressionTree, ModifierTree {
+public interface Arguments extends ListTree<ExpressionTree> {
 
-  SyntaxToken atToken();
+  @Nullable
+  SyntaxToken openParenToken();
 
-  TypeTree annotationType();
-
-  Arguments arguments();
+  @Nullable
+  SyntaxToken closeParenToken();
 
 }

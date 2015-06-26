@@ -336,9 +336,14 @@ abstract class Rest<T> {
     op = (a,b) -> a - b /* comment */;
     
     String[] array2 = {"A", "B", "C"};
+    Arrays.sort(array2 /* comment */, String::compareToIgnoreCase);
     Arrays.sort(array2, /* comment */ String::compareToIgnoreCase);
     Arrays.sort(array2, String/* comment */ ::compareToIgnoreCase);
     Arrays.sort(array2, String:: /* comment */compareToIgnoreCase);
+    
+    rest /* comment */(true, null, null, null);
+    rest(/* comment */ true, null, null, null);
+    rest(true /* comment */, null, null, null);
     
     if (test) { return null /* comment */; }
     /* comment */ return null;

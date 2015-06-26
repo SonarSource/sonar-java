@@ -422,22 +422,8 @@ public class TreeFactory {
 
     IdentifierTreeImpl identifier = new IdentifierTreeImpl((InternalSyntaxToken) identifierToken);
 
-    SyntaxToken openParenToken = null;
-    SyntaxToken closeParenToken = null;
-    List<ExpressionTree> argumentsList = Collections.emptyList();
-    if (arguments.isPresent()) {
-      ArgumentListTreeImpl argumentsListTreeImpl = arguments.get();
-      argumentsList = argumentsListTreeImpl;
-      openParenToken = argumentsListTreeImpl.openParenToken();
-      closeParenToken = argumentsListTreeImpl.closeParenToken();
-    }
-
-    NewClassTreeImpl newClass = new NewClassTreeImpl(
-      openParenToken,
-      argumentsList,
-      closeParenToken,
-      classBody.orNull()
-      );
+    ArgumentListTreeImpl defaultArguments = new ArgumentListTreeImpl(ImmutableList.<ExpressionTree>of(), ImmutableList.<SyntaxToken>of());
+    NewClassTreeImpl newClass = new NewClassTreeImpl(arguments.or(defaultArguments), classBody.orNull());
     newClass.completeWithIdentifier(identifier);
 
     return new EnumConstantTreeImpl(modifiers((Optional<List<ModifierTree>>) (Optional<?>) annotations), identifier, newClass, commaToken.orNull());
@@ -646,7 +632,8 @@ public class TreeFactory {
   }
 
   public AnnotationTreeImpl newAnnotation(InternalSyntaxToken atToken, TypeTree qualifiedIdentifier, Optional<ArgumentListTreeImpl> arguments) {
-    return new AnnotationTreeImpl(atToken, qualifiedIdentifier, arguments.orNull());
+    ArgumentListTreeImpl defaultValue = new ArgumentListTreeImpl(ImmutableList.<ExpressionTree>of(), ImmutableList.<SyntaxToken>of());
+    return new AnnotationTreeImpl(atToken, qualifiedIdentifier, arguments.or(defaultValue));
   }
 
   public ArgumentListTreeImpl completeNormalAnnotation(InternalSyntaxToken openParenToken, Optional<ArgumentListTreeImpl> partial, InternalSyntaxToken closeParenToken) {
@@ -664,13 +651,15 @@ public class TreeFactory {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
     expressions.add(elementValuePair);
 
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, AssignmentExpressionTreeImpl> rest : rests.get()) {
+        separators.add(rest.first());
         expressions.add(rest.second());
       }
     }
 
-    return new ArgumentListTreeImpl(expressions.build());
+    return new ArgumentListTreeImpl(expressions.build(), separators.build());
   }
 
   public AssignmentExpressionTreeImpl newElementValuePair(JavaTree identifierToken, InternalSyntaxToken operator, ExpressionTree elementValue) {
@@ -1500,16 +1489,16 @@ public class TreeFactory {
 
   public ArgumentListTreeImpl newArguments(ExpressionTree expression, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
-
     expressions.add(expression);
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
-        // FIXME : SONARJAVA-547 Comma should be handled : rest.first()
+        separators.add(rest.first());
         expressions.add(rest.second());
       }
     }
 
-    return new ArgumentListTreeImpl(expressions.build());
+    return new ArgumentListTreeImpl(expressions.build(), separators.build());
   }
 
   public TypeTree annotationIdentifier(JavaTree firstIdentifier, Optional<List<Tuple<InternalSyntaxToken, JavaTree>>> rests) {
@@ -1645,7 +1634,7 @@ public class TreeFactory {
   }
 
   public NewClassTreeImpl newClassCreatorRest(ArgumentListTreeImpl arguments, Optional<ClassTreeImpl> classBody) {
-    return new NewClassTreeImpl(arguments.openParenToken(), arguments, arguments.closeParenToken(), classBody.orNull());
+    return new NewClassTreeImpl(arguments, classBody.orNull());
   }
 
   public ExpressionTree newIdentifierOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, JavaTree identifierToken, Optional<ArgumentListTreeImpl> arguments) {

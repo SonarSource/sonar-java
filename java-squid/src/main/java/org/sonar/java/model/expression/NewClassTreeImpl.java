@@ -19,12 +19,12 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -50,20 +50,14 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   @Nullable
   private SyntaxToken newKeyword;
   private TypeTree identifier;
-  @Nullable
-  private final SyntaxToken openParenToken;
-  private final List<ExpressionTree> arguments;
-  @Nullable
-  private final SyntaxToken closeParenToken;
+  private final Arguments arguments;
   @Nullable
   private final ClassTree classBody;
 
-  public NewClassTreeImpl(@Nullable SyntaxToken openParenToken, List arguments, @Nullable SyntaxToken closeParenToken, @Nullable ClassTreeImpl classBody) {
+  public NewClassTreeImpl(Arguments arguments, @Nullable ClassTreeImpl classBody) {
     super(Kind.NEW_CLASS);
     this.enclosingExpression = null;
-    this.openParenToken = openParenToken;
-    this.arguments = Preconditions.checkNotNull(arguments);
-    this.closeParenToken = closeParenToken;
+    this.arguments = arguments;
     this.classBody = classBody;
   }
 
@@ -105,7 +99,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   }
 
   @Override
-  public List<ExpressionTree> arguments() {
+  public Arguments arguments() {
     return arguments;
   }
 
@@ -125,9 +119,8 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
     addIfNotNull(iteratorBuilder, enclosingExpression, dotToken, newKeyword);
     iteratorBuilder.add(identifier);
-    addIfNotNull(iteratorBuilder, openParenToken);
-    iteratorBuilder.addAll(arguments);
-    addIfNotNull(iteratorBuilder, closeParenToken, classBody);
+    iteratorBuilder.add(arguments);
+    addIfNotNull(iteratorBuilder, classBody);
     
     return iteratorBuilder.build().iterator();
   }
@@ -150,19 +143,6 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     }
     return constructorIdentifier;
   }
-
-  @Nullable
-  @Override
-  public SyntaxToken openParenToken() {
-    return openParenToken;
-  }
-
-  @Nullable
-  @Override
-  public SyntaxToken closeParenToken() {
-    return closeParenToken;
-  }
-
   @Nullable
   @Override
   public SyntaxToken newKeyword() {

@@ -33,6 +33,7 @@ import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -131,14 +132,15 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     for (AnnotationTree tree : annotations) {
       AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve((JavaSymbol.TypeJavaSymbol) tree.symbolType().symbol());
       symbol.metadata().addAnnotation(annotationInstance);
-      if (tree.arguments().size() > 1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
-        for (ExpressionTree expressionTree : tree.arguments()) {
+      Arguments arguments = tree.arguments();
+      if (arguments.size() > 1 || (!arguments.isEmpty() && arguments.get(0).is(Tree.Kind.ASSIGNMENT))) {
+        for (ExpressionTree expressionTree : arguments) {
           AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
-          //TODO: Store more precise value than the expression (real value in case of literal, symbol for enums, array of values, solve constants?)
+          // TODO: Store more precise value than the expression (real value in case of literal, symbol for enums, array of values, solve constants?)
           annotationInstance.addValue(new AnnotationValueResolve(((IdentifierTree) aet.variable()).name(), aet.expression()));
         }
       } else {
-        //Constant
+        // Constant
         addConstantValue(tree, annotationInstance);
       }
     }
@@ -450,7 +452,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     Resolve.Env newClassEnv = semanticModel.getEnv(tree);
     resolveAs(tree.identifier(), JavaSymbol.TYP, newClassEnv, false);
     resolveAs(tree.typeArguments(), JavaSymbol.TYP);
-    resolveAs(tree.arguments(), JavaSymbol.VAR);
+    resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));
     ClassTree classBody = tree.classBody();
@@ -568,9 +570,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       return;
     }
     resolveAs(tree.annotationType(), JavaSymbol.TYP);
-    if (tree.arguments().size() > 1 || (!tree.arguments().isEmpty() && tree.arguments().get(0).is(Tree.Kind.ASSIGNMENT))) {
+    Arguments arguments = tree.arguments();
+    if (arguments.size() > 1 || (!arguments.isEmpty() && arguments.get(0).is(Tree.Kind.ASSIGNMENT))) {
       // resolve by identifying correct identifier in assignment.
-      for (ExpressionTree expressionTree : tree.arguments()) {
+      for (ExpressionTree expressionTree : arguments) {
         AssignmentExpressionTree aet = (AssignmentExpressionTree) expressionTree;
         IdentifierTree variable = (IdentifierTree) aet.variable();
         JavaSymbol identInType = resolve.findMethod(semanticModel.getEnv(tree), getType(tree.annotationType()), variable.name(), ImmutableList.<JavaType>of()).symbol();
@@ -583,7 +586,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         resolveAs(aet.expression(), JavaSymbol.VAR);
       }
     } else {
-      for (ExpressionTree expressionTree : tree.arguments()) {
+      for (ExpressionTree expressionTree : arguments) {
         resolveAs(expressionTree, JavaSymbol.VAR);
       }
     }
@@ -638,4 +641,5 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       symbol.addUsage(tree);
     }
   }
+
 }
