@@ -296,8 +296,9 @@ public abstract class JavaTree implements Tree {
     public Iterator<Tree> childrenIterator() {
 
       return Iterators.<Tree>concat(
-        isStatic ? Iterators.<Tree>singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
-        Iterators.<Tree>forArray(importToken, qualifiedIdentifier, semiColonToken));
+        Iterators.singletonIterator(importToken),
+        isStatic ? Iterators.singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
+        Iterators.forArray(qualifiedIdentifier, semiColonToken));
     }
   }
 
