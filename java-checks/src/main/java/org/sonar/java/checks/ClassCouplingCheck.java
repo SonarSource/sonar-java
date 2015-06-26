@@ -86,7 +86,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       types = Sets.newHashSet();
     }
     checkTypes(tree.superClass());
-    checkTypes(tree.superInterfaces());
+    checkTypes((List<? extends Tree>) tree.superInterfaces());
     super.visitClass(tree);
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (types.size() > max) {

@@ -68,7 +68,7 @@ class A13 <T extends I1 /* comment FIXME separators of bound are ignored */ & I2
 class A14 <T extends I1 & /* comment */ I2> {}
 class A15 /* comment */ implements I {}
 class A16 implements /* comment */ I {}
-class A17 implements I1 /* comment FIXME separators of interface are ignored */, I2 {}
+class A17 implements I1 /* comment separators of interface*/, I2 {}
 class A18 implements I1, /* comment */ I2 {}
 class A19 /* comment */ extends A02 {}
 

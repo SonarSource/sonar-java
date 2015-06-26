@@ -460,7 +460,7 @@ public class TreeFactory {
     if (extendsClause.isPresent()) {
       InternalSyntaxToken extendsKeyword = (InternalSyntaxToken) extendsClause.get().first();
       QualifiedIdentifierListTreeImpl interfaces = extendsClause.get().second();
-      partial.compleInterfacesForInterface(extendsKeyword, interfaces);
+      partial.completeInterfaces(extendsKeyword, interfaces);
     }
 
     return partial;
@@ -1627,16 +1627,15 @@ public class TreeFactory {
 
   public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {
     ImmutableList.Builder<TypeTree> qualifiedIdentifiers = ImmutableList.builder();
-
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     qualifiedIdentifiers.add(qualifiedIdentifier);
-
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, TypeTree> rest : rests.get()) {
+        separators.add(rest.first());
         qualifiedIdentifiers.add(rest.second());
       }
     }
-
-    return new QualifiedIdentifierListTreeImpl(qualifiedIdentifiers.build());
+    return new QualifiedIdentifierListTreeImpl(qualifiedIdentifiers.build(), separators.build());
   }
 
   public ArrayAccessExpressionTreeImpl newArrayAccessExpression(Optional<List<AnnotationTreeImpl>> annotations, InternalSyntaxToken openBracketToken, ExpressionTree index,

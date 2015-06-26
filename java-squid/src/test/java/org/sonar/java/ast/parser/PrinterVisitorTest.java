@@ -35,7 +35,8 @@ public class PrinterVisitorTest {
     String expectedOutput = "CompilationUnitTree 1 : [\n" +
         "  ClassTree 1\n" +
         "    ModifiersTree\n" +
-        "    TypeParameters : [\n"+
+        "    TypeParameters\n"+
+        "    Tree : [\n"+
         "    MethodTree 1\n" +
         "      ModifiersTree\n" +
         "      TypeParameters\n"+

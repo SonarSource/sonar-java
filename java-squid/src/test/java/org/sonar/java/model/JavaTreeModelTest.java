@@ -400,6 +400,8 @@ public class JavaTreeModelTest {
     assertThat(tree.openBraceToken().text()).isEqualTo("{");
     assertThat(tree.superClass()).isNotNull();
     assertThat(tree.superInterfaces()).hasSize(2);
+    assertThat(tree.superInterfaces().separators()).hasSize(1);
+    assertThat(tree.superInterfaces().separators().get(0).text()).isEqualTo(",");
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.declarationKeyword().text()).isEqualTo("class");
 
@@ -555,7 +557,7 @@ public class JavaTreeModelTest {
     assertThat(type.annotations()).hasSize(1);
     assertThatChildrenIteratorHasSize(type, 2);
 
-    variable = (VariableTree) ((TryStatementTree) firstMethodFirstStatement("class T { private void m() { try{ } catch (@Foo E1 | E2 e) {}; } }")).catches().get(0).parameter();
+    variable = ((TryStatementTree) firstMethodFirstStatement("class T { private void m() { try{ } catch (@Foo E1 | E2 e) {}; } }")).catches().get(0).parameter();
     assertThat(variable.modifiers()).hasSize(1);
     assertThatChildrenIteratorHasSize(variable, 3);
     type = variable.type();
@@ -563,17 +565,17 @@ public class JavaTreeModelTest {
     assertThat(type.annotations()).isEmpty();
     assertThatChildrenIteratorHasSize(type, 2);
 
-    ClassTree classTree = (ClassTree) firstType("class T extends @Foo a.b.C {}");
+    ClassTree classTree = firstType("class T extends @Foo a.b.C {}");
     assertThat(classTree.modifiers()).isEmpty();
-    assertThatChildrenIteratorHasSize(classTree, 8);
+    assertThatChildrenIteratorHasSize(classTree, 9);
     type = classTree.superClass();
     assertThat(type.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(type.annotations()).hasSize(1);
     assertThatChildrenIteratorHasSize(type, 4);
 
-    classTree = (ClassTree) firstType("class T extends @Foo a.b.C<Integer> {}");
+    classTree = firstType("class T extends @Foo a.b.C<Integer> {}");
     assertThat(classTree.modifiers()).isEmpty();
-    assertThatChildrenIteratorHasSize(classTree, 8);
+    assertThatChildrenIteratorHasSize(classTree, 9);
     type = classTree.superClass();
     assertThat(type.is(Tree.Kind.PARAMETERIZED_TYPE)).isTrue();
     assertThat(type.annotations()).hasSize(1);
@@ -581,7 +583,7 @@ public class JavaTreeModelTest {
 
     classTree = (ClassTree) firstMethodFirstStatement("class MyClass<A, B, C> { void foo() { class MyOtherClass extends @Foo MyClass<A, B, C>.MyInnerClass {} } public class MyInnerClass {}}");
     assertThat(classTree.modifiers()).isEmpty();
-    assertThatChildrenIteratorHasSize(classTree, 8);
+    assertThatChildrenIteratorHasSize(classTree, 9);
     type = classTree.superClass();
     assertThat(type.is(Tree.Kind.MEMBER_SELECT)).isTrue();
     assertThat(type.annotations()).hasSize(1);
@@ -742,7 +744,7 @@ public class JavaTreeModelTest {
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
     assertThat(tree.declarationKeyword().text()).isEqualTo("enum");
-    assertThatChildrenIteratorHasSize(tree, 9);
+    assertThatChildrenIteratorHasSize(tree, 8);
 
     tree = firstType("public enum T { }");
     assertThat(tree.is(Tree.Kind.ENUM)).isTrue();
@@ -754,7 +756,7 @@ public class JavaTreeModelTest {
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("enum");
-    assertThatChildrenIteratorHasSize(tree, 6);
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   @Test
@@ -873,8 +875,9 @@ public class JavaTreeModelTest {
     assertThat(typeParameters).isNotEmpty();
     assertThat(tree.superClass()).isNull();
     assertThat(tree.superInterfaces()).hasSize(2);
+    assertThat(tree.superInterfaces().separators()).hasSize(1);
     assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
-    assertThatChildrenIteratorHasSize(tree, 9);
+    assertThatChildrenIteratorHasSize(tree, 8);
 
     tree = firstType("public interface T { }");
     assertThat(tree.is(Tree.Kind.INTERFACE)).isTrue();
@@ -887,7 +890,7 @@ public class JavaTreeModelTest {
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
-    assertThatChildrenIteratorHasSize(tree, 6);
+    assertThatChildrenIteratorHasSize(tree, 7);
   }
 
   @Test
@@ -959,7 +962,7 @@ public class JavaTreeModelTest {
     assertThat(tree.closeBraceToken().text()).isEqualTo("}");
     assertThat(tree.superInterfaces()).isEmpty();
     assertThat(tree.declarationKeyword().text()).isEqualTo("interface");
-    assertThatChildrenIteratorHasSize(tree, 7);
+    assertThatChildrenIteratorHasSize(tree, 8);
   }
 
   @Test
@@ -1031,7 +1034,7 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.ABSTRACT);
     assertThat(tree).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 6);
+    assertThatChildrenIteratorHasSize(tree, 7);
 
     block = ((MethodTree) firstTypeMember("class T { void m() { static enum Local { ; } } }")).block();
     tree = (ClassTree) block.body().get(0);
@@ -1039,7 +1042,7 @@ public class JavaTreeModelTest {
     assertThat(tree.modifiers().modifiers()).hasSize(1);
     assertThat(tree.modifiers().modifiers().get(0).modifier()).isEqualTo(Modifier.STATIC);
     assertThat(tree).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 7);
+    assertThatChildrenIteratorHasSize(tree, 8);
   }
 
   /**
