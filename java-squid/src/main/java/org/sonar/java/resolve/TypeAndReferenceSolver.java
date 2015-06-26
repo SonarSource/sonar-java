@@ -389,7 +389,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitNewArray(NewArrayTree tree) {
     resolveAs(tree.type(), JavaSymbol.TYP);
     scan(tree.dimensions());
-    resolveAs(tree.initializers(), JavaSymbol.VAR);
+    resolveAs((List<? extends Tree>) tree.initializers(), JavaSymbol.VAR);
     JavaType type = getType(tree.type());
     int dimensions = tree.dimensions().size();
     // TODO why?

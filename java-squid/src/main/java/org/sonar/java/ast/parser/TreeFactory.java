@@ -674,20 +674,22 @@ public class TreeFactory {
 
     // FIXME SONARJAVA-547 commas should be handled.
 
-    NewArrayTreeImpl elementValues = partial.or(new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), ImmutableList.<ExpressionTree>of()));
+    NewArrayTreeImpl elementValues = partial.or(new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), InitializerListTreeImpl.emptyList()));
 
     return elementValues.completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public NewArrayTreeImpl newElementValueArrayInitializer(ExpressionTree elementValue, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     expressions.add(elementValue);
     if (rests.isPresent()) {
       for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
+        separators.add(rest.first());
         expressions.add(rest.second());
       }
     }
-    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), expressions.build());
+    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), new InitializerListTreeImpl(expressions.build(), separators.build()));
   }
 
   public ArgumentListTreeImpl newSingleElementAnnotation(InternalSyntaxToken openParenToken, ExpressionTree elementValue, InternalSyntaxToken closeParenToken) {
@@ -1456,7 +1458,7 @@ public class TreeFactory {
         dimensions.add(new ArrayDimensionTreeImpl(annotations, brackets.first(), null, brackets.second()));
       }
     }
-    return new NewArrayTreeImpl(dimensions.build(), ImmutableList.<ExpressionTree>of());
+    return new NewArrayTreeImpl(dimensions.build(), InitializerListTreeImpl.emptyList());
   }
 
   public ExpressionTree basicClassExpression(PrimitiveTypeTreeImpl basicType, Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> dimensions,
@@ -1598,13 +1600,16 @@ public class TreeFactory {
   public NewArrayTreeImpl newArrayInitializer(InternalSyntaxToken openBraceToken, Optional<List<Tuple<ExpressionTree, Optional<InternalSyntaxToken>>>> rests,
     InternalSyntaxToken closeBraceToken) {
     ImmutableList.Builder<ExpressionTree> initializers = ImmutableList.builder();
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     if (rests.isPresent()) {
       for (Tuple<ExpressionTree, Optional<InternalSyntaxToken>> rest : rests.get()) {
-        // FIXME SONARJAVA-547 commas should be handled.
         initializers.add(rest.first());
+        if(rest.second().isPresent()) {
+          separators.add(rest.second().get());
+        }
       }
     }
-    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), initializers.build()).completeWithCurlyBraces(openBraceToken, closeBraceToken);
+    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), new InitializerListTreeImpl(initializers.build(), separators.build())).completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {

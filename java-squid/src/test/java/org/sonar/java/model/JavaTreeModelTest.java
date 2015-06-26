@@ -1689,8 +1689,9 @@ public class JavaTreeModelTest {
     assertThat(tree.type()).isNotNull();
     assertThat(tree.dimensions()).hasSize(2);
     assertThat(tree.initializers()).hasSize(2);
+    assertThat(tree.initializers().separators()).hasSize(1);
     assertThat(tree.newKeyword()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 8);
+    assertThatChildrenIteratorHasSize(tree, 7);
 
     ArrayDimensionTree dimension = tree.dimensions().get(0);
     assertThat(dimension.is(Tree.Kind.ARRAY_DIMENSION)).isTrue();
@@ -1709,10 +1710,12 @@ public class JavaTreeModelTest {
 
     NewArrayTree firstDim = (NewArrayTree) tree.initializers().get(0);
     assertThat(firstDim.initializers()).hasSize(1);
+    assertThat(firstDim.initializers().separators()).isEmpty();
     assertThatChildrenIteratorHasSize(firstDim, 3);
     NewArrayTree secondDim = (NewArrayTree) tree.initializers().get(1);
     assertThat(secondDim.initializers()).hasSize(2);
-    assertThatChildrenIteratorHasSize(secondDim, 4);
+    assertThat(secondDim.initializers().separators()).hasSize(1);
+    assertThatChildrenIteratorHasSize(secondDim, 3);
 
     tree = (NewArrayTree) expressionOfReturnStatement("class T { int[][] m() { return new int[2][2]; } }");
     assertThat(tree.is(Tree.Kind.NEW_ARRAY)).isTrue();
@@ -1720,7 +1723,7 @@ public class JavaTreeModelTest {
     assertThat(tree.dimensions()).hasSize(2);
     assertThat(tree.initializers()).isEmpty();
     assertThat(tree.newKeyword()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 4);
+    assertThatChildrenIteratorHasSize(tree, 5);
     dimension = tree.dimensions().get(0);
     assertThat(dimension.is(Tree.Kind.ARRAY_DIMENSION)).isTrue();
     assertThat(dimension.annotations()).isEmpty();
@@ -1735,7 +1738,7 @@ public class JavaTreeModelTest {
     assertThat(tree.dimensions()).hasSize(2);
     assertThat(tree.initializers()).hasSize(2);
     assertThat(tree.newKeyword()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 8);
+    assertThatChildrenIteratorHasSize(tree, 7);
     dimension = tree.dimensions().get(0);
     assertThat(dimension.is(Tree.Kind.ARRAY_DIMENSION)).isTrue();
     assertThat(dimension.annotations()).isEmpty();
@@ -1757,7 +1760,7 @@ public class JavaTreeModelTest {
     assertThat(tree.dimensions()).hasSize(2);
     assertThat(tree.initializers()).isEmpty();
     assertThat(tree.newKeyword()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 4);
+    assertThatChildrenIteratorHasSize(tree, 5);
     dimension = tree.dimensions().get(0);
     assertThat(dimension.is(Tree.Kind.ARRAY_DIMENSION)).isTrue();
     assertThat(dimension.annotations()).isEmpty();
@@ -1779,7 +1782,7 @@ public class JavaTreeModelTest {
     assertThat(tree.dimensions()).hasSize(1);
     assertThat(tree.initializers()).isEmpty();
     assertThat(tree.newKeyword()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 3);
+    assertThatChildrenIteratorHasSize(tree, 4);
     dimension = tree.dimensions().get(0);
     assertThat(dimension.is(Tree.Kind.ARRAY_DIMENSION)).isTrue();
     assertThat(dimension.annotations()).hasSize(1);

@@ -44,8 +44,8 @@ enum E3 {
 
 @Target(/* comment */{
   /*comment */ ElementType.FIELD
-  /* comment FIXME separators of arguments are ignored */, ElementType.ANNOTATION_TYPE, 
-  ElementType.TYPE_PARAMETER /* comment FIXME separators of arguments are ignored */,
+  /* comment separators of arguments */, ElementType.ANNOTATION_TYPE,
+  ElementType.TYPE_PARAMETER /* comment separators of arguments are ignored */,
   ElementType. /* comment */METHOD,
   ElementType.TYPE_USE /* comment*/}
 /* comment */)
@@ -126,7 +126,7 @@ abstract class Rest<T> {
   int[] c14 = new int[] /* comment */{};
   int[] c15 = new int[] {/* comment */};
   int[] c16 = new int[] {/* comment */0, 1};
-  int[] c17 = new int[] {0 /* comment FIXME separators of array initializers are ignored */, 1};
+  int[] c17 = new int[] {0 /* comment separators of array initializers */, 1};
   int[][] c18 = new int[][] {/* comment */{0, 1}, null};
   int[][] c19 = new int[][] {{0 , 1}, /* comment */ null};
   
