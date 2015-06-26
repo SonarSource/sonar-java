@@ -154,7 +154,7 @@ abstract class Rest<T> {
   abstract <T/* comment */> void m16(T t);
   abstract void m17() /* comment */ throws Exception;
   abstract void m18() throws /* comment */ Exception;
-  abstract void m19() throws RuntimeException /* comment FIXME separators of exceptions are ignored */, Exception;
+  abstract void m19() throws RuntimeException /* comment separators of exceptions */, Exception;
   
   /* comment */ public Rest() {}
   public /* comment */ Rest(int i) {}

@@ -89,6 +89,7 @@ import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -529,7 +530,7 @@ public class TreeFactory {
     }
 
     InternalSyntaxToken throwsToken = null;
-    List<TypeTree> throwsClauses = ImmutableList.of();
+    ListTree<TypeTree> throwsClauses = QualifiedIdentifierListTreeImpl.emptyList();
     if (throwsClause.isPresent()) {
       throwsToken = (InternalSyntaxToken) throwsClause.get().first();
       throwsClauses = throwsClause.get().second();

@@ -22,6 +22,7 @@ package org.sonar.java.model.declaration;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
+import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -65,7 +67,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   private SyntaxToken semicolonToken;
   @Nullable
   private final SyntaxToken throwsToken;
-  private final List<TypeTree> throwsClauses;
+  private final ListTree<TypeTree> throwsClauses;
   private final SyntaxToken defaultToken;
   private final ExpressionTree defaultValue;
 
@@ -81,7 +83,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     this.closeParenToken = parameters.closeParenToken();
     this.block = null;
     this.throwsToken = null;
-    this.throwsClauses = ImmutableList.of();
+    this.throwsClauses = QualifiedIdentifierListTreeImpl.emptyList();
     this.defaultToken = defaultToken;
     this.defaultValue = defaultValue;
   }
@@ -91,7 +93,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     IdentifierTree simpleName,
     FormalParametersListTreeImpl parameters,
     @Nullable SyntaxToken throwsToken,
-    List<TypeTree> throwsClauses,
+    ListTree<TypeTree> throwsClauses,
     @Nullable BlockTree block,
     @Nullable SyntaxToken semicolonToken) {
 
@@ -175,7 +177,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public List<TypeTree> throwsClauses() {
+  public ListTree<TypeTree> throwsClauses() {
     return throwsClauses;
   }
 
@@ -225,7 +227,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     iteratorBuilder.add(modifiers, typeParameters);
     if (returnType != null) {
       iteratorBuilder.add(returnType);
@@ -235,7 +237,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     iteratorBuilder.add(closeParenToken);
     if (throwsToken != null) {
       iteratorBuilder.add(throwsToken);
-      iteratorBuilder.addAll(throwsClauses.iterator());
+      iteratorBuilder.add(throwsClauses);
     }
     if (defaultToken != null) {
       iteratorBuilder.add(defaultToken, defaultValue);

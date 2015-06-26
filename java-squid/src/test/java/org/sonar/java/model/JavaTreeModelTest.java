@@ -630,9 +630,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 11);
+    assertThatChildrenIteratorHasSize(tree, 10);
   }
 
   @Test
@@ -686,9 +687,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.parameters().get(1).endToken()).isNull();
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 12);
+    assertThatChildrenIteratorHasSize(tree, 11);
 
     // void method
     tree = (MethodTree) firstTypeMember("class T { public void m(int p) throws Exception1, Exception2 {} }");
@@ -703,7 +705,7 @@ public class JavaTreeModelTest {
     assertThat(tree.throwsClauses()).hasSize(2);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 11);
+    assertThatChildrenIteratorHasSize(tree, 10);
 
     tree = (MethodTree) firstTypeMember("class T { public int[] m(int p1, int... p2)[] throws Exception1, Exception2 {} }");
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
@@ -718,9 +720,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 12);
+    assertThatChildrenIteratorHasSize(tree, 11);
 
     tree = (MethodTree) firstTypeMember("class T { public int m()[] { return null; } }");
     assertThat(tree.is(Tree.Kind.METHOD)).isTrue();
@@ -828,9 +831,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThatArrayTypeHasEllipsis((ArrayTypeTree) tree.parameters().get(1).type());
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 11);
+    assertThatChildrenIteratorHasSize(tree, 10);
   }
 
   @Test
@@ -843,9 +847,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThatArrayTypeHasEllipsis((ArrayTypeTree) tree.parameters().get(1).type());
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNotNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 12);
+    assertThatChildrenIteratorHasSize(tree, 11);
 
     // void method
     tree = (MethodTree) firstType("enum T { ; void m(int p) throws Exception1, Exception2; }").members().get(1);
@@ -854,9 +859,10 @@ public class JavaTreeModelTest {
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 11);
+    assertThatChildrenIteratorHasSize(tree, 10);
   }
 
   /*
@@ -929,9 +935,10 @@ public class JavaTreeModelTest {
     assertThat(tree.parameters().get(0).type()).isInstanceOf(PrimitiveTypeTree.class);
     assertThat(tree.parameters().get(1).type()).isInstanceOf(ArrayTypeTree.class);
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 12);
+    assertThatChildrenIteratorHasSize(tree, 11);
 
     // void method
     tree = (MethodTree) firstTypeMember("interface T { void m(int p) throws Exception1, Exception2; }");
@@ -941,9 +948,10 @@ public class JavaTreeModelTest {
     assertThat(tree.simpleName().name()).isEqualTo("m");
     assertThat(tree.parameters()).hasSize(1);
     assertThat(tree.throwsClauses()).hasSize(2);
+    assertThat(tree.throwsClauses().separators()).hasSize(1);
     assertThat(tree.block()).isNull();
     assertThat(tree.defaultValue()).isNull();
-    assertThatChildrenIteratorHasSize(tree, 11);
+    assertThatChildrenIteratorHasSize(tree, 10);
   }
 
   /*

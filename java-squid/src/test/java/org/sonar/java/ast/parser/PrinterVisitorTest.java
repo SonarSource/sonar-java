@@ -41,6 +41,7 @@ public class PrinterVisitorTest {
         "      ModifiersTree\n" +
         "      TypeParameters\n"+
         "      PrimitiveTypeTree 1\n" +
+        "      Tree\n"+
         "      BlockTree 1\n" +
         "    ]\n" +
         "  ]\n";
