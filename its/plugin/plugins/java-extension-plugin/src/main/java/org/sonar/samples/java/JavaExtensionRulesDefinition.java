@@ -12,23 +12,19 @@ public class JavaExtensionRulesDefinition implements RulesDefinition {
 
   public static final String REPOSITORY_KEY = "java-extension";
 
-  public static final String TEST_REPOSITORY_KEY = "java-extension-test";
-
   @Override
   public void define(Context context) {
     NewRepository repo = context.createRepository(REPOSITORY_KEY, "java");
     repo.setName(REPOSITORY_KEY);
 
-    NewRepository testRepo = context.createRepository(TEST_REPOSITORY_KEY, "java");
-    testRepo.setName(TEST_REPOSITORY_KEY);
-
     // We could use a XML or JSON file to load all rule metadata, but
     // we prefer use annotations in order to have all information in a
     // single place
     RulesDefinitionAnnotationLoader annotationLoader = new RulesDefinitionAnnotationLoader();
+    // Load custom check classes
     annotationLoader.load(repo, JavaExtensionsCheckRegistrar.checkClasses());
-    annotationLoader.load(testRepo, JavaExtensionsTestCheckRegistrar.checkClasses());
+    // Load custom test check classes
+    annotationLoader.load(repo, JavaExtensionsCheckRegistrar.testCheckClasses());
     repo.done();
-    testRepo.done();
   }
 }

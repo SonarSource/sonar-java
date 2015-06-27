@@ -13,7 +13,9 @@ public class JavaExtensionPlugin extends SonarPlugin {
 
   @Override
   public List getExtensions() {
-    return ImmutableList.of(JavaExtensionRulesDefinition.class, JavaExtensionsCheckRegistrar.class, JavaExtensionsTestCheckRegistrar.class);
+    return ImmutableList.of(
+      JavaExtensionRulesDefinition.class,
+      JavaExtensionsCheckRegistrar.class);
   }
 
 }

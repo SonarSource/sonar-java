@@ -45,34 +45,16 @@ public interface CheckRegistrar extends BatchExtension {
    */
   void register(RegistrarContext registrarContext);
 
-  /**
-   * This method is called to retrieve the type of the CheckRegistrar instance.
-   * @return type of CheckRegistrar indicating whether the checks apply to source files or test files.
-   */
-  Type type();
-
-  /**
-   * The Type enum is to be used to indicate if checks it helds are to be applied on source or test files.
-   */
-  public enum Type {
-    /**
-     * Indicates that checks held by the CheckRegistrar need to be applied to source files.
-     */
-    SOURCE_CHECKS,
-    /**
-     * Indicates that checks held by the CheckRegistrar need to be applied to test files.
-     */
-    TEST_CHECKS;
-  }
-
   class RegistrarContext {
     private String repositoryKey;
     private Iterable<Class<? extends JavaCheck>> checkClasses;
+    private Iterable<Class<? extends JavaCheck>> testCheckClasses;
 
-    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses) {
+    public void registerClassesForRepository(String repositoryKey, Iterable<Class<? extends JavaCheck>> checkClasses, Iterable<Class<? extends JavaCheck>> testCheckClasses) {
       Preconditions.checkArgument(StringUtils.isNotBlank(repositoryKey), "Please specify a valid repository key to register your custom rules");
       this.repositoryKey = repositoryKey;
       this.checkClasses = checkClasses;
+      this.testCheckClasses = testCheckClasses;
     }
 
     public String repositoryKey() {
@@ -81,6 +63,10 @@ public interface CheckRegistrar extends BatchExtension {
 
     public Iterable<Class<? extends JavaCheck>> checkClasses() {
       return checkClasses;
+    }
+
+    public Iterable<Class<? extends JavaCheck>> testCheckClasses() {
+      return testCheckClasses;
     }
 
   }

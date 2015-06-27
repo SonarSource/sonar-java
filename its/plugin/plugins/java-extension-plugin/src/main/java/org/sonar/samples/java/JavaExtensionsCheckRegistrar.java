@@ -12,14 +12,16 @@ public class JavaExtensionsCheckRegistrar implements CheckRegistrar {
     return new Class[] {ExampleCheck.class, SubscriptionExampleCheck.class};
   }
 
-  @Override
-  public void register(RegistrarContext registrarContext) {
-    registrarContext.registerClassesForRepository(JavaExtensionRulesDefinition.REPOSITORY_KEY, Arrays.asList(checkClasses()));
+  /**
+   * Lists all the test checks provided by the plugin
+   */
+  public static Class<? extends JavaCheck>[] testCheckClasses() {
+    return new Class[] {SubscriptionExampleTestCheck.class};
   }
 
   @Override
-  public Type type() {
-    return Type.SOURCE_CHECKS;
+  public void register(RegistrarContext registrarContext) {
+    registrarContext.registerClassesForRepository(JavaExtensionRulesDefinition.REPOSITORY_KEY, Arrays.asList(checkClasses()), Arrays.asList(testCheckClasses()));
   }
 
 }
