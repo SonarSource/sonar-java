@@ -22,7 +22,9 @@ package org.sonar.java.parser.sslr;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.GenericTokenType;
+import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
@@ -87,7 +89,11 @@ public class SyntaxTreeCreator<T> {
       if (node.getChildren().isEmpty()) {
         return Optional.absent();
       } else {
-        return Optional.of(visit(node.getChildren().get(0)));
+        Object child = visit(node.getChildren().get(0));
+        if (child instanceof AstNode) {
+          ((AstNode) child).hasToBeSkippedFromAst();
+        }
+        return Optional.of(child);
       }
     }
 
@@ -96,7 +102,19 @@ public class SyntaxTreeCreator<T> {
     for (ParseNode child : children) {
       Object result = visit(child);
       if (result != null) {
-        convertedChildren.add(result);
+        // FIXME to remove aafter full migration: Allow to skip optional nodes that are supposed to bw skipped from the AST
+        if ((result instanceof Optional && ((Optional) result).isPresent() && ((Optional) result).get() instanceof AstNode) && ((AstNode) ((Optional) result).get()).hasToBeSkippedFromAst()){
+          for (AstNode resultChild : ((AstNode) ((Optional) result).get()).getChildren()) {
+            convertedChildren.add(resultChild);
+          }
+
+        } else if (result instanceof AstNode && ((AstNode) result).hasToBeSkippedFromAst()) {
+          for (AstNode resultChild : ((AstNode) result).getChildren()) {
+            convertedChildren.add(resultChild);
+          }
+        } else {
+          convertedChildren.add(result);
+        }
       }
     }
 
@@ -110,14 +128,7 @@ public class SyntaxTreeCreator<T> {
 
     Method method = mapping.actionForRuleKey(ruleKey);
     if (method == null) {
-      for (Object child : convertedChildren) {
-        if (child instanceof InternalSyntaxToken) {
-          InternalSyntaxToken syntaxToken = (InternalSyntaxToken) child;
-          syntaxToken.setGrammarRuleKey(rule.getRuleKey());
-          return child;
-        }
-      }
-      return new InternalSyntaxSpacing(node.getStartIndex(), node.getEndIndex());
+      return createNonTerminal(ruleKey, rule, convertedChildren, node.getStartIndex(), node.getEndIndex());
     }
 
     try {
@@ -129,6 +140,17 @@ public class SyntaxTreeCreator<T> {
     } catch (InvocationTargetException e) {
       throw Throwables.propagate(e);
     }
+  }
+
+  private static Object createNonTerminal(GrammarRuleKey ruleKey, Rule rule, List<Object> children, int startIndex, int endIndex) {
+    for (Object child : children) {
+      if (child instanceof InternalSyntaxToken) {
+        InternalSyntaxToken syntaxToken = (InternalSyntaxToken) child;
+        syntaxToken.setGrammarRuleKey(ruleKey);
+        return child;
+      }
+    }
+    return new InternalSyntaxSpacing(startIndex, endIndex);
   }
 
   private InternalSyntaxToken visitTerminal(ParseNode node) {
