@@ -20,7 +20,6 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.Lists;
-import org.fest.assertions.Assertions;
 import org.junit.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.EmptyStatementTreeImpl;
@@ -31,12 +30,13 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.Iterator;
 import java.util.List;
 
+import static org.fest.assertions.Assertions.assertThat;
+
 public class ListTreeImplTest {
 
 
   @Test
   public void separators_order_in_children_iteration() throws Exception {
-
     Tree tree1 = new EmptyStatementTreeImpl(null);
     Tree tree2 = new EmptyStatementTreeImpl(null);
     Tree tree3 = new EmptyStatementTreeImpl(null);
@@ -50,7 +50,21 @@ public class ListTreeImplTest {
     while (childrenIterator.hasNext()) {
       result.add(childrenIterator.next());
     }
-    Assertions.assertThat(result).containsExactly(tree1, token1, tree2, token2, tree3);
+    assertThat(result).containsExactly(tree1, token1, tree2, token2, tree3);
+  }
+
+  @Test
+  public void emptySeparators() throws Exception {
+    Tree tree1 = new EmptyStatementTreeImpl(null);
+    List<Tree> trees = Lists.newArrayList(tree1);
+    List<SyntaxToken> separators = Lists.newArrayList();
+    ListTreeImpl<Tree> listTree = new MyList(trees, separators);
+    Iterator<Tree> childrenIterator = listTree.childrenIterator();
+    List result = Lists.newArrayList();
+    while (childrenIterator.hasNext()) {
+      result.add(childrenIterator.next());
+    }
+    assertThat(result).containsExactly(tree1);
   }
 
   private static class MyList extends ListTreeImpl<Tree> {

@@ -145,7 +145,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       }
     }
   }
-
+  
   private static void addConstantValue(AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
     Collection<Symbol> scopeSymbols = tree.annotationType().symbolType().symbol().memberSymbols();
     for (ExpressionTree expressionTree : tree.arguments()) {

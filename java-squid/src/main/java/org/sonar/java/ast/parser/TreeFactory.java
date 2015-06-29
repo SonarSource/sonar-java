@@ -1612,7 +1612,8 @@ public class TreeFactory {
         }
       }
     }
-    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), new InitializerListTreeImpl(initializers.build(), separators.build())).completeWithCurlyBraces(openBraceToken, closeBraceToken);
+    return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(),
+        new InitializerListTreeImpl(initializers.build(), separators.build())).completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
   public QualifiedIdentifierListTreeImpl newQualifiedIdentifierList(TypeTree qualifiedIdentifier, Optional<List<Tuple<InternalSyntaxToken, TypeTree>>> rests) {

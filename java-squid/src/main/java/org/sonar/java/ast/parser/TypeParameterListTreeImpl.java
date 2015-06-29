@@ -40,14 +40,15 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   @Nullable
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters, List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
+  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters,
+    List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
     super(JavaLexer.TYPE_PARAMETERS, typeParameters, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
   }
 
-  public TypeParameterListTreeImpl(){
+  public TypeParameterListTreeImpl() {
     super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<SyntaxToken>of());
     this.openBracketToken = null;
     this.closeBracketToken = null;
@@ -73,9 +74,9 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-        Iterators.singletonIterator(openBracketToken),
-        super.childrenIterator(),
-        Iterators.singletonIterator(closeBracketToken));
+      Iterators.singletonIterator(openBracketToken),
+      super.childrenIterator(),
+      Iterators.singletonIterator(closeBracketToken));
   }
 
   @Override

@@ -72,12 +72,7 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    //FIXME SONARJAVA-547 Separators
-    Iterator<Tree> iterator = (Iterator<Tree>) ((Iterable<? extends Tree>) list).iterator();
-    if(separators.isEmpty()) {
-      return iterator;
-    }
-    return new InterleaveIterator<>(ImmutableList.of(iterator, separators.iterator()));
+    return new InterleaveIterator<>(ImmutableList.of(((Iterable<? extends Tree>) list).iterator(), separators.iterator()));
   }
   private static class InterleaveIterator<E> extends AbstractIterator<E>{
 
