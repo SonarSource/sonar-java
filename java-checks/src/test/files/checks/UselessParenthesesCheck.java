@@ -31,6 +31,7 @@ class Foo {
     this.a = false ? (true ? 1 : 2) : 2; // Compliant
     this.a = (1+2)/2; // Compliant
     this.a = ((int[])contentSpec.value)[0]; // Compliant
+    Object[] foo = {(true?1:2)}; // Noncompliant
   }
     public static final short value = (short)(0);
 }

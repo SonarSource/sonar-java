@@ -36,12 +36,12 @@ public class PrinterVisitorTest {
         "  ClassTree 1\n" +
         "    ModifiersTree\n" +
         "    TypeParameters\n"+
-        "    Tree : [\n"+
+        "    ListTree : [\n"+
         "    MethodTree 1\n" +
         "      ModifiersTree\n" +
         "      TypeParameters\n"+
         "      PrimitiveTypeTree 1\n" +
-        "      Tree\n"+
+        "      ListTree\n"+
         "      BlockTree 1\n" +
         "    ]\n" +
         "  ]\n";
