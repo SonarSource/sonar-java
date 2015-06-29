@@ -66,6 +66,9 @@ class A {
     formatter.format("value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
     formatter.format(loc, "value is " + value); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
 
+    pr.format("value is "+"asd"); // Noncompliant {{Format specifiers should be used instead of string concatenation.}}
+    pr.format("value is "+
+        "asd"); // Compliant operand not on the same line.
     String.format("value is %d", value); // Compliant
 
     String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}

@@ -28,7 +28,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -107,9 +109,13 @@ public class PrintfCheck extends AbstractMethodDetection {
         return;
       }
       verifyParameters(mit, args, params);
-    } else if (formatStringTree.is(Tree.Kind.PLUS)) {
+    } else if (formatStringTree.is(Tree.Kind.PLUS) && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree)) {
       addIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
+  }
+
+  private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
+    return FirstSyntaxTokenFinder.firstSyntaxToken(formatStringTree.leftOperand()).line() == FirstSyntaxTokenFinder.firstSyntaxToken(formatStringTree.rightOperand()).line();
   }
 
   private static void cleanupLineSeparator(List<String> params) {
