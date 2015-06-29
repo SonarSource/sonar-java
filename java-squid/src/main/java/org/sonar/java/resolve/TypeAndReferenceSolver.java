@@ -540,7 +540,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    resolveAs(tree.typeAlternatives(), JavaSymbol.TYP);
+    resolveAs((List<? extends Tree>) tree.typeAlternatives(), JavaSymbol.TYP);
     //TODO compute type of union type: lub(alternatives) cf JLS8 14.20
     registerType(tree, Symbols.unknownType);
   }

@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -392,7 +393,7 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
-    private final List<TypeTree> typeAlternatives;
+    private final ListTree<TypeTree> typeAlternatives;
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
       super(Kind.UNION_TYPE);
@@ -405,7 +406,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<TypeTree> typeAlternatives() {
+    public ListTree<TypeTree> typeAlternatives() {
       return typeAlternatives;
     }
 
@@ -416,12 +417,12 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return ImmutableList.<Tree>builder().addAll(typeAlternatives).build().iterator();
+      return ImmutableList.<Tree>builder().add(typeAlternatives).build().iterator();
     }
 
     @Override
     public List<AnnotationTree> annotations() {
-      return ImmutableList.<AnnotationTree>of();
+      return ImmutableList.of();
     }
   }
 
@@ -460,7 +461,7 @@ public abstract class JavaTree implements Tree {
     public PrimitiveTypeTreeImpl(InternalSyntaxToken token) {
       super(Kind.PRIMITIVE_TYPE);
       this.token = token;
-      this.annotations = ImmutableList.<AnnotationTree>of();
+      this.annotations = ImmutableList.of();
     }
 
     public PrimitiveTypeTreeImpl complete(List<AnnotationTree> annotations) {

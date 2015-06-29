@@ -254,7 +254,7 @@ abstract class Rest<T> {
     try { } catch (Exception e /* comment */) {}
     try { } catch (Exception e ) /* comment */{}
     try { } catch (Exception e ) {/* comment */}
-    try { throw new FileNotFoundException(); } catch (FileNotFoundException /* comment FIXME separators of unary types are ignored */ | UnknownTypeException e ) {}
+    try { throw new FileNotFoundException(); } catch (FileNotFoundException /* comment separators of unary types*/ | UnknownTypeException e ) {}
     try { } /* comment */ finally {}
     try { } finally /* comment */ {}
     try { } finally {/* comment */ }

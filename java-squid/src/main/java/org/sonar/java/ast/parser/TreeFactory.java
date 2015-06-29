@@ -943,11 +943,12 @@ public class TreeFactory {
     }
     ImmutableList.Builder<TypeTree> types = ImmutableList.builder();
     types.add(qualifiedIdentifier);
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
     for (Tuple<InternalSyntaxToken, TypeTree> rest : rests.get()) {
+      separators.add(rest.first());
       types.add(rest.second());
     }
-
-    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build()));
+    return new UnionTypeTreeImpl(new TypeUnionListTreeImpl(types.build(), separators.build()));
   }
 
   public TryStatementTreeImpl newFinallyBlock(JavaTree finallyToken, BlockTreeImpl block) {

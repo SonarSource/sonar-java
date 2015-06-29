@@ -133,7 +133,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    checkTypes(tree.typeAlternatives());
+    checkTypes((List<? extends Tree>) tree.typeAlternatives());
     super.visitUnionType(tree);
   }
 

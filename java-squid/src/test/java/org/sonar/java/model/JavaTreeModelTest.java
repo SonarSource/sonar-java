@@ -565,7 +565,8 @@ public class JavaTreeModelTest {
     type = variable.type();
     assertThat(type.is(Tree.Kind.UNION_TYPE)).isTrue();
     assertThat(type.annotations()).isEmpty();
-    assertThatChildrenIteratorHasSize(type, 2);
+    assertThat(((UnionTypeTree) type).typeAlternatives().separators()).hasSize(1);
+    assertThatChildrenIteratorHasSize(type, 1);
 
     ClassTree classTree = firstType("class T extends @Foo a.b.C {}");
     assertThat(classTree.modifiers()).isEmpty();
@@ -1534,9 +1535,9 @@ public class JavaTreeModelTest {
     parameterTree = tree.catches().get(0).parameter();
     assertThatChildrenIteratorHasSize(parameterTree, 3);
     UnionTypeTree type = (UnionTypeTree) parameterTree.type();
-    // TODO SONARJAVA-547 or operator is not stored
-    assertThatChildrenIteratorHasSize(type, 2);
+    assertThatChildrenIteratorHasSize(type, 1);
     assertThat(type.typeAlternatives()).hasSize(2);
+    assertThat(type.typeAlternatives().separators()).hasSize(1);
     assertThatChildrenIteratorHasSize(tree, 3);
   }
 
