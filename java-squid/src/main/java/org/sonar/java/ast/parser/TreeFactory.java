@@ -970,15 +970,17 @@ public class TreeFactory {
   }
 
   public ResourceListTreeImpl newResources(List<Tuple<VariableTreeImpl, Optional<InternalSyntaxToken>>> rests) {
-    ImmutableList.Builder<VariableTreeImpl> resources = ImmutableList.builder();
+    ImmutableList.Builder<VariableTree> resources = ImmutableList.builder();
+    ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
 
     for (Tuple<VariableTreeImpl, Optional<InternalSyntaxToken>> rest : rests) {
-      VariableTreeImpl resource = rest.first();
-      resources.add(resource);
-      // FIXME SONARJAVA-547 handle semi colon separator
+      if(rest.second().isPresent()) {
+        separators.add(rest.second().get());
+      }
+      resources.add(rest.first());
     }
 
-    return new ResourceListTreeImpl(resources.build());
+    return new ResourceListTreeImpl(resources.build(), separators.build());
   }
 
   public VariableTreeImpl newResource(ModifiersTreeImpl modifiers, TypeTree classType, VariableTreeImpl partial, InternalSyntaxToken equalToken, ExpressionTree expression) {

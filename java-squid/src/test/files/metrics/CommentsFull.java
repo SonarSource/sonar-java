@@ -260,7 +260,7 @@ abstract class Rest<T> {
     try { } finally {/* comment */ }
     try /* comment */ (Closeable c = new FileInputStream("")) {}
     try (Closeable c = new FileInputStream("")/* comment */ ) {}
-    try (Closeable c1 = new FileInputStream("") /* comment FIXME separators of resources are ignored */ ; Closeable c2 = new FileInputStream("")) {}
+    try (Closeable c1 = new FileInputStream("") /* comment separators of resources */ ; Closeable c2 = new FileInputStream("")) {}
     
     int i /* comment */ = 0, j = 0;
     i /* comment */ ++;

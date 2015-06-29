@@ -1522,6 +1522,7 @@ public class JavaTreeModelTest {
     assertThat(tree.finallyBlock()).isNotNull();
     assertThat(tree.openParenToken().text()).isEqualTo("(");
     assertThat(tree.resources()).hasSize(2);
+    assertThat(tree.resources().separators()).hasSize(1);
     assertThat(tree.closeParenToken().text()).isEqualTo(")");
     resource = tree.resources().get(0);
     assertThat(resource.simpleName().name()).isEqualTo("r1");
@@ -1529,7 +1530,7 @@ public class JavaTreeModelTest {
     resource = tree.resources().get(1);
     assertThat(resource.simpleName().name()).isEqualTo("r2");
     assertThat(resource.initializer()).isNotNull();
-    assertThatChildrenIteratorHasSize(tree, 9);
+    assertThatChildrenIteratorHasSize(tree, 8);
 
     tree = (TryStatementTree) firstMethodFirstStatement("class T { void m() { try { } catch (Exception1 | Exception2 e) { } } }");
     parameterTree = tree.catches().get(0).parameter();

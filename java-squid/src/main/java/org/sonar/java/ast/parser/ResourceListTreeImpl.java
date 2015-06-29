@@ -19,14 +19,20 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.java.model.declaration.VariableTreeImpl;
+import com.google.common.collect.ImmutableList;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
-public class ResourceListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
+public class ResourceListTreeImpl extends ListTreeImpl<VariableTree> {
 
-  public ResourceListTreeImpl(List<VariableTreeImpl> resources) {
-    super(JavaLexer.RESOURCE_SPECIFICATION, resources);
+  public ResourceListTreeImpl(List<VariableTree> resources, List<SyntaxToken> tokens) {
+    super(JavaLexer.RESOURCE_SPECIFICATION, resources, tokens);
   }
 
+  public static ListTree<VariableTree> emptyList() {
+    return new ResourceListTreeImpl(ImmutableList.<VariableTree>of(), ImmutableList.<SyntaxToken>of());
+  }
 }
