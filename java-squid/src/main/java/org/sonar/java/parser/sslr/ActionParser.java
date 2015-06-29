@@ -29,9 +29,7 @@ import com.sonar.sslr.api.RecognitionException;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
@@ -224,14 +222,8 @@ public class ActionParser {
     }
 
     @Override
-    public JavaTree invokeRule(GrammarRuleKey grammarRuleKey) {
+    public InternalSyntaxToken invokeRule(GrammarRuleKey grammarRuleKey) {
       push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
-      return null;
-    }
-
-    @Override
-    public InternalSyntaxToken invokeRule(JavaPunctuator javaPunctuator) {
-      push(new DelayedRuleInvocationExpression(b, javaPunctuator));
       return null;
     }
 
