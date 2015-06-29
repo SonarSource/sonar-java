@@ -130,9 +130,9 @@ public class VisitorsBridge {
 
   private boolean isNotJavaLangOrSerializable(String packageName) {
     String name = getContext().getFile().getName();
-    return !(packageName.equals("java/lang")
-        || (packageName.equals("java/lang/annotation") && name.equals("Annotation.java"))
-        || (packageName.equals("java/io") && name.equals("Serializable.java"))
+    return !("java/lang".equals(packageName)
+        || ("java/lang/annotation".equals(packageName) && "Annotation.java".equals(name))
+        || ("java/io".equals(packageName) && "Serializable.java".equals(name))
     );
   }
 
