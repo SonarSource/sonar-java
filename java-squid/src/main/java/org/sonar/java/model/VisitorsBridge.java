@@ -129,14 +129,11 @@ public class VisitorsBridge {
   }
 
   private boolean isNotJavaLangOrSerializable(String packageName) {
-    if(packageName.equals("java/lang")) {
-      return false;
-    } else if(packageName.equals("java/lang/annotation") && getContext().getFile().getName().equals("Annotation.java")) {
-      return false;
-    } else if(packageName.equals("java/io") && getContext().getFile().getName().equals("Serializable.java")) {
-      return false;
-    }
-    return true;
+    String name = getContext().getFile().getName();
+    return !(packageName.equals("java/lang")
+        || (packageName.equals("java/lang/annotation") && name.equals("Annotation.java"))
+        || (packageName.equals("java/io") && name.equals("Serializable.java"))
+    );
   }
 
   private List<File> getProjectClasspath() {
