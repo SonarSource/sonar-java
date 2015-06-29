@@ -57,6 +57,8 @@ public class VisitorsBridgeTest {
       }
     });
     visitorsBridgeWithSemantic.setContext(context);
+    checkFile(contstructFileName("java", "lang", "annotation", "Foo.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithSemantic);
+    checkFile(contstructFileName("java","io","File.java"), "package java.io; class A {}", visitorsBridgeWithSemantic);
     checkFile(contstructFileName("src", "foo", "bar", "java", "lang", "someFile.java"), "package foo.bar.java.lang; class A{}", visitorsBridgeWithSemantic);
   }
 
