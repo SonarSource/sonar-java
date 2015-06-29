@@ -48,14 +48,12 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 public class VisitorsBridge {
 
@@ -107,7 +105,7 @@ public class VisitorsBridge {
     CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
     if (parsedTree != null && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (CompilationUnitTree) parsedTree;
-      if (isNotJavaLangOrSerializable()) {
+      if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
           semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
         } catch (Exception e) {
@@ -130,13 +128,15 @@ public class VisitorsBridge {
     }
   }
 
-  private boolean isNotJavaLangOrSerializable() {
-    String[] path = getContext().peekSourceCode().getName().split(Pattern.quote(File.separator));
-    boolean isJavaLang = path.length > 3 && "java".equals(path[path.length - 3]) && "lang".equals(path[path.length - 2]);
-    boolean isJavaLangAnnotation = path.length > 4 && "Annotation.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 4])
-      && "lang".equals(path[path.length - 3]) && "annotation".equals(path[path.length - 2]);
-    boolean isSerializable = path.length > 3 && "Serializable.java".equals(path[path.length - 1]) && "java".equals(path[path.length - 3]) && "io".equals(path[path.length - 2]);
-    return !(isJavaLang || isJavaLangAnnotation || isSerializable);
+  private boolean isNotJavaLangOrSerializable(String packageName) {
+    if(packageName.equals("java/lang")) {
+      return false;
+    } else if(packageName.equals("java/lang/annotation") && getContext().getFile().getName().equals("Annotation.java")) {
+      return false;
+    } else if(packageName.equals("java/io") && getContext().getFile().getName().equals("Serializable.java")) {
+      return false;
+    }
+    return true;
   }
 
   private List<File> getProjectClasspath() {
