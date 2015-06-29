@@ -28,7 +28,7 @@ import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.parser.sslr.ActionParser;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -51,10 +51,10 @@ public class JavaAstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
 
   private final SquidIndex index;
-  private final ActionParser parser;
+  private final ActionParser<Tree> parser;
   private VisitorsBridge visitor;
 
-  public JavaAstScanner(ActionParser parser) {
+  public JavaAstScanner(ActionParser<Tree> parser) {
     this.parser = parser;
     this.index = new SquidIndex();
   }

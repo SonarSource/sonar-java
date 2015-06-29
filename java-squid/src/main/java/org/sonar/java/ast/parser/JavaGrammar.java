@@ -61,8 +61,8 @@ import org.sonar.java.model.statement.SynchronizedStatementTreeImpl;
 import org.sonar.java.model.statement.ThrowStatementTreeImpl;
 import org.sonar.java.model.statement.TryStatementTreeImpl;
 import org.sonar.java.model.statement.WhileStatementTreeImpl;
-import org.sonar.java.parser.sslr.GrammarBuilder;
-import org.sonar.java.parser.sslr.Optional;
+import com.sonar.sslr.api.typed.GrammarBuilder;
+import com.sonar.sslr.api.typed.Optional;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
@@ -78,10 +78,10 @@ import static org.sonar.java.ast.api.JavaTokenType.IDENTIFIER;
 
 public class JavaGrammar {
 
-  private final GrammarBuilder b;
+  private final GrammarBuilder<InternalSyntaxToken> b;
   private final TreeFactory f;
 
-  public JavaGrammar(GrammarBuilder b, TreeFactory f) {
+  public JavaGrammar(GrammarBuilder<InternalSyntaxToken> b, TreeFactory f) {
     this.b = b;
     this.f = f;
   }

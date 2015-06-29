@@ -22,11 +22,11 @@ package org.sonar.java.model;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
-import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
@@ -99,7 +99,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTreeModelTest {
 
-  private final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
 
   @Test
   public void line_of_tree() throws Exception {

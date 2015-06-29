@@ -20,9 +20,9 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.fest.assertions.Assertions.assertThat;

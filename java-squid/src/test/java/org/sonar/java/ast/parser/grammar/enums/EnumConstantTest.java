@@ -20,14 +20,16 @@
 package org.sonar.java.ast.parser.grammar.enums;
 
 import com.google.common.base.Charsets;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaLexer;
+import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.declaration.EnumConstantTreeImpl;
-import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import static org.sonar.sslr.tests.Assertions.assertThat;
@@ -50,7 +52,7 @@ public class EnumConstantTest {
   @Test
   public void test_annotation() {
     LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
-    ActionParser parser = new ActionParser(Charsets.UTF_8, b, JavaGrammar.class, new TreeFactory(), JavaLexer.ENUM_CONSTANT);
+    ActionParser<Tree> parser = new ActionParser<Tree>(Charsets.UTF_8, b, JavaGrammar.class, new TreeFactory(), new JavaNodeBuilder(), JavaLexer.ENUM_CONSTANT);
     EnumConstantTreeImpl node = (EnumConstantTreeImpl) parser.parse("@Foo CONSTANT");
     org.fest.assertions.Assertions.assertThat(node.modifiers().size()).isEqualTo(1);
     org.fest.assertions.Assertions.assertThat(((IdentifierTree)((AnnotationTreeImpl) node.modifiers().get(0)).annotationType()).identifierToken().text()).isEqualTo("Foo");
