@@ -24,6 +24,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.GenericTokenType;
 import com.sonar.sslr.api.Token;
+import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
 import com.sonar.sslr.api.Trivia.TriviaKind;
 import org.sonar.java.model.InternalSyntaxSpacing;
@@ -131,7 +132,7 @@ public class SyntaxTreeCreator<T> {
   }
 
   private InternalSyntaxToken visitTerminal(ParseNode node) {
-    boolean isEof = false;
+    TokenType type = null;
     if (node.getMatcher() instanceof TriviaExpression) {
       TriviaExpression ruleMatcher = (TriviaExpression) node.getMatcher();
       if (ruleMatcher.getTriviaKind() == TriviaKind.SKIPPED_TEXT) {
@@ -148,21 +149,26 @@ public class SyntaxTreeCreator<T> {
     } else if (node.getMatcher() instanceof TokenExpression) {
       updateTokenPositionAndValue(node);
       TokenExpression ruleMatcher = (TokenExpression) node.getMatcher();
-      tokenBuilder.setType(ruleMatcher.getTokenType());
-      isEof = GenericTokenType.EOF == ruleMatcher.getTokenType();
+      type = ruleMatcher.getTokenType();
       if (GenericTokenType.COMMENT == ruleMatcher.getTokenType()) {
         tokenBuilder.setTrivia(Collections.<Trivia>emptyList());
+        tokenBuilder.setType(ruleMatcher.getTokenType());
         trivias.add(Trivia.createComment(tokenBuilder.build()));
         return null;
       }
     }
-    LineColumnValue lineColumnValue = tokenPosition(node);
-    InternalSyntaxToken internalSyntaxToken = new InternalSyntaxToken(lineColumnValue.line, lineColumnValue.column, lineColumnValue.value,
-        createTrivias(trivias), node.getStartIndex(), node.getEndIndex(), isEof);
+    InternalSyntaxToken internalSyntaxToken =
+      createTerminal(input, node.getStartIndex(), node.getEndIndex(), Collections.unmodifiableList(trivias), type);
     trivias.clear();
     return internalSyntaxToken;
   }
 
+  private static InternalSyntaxToken createTerminal(Input input, int startIndex, int endIndex, List<Trivia> trivias, TokenType type) {
+    boolean isEof = GenericTokenType.EOF == type;
+    LineColumnValue lineColumnValue = tokenPosition(input, startIndex, endIndex);
+    return new InternalSyntaxToken(lineColumnValue.line, lineColumnValue.column, lineColumnValue.value,
+      createTrivias(trivias), startIndex, endIndex, isEof);
+  }
 
   private static List<SyntaxTrivia> createTrivias(List<Trivia> trivias) {
     List<SyntaxTrivia> result = Lists.newArrayList();
@@ -183,9 +189,9 @@ public class SyntaxTreeCreator<T> {
     tokenBuilder.setValueAndOriginalValue(value);
   }
 
-  private LineColumnValue tokenPosition(ParseNode node) {
-    int[] lineAndColumn = input.lineAndColumnAt(node.getStartIndex());
-    String value = input.substring(node.getStartIndex(), node.getEndIndex());
+  private static LineColumnValue tokenPosition(Input input, int startIndex, int endIndex) {
+    int[] lineAndColumn = input.lineAndColumnAt(startIndex);
+    String value = input.substring(startIndex, endIndex);
     return new LineColumnValue(lineAndColumn[0], lineAndColumn[1] -1, value);
   }
 
