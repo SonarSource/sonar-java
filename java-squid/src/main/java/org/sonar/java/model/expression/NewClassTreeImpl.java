@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -34,12 +34,12 @@ import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
@@ -49,6 +49,8 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   private SyntaxToken dotToken;
   @Nullable
   private SyntaxToken newKeyword;
+  @Nullable
+  private TypeArguments typeArguments;
   private TypeTree identifier;
   private final Arguments arguments;
   @Nullable
@@ -76,6 +78,11 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return this;
   }
 
+  public NewClassTreeImpl completeWithTypeArguments(TypeArgumentListTreeImpl typeArguments) {
+    this.typeArguments = typeArguments;
+    return this;
+  }
+
   @Override
   public Kind getKind() {
     return Kind.NEW_CLASS;
@@ -87,10 +94,10 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return enclosingExpression;
   }
 
+  @Nullable
   @Override
-  public List<Tree> typeArguments() {
-    // TODO implement
-    return ImmutableList.of();
+  public TypeArguments typeArguments() {
+    return typeArguments;
   }
 
   @Override
@@ -116,13 +123,15 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
-    addIfNotNull(iteratorBuilder, enclosingExpression, dotToken, newKeyword);
-    iteratorBuilder.add(identifier);
-    iteratorBuilder.add(arguments);
-    addIfNotNull(iteratorBuilder, classBody);
-    
-    return iteratorBuilder.build().iterator();
+    Iterator<Tree> result = Iterators.<Tree>emptyIterator();
+    result = addIfNotNull(result, enclosingExpression, dotToken, newKeyword, typeArguments);
+    result = add(result, identifier, arguments);
+    result = addIfNotNull(result, classBody);
+    return result;
+  }
+
+  private static Iterator<Tree> add(Iterator<Tree> iterator, Tree... trees) {
+    return Iterators.concat(iterator, Iterators.forArray(trees));
   }
 
   public IdentifierTree getConstructorIdentifier() {
@@ -164,12 +173,13 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return this.getConstructorIdentifier().symbol();
   }
 
-  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, Tree... trees) {
+  private static Iterator<Tree> addIfNotNull(Iterator<Tree> iterator, Tree... trees) {
+    Iterator<Tree> result = iterator;
     for (Tree tree : trees) {
       if (tree != null) {
-        builder.add(tree);
+        result = Iterators.concat(result, Iterators.singletonIterator(tree));
       }
     }
-    return builder;
+    return result;
   }
 }

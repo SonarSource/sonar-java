@@ -1149,15 +1149,13 @@ public class JavaGrammar {
   public ExpressionTree CREATOR() {
     return b.<ExpressionTree>nonterminal(JavaLexer.CREATOR)
       .is(
-        f.completeCreator(
-          b.optional(TYPE_ARGUMENTS()),
-          b.firstOf(
-            f.newClassCreator(TYPE_QUALIFIED_IDENTIFIER(), CLASS_CREATOR_REST()),
-            f.newArrayCreator(
-              b.firstOf(
-                TYPE_QUALIFIED_IDENTIFIER(),
-                BASIC_TYPE()),
-              ARRAY_CREATOR_REST()))));
+        b.firstOf(
+          f.newClassCreator(b.optional(TYPE_ARGUMENTS()), TYPE_QUALIFIED_IDENTIFIER(), CLASS_CREATOR_REST()),
+          f.newArrayCreator(
+            b.firstOf(
+              TYPE_QUALIFIED_IDENTIFIER(),
+              BASIC_TYPE()),
+            ARRAY_CREATOR_REST())));
   }
 
   public NewArrayTreeImpl ARRAY_CREATOR_REST() {

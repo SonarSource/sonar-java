@@ -1380,13 +1380,10 @@ public class TreeFactory {
     return partial;
   }
 
-  public ExpressionTree completeCreator(Optional<TypeArgumentListTreeImpl> typeArguments, ExpressionTree partial) {
-    // TODO typeArguments is a parameterized expression used to chose which constructor to call
-    // FIXME SONARJAVA-547 Handle type arguments
-    return partial;
-  }
-
-  public ExpressionTree newClassCreator(TypeTree qualifiedIdentifier, NewClassTreeImpl classCreatorRest) {
+  public ExpressionTree newClassCreator(Optional<TypeArgumentListTreeImpl> typeArguments, TypeTree qualifiedIdentifier, NewClassTreeImpl classCreatorRest) {
+    if (typeArguments.isPresent()) {
+      classCreatorRest.completeWithTypeArguments(typeArguments.get());
+    }
     return classCreatorRest.completeWithIdentifier(qualifiedIdentifier);
   }
 
@@ -1628,7 +1625,6 @@ public class TreeFactory {
 
   public ExpressionTree newIdentifierOrMethodInvocation(Optional<TypeArgumentListTreeImpl> typeArguments, InternalSyntaxToken identifierToken,
     Optional<ArgumentListTreeImpl> arguments) {
-    // FIXME SONARJAVA-547 Handle type arguments
     IdentifierTreeImpl identifier = new IdentifierTreeImpl(identifierToken);
     ExpressionTree result = identifier;
     if (arguments.isPresent()) {

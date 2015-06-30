@@ -1694,6 +1694,14 @@ public class JavaTreeModelTest {
     assertThat(tree.newKeyword()).isNotNull();
     assertThatChildrenIteratorHasSize(tree, 6);
     // assertThat(tree.typeArguments()).isEmpty();
+
+    tree = (NewClassTree) ((VariableTree) firstMethodFirstStatement("class T { void m() { Foo myInt = new<Integer>Foo(42); } }")).initializer();
+    assertThat(tree.enclosingExpression()).isNull();
+    assertThat(tree.dotToken()).isNull();
+    assertThat(tree.identifier()).isNotNull();
+    assertThat(tree.typeArguments()).isNotNull();
+    assertThat(tree.typeArguments()).hasSize(1);
+    assertThatChildrenIteratorHasSize(tree, 4);
   }
 
   /**

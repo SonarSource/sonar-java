@@ -451,7 +451,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     Resolve.Env newClassEnv = semanticModel.getEnv(tree);
     resolveAs(tree.identifier(), JavaSymbol.TYP, newClassEnv, false);
-    resolveAs(tree.typeArguments(), JavaSymbol.TYP);
+    if (tree.typeArguments() != null) {
+      resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
+    }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));

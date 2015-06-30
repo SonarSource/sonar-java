@@ -48,6 +48,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -147,7 +148,9 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    checkTypes(tree.typeArguments());
+    if (tree.typeArguments() != null) {
+      checkTypes((List<Tree>) tree.typeArguments());
+    }
     if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       scan(tree.enclosingExpression());
       checkTypes((List<Tree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
