@@ -19,25 +19,26 @@
  */
 package org.sonar.java.parser.sslr;
 
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
 
-public interface GrammarBuilder {
+public interface GrammarBuilder<N, T> {
 
-  <T> NonterminalBuilder<T> nonterminal();
+  <U> NonterminalBuilder<U> nonterminal();
 
-  <T> NonterminalBuilder<T> nonterminal(GrammarRuleKey ruleKey);
+  <U> NonterminalBuilder<U> nonterminal(GrammarRuleKey ruleKey);
 
-  <T> T firstOf(T... methods);
+  <U> U firstOf(U... methods);
 
-  <T> Optional<T> optional(T method);
+  <U> Optional<U> optional(U method);
 
-  <T> List<T> oneOrMore(T method);
+  <U> List<U> oneOrMore(U method);
 
-  <T> Optional<List<T>> zeroOrMore(T method);
+  <U> Optional<List<U>> zeroOrMore(U method);
 
-  InternalSyntaxToken token(GrammarRuleKey ruleKey);
+  N invokeRule(GrammarRuleKey ruleKey);
+
+  T token(GrammarRuleKey ruleKey);
 
 }

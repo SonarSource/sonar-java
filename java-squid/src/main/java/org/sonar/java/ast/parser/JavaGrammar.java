@@ -78,10 +78,10 @@ import static org.sonar.java.ast.api.JavaTokenType.IDENTIFIER;
 
 public class JavaGrammar {
 
-  private final GrammarBuilder b;
+  private final GrammarBuilder<JavaTree, InternalSyntaxToken> b;
   private final TreeFactory f;
 
-  public JavaGrammar(GrammarBuilder b, TreeFactory f) {
+  public JavaGrammar(GrammarBuilder<JavaTree, InternalSyntaxToken> b, TreeFactory f) {
     this.b = b;
     this.f = f;
   }

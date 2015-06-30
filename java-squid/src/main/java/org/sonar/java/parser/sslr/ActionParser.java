@@ -29,7 +29,6 @@ import com.sonar.sslr.api.RecognitionException;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
@@ -127,7 +126,7 @@ public class ActionParser {
     return rootRule;
   }
 
-  public static class GrammarBuilderInterceptor implements MethodInterceptor, GrammarBuilder, NonterminalBuilder {
+  public static class GrammarBuilderInterceptor<N, T> implements MethodInterceptor, GrammarBuilder<N, T>, NonterminalBuilder {
 
     private final LexerlessGrammarBuilder b;
     private final BiMap<Method, GrammarRuleKey> mapping = HashBiMap.create();
@@ -161,12 +160,12 @@ public class ActionParser {
     }
 
     @Override
-    public <T> NonterminalBuilder<T> nonterminal() {
+    public <U> NonterminalBuilder<U> nonterminal() {
       return nonterminal(new DummyGrammarRuleKey(this.buildingMethod));
     }
 
     @Override
-    public <T> NonterminalBuilder<T> nonterminal(GrammarRuleKey ruleKey) {
+    public <U> NonterminalBuilder<U> nonterminal(GrammarRuleKey ruleKey) {
       this.ruleKey = ruleKey;
       this.mapping.put(this.buildingMethod, this.ruleKey);
       return this;
@@ -186,14 +185,14 @@ public class ActionParser {
     }
 
     @Override
-    public <T> T firstOf(T... methods) {
+    public <U> U firstOf(U... methods) {
       ParsingExpression expression = new FirstOfExpression(pop(methods.length));
       expressionStack.push(expression);
       return null;
     }
 
     @Override
-    public <T> Optional<T> optional(T method) {
+    public <U> Optional<U> optional(U method) {
       ParsingExpression expression = pop();
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("optional", expression);
       optionals.add(grammarRuleKey);
@@ -203,7 +202,7 @@ public class ActionParser {
     }
 
     @Override
-    public <T> List<T> oneOrMore(T method) {
+    public <U> List<U> oneOrMore(U method) {
       ParsingExpression expression = pop();
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("oneOrMore", expression);
       oneOrMores.add(grammarRuleKey);
@@ -213,7 +212,7 @@ public class ActionParser {
     }
 
     @Override
-    public <T> Optional<List<T>> zeroOrMore(T method) {
+    public <U> Optional<List<U>> zeroOrMore(U method) {
       ParsingExpression expression = pop();
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
       zeroOrMores.add(grammarRuleKey);
@@ -223,9 +222,19 @@ public class ActionParser {
     }
 
     @Override
-    public InternalSyntaxToken token(GrammarRuleKey grammarRuleKey) {
-      push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
+    public N invokeRule(GrammarRuleKey grammarRuleKey) {
+      pushDelayed(grammarRuleKey);
       return null;
+    }
+
+    @Override
+    public T token(GrammarRuleKey grammarRuleKey) {
+      pushDelayed(grammarRuleKey);
+      return null;
+    }
+
+    private void pushDelayed(GrammarRuleKey grammarRuleKey) {
+      push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
     }
 
     public void replaceByRule(GrammarRuleKey grammarRuleKey, int stackElements) {

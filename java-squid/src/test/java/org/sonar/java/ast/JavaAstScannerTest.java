@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.java.Measurer;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.parser.sslr.ActionParser;
@@ -191,10 +192,10 @@ public class JavaAstScannerTest {
   }
 
   public static class FakeGrammar {
-    final GrammarBuilder b;
+    final GrammarBuilder<JavaTree, InternalSyntaxToken> b;
     final FakeTreeFactory f;
 
-    public FakeGrammar(GrammarBuilder b, FakeTreeFactory f) {
+    public FakeGrammar(GrammarBuilder<JavaTree, InternalSyntaxToken> b, FakeTreeFactory f) {
       this.b = b;
       this.f = f;
     }
