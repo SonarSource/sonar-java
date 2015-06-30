@@ -40,6 +40,7 @@ import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
@@ -51,10 +52,10 @@ public class JavaAstScanner {
   private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
 
   private final SquidIndex index;
-  private final ActionParser parser;
+  private final ActionParser<Tree> parser;
   private VisitorsBridge visitor;
 
-  public JavaAstScanner(ActionParser parser) {
+  public JavaAstScanner(ActionParser<Tree> parser) {
     this.parser = parser;
     this.index = new SquidIndex();
   }

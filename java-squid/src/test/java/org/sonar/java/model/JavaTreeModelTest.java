@@ -99,7 +99,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaTreeModelTest {
 
-  private final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser<Tree> p = JavaParser.createParser(Charsets.UTF_8);
 
   @Test
   public void line_of_tree() throws Exception {

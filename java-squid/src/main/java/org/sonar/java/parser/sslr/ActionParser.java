@@ -25,11 +25,11 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+import com.sonar.sslr.api.AstNode;
 import com.sonar.sslr.api.RecognitionException;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.matchers.InputBuffer;
@@ -53,15 +53,16 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Set;
 
-public class ActionParser {
+public class ActionParser<N> {
 
   private final Charset charset;
 
-  private final SyntaxTreeCreator<Tree> syntaxTreeCreator;
+  private final AstNodeSanitizer astNodeSanitizer = new AstNodeSanitizer();
+  private final SyntaxTreeCreator<N> syntaxTreeCreator;
   private final GrammarRuleKey rootRule;
   private final ParseRunner parseRunner;
 
-  public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, GrammarRuleKey rootRule) {
+  public ActionParser(Charset charset, LexerlessGrammarBuilder b, Class grammarClass, Object treeFactory, NodeBuilder nodeBuilder, GrammarRuleKey rootRule) {
     this.charset = charset;
 
     GrammarBuilderInterceptor grammarBuilderInterceptor = new GrammarBuilderInterceptor(b);
@@ -90,14 +91,14 @@ public class ActionParser {
       }
     }
 
-    this.syntaxTreeCreator = new SyntaxTreeCreator<>(treeFactory, grammarBuilderInterceptor, new JavaNodeBuilder());
+    this.syntaxTreeCreator = new SyntaxTreeCreator<>(treeFactory, grammarBuilderInterceptor, nodeBuilder);
 
     b.setRootRule(rootRule);
     this.rootRule = rootRule;
     this.parseRunner = new ParseRunner(b.build().getRootRule());
   }
 
-  public Tree parse(File file) {
+  public N parse(File file) {
     try {
       return parse(new Input(Files.toString(file, charset).toCharArray(), file.toURI()));
     } catch (IOException e) {
@@ -105,11 +106,11 @@ public class ActionParser {
     }
   }
 
-  public Tree parse(String source) {
+  public N parse(String source) {
     return parse(new Input(source.toCharArray()));
   }
 
-  private Tree parse(Input input) {
+  private N parse(Input input) {
     ParsingResult result = parseRunner.parse(input.input());
 
     if (!result.isMatched()) {
@@ -119,7 +120,12 @@ public class ActionParser {
       String message = new ParseErrorFormatter().format(parseError);
       throw new RecognitionException(line, message);
     }
-    return syntaxTreeCreator.create(result.getParseTreeRoot(), input);
+
+    N node = syntaxTreeCreator.create(result.getParseTreeRoot(), input);
+    if (node instanceof AstNode) {
+      astNodeSanitizer.sanitize((AstNode) node);
+    }
+    return node;
   }
 
   public GrammarRuleKey rootRule() {
@@ -197,7 +203,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("optional", expression);
       optionals.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.optional(expression));
-      token(grammarRuleKey);
+      invokeRule(grammarRuleKey);
       return null;
     }
 
@@ -207,7 +213,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("oneOrMore", expression);
       oneOrMores.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.oneOrMore(expression));
-      token(grammarRuleKey);
+      invokeRule(grammarRuleKey);
       return null;
     }
 
@@ -217,7 +223,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
       zeroOrMores.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.zeroOrMore(expression));
-      token(grammarRuleKey);
+      invokeRule(grammarRuleKey);
       return null;
     }
 
@@ -240,7 +246,7 @@ public class ActionParser {
     public void replaceByRule(GrammarRuleKey grammarRuleKey, int stackElements) {
       ParsingExpression expression = stackElements == 1 ? pop() : new SequenceExpression(pop(stackElements));
       b.rule(grammarRuleKey).is(expression);
-      token(grammarRuleKey);
+      invokeRule(grammarRuleKey);
     }
 
     private ParsingExpression[] pop(int n) {

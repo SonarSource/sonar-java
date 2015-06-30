@@ -20,6 +20,8 @@
 package org.sonar.java.ast.parser;
 
 import org.sonar.java.parser.sslr.ActionParser;
+import org.sonar.java.parser.sslr.JavaNodeBuilder;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.nio.charset.Charset;
 
@@ -28,12 +30,13 @@ public class JavaParser {
   private JavaParser() {
   }
 
-  public static ActionParser createParser(Charset charset) {
-    return new ActionParser(
+  public static ActionParser<Tree> createParser(Charset charset) {
+    return new ActionParser<Tree>(
       charset,
       JavaLexer.createGrammarBuilder(),
       JavaGrammar.class,
       new TreeFactory(),
+      new JavaNodeBuilder(),
       JavaLexer.COMPILATION_UNIT);
   }
 

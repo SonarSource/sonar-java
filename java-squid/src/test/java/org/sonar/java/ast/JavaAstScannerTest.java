@@ -37,6 +37,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.java.parser.sslr.GrammarBuilder;
+import org.sonar.java.parser.sslr.JavaNodeBuilder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -92,7 +93,8 @@ public class JavaAstScannerTest {
   @Test
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-    JavaAstScanner scanner = new JavaAstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
+    JavaAstScanner scanner = new JavaAstScanner(
+      new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
@@ -101,7 +103,8 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
-    JavaAstScanner scanner = new JavaAstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
+    JavaAstScanner scanner = new JavaAstScanner(
+      new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
@@ -130,7 +133,8 @@ public class JavaAstScannerTest {
 
   @Test
   public void should_propagate_visitor_exception_when_no_parse_error() {
-    JavaAstScanner scanner = new JavaAstScanner(new ActionParser(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), FakeLexer.ROOT));
+    JavaAstScanner scanner = new JavaAstScanner(
+      new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
     scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
 
       @Override
