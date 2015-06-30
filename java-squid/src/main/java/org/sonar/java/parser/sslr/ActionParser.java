@@ -197,7 +197,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("optional", expression);
       optionals.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.optional(expression));
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
       return null;
     }
 
@@ -207,7 +207,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("oneOrMore", expression);
       oneOrMores.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.oneOrMore(expression));
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
       return null;
     }
 
@@ -217,12 +217,12 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
       zeroOrMores.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.zeroOrMore(expression));
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
       return null;
     }
 
     @Override
-    public InternalSyntaxToken invokeRule(GrammarRuleKey grammarRuleKey) {
+    public InternalSyntaxToken token(GrammarRuleKey grammarRuleKey) {
       push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
       return null;
     }
@@ -230,7 +230,7 @@ public class ActionParser {
     public void replaceByRule(GrammarRuleKey grammarRuleKey, int stackElements) {
       ParsingExpression expression = stackElements == 1 ? pop() : new SequenceExpression(pop(stackElements));
       b.rule(grammarRuleKey).is(expression);
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
     }
 
     private ParsingExpression[] pop(int n) {

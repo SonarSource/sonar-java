@@ -206,7 +206,7 @@ public class JavaAstScannerTest {
     }
 
     public Tree ROOT() {
-      return b.<Tree>nonterminal(FakeLexer.ROOT).is(f.root(b.invokeRule(FakeLexer.TOKEN)));
+      return b.<Tree>nonterminal(FakeLexer.ROOT).is(f.root(b.token(FakeLexer.TOKEN)));
     }
   }
 

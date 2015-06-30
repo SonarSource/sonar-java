@@ -38,6 +38,6 @@ public interface GrammarBuilder {
 
   <T> Optional<List<T>> zeroOrMore(T method);
 
-  InternalSyntaxToken invokeRule(GrammarRuleKey ruleKey);
+  InternalSyntaxToken token(GrammarRuleKey ruleKey);
 
 }
