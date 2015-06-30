@@ -255,7 +255,7 @@ public class TreeFactory {
   public WildcardTreeImpl completeWildcardTypeArgument(InternalSyntaxToken queryToken, Optional<WildcardTreeImpl> partial) {
     return partial.isPresent() ?
       partial.get().complete(queryToken) :
-      new WildcardTreeImpl(Kind.UNBOUNDED_WILDCARD, queryToken);
+      new WildcardTreeImpl(queryToken);
   }
 
   public WildcardTreeImpl newWildcardTypeArguments(InternalSyntaxToken extendsOrSuperToken, Optional<List<AnnotationTreeImpl>> annotations, TypeTree type) {

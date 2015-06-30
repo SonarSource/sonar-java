@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -41,13 +40,11 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
     super(Kind.INSTANCE_OF);
     this.instanceofToken = instanceofToken;
-    this.type = Preconditions.checkNotNull(type);
+    this.type = type;
   }
 
   public InstanceOfTreeImpl complete(ExpressionTree expression) {
-    Preconditions.checkState(this.expression == null);
     this.expression = expression;
-
     return this;
   }
 

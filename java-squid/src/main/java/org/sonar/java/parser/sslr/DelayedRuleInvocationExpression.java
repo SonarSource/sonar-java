@@ -38,9 +38,7 @@ public class DelayedRuleInvocationExpression implements ParsingExpression {
   static {
     try {
       definitionsField = LexerlessGrammarBuilder.class.getDeclaredField("definitions");
-    } catch (NoSuchFieldException e) {
-      throw Throwables.propagate(e);
-    } catch (SecurityException e) {
+    } catch (NoSuchFieldException | SecurityException e) {
       throw Throwables.propagate(e);
     }
     definitionsField.setAccessible(true);
@@ -75,11 +73,10 @@ public class DelayedRuleInvocationExpression implements ParsingExpression {
     }
 
     try {
-      b.rule(ruleKey); // Ensure the MutableParsingRule is created in the definitions
+      // Ensure the MutableParsingRule is created in the definitions
+      b.rule(ruleKey);
       return compiler.compile((MutableParsingRule) ((Map) definitionsField.get(b)).get(ruleKey));
-    } catch (IllegalArgumentException e) {
-      throw Throwables.propagate(e);
-    } catch (IllegalAccessException e) {
+    } catch (IllegalArgumentException | IllegalAccessException e) {
       throw Throwables.propagate(e);
     }
   }

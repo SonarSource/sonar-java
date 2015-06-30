@@ -48,9 +48,10 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 @Rule(
   key = "S1200",
@@ -69,7 +70,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Stack<Set<String>> nesting = new Stack<>();
+  private final Deque<Set<String>> nesting = new LinkedList<>();
   private Set<String> types;
   private JavaFileScannerContext context;
 

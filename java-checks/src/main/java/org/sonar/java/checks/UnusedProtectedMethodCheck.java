@@ -48,8 +48,7 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if (!asmMethod.isUsed() && asmMethod.isProtected() && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)
-      && !asmMethod.isInherited()) {
+    if (isUnusedNonOverridenProtectedMethod(asmMethod) && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)) {
       CheckMessage message = new CheckMessage(this, "Protected method '" + asmMethod.getName() + "(...)' is never used.");
       int line = getMethodLineNumber(asmMethod);
       if (line > 0) {
@@ -58,6 +57,10 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
       SourceFile file = getSourceFile(asmClass);
       file.log(message);
     }
+  }
+
+  private boolean isUnusedNonOverridenProtectedMethod(AsmMethod asmMethod) {
+    return !asmMethod.isUsed() && asmMethod.isProtected() && !asmMethod.isInherited();
   }
 
 }
