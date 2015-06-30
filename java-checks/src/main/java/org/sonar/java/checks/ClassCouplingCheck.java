@@ -135,6 +135,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
+    // can not be visited because of visitCatch excluding exceptions
     checkTypes((List<? extends Tree>) tree.typeAlternatives());
     super.visitUnionType(tree);
   }
