@@ -667,23 +667,20 @@ public class TreeFactory {
   }
 
   public NewArrayTreeImpl completeElementValueArrayInitializer(
-    InternalSyntaxToken openBraceToken, Optional<NewArrayTreeImpl> partial, Optional<InternalSyntaxToken> commaTokenOptional, InternalSyntaxToken closeBraceToken) {
-
-    // FIXME SONARJAVA-547 commas should be handled.
+    InternalSyntaxToken openBraceToken, Optional<NewArrayTreeImpl> partial, InternalSyntaxToken closeBraceToken) {
 
     NewArrayTreeImpl elementValues = partial.or(new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), InitializerListTreeImpl.emptyList()));
 
     return elementValues.completeWithCurlyBraces(openBraceToken, closeBraceToken);
   }
 
-  public NewArrayTreeImpl newElementValueArrayInitializer(ExpressionTree elementValue, Optional<List<Tuple<InternalSyntaxToken, ExpressionTree>>> rests) {
+  public NewArrayTreeImpl newElementValueArrayInitializer(List<Tuple<ExpressionTree, Optional<InternalSyntaxToken>>> rests) {
     ImmutableList.Builder<ExpressionTree> expressions = ImmutableList.builder();
     ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
-    expressions.add(elementValue);
-    if (rests.isPresent()) {
-      for (Tuple<InternalSyntaxToken, ExpressionTree> rest : rests.get()) {
-        separators.add(rest.first());
-        expressions.add(rest.second());
+    for (Tuple<ExpressionTree, Optional<InternalSyntaxToken>> tuple : rests) {
+      expressions.add(tuple.first());
+      if (tuple.second().isPresent()) {
+        separators.add(tuple.second().get());
       }
     }
     return new NewArrayTreeImpl(ImmutableList.<ArrayDimensionTree>of(), new InitializerListTreeImpl(expressions.build(), separators.build()));
@@ -1580,10 +1577,17 @@ public class TreeFactory {
     return result;
   }
 
-  public NewArrayTreeImpl newArrayInitializer(InternalSyntaxToken openBraceToken, Optional<List<Tuple<ExpressionTree, Optional<InternalSyntaxToken>>>> rests,
+  public NewArrayTreeImpl newArrayInitializer(
+    InternalSyntaxToken openBraceToken,
+    Optional<InternalSyntaxToken> optionalComma,
+    Optional<List<Tuple<ExpressionTree, Optional<InternalSyntaxToken>>>> rests,
     InternalSyntaxToken closeBraceToken) {
     ImmutableList.Builder<ExpressionTree> initializers = ImmutableList.builder();
     ImmutableList.Builder<SyntaxToken> separators = ImmutableList.builder();
+
+    if (optionalComma.isPresent()) {
+      separators.add(optionalComma.get());
+    }
     if (rests.isPresent()) {
       for (Tuple<ExpressionTree, Optional<InternalSyntaxToken>> rest : rests.get()) {
         initializers.add(rest.first());

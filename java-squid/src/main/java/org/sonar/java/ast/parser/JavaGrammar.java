@@ -487,7 +487,6 @@ public class JavaGrammar {
         f.completeElementValueArrayInitializer(
           b.token(JavaPunctuator.LWING),
           b.optional(ELEMENT_VALUES()),
-          b.optional(b.token(JavaPunctuator.COMMA)),
           b.token(JavaPunctuator.RWING)));
   }
 
@@ -495,7 +494,7 @@ public class JavaGrammar {
     return b.<NewArrayTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUES)
       .is(
         f.newElementValueArrayInitializer(
-          ELEMENT_VALUE(), b.zeroOrMore(f.newTuple23(b.token(JavaPunctuator.COMMA), ELEMENT_VALUE()))));
+          b.oneOrMore(f.newTuple23(ELEMENT_VALUE(), b.optional(b.token(JavaPunctuator.COMMA))))));
   }
 
   public ArgumentListTreeImpl SINGLE_ELEMENT_ANNOTATION_REST() {
@@ -1241,6 +1240,7 @@ public class JavaGrammar {
       .is(
         f.newArrayInitializer(
           b.token(JavaPunctuator.LWING),
+          b.optional(b.token(JavaPunctuator.COMMA)),
           b.zeroOrMore(f.newTuple28(VARIABLE_INITIALIZER(), b.optional(b.token(JavaPunctuator.COMMA)))),
           b.token(JavaPunctuator.RWING)));
   }

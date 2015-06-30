@@ -471,6 +471,21 @@ public class JavaTreeModelTest {
     assertThat(annotation.atToken()).isNotNull();
     assertThatChildrenIteratorHasSize(annotation, 3);
 
+    tree = firstType("@SuppressWarnings({\"hello\",}) class U {}");
+    annotations = tree.modifiers().annotations();
+    assertThat(annotations).hasSize(1);
+    annotation = annotations.get(0);
+    assertThat(annotation.arguments().openParenToken()).isNotNull();
+    assertThat(annotation.arguments()).hasSize(1);
+    assertThat(annotation.arguments().get(0).is(Tree.Kind.NEW_ARRAY)).isTrue();
+    NewArrayTree arg = (NewArrayTree) annotation.arguments().get(0);
+    assertThat(arg.initializers()).hasSize(1);
+    assertThat(arg.initializers().get(0).is(Tree.Kind.STRING_LITERAL)).isTrue();
+    assertThat(arg.initializers().separators()).hasSize(1);
+    assertThat(annotation.arguments().closeParenToken()).isNotNull();
+    assertThat(annotation.atToken()).isNotNull();
+    assertThatChildrenIteratorHasSize(annotation, 3);
+
     tree = firstType("@Target(value={ElementType.METHOD}, value2=\"toto\") class T { }");
     annotations = tree.modifiers().annotations();
     assertThat(annotations).hasSize(1);
@@ -1792,6 +1807,13 @@ public class JavaTreeModelTest {
     assertThat(dimension.expression().is(Tree.Kind.INT_LITERAL)).isTrue();
     assertThat(dimension.closeBracketToken().text()).isEqualTo("]");
     assertThatChildrenIteratorHasSize(dimension, 4);
+
+    tree = (NewArrayTree) ((VariableTree) firstMethodFirstStatement("class T { void m() { int[] a = {,}; } }")).initializer();
+    assertThat(tree.is(Tree.Kind.NEW_ARRAY)).isTrue();
+    assertThat(tree.type()).isNull();
+    assertThat(tree.dimensions()).isEmpty();
+    assertThat(tree.initializers()).isEmpty();
+    assertThat(tree.initializers().separators()).hasSize(1);
   }
 
   /**
