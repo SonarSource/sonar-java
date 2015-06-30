@@ -21,10 +21,10 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;

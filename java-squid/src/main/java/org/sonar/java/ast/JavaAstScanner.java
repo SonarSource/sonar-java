@@ -28,7 +28,7 @@ import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.parser.sslr.ActionParser;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -40,7 +40,6 @@ import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;

@@ -17,7 +17,7 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.parser.sslr;
+package org.sonar.java.ast.parser;
 
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.GenericTokenType;
@@ -25,6 +25,8 @@ import com.sonar.sslr.api.Rule;
 import com.sonar.sslr.api.Token;
 import com.sonar.sslr.api.TokenType;
 import com.sonar.sslr.api.Trivia;
+import com.sonar.sslr.api.typed.Input;
+import com.sonar.sslr.api.typed.NodeBuilder;
 import org.sonar.java.model.InternalSyntaxSpacing;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.InternalSyntaxTrivia;

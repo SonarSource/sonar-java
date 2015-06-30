@@ -19,8 +19,7 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.java.parser.sslr.ActionParser;
-import org.sonar.java.parser.sslr.JavaNodeBuilder;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.nio.charset.Charset;
