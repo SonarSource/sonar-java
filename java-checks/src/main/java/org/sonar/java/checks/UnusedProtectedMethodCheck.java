@@ -59,7 +59,7 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
     }
   }
 
-  private boolean isUnusedNonOverridenProtectedMethod(AsmMethod asmMethod) {
+  private static boolean isUnusedNonOverridenProtectedMethod(AsmMethod asmMethod) {
     return !asmMethod.isUsed() && asmMethod.isProtected() && !asmMethod.isInherited();
   }
 
