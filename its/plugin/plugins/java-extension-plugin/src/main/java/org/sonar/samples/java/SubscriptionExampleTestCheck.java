@@ -7,8 +7,8 @@ import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
-@Rule(key = "subscriptionexamplecheck", priority = Priority.MINOR, name = "SubscriptionExampleCheck", description = "SubscriptionExampleCheck")
-public class SubscriptionExampleCheck extends IssuableSubscriptionVisitor {
+@Rule(key = "subscriptionexampletestcheck", priority = Priority.MINOR, name = "SubscriptionExampleTestCheck", description = "SubscriptionExampleTestCheck")
+public class SubscriptionExampleTestCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -17,6 +17,6 @@ public class SubscriptionExampleCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    addIssue(tree, "Issue on methods");
+    addIssue(tree, "Issue on test methods");
   }
 }

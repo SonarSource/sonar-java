@@ -18,10 +18,13 @@ public class JavaExtensionRulesDefinition implements RulesDefinition {
     repo.setName(REPOSITORY_KEY);
 
     // We could use a XML or JSON file to load all rule metadata, but
-    // we prefer use annotations in order to have all information in a single place
+    // we prefer use annotations in order to have all information in a
+    // single place
     RulesDefinitionAnnotationLoader annotationLoader = new RulesDefinitionAnnotationLoader();
+    // Load custom check classes
     annotationLoader.load(repo, JavaExtensionsCheckRegistrar.checkClasses());
+    // Load custom test check classes
+    annotationLoader.load(repo, JavaExtensionsCheckRegistrar.testCheckClasses());
     repo.done();
   }
 }
-
