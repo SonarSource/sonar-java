@@ -20,6 +20,7 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,15 +40,16 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   @Nullable
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_PARAMETERS, typeParameters);
+  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters,
+    List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
+    super(JavaLexer.TYPE_PARAMETERS, typeParameters, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
   }
 
-  public TypeParameterListTreeImpl(){
-    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of());
+  public TypeParameterListTreeImpl() {
+    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<SyntaxToken>of());
     this.openBracketToken = null;
     this.closeBracketToken = null;
   }
@@ -71,22 +73,10 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iterator = ImmutableList.<Tree>builder();
-    if (openBracketToken != null) {
-      iterator.add(openBracketToken);
-    }
-    // FIXME SONARJAVA-547 separators between parameters are currently ignored
-    iterator.addAll(this);
-    if (closeBracketToken != null) {
-      iterator.add(closeBracketToken);
-    }
-
-    return iterator.build().iterator();
-  }
-
-  @Override
-  public boolean isLeaf() {
-    return false;
+    return Iterators.concat(
+      Iterators.singletonIterator(openBracketToken),
+      super.childrenIterator(),
+      Iterators.singletonIterator(closeBracketToken));
   }
 
   @Override

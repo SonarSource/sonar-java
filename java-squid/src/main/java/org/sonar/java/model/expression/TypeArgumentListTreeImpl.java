@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -36,8 +36,8 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken openBracketToken;
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_ARGUMENTS, expressions);
+  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
+    super(JavaLexer.TYPE_ARGUMENTS, expressions, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
@@ -60,8 +60,10 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    // FIXME SONARJAVA-547 separators between arguments are currently ignored
-    return ImmutableList.<Tree>builder().add(openBracketToken).addAll(this).add(closeBracketToken).build().iterator();
+    return Iterators.concat(
+        Iterators.singletonIterator(openBracketToken),
+        super.childrenIterator(),
+        Iterators.singletonIterator(closeBracketToken));
   }
 
   @Override

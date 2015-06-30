@@ -22,21 +22,17 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
-import java.util.Deque;
-import java.util.LinkedList;
 
 @Rule(
   key = "S1598",
@@ -61,7 +57,7 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
   public void visitCompilationUnit(CompilationUnitTree tree) {
     if (tree.packageDeclaration() != null) {
       ExpressionTree packageNameExpression = tree.packageDeclaration().packageName();
-      String packageName = concatenate(packageNameExpression);
+      String packageName = PackageUtils.packageName(tree.packageDeclaration(), File.separator);
       File javaFile = context.getFile();
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
@@ -70,25 +66,4 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
     }
   }
 
-  private static String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<>();
-
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(File.separator);
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece : pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
-  }
 }

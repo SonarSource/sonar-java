@@ -19,14 +19,20 @@
  */
 package org.sonar.java.ast.parser;
 
+import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
 public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public QualifiedIdentifierListTreeImpl(List<? extends TypeTree> qualifiedIdentifiers) {
-    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, (List<TypeTree>) qualifiedIdentifiers);
+  public static QualifiedIdentifierListTreeImpl emptyList() {
+    return new QualifiedIdentifierListTreeImpl(Lists.<TypeTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
+  }
+
+  public QualifiedIdentifierListTreeImpl(List<TypeTree> qualifiedIdentifiers, List<SyntaxToken> separators) {
+    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, qualifiedIdentifiers, separators);
   }
 
 }

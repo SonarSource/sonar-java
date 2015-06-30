@@ -47,9 +47,10 @@ import java.util.List;
 @SqaleConstantRemediation("1min")
 public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
 
-  private final Deque<Tree> parent = new LinkedList<Tree>();
+  private final Deque<Tree> parent = new LinkedList<>();
   private static final Kind[] PARENT_EXPRESSION =  {
       Kind.ANNOTATION,
+      Kind.LIST,
       Kind.ARRAY_ACCESS_EXPRESSION,
       Kind.ARRAY_DIMENSION,
       Kind.ASSERT_STATEMENT,
@@ -62,7 +63,7 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
       Kind.FOR_STATEMENT,
       Kind.IF_STATEMENT,
       Kind.LAMBDA_EXPRESSION,
-      Kind.METHOD_INVOCATION,
+      Kind.ARGUMENTS,
       Kind.METHOD,
       Kind.NEW_ARRAY,
       Kind.NEW_CLASS,

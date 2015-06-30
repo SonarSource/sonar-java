@@ -637,11 +637,19 @@ public interface Tree {
     /**
      * {@link TypeParameters}
      */
-    TYPE_PARAMETERS(TypeParameters.class);
+    TYPE_PARAMETERS(TypeParameters.class),
+    /**
+     * {@link Arguments}
+     */
+    ARGUMENTS(Arguments.class),
+    /**
+     * {@link ListTree}
+     */
+    LIST(ListTree.class);
 
     final Class<? extends Tree> associatedInterface;
 
-    private Kind(Class<? extends Tree> associatedInterface) {
+    Kind(Class<? extends Tree> associatedInterface) {
       this.associatedInterface = associatedInterface;
     }
 

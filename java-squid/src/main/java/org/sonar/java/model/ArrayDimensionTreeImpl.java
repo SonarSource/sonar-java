@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -30,7 +29,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,10 +42,10 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
 
   public ArrayDimensionTreeImpl(SyntaxToken openBracketToken, @Nullable ExpressionTree expression, SyntaxToken closeBracketToken) {
     super(Tree.Kind.ARRAY_DIMENSION);
-    this.annotations = ImmutableList.<AnnotationTree>of();
-    this.openBracketToken = Preconditions.checkNotNull(openBracketToken);
+    this.annotations = ImmutableList.of();
+    this.openBracketToken = openBracketToken;
     this.expression = expression;
-    this.closeBracketToken = Preconditions.checkNotNull(closeBracketToken);
+    this.closeBracketToken = closeBracketToken;
   }
 
   public ArrayDimensionTreeImpl(List<AnnotationTreeImpl> annotations, SyntaxToken openBracketToken, @Nullable ExpressionTree expression, SyntaxToken closeBracketToken) {

@@ -28,14 +28,13 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -47,7 +46,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -94,9 +92,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageDeclaration() != null) {
-      packageName = concatenate(tree.packageDeclaration().packageName());
-    }
+    packageName = PackageUtils.packageName(tree.packageDeclaration(), "/");
     super.visitCompilationUnit(tree);
   }
 
@@ -250,28 +246,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private static boolean hasReturnJavadoc(String comment) {
     return comment.contains("@return");
-  }
-
-  private static String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<>();
-
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push("/");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece : pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
   }
 
 }

@@ -24,8 +24,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 
-import java.util.List;
-
 /**
  * Class instance creation expression.
  *
@@ -61,17 +59,11 @@ public interface NewClassTree extends ExpressionTree {
   /**
    * @since Java 1.5
    */
-  List<Tree> typeArguments();
+  TypeArguments typeArguments();
 
   TypeTree identifier();
 
-  @Nullable
-  SyntaxToken openParenToken();
-
-  List<ExpressionTree> arguments();
-
-  @Nullable
-  SyntaxToken closeParenToken();
+  Arguments arguments();
 
   @Nullable
   ClassTree classBody();

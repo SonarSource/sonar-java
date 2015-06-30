@@ -195,10 +195,10 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    Iterator<Tree> initializerIterator = initializer != null ? Iterators.<Tree>forArray(equalToken, initializer) : Iterators.<Tree>emptyIterator();
+    Iterator<Tree> initializerIterator = initializer != null ? Iterators.forArray(equalToken, initializer) : Iterators.<Tree>emptyIterator();
     Iterator<Tree> endTokenIterator = endToken != null ? Iterators.<Tree>singletonIterator(endToken) : Iterators.<Tree>emptyIterator();
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>forArray(modifiers, type, simpleName),
+    return Iterators.concat(
+      Iterators.forArray(modifiers, type, simpleName),
       initializerIterator,
       endTokenIterator
       );

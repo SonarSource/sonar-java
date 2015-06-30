@@ -21,8 +21,6 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import java.util.List;
-
 /**
  * Union type expression in a multi-catch.
  *
@@ -31,6 +29,6 @@ import java.util.List;
 @Beta
 public interface UnionTypeTree extends TypeTree {
 
-  List<TypeTree> typeAlternatives();
+  ListTree<TypeTree> typeAlternatives();
 
 }

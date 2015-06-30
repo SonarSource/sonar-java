@@ -20,33 +20,39 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
+import java.util.Iterator;
 import java.util.List;
 
-public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
+public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implements Arguments {
 
   private InternalSyntaxToken openParenToken;
   private InternalSyntaxToken closeParenToken;
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, ImmutableList.<ExpressionTree>of());
+    super(JavaLexer.ARGUMENTS, ImmutableList.<ExpressionTree>of(), ImmutableList.<SyntaxToken>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
   public ArgumentListTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
-    super(JavaLexer.ARGUMENTS, ImmutableList.of(expression));
+    super(JavaLexer.ARGUMENTS, ImmutableList.of(expression), ImmutableList.<SyntaxToken>of());
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
   }
 
-  public ArgumentListTreeImpl(List<ExpressionTree> expressions) {
-    super(JavaLexer.ARGUMENTS, expressions);
+  public ArgumentListTreeImpl(List<ExpressionTree> expressions, List<SyntaxToken> separators) {
+    super(JavaLexer.ARGUMENTS, expressions, separators);
   }
 
   public ArgumentListTreeImpl complete(InternalSyntaxToken openParenToken, InternalSyntaxToken closeParenToken) {
@@ -56,12 +62,28 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> {
     return this;
   }
 
+  @Nullable
+  @Override
   public SyntaxToken openParenToken() {
     return openParenToken;
   }
 
+  @Nullable
+  @Override
   public SyntaxToken closeParenToken() {
     return closeParenToken;
   }
 
+  @Override
+  public Tree.Kind getKind() {
+    return Tree.Kind.ARGUMENTS;
+  }
+
+  @Override
+  public Iterator<Tree> childrenIterator() {
+    return Iterators.concat(
+      openParenToken != null ? Iterators.singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
+      super.childrenIterator(),
+      closeParenToken != null ? Iterators.singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator());
+  }
 }

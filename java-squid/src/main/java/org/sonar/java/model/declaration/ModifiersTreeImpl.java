@@ -27,11 +27,9 @@ import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements ModifiersTree {
@@ -86,16 +84,6 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitModifier(this);
-  }
-
-  @Override
-  public boolean isLeaf() {
-    return false;
-  }
-
-  @Override
-  public Iterator<Tree> childrenIterator() {
-    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
   }
 
 }

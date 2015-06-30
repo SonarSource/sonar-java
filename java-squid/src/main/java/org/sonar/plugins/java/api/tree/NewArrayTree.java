@@ -50,7 +50,7 @@ public interface NewArrayTree extends ExpressionTree {
   @Nullable
   SyntaxToken openBraceToken();
 
-  List<ExpressionTree> initializers();
+  ListTree<ExpressionTree> initializers();
 
   @Nullable
   SyntaxToken closeBraceToken();

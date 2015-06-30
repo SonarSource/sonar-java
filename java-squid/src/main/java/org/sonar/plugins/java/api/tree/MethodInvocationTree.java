@@ -23,7 +23,6 @@ import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Method invocation expression.
@@ -48,11 +47,7 @@ public interface MethodInvocationTree extends ExpressionTree {
 
   ExpressionTree methodSelect();
 
-  SyntaxToken openParenToken();
-
-  List<ExpressionTree> arguments();
-
-  SyntaxToken closeParenToken();
+  Arguments arguments();
 
   Symbol symbol();
 

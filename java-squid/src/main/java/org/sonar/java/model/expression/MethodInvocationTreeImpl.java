@@ -25,9 +25,9 @@ import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
@@ -35,25 +35,20 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import javax.annotation.Nullable;
 
 import java.util.Iterator;
-import java.util.List;
 
 public class MethodInvocationTreeImpl extends AbstractTypedTree implements MethodInvocationTree {
 
   private final ExpressionTree methodSelect;
-  private final List<ExpressionTree> arguments;
+  private final Arguments arguments;
   @Nullable
   private TypeArguments typeArguments;
   private Symbol symbol = Symbols.unknownSymbol;
-  private SyntaxToken openParenToken;
-  private SyntaxToken closeParenToken;
 
   public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     super(Kind.METHOD_INVOCATION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
     this.typeArguments = typeArguments;
-    this.openParenToken = arguments.openParenToken();
     this.arguments = Preconditions.checkNotNull(arguments);
-    this.closeParenToken = arguments.closeParenToken();
   }
 
   @Override
@@ -73,18 +68,8 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
-  public SyntaxToken openParenToken() {
-    return openParenToken;
-  }
-
-  @Override
-  public List<ExpressionTree> arguments() {
+  public Arguments arguments() {
     return arguments;
-  }
-
-  @Override
-  public SyntaxToken closeParenToken() {
-    return closeParenToken;
   }
 
   @Override
@@ -101,10 +86,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
       typeArguments != null ? Iterators.<Tree>singletonIterator(typeArguments) : Iterators.<Tree>emptyIterator(),
-      Iterators.<Tree>forArray(methodSelect, openParenToken),
-      // FIXME SONARJAVA-547 separators are lost
-      arguments.iterator(),
-      Iterators.<Tree>singletonIterator(closeParenToken));
+      Iterators.<Tree>forArray(methodSelect, arguments));
   }
 
   public void setSymbol(Symbol symbol) {

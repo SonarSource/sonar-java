@@ -325,8 +325,8 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
   public void visitNewClass(NewClassTree tree) {
     if (tree.classBody() != null) {
       scan(tree.classBody());
-    } else if (tree.closeParenToken() != null) {
-      lastSyntaxToken = tree.closeParenToken();
+    } else if (tree.arguments().closeParenToken() != null) {
+      lastSyntaxToken = tree.arguments().closeParenToken();
     } else {
       scan(tree.identifier());
     }
@@ -344,7 +344,7 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    lastSyntaxToken = tree.closeParenToken();
+    lastSyntaxToken = tree.arguments().closeParenToken();
   }
 
   @Override
@@ -415,9 +415,8 @@ public class LastSyntaxTokenFinder extends BaseTreeVisitor {
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-    SyntaxToken closeParenToken = annotationTree.closeParenToken();
-    if (closeParenToken != null) {
-      lastSyntaxToken = closeParenToken;
+    if (annotationTree.arguments().closeParenToken() != null) {
+      lastSyntaxToken = annotationTree.arguments().closeParenToken();
     } else {
       scan(annotationTree.annotationType());
     }

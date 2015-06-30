@@ -20,7 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -31,6 +31,7 @@ import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,7 +63,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private TypeTree superClass;
   @Nullable
   private SyntaxToken implementsKeyowrd;
-  private List<TypeTree> superInterfaces;
+  private ListTree<TypeTree> superInterfaces;
   private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
 
   public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
@@ -74,7 +75,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.closeBraceToken = closeBraceToken;
     this.modifiers = ModifiersTreeImpl.EMPTY;
     this.typeParameters = new TypeParameterListTreeImpl();
-    this.superInterfaces = ImmutableList.of();
+    this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
   }
 
   public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
@@ -83,7 +84,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.modifiers = modifiers;
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superClass = null;
-    this.superInterfaces = ImmutableList.of();
+    this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
     this.openBraceToken = openBraceToken;
     this.members = Preconditions.checkNotNull(members);
     this.closeBraceToken = closeBraceToken;
@@ -110,14 +111,12 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return this;
   }
 
-  public ClassTreeImpl completeInterfaces(SyntaxToken implementsKeyword, QualifiedIdentifierListTreeImpl interfaces) {
-    this.implementsKeyowrd = implementsKeyword;
-    this.superInterfaces = interfaces;
-    return this;
-  }
-
-  public ClassTreeImpl compleInterfacesForInterface(SyntaxToken extendsKeyword, QualifiedIdentifierListTreeImpl interfaces) {
-    this.extendsKeyword = extendsKeyword;
+  public ClassTreeImpl completeInterfaces(SyntaxToken keyword, QualifiedIdentifierListTreeImpl interfaces) {
+    if (is(Kind.INTERFACE)) {
+      extendsKeyword = keyword;
+    } else {
+      implementsKeyowrd = keyword;
+    }
     this.superInterfaces = interfaces;
     return this;
   }
@@ -163,7 +162,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
-  public List<TypeTree> superInterfaces() {
+  public ListTree<TypeTree> superInterfaces() {
     return superInterfaces;
   }
 
@@ -215,29 +214,27 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
-
-    iteratorBuilder.add(modifiers);
-    addIfNotNull(iteratorBuilder, atToken);
-    addIfNotNull(iteratorBuilder, declarationKeyowrd);
-    addIfNotNull(iteratorBuilder, simpleName);
-    iteratorBuilder.add(typeParameters);
-    addIfNotNull(iteratorBuilder, extendsKeyword);
-    addIfNotNull(iteratorBuilder, superClass);
-    addIfNotNull(iteratorBuilder, implementsKeyowrd);
-    iteratorBuilder.addAll(superInterfaces);
-    addIfNotNull(iteratorBuilder, openBraceToken);
-    iteratorBuilder.addAll(members);
-    addIfNotNull(iteratorBuilder, closeBraceToken);
-
-    return iteratorBuilder.build().iterator();
+    return Iterators.concat(
+      Iterators.singletonIterator(modifiers),
+      addIfNotNull(atToken),
+      addIfNotNull(declarationKeyowrd),
+      addIfNotNull(simpleName),
+      Iterators.singletonIterator(typeParameters),
+      addIfNotNull(extendsKeyword),
+      addIfNotNull(superClass),
+      addIfNotNull(implementsKeyowrd),
+      Iterators.singletonIterator(superInterfaces),
+      addIfNotNull(openBraceToken),
+      members.iterator(),
+      addIfNotNull(closeBraceToken)
+      );
   }
 
-  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, Tree tree) {
-    if (tree != null) {
-      builder.add(tree);
+  private static Iterator<Tree> addIfNotNull(@Nullable Tree tree) {
+    if (tree == null) {
+      return Iterators.emptyIterator();
     }
-    return builder;
+    return Iterators.singletonIterator(tree);
   }
 
 }

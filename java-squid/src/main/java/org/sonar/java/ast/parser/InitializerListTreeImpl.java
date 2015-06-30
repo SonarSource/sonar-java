@@ -17,29 +17,20 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api.tree;
+package org.sonar.java.ast.parser;
 
-import com.google.common.annotations.Beta;
+import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
-/**
- * Annotation.
- *
- * JLS 9.7
- *
- * <pre>
- *   {@code @}{@link #annotationType()}
- *   {@code @}{@link #annotationType()} ( {@link #arguments()} )
- * </pre>
- *
- * @since Java 1.5
- */
-@Beta
-public interface AnnotationTree extends ExpressionTree, ModifierTree {
+import java.util.List;
 
-  SyntaxToken atToken();
+public class InitializerListTreeImpl extends ListTreeImpl<ExpressionTree> {
+  public InitializerListTreeImpl(List<ExpressionTree> list, List<SyntaxToken> separators) {
+    super(JavaLexer.ARRAY_INITIALIZER, list, separators);
+  }
 
-  TypeTree annotationType();
-
-  Arguments arguments();
-
+  public static InitializerListTreeImpl emptyList() {
+    return new InitializerListTreeImpl(Lists.<ExpressionTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
+  }
 }
