@@ -109,9 +109,13 @@ public class PrintfCheck extends AbstractMethodDetection {
         return;
       }
       verifyParameters(mit, args, params);
-    } else if (formatStringTree.is(Tree.Kind.PLUS) && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree)) {
+    } else if (isConcatenationOnSameLine(formatStringTree)) {
       addIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
+  }
+
+  private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
+    return formatStringTree.is(Tree.Kind.PLUS) && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree);
   }
 
   private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
