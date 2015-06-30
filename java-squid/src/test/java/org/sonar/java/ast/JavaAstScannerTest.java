@@ -30,8 +30,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.java.Measurer;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
@@ -53,7 +52,6 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class JavaAstScannerTest {
 
@@ -61,27 +59,23 @@ public class JavaAstScannerTest {
   public ExpectedException thrown = ExpectedException.none();
 
   SensorContext context;
-  Project sonarProject;
+  private DefaultFileSystem fs;
 
   @Before
   public void setUp() throws Exception {
     context = mock(SensorContext.class);
-    sonarProject = mock(Project.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    File baseDir = new File("src/test/files/metrics");
-    when(sonarProject.getFileSystem()).thenReturn(pfs);
-    when(pfs.getBasedir()).thenReturn(baseDir);
+    fs = new DefaultFileSystem();
   }
 
   @Test
   public void comments() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"), new VisitorsBridge(new Measurer(sonarProject, context, false)));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"), new VisitorsBridge(new Measurer(fs, context, false)));
     assertThat(file.getNoSonarTagLines()).contains(15).hasSize(1);
   }
 
   @Test
   public void noSonarLines() throws Exception {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"), new VisitorsBridge(new Measurer(sonarProject, context, false)));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"), new VisitorsBridge(new Measurer(fs, context, false)));
     assertThat(file.getNoSonarTagLines()).hasSize(1);
     assertThat(file.getNoSonarTagLines()).contains(8);
   }

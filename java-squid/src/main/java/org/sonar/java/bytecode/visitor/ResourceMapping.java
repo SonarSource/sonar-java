@@ -43,7 +43,7 @@ public class ResourceMapping {
   public ResourceMapping() {
     directories = ArrayListMultimap.create();
     subDependencies = ArrayListMultimap.create();
-    fileKeyByResource = new HashMap<File, String>();
+    fileKeyByResource = new HashMap<>();
   }
 
   public void addResource(File resource, String fileKey) {
