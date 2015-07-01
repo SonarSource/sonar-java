@@ -1,6 +1,6 @@
 /*
  * Java :: IT :: Plugin :: Tests
- * Copyright (C) 2013 ${owner}
+ * Copyright (C) 2013 SonarSource
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
