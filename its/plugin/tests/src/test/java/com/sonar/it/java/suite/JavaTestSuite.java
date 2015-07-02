@@ -35,7 +35,6 @@ import org.junit.runners.Suite;
   JavaComplexityTest.class,
   SquidTest.class,
   Struts139Test.class,
-  Struts139WithoutAccessorsTest.class,
   JavaClasspathTest.class,
   JaCoCoTest.class
 })
