@@ -130,28 +130,6 @@ public class JavaTest {
     assertThat(buildResult.getStatus()).isEqualTo(0);
   }
 
-  /**
-   * SONARJAVA-444
-   */
-  @Test
-  public void testEmptyFiles() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("empty-files"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    Resource file = orchestrator.getServer().getWsClient()
-      .find(ResourceQuery.createForMetrics(JavaTestSuite.keyFor("com.sonar.it.projects.java:empty-files", "com/", "CommentedOutFile.java"), "lines", "ncloc"));
-    assertThat(file.getMeasureIntValue("lines")).isEqualTo(2);
-    assertThat(file.getMeasureIntValue("ncloc")).isEqualTo(0);
-
-    file = orchestrator.getServer().getWsClient()
-      .find(ResourceQuery.createForMetrics(JavaTestSuite.keyFor("com.sonar.it.projects.java:empty-files", "org/", "EmptyFile.java"), "lines", "ncloc"));
-    assertThat(file.getMeasureIntValue("lines")).isEqualTo(1);
-    assertThat(file.getMeasureIntValue("ncloc")).isEqualTo(0);
-  }
-
   @Test
   public void measures_on_directory() {
     MavenBuild build = MavenBuild.create()

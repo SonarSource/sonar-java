@@ -50,13 +50,14 @@ public class MeasurerTest {
   @Before
   public void setUp() throws Exception {
     fs = new DefaultFileSystem();
-    context = mock(SensorContext.class);
     baseDir = new File("src/test/files/metrics");
   }
 
   @Test
   public void verify_lines_metric() {
     checkMetric("Lines.java", "lines", 7.0);
+    checkMetric("CommentedOutFile.java", "lines", 2.0);
+    checkMetric("EmptyFile.java", "lines", 1.0);
   }
 
   @Test
@@ -117,6 +118,8 @@ public class MeasurerTest {
   @Test
   public void verify_ncloc_metric() {
     checkMetric("LinesOfCode.java", "ncloc", 2);
+    checkMetric("CommentedOutFile.java", "ncloc", 0);
+    checkMetric("EmptyFile.java", "ncloc", 0);
   }
 
   @Test
@@ -132,6 +135,7 @@ public class MeasurerTest {
    * Utility method to quickly get metric out of a file.
    */
   private void checkMetric(boolean separateAccessorsFromMethods, File baseDir, String filename, String metric, double expectedValue) {
+    context = mock(SensorContext.class);
     fs.add(new DefaultInputFile(filename));
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods);
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
