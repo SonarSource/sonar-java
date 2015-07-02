@@ -37,7 +37,8 @@ public class VariableDeclaratorTest {
       .matches("identifier [] = {}")
       .notMatches("identifier []") // FIXME missing bracket token
       .matches("identifier = 0")
-      .matches("identifier");
+      .matches("identifier")
+      .matches("enum");
   }
 
   @Test

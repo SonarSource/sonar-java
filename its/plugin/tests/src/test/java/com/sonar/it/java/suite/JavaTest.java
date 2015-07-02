@@ -171,42 +171,6 @@ public class JavaTest {
   }
 
   @Test
-  public void shouldSupportEnumVariablesOfJava4() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java4"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    assertThat(getMeasure("org.sonar.it.core:java4", "files").getIntValue()).isEqualTo(1);
-  }
-
-  @Test
-  public void shouldSupportJava7Syntax() {
-    MavenBuild inspection = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java7"))
-      .setProperty("sonar.dynamicAnalysis", "false")
-      .setGoals("sonar:sonar");
-    orchestrator.executeBuild(inspection);
-
-    assertThat(getMeasure("org.sonar.it.core:java7", "files").getIntValue()).isEqualTo(7);
-    assertThat(getMeasure("org.sonar.it.core:java7", "complexity").getIntValue()).isEqualTo(21);
-  }
-
-  @Test
-  public void shouldSupportJava8Syntax() {
-    MavenBuild inspection = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java8"))
-      .setProperty("sonar.dynamicAnalysis", "false")
-      .setGoals("sonar:sonar");
-    orchestrator.executeBuild(inspection);
-
-    assertThat(getMeasure("org.sonar.it.core:java8", "files").getIntValue()).isEqualTo(10);
-    int expectedComplexity = 28;
-    assertThat(getMeasure("org.sonar.it.core:java8", "complexity").getIntValue()).isEqualTo(expectedComplexity);
-  }
-
-  @Test
   public void multiple_package_in_directory_should_not_fail() throws Exception {
     MavenBuild inspection = MavenBuild.create()
       .setPom(TestUtils.projectPom("multiple-packages-in-directory"))

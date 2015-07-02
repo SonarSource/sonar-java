@@ -33,7 +33,9 @@ public class FormalParametersTest {
 
     assertThat(b, JavaLexer.FORMAL_PARAMETERS)
       .matches("( )")
-      .matches("( int foo, int... bar )");
+      .matches("( int foo, int... bar )")
+        // Java 4 syntax : enum is not a keyword
+      .matches("( int enum, int... bar )");
   }
 
 }
