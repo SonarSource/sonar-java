@@ -106,23 +106,6 @@ public class JavaClasspathTest {
     assertThat(getNumberOfViolations()).isEqualTo(2);
   }
 
-  @Test
-  public void relative_path_for_libraries_should_be_supported() throws Exception {
-    SonarRunner runner = ditProjectSonarRunner();
-    runner.setProperty("sonar.java.binaries", "target/classes");
-    runner.setProperty("sonar.java.libraries", "lib/../lib/*.jar");
-    ORCHESTRATOR.executeBuild(runner);
-    assertThat(getNumberOfViolations()).isEqualTo(1);
-  }
-
-  @Test
-  public void relative_path_with_wildcard_for_libraries_should_be_supported() throws Exception {
-    SonarRunner runner = ditProjectSonarRunner();
-    runner.setProperty("sonar.java.binaries", "target/classes");
-    runner.setProperty("sonar.java.libraries", "../dit-check/**/library.jar");
-    ORCHESTRATOR.executeBuild(runner);
-    assertThat(getNumberOfViolations()).isEqualTo(1);
-  }
 
   @Test
   public void should_support_the_old_binaries_and_libraries_properties() {
@@ -153,12 +136,6 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void should_support_nested_folder_wildcard() {
-    buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath() + "/**/*.jar");
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
   public void directory_specified_for_library_should_find_jars() {
     buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath());
     assertThat(getNumberOfViolations()).isEqualTo(2);
@@ -177,30 +154,6 @@ public class JavaClasspathTest {
     runner.setProperty("sonar.java.libraries", "target/classes");
     ORCHESTRATOR.executeBuild(runner);
     assertThat(getNumberOfViolations()).isEqualTo(1);
-  }
-
-  @Test
-  public void multi_module_project_should_not_validate_classpath_on_parent_module() {
-    SonarRunner runner = SonarRunner.create(TestUtils.projectDir("multi-module"))
-      .setProperty("sonar.projectKey", "multi-module")
-      .setProperty("sonar.projectName", "multi-module")
-      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "dit-check")
-      .setProperty("sonar.modules", "module1,module2")
-      .setProperty("sonar.sources", "src")
-      .setProperty("sonar.java.libraries", "lib/*");
-    Integer status = ORCHESTRATOR.executeBuild(runner).getStatus();
-    assertThat(status).isEqualTo(0);
-    runner = SonarRunner.create(TestUtils.projectDir("multi-module"))
-      .setProperty("sonar.projectKey", "multi-module")
-      .setProperty("sonar.projectName", "multi-module")
-      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "dit-check")
-      .setProperty("sonar.modules", "module1,module2")
-      .setProperty("sonar.sources", "src")
-      .setProperty("sonar.java.libraries", "../sharedlib/*");
-    status = ORCHESTRATOR.executeBuild(runner).getStatus();
-    assertThat(status).isEqualTo(0);
   }
 
   @Test
