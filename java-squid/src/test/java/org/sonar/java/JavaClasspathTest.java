@@ -103,6 +103,17 @@ public class JavaClasspathTest {
   }
 
   @Test
+  public void directory_specified_for_library_should_find_jars() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+    assertThat(javaClasspath.getElements().get(1)).exists();
+    assertThat(javaClasspath.getElements().get(2)).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("lib","hello.jar", "world.jar");
+  }
+
+  @Test
   public void libraries_should_accept_path_ending_with_wildcard() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib/*");
     javaClasspath = createJavaClasspath();

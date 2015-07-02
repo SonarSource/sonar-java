@@ -130,25 +130,6 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void should_support_simple_wildcard() {
-    buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath() + "/subFolder/subSubFolder/*.jar");
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
-  public void directory_specified_for_library_should_find_jars() {
-    buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath());
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
-  public void directory_specified_for_library_with_wildcards_should_find_jars() {
-    String absolutePath = tmp.getRoot().getAbsolutePath();
-    buildAndAnalyzeWithLibraries(absolutePath.substring(0, absolutePath.length() - 3) + "*" + absolutePath.substring(absolutePath.length() - 1));
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
   public void directory_of_classes_in_library_should_be_supported() throws Exception {
     SonarRunner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.libraries", "target/classes");
@@ -168,13 +149,6 @@ public class JavaClasspathTest {
     } else {
       assertThat(status).isGreaterThan(0);
     }
-  }
-
-  private static void buildAndAnalyzeWithLibraries(String libraries) {
-    SonarRunner runner = ditProjectSonarRunner();
-    runner.setProperty("sonar.java.binaries", "target/classes");
-    runner.setProperty("sonar.java.libraries", libraries);
-    ORCHESTRATOR.executeBuild(runner);
   }
 
   private static String buildDitProject() {
