@@ -151,16 +151,16 @@ public class JavaClasspathTest {
     }
   }
 
-  private static String buildDitProject() {
-    return mavenOnDitProject("clean package");
+  private static void buildDitProject() {
+    mavenOnDitProject("clean package");
   }
 
-  private static String mavenOnDitProject(String goal) {
+  private static void mavenOnDitProject(String goal) {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("dit-check"))
       .setGoals(goal)
       .setProperty("sonar.profile", "dit-check")
       .setProperty("sonar.dynamicAnalysis", "false");
-    return ORCHESTRATOR.executeBuild(build).getLogs();
+    ORCHESTRATOR.executeBuild(build);
   }
 
   private static SonarRunner ditProjectSonarRunner() {
