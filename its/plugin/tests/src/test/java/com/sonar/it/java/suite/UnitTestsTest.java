@@ -31,7 +31,6 @@ import org.sonar.wsclient.services.ResourceQuery;
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class UnitTestsTest {
 
@@ -63,7 +62,6 @@ public class UnitTestsTest {
 
   @Test
   public void tests_with_report_name_suffix() {
-    assumeTrue(JavaTestSuite.isAtLeastPlugin3_4());
     MavenBuild build = MavenBuild.create()
         .setPom(TestUtils.projectPom("tests-surefire-suffix"))
         .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1","test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
