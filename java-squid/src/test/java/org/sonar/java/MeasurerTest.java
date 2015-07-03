@@ -82,7 +82,7 @@ public class MeasurerTest {
 
   @Test
   public void verify_class_metric() {
-    checkMetric("Classes.java", "classes", 4.0);
+    checkMetric("Classes.java", "classes", 8.0);
   }
 
   @Test

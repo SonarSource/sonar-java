@@ -71,19 +71,6 @@ public class JavaTest {
     assertThat(file.getLongName()).contains("FilenameWith$Dollar");
   }
 
-  @Test
-  public void shouldSupportJavaInnerClasses() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java-inner-classes"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:java-inner-classes", "classes", "functions"));
-    assertThat(project.getMeasureIntValue("classes")).isEqualTo(11);
-    assertThat(project.getMeasureIntValue("functions")).isEqualTo(15);
-  }
-
   /**
    * Since 2.13 commented-out code lines not saved as measure for Java - see SONAR-3093
    */
