@@ -20,7 +20,6 @@
 package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -91,25 +90,6 @@ public class UnitTestsTest {
       "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density"));
     assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(2);
     assertThat(project.getMeasure("test_execution_time").getIntValue()).isEqualTo(1000);
-  }
-
-  @Test
-  public void no_coverage() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("no_coverage"))
-      .setGoals("clean test-compile surefire:test", "sonar:sonar")
-      .setProperty("sonar.jacoco.reportMissing.force.zero", "true");
-    BuildResult buildResult = orchestrator.executeBuild(build);
-
-    assertThat(buildResult.getLogs())
-      .contains("JaCoCoSensor: JaCoCo report not found.")
-      .contains("Project coverage is set to 0% as no JaCoCo execution data has been dumped: ");
-
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("test:no_coverage",
-      "tests", "coverage"));
-
-    assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(1);
-    assertThat(project.getMeasure("coverage").getIntValue()).isEqualTo(0);
   }
 
 }
