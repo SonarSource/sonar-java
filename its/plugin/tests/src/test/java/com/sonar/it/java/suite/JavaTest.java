@@ -71,21 +71,6 @@ public class JavaTest {
     assertThat(file.getLongName()).contains("FilenameWith$Dollar");
   }
 
-  /**
-   * This is a big limitation of resource keys : a class key can be the same than a package.
-   * Example : package com.sonar.sample and class com.sonar.Sample
-   */
-  @Test
-  public void keysShouldBeCaseSensitiveToAvoidResourceKeyConflict() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("resource-key-conflict"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    assertThat(orchestrator.getServer().getWsClient().findAll(new ResourceQuery("com.sonarsource.it.projects.java:resource-key-conflict").setAllDepths())).hasSize(5);
-  }
-
   @Test
   public void shouldSupportJavaInnerClasses() {
     MavenBuild build = MavenBuild.create()
