@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
 
-import java.io.File;
-
 import static org.fest.assertions.Assertions.assertThat;
 
 public class UnitTestsTest {
@@ -75,21 +73,6 @@ public class UnitTestsTest {
     assertThat(project.getMeasure("skipped_tests").getIntValue()).isEqualTo(2);
     assertThat(project.getMeasure("test_execution_time").getIntValue()).isGreaterThan(0);
     assertThat(project.getMeasure("test_success_density").getValue()).isEqualTo(100.0);
-  }
-
-  @Test
-  public void test_negative_duration() {
-
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("test_negative_duration"))
-      .setGoals("sonar:sonar")
-      .setProperty("sonar.junit.reportsPath", new File(TestUtils.projectDir("test_negative_duration"), "surefire-reports").getAbsolutePath());
-    orchestrator.executeBuild(build);
-
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("test:test_negative_duration",
-      "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density"));
-    assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(2);
-    assertThat(project.getMeasure("test_execution_time").getIntValue()).isEqualTo(1000);
   }
 
 }
