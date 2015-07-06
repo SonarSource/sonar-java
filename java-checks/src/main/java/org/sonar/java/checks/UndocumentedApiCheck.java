@@ -22,6 +22,10 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.Deque;
+import java.util.List;
+import java.util.regex.Pattern;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
@@ -44,10 +48,6 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import java.util.Deque;
-import java.util.List;
-import java.util.regex.Pattern;
 
 @Rule(
   key = "UndocumentedApi",
@@ -134,6 +134,9 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         }
         if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
           context.addIssue(tree, this, "Document this method return value.");
+        }
+        if (hasEmptyDescription(javadoc)) {
+          context.addIssue(tree, this, "Document this description.");
         }
       }
     }
@@ -246,6 +249,22 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private static boolean hasReturnJavadoc(String comment) {
     return comment.contains("@return");
+  }
+
+  private static boolean hasEmptyDescription(String comment) {
+    // Extract Javadoc description : content before any tag (@xxx or {@xxx})
+    String description = StringUtils.substringBefore(comment, "@");
+    description = StringUtils.removeEnd(description, "{");
+
+    // Delete the Javadoc characters definition (start/end/multi-lines)
+    description = StringUtils.remove(description, "/**");
+    description = StringUtils.remove(description, "*/");
+    description = StringUtils.remove(description, '*');
+
+    if (StringUtils.isBlank(description)) {
+      return true;
+    }
+    return false;
   }
 
 }
