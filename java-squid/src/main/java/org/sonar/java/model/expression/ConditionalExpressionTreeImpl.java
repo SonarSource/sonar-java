@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -43,15 +42,13 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
 
     super(Kind.CONDITIONAL_EXPRESSION);
     this.queryToken = queryToken;
-    this.trueExpression = Preconditions.checkNotNull(trueExpression);
+    this.trueExpression = trueExpression;
     this.colonToken = colonToken;
-    this.falseExpression = Preconditions.checkNotNull(falseExpression);
+    this.falseExpression = falseExpression;
   }
 
   public ConditionalExpressionTreeImpl complete(ExpressionTree condition) {
-    Preconditions.checkState(this.condition == null);
     this.condition = condition;
-
     return this;
   }
 
@@ -92,7 +89,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
+    return Iterators.forArray(
       condition,
       queryToken,
       trueExpression,

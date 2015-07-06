@@ -32,9 +32,11 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
@@ -81,6 +83,7 @@ public class SemanticModel {
   public static void handleMissingTypes(Tree tree) {
     // (Godin): Another and probably better (safer) way to do the same - is to assign default value during creation of nodes, so that to guarantee that this step won't be skipped.
     tree.accept(new BaseTreeVisitor() {
+
       @Override
       protected void scan(@Nullable Tree tree) {
         if (tree instanceof AbstractTypedTree) {
@@ -90,6 +93,13 @@ public class SemanticModel {
           }
         }
         super.scan(tree);
+      }
+
+      @Override
+      protected void scan(ListTree<? extends Tree> listTree) {
+        if (listTree != null) {
+          scan((List<? extends Tree>) listTree);
+        }
       }
     });
   }

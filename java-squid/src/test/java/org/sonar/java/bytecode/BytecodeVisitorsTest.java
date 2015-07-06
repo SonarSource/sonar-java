@@ -26,10 +26,11 @@ import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputPath;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Directory;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.DefaultJavaResourceLocator;
@@ -69,24 +70,26 @@ public class BytecodeVisitorsTest {
   @BeforeClass
   public static void setup() {
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
-    Project project = mock(Project.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     File baseDir = new File("src/test/files/bytecode/src");
-    when(project.getFileSystem()).thenReturn(pfs);
-    when(pfs.getBasedir()).thenReturn(baseDir);
     SensorContext sensorContext = mock(SensorContext.class);
-    when(sensorContext.getResource(Matchers.any(org.sonar.api.resources.File.class))).thenAnswer(new Answer<org.sonar.api.resources.File>() {
+    when(sensorContext.getResource(Matchers.any(InputPath.class))).thenAnswer(new Answer<org.sonar.api.resources.File>() {
       @Override
       public org.sonar.api.resources.File answer(InvocationOnMock invocation) throws Throwable {
-        org.sonar.api.resources.File response = (org.sonar.api.resources.File) invocation.getArguments()[0];
+        org.sonar.api.resources.File response = org.sonar.api.resources.File.create(((InputPath) invocation.getArguments()[0]).relativePath());
         response.setEffectiveKey("");
         return response;
       }
     });
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
+    Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
+    DefaultFileSystem fs = new DefaultFileSystem();
+    fs.setBaseDir(baseDir);
+    for (File javaFile : files) {
+      DefaultInputFile inputFile = new DefaultInputFile(javaFile.getPath());
+      fs.add(inputFile);
+    }
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
     javaResourceLocator.setSensorContext(sensorContext);
     JavaSquid squid = new JavaSquid(conf, javaResourceLocator);
-    Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
     File binDir = new File("src/test/files/bytecode/bin");
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
     graph = squid.getGraph();

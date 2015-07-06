@@ -19,14 +19,15 @@
  */
 package org.sonar.java.ast.parser;
 
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
 public class TypeUnionListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public TypeUnionListTreeImpl(List<TypeTree> types) {
-    super(JavaLexer.CATCH_TYPE, types);
+  public TypeUnionListTreeImpl(List<TypeTree> types, List<SyntaxToken> separatorsList) {
+    super(JavaLexer.CATCH_TYPE, types, separatorsList);
   }
 
 }

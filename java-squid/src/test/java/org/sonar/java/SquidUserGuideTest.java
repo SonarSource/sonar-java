@@ -26,9 +26,10 @@ import org.fest.assertions.Delta;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -46,7 +47,6 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class SquidUserGuideTest {
 
@@ -61,11 +61,12 @@ public class SquidUserGuideTest {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
-    Project sonarProject = mock(Project.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    when(pfs.getBasedir()).thenReturn(prjDir);
-    when(sonarProject.getFileSystem()).thenReturn(pfs);
-    Measurer measurer = new Measurer(sonarProject, context, separateAccessorsFromMethods);
+    DefaultFileSystem fs = new DefaultFileSystem();
+    Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
+    for (File file : files) {
+      fs.add(new DefaultInputFile(file.getPath()));
+    }
+    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods);
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
 
@@ -115,15 +116,14 @@ public class SquidUserGuideTest {
       }
     };
     squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
-    Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
   private Map<String, Double> getMetrics() {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    ArgumentCaptor<org.sonar.api.resources.File> files = ArgumentCaptor.forClass(org.sonar.api.resources.File.class);
+    ArgumentCaptor<InputFile> files = ArgumentCaptor.forClass(InputFile.class);
     verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
-    Map<String, Double> metrics = new HashMap<String, Double>();
+    Map<String, Double> metrics = new HashMap<>();
     for (Measure measure : captor.getAllValues()) {
       if(measure.getValue() != null ){
         if(metrics.get(measure.getMetricKey())==null) {

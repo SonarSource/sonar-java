@@ -184,8 +184,8 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
   @Override
   public void visitNewClass(NewClassTree tree) {
     ClassTree classBody = tree.classBody();
-    if (classBody != null && tree.closeParenToken() != null) {
-      checkTokens(tree.closeParenToken(), classBody.openBraceToken());
+    if (classBody != null && tree.arguments().closeParenToken() != null) {
+      checkTokens(tree.arguments().closeParenToken(), classBody.openBraceToken());
     }
     super.visitNewClass(tree);
   }
@@ -221,10 +221,9 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
     NewClassTree initializer = tree.initializer();
     ClassTree classBody = initializer.classBody();
     if (classBody != null) {
-      SyntaxToken closeParenToken = initializer.closeParenToken();
       SyntaxToken openBraceToken = classBody.openBraceToken();
-      if (closeParenToken != null) {
-        checkTokens(closeParenToken, openBraceToken);
+      if (initializer.arguments().closeParenToken() != null) {
+        checkTokens(initializer.arguments().closeParenToken(), openBraceToken);
       } else {
         checkTokens(tree.simpleName().identifierToken(), openBraceToken);
       }

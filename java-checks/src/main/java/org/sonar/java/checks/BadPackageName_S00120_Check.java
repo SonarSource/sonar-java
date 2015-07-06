@@ -23,20 +23,15 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.regex.Pattern;
 
 @Rule(
@@ -72,33 +67,11 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     if (tree.packageDeclaration() != null) {
-      String name = concatenate(tree.packageDeclaration().packageName());
+      String name = PackageUtils.packageName(tree.packageDeclaration(), ".");
       if (!pattern.matcher(name).matches()) {
         context.addIssue(tree, this, "Rename this package name to match the regular expression '" + format + "'.");
       }
     }
-  }
-
-  private static String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
-
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(".");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece: pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
   }
 
 }

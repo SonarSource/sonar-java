@@ -24,39 +24,25 @@ import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
-import javax.annotation.Nullable;
-
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationTree {
 
   private final SyntaxToken atToken;
   private final TypeTree annotationType;
-  private final List<ExpressionTree> arguments;
-  private final SyntaxToken openParenToken;
-  private final SyntaxToken closeParenToken;
+  private final Arguments arguments;
 
-  public AnnotationTreeImpl(InternalSyntaxToken atToken, TypeTree annotationType, @Nullable ArgumentListTreeImpl arguments) {
+  public AnnotationTreeImpl(InternalSyntaxToken atToken, TypeTree annotationType, ArgumentListTreeImpl arguments) {
     super(Kind.ANNOTATION);
     this.atToken = atToken;
     this.annotationType = annotationType;
-    if (arguments == null) {
-      this.openParenToken = null;
-      this.arguments = Collections.<ExpressionTree>emptyList();
-      this.closeParenToken = null;
-    } else {
-      this.openParenToken = arguments.openParenToken();
-      this.arguments = arguments;
-      this.closeParenToken = arguments.closeParenToken();
-    }
+    this.arguments = arguments;
   }
 
   @Override
@@ -65,7 +51,7 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
   }
 
   @Override
-  public List<ExpressionTree> arguments() {
+  public Arguments arguments() {
     return arguments;
   }
 
@@ -81,27 +67,11 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    boolean hasParenthesis = openParenToken != null;
-    return Iterators.concat(
-      Iterators.forArray(atToken, annotationType),
-      hasParenthesis ? Iterators.singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
-      arguments.iterator(),
-      hasParenthesis ? Iterators.singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator());
+    return Iterators.forArray(atToken, annotationType, arguments);
   }
 
   @Override
   public SyntaxToken atToken() {
     return atToken;
   }
-
-  @Override
-  public SyntaxToken openParenToken() {
-    return openParenToken;
-  }
-
-  @Override
-  public SyntaxToken closeParenToken() {
-    return closeParenToken;
-  }
-
 }

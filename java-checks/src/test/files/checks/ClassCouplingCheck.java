@@ -163,3 +163,31 @@ class Plop { // Noncompliant
   List<T19> a19;
   List<T20> a20;
 }
+
+class Tmp<T1, T2> { // Noncompliant
+  void m() {
+    try {} catch (Exception1 | Exception2 e) {} // not covered...
+    
+    Object o;
+    org.foo.T1 t1 = (org.foo.T1) o;
+    T2 t2 = new T2(o);
+    T3 t3 = new <Integer> T3(o);
+    T4 t4 = new T4<Integer>(o);
+    T5<? extends T4> t5 = new T5<T4>(o);
+    T6 t6 = (T6) o;
+    T7 t7 = (T7) o;
+    T8 t8 = (T8) o;
+    T9 t9 = (T9) o;
+    T10 t10 = (T10) o;
+    T11 t11 = (T11) o;
+    T12 t12 = (T12) o;
+    T13 t13 = (T13) o;
+    T14 t14 = (T14) o;
+    T15 t15 = (T15) o;
+    T16 t16 = new T16() {
+      void foo() {}
+    };
+    T17[] t17 = new T17[3];
+    boolean t18 = 0 instanceof T18;
+  }
+}

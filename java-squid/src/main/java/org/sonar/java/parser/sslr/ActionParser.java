@@ -29,9 +29,7 @@ import com.sonar.sslr.api.RecognitionException;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
@@ -199,7 +197,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("optional", expression);
       optionals.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.optional(expression));
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
       return null;
     }
 
@@ -209,7 +207,7 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("oneOrMore", expression);
       oneOrMores.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.oneOrMore(expression));
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
       return null;
     }
 
@@ -219,26 +217,20 @@ public class ActionParser {
       GrammarRuleKey grammarRuleKey = new DummyGrammarRuleKey("zeroOrMore", expression);
       zeroOrMores.add(grammarRuleKey);
       b.rule(grammarRuleKey).is(b.zeroOrMore(expression));
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
       return null;
     }
 
     @Override
-    public JavaTree invokeRule(GrammarRuleKey grammarRuleKey) {
+    public InternalSyntaxToken token(GrammarRuleKey grammarRuleKey) {
       push(new DelayedRuleInvocationExpression(b, grammarRuleKey));
-      return null;
-    }
-
-    @Override
-    public InternalSyntaxToken invokeRule(JavaPunctuator javaPunctuator) {
-      push(new DelayedRuleInvocationExpression(b, javaPunctuator));
       return null;
     }
 
     public void replaceByRule(GrammarRuleKey grammarRuleKey, int stackElements) {
       ParsingExpression expression = stackElements == 1 ? pop() : new SequenceExpression(pop(stackElements));
       b.rule(grammarRuleKey).is(expression);
-      invokeRule(grammarRuleKey);
+      token(grammarRuleKey);
     }
 
     private ParsingExpression[] pop(int n) {

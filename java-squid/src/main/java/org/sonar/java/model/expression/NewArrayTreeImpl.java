@@ -26,6 +26,7 @@ import org.sonar.java.model.ArrayDimensionTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,11 +47,11 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   private List<ArrayDimensionTree> dimensions;
   @Nullable
   private SyntaxToken openCurlyBraceToken;
-  private final List<ExpressionTree> initializers;
+  private final ListTree<ExpressionTree> initializers;
   @Nullable
   private SyntaxToken closeCurlyBraceToken;
 
-  public NewArrayTreeImpl(List<ArrayDimensionTree> dimensions, List<ExpressionTree> initializers) {
+  public NewArrayTreeImpl(List<ArrayDimensionTree> dimensions, ListTree<ExpressionTree> initializers) {
     super(Kind.NEW_ARRAY);
 
     // TODO maybe type should not be null?
@@ -109,7 +110,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   @Override
-  public List<ExpressionTree> initializers() {
+  public ListTree<ExpressionTree> initializers() {
     return initializers;
   }
 
@@ -126,12 +127,12 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder();
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     addIfNotNull(iteratorBuilder, newKeyword);
     addIfNotNull(iteratorBuilder, type);
     iteratorBuilder.addAll(dimensions);
     addIfNotNull(iteratorBuilder, openCurlyBraceToken);
-    iteratorBuilder.addAll(initializers);
+    iteratorBuilder.add(initializers);
     addIfNotNull(iteratorBuilder, closeCurlyBraceToken);
     return iteratorBuilder.build().iterator();
   }

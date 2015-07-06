@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -110,8 +111,8 @@ public abstract class JavaTree implements Tree {
       List<Tree> types, SyntaxToken eofToken) {
       super(Kind.COMPILATION_UNIT);
       this.packageDeclaration = packageDeclaration;
-      this.imports = Preconditions.checkNotNull(imports);
-      this.types = Preconditions.checkNotNull(types);
+      this.imports = imports;
+      this.types = types;
       this.eofToken = eofToken;
     }
 
@@ -295,7 +296,7 @@ public abstract class JavaTree implements Tree {
     @Override
     public Iterator<Tree> childrenIterator() {
 
-      return Iterators.<Tree>concat(
+      return Iterators.concat(
         Iterators.singletonIterator(importToken),
         isStatic ? Iterators.singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
         Iterators.forArray(qualifiedIdentifier, semiColonToken));
@@ -312,12 +313,9 @@ public abstract class JavaTree implements Tree {
     private final TypeTree bound;
     private List<AnnotationTree> annotations;
 
-    public WildcardTreeImpl(Kind kind, InternalSyntaxToken queryToken) {
-      super(kind);
-
-      Preconditions.checkArgument(kind == Kind.UNBOUNDED_WILDCARD);
-
-      this.kind = Preconditions.checkNotNull(kind);
+    public WildcardTreeImpl(InternalSyntaxToken queryToken) {
+      super(Kind.UNBOUNDED_WILDCARD);
+      this.kind = Kind.UNBOUNDED_WILDCARD;
       this.annotations = Collections.emptyList();
       this.queryToken = queryToken;
       this.extendsOrSuperToken = null;
@@ -326,10 +324,8 @@ public abstract class JavaTree implements Tree {
 
     public WildcardTreeImpl(Kind kind, InternalSyntaxToken extendsOrSuperToken, TypeTree bound) {
       super(kind);
-
-      Preconditions.checkArgument(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
-
-      this.kind = Preconditions.checkNotNull(kind);
+      Preconditions.checkState(kind == Kind.EXTENDS_WILDCARD || kind == Kind.SUPER_WILDCARD);
+      this.kind = kind;
       this.annotations = Collections.emptyList();
       this.extendsOrSuperToken = extendsOrSuperToken;
       this.bound = bound;
@@ -392,7 +388,7 @@ public abstract class JavaTree implements Tree {
   }
 
   public static class UnionTypeTreeImpl extends AbstractTypedTree implements UnionTypeTree {
-    private final List<TypeTree> typeAlternatives;
+    private final ListTree<TypeTree> typeAlternatives;
 
     public UnionTypeTreeImpl(TypeUnionListTreeImpl typeAlternatives) {
       super(Kind.UNION_TYPE);
@@ -405,7 +401,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public List<TypeTree> typeAlternatives() {
+    public ListTree<TypeTree> typeAlternatives() {
       return typeAlternatives;
     }
 
@@ -416,12 +412,12 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public Iterator<Tree> childrenIterator() {
-      return ImmutableList.<Tree>builder().addAll(typeAlternatives).build().iterator();
+      return ImmutableList.<Tree>builder().add(typeAlternatives).build().iterator();
     }
 
     @Override
     public List<AnnotationTree> annotations() {
-      return ImmutableList.<AnnotationTree>of();
+      return ImmutableList.of();
     }
   }
 
@@ -460,7 +456,7 @@ public abstract class JavaTree implements Tree {
     public PrimitiveTypeTreeImpl(InternalSyntaxToken token) {
       super(Kind.PRIMITIVE_TYPE);
       this.token = token;
-      this.annotations = ImmutableList.<AnnotationTree>of();
+      this.annotations = ImmutableList.of();
     }
 
     public PrimitiveTypeTreeImpl complete(List<AnnotationTree> annotations) {

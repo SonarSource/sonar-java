@@ -47,7 +47,7 @@ public interface TryStatementTree extends StatementTree {
   /**
    * @since Java 1.7
    */
-  List<VariableTree> resources();
+  ListTree<VariableTree> resources();
 
   @Nullable
   SyntaxToken closeParenToken();

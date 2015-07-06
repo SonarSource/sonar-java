@@ -100,18 +100,18 @@ public class JavaGrammar {
     return b.<ModifierKeywordTreeImpl>nonterminal().is(
       f.modifierKeyword(
         b.firstOf(
-          b.invokeRule(JavaKeyword.PUBLIC),
-          b.invokeRule(JavaKeyword.PROTECTED),
-          b.invokeRule(JavaKeyword.PRIVATE),
-          b.invokeRule(JavaKeyword.ABSTRACT),
-          b.invokeRule(JavaKeyword.STATIC),
-          b.invokeRule(JavaKeyword.FINAL),
-          b.invokeRule(JavaKeyword.TRANSIENT),
-          b.invokeRule(JavaKeyword.VOLATILE),
-          b.invokeRule(JavaKeyword.SYNCHRONIZED),
-          b.invokeRule(JavaKeyword.NATIVE),
-          b.invokeRule(JavaKeyword.DEFAULT),
-          b.invokeRule(JavaKeyword.STRICTFP))));
+          b.token(JavaKeyword.PUBLIC),
+          b.token(JavaKeyword.PROTECTED),
+          b.token(JavaKeyword.PRIVATE),
+          b.token(JavaKeyword.ABSTRACT),
+          b.token(JavaKeyword.STATIC),
+          b.token(JavaKeyword.FINAL),
+          b.token(JavaKeyword.TRANSIENT),
+          b.token(JavaKeyword.VOLATILE),
+          b.token(JavaKeyword.SYNCHRONIZED),
+          b.token(JavaKeyword.NATIVE),
+          b.token(JavaKeyword.DEFAULT),
+          b.token(JavaKeyword.STRICTFP))));
   }
 
   // Literals
@@ -121,15 +121,15 @@ public class JavaGrammar {
       .is(
         f.literal(
           b.firstOf(
-            b.invokeRule(JavaKeyword.TRUE),
-            b.invokeRule(JavaKeyword.FALSE),
-            b.invokeRule(JavaKeyword.NULL),
-            b.invokeRule(JavaTokenType.CHARACTER_LITERAL),
-            b.invokeRule(JavaTokenType.LITERAL),
-            b.invokeRule(JavaTokenType.FLOAT_LITERAL),
-            b.invokeRule(JavaTokenType.DOUBLE_LITERAL),
-            b.invokeRule(JavaTokenType.LONG_LITERAL),
-            b.invokeRule(JavaTokenType.INTEGER_LITERAL))));
+            b.token(JavaKeyword.TRUE),
+            b.token(JavaKeyword.FALSE),
+            b.token(JavaKeyword.NULL),
+            b.token(JavaTokenType.CHARACTER_LITERAL),
+            b.token(JavaTokenType.LITERAL),
+            b.token(JavaTokenType.FLOAT_LITERAL),
+            b.token(JavaTokenType.DOUBLE_LITERAL),
+            b.token(JavaTokenType.LONG_LITERAL),
+            b.token(JavaTokenType.INTEGER_LITERAL))));
   }
 
   // End of literals
@@ -140,16 +140,16 @@ public class JavaGrammar {
     return b.<CompilationUnitTreeImpl>nonterminal(JavaLexer.COMPILATION_UNIT)
       .is(
         f.newCompilationUnit(
-          b.invokeRule(JavaLexer.SPACING),
+          b.token(JavaLexer.SPACING),
           b.optional(PACKAGE_DECLARATION()),
           b.zeroOrMore(IMPORT_DECLARATION()),
           b.zeroOrMore(TYPE_DECLARATION()),
-          b.invokeRule(JavaLexer.EOF)));
+          b.token(JavaLexer.EOF)));
   }
 
   public PackageDeclarationTree PACKAGE_DECLARATION() {
     return b.<PackageDeclarationTree>nonterminal(JavaLexer.PACKAGE_DECLARATION)
-      .is(f.newPackageDeclaration(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaKeyword.PACKAGE), EXPRESSION_QUALIFIED_IDENTIFIER(), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.newPackageDeclaration(b.zeroOrMore(ANNOTATION()), b.token(JavaKeyword.PACKAGE), EXPRESSION_QUALIFIED_IDENTIFIER(), b.token(JavaPunctuator.SEMI)));
   }
 
   private ExpressionTree EXPRESSION_QUALIFIED_IDENTIFIER() {
@@ -161,11 +161,11 @@ public class JavaGrammar {
       .is(
         b.firstOf(
           f.newImportDeclaration(
-            b.invokeRule(JavaKeyword.IMPORT), b.optional(b.invokeRule(JavaKeyword.STATIC)), EXPRESSION_QUALIFIED_IDENTIFIER(),
-            b.optional(f.newTuple17(b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaPunctuator.STAR))),
-            b.invokeRule(JavaPunctuator.SEMI)),
+            b.token(JavaKeyword.IMPORT), b.optional(b.token(JavaKeyword.STATIC)), EXPRESSION_QUALIFIED_IDENTIFIER(),
+            b.optional(f.newTuple17(b.token(JavaPunctuator.DOT), b.token(JavaPunctuator.STAR))),
+            b.token(JavaPunctuator.SEMI)),
           // javac accepts empty statements in import declarations
-          f.newEmptyImport(b.invokeRule(JavaPunctuator.SEMI))));
+          f.newEmptyImport(b.token(JavaPunctuator.SEMI))));
   }
 
   public Tree TYPE_DECLARATION() {
@@ -181,7 +181,7 @@ public class JavaGrammar {
               INTERFACE_DECLARATION(),
               ANNOTATION_TYPE_DECLARATION())),
           // javac accepts empty statements in type declarations
-          f.newEmptyType(b.invokeRule(JavaPunctuator.SEMI))));
+          f.newEmptyType(b.token(JavaPunctuator.SEMI))));
   }
 
   // End of compilation unit
@@ -203,11 +203,11 @@ public class JavaGrammar {
       .is(
         b.firstOf(
           f.newTypeArgumentList(
-            b.invokeRule(JavaPunctuator.LPOINT),
+            b.token(JavaPunctuator.LPOINT),
             TYPE_ARGUMENT(),
-            b.zeroOrMore(f.newTuple19(b.invokeRule(JavaPunctuator.COMMA), TYPE_ARGUMENT())),
-            b.invokeRule(JavaPunctuator.RPOINT)),
-          f.newDiamondTypeArgument(b.invokeRule(JavaPunctuator.LPOINT), b.invokeRule(JavaPunctuator.RPOINT))));
+            b.zeroOrMore(f.newTuple19(b.token(JavaPunctuator.COMMA), TYPE_ARGUMENT())),
+            b.token(JavaPunctuator.RPOINT)),
+          f.newDiamondTypeArgument(b.token(JavaPunctuator.LPOINT), b.token(JavaPunctuator.RPOINT))));
   }
 
   public Tree TYPE_ARGUMENT() {
@@ -218,12 +218,12 @@ public class JavaGrammar {
           b.firstOf(
             f.newBasicTypeArgument(TYPE()),
             f.completeWildcardTypeArgument(
-              b.invokeRule(JavaPunctuator.QUERY),
+              b.token(JavaPunctuator.QUERY),
               b.optional(
                 f.newWildcardTypeArguments(
                   b.firstOf(
-                    b.invokeRule(JavaKeyword.EXTENDS),
-                    b.invokeRule(JavaKeyword.SUPER)),
+                    b.token(JavaKeyword.EXTENDS),
+                    b.token(JavaKeyword.SUPER)),
                   b.zeroOrMore(ANNOTATION()),
                   TYPE()))))));
   }
@@ -232,10 +232,10 @@ public class JavaGrammar {
     return b.<TypeParameterListTreeImpl>nonterminal(JavaLexer.TYPE_PARAMETERS)
       .is(
         f.newTypeParameterList(
-          b.invokeRule(JavaPunctuator.LPOINT),
+          b.token(JavaPunctuator.LPOINT),
           TYPE_PARAMETER(),
-          b.zeroOrMore(f.newTuple22(b.invokeRule(JavaPunctuator.COMMA), TYPE_PARAMETER())),
-          b.invokeRule(JavaPunctuator.RPOINT)));
+          b.zeroOrMore(f.newTuple22(b.token(JavaPunctuator.COMMA), TYPE_PARAMETER())),
+          b.token(JavaPunctuator.RPOINT)));
   }
 
   public TypeParameterTreeImpl TYPE_PARAMETER() {
@@ -243,9 +243,9 @@ public class JavaGrammar {
       .is(
         f.completeTypeParameter(
           b.zeroOrMore(ANNOTATION()),
-          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.token(JavaTokenType.IDENTIFIER),
           b.optional(
-            f.newTypeParameter(b.invokeRule(JavaKeyword.EXTENDS), BOUND()))));
+            f.newTypeParameter(b.token(JavaKeyword.EXTENDS), BOUND()))));
   }
 
   public BoundListTreeImpl BOUND() {
@@ -253,7 +253,7 @@ public class JavaGrammar {
       .is(
         f.newBounds(
             TYPE_QUALIFIED_IDENTIFIER(),
-            b.zeroOrMore(f.newTuple21(b.invokeRule(JavaPunctuator.AND), QUALIFIED_IDENTIFIER()))));
+            b.zeroOrMore(f.newTuple21(b.token(JavaPunctuator.AND), QUALIFIED_IDENTIFIER()))));
   }
 
   // End of types
@@ -264,16 +264,16 @@ public class JavaGrammar {
     return b.<ClassTreeImpl>nonterminal(JavaLexer.CLASS_DECLARATION)
       .is(
         f.completeClassDeclaration(
-            b.invokeRule(JavaKeyword.CLASS),
-            b.invokeRule(JavaTokenType.IDENTIFIER), b.optional(TYPE_PARAMETERS()),
-            b.optional(f.newTuple7(b.invokeRule(JavaKeyword.EXTENDS), TYPE_QUALIFIED_IDENTIFIER())),
-            b.optional(f.newTuple14(b.invokeRule(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
+            b.token(JavaKeyword.CLASS),
+            b.token(JavaTokenType.IDENTIFIER), b.optional(TYPE_PARAMETERS()),
+            b.optional(f.newTuple7(b.token(JavaKeyword.EXTENDS), TYPE_QUALIFIED_IDENTIFIER())),
+            b.optional(f.newTuple14(b.token(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
             CLASS_BODY()));
   }
 
   public ClassTreeImpl CLASS_BODY() {
     return b.<ClassTreeImpl>nonterminal(JavaLexer.CLASS_BODY)
-      .is(f.newClassBody(b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.invokeRule(JavaPunctuator.RWING)));
+      .is(f.newClassBody(b.token(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.token(JavaPunctuator.RWING)));
   }
 
   public JavaTree CLASS_MEMBER() {
@@ -289,9 +289,9 @@ public class JavaGrammar {
               ANNOTATION_TYPE_DECLARATION(),
               INTERFACE_DECLARATION(),
               ENUM_DECLARATION())),
-          f.newInitializerMember(b.optional(b.invokeRule(JavaKeyword.STATIC)), BLOCK()),
+          f.newInitializerMember(b.optional(b.token(JavaKeyword.STATIC)), BLOCK()),
           // javac accepts empty statements in member declarations
-          f.newEmptyMember(b.invokeRule(JavaPunctuator.SEMI))));
+          f.newEmptyMember(b.token(JavaPunctuator.SEMI))));
   }
 
   public MethodTreeImpl METHOD_OR_CONSTRUCTOR_DECLARATION() {
@@ -300,25 +300,25 @@ public class JavaGrammar {
         b.firstOf(
           f.completeGenericMethodOrConstructorDeclaration(TYPE_PARAMETERS(), METHOD_OR_CONSTRUCTOR_DECLARATION()),
           f.newMethod(
-            TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
+            TYPE(), b.token(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
             b.zeroOrMore(ANNOTATED_DIMENSION()),
-            b.optional(f.newTuple10(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
+            b.optional(f.newTuple10(b.token(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
             b.firstOf(
               BLOCK(),
-              b.invokeRule(JavaPunctuator.SEMI))),
+              b.token(JavaPunctuator.SEMI))),
           // TODO Largely duplicated with method, but there is a prefix capture on the TYPE, it can be improved
           f.newConstructor(
-            b.invokeRule(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
+            b.token(JavaTokenType.IDENTIFIER), FORMAL_PARAMETERS(),
             b.zeroOrMore(ANNOTATED_DIMENSION()),
-            b.optional(f.newTuple16(b.invokeRule(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
+            b.optional(f.newTuple16(b.token(JavaKeyword.THROWS), QUALIFIED_IDENTIFIER_LIST())),
             b.firstOf(
               BLOCK(),
-              b.invokeRule(JavaPunctuator.SEMI)))));
+              b.token(JavaPunctuator.SEMI)))));
   }
 
   public VariableDeclaratorListTreeImpl FIELD_DECLARATION() {
     return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaLexer.FIELD_DECLARATION)
-      .is(f.completeFieldDeclaration(TYPE(), VARIABLE_DECLARATORS(), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.completeFieldDeclaration(TYPE(), VARIABLE_DECLARATORS(), b.token(JavaPunctuator.SEMI)));
   }
 
   // End of classes
@@ -329,25 +329,25 @@ public class JavaGrammar {
     return b.<ClassTreeImpl>nonterminal(JavaLexer.ENUM_DECLARATION)
       .is(
         f.newEnumDeclaration(
-          b.invokeRule(JavaKeyword.ENUM),
-          b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.optional(f.newTuple12(b.invokeRule(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
-          b.invokeRule(JavaPunctuator.LWING),
+          b.token(JavaKeyword.ENUM),
+          b.token(JavaTokenType.IDENTIFIER),
+          b.optional(f.newTuple12(b.token(JavaKeyword.IMPLEMENTS), QUALIFIED_IDENTIFIER_LIST())),
+          b.token(JavaPunctuator.LWING),
           b.zeroOrMore(ENUM_CONSTANT()),
           // TODO Grammar has been relaxed
-          b.optional(b.invokeRule(JavaPunctuator.SEMI)),
+          b.optional(b.token(JavaPunctuator.SEMI)),
           b.zeroOrMore(CLASS_MEMBER()),
-          b.invokeRule(JavaPunctuator.RWING)));
+          b.token(JavaPunctuator.RWING)));
   }
 
   public EnumConstantTreeImpl ENUM_CONSTANT() {
     return b.<EnumConstantTreeImpl>nonterminal(JavaLexer.ENUM_CONSTANT)
       .is(
         f.newEnumConstant(
-          b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.zeroOrMore(ANNOTATION()), b.token(JavaTokenType.IDENTIFIER),
           b.optional(ARGUMENTS()),
           b.optional(CLASS_BODY()),
-          b.optional(b.invokeRule(JavaPunctuator.COMMA))));
+          b.optional(b.token(JavaPunctuator.COMMA))));
   }
 
   // End of enums
@@ -358,16 +358,16 @@ public class JavaGrammar {
     return b.<ClassTreeImpl>nonterminal(JavaLexer.INTERFACE_DECLARATION)
       .is(
         f.completeInterfaceDeclaration(
-          b.invokeRule(JavaKeyword.INTERFACE),
-          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.token(JavaKeyword.INTERFACE),
+          b.token(JavaTokenType.IDENTIFIER),
           b.optional(TYPE_PARAMETERS()),
-          b.optional(f.newTuple11(b.invokeRule(JavaKeyword.EXTENDS), QUALIFIED_IDENTIFIER_LIST())),
+          b.optional(f.newTuple11(b.token(JavaKeyword.EXTENDS), QUALIFIED_IDENTIFIER_LIST())),
           INTERFACE_BODY()));
   }
 
   public ClassTreeImpl INTERFACE_BODY() {
     return b.<ClassTreeImpl>nonterminal()
-      .is(f.newInterfaceBody(b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.invokeRule(JavaPunctuator.RWING)));
+      .is(f.newInterfaceBody(b.token(JavaPunctuator.LWING), b.zeroOrMore(CLASS_MEMBER()), b.token(JavaPunctuator.RWING)));
   }
 
   // End of interfaces
@@ -379,9 +379,9 @@ public class JavaGrammar {
     return b.<ClassTreeImpl>nonterminal(JavaLexer.ANNOTATION_TYPE_DECLARATION)
       .is(
         f.completeAnnotationType(
-          b.invokeRule(JavaPunctuator.AT),
-          b.invokeRule(JavaKeyword.INTERFACE),
-          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.token(JavaPunctuator.AT),
+          b.token(JavaKeyword.INTERFACE),
+          b.token(JavaTokenType.IDENTIFIER),
           ANNOTATION_TYPE_BODY()));
   }
 
@@ -389,7 +389,7 @@ public class JavaGrammar {
     return b.<ClassTreeImpl>nonterminal(JavaLexer.ANNOTATION_TYPE_BODY)
       .is(
         f.newAnnotationType(
-          b.invokeRule(JavaPunctuator.LWING), b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION()), b.invokeRule(JavaPunctuator.RWING)));
+          b.token(JavaPunctuator.LWING), b.zeroOrMore(ANNOTATION_TYPE_ELEMENT_DECLARATION()), b.token(JavaPunctuator.RWING)));
   }
 
   public JavaTree ANNOTATION_TYPE_ELEMENT_DECLARATION() {
@@ -397,7 +397,7 @@ public class JavaGrammar {
       .is(
         b.firstOf(
           f.completeAnnotationTypeMember(MODIFIERS(), ANNOTATION_TYPE_ELEMENT_REST()),
-          b.invokeRule(JavaPunctuator.SEMI)));
+          b.token(JavaPunctuator.SEMI)));
   }
 
   public JavaTree ANNOTATION_TYPE_ELEMENT_REST() {
@@ -405,7 +405,7 @@ public class JavaGrammar {
       .is(
         b.firstOf(
           f.completeAnnotationMethod(
-            TYPE(), b.invokeRule(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_REST(), b.invokeRule(JavaPunctuator.SEMI)),
+            TYPE(), b.token(JavaTokenType.IDENTIFIER), ANNOTATION_METHOD_REST(), b.token(JavaPunctuator.SEMI)),
           FIELD_DECLARATION(),
           CLASS_DECLARATION(),
           ENUM_DECLARATION(),
@@ -417,15 +417,15 @@ public class JavaGrammar {
     return b.<MethodTreeImpl>nonterminal(JavaLexer.ANNOTATION_METHOD_REST)
       .is(
         f.newAnnotationTypeMethod(
-          b.invokeRule(JavaPunctuator.LPAR),
-          b.invokeRule(JavaPunctuator.RPAR),
+          b.token(JavaPunctuator.LPAR),
+          b.token(JavaPunctuator.RPAR),
           b.optional(DEFAULT_VALUE())));
   }
 
   public Tuple<InternalSyntaxToken, ExpressionTree> DEFAULT_VALUE() {
     return b.<Tuple<InternalSyntaxToken, ExpressionTree>>nonterminal(JavaLexer.DEFAULT_VALUE)
       .is(f.newDefaultValue(
-          b.invokeRule(JavaKeyword.DEFAULT),
+          b.token(JavaKeyword.DEFAULT),
           ELEMENT_VALUE()));
   }
 
@@ -433,9 +433,9 @@ public class JavaGrammar {
     return b.<AnnotationTreeImpl>nonterminal(JavaLexer.ANNOTATION)
       .is(
         f.newAnnotation(
-          b.invokeRule(JavaPunctuator.AT),
-          f.annotationIdentifier(b.invokeRule(JavaTokenType.IDENTIFIER),
-              b.zeroOrMore(f.newTuple8(b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaTokenType.IDENTIFIER)))),
+          b.token(JavaPunctuator.AT),
+          f.annotationIdentifier(b.token(JavaTokenType.IDENTIFIER),
+              b.zeroOrMore(f.newTuple8(b.token(JavaPunctuator.DOT), b.token(JavaTokenType.IDENTIFIER)))),
           b.optional(ANNOTATION_REST())));
   }
 
@@ -451,24 +451,24 @@ public class JavaGrammar {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.NORMAL_ANNOTATION_REST)
       .is(
         f.completeNormalAnnotation(
-          b.invokeRule(JavaPunctuator.LPAR),
+          b.token(JavaPunctuator.LPAR),
           b.optional(ELEMENT_VALUE_PAIRS()),
-          b.invokeRule(JavaPunctuator.RPAR)));
+          b.token(JavaPunctuator.RPAR)));
   }
 
   public ArgumentListTreeImpl ELEMENT_VALUE_PAIRS() {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUE_PAIRS)
       .is(
         f.newNormalAnnotation(
-          ELEMENT_VALUE_PAIR(), b.zeroOrMore(f.newTuple24(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE_PAIR()))));
+          ELEMENT_VALUE_PAIR(), b.zeroOrMore(f.newTuple24(b.token(JavaPunctuator.COMMA), ELEMENT_VALUE_PAIR()))));
   }
 
   public AssignmentExpressionTreeImpl ELEMENT_VALUE_PAIR() {
     return b.<AssignmentExpressionTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUE_PAIR)
       .is(
         f.newElementValuePair(
-          b.invokeRule(JavaTokenType.IDENTIFIER),
-          b.invokeRule(JavaPunctuator.EQU),
+          b.token(JavaTokenType.IDENTIFIER),
+          b.token(JavaPunctuator.EQU),
           ELEMENT_VALUE()));
   }
 
@@ -485,22 +485,21 @@ public class JavaGrammar {
     return b.<NewArrayTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUE_ARRAY_INITIALIZER)
       .is(
         f.completeElementValueArrayInitializer(
-          b.invokeRule(JavaPunctuator.LWING),
+          b.token(JavaPunctuator.LWING),
           b.optional(ELEMENT_VALUES()),
-          b.optional(b.invokeRule(JavaPunctuator.COMMA)),
-          b.invokeRule(JavaPunctuator.RWING)));
+          b.token(JavaPunctuator.RWING)));
   }
 
   public NewArrayTreeImpl ELEMENT_VALUES() {
     return b.<NewArrayTreeImpl>nonterminal(JavaLexer.ELEMENT_VALUES)
       .is(
         f.newElementValueArrayInitializer(
-          ELEMENT_VALUE(), b.zeroOrMore(f.newTuple23(b.invokeRule(JavaPunctuator.COMMA), ELEMENT_VALUE()))));
+          b.oneOrMore(f.newTuple23(ELEMENT_VALUE(), b.optional(b.token(JavaPunctuator.COMMA))))));
   }
 
   public ArgumentListTreeImpl SINGLE_ELEMENT_ANNOTATION_REST() {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.SINGLE_ELEMENT_ANNOTATION_REST)
-      .is(f.newSingleElementAnnotation(b.invokeRule(JavaPunctuator.LPAR), ELEMENT_VALUE(), b.invokeRule(JavaPunctuator.RPAR)));
+      .is(f.newSingleElementAnnotation(b.token(JavaPunctuator.LPAR), ELEMENT_VALUE(), b.token(JavaPunctuator.RPAR)));
   }
 
   // End of annotations
@@ -511,9 +510,9 @@ public class JavaGrammar {
     return b.<FormalParametersListTreeImpl>nonterminal(JavaLexer.FORMAL_PARAMETERS)
       .is(
         f.completeParenFormalParameters(
-          b.invokeRule(JavaPunctuator.LPAR),
+          b.token(JavaPunctuator.LPAR),
           b.optional(FORMAL_PARAMETERS_DECLS()),
-          b.invokeRule(JavaPunctuator.RPAR)));
+          b.token(JavaPunctuator.RPAR)));
   }
 
   public FormalParametersListTreeImpl FORMAL_PARAMETERS_DECLS() {
@@ -529,15 +528,15 @@ public class JavaGrammar {
     return b.<FormalParametersListTreeImpl>nonterminal(JavaLexer.FORMAL_PARAMETERS_DECLS_REST)
       .is(
         b.firstOf(
-          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newTuple18(b.invokeRule(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
-          f.newVariableArgumentFormalParameter(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.ELLIPSIS), VARIABLE_DECLARATOR_ID())));
+          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newTuple18(b.token(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
+          f.newVariableArgumentFormalParameter(b.zeroOrMore(ANNOTATION()), b.token(JavaPunctuator.ELLIPSIS), VARIABLE_DECLARATOR_ID())));
   }
 
   public VariableTreeImpl VARIABLE_DECLARATOR_ID() {
     return b.<VariableTreeImpl>nonterminal(JavaLexer.VARIABLE_DECLARATOR_ID)
       .is(
         f.newVariableDeclaratorId(
-          b.invokeRule(JavaTokenType.IDENTIFIER),
+          b.token(JavaTokenType.IDENTIFIER),
           b.zeroOrMore(ANNOTATED_DIMENSION())));
   }
 
@@ -557,21 +556,21 @@ public class JavaGrammar {
 
   public VariableDeclaratorListTreeImpl LOCAL_VARIABLE_DECLARATION_STATEMENT() {
     return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaLexer.LOCAL_VARIABLE_DECLARATION_STATEMENT)
-      .is(f.completeLocalVariableDeclaration(MODIFIERS(), TYPE(), VARIABLE_DECLARATORS(), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.completeLocalVariableDeclaration(MODIFIERS(), TYPE(), VARIABLE_DECLARATORS(), b.token(JavaPunctuator.SEMI)));
   }
 
   public VariableDeclaratorListTreeImpl VARIABLE_DECLARATORS() {
     return b.<VariableDeclaratorListTreeImpl>nonterminal(JavaLexer.VARIABLE_DECLARATORS)
-      .is(f.newVariableDeclarators(VARIABLE_DECLARATOR(), b.zeroOrMore(f.newTuple3(b.invokeRule(JavaPunctuator.COMMA), VARIABLE_DECLARATOR()))));
+      .is(f.newVariableDeclarators(VARIABLE_DECLARATOR(), b.zeroOrMore(f.newTuple3(b.token(JavaPunctuator.COMMA), VARIABLE_DECLARATOR()))));
   }
 
   public VariableTreeImpl VARIABLE_DECLARATOR() {
     return b.<VariableTreeImpl>nonterminal(JavaLexer.VARIABLE_DECLARATOR)
       .is(
         f.completeVariableDeclarator(
-          b.invokeRule(JavaTokenType.IDENTIFIER), b.zeroOrMore(ANNOTATED_DIMENSION()),
+          b.token(JavaTokenType.IDENTIFIER), b.zeroOrMore(ANNOTATED_DIMENSION()),
           b.optional(
-            f.newVariableDeclarator(b.invokeRule(JavaPunctuator.EQU), VARIABLE_INITIALIZER()))));
+            f.newVariableDeclarator(b.token(JavaPunctuator.EQU), VARIABLE_INITIALIZER()))));
   }
 
   public StatementTree STATEMENT() {
@@ -598,26 +597,26 @@ public class JavaGrammar {
 
   public BlockTreeImpl BLOCK() {
     return b.<BlockTreeImpl>nonterminal(JavaLexer.BLOCK)
-      .is(f.block(b.invokeRule(JavaPunctuator.LWING), BLOCK_STATEMENTS(), b.invokeRule(JavaPunctuator.RWING)));
+      .is(f.block(b.token(JavaPunctuator.LWING), BLOCK_STATEMENTS(), b.token(JavaPunctuator.RWING)));
   }
 
   public AssertStatementTreeImpl ASSERT_STATEMENT() {
     return b.<AssertStatementTreeImpl>nonterminal(JavaLexer.ASSERT_STATEMENT)
       .is(f.completeAssertStatement(
-        b.invokeRule(JavaKeyword.ASSERT), EXPRESSION(),
+        b.token(JavaKeyword.ASSERT), EXPRESSION(),
         b.optional(
-          f.newAssertStatement(b.invokeRule(JavaPunctuator.COLON), EXPRESSION())),
-        b.invokeRule(JavaPunctuator.SEMI)));
+          f.newAssertStatement(b.token(JavaPunctuator.COLON), EXPRESSION())),
+        b.token(JavaPunctuator.SEMI)));
   }
 
   public IfStatementTreeImpl IF_STATEMENT() {
     return b.<IfStatementTreeImpl>nonterminal(JavaLexer.IF_STATEMENT)
       .is(
         f.completeIf(
-          b.invokeRule(JavaKeyword.IF), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
+          b.token(JavaKeyword.IF), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
           STATEMENT(),
           b.optional(
-            f.newIfWithElse(b.invokeRule(JavaKeyword.ELSE), STATEMENT()))));
+            f.newIfWithElse(b.token(JavaKeyword.ELSE), STATEMENT()))));
   }
 
   public StatementTree FOR_STATEMENT() {
@@ -632,12 +631,12 @@ public class JavaGrammar {
     return b.<ForStatementTreeImpl>nonterminal()
       .is(
         f.newStandardForStatement(
-          b.invokeRule(JavaKeyword.FOR),
-          b.invokeRule(JavaPunctuator.LPAR),
-          b.optional(FOR_INIT()), b.invokeRule(JavaPunctuator.SEMI),
-          b.optional(EXPRESSION()), b.invokeRule(JavaPunctuator.SEMI),
+          b.token(JavaKeyword.FOR),
+          b.token(JavaPunctuator.LPAR),
+          b.optional(FOR_INIT()), b.token(JavaPunctuator.SEMI),
+          b.optional(EXPRESSION()), b.token(JavaPunctuator.SEMI),
           b.optional(FOR_UPDATE()),
-          b.invokeRule(JavaPunctuator.RPAR),
+          b.token(JavaPunctuator.RPAR),
           STATEMENT()));
   }
 
@@ -668,30 +667,30 @@ public class JavaGrammar {
     return b.<StatementExpressionListTreeImpl>nonterminal()
       .is(
         f.newStatementExpressions(
-          EXPRESSION(), b.zeroOrMore(f.newTuple25(b.invokeRule(JavaPunctuator.COMMA), EXPRESSION()))));
+          EXPRESSION(), b.zeroOrMore(f.newTuple25(b.token(JavaPunctuator.COMMA), EXPRESSION()))));
   }
 
   public ForEachStatementImpl FOREACH_STATEMENT() {
     return b.<ForEachStatementImpl>nonterminal()
       .is(
         f.newForeachStatement(
-          b.invokeRule(JavaKeyword.FOR),
-          b.invokeRule(JavaPunctuator.LPAR), FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.COLON), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
+          b.token(JavaKeyword.FOR),
+          b.token(JavaPunctuator.LPAR), FORMAL_PARAMETER(), b.token(JavaPunctuator.COLON), EXPRESSION(), b.token(JavaPunctuator.RPAR),
           STATEMENT()));
   }
 
   public WhileStatementTreeImpl WHILE_STATEMENT() {
     return b.<WhileStatementTreeImpl>nonterminal(JavaLexer.WHILE_STATEMENT)
-      .is(f.whileStatement(b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
+      .is(f.whileStatement(b.token(JavaKeyword.WHILE), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
         STATEMENT()));
   }
 
   public DoWhileStatementTreeImpl DO_WHILE_STATEMENT() {
     return b.<DoWhileStatementTreeImpl>nonterminal(JavaLexer.DO_STATEMENT)
       .is(
-        f.doWhileStatement(b.invokeRule(JavaKeyword.DO), STATEMENT(),
-          b.invokeRule(JavaKeyword.WHILE), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
-          b.invokeRule(JavaPunctuator.SEMI)));
+        f.doWhileStatement(b.token(JavaKeyword.DO), STATEMENT(),
+          b.token(JavaKeyword.WHILE), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
+          b.token(JavaPunctuator.SEMI)));
   }
 
   public TryStatementTreeImpl TRY_STATEMENT() {
@@ -706,7 +705,7 @@ public class JavaGrammar {
     return b.<TryStatementTreeImpl>nonterminal()
       .is(
         f.completeStandardTryStatement(
-          b.invokeRule(JavaKeyword.TRY),
+          b.token(JavaKeyword.TRY),
           BLOCK(),
           b.firstOf(
             f.newTryCatch(b.zeroOrMore(CATCH_CLAUSE()), b.optional(FINALLY())),
@@ -717,7 +716,7 @@ public class JavaGrammar {
     return b.<CatchTreeImpl>nonterminal(JavaLexer.CATCH_CLAUSE)
       .is(
         f.newCatchClause(
-          b.invokeRule(JavaKeyword.CATCH), b.invokeRule(JavaPunctuator.LPAR), CATCH_FORMAL_PARAMETER(), b.invokeRule(JavaPunctuator.RPAR), BLOCK()));
+          b.token(JavaKeyword.CATCH), b.token(JavaPunctuator.LPAR), CATCH_FORMAL_PARAMETER(), b.token(JavaPunctuator.RPAR), BLOCK()));
   }
 
   public VariableTreeImpl CATCH_FORMAL_PARAMETER() {
@@ -729,23 +728,23 @@ public class JavaGrammar {
   public TypeTree CATCH_TYPE() {
     return b.<TypeTree>nonterminal()
       .is(
-        f.newCatchType(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newTuple26(b.invokeRule(JavaPunctuator.OR), TYPE_QUALIFIED_IDENTIFIER()))));
+        f.newCatchType(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newTuple26(b.token(JavaPunctuator.OR), TYPE_QUALIFIED_IDENTIFIER()))));
   }
 
   public TryStatementTreeImpl FINALLY() {
     return b.<TryStatementTreeImpl>nonterminal(JavaLexer.FINALLY_)
       .is(
-        f.newFinallyBlock(b.invokeRule(JavaKeyword.FINALLY), BLOCK()));
+        f.newFinallyBlock(b.token(JavaKeyword.FINALLY), BLOCK()));
   }
 
   public TryStatementTreeImpl TRY_WITH_RESOURCES_STATEMENT() {
     return b.<TryStatementTreeImpl>nonterminal()
       .is(
         f.newTryWithResourcesStatement(
-          b.invokeRule(JavaKeyword.TRY),
-          b.invokeRule(JavaPunctuator.LPAR),
+          b.token(JavaKeyword.TRY),
+          b.token(JavaPunctuator.LPAR),
           RESOURCES(),
-          b.invokeRule(JavaPunctuator.RPAR),
+          b.token(JavaPunctuator.RPAR),
           BLOCK(),
           b.zeroOrMore(CATCH_CLAUSE()),
           b.optional(FINALLY())));
@@ -754,23 +753,23 @@ public class JavaGrammar {
   public ResourceListTreeImpl RESOURCES() {
     return b.<ResourceListTreeImpl>nonterminal()
       .is(
-        f.newResources(b.oneOrMore(f.newTuple27(RESOURCE(), b.optional(b.invokeRule(JavaPunctuator.SEMI))))));
+        f.newResources(b.oneOrMore(f.newTuple27(RESOURCE(), b.optional(b.token(JavaPunctuator.SEMI))))));
   }
 
   public VariableTreeImpl RESOURCE() {
     return b.<VariableTreeImpl>nonterminal(JavaLexer.RESOURCE)
       .is(
-        f.newResource(MODIFIERS(), TYPE_QUALIFIED_IDENTIFIER(), VARIABLE_DECLARATOR_ID(), b.invokeRule(JavaPunctuator.EQU), EXPRESSION()));
+        f.newResource(MODIFIERS(), TYPE_QUALIFIED_IDENTIFIER(), VARIABLE_DECLARATOR_ID(), b.token(JavaPunctuator.EQU), EXPRESSION()));
   }
 
   public SwitchStatementTreeImpl SWITCH_STATEMENT() {
     return b.<SwitchStatementTreeImpl>nonterminal(JavaLexer.SWITCH_STATEMENT)
       .is(
         f.switchStatement(
-          b.invokeRule(JavaKeyword.SWITCH), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
-          b.invokeRule(JavaPunctuator.LWING),
+          b.token(JavaKeyword.SWITCH), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
+          b.token(JavaPunctuator.LWING),
           b.zeroOrMore(SWITCH_GROUP()),
-          b.invokeRule(JavaPunctuator.RWING)));
+          b.token(JavaPunctuator.RWING)));
   }
 
   public CaseGroupTreeImpl SWITCH_GROUP() {
@@ -782,50 +781,50 @@ public class JavaGrammar {
     return b.<CaseLabelTreeImpl>nonterminal(JavaLexer.SWITCH_LABEL)
       .is(
         b.firstOf(
-          f.newCaseSwitchLabel(b.invokeRule(JavaKeyword.CASE), EXPRESSION(), b.invokeRule(JavaPunctuator.COLON)),
-          f.newDefaultSwitchLabel(b.invokeRule(JavaKeyword.DEFAULT), b.invokeRule(JavaPunctuator.COLON))));
+          f.newCaseSwitchLabel(b.token(JavaKeyword.CASE), EXPRESSION(), b.token(JavaPunctuator.COLON)),
+          f.newDefaultSwitchLabel(b.token(JavaKeyword.DEFAULT), b.token(JavaPunctuator.COLON))));
   }
 
   public SynchronizedStatementTreeImpl SYNCHRONIZED_STATEMENT() {
     return b.<SynchronizedStatementTreeImpl>nonterminal(JavaLexer.SYNCHRONIZED_STATEMENT)
       .is(
-        f.synchronizedStatement(b.invokeRule(JavaKeyword.SYNCHRONIZED), b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR),
+        f.synchronizedStatement(b.token(JavaKeyword.SYNCHRONIZED), b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR),
           BLOCK()));
   }
 
   public BreakStatementTreeImpl BREAK_STATEMENT() {
     return b.<BreakStatementTreeImpl>nonterminal(JavaLexer.BREAK_STATEMENT)
-      .is(f.breakStatement(b.invokeRule(JavaKeyword.BREAK), b.optional(b.invokeRule(JavaTokenType.IDENTIFIER)), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.breakStatement(b.token(JavaKeyword.BREAK), b.optional(b.token(JavaTokenType.IDENTIFIER)), b.token(JavaPunctuator.SEMI)));
   }
 
   public ContinueStatementTreeImpl CONTINUE_STATEMENT() {
     return b.<ContinueStatementTreeImpl>nonterminal(JavaLexer.CONTINUE_STATEMENT)
-      .is(f.continueStatement(b.invokeRule(JavaKeyword.CONTINUE), b.optional(b.invokeRule(JavaTokenType.IDENTIFIER)), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.continueStatement(b.token(JavaKeyword.CONTINUE), b.optional(b.token(JavaTokenType.IDENTIFIER)), b.token(JavaPunctuator.SEMI)));
   }
 
   public ReturnStatementTreeImpl RETURN_STATEMENT() {
     return b.<ReturnStatementTreeImpl>nonterminal(JavaLexer.RETURN_STATEMENT)
-      .is(f.returnStatement(b.invokeRule(JavaKeyword.RETURN), b.optional(EXPRESSION()), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.returnStatement(b.token(JavaKeyword.RETURN), b.optional(EXPRESSION()), b.token(JavaPunctuator.SEMI)));
   }
 
   public ThrowStatementTreeImpl THROW_STATEMENT() {
     return b.<ThrowStatementTreeImpl>nonterminal(JavaLexer.THROW_STATEMENT)
-      .is(f.throwStatement(b.invokeRule(JavaKeyword.THROW), EXPRESSION(), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.throwStatement(b.token(JavaKeyword.THROW), EXPRESSION(), b.token(JavaPunctuator.SEMI)));
   }
 
   public LabeledStatementTreeImpl LABELED_STATEMENT() {
     return b.<LabeledStatementTreeImpl>nonterminal(JavaLexer.LABELED_STATEMENT)
-      .is(f.labeledStatement(b.invokeRule(IDENTIFIER), b.invokeRule(COLON), STATEMENT()));
+      .is(f.labeledStatement(b.token(IDENTIFIER), b.token(COLON), STATEMENT()));
   }
 
   public ExpressionStatementTreeImpl EXPRESSION_STATEMENT() {
     return b.<ExpressionStatementTreeImpl>nonterminal(JavaLexer.EXPRESSION_STATEMENT)
-      .is(f.expressionStatement(EXPRESSION(), b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.expressionStatement(EXPRESSION(), b.token(JavaPunctuator.SEMI)));
   }
 
   public EmptyStatementTreeImpl EMPTY_STATEMENT() {
     return b.<EmptyStatementTreeImpl>nonterminal(JavaLexer.EMPTY_STATEMENT)
-      .is(f.emptyStatement(b.invokeRule(JavaPunctuator.SEMI)));
+      .is(f.emptyStatement(b.token(JavaPunctuator.SEMI)));
   }
 
   public BlockStatementListTreeImpl BLOCK_STATEMENTS() {
@@ -863,18 +862,18 @@ public class JavaGrammar {
           b.zeroOrMore(
             f.newOperatorAndOperand11(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.EQU),
-                b.invokeRule(JavaPunctuator.PLUSEQU),
-                b.invokeRule(JavaPunctuator.MINUSEQU),
-                b.invokeRule(JavaPunctuator.STAREQU),
-                b.invokeRule(JavaPunctuator.DIVEQU),
-                b.invokeRule(JavaPunctuator.ANDEQU),
-                b.invokeRule(JavaPunctuator.OREQU),
-                b.invokeRule(JavaPunctuator.HATEQU),
-                b.invokeRule(JavaPunctuator.MODEQU),
-                b.invokeRule(JavaPunctuator.SLEQU),
-                b.invokeRule(JavaPunctuator.SREQU),
-                b.invokeRule(JavaPunctuator.BSREQU)),
+                b.token(JavaPunctuator.EQU),
+                b.token(JavaPunctuator.PLUSEQU),
+                b.token(JavaPunctuator.MINUSEQU),
+                b.token(JavaPunctuator.STAREQU),
+                b.token(JavaPunctuator.DIVEQU),
+                b.token(JavaPunctuator.ANDEQU),
+                b.token(JavaPunctuator.OREQU),
+                b.token(JavaPunctuator.HATEQU),
+                b.token(JavaPunctuator.MODEQU),
+                b.token(JavaPunctuator.SLEQU),
+                b.token(JavaPunctuator.SREQU),
+                b.token(JavaPunctuator.BSREQU)),
               CONDITIONAL_EXPRESSION()))));
   }
 
@@ -885,9 +884,9 @@ public class JavaGrammar {
           CONDITIONAL_OR_EXPRESSION(),
           b.optional(
             f.newTernaryExpression(
-              b.invokeRule(JavaPunctuator.QUERY),
+              b.token(JavaPunctuator.QUERY),
               EXPRESSION(),
-              b.invokeRule(JavaPunctuator.COLON),
+              b.token(JavaPunctuator.COLON),
               EXPRESSION()))));
   }
 
@@ -898,7 +897,7 @@ public class JavaGrammar {
           CONDITIONAL_AND_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand10(
-              b.invokeRule(JavaPunctuator.OROR),
+              b.token(JavaPunctuator.OROR),
               CONDITIONAL_AND_EXPRESSION()))));
   }
 
@@ -909,7 +908,7 @@ public class JavaGrammar {
           INCLUSIVE_OR_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand9(
-              b.invokeRule(JavaPunctuator.ANDAND),
+              b.token(JavaPunctuator.ANDAND),
               INCLUSIVE_OR_EXPRESSION()))));
   }
 
@@ -920,7 +919,7 @@ public class JavaGrammar {
           EXCLUSIVE_OR_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand8(
-              b.invokeRule(JavaPunctuator.OR),
+              b.token(JavaPunctuator.OR),
               EXCLUSIVE_OR_EXPRESSION()))));
   }
 
@@ -931,7 +930,7 @@ public class JavaGrammar {
           AND_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand7(
-              b.invokeRule(JavaPunctuator.HAT),
+              b.token(JavaPunctuator.HAT),
               AND_EXPRESSION()))));
   }
 
@@ -942,7 +941,7 @@ public class JavaGrammar {
           EQUALITY_EXPRESSION(),
           b.zeroOrMore(
             f.newOperatorAndOperand6(
-              b.invokeRule(JavaPunctuator.AND),
+              b.token(JavaPunctuator.AND),
               EQUALITY_EXPRESSION()))));
   }
 
@@ -954,8 +953,8 @@ public class JavaGrammar {
           b.zeroOrMore(
             f.newOperatorAndOperand5(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.EQUAL),
-                b.invokeRule(JavaPunctuator.NOTEQUAL)),
+                b.token(JavaPunctuator.EQUAL),
+                b.token(JavaPunctuator.NOTEQUAL)),
               INSTANCEOF_EXPRESSION()))));
   }
 
@@ -964,7 +963,7 @@ public class JavaGrammar {
       .is(
         f.completeInstanceofExpression(
           RELATIONAL_EXPRESSION(),
-          b.optional(f.newInstanceofExpression(b.invokeRule(JavaKeyword.INSTANCEOF), TYPE()))));
+          b.optional(f.newInstanceofExpression(b.token(JavaKeyword.INSTANCEOF), TYPE()))));
   }
 
   public ExpressionTree RELATIONAL_EXPRESSION() {
@@ -975,10 +974,10 @@ public class JavaGrammar {
           b.zeroOrMore(
             f.newOperatorAndOperand4(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.GE),
-                b.invokeRule(JavaPunctuator.GT),
-                b.invokeRule(JavaPunctuator.LE),
-                b.invokeRule(JavaPunctuator.LT)),
+                b.token(JavaPunctuator.GE),
+                b.token(JavaPunctuator.GT),
+                b.token(JavaPunctuator.LE),
+                b.token(JavaPunctuator.LT)),
               SHIFT_EXPRESSION()))));
   }
 
@@ -990,9 +989,9 @@ public class JavaGrammar {
           b.zeroOrMore(
             f.newOperatorAndOperand3(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.SL),
-                b.invokeRule(JavaPunctuator.BSR),
-                b.invokeRule(JavaPunctuator.SR)),
+                b.token(JavaPunctuator.SL),
+                b.token(JavaPunctuator.BSR),
+                b.token(JavaPunctuator.SR)),
               ADDITIVE_EXPRESSION()))));
   }
 
@@ -1004,8 +1003,8 @@ public class JavaGrammar {
           b.zeroOrMore(
             f.newOperatorAndOperand2(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.PLUS),
-                b.invokeRule(JavaPunctuator.MINUS)),
+                b.token(JavaPunctuator.PLUS),
+                b.token(JavaPunctuator.MINUS)),
               MULTIPLICATIVE_EXPRESSION()))));
   }
 
@@ -1017,9 +1016,9 @@ public class JavaGrammar {
           b.zeroOrMore(
             f.newOperatorAndOperand1(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.STAR),
-                b.invokeRule(JavaPunctuator.DIV),
-                b.invokeRule(JavaPunctuator.MOD)),
+                b.token(JavaPunctuator.STAR),
+                b.token(JavaPunctuator.DIV),
+                b.token(JavaPunctuator.MOD)),
               UNARY_EXPRESSION()))));
   }
 
@@ -1029,10 +1028,10 @@ public class JavaGrammar {
         b.firstOf(
           f.newPrefixedExpression(
             b.firstOf(
-              b.invokeRule(JavaPunctuator.INC),
-              b.invokeRule(JavaPunctuator.DEC),
-              b.invokeRule(JavaPunctuator.PLUS),
-              b.invokeRule(JavaPunctuator.MINUS)),
+              b.token(JavaPunctuator.INC),
+              b.token(JavaPunctuator.DEC),
+              b.token(JavaPunctuator.PLUS),
+              b.token(JavaPunctuator.MINUS)),
             UNARY_EXPRESSION()),
           UNARY_EXPRESSION_NOT_PLUS_MINUS()));
   }
@@ -1048,24 +1047,24 @@ public class JavaGrammar {
             f.applySelectors1(PRIMARY(), b.zeroOrMore(SELECTOR())),
             b.optional(
               b.firstOf(
-                b.invokeRule(JavaPunctuator.INC),
-                b.invokeRule(JavaPunctuator.DEC)))),
-          f.newTildaExpression(b.invokeRule(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
-          f.newBangExpression(b.invokeRule(JavaPunctuator.BANG), UNARY_EXPRESSION())));
+                b.token(JavaPunctuator.INC),
+                b.token(JavaPunctuator.DEC)))),
+          f.newTildaExpression(b.token(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
+          f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION())));
   }
 
   public ExpressionTree CAST_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaLexer.CAST_EXPRESSION)
       .is(
         f.completeCastExpression(
-          b.invokeRule(JavaPunctuator.LPAR),
+          b.token(JavaPunctuator.LPAR),
           b.firstOf(
-            f.newBasicTypeCastExpression(BASIC_TYPE(), b.invokeRule(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
+            f.newBasicTypeCastExpression(BASIC_TYPE(), b.token(JavaPunctuator.RPAR), UNARY_EXPRESSION()),
             f.newClassCastExpression(
-              TYPE(),
-              b.zeroOrMore(f.newAdditionalBound(b.invokeRule(JavaPunctuator.AND), QUALIFIED_IDENTIFIER())),
-              b.invokeRule(JavaPunctuator.RPAR),
-              UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
+                TYPE(),
+                b.optional(f.newTuple29(b.token(JavaPunctuator.AND), BOUND())),
+                b.token(JavaPunctuator.RPAR),
+                UNARY_EXPRESSION_NOT_PLUS_MINUS()))));
   }
 
   public ExpressionTree METHOD_REFERENCE() {
@@ -1073,16 +1072,16 @@ public class JavaGrammar {
       .is(
         f.completeMethodReference(
           b.firstOf(
-            f.newSuperMethodReference(b.invokeRule(JavaKeyword.SUPER), b.invokeRule(JavaPunctuator.DBLECOLON)),
-            f.newTypeMethodReference(TYPE(), b.invokeRule(JavaPunctuator.DBLECOLON)),
+            f.newSuperMethodReference(b.token(JavaKeyword.SUPER), b.token(JavaPunctuator.DBLECOLON)),
+            f.newTypeMethodReference(TYPE(), b.token(JavaPunctuator.DBLECOLON)),
             // TODO This is a postfix expression followed by a double colon
             f.newPrimaryMethodReference(
               f.applySelectors2(PRIMARY(), b.zeroOrMore(SELECTOR())),
-              b.invokeRule(JavaPunctuator.DBLECOLON))),
+              b.token(JavaPunctuator.DBLECOLON))),
           b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
-            b.invokeRule(JavaKeyword.NEW),
-            b.invokeRule(JavaTokenType.IDENTIFIER))));
+            b.token(JavaKeyword.NEW),
+            b.token(JavaTokenType.IDENTIFIER))));
   }
 
   public ExpressionTree PRIMARY() {
@@ -1099,7 +1098,7 @@ public class JavaGrammar {
 
   public ExpressionTree LAMBDA_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaLexer.LAMBDA_EXPRESSION)
-      .is(f.lambdaExpression(LAMBDA_PARAMETERS(), b.invokeRule(JavaLexer.ARROW), LAMBDA_BODY()));
+      .is(f.lambdaExpression(LAMBDA_PARAMETERS(), b.token(JavaLexer.ARROW), LAMBDA_BODY()));
   }
 
   public LambdaParameterListTreeImpl LAMBDA_PARAMETERS() {
@@ -1115,18 +1114,18 @@ public class JavaGrammar {
     return b.<LambdaParameterListTreeImpl>nonterminal(JavaLexer.INFERED_PARAMS)
       .is(
         f.newInferedParameters(
-          b.invokeRule(JavaPunctuator.LPAR),
+          b.token(JavaPunctuator.LPAR),
           b.optional(
             f.newTuple2(
               INFERED_PARAMETER(),
-              b.zeroOrMore(f.newTuple1(b.invokeRule(JavaPunctuator.COMMA), INFERED_PARAMETER())))),
-          b.invokeRule(JavaPunctuator.RPAR)));
+              b.zeroOrMore(f.newTuple1(b.token(JavaPunctuator.COMMA), INFERED_PARAMETER())))),
+          b.token(JavaPunctuator.RPAR)));
   }
 
   public VariableTreeImpl INFERED_PARAMETER() {
     return b.<VariableTreeImpl>nonterminal()
       .is(
-        f.newSimpleParameter(b.invokeRule(JavaTokenType.IDENTIFIER)));
+        f.newSimpleParameter(b.token(JavaTokenType.IDENTIFIER)));
   }
 
   public Tree LAMBDA_BODY() {
@@ -1139,26 +1138,24 @@ public class JavaGrammar {
 
   public ParenthesizedTreeImpl PARENTHESIZED_EXPRESSION() {
     return b.<ParenthesizedTreeImpl>nonterminal(JavaLexer.PAR_EXPRESSION)
-      .is(f.parenthesizedExpression(b.invokeRule(JavaPunctuator.LPAR), EXPRESSION(), b.invokeRule(JavaPunctuator.RPAR)));
+      .is(f.parenthesizedExpression(b.token(JavaPunctuator.LPAR), EXPRESSION(), b.token(JavaPunctuator.RPAR)));
   }
 
   public ExpressionTree NEW_EXPRESSION() {
     return b.<ExpressionTree>nonterminal(JavaLexer.NEW_EXPRESSION)
-      .is(f.newExpression(b.invokeRule(JavaKeyword.NEW), b.zeroOrMore(ANNOTATION()), CREATOR()));
+      .is(f.newExpression(b.token(JavaKeyword.NEW), b.zeroOrMore(ANNOTATION()), CREATOR()));
   }
 
   public ExpressionTree CREATOR() {
     return b.<ExpressionTree>nonterminal(JavaLexer.CREATOR)
       .is(
-        f.completeCreator(
-          b.optional(TYPE_ARGUMENTS()),
-          b.firstOf(
-            f.newClassCreator(TYPE_QUALIFIED_IDENTIFIER(), CLASS_CREATOR_REST()),
-            f.newArrayCreator(
-              b.firstOf(
-                TYPE_QUALIFIED_IDENTIFIER(),
-                BASIC_TYPE()),
-              ARRAY_CREATOR_REST()))));
+        b.firstOf(
+          f.newClassCreator(b.optional(TYPE_ARGUMENTS()), TYPE_QUALIFIED_IDENTIFIER(), CLASS_CREATOR_REST()),
+          f.newArrayCreator(
+            b.firstOf(
+              TYPE_QUALIFIED_IDENTIFIER(),
+              BASIC_TYPE()),
+            ARRAY_CREATOR_REST())));
   }
 
   public NewArrayTreeImpl ARRAY_CREATOR_REST() {
@@ -1168,9 +1165,9 @@ public class JavaGrammar {
           b.zeroOrMore(ANNOTATION()),
           b.firstOf(
             f.newArrayCreatorWithInitializer(
-              b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK), b.zeroOrMore(ANNOTATED_DIMENSION()), ARRAY_INITIALIZER()),
+              b.token(JavaPunctuator.LBRK), b.token(JavaPunctuator.RBRK), b.zeroOrMore(ANNOTATED_DIMENSION()), ARRAY_INITIALIZER()),
             f.newArrayCreatorWithDimension(
-              b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK),
+              b.token(JavaPunctuator.LBRK), EXPRESSION(), b.token(JavaPunctuator.RBRK),
               b.zeroOrMore(ARRAY_ACCESS_EXPRESSION()),
               b.zeroOrMore(ANNOTATED_DIMENSION())))));
   }
@@ -1180,7 +1177,7 @@ public class JavaGrammar {
     return b
       .<ExpressionTree>nonterminal(JavaLexer.BASIC_CLASS_EXPRESSION)
       .is(
-        f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)));
+        f.basicClassExpression(BASIC_TYPE(), b.zeroOrMore(DIMENSION()), b.token(JavaPunctuator.DOT), b.token(JavaKeyword.CLASS)));
   }
 
   public PrimitiveTypeTreeImpl BASIC_TYPE() {
@@ -1189,34 +1186,34 @@ public class JavaGrammar {
         f.newBasicType(
           b.zeroOrMore(ANNOTATION()),
           b.firstOf(
-            b.invokeRule(JavaKeyword.BYTE),
-            b.invokeRule(JavaKeyword.SHORT),
-            b.invokeRule(JavaKeyword.CHAR),
-            b.invokeRule(JavaKeyword.INT),
-            b.invokeRule(JavaKeyword.LONG),
-            b.invokeRule(JavaKeyword.FLOAT),
-            b.invokeRule(JavaKeyword.DOUBLE),
-            b.invokeRule(JavaKeyword.BOOLEAN),
-            b.invokeRule(JavaKeyword.VOID))));
+            b.token(JavaKeyword.BYTE),
+            b.token(JavaKeyword.SHORT),
+            b.token(JavaKeyword.CHAR),
+            b.token(JavaKeyword.INT),
+            b.token(JavaKeyword.LONG),
+            b.token(JavaKeyword.FLOAT),
+            b.token(JavaKeyword.DOUBLE),
+            b.token(JavaKeyword.BOOLEAN),
+            b.token(JavaKeyword.VOID))));
   }
 
   public ArgumentListTreeImpl ARGUMENTS() {
     return b.<ArgumentListTreeImpl>nonterminal(JavaLexer.ARGUMENTS)
       .is(
         f.completeArguments(
-            b.invokeRule(JavaPunctuator.LPAR),
+            b.token(JavaPunctuator.LPAR),
             b.optional(
                 f.newArguments(
                     EXPRESSION(),
-                    b.zeroOrMore(f.newTuple20(b.invokeRule(JavaPunctuator.COMMA), EXPRESSION())))),
-            b.invokeRule(JavaPunctuator.RPAR)));
+                    b.zeroOrMore(f.newTuple20(b.token(JavaPunctuator.COMMA), EXPRESSION())))),
+            b.token(JavaPunctuator.RPAR)));
   }
 
   public <T extends Tree> T QUALIFIED_IDENTIFIER() {
     return b.<T>nonterminal(JavaLexer.QUALIFIED_IDENTIFIER)
       .is(
         f.<T>newQualifiedIdentifier(
-            ANNOTATED_PARAMETERIZED_IDENTIFIER(), b.zeroOrMore(f.newTuple5(b.invokeRule(JavaPunctuator.DOT), ANNOTATED_PARAMETERIZED_IDENTIFIER()))));
+            ANNOTATED_PARAMETERIZED_IDENTIFIER(), b.zeroOrMore(f.newTuple5(b.token(JavaPunctuator.DOT), ANNOTATED_PARAMETERIZED_IDENTIFIER()))));
   }
 
   private TypeTree TYPE_QUALIFIED_IDENTIFIER() {
@@ -1225,7 +1222,7 @@ public class JavaGrammar {
 
   public ExpressionTree ANNOTATED_PARAMETERIZED_IDENTIFIER() {
     return b.<ExpressionTree>nonterminal(JavaLexer.ANNOTATED_PARAMETERIZED_IDENTIFIER)
-      .is(f.newAnnotatedParameterizedIdentifier(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaTokenType.IDENTIFIER), b.optional(TYPE_ARGUMENTS())));
+      .is(f.newAnnotatedParameterizedIdentifier(b.zeroOrMore(ANNOTATION()), b.token(JavaTokenType.IDENTIFIER), b.optional(TYPE_ARGUMENTS())));
   }
 
   public ExpressionTree VARIABLE_INITIALIZER() {
@@ -1240,19 +1237,20 @@ public class JavaGrammar {
     return b.<NewArrayTreeImpl>nonterminal(JavaLexer.ARRAY_INITIALIZER)
       .is(
         f.newArrayInitializer(
-          b.invokeRule(JavaPunctuator.LWING),
-          b.zeroOrMore(f.newTuple28(VARIABLE_INITIALIZER(), b.optional(b.invokeRule(JavaPunctuator.COMMA)))),
-          b.invokeRule(JavaPunctuator.RWING)));
+          b.token(JavaPunctuator.LWING),
+          b.optional(b.token(JavaPunctuator.COMMA)),
+          b.zeroOrMore(f.newTuple28(VARIABLE_INITIALIZER(), b.optional(b.token(JavaPunctuator.COMMA)))),
+          b.token(JavaPunctuator.RWING)));
   }
 
   public QualifiedIdentifierListTreeImpl QUALIFIED_IDENTIFIER_LIST() {
     return b.<QualifiedIdentifierListTreeImpl>nonterminal(JavaLexer.QUALIFIED_IDENTIFIER_LIST)
-      .is(f.newQualifiedIdentifierList(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newTuple4(b.invokeRule(JavaPunctuator.COMMA), TYPE_QUALIFIED_IDENTIFIER()))));
+      .is(f.newQualifiedIdentifierList(TYPE_QUALIFIED_IDENTIFIER(), b.zeroOrMore(f.newTuple4(b.token(JavaPunctuator.COMMA), TYPE_QUALIFIED_IDENTIFIER()))));
   }
 
   public ArrayAccessExpressionTreeImpl ARRAY_ACCESS_EXPRESSION() {
     return b.<ArrayAccessExpressionTreeImpl>nonterminal(JavaLexer.DIM_EXPR)
-      .is(f.newArrayAccessExpression(b.zeroOrMore(ANNOTATION()), b.invokeRule(JavaPunctuator.LBRK), EXPRESSION(), b.invokeRule(JavaPunctuator.RBRK)));
+      .is(f.newArrayAccessExpression(b.zeroOrMore(ANNOTATION()), b.token(JavaPunctuator.LBRK), EXPRESSION(), b.token(JavaPunctuator.RBRK)));
   }
 
   public NewClassTreeImpl CLASS_CREATOR_REST() {
@@ -1267,18 +1265,18 @@ public class JavaGrammar {
 
   public Tuple<InternalSyntaxToken, InternalSyntaxToken> DIMENSION() {
     return b.<Tuple<InternalSyntaxToken, InternalSyntaxToken>>nonterminal(JavaLexer.DIM)
-      .is(f.newTuple6(b.invokeRule(JavaPunctuator.LBRK), b.invokeRule(JavaPunctuator.RBRK)));
+      .is(f.newTuple6(b.token(JavaPunctuator.LBRK), b.token(JavaPunctuator.RBRK)));
   }
 
   public Tuple<Optional<InternalSyntaxToken>, ExpressionTree> SELECTOR() {
     return b.<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>nonterminal(JavaLexer.SELECTOR)
       .is(
         b.firstOf(
-          f.completeMemberSelectOrMethodSelector(b.invokeRule(JavaPunctuator.DOT), IDENTIFIER_OR_METHOD_INVOCATION()),
+          f.completeMemberSelectOrMethodSelector(b.token(JavaPunctuator.DOT), IDENTIFIER_OR_METHOD_INVOCATION()),
           // TODO Perhaps NEW_EXPRESSION() is not as good as before, as it allows NewArrayTree to be constructed
-          f.completeCreatorSelector(b.invokeRule(JavaPunctuator.DOT), NEW_EXPRESSION()),
+          f.completeCreatorSelector(b.token(JavaPunctuator.DOT), NEW_EXPRESSION()),
           f.<ExpressionTree>newTupleAbsent1(ARRAY_ACCESS_EXPRESSION()),
-          f.newTupleAbsent2(f.newDotClassSelector(b.zeroOrMore(DIMENSION()), b.invokeRule(JavaPunctuator.DOT), b.invokeRule(JavaKeyword.CLASS)))
+          f.newTupleAbsent2(f.newDotClassSelector(b.zeroOrMore(DIMENSION()), b.token(JavaPunctuator.DOT), b.token(JavaKeyword.CLASS)))
         ));
   }
 
@@ -1288,9 +1286,9 @@ public class JavaGrammar {
         f.newIdentifierOrMethodInvocation(
           b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
-            b.invokeRule(JavaTokenType.IDENTIFIER),
-            b.invokeRule(JavaKeyword.THIS),
-            b.invokeRule(JavaKeyword.SUPER)),
+            b.token(JavaTokenType.IDENTIFIER),
+            b.token(JavaKeyword.THIS),
+            b.token(JavaKeyword.SUPER)),
           b.optional(ARGUMENTS())));
   }
 

@@ -44,8 +44,8 @@ enum E3 {
 
 @Target(/* comment */{
   /*comment */ ElementType.FIELD
-  /* comment FIXME separators of arguments are ignored */, ElementType.ANNOTATION_TYPE, 
-  ElementType.TYPE_PARAMETER /* comment FIXME separators of arguments are ignored */,
+  /* comment separators of arguments */, ElementType.ANNOTATION_TYPE,
+  ElementType.TYPE_PARAMETER /* comment separators of arguments are ignored */,
   ElementType. /* comment */METHOD,
   ElementType.TYPE_USE /* comment*/}
 /* comment */)
@@ -60,15 +60,15 @@ class A05 /* comment */ <T> {}
 class A06 </* comment */ T> {}
 class A07 <T /* comment */> {}
 class A08 </* comment */ @A01 T> {}
-class A09 <T /* comment FIXME separators of type parameters are ignored */, G> {}
+class A09 <T /* comment */, G> {}
 class A10 <T /* comment */ extends I> {}
 class A11 <T extends /* comment */ I> {}
 class A12 <T extends /* comment */ @A01 I> {}
-class A13 <T extends I1 /* comment FIXME separators of bound are ignored */ & I2> {}
+class A13 <T extends I1 /* comment separators of bound*/ & I2> {}
 class A14 <T extends I1 & /* comment */ I2> {}
 class A15 /* comment */ implements I {}
 class A16 implements /* comment */ I {}
-class A17 implements I1 /* comment FIXME separators of interface are ignored */, I2 {}
+class A17 implements I1 /* comment separators of interface*/, I2 {}
 class A18 implements I1, /* comment */ I2 {}
 class A19 /* comment */ extends A02 {}
 
@@ -80,7 +80,7 @@ abstract class Rest<T> {
   List/* comment */<Integer> a04;
   List</* comment */Integer> a05;
   List<Integer /* comment */> a06;
-  Map<Integer /* comment FIXME separators of type parameters are ignored */, Integer> a07;
+  Map<Integer /* comment */, Integer> a07;
   List</* comment */ ?> a8;
   List</* comment */ ? extends I> a9;
   List<? /* comment */ extends I> a10;
@@ -126,7 +126,7 @@ abstract class Rest<T> {
   int[] c14 = new int[] /* comment */{};
   int[] c15 = new int[] {/* comment */};
   int[] c16 = new int[] {/* comment */0, 1};
-  int[] c17 = new int[] {0 /* comment FIXME separators of array initializers are ignored */, 1};
+  int[] c17 = new int[] {0 /* comment separators of array initializers */, 1};
   int[][] c18 = new int[][] {/* comment */{0, 1}, null};
   int[][] c19 = new int[][] {{0 , 1}, /* comment */ null};
   
@@ -154,7 +154,7 @@ abstract class Rest<T> {
   abstract <T/* comment */> void m16(T t);
   abstract void m17() /* comment */ throws Exception;
   abstract void m18() throws /* comment */ Exception;
-  abstract void m19() throws RuntimeException /* comment FIXME separators of exceptions are ignored */, Exception;
+  abstract void m19() throws RuntimeException /* comment separators of exceptions */, Exception;
   
   /* comment */ public Rest() {}
   public /* comment */ Rest(int i) {}
@@ -171,7 +171,7 @@ abstract class Rest<T> {
     assert test : /* comment */ m09();
     
     /* comment */ ;
-    
+    for (i/* comment */, j;;) {}
     /* comment */ for (;;) {
       /* comment */ break;
     }
@@ -254,13 +254,13 @@ abstract class Rest<T> {
     try { } catch (Exception e /* comment */) {}
     try { } catch (Exception e ) /* comment */{}
     try { } catch (Exception e ) {/* comment */}
-    try { throw new FileNotFoundException(); } catch (FileNotFoundException /* comment FIXME separators of unary types are ignored */ | UnknownTypeException e ) {}
+    try { throw new FileNotFoundException(); } catch (FileNotFoundException /* comment separators of unary types*/ | UnknownTypeException e ) {}
     try { } /* comment */ finally {}
     try { } finally /* comment */ {}
     try { } finally {/* comment */ }
     try /* comment */ (Closeable c = new FileInputStream("")) {}
     try (Closeable c = new FileInputStream("")/* comment */ ) {}
-    try (Closeable c1 = new FileInputStream("") /* comment FIXME separators of resources are ignored */ ; Closeable c2 = new FileInputStream("")) {}
+    try (Closeable c1 = new FileInputStream("") /* comment separators of resources */ ; Closeable c2 = new FileInputStream("")) {}
     
     int i /* comment */ = 0, j = 0;
     i /* comment */ ++;
@@ -336,9 +336,14 @@ abstract class Rest<T> {
     op = (a,b) -> a - b /* comment */;
     
     String[] array2 = {"A", "B", "C"};
+    Arrays.sort(array2 /* comment */, String::compareToIgnoreCase);
     Arrays.sort(array2, /* comment */ String::compareToIgnoreCase);
     Arrays.sort(array2, String/* comment */ ::compareToIgnoreCase);
     Arrays.sort(array2, String:: /* comment */compareToIgnoreCase);
+    
+    rest /* comment */(true, null, null, null);
+    rest(/* comment */ true, null, null, null);
+    rest(true /* comment */, null, null, null);
     
     if (test) { return null /* comment */; }
     /* comment */ return null;

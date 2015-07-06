@@ -24,11 +24,12 @@ import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
 
 import java.io.File;
-import java.util.Stack;
+import java.util.Deque;
+import java.util.LinkedList;
 
 public class VisitorContext {
 
-  private final Stack<SourceCode> sourceCodeStack = new Stack<>();
+  private final Deque<SourceCode> sourceCodeStack = new LinkedList<>();
   private final SourceProject project;
   private File file;
 
@@ -37,12 +38,12 @@ public class VisitorContext {
       throw new IllegalArgumentException("project cannot be null.");
     }
     this.project = project;
-    sourceCodeStack.add(project);
+    sourceCodeStack.push(project);
   }
 
   private void addSourceCode(SourceCode child) {
     peekSourceCode().addChild(child);
-    sourceCodeStack.add(child);
+    sourceCodeStack.push(child);
   }
 
   public SourceCode peekSourceCode() {

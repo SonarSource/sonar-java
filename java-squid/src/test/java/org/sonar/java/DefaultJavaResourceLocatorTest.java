@@ -23,14 +23,16 @@ import com.google.common.collect.Lists;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.batch.fs.InputPath;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -40,18 +42,17 @@ public class DefaultJavaResourceLocatorTest {
 
   @BeforeClass
   public static void setup() {
-    Project project = mock(Project.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     JavaClasspath javaClasspath = mock(JavaClasspath.class);
     when(javaClasspath.getBinaryDirs()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
     when(javaClasspath.getElements()).thenReturn(Lists.newArrayList(new File("target/test-classes")));
-    File baseDir = new File("src/test/java");
-    when(project.getFileSystem()).thenReturn(pfs);
-    when(pfs.getBasedir()).thenReturn(baseDir);
     SensorContext sensorContext = mock(SensorContext.class);
-    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(project, javaClasspath, new SuppressWarningsFilter());
+    File file = new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
+    when(sensorContext.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
+    DefaultFileSystem fs = new DefaultFileSystem();
+    fs.add(new DefaultInputFile(file.getPath()));
+    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(fs, javaClasspath, new SuppressWarningsFilter());
     jrl.setSensorContext(sensorContext);
-    org.sonar.java.ast.JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java"), new VisitorsBridge(jrl));
+    org.sonar.java.ast.JavaAstScanner.scanSingleFile(file, new VisitorsBridge(jrl));
     javaResourceLocator = jrl;
   }
 

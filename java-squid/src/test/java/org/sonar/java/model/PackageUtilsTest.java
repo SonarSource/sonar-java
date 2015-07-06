@@ -17,35 +17,47 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.ast.parser;
+package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
 import org.junit.Test;
+import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class PrinterVisitorTest {
+public class PackageUtilsTest {
+
+  private static final ActionParser PARSER = JavaParser.createParser(Charsets.UTF_8);
 
   @Test
-  public void testName() throws Exception {
-    final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
-    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { void foo(){}}");
-    String expectedOutput = "CompilationUnitTree 1 : [\n" +
-        "  ClassTree 1\n" +
-        "    ModifiersTree\n" +
-        "    TypeParameters\n"+
-        "    ListTree : [\n"+
-        "    MethodTree 1\n" +
-        "      ModifiersTree\n" +
-        "      TypeParameters\n"+
-        "      PrimitiveTypeTree 1\n" +
-        "      ListTree\n"+
-        "      BlockTree 1\n" +
-        "    ]\n" +
-        "  ]\n";
-    assertThat(PrinterVisitor.print(cut)).isEqualTo(expectedOutput);
+  public void no_package_empty_string() {
+    assertThat(packageName("class A{}")).isEqualTo("");
+  }
+
+  @Test
+  public void identifier_package() {
+    assertThat(packageName("package foo; class A{}")).isEqualTo("foo");
+  }
+
+  @Test
+  public void member_select_package() {
+    assertThat(packageName("package foo.bar.plop; class A{}")).isEqualTo("foo.bar.plop");
+  }
+
+  @Test
+  public void different_separator() {
+    assertThat(packageName("package foo.bar.plop; class A{}", "/")).isEqualTo("foo/bar/plop");
+  }
+
+  private static String packageName(String code) {
+    return packageName(code, ".");
+  }
+
+  private static String packageName(String code, String separator) {
+    CompilationUnitTree tree = (CompilationUnitTree) PARSER.parse(code);
+    return PackageUtils.packageName(tree.packageDeclaration(), separator);
   }
 
 

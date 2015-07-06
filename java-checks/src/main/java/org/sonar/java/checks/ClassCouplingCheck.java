@@ -48,9 +48,11 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 @Rule(
   key = "S1200",
@@ -69,7 +71,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Stack<Set<String>> nesting = new Stack<>();
+  private final Deque<Set<String>> nesting = new LinkedList<>();
   private Set<String> types;
   private JavaFileScannerContext context;
 
@@ -86,7 +88,7 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       types = Sets.newHashSet();
     }
     checkTypes(tree.superClass());
-    checkTypes(tree.superInterfaces());
+    checkTypes((List<? extends Tree>) tree.superInterfaces());
     super.visitClass(tree);
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (types.size() > max) {
@@ -126,14 +128,15 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-    checkTypes(typeParameter.bounds());
+    checkTypes((List<? extends Tree>) typeParameter.bounds());
     checkTypes(typeParameter.identifier());
     super.visitTypeParameter(typeParameter);
   }
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    checkTypes(tree.typeAlternatives());
+    // can not be visited because of visitCatch excluding exceptions
+    checkTypes((List<? extends Tree>) tree.typeAlternatives());
     super.visitUnionType(tree);
   }
 
@@ -146,7 +149,9 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    checkTypes(tree.typeArguments());
+    if (tree.typeArguments() != null) {
+      checkTypes((List<Tree>) tree.typeArguments());
+    }
     if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       scan(tree.enclosingExpression());
       checkTypes((List<Tree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
