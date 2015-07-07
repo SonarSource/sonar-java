@@ -43,6 +43,10 @@ public class JavaPlugin extends SonarPlugin {
 
   public static final String SQUID_ANALYSE_ACCESSORS_PROPERTY = "sonar.squid.analyse.property.accessors";
   public static final boolean SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE = true;
+  public static final String JSON_OUTPUT = "sonar.java.jsonoutput";
+  public static final String JSON_OUTPUT_FOLDER = "sonar.java.jsonoutput.folder";
+  public static final boolean JSON_OUTPUT_DEFAULT_VALUE = false;
+  public static final String JSON_OUTPUT_FOLDER_DEFAULT = "target";
 
   @Override
   public List getExtensions() {
@@ -80,6 +84,22 @@ public class JavaPlugin extends SonarPlugin {
             .subCategory(GENERAL_SUBCATEGORY)
             .name("Skip design analysis")
             .type(PropertyType.BOOLEAN)
+            .hidden()
+            .build(),
+        PropertyDefinition.builder(JavaPlugin.JSON_OUTPUT)
+            .defaultValue(Boolean.toString(JavaPlugin.JSON_OUTPUT_DEFAULT_VALUE))
+            .category(JAVA_CATEGORY)
+            .subCategory(GENERAL_SUBCATEGORY)
+            .name("Output issues as Json files and do not save them in SonarQube")
+            .type(PropertyType.BOOLEAN)
+            .hidden()
+            .build(),
+        PropertyDefinition.builder(JavaPlugin.JSON_OUTPUT_FOLDER)
+            .defaultValue(JavaPlugin.JSON_OUTPUT_FOLDER_DEFAULT)
+            .category(JAVA_CATEGORY)
+            .subCategory(GENERAL_SUBCATEGORY)
+            .name("Output folder of issues as Json files")
+            .type(PropertyType.STRING)
             .hidden()
             .build(),
 

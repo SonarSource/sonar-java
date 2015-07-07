@@ -33,12 +33,15 @@ import org.sonar.api.rules.ActiveRule;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.PackageInfoCheck;
+import org.sonar.plugins.java.Bridges;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Set;
 
@@ -55,26 +58,29 @@ public class ChecksBridge {
     this.rulesProfile = rulesProfile;
   }
 
-  public void reportIssues(SourceFile squidFile, Resource sonarFile) {
+  public void reportIssues(SourceFile squidFile, Resource sonarFile, @Nullable Bridges.ProjectIssue project) {
     if (squidFile.hasCheckMessages()) {
       Issuable issuable = resourcePerspectives.as(Issuable.class, sonarFile);
       Set<CheckMessage> messages = squidFile.getCheckMessages();
-      if(issuable != null) {
+      if (issuable != null) {
         for (CheckMessage checkMessage : messages) {
           Object check = checkMessage.getCheck();
 
           RuleKey ruleKey = getRuleKey((JavaCheck) check);
           if (ruleKey != null) {
-            Issue issue = issuable.newIssueBuilder()
+            if (project == null) {
+              Issue issue = issuable.newIssueBuilder()
                 .ruleKey(ruleKey)
                 .line(checkMessage.getLine())
                 .message(checkMessage.formatDefaultMessage())
                 .effortToFix(checkMessage.getCost())
                 .build();
-
-            issuable.addIssue(issue);
+              issuable.addIssue(issue);
+            } else {
+              project.addIssue(ruleKey, sonarFile.getKey(), checkMessage.getLine());
+            }
           } else {
-            throw new IllegalStateException("Cannot find rule key for instance of "+check.getClass());
+            throw new IllegalStateException("Cannot find rule key for instance of " + check.getClass());
           }
         }
       }
@@ -87,7 +93,7 @@ public class ChecksBridge {
   private RuleKey getRuleKey(JavaCheck check) {
     for (Checks<JavaCheck> sonarChecks : checks) {
       RuleKey ruleKey = sonarChecks.ruleKey(check);
-      if(ruleKey != null) {
+      if (ruleKey != null) {
         return ruleKey;
       }
     }
@@ -98,7 +104,7 @@ public class ChecksBridge {
   private JavaCheck checkInstanceOf(RuleKey ruleKey) {
     for (Checks<JavaCheck> sonarChecks : checks) {
       JavaCheck check = sonarChecks.of(ruleKey);
-      if(check != null) {
+      if (check != null) {
         return check;
       }
     }
@@ -113,7 +119,7 @@ public class ChecksBridge {
       Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
       if (issuable != null) {
         Issue issue = issuable.newIssueBuilder().ruleKey(RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY))
-            .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
+          .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
         issuable.addIssue(issue);
       }
     }
