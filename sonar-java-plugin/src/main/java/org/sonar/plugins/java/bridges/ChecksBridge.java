@@ -111,16 +111,21 @@ public class ChecksBridge {
     return null;
   }
 
-  public void reportIssueForPackageInfo(Directory directory, Project project) {
+  public void reportIssueForPackageInfo(Directory directory, Project project, @Nullable Bridges.ProjectIssue projectIssue) {
     if (dirsWithoutPackageInfo == null) {
       initSetOfDirs(project);
     }
     if (dirsWithoutPackageInfo.contains(directory)) {
-      Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
-      if (issuable != null) {
-        Issue issue = issuable.newIssueBuilder().ruleKey(RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY))
-          .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
-        issuable.addIssue(issue);
+      RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
+      if(projectIssue != null) {
+        projectIssue.addIssue(ruleKey, directory.getKey(), null);
+      } else {
+        Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
+        if (issuable != null) {
+          Issue issue = issuable.newIssueBuilder().ruleKey(ruleKey)
+            .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
+          issuable.addIssue(issue);
+        }
       }
     }
   }

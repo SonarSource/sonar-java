@@ -38,15 +38,15 @@ import org.sonar.plugins.java.bridges.DesignBridge;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Bridges {
 
@@ -68,17 +68,20 @@ public class Bridges {
       designBridge.saveDesign(project);
     }
     // Report Issues
+    LOG.error("Reporting issues");
     ChecksBridge checksBridge = new ChecksBridge(sonarComponents, rulesProfile);
     reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
+    LOG.error("Reporting issues done");
   }
 
   private void reportIssues(ResourceMapping resourceMapping, NoSonarFilter noSonarFilter, ChecksBridge checksBridge, Project project) {
     ProjectIssue projectIssue = null;
     if (settings.getBoolean(JavaPlugin.JSON_OUTPUT)) {
+      LOG.error("creating project issue ");
       projectIssue = new ProjectIssue();
     }
     for (Resource directory : resourceMapping.directories()) {
-      checksBridge.reportIssueForPackageInfo((Directory) directory, project);
+      checksBridge.reportIssueForPackageInfo((Directory) directory, project, projectIssue);
       for (Resource sonarFile : resourceMapping.files((Directory) directory)) {
         String key = resourceMapping.getFileKeyByResource((org.sonar.api.resources.File) sonarFile);
         // key would be null for test files as they are not in squid index.
@@ -100,28 +103,24 @@ public class Bridges {
     if (projectIssue != null) {
       File folder = new File(settings.getString(JavaPlugin.JSON_OUTPUT_FOLDER));
       folder.mkdir();
-      LOG.info("Outputing json files to folder: "+folder.getAbsolutePath());
+      LOG.info("Outputing json files to folder: " + folder.getAbsolutePath());
       for (Map.Entry<RuleKey, RuleIssues> entry : projectIssue.rules.entrySet()) {
-        PrintWriter pw = null;
-        try {
-          pw = new PrintWriter(new File(folder, "squid-" + entry.getKey().rule() + ".json"), "UTF-8");
-          pw.println("{");
+        try (FileWriter pw = new FileWriter(folder.getAbsolutePath() + File.separator + "squid-" + entry.getKey().rule() + ".json")) {
+          pw.write("{\n");
           RuleIssues ruleIssues = entry.getValue();
           for (Map.Entry<String, FileIssues> stringFileIssuesEntry : ruleIssues.files.entrySet()) {
             FileIssues fileIssues = stringFileIssuesEntry.getValue();
-            if (!fileIssues.lines.isEmpty()) {
-              pw.println("'project:" + stringFileIssuesEntry.getKey() + "':[");
-              for (Integer line : fileIssues.lines) {
-                pw.println(line + ",");
+            if (!fileIssues.getLines().isEmpty()) {
+              pw.write("'project:" + stringFileIssuesEntry.getKey() + "':[\n");
+              for (Integer line : fileIssues.getLines()) {
+                pw.write(line + ",\n");
               }
-              pw.println("],");
+              pw.write("],\n");
             }
           }
-          pw.println("}");
-        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+          pw.write("}\n");
+        } catch (IOException e) {
           e.printStackTrace();
-        } finally {
-          pw.close();
         }
       }
     }
@@ -145,7 +144,7 @@ public class Bridges {
   }
 
   private static class RuleIssues {
-    Map<String, FileIssues> files = new HashMap<>();
+    Map<String, FileIssues> files = new TreeMap<>();
 
     public void addIssue(String name, Integer line) {
       FileIssues fileIssues = files.get(name);
@@ -162,6 +161,11 @@ public class Bridges {
 
   private static class FileIssues {
     List<Integer> lines = new ArrayList<>();
+
+    public List<Integer> getLines() {
+      Collections.sort(lines);
+      return lines;
+    }
   }
 
 }
