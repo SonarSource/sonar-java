@@ -9,7 +9,7 @@ function installTravisTools {
 if [ "$TESTS" == "CI" ]; then
   mvn verify -B -e -V
 else
-  mvn install -DskipTests=true
+  mvn install -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
   installTravisTools
   travis_run_its "${TESTS}"
