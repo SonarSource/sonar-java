@@ -7,10 +7,10 @@ jdk:
 install: true
 script: ./travis.sh
 env:
-  - TESTS=CI
-  - TESTS=IT-DEV
-  - TESTS=IT-LATEST
-
+#  - TESTS=CI
+#  - TESTS=IT-DEV
+#  - TESTS=IT-LATEST
+  - TESTS=RULING
 matrix:
   fast_finish: true
 
