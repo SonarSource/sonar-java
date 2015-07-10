@@ -72,6 +72,8 @@ public class JavaRulingTest {
         .setSourceEncoding("UTF-8")
         .setProfile("rules")
         .setProperty("sonar.cpd.skip", "true")
+        .setProperty("sonar.skipPackageDesign", "true")
+        .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.java.jsonoutput", "true")
         .setProperty("sonar.java.jsonoutput.folder", "actual")
         .setProperty("sonar.java.libraries", classes.getAbsolutePath())

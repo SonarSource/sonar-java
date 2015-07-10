@@ -23,11 +23,10 @@ IT-DEV)
   cd its/plugin
   mvn -DjavaVersion="DEV" -Dsonar.runtimeVersion="DEV" -Dmaven.test.redirectTestOutputToFile=false install
   ;;
-  
+
 RULING)
-  mkdir -p ~/.m2/repository/org/codehaus/sonar/sonar-application/4.5.4
-  curl -sSL http://downloads.sonarsource.com/sonarqube/sonarqube-4.5.4.zip -o ~/.m2/repository/org/codehaus/sonar/sonar-application/4.5.4/sonar-application-4.5.4.zip
-	
+	mkdir -p ~/.m2/repository/org/codehaus/sonar/sonar-application/5.1.1
+	curl -sSL http://downloads.sonarsource.com/sonarqube/sonarqube-5.1.1.zip -o ~/.m2/repository/org/codehaus/sonar/sonar-application/5.1.1/sonar-application-5.1.1.zip
 	mvn install -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
   git clone https://github.com/SonarSource/ruling_java.git it_sources
 
@@ -37,8 +36,7 @@ RULING)
   installTravisTools
   #travis_reset_ruby
   unset GEM_PATH GEM_HOME RAILS_ENV
-  travis_install_jars
-  mvn clean install -DjavaVersion=DEV -Dsonar.runtimeVersion=LTS -Dorchestrator.configUrl=file://$(pwd)/../plugin/tests/orchestrator.properties
+  mvn clean install -Dmaven.test.redirectTestOutputToFile=false -DjavaVersion=DEV -Dsonar.runtimeVersion=5.1.1
   ;;
 
 IT-LATEST)

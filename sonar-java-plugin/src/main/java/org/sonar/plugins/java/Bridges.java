@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
@@ -68,16 +69,13 @@ public class Bridges {
       designBridge.saveDesign(project);
     }
     // Report Issues
-    LOG.error("Reporting issues");
     ChecksBridge checksBridge = new ChecksBridge(sonarComponents, rulesProfile);
     reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
-    LOG.error("Reporting issues done");
   }
 
   private void reportIssues(ResourceMapping resourceMapping, NoSonarFilter noSonarFilter, ChecksBridge checksBridge, Project project) {
     ProjectIssue projectIssue = null;
-    if (settings.getBoolean(JavaPlugin.JSON_OUTPUT)) {
-      LOG.error("creating project issue ");
+    if (StringUtils.isNotBlank(settings.getString(JavaPlugin.JSON_OUTPUT_FOLDER))) {
       projectIssue = new ProjectIssue();
     }
     for (Resource directory : resourceMapping.directories()) {
