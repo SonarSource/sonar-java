@@ -67,20 +67,19 @@ public class ChecksBridge {
           Object check = checkMessage.getCheck();
 
           RuleKey ruleKey = getRuleKey((JavaCheck) check);
-          if (ruleKey != null) {
-            if (project == null) {
-              Issue issue = issuable.newIssueBuilder()
-                .ruleKey(ruleKey)
-                .line(checkMessage.getLine())
-                .message(checkMessage.formatDefaultMessage())
-                .effortToFix(checkMessage.getCost())
-                .build();
-              issuable.addIssue(issue);
-            } else {
-              project.addIssue(ruleKey, sonarFile.getKey(), checkMessage.getLine());
-            }
-          } else {
+          if (ruleKey == null) {
             throw new IllegalStateException("Cannot find rule key for instance of " + check.getClass());
+          }
+          if (project == null) {
+            Issue issue = issuable.newIssueBuilder()
+              .ruleKey(ruleKey)
+              .line(checkMessage.getLine())
+              .message(checkMessage.formatDefaultMessage())
+              .effortToFix(checkMessage.getCost())
+              .build();
+            issuable.addIssue(issue);
+          } else {
+            project.addIssue(ruleKey, sonarFile.getKey(), checkMessage.getLine());
           }
         }
       }
@@ -117,7 +116,7 @@ public class ChecksBridge {
     }
     if (dirsWithoutPackageInfo.contains(directory)) {
       RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
-      if(projectIssue != null) {
+      if (projectIssue != null) {
         projectIssue.addIssue(ruleKey, directory.getKey(), null);
       } else {
         Issuable issuable = resourcePerspectives.as(Issuable.class, directory);

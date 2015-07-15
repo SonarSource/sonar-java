@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.base.Charsets;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +40,11 @@ import org.sonar.plugins.java.bridges.DesignBridge;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -103,25 +106,28 @@ public class Bridges {
       folder.mkdir();
       LOG.info("Outputing json files to folder: " + folder.getAbsolutePath());
       for (Map.Entry<RuleKey, RuleIssues> entry : projectIssue.rules.entrySet()) {
-        try (FileWriter pw = new FileWriter(folder.getAbsolutePath() + File.separator + "squid-" + entry.getKey().rule() + ".json")) {
-          pw.write("{\n");
-          RuleIssues ruleIssues = entry.getValue();
-          for (Map.Entry<String, FileIssues> stringFileIssuesEntry : ruleIssues.files.entrySet()) {
-            FileIssues fileIssues = stringFileIssuesEntry.getValue();
-            if (!fileIssues.getLines().isEmpty()) {
-              pw.write("'project:" + stringFileIssuesEntry.getKey() + "':[\n");
-              for (Integer line : fileIssues.getLines()) {
-                pw.write(line + ",\n");
-              }
-              pw.write("],\n");
-            }
-          }
-          pw.write("}\n");
+        try (PrintWriter pw = new PrintWriter(folder.getAbsolutePath() + File.separator + "squid-" + entry.getKey().rule() + ".json", Charsets.UTF_8.name())) {
+          writeIssueFile(pw, entry.getValue());
         } catch (IOException e) {
-          e.printStackTrace();
+          LOG.error("Could not output json file for rule : " + entry.getKey(), e);
         }
       }
     }
+  }
+
+  private static void writeIssueFile(Writer pw, RuleIssues ruleIssues) throws IOException {
+    pw.write("{\n");
+    for (Map.Entry<String, FileIssues> stringFileIssuesEntry : ruleIssues.files.entrySet()) {
+      FileIssues fileIssues = stringFileIssuesEntry.getValue();
+      if (!fileIssues.getLines().isEmpty()) {
+        pw.write("'project:" + stringFileIssuesEntry.getKey() + "':[\n");
+        for (Integer line : fileIssues.getLines()) {
+          pw.write(line + ",\n");
+        }
+        pw.write("],\n");
+      }
+    }
+    pw.write("}\n");
   }
 
   public static class ProjectIssue {
@@ -131,7 +137,7 @@ public class Bridges {
       this.rules = new HashMap<>();
     }
 
-    public void addIssue(RuleKey ruleKey, String name, Integer line) {
+    public void addIssue(RuleKey ruleKey, String name, @Nullable Integer line) {
       RuleIssues ruleIssues = rules.get(ruleKey);
       if (ruleIssues == null) {
         ruleIssues = new RuleIssues();
@@ -144,16 +150,13 @@ public class Bridges {
   private static class RuleIssues {
     Map<String, FileIssues> files = new TreeMap<>();
 
-    public void addIssue(String name, Integer line) {
+    public void addIssue(String name, @Nullable Integer line) {
       FileIssues fileIssues = files.get(name);
       if (fileIssues == null) {
         fileIssues = new FileIssues();
         files.put(name, fileIssues);
       }
-      if(line == null) {
-        line = 0;
-      }
-      fileIssues.lines.add(line);
+      fileIssues.lines.add(line == null ? 0 : line);
     }
   }
 
