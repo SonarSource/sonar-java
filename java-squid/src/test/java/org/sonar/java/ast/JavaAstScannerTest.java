@@ -193,10 +193,10 @@ public class JavaAstScannerTest {
   }
 
   public static class FakeGrammar {
-    final GrammarBuilder<JavaTree, InternalSyntaxToken> b;
+    final GrammarBuilder<InternalSyntaxToken> b;
     final FakeTreeFactory f;
 
-    public FakeGrammar(GrammarBuilder<JavaTree, InternalSyntaxToken> b, FakeTreeFactory f) {
+    public FakeGrammar(GrammarBuilder<InternalSyntaxToken> b, FakeTreeFactory f) {
       this.b = b;
       this.f = f;
     }
