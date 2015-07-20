@@ -20,15 +20,20 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.PrintStream;
 import java.util.Deque;
@@ -70,7 +75,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     explodedGraph = new ExplodedGraph();
     workList = new LinkedList<>();
     out.println("Exploring Exploded Graph");
-    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState());
+    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState(/*TODO method parameters*/Maps.<Symbol, SymbolicValue>newHashMap()));
     steps = 0;
     while (!workList.isEmpty()) {
       steps++;
@@ -150,9 +155,30 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case EXPRESSION_STATEMENT:
       case PARENTHESIZED_EXPRESSION:
         throw new IllegalStateException("Cannot appear in CFG: " + javaTree.getKind().name());
+      case VARIABLE:
+        VariableTree variableTree = (VariableTree) tree;
+        if (variableTree.type().symbolType().isPrimitive()) {
+        //TODO handle primitives
+        } else {
+          ExpressionTree initializer = variableTree.initializer();
+          SymbolicValue.NullSymbolicValue symbolicValue = SymbolicValue.NullSymbolicValue.NOT_NULL;
+          if(initializer == null || initializer.is(Tree.Kind.NULL_LITERAL)) {
+            symbolicValue = SymbolicValue.NullSymbolicValue.NULL;
+          }
+          programState = put(programState, variableTree.symbol(), new SymbolicValue.ObjectSymbolicValue(symbolicValue));
+        }
       default:
     }
     checkerDispatcher.executeCheckPreStatement(javaTree);
+  }
+
+  private static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
+    SymbolicValue symbolicValue = programState.values.get(symbol);
+    //update program state only for a different symbolic value
+    if(symbolicValue == null || !symbolicValue.equals(value)) {
+      return new ProgramState(ImmutableMap.<Symbol, SymbolicValue>builder().putAll(programState.values).put(symbol, value).build());
+    }
+    return programState;
   }
 
   public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState) {
