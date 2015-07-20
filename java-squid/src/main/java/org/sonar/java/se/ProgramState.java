@@ -19,5 +19,23 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.ImmutableMap;
+import org.sonar.plugins.java.api.semantic.Symbol;
+
+import java.util.Map;
+
 public class ProgramState {
+
+  Map<Symbol, SymbolicValue> values;
+
+
+  public ProgramState(Map<Symbol, SymbolicValue> values) {
+    this.values = ImmutableMap.copyOf(values);
+  }
+
+
+  @Override
+  public String toString() {
+    return ""+values.toString();
+  }
 }
