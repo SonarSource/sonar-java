@@ -25,11 +25,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.se.checkers.NullDereferenceCheck;
+import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -57,7 +60,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public ExplodedGraphWalker(PrintStream out) {
     this.out = out;
-    this.checkerDispatcher  = new CheckerDispatcher(this, Lists.newArrayList());
+    this.checkerDispatcher = new CheckerDispatcher(this, Lists.<SEChecker>newArrayList(new NullDereferenceCheck()));
   }
 
   @Override
@@ -75,7 +78,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     explodedGraph = new ExplodedGraph();
     workList = new LinkedList<>();
     out.println("Exploring Exploded Graph");
-    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState(/*TODO method parameters*/Maps.<Symbol, SymbolicValue>newHashMap()));
+    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState(/* TODO method parameters */Maps.<Symbol, SymbolicValue>newHashMap()));
     steps = 0;
     while (!workList.isEmpty()) {
       steps++;
@@ -102,7 +105,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         out.println("terminator is null");
         handleBlockExit(programPosition);
       } else if (programPosition.i == programPosition.block.elements().size()) {
-        out.println("process block element "+programPosition.i);
+        out.println("process block element " + programPosition.i);
         // process block exist, which is conditional jump such as if-statement
         checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator);
       } else {
@@ -140,7 +143,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {
-    //FIXME : no constraints added from branch yet
+    // FIXME : no constraints added from branch yet
     // workList is LIFO - enqueue else-branch first:
     for (CFG.Block block : Lists.reverse(programPosition.successors)) {
       enqueue(new ExplodedGraph.ProgramPoint(block, 0), programState);
@@ -158,11 +161,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case VARIABLE:
         VariableTree variableTree = (VariableTree) tree;
         if (variableTree.type().symbolType().isPrimitive()) {
-        //TODO handle primitives
+          // TODO handle primitives
         } else {
           ExpressionTree initializer = variableTree.initializer();
           SymbolicValue.NullSymbolicValue symbolicValue = SymbolicValue.NullSymbolicValue.NOT_NULL;
-          if(initializer == null || initializer.is(Tree.Kind.NULL_LITERAL)) {
+          if (initializer == null || initializer.is(Tree.Kind.NULL_LITERAL)) {
             symbolicValue = SymbolicValue.NullSymbolicValue.NULL;
           }
           programState = put(programState, variableTree.symbol(), new SymbolicValue.ObjectSymbolicValue(symbolicValue));
@@ -174,8 +177,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
     SymbolicValue symbolicValue = programState.values.get(symbol);
-    //update program state only for a different symbolic value
-    if(symbolicValue == null || !symbolicValue.equals(value)) {
+    // update program state only for a different symbolic value
+    if (symbolicValue == null || !symbolicValue.equals(value)) {
       return new ProgramState(ImmutableMap.<Symbol, SymbolicValue>builder().putAll(programState.values).put(symbol, value).build());
     }
     return programState;
@@ -190,4 +193,18 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     workList.addFirst(node);
   }
 
+  public SymbolicValue getVal(Tree expression) {
+    // TODO evaluate expressions (probably introducing a constraint manager) , for now only get null/not null values.
+    // if(expression.is(Tree.Kind.MEMBER_SELECT)) {
+    // return getVal(((MemberSelectExpressionTree) expression).expression());
+    // } else if(expression.is(Tree.Kind.METHOD_INVOCATION)) {
+    // return getVal(((MethodInvocationTree) expression).methodSelect());
+    // } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+    Symbol symbol = ((IdentifierTree) expression).symbol();
+    SymbolicValue symbolicValue = programState.values.get(symbol);
+    if (symbolicValue == null) {
+      programState = put(programState, symbol, new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.UNKNOWN));
+    }
+    return symbolicValue;
+  }
 }

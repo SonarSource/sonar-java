@@ -39,7 +39,7 @@ public class ExplodedGraphWalkerTest {
     CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A  { Object a; void func() { if(a==null) a.toString(); } } ");
     ExplodedGraphWalker graphWalker = new ExplodedGraphWalker(System.out);
     cut.accept(graphWalker);
-    assertThat(graphWalker.steps).isEqualTo(5);
+    assertThat(graphWalker.steps).isEqualTo(8);
   }
 
   @Test
@@ -49,7 +49,8 @@ public class ExplodedGraphWalkerTest {
     SemanticModel.createFor(cut, Lists.<File>newArrayList());
     ExplodedGraphWalker graphWalker = new ExplodedGraphWalker(System.out);
     cut.accept(graphWalker);
-    assertThat(graphWalker.steps).isEqualTo(3);
+    //Only two steps as we sink into the second because of the NPE.
+    assertThat(graphWalker.steps).isEqualTo(2);
   }
 
 }
