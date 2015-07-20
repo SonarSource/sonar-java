@@ -60,11 +60,15 @@ public class VisitorsBridge extends InternalVisitorsBridge {
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor, List<File> projectClasspath) {
-    this(Arrays.asList(visitor), projectClasspath, null);
+    this(Arrays.asList(visitor), projectClasspath, null, false);
   }
 
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents);
+    super(visitors, projectClasspath, sonarComponents, true);
+  }
+
+  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
+    super(visitors, projectClasspath, sonarComponents, symbolicExecutionEnabled);
   }
 
   @Override
@@ -111,7 +115,7 @@ public class VisitorsBridge extends InternalVisitorsBridge {
       if (cost == null) {
         Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
         Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
-        if (linear != null || linearWithOffset != null) {
+        if ((linear != null) || (linearWithOffset != null)) {
           throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
         }
       } else {

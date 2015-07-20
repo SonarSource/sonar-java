@@ -33,11 +33,6 @@ class A {
       break;
     }
 
-    break;
-    break;
-    continue;
-    continue;
-
     do { // Noncompliant
       break;
       switch (foo) {

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -28,7 +29,6 @@ import org.sonar.api.rules.RuleParam;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
@@ -39,6 +39,11 @@ import java.util.Set;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class CheckListTest {
+
+  private static final List<String> SE_CHEKS = ImmutableList.of(
+    "NullDereferenceCheck",
+    "ConditionAlwaysTrueOrFalseCheck"
+  );
 
   /**
    * Enforces that each check declared in list.
@@ -52,7 +57,7 @@ public class CheckListTest {
         count++;
       }
     }
-    assertThat(CheckList.getChecks().size()).isEqualTo(count);
+    assertThat(CheckList.getChecks().size()).isEqualTo(count + SE_CHEKS.size());
   }
 
   /**
@@ -63,8 +68,12 @@ public class CheckListTest {
     List<Class> checks = CheckList.getChecks();
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
+      String simpleName = cls.getSimpleName();
+      if (SE_CHEKS.contains(simpleName)) {
+        continue;
+      }
       assertThat(getClass().getResource(testName))
-        .overridingErrorMessage("No test for " + cls.getSimpleName())
+        .overridingErrorMessage("No test for " + simpleName)
         .isNotNull();
     }
 
