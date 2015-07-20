@@ -19,24 +19,17 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.ImmutableMap;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Map;
-
-public class ProgramState {
-
-  Map<Symbol, SymbolicValue> values;
+public interface CheckerContext {
 
 
-  public ProgramState(Map<Symbol, SymbolicValue> values) {
-    this.values = ImmutableMap.copyOf(values);
-  }
+  Object createSink();
 
+  SymbolicValue getVal(Tree expression);
 
-  @Override
-  public String toString() {
-    return ""+values.toString();
-  }
+  void addTransition(ProgramState state);
+
+  ProgramState getState();
 
 }

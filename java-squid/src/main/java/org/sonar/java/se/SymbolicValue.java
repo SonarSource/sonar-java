@@ -23,6 +23,8 @@ import com.google.common.base.Objects;
 
 public interface SymbolicValue {
 
+  boolean isNull();
+
   enum NullSymbolicValue {
     NULL,
     NOT_NULL,
