@@ -437,6 +437,11 @@ public class JavaSymbol implements Symbol {
     public VariableTree declaration() {
       return declaration;
     }
+
+    @Override
+    public String toString() {
+      return "VariableSymbol#"+name;
+    }
   }
 
   /**
