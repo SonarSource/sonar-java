@@ -9,8 +9,8 @@ script: ./travis.sh
 env:
   - TESTS=CI
   - TESTS=IT-DEV
+  - TESTS=RULING
   - TESTS=IT-LATEST
-
 matrix:
   fast_finish: true
 

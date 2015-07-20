@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -100,6 +100,17 @@ public class JavaClasspathTest {
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
+  }
+
+  @Test
+  public void directory_specified_for_library_should_find_jars() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+    assertThat(javaClasspath.getElements().get(1)).exists();
+    assertThat(javaClasspath.getElements().get(2)).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("lib","hello.jar", "world.jar");
   }
 
   @Test

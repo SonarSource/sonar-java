@@ -1,6 +1,6 @@
 /*
  * Java :: IT :: Plugin :: Tests
- * Copyright (C) 2013 ${owner}
+ * Copyright (C) 2013 SonarSource
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -72,34 +72,6 @@ public class JavaTest {
   }
 
   /**
-   * This is a big limitation of resource keys : a class key can be the same than a package.
-   * Example : package com.sonar.sample and class com.sonar.Sample
-   */
-  @Test
-  public void keysShouldBeCaseSensitiveToAvoidResourceKeyConflict() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("resource-key-conflict"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    assertThat(orchestrator.getServer().getWsClient().findAll(new ResourceQuery("com.sonarsource.it.projects.java:resource-key-conflict").setAllDepths())).hasSize(5);
-  }
-
-  @Test
-  public void shouldSupportJavaInnerClasses() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java-inner-classes"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:java-inner-classes", "classes", "functions"));
-    assertThat(project.getMeasureIntValue("classes")).isEqualTo(11);
-    assertThat(project.getMeasureIntValue("functions")).isEqualTo(15);
-  }
-
-  /**
    * Since 2.13 commented-out code lines not saved as measure for Java - see SONAR-3093
    */
   @Test
@@ -130,28 +102,6 @@ public class JavaTest {
     assertThat(buildResult.getStatus()).isEqualTo(0);
   }
 
-  /**
-   * SONARJAVA-444
-   */
-  @Test
-  public void testEmptyFiles() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("empty-files"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    Resource file = orchestrator.getServer().getWsClient()
-      .find(ResourceQuery.createForMetrics(JavaTestSuite.keyFor("com.sonar.it.projects.java:empty-files", "com/", "CommentedOutFile.java"), "lines", "ncloc"));
-    assertThat(file.getMeasureIntValue("lines")).isEqualTo(2);
-    assertThat(file.getMeasureIntValue("ncloc")).isEqualTo(0);
-
-    file = orchestrator.getServer().getWsClient()
-      .find(ResourceQuery.createForMetrics(JavaTestSuite.keyFor("com.sonar.it.projects.java:empty-files", "org/", "EmptyFile.java"), "lines", "ncloc"));
-    assertThat(file.getMeasureIntValue("lines")).isEqualTo(1);
-    assertThat(file.getMeasureIntValue("ncloc")).isEqualTo(0);
-  }
-
   @Test
   public void measures_on_directory() {
     MavenBuild build = MavenBuild.create()
@@ -168,42 +118,6 @@ public class JavaTest {
       // sonar-java 2.1 does not fail if multiple package in same directory.
       assertThat(result.getStatus()).isEqualTo(0);
     }
-  }
-
-  @Test
-  public void shouldSupportEnumVariablesOfJava4() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java4"))
-      .setCleanSonarGoals()
-      .setProperty("sonar.dynamicAnalysis", "false");
-    orchestrator.executeBuild(build);
-
-    assertThat(getMeasure("org.sonar.it.core:java4", "files").getIntValue()).isEqualTo(1);
-  }
-
-  @Test
-  public void shouldSupportJava7Syntax() {
-    MavenBuild inspection = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java7"))
-      .setProperty("sonar.dynamicAnalysis", "false")
-      .setGoals("sonar:sonar");
-    orchestrator.executeBuild(inspection);
-
-    assertThat(getMeasure("org.sonar.it.core:java7", "files").getIntValue()).isEqualTo(7);
-    assertThat(getMeasure("org.sonar.it.core:java7", "complexity").getIntValue()).isEqualTo(21);
-  }
-
-  @Test
-  public void shouldSupportJava8Syntax() {
-    MavenBuild inspection = MavenBuild.create()
-      .setPom(TestUtils.projectPom("java8"))
-      .setProperty("sonar.dynamicAnalysis", "false")
-      .setGoals("sonar:sonar");
-    orchestrator.executeBuild(inspection);
-
-    assertThat(getMeasure("org.sonar.it.core:java8", "files").getIntValue()).isEqualTo(10);
-    int expectedComplexity = 28;
-    assertThat(getMeasure("org.sonar.it.core:java8", "complexity").getIntValue()).isEqualTo(expectedComplexity);
   }
 
   @Test

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2010 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,16 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
@@ -42,6 +47,7 @@ import org.sonar.test.TestUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.fest.assertions.Assertions.assertThat;
@@ -124,7 +130,7 @@ public class JaCoCoSensorTest {
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.LINES_TO_COVER, 7.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.UNCOVERED_LINES, 3.0)));
     verify(context).saveMeasure(eq(resource),
-      argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "6=1;7=1;8=1;11=1;15=0;16=0;18=0")));
+        argThat(new IsMeasure(CoreMetrics.COVERAGE_LINE_HITS_DATA, "6=1;7=1;8=1;11=1;15=0;16=0;18=0")));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.CONDITIONS_TO_COVER, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.UNCOVERED_CONDITIONS, 2.0)));
     verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.CONDITIONS_BY_LINE, "15=2")));
@@ -136,7 +142,7 @@ public class JaCoCoSensorTest {
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/");
     jacocoExecutionData = new File(outputDir, "jacoco.exec");
     Files.copy(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest2/org/example/App.class.toCopy"),
-      new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
+        new File(jacocoExecutionData.getParentFile(), "/org/example/App.class"));
 
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);
@@ -200,6 +206,49 @@ public class JaCoCoSensorTest {
 
     sensor.analyse(project, context);
     verify(testCase).setCoverageBlock(testAbleFile, linesExpected);
+  }
+
+  @Test
+  public void force_coverage_to_zero_when_no_report() {
+    ModuleFileSystem fs = mock(ModuleFileSystem.class);
+    Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", JacocoConfiguration.REPORT_PATH_PROPERTY, "foo");
+    DefaultFileSystem fileSystem = new DefaultFileSystem();
+    fileSystem.add(new DefaultInputFile("foo").setLanguage("java"));
+    JacocoConfiguration configuration = new JacocoConfiguration(new Settings().addProperties(props), fileSystem);
+    JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fs, pathResolver, javaResourceLocator, javaClasspath);
+    outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
+    org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
+    when(context.getResource(any(Resource.class))).thenReturn(resource);
+    when(javaClasspath.getBinaryDirs()).thenReturn(ImmutableList.of(outputDir));
+    when(pathResolver.relativeFile(any(File.class), any(String.class))).thenReturn(new File("foo"));
+    assertThat(sensor_force_coverage.shouldExecuteOnProject(project)).isTrue();
+    sensor_force_coverage.analyse(project, context);
+
+    verify(context, times(1)).saveMeasure(any(Resource.class), eqMetric(CoreMetrics.LINES_TO_COVER_KEY, 7));
+    verify(context, times(1)).saveMeasure(any(Resource.class), eqMetric(CoreMetrics.UNCOVERED_LINES_KEY, 7));
+    verify(context, times(1)).saveMeasure(any(Resource.class), eqMetric(CoreMetrics.CONDITIONS_TO_COVER_KEY, 2));
+    verify(context, times(1)).saveMeasure(any(Resource.class), eqMetric(CoreMetrics.UNCOVERED_CONDITIONS_KEY, 2));
+  }
+
+  static Measure<?> eqMetric(String metricKey, int value) {
+    return argThat(new MetricMatcher(metricKey, value));
+  }
+
+  private static class MetricMatcher extends ArgumentMatcher<Measure<?>>{
+
+    private final String metric;
+    private final double value;
+
+    public MetricMatcher(String metric, int value) {
+      this.metric = metric;
+      this.value = value;
+    }
+
+    @Override
+    public boolean matches(Object actual) {
+      Measure<?> actualMeasure = (Measure<?>) actual;
+      return actualMeasure.getMetricKey().equals(metric) && actualMeasure.getIntValue()==value;
+    }
   }
 
   @Test

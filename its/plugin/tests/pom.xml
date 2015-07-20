@@ -14,9 +14,6 @@
 
   <properties>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <javaVersion>DEV</javaVersion>
-    <sonar.runtimeVersion>DEV</sonar.runtimeVersion>
-    <orchestrator.configUrl>file://${basedir}/orchestrator.properties</orchestrator.configUrl>
   </properties>
 
   <dependencies>
@@ -58,7 +55,7 @@
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <configuration>
-            <argLine>-server -DjavaVersion="${javaVersion}" -Dsonar.runtimeVersion="${sonar.runtimeVersion}" -Dorchestrator.configUrl="${orchestrator.configUrl}"</argLine>
+            <argLine>-server</argLine>
             <includes>
               <include>com/sonar/it/java/suite/*TestSuite.java</include>
               <include>com/sonar/it/java/*Test.java</include>

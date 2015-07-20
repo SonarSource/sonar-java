@@ -1,13 +1,27 @@
-public class HelloWorld {
+public class HelloWorld { // counted
+  void method(){
+    class LocalInnerClass{ // counted
+    }
+    AbstractMap anonymousMap = new AbstractMap() {
+      public Set entrySet() {
+        return null;
+      }
+    };
+  }
+  static class staticInnerClass{} // counted
+  interface innerInterface{}  // counted
 }
 
-class AnotherClass {
-  class innerClass{
+private @interface annotationType {}  // counted
+
+class AnotherClass { // counted
+  class innerClass{ // counted
 
   }
+
 }
 
-enum Enum {
+enum Enum { // counted
   A{
 
   },

@@ -1,6 +1,6 @@
 /*
  * Java :: IT :: Plugin :: Tests
- * Copyright (C) 2013 ${owner}
+ * Copyright (C) 2013 SonarSource
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -106,23 +106,6 @@ public class JavaClasspathTest {
     assertThat(getNumberOfViolations()).isEqualTo(2);
   }
 
-  @Test
-  public void relative_path_for_libraries_should_be_supported() throws Exception {
-    SonarRunner runner = ditProjectSonarRunner();
-    runner.setProperty("sonar.java.binaries", "target/classes");
-    runner.setProperty("sonar.java.libraries", "lib/../lib/*.jar");
-    ORCHESTRATOR.executeBuild(runner);
-    assertThat(getNumberOfViolations()).isEqualTo(1);
-  }
-
-  @Test
-  public void relative_path_with_wildcard_for_libraries_should_be_supported() throws Exception {
-    SonarRunner runner = ditProjectSonarRunner();
-    runner.setProperty("sonar.java.binaries", "target/classes");
-    runner.setProperty("sonar.java.libraries", "../dit-check/**/library.jar");
-    ORCHESTRATOR.executeBuild(runner);
-    assertThat(getNumberOfViolations()).isEqualTo(1);
-  }
 
   @Test
   public void should_support_the_old_binaries_and_libraries_properties() {
@@ -147,60 +130,11 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void should_support_simple_wildcard() {
-    buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath() + "/subFolder/subSubFolder/*.jar");
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
-  public void should_support_nested_folder_wildcard() {
-    buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath() + "/**/*.jar");
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
-  public void directory_specified_for_library_should_find_jars() {
-    buildAndAnalyzeWithLibraries(tmp.getRoot().getAbsolutePath());
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
-  public void directory_specified_for_library_with_wildcards_should_find_jars() {
-    String absolutePath = tmp.getRoot().getAbsolutePath();
-    buildAndAnalyzeWithLibraries(absolutePath.substring(0, absolutePath.length() - 3) + "*" + absolutePath.substring(absolutePath.length() - 1));
-    assertThat(getNumberOfViolations()).isEqualTo(2);
-  }
-
-  @Test
   public void directory_of_classes_in_library_should_be_supported() throws Exception {
     SonarRunner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.libraries", "target/classes");
     ORCHESTRATOR.executeBuild(runner);
     assertThat(getNumberOfViolations()).isEqualTo(1);
-  }
-
-  @Test
-  public void multi_module_project_should_not_validate_classpath_on_parent_module() {
-    SonarRunner runner = SonarRunner.create(TestUtils.projectDir("multi-module"))
-      .setProperty("sonar.projectKey", "multi-module")
-      .setProperty("sonar.projectName", "multi-module")
-      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "dit-check")
-      .setProperty("sonar.modules", "module1,module2")
-      .setProperty("sonar.sources", "src")
-      .setProperty("sonar.java.libraries", "lib/*");
-    Integer status = ORCHESTRATOR.executeBuild(runner).getStatus();
-    assertThat(status).isEqualTo(0);
-    runner = SonarRunner.create(TestUtils.projectDir("multi-module"))
-      .setProperty("sonar.projectKey", "multi-module")
-      .setProperty("sonar.projectName", "multi-module")
-      .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
-      .setProperty("sonar.profile", "dit-check")
-      .setProperty("sonar.modules", "module1,module2")
-      .setProperty("sonar.sources", "src")
-      .setProperty("sonar.java.libraries", "../sharedlib/*");
-    status = ORCHESTRATOR.executeBuild(runner).getStatus();
-    assertThat(status).isEqualTo(0);
   }
 
   @Test
@@ -217,23 +151,16 @@ public class JavaClasspathTest {
     }
   }
 
-  private static void buildAndAnalyzeWithLibraries(String libraries) {
-    SonarRunner runner = ditProjectSonarRunner();
-    runner.setProperty("sonar.java.binaries", "target/classes");
-    runner.setProperty("sonar.java.libraries", libraries);
-    ORCHESTRATOR.executeBuild(runner);
+  private static void buildDitProject() {
+    mavenOnDitProject("clean package");
   }
 
-  private static String buildDitProject() {
-    return mavenOnDitProject("clean package");
-  }
-
-  private static String mavenOnDitProject(String goal) {
+  private static void mavenOnDitProject(String goal) {
     MavenBuild build = MavenBuild.create(TestUtils.projectPom("dit-check"))
       .setGoals(goal)
       .setProperty("sonar.profile", "dit-check")
       .setProperty("sonar.dynamicAnalysis", "false");
-    return ORCHESTRATOR.executeBuild(build).getLogs();
+    ORCHESTRATOR.executeBuild(build);
   }
 
   private static SonarRunner ditProjectSonarRunner() {
