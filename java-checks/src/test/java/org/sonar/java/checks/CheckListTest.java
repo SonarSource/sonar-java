@@ -74,8 +74,9 @@ public class CheckListTest {
     List<Class> checks = CheckList.getChecks();
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
+      String simpleName = cls.getSimpleName();
       assertThat(getClass().getResource(testName))
-        .overridingErrorMessage("No test for " + cls.getSimpleName())
+        .overridingErrorMessage("No test for " + simpleName)
         .isNotNull();
     }
 

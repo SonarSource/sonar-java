@@ -321,6 +321,7 @@ public class CFG {
       case METHOD_REFERENCE:
       // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
+        //Ignore assert statement as they are disabled by default in JVM
         break;
       // store declarations as complete blocks.
       case EMPTY_STATEMENT:

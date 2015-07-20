@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import java.util.List;
@@ -303,8 +305,8 @@ public final class CheckList {
       .add(SelectorMethodArgumentCheck.class)
       .add(ThreadAsRunnableArgumentCheck.class)
       .add(SynchronizedFieldAssignmentCheck.class)
-      .add(NullPointerCheck.class)
-      .add(UselessConditionCheck.class)
+      .add(NullDereferenceCheck.class)
+      .add(ConditionAlwaysTrueOrFalseCheck.class)
       .add(StaticFieldUpateCheck.class)
       .add(IgnoredStreamReturnValueCheck.class)
       .add(DateUtilsTruncateCheck.class)
