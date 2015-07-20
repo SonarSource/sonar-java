@@ -34,8 +34,6 @@ public interface Tree {
 
   boolean is(Kind... kind);
 
-  Kind kind();
-
   void accept(TreeVisitor visitor);
 
   @Nullable
@@ -665,4 +663,5 @@ public interface Tree {
     }
   }
 
+  Kind kind();
 }
