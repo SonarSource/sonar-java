@@ -2,4 +2,7 @@
 'net.code-story:http:src/main/java/net/codestory/http/misc/MemoizingSupplier.java':[
 42,
 ],
+'net.code-story:http:src/main/java/net/codestory/http/reload/JdkWatchService.java':[
+74,
+],
 }
