@@ -19,17 +19,19 @@
  */
 package org.sonar.java.se;
 
+import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public class CheckerDispatcher {
+public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;
-  private final List<Object> checkers;
+  private final List<SEChecker> checkers;
   private Tree syntaxNode;
   private int currentCheckerIndex = 0;
+  private boolean transition = false;
 
-  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<Object> checkers) {
+  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<SEChecker> checkers) {
     this.explodedGraphWalker = explodedGraphWalker;
     this.checkers = checkers;
   }
@@ -41,7 +43,7 @@ public class CheckerDispatcher {
 
   private void execute() {
     if (currentCheckerIndex < checkers.size()) {
-//      NOOP for now checkers.get(currentCheckerIndex).checkPreStatement(this, syntaxNode);
+      checkers.get(currentCheckerIndex).checkPreStatement(this, syntaxNode);
     } else {
       explodedGraphWalker.enqueue(
           new ExplodedGraph.ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
@@ -49,5 +51,33 @@ public class CheckerDispatcher {
       );
       return;
     }
+  }
+
+  public ProgramState getState() {
+    return explodedGraphWalker.programState;
+  }
+
+
+  @Override
+  public void addTransition(ProgramState state) {
+    ProgramState oldState = explodedGraphWalker.programState;
+    explodedGraphWalker.programState = state;
+    currentCheckerIndex++;
+    execute();
+    currentCheckerIndex--;
+    explodedGraphWalker.programState = oldState;
+    this.transition = true;
+  }
+
+  @Override
+  public Object createSink() {
+    transition = true;
+    return new Object();
+  }
+
+
+  @Override
+  public SymbolicValue getVal(Tree expression) {
+    return explodedGraphWalker.getVal(expression);
   }
 }

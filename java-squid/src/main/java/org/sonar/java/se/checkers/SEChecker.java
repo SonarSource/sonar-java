@@ -17,26 +17,13 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.se;
+package org.sonar.java.se.checkers;
 
-import com.google.common.collect.ImmutableMap;
-import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.java.se.CheckerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Map;
+public interface SEChecker {
 
-public class ProgramState {
-
-  Map<Symbol, SymbolicValue> values;
-
-
-  public ProgramState(Map<Symbol, SymbolicValue> values) {
-    this.values = ImmutableMap.copyOf(values);
-  }
-
-
-  @Override
-  public String toString() {
-    return ""+values.toString();
-  }
+  void checkPreStatement(CheckerContext context, Tree syntaxNode);
 
 }
