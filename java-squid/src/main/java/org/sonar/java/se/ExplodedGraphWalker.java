@@ -144,12 +144,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {
-
+    if(condition.is(Tree.Kind.CONDITIONAL_OR, Tree.Kind.CONDITIONAL_AND)) {
+      // this is the case for branches such as "if (lhs && lhs)" and "if (lhs || rhs)"
+      // we already made an assumption on lhs, because CFG contains branch for it, so now let's make an assumption on rhs
+      condition = ((BinaryExpressionTree) condition).rightOperand();
+    }
     Symbol nullComparedSymbol = isNullComparison(condition);
 
     if(nullComparedSymbol == null) {
       // workList is LIFO - enqueue else-branch first:
       for (CFG.Block block : Lists.reverse(programPosition.successors)) {
+        out.println("Enqueuing B" + block.id);
         enqueue(new ExplodedGraph.ProgramPoint(block, 0), programState);
       }
     } else {
@@ -173,6 +178,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void visit(Tree tree) {
     JavaTree javaTree = (JavaTree) tree;
+    out.println("visiting node "+javaTree.getKind().name()+ " at line "+javaTree.getLine());
     switch (javaTree.getKind()) {
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
