@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import java.io.PrintStream;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -60,7 +61,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public ExplodedGraphWalker(PrintStream out) {
     this.out = out;
-    this.checkerDispatcher = new CheckerDispatcher(this, Lists.<SEChecker>newArrayList(new NullDereferenceChecker()));
+    this.checkerDispatcher = new CheckerDispatcher(this, Lists.<SEChecker>newArrayList(new NullDereferenceChecker(out)));
   }
 
   @Override
@@ -143,11 +144,31 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {
-    // FIXME : no constraints added from branch yet
-    // workList is LIFO - enqueue else-branch first:
-    for (CFG.Block block : Lists.reverse(programPosition.successors)) {
-      enqueue(new ExplodedGraph.ProgramPoint(block, 0), programState);
+
+    Symbol nullComparedSymbol = isNullComparison(condition);
+
+    if(nullComparedSymbol == null) {
+      // workList is LIFO - enqueue else-branch first:
+      for (CFG.Block block : Lists.reverse(programPosition.successors)) {
+        enqueue(new ExplodedGraph.ProgramPoint(block, 0), programState);
+      }
+    } else {
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), put(programState, nullComparedSymbol, new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NOT_NULL)));
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), put(programState, nullComparedSymbol, new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL)));
     }
+  }
+
+  @CheckForNull
+  private static Symbol isNullComparison(Tree tree) {
+    if(tree.is(Tree.Kind.EQUAL_TO)) {
+      BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
+      if(binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
+        return ((IdentifierTree) binaryTree.rightOperand()).symbol();
+      } else if (binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER)) {
+        return ((IdentifierTree) binaryTree.leftOperand()).symbol();
+      }
+    }
+    return null;
   }
 
   private void visit(Tree tree) {
