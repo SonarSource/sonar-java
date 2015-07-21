@@ -48,7 +48,6 @@ public class ExplodedGraphWalkerTest {
     ExplodedGraphWalker graphWalker = getGraphWalker("class A  { Object a; void func() { if(a==null)\n a.toString();\n } } ");
     assertThat(graphWalker.steps).isEqualTo(6);
     String output = out.toString();
-    System.out.println(output);
     assertThat(output).contains("Null pointer dereference at line 2");
   }
 
@@ -57,19 +56,34 @@ public class ExplodedGraphWalkerTest {
     ExplodedGraphWalker graphWalker = getGraphWalker("class A  \n{ Object a;\n void func() \n{ if(b == a &&\n a == null) \na.toString();\n } } ");
     assertThat(graphWalker.steps).isEqualTo(11);
     String output = out.toString();
-    System.out.println(output);
     assertThat(output).contains("Null pointer dereference at line 6");
   }
 
   @Test
-  public void test_complex_condition_2() throws Exception {
-    ExplodedGraphWalker graphWalker = getGraphWalker("class A  { Object a; void func() { if(a == null && b == a) \na.toString();\n } } ");
+  public void test_complex_condition_inverted() throws Exception {
+    ExplodedGraphWalker graphWalker = getGraphWalker("class A  { Object a; void func() { if(null == a && b == a) \na.toString();\n } } ");
     assertThat(graphWalker.steps).isEqualTo(11);
+    String output = out.toString();
+    assertThat(output).contains("Null pointer dereference at line 2");
+  }
+
+  @Test
+  public void test_reassignement() throws Exception {
+    ExplodedGraphWalker graphWalker = getGraphWalker("class A  { Object a; Object b; void func() { if(b == null) {\na = b; \n a.toString();\n }} } ");
+    assertThat(graphWalker.steps).isEqualTo(7);
+    String output = out.toString();
+    System.out.println(output);
+    assertThat(output).contains("Null pointer dereference at line 3");
+  }
+
+  @Test
+  public void test_null_assignement() throws Exception {
+    ExplodedGraphWalker graphWalker = getGraphWalker("class A  { void func(Object a) { a = null;\n a.toString();\n } } ");
+    assertThat(graphWalker.steps).isEqualTo(2);
     String output = out.toString();
     System.out.println(output);
     assertThat(output).contains("Null pointer dereference at line 2");
   }
-
 
   @Test
   public void local_variable() throws Exception {
