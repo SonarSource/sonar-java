@@ -29,8 +29,13 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
+import java.io.PrintStream;
 
-public class NullDereferenceChecker implements SEChecker {
+public class NullDereferenceChecker extends SEChecker {
+
+  public NullDereferenceChecker(PrintStream out) {
+    super(out);
+  }
 
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -71,7 +76,8 @@ public class NullDereferenceChecker implements SEChecker {
   private void checkNullDeref(CheckerContext context, IdentifierTree dereferenced) {
     SymbolicValue val = context.getVal(dereferenced);
     if (val != null && val.isNull()) {
-      System.out.println("Null pointer dereference at line " + ((JavaTree) dereferenced).getLine());
+      //TODO create issue properly.
+      out.println("Null pointer dereference at line " + ((JavaTree) dereferenced).getLine());
       context.createSink();
       return;
     }
