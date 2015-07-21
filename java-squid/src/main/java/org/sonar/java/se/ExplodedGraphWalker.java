@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.se.checkers.NullDereferenceCheck;
+import org.sonar.java.se.checkers.NullDereferenceChecker;
 import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -60,7 +60,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public ExplodedGraphWalker(PrintStream out) {
     this.out = out;
-    this.checkerDispatcher = new CheckerDispatcher(this, Lists.<SEChecker>newArrayList(new NullDereferenceCheck()));
+    this.checkerDispatcher = new CheckerDispatcher(this, Lists.<SEChecker>newArrayList(new NullDereferenceChecker()));
   }
 
   @Override
@@ -195,11 +195,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public SymbolicValue getVal(Tree expression) {
     // TODO evaluate expressions (probably introducing a constraint manager) , for now only get null/not null values.
-    // if(expression.is(Tree.Kind.MEMBER_SELECT)) {
-    // return getVal(((MemberSelectExpressionTree) expression).expression());
-    // } else if(expression.is(Tree.Kind.METHOD_INVOCATION)) {
-    // return getVal(((MethodInvocationTree) expression).methodSelect());
-    // } else if (expression.is(Tree.Kind.IDENTIFIER)) {
     Symbol symbol = ((IdentifierTree) expression).symbol();
     SymbolicValue symbolicValue = programState.values.get(symbol);
     if (symbolicValue == null) {
