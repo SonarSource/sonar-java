@@ -36,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S1444",
-  name = ":",
+  name = "\"public static\" fields should be constant",
   tags = {"cert", "cwe", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
