@@ -22,8 +22,16 @@ package org.sonar.java.se.checkers;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public interface SEChecker {
+import java.io.PrintStream;
 
-  void checkPreStatement(CheckerContext context, Tree syntaxNode);
+public abstract class SEChecker {
+
+  protected PrintStream out;
+
+  public SEChecker(PrintStream out) {
+    this.out = out;
+  }
+
+  public abstract void checkPreStatement(CheckerContext context, Tree syntaxNode);
 
 }
