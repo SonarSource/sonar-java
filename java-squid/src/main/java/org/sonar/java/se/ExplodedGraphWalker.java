@@ -28,6 +28,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checkers.NullDereferenceChecker;
 import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -197,6 +198,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           }
           programState = put(programState, variableTree.symbol(), new SymbolicValue.ObjectSymbolicValue(symbolicValue));
         }
+        break;
+      case ASSIGNMENT:
+        AssignmentExpressionTree assignmentExpressionTree = ((AssignmentExpressionTree) javaTree);
+        //FIXME restricted to identifiers for now.
+        if(assignmentExpressionTree.variable().is(Tree.Kind.IDENTIFIER)) {
+          SymbolicValue value = getVal(assignmentExpressionTree.expression());
+          programState = put(programState, ((IdentifierTree) assignmentExpressionTree.variable()).symbol(), value);
+        }
+        break;
       default:
     }
     checkerDispatcher.executeCheckPreStatement(javaTree);
@@ -220,8 +230,16 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     workList.addFirst(node);
   }
 
+  @CheckForNull
   public SymbolicValue getVal(Tree expression) {
-    // TODO evaluate expressions (probably introducing a constraint manager) , for now only get null/not null values.
+    if(!expression.is(Tree.Kind.NULL_LITERAL)) {
+      return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
+    }
+    if(!expression.is(Tree.Kind.IDENTIFIER)) {
+      //FIXME associate this value to this expression... ?
+      return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.UNKNOWN);
+    }
+    // TODO evaluate expressions (probably introducing a constraint manager) , for now only get null/not null values and assume identifiers tree.
     Symbol symbol = ((IdentifierTree) expression).symbol();
     SymbolicValue symbolicValue = programState.values.get(symbol);
     if (symbolicValue == null) {
