@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 
-public class NullDereferenceCheck implements SEChecker {
+public class NullDereferenceChecker implements SEChecker {
 
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -75,7 +75,7 @@ public class NullDereferenceCheck implements SEChecker {
       context.createSink();
       return;
     }
-    // TODO : improve next state with assumption on not null value as we can safely assume that if we get passed this, value is not null.
+    // TODO : improve next state with assumption on not null value as we can safely assume that if we did not sink, value is not null.
     context.addTransition(context.getState());
   }
 }
