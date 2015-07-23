@@ -249,7 +249,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   @CheckForNull
   public SymbolicValue getVal(Tree expression) {
     if(expression.is(Tree.Kind.NULL_LITERAL)) {
-      return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
+      return SymbolicValue.NULL_LITERAL;
     }
     if(expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) expression;
