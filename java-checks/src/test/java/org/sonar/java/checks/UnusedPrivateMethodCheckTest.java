@@ -20,30 +20,15 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.JavaConfiguration;
-import org.sonar.java.JavaSquid;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-import org.sonar.squidbridge.indexer.QueryByType;
-
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.mockito.Mockito.mock;
 
 public class UnusedPrivateMethodCheckTest {
 
-  private final UnusedPrivateMethodCheck check = new UnusedPrivateMethodCheck();
+    private final UnusedPrivateMethodCheck check = new UnusedPrivateMethodCheck();
 
-  @Test
-  public void test() {
-      JavaCheckVerifier.verify("src/test/files/checks/UnusedPrivateMethodCheck.java", check);
-  }
+    @Test
+    public void test() {
+        JavaCheckVerifier.verify("src/test/files/checks/UnusedPrivateMethodCheck.java", check);
+    }
 
 }
