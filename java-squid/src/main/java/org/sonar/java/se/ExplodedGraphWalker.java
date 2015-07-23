@@ -266,7 +266,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     Symbol symbol = ((IdentifierTree) expression).symbol();
     SymbolicValue symbolicValue = programState.values.get(symbol);
     if (symbolicValue == null) {
-      programState = put(programState, symbol, new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.UNKNOWN));
+      symbolicValue = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.UNKNOWN);
+      programState = put(programState, symbol, symbolicValue);
     }
     return symbolicValue;
   }
