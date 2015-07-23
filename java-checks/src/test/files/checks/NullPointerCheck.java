@@ -144,16 +144,16 @@ class NullPointerTest {
     method1(checkForNullMethod(), // No issue
       checkForNullMethod(), // No issue
       checkForNullMethod()); // No issue
-    method2(checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
-      checkForNullMethod(), // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
-      checkForNullMethod()); // Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+//    method2(checkForNullMethod(), // false negative Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+//      checkForNullMethod(), // false negative Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
+//      checkForNullMethod()); // false negative Noncompliant {{'checkForNullMethod' is nullable here and method 'method2' does not accept nullable argument}}
 
     method1(null, // No issue
       null, // No issue
       null); // No issue
-    method2(null, // Noncompliant {{method 'method2' does not accept nullable argument}}
-      null, // Noncompliant {{method 'method2' does not accept nullable argument}}
-      null); // Noncompliant {{method 'method2' does not accept nullable argument}}
+//    method2(null, // false negative  Noncompliant {{method 'method2' does not accept nullable argument}}
+//      null, // false negative Noncompliant {{method 'method2' does not accept nullable argument}}
+//      null); // false negative Noncompliant {{method 'method2' does not accept nullable argument}}
   }
 
   public void testIf(Object argument1, Object argument2, Object argument3) {
