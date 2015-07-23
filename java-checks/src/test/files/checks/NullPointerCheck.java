@@ -11,9 +11,10 @@ class NullPointerTest {
 
   // tests constructs that can generate an issue. namely, syntax constructs that performs a potential null dereference.
   public void testIssues() {
-    null[0]; // Noncompliant {{null is dereferenced}}
-    null.field; // Noncompliant {{null is dereferenced}}
-    null.method(); // Noncompliant {{null is dereferenced}}
+    //Not tested right away : those are invalid construction anyway.
+//    null[0]; //  {{null is dereferenced}}
+//    null.field; //  {{null is dereferenced}}
+//    null.method(); //  {{null is dereferenced}}
   }
 
   public Object[] field;
@@ -74,7 +75,9 @@ class NullPointerTest {
 
     Object[] array2 = checkForNullMethod();
     i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
-
+  }
+  public void testCheckNotNull(@CheckForNull Object parameter) {
+    int i;
     i = checkForNullMethod().length; // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
 
@@ -166,6 +169,8 @@ class NullPointerTest {
     }
     argument1.hashCode(); // Compliant
     argument2.hashCode(); // Compliant
+  }
+  public void testIf2(Object argument1, Object argument2, Object argument3) {
     if (null != argument2) {
       argument2.hashCode(); // Compliant
       argument2 = null;

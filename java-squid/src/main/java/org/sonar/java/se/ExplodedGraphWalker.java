@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -43,13 +43,14 @@ import javax.annotation.CheckForNull;
 import java.io.PrintStream;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 100;
+  private static final int MAX_STEPS = 300;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
   private final PrintStream out;
@@ -79,8 +80,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     cfg.debugTo(out);
     explodedGraph = new ExplodedGraph();
     workList = new LinkedList<>();
-    out.println("Exploring Exploded Graph");
-    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState(/* TODO method parameters */Maps.<Symbol, SymbolicValue>newHashMap()));
+    out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
+    Map<Symbol, SymbolicValue> parameterValues = Maps.newHashMap();
+    for (VariableTree variableTree : tree.parameters()) {
+      SymbolicValue sv = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NOT_NULL);
+      if(variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+        //FIXME : introduce new state : maybe_null ??
+        sv = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
+      }
+      parameterValues.put(variableTree.symbol(), sv);
+    }
+    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState(parameterValues));
     steps = 0;
     while (!workList.isEmpty()) {
       steps++;
@@ -192,11 +202,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           // TODO handle primitives
         } else {
           ExpressionTree initializer = variableTree.initializer();
-          SymbolicValue.NullSymbolicValue symbolicValue = SymbolicValue.NullSymbolicValue.NOT_NULL;
-          if (initializer == null || initializer.is(Tree.Kind.NULL_LITERAL)) {
-            symbolicValue = SymbolicValue.NullSymbolicValue.NULL;
+          if (initializer == null) {
+            programState = put(programState, variableTree.symbol(), new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL));
+          } else {
+            SymbolicValue val = getVal(initializer);
+            if(val == null) {
+              val = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NOT_NULL);
+            }
+            programState = put(programState, variableTree.symbol(), val);
           }
-          programState = put(programState, variableTree.symbol(), new SymbolicValue.ObjectSymbolicValue(symbolicValue));
         }
         break;
       case ASSIGNMENT:
@@ -216,7 +230,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     SymbolicValue symbolicValue = programState.values.get(symbol);
     // update program state only for a different symbolic value
     if (symbolicValue == null || !symbolicValue.equals(value)) {
-      return new ProgramState(ImmutableMap.<Symbol, SymbolicValue>builder().putAll(programState.values).put(symbol, value).build());
+      Map<Symbol, SymbolicValue> temp = Maps.newHashMap(programState.values);
+      temp.put(symbol, value);
+      return new ProgramState(temp);
     }
     return programState;
   }
@@ -232,8 +248,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   @CheckForNull
   public SymbolicValue getVal(Tree expression) {
-    if(!expression.is(Tree.Kind.NULL_LITERAL)) {
+    if(expression.is(Tree.Kind.NULL_LITERAL)) {
       return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
+    }
+    if(expression.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) expression;
+      if(mit.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+        //FIXME : introduce new state : maybe_null ??
+        return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
+      }
     }
     if(!expression.is(Tree.Kind.IDENTIFIER)) {
       //FIXME associate this value to this expression... ?
