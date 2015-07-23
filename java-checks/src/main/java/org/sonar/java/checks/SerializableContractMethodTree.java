@@ -20,25 +20,24 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
+import java.util.Set;
 import org.sonar.plugins.java.api.tree.MethodTree;
 
-import java.util.Set;
-
 public final class SerializableContractMethodTree {
-    private static final Set<String> SERIALIZABLE_CONTRACT_METHODS = Sets.newHashSet();
+  private static final Set<String> SERIALIZABLE_CONTRACT_METHODS = Sets.newHashSet();
 
-    static {
-        SERIALIZABLE_CONTRACT_METHODS.add("writeObject");
-        SERIALIZABLE_CONTRACT_METHODS.add("readObject");
-        SERIALIZABLE_CONTRACT_METHODS.add("writeReplace");
-        SERIALIZABLE_CONTRACT_METHODS.add("readResolve");
-        SERIALIZABLE_CONTRACT_METHODS.add("readObjectNoData");
-    }
+  static {
+    SERIALIZABLE_CONTRACT_METHODS.add("writeObject");
+    SERIALIZABLE_CONTRACT_METHODS.add("readObject");
+    SERIALIZABLE_CONTRACT_METHODS.add("writeReplace");
+    SERIALIZABLE_CONTRACT_METHODS.add("readResolve");
+    SERIALIZABLE_CONTRACT_METHODS.add("readObjectNoData");
+  }
 
-    private SerializableContractMethodTree() {
-    }
+  private SerializableContractMethodTree() {
+  }
 
-    protected static boolean methodMatch(MethodTree tree) {
-        return SERIALIZABLE_CONTRACT_METHODS.contains(tree.simpleName().name());
-    }
+  protected static boolean methodMatch(MethodTree tree) {
+    return SERIALIZABLE_CONTRACT_METHODS.contains(tree.simpleName().name());
+  }
 }

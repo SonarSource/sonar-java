@@ -24,7 +24,6 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.checks.SerializableContract;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -33,23 +32,23 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SerializableContractMethodTreeTest {
 
-    @Test
-    public void testMethodMatch() {
-        CompilationUnitTree compilationUnit = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(new File("src/test/files/checks/UnusedPrivateMethodCheck.java"));
-        assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2))).isTrue();
-        assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(3))).isTrue();
-        assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(4))).isTrue();
-        assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(5))).isTrue();
-        assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(6))).isTrue();
-        assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(1))).isFalse();
-    }
+  @Test
+  public void testMethodMatch() {
+    CompilationUnitTree compilationUnit = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(new File("src/test/files/checks/UnusedPrivateMethodCheck.java"));
+    assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(2))).isTrue();
+    assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(3))).isTrue();
+    assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(4))).isTrue();
+    assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(5))).isTrue();
+    assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(6))).isTrue();
+    assertThat(SerializableContractMethodTree.methodMatch((MethodTree) ((ClassTree) compilationUnit.types().get(0)).members().get(1))).isFalse();
+  }
 
-    @Test
-    public void private_constructor() throws Exception {
-        Constructor constructor = SerializableContract.class.getDeclaredConstructor();
-        assertThat(constructor.isAccessible()).isFalse();
-        constructor.setAccessible(true);
-        constructor.newInstance();
-    }
+  @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = SerializableContract.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
 
 }

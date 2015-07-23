@@ -50,98 +50,98 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public class UnusedPrivateMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-    private JavaFileScannerContext context;
+  private JavaFileScannerContext context;
 
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-        this.context = context;
-        if (context.getSemanticModel() != null) {
-            scan(context.getTree());
-        }
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
     }
+  }
 
-    @Override
-    public void visitClass(ClassTree tree) {
-        if (tree.is(Tree.Kind.ENUM)) {
-            for (Tree member : tree.members()) {
-                if (member.is(Tree.Kind.CONSTRUCTOR)) {
-                    checkConstructorNotUsed((MethodTree) member);
-                }
-            }
+  @Override
+  public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.ENUM)) {
+      for (Tree member : tree.members()) {
+        if (member.is(Tree.Kind.CONSTRUCTOR)) {
+          checkConstructorNotUsed((MethodTree) member);
         }
-        super.visitClass(tree);
+      }
     }
+    super.visitClass(tree);
+  }
 
-    @Override
-    public void visitMethod(MethodTree tree) {
-        checkMethodNotUsed(tree);
-        super.visitMethod(tree);
-    }
+  @Override
+  public void visitMethod(MethodTree tree) {
+    checkMethodNotUsed(tree);
+    super.visitMethod(tree);
+  }
 
-    private void checkMethodNotUsed(MethodTree tree) {
-        if (isPrivateUnused(tree)) {
-            if (tree.is(Tree.Kind.CONSTRUCTOR)) {
-                checkConstructorNotUsed(tree);
-            } else {
-                if (!isExcludedFromCheck(tree)) {
-                    String messageStr = "Private method '" + tree.simpleName().name() + "' is never used.";
-                    context.addIssue(tree, this, messageStr);
-                }
-            }
+  private void checkMethodNotUsed(MethodTree tree) {
+    if (isPrivateUnused(tree)) {
+      if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+        checkConstructorNotUsed(tree);
+      } else {
+        if (!isExcludedFromCheck(tree)) {
+          String messageStr = "Private method '" + tree.simpleName().name() + "' is never used.";
+          context.addIssue(tree, this, messageStr);
         }
+      }
     }
+  }
 
-    private void checkConstructorNotUsed(MethodTree tree) {
-        Symbol.MethodSymbol methodSymbol = tree.symbol();
-        if (methodSymbol != null && methodSymbol.usages().isEmpty()) {
-            String messageStr = "Private constructor '" + tree.simpleName().name() + "(";
-            List<String> params = Lists.newArrayList();
-            for (Type paramType : methodSymbol.parameterTypes()) {
-                params.add(paramType.toString());
-            }
-            messageStr += Joiner.on(",").join(params) + ")' is never used.";
-            context.addIssue(tree, this, messageStr);
-        }
+  private void checkConstructorNotUsed(MethodTree tree) {
+    Symbol.MethodSymbol methodSymbol = tree.symbol();
+    if (methodSymbol != null && methodSymbol.usages().isEmpty()) {
+      String messageStr = "Private constructor '" + tree.simpleName().name() + "(";
+      List<String> params = Lists.newArrayList();
+      for (Type paramType : methodSymbol.parameterTypes()) {
+        params.add(paramType.toString());
+      }
+      messageStr += Joiner.on(",").join(params) + ")' is never used.";
+      context.addIssue(tree, this, messageStr);
     }
+  }
 
-    private boolean isPrivateUnused(MethodTree tree) {
-        Symbol symbol = tree.symbol();
-        if (symbol != null && symbol.usages().isEmpty() && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE)) {
-            return true;
-        }
+  private boolean isPrivateUnused(MethodTree tree) {
+    Symbol symbol = tree.symbol();
+    if (symbol != null && symbol.usages().isEmpty() && ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE)) {
+      return true;
+    }
+    return false;
+  }
+
+  private boolean isExcludedFromCheck(MethodTree tree) {
+    return SerializableContractMethodTree.methodMatch(tree) || hasExcludingAnnotation(tree);
+  }
+
+  private boolean hasExcludingAnnotation(MethodTree method) {
+    for (AnnotationTree annotation : method.modifiers().annotations()) {
+      Type annotationType = annotation.symbolType();
+      if (annotationType == null) {
         return false;
-    }
-
-    private boolean isExcludedFromCheck(MethodTree tree) {
-        return SerializableContractMethodTree.methodMatch(tree) || hasExcludingAnnotation(tree);
-    }
-
-    private boolean hasExcludingAnnotation(MethodTree method) {
-        for (AnnotationTree annotation : method.modifiers().annotations()) {
-            Type annotationType = annotation.symbolType();
-            if (annotationType == null) {
-                return false;
-            }
-            if (annotationType.isUnknown() || annotationType.isArray()) {
-                return false;
-            }
-            if (annotationType.is("javax.annotation.PostConstruct")
-                    || annotationType.is("javax.annotation.PreDestroy")
-                    || annotationType.is("javax.enterprise.inject.Produces")
-                    || annotationType.is("javax.persistence.PostLoad")
-                    || annotationType.is("javax.persistence.PrePersist")
-                    || annotationType.is("javax.persistence.PostPersist")
-                    || annotationType.is("javax.persistence.PreUpdate")
-                    || annotationType.is("javax.persistence.PostUpdate")
-                    || annotationType.is("javax.persistence.PreRemove")
-                    || annotationType.is("javax.persistence.PostRemove")
-                    || annotationType.is("javax.ejb.Remove")
-                    || annotationType.is("javafx.fxml.FXML")) {
-                return true;
-            }
-
-        }
+      }
+      if (annotationType.isUnknown() || annotationType.isArray()) {
         return false;
+      }
+      if (annotationType.is("javax.annotation.PostConstruct")
+        || annotationType.is("javax.annotation.PreDestroy")
+        || annotationType.is("javax.enterprise.inject.Produces")
+        || annotationType.is("javax.persistence.PostLoad")
+        || annotationType.is("javax.persistence.PrePersist")
+        || annotationType.is("javax.persistence.PostPersist")
+        || annotationType.is("javax.persistence.PreUpdate")
+        || annotationType.is("javax.persistence.PostUpdate")
+        || annotationType.is("javax.persistence.PreRemove")
+        || annotationType.is("javax.persistence.PostRemove")
+        || annotationType.is("javax.ejb.Remove")
+        || annotationType.is("javafx.fxml.FXML")) {
+        return true;
+      }
+
     }
+    return false;
+  }
 
 }
