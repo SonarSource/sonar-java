@@ -117,7 +117,7 @@ public class ExplodedGraphWalkerTest {
   public void test_null_pointer_check_unit_test() throws Exception {
     Pattern pattern = Pattern.compile("Null pointer dereference at line (\\d*)");
 
-    List<String> unitTestNPE = Files.readLines(new File("/home/benzonico/Development/SonarSource/sonar-java/java-checks/src/test/files/checks/NullPointerCheck.java"), Charsets.UTF_8);
+    List<String> unitTestNPE = Files.readLines(new File("../java-checks/src/test/files/checks/NullPointerCheck.java"), Charsets.UTF_8);
     List<Integer> expectedLines = Lists.newArrayList();
     int lineNb = 0;
     for (String line : unitTestNPE) {

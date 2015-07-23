@@ -31,6 +31,7 @@ public interface SymbolicValue {
     UNKNOWN
   }
 
+  public static final SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(NullSymbolicValue.NULL);
   class ObjectSymbolicValue implements SymbolicValue {
     private final NullSymbolicValue value;
 
