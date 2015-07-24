@@ -19,51 +19,22 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Objects;
+import javax.annotation.Nullable;
 
-public interface SymbolicValue {
+public class Pair<A, B> {
 
-  SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0);
+  @Nullable
+  final A a;
+  @Nullable
+  final B b;
 
-  enum NullSymbolicValue {
-    NULL,
-    NOT_NULL,
-    UNKNOWN
+  public Pair(@Nullable A a, @Nullable B b) {
+    this.a = a;
+    this.b = b;
   }
 
-
-  class ObjectSymbolicValue implements SymbolicValue {
-
-    private final int id;
-
-    public ObjectSymbolicValue(int id) {
-      this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      ObjectSymbolicValue that = (ObjectSymbolicValue) o;
-      return Objects.equal(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-      return "SV#" + id;
-    }
+  public Pair<B, A> invert() {
+    return new Pair<>(b, a);
   }
-
-
-
 
 }
