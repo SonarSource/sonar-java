@@ -245,10 +245,15 @@ class NullPointerTest {
 
   public void testLogicalAnd(String str) {
     Object object = null;
-    if (object != null && object.hashCode() == 0); // Compliant
-    if (object != null && object.hashCode() != 0 && object.hashCode() != 0); // Compliant
-    if (object == null && object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+    if (object != null && object.hashCode() == 0) ; // Compliant
+    if (object != null && object.hashCode() != 0 && object.hashCode() != 0) ; // Compliant
+    if (object == null && object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+  }
+  public void testLogicalAnd2(String str) {
+    Object object = null;
     if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+  }
+  public void testLogicalAnd3(String str) {
     boolean b2 = str != null && str.length() == 0; // Compliant
     boolean b1 = str == null && str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
