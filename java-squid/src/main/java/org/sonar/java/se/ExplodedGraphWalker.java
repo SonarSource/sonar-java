@@ -89,8 +89,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       SymbolicValue sv = constraintManager.eval(programState, variableTree);
       programState = put(programState, variableTree.symbol(), sv);
       if(variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-        //FIXME : introduce new state : maybe_null ??
-        programState = setConstraint(programState, sv, SymbolicValue.NullSymbolicValue.NULL);
+        //FIXME? : introduce new state : maybe_null ?
+        programState = ConstraintManager.setConstraint(programState, sv, ConstraintManager.NullConstraint.NULL);
       }
     }
     enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), programState);
@@ -215,18 +215,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       Map<Symbol, SymbolicValue> temp = Maps.newHashMap(programState.values);
       temp.put(symbol, value);
       return new ProgramState(temp, programState.constraints);
-    }
-    return programState;
-  }
-
-  //FIXME should probably return null if constraint is not possible (sv is known to be null and we want to constrained it to null)
-  static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, SymbolicValue.NullSymbolicValue nullConstraint) {
-    Object data = programState.constraints.get(sv);
-    // update program state only for a different constraint
-    if (data == null || !data.equals(nullConstraint)) {
-      Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-      temp.put(sv, nullConstraint);
-      return new ProgramState(programState.values, temp);
     }
     return programState;
   }

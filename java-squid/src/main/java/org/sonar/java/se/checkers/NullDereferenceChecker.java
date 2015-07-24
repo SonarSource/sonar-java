@@ -21,6 +21,7 @@ package org.sonar.java.se.checkers;
 
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -54,11 +55,11 @@ public class NullDereferenceChecker extends SEChecker {
     SymbolicValue val = context.getVal(syntaxNode);
     switch (syntaxNode.kind()) {
       case NULL_LITERAL:
-        return context.setConstraint(val, SymbolicValue.NullSymbolicValue.NULL);
+        return context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
       case METHOD_INVOCATION:
         ProgramState ps = context.getState();
         if(((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-          ps = context.setConstraint(val, SymbolicValue.NullSymbolicValue.NULL);
+          ps = context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
         }
         return ps;
     }

@@ -123,8 +123,8 @@ class NullPointerTest {
 
   public void testMethodInvocation() {
     method1(notnullableField, // No issue
-      notnullableField, // No issue
-      notnullableField); // No issue
+        notnullableField, // No issue
+        notnullableField); // No issue
     method2(notnullableField, // No issue
       notnullableField, // No issue
       notnullableField); // No issue
@@ -260,11 +260,16 @@ class NullPointerTest {
 
   public void testLogicalOr(String str) {
     Object object = null;
-    if (object == null || object.hashCode() == 0); // Compliant
-    if (object == null || object.hashCode() != 0 || object.hashCode() != 0); // Compliant
-    if (object != null || object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
-    if (object != null || object.hashCode() == 0 || object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+    if (object == null || object.hashCode() == 0) ; // Compliant
+    if (object == null || object.hashCode() != 0 || object.hashCode() != 0) ; // Compliant
+    if (object != null || object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+  }
+  public void testLogicalOr2(String str) {
+    Object object = null;
+    if (object != null || object.hashCode() == 0 || object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
     boolean b1 = str == null || str.length() == 0; // Compliant
+  }
+  public void testLogicalOr3(String str) {
     boolean b2 = str != null || str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
 
