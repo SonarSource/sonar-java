@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -60,6 +59,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private CheckerDispatcher checkerDispatcher;
   @VisibleForTesting
   int steps;
+  ConstraintManager constraintManager;
 
   public ExplodedGraphWalker(PrintStream out) {
     this.out = out;
@@ -79,18 +79,20 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     CFG cfg = CFG.build(tree);
     cfg.debugTo(out);
     explodedGraph = new ExplodedGraph();
+    constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
     out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
-    Map<Symbol, SymbolicValue> parameterValues = Maps.newHashMap();
+    programState = ProgramState.EMPTY_STATE;
     for (VariableTree variableTree : tree.parameters()) {
-      SymbolicValue sv = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NOT_NULL);
+      //create
+      SymbolicValue sv = constraintManager.eval(programState, variableTree);
+      programState = put(programState, variableTree.symbol(), sv);
       if(variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
         //FIXME : introduce new state : maybe_null ??
-        sv = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
+        programState = setConstraint(programState, sv, SymbolicValue.NullSymbolicValue.NULL);
       }
-      parameterValues.put(variableTree.symbol(), sv);
     }
-    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), new ProgramState(parameterValues));
+    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), programState);
     steps = 0;
     while (!workList.isEmpty()) {
       steps++;
@@ -133,12 +135,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     workList = null;
     node = null;
     programState = null;
+    constraintManager = null;
   }
 
   private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
     CFG.Block block = programPosition.block;
     if (block.terminator != null) {
-      switch (((JavaTree) block.terminator).getKind()) {
+      switch (block.terminator.kind()) {
         case IF_STATEMENT:
           handleBranch(block, ((IfStatementTree) block.terminator).condition());
           return;
@@ -155,47 +158,25 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {
-    if(condition.is(Tree.Kind.CONDITIONAL_OR, Tree.Kind.CONDITIONAL_AND)) {
-      // this is the case for branches such as "if (lhs && lhs)" and "if (lhs || rhs)"
-      // we already made an assumption on lhs, because CFG contains branch for it, so now let's make an assumption on rhs
-      condition = ((BinaryExpressionTree) condition).rightOperand();
+    Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState, condition);
+    if (pair.a != null) {
+      // enqueue false-branch, if feasible
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), pair.a);
     }
-    Symbol nullComparedSymbol = isNullComparison(condition);
-
-    if(nullComparedSymbol == null) {
-      // workList is LIFO - enqueue else-branch first:
-      for (CFG.Block block : Lists.reverse(programPosition.successors)) {
-        out.println("Enqueuing B" + block.id);
-        enqueue(new ExplodedGraph.ProgramPoint(block, 0), programState);
-      }
-    } else {
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), put(programState, nullComparedSymbol, new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NOT_NULL)));
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), put(programState, nullComparedSymbol, new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL)));
+    if (pair.b != null) {
+      // enqueue true-branch, if feasible
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), pair.b);
     }
-  }
-
-  @CheckForNull
-  private static Symbol isNullComparison(Tree tree) {
-    if(tree.is(Tree.Kind.EQUAL_TO)) {
-      BinaryExpressionTree binaryTree = (BinaryExpressionTree) tree;
-      if(binaryTree.leftOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.rightOperand().is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) binaryTree.rightOperand()).symbol();
-      } else if (binaryTree.rightOperand().is(Tree.Kind.NULL_LITERAL) && binaryTree.leftOperand().is(Tree.Kind.IDENTIFIER)) {
-        return ((IdentifierTree) binaryTree.leftOperand()).symbol();
-      }
-    }
-    return null;
   }
 
   private void visit(Tree tree) {
-    JavaTree javaTree = (JavaTree) tree;
-    out.println("visiting node "+javaTree.getKind().name()+ " at line "+javaTree.getLine());
-    switch (javaTree.getKind()) {
+    out.println("visiting node "+tree.kind().name()+ " at line "+ ((JavaTree) tree).getLine());
+    switch (tree.kind()) {
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
       case EXPRESSION_STATEMENT:
       case PARENTHESIZED_EXPRESSION:
-        throw new IllegalStateException("Cannot appear in CFG: " + javaTree.getKind().name());
+        throw new IllegalStateException("Cannot appear in CFG: " + tree.kind().name());
       case VARIABLE:
         VariableTree variableTree = (VariableTree) tree;
         if (variableTree.type().symbolType().isPrimitive()) {
@@ -203,18 +184,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         } else {
           ExpressionTree initializer = variableTree.initializer();
           if (initializer == null) {
-            programState = put(programState, variableTree.symbol(), new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL));
+            programState = put(programState, variableTree.symbol(), SymbolicValue.NULL_LITERAL);
           } else {
-            SymbolicValue val = getVal(initializer);
-            if(val == null) {
-              val = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NOT_NULL);
-            }
+            SymbolicValue val = constraintManager.eval(programState, initializer);
             programState = put(programState, variableTree.symbol(), val);
           }
         }
         break;
       case ASSIGNMENT:
-        AssignmentExpressionTree assignmentExpressionTree = ((AssignmentExpressionTree) javaTree);
+        AssignmentExpressionTree assignmentExpressionTree = ((AssignmentExpressionTree) tree);
         //FIXME restricted to identifiers for now.
         if(assignmentExpressionTree.variable().is(Tree.Kind.IDENTIFIER)) {
           SymbolicValue value = getVal(assignmentExpressionTree.expression());
@@ -223,16 +201,28 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         break;
       default:
     }
-    checkerDispatcher.executeCheckPreStatement(javaTree);
+    checkerDispatcher.executeCheckPreStatement(tree);
   }
 
-  private static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
+  static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
     SymbolicValue symbolicValue = programState.values.get(symbol);
     // update program state only for a different symbolic value
     if (symbolicValue == null || !symbolicValue.equals(value)) {
       Map<Symbol, SymbolicValue> temp = Maps.newHashMap(programState.values);
       temp.put(symbol, value);
-      return new ProgramState(temp);
+      return new ProgramState(temp, programState.constraints);
+    }
+    return programState;
+  }
+
+  //FIXME should probably return null if constraint is not possible (sv is known to be null and we want to constrained it to null)
+  static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, SymbolicValue.NullSymbolicValue nullConstraint) {
+    Object data = programState.constraints.get(sv);
+    // update program state only for a different constraint
+    if (data == null || !data.equals(nullConstraint)) {
+      Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+      temp.put(sv, nullConstraint);
+      return new ProgramState(programState.values, temp);
     }
     return programState;
   }
@@ -248,27 +238,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   @CheckForNull
   public SymbolicValue getVal(Tree expression) {
-    if(expression.is(Tree.Kind.NULL_LITERAL)) {
-      return SymbolicValue.NULL_LITERAL;
-    }
-    if(expression.is(Tree.Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree mit = (MethodInvocationTree) expression;
-      if(mit.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-        //FIXME : introduce new state : maybe_null ??
-        return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.NULL);
-      }
-    }
-    if(!expression.is(Tree.Kind.IDENTIFIER)) {
-      //FIXME associate this value to this expression... ?
-      return new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.UNKNOWN);
-    }
-    // TODO evaluate expressions (probably introducing a constraint manager) , for now only get null/not null values and assume identifiers tree.
-    Symbol symbol = ((IdentifierTree) expression).symbol();
-    SymbolicValue symbolicValue = programState.values.get(symbol);
-    if (symbolicValue == null) {
-      symbolicValue = new SymbolicValue.ObjectSymbolicValue(SymbolicValue.NullSymbolicValue.UNKNOWN);
-      programState = put(programState, symbol, symbolicValue);
-    }
-    return symbolicValue;
+    return constraintManager.eval(programState, expression);
   }
 }
