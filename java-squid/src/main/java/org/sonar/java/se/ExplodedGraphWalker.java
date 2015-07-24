@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
@@ -148,6 +149,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         case CONDITIONAL_OR:
         case CONDITIONAL_AND:
           handleBranch(block, ((BinaryExpressionTree) block.terminator).leftOperand());
+          return;
+        case CONDITIONAL_EXPRESSION:
+          handleBranch(block, ((ConditionalExpressionTree) block.terminator).condition());
           return;
       }
     }

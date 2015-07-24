@@ -208,6 +208,24 @@ public class CFG {
       case CONDITIONAL_EXPRESSION:
         buildConditionalExpression((ConditionalExpressionTree) tree);
         break;
+      }
+      case CONDITIONAL_EXPRESSION: {
+        ConditionalExpressionTree cond = (ConditionalExpressionTree) tree;
+        Block next = currentBlock;
+        // process else-branch
+        ExpressionTree elseStatement = cond.falseExpression();
+        currentBlock = createBlock(next);
+        build(elseStatement);
+        Block elseBlock = currentBlock;
+        // process then-branch
+        currentBlock = createBlock(next);
+        build(cond.trueExpression());
+        Block thenBlock = currentBlock;
+        // process condition
+        currentBlock = createBranch(cond, thenBlock, elseBlock);
+        buildCondition(cond.condition(), thenBlock, elseBlock);
+        break;
+      }
       case VARIABLE:
         buildVariable((VariableTree) tree);
         break;
