@@ -166,10 +166,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (pair.a != null) {
       // enqueue false-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), pair.a);
+    } else {
+      out.println("condition at line "+ ((JavaTree) condition).getLine() + " always evaluate to false");
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), pair.b);
+    } else {
+      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to true");
     }
   }
 

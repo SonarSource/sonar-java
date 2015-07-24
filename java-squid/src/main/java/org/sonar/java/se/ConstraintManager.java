@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -161,15 +162,23 @@ public class ConstraintManager {
     return new Pair<>(programState, programState);
   }
 
-  //FIXME should probably return null if constraint is not possible (sv is known to be null and we want to constrained it to null)
+  @CheckForNull
   static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, NullConstraint nullConstraint) {
     Object data = programState.constraints.get(sv);
     // update program state only for a different constraint
+    //For now, we only store null constraints so casting is ok.
+    NullConstraint nc = (NullConstraint) data;
+    if((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
+        (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
+      //setting null where value is known to be non null or the contrary
+      return null;
+    }
     if (data == null || !data.equals(nullConstraint)) {
       Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
       temp.put(sv, nullConstraint);
       return new ProgramState(programState.values, temp);
     }
+
     return programState;
   }
 
