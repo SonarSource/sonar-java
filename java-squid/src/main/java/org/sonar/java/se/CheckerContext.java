@@ -32,7 +32,7 @@ public interface CheckerContext {
 
   ProgramState getState();
 
-  ProgramState setConstraint(SymbolicValue val, SymbolicValue.NullSymbolicValue nl);
+  ProgramState setConstraint(SymbolicValue val, ConstraintManager.NullConstraint nl);
 
   boolean isNull(SymbolicValue val);
 }

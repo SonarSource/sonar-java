@@ -29,7 +29,7 @@ public class ProgramState {
 
   public static final ProgramState EMPTY_STATE = new ProgramState(Maps.<Symbol, SymbolicValue>newHashMap(),
       /*Empty state knows that null literal is null */
-      ImmutableMap.<SymbolicValue, Object>builder().put(SymbolicValue.NULL_LITERAL, SymbolicValue.NullSymbolicValue.NULL).build());
+      ImmutableMap.<SymbolicValue, Object>builder().put(SymbolicValue.NULL_LITERAL, ConstraintManager.NullConstraint.NULL).build());
   Map<Symbol, SymbolicValue> values;
   Map<SymbolicValue, Object> constraints;
 
