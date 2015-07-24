@@ -114,20 +114,36 @@ public class ConstraintManager {
   public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
     //FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a dedicated checker.
     switch (condition.kind()) {
-      case EQUAL_TO:
+      case EQUAL_TO: {
         BinaryExpressionTree equalTo = (BinaryExpressionTree) condition;
         SymbolicValue lhs = eval(programState, equalTo.leftOperand());
         SymbolicValue rhs = eval(programState, equalTo.rightOperand());
-        if(isNull(programState, lhs)) {
+        if (isNull(programState, lhs)) {
           ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NULL);
           ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
-        } else if(isNull(programState, rhs)) {
+        } else if (isNull(programState, rhs)) {
           ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NULL);
           ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
         }
         break;
+      }
+      case NOT_EQUAL_TO: {
+        BinaryExpressionTree notEqualTo = (BinaryExpressionTree) condition;
+        SymbolicValue lhs = eval(programState, notEqualTo.leftOperand());
+        SymbolicValue rhs = eval(programState, notEqualTo.rightOperand());
+        if (isNull(programState, lhs)) {
+          ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NULL);
+          ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
+          return new Pair<>(stateNull, stateNotNull);
+        } else if (isNull(programState, rhs)) {
+          ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NULL);
+          ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
+          return new Pair<>(stateNull, stateNotNull);
+        }
+        break;
+      }
       case CONDITIONAL_OR:
       case CONDITIONAL_AND:
         // this is the case for branches such as "if (lhs && lhs)" and "if (lhs || rhs)"
