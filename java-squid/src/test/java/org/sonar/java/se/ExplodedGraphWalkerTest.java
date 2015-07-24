@@ -109,7 +109,20 @@ public class ExplodedGraphWalkerTest {
     assertThat(graphWalker.steps).isEqualTo(9);
     String output = out.toString();
     assertThat(output).contains("Null pointer dereference at line 4");
+  }
 
+  @Test
+  public void condition_always_false() throws Exception {
+    getGraphWalker("class A  {void func(Object a){ a = null; if(\na == null\n);}}");
+    String output = out.toString();
+    assertThat(output).contains("condition at line 2 always evaluate to false");
+  }
+
+  @Test
+  public void condition_always_true() throws Exception {
+    getGraphWalker("class A  {void func(Object a){ a = null; Object b= null; if(\na != null && b!=null\n);}}");
+    String output = out.toString();
+    assertThat(output).contains("condition at line 2 always evaluate to true");
   }
 
   @Test
