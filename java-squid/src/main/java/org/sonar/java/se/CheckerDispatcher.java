@@ -58,8 +58,8 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   @Override
-  public ProgramState setConstraint(SymbolicValue val, SymbolicValue.NullSymbolicValue nl) {
-    return ExplodedGraphWalker.setConstraint(getState(), val, nl);
+  public ProgramState setConstraint(SymbolicValue val, ConstraintManager.NullConstraint nl) {
+    return ConstraintManager.setConstraint(getState(), val, nl);
   }
 
   @Override

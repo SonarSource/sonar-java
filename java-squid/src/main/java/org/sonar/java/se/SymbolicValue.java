@@ -25,12 +25,6 @@ public interface SymbolicValue {
 
   SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0);
 
-  enum NullSymbolicValue {
-    NULL,
-    NOT_NULL,
-    UNKNOWN
-  }
-
 
   class ObjectSymbolicValue implements SymbolicValue {
 

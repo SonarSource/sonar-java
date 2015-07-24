@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.Maps;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -108,7 +109,7 @@ public class ConstraintManager {
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val){
-    return SymbolicValue.NullSymbolicValue.NULL.equals(ps.constraints.get(val));
+    return NullConstraint.NULL.equals(ps.constraints.get(val));
   }
 
   public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
@@ -119,12 +120,12 @@ public class ConstraintManager {
         SymbolicValue lhs = eval(programState, equalTo.leftOperand());
         SymbolicValue rhs = eval(programState, equalTo.rightOperand());
         if (isNull(programState, lhs)) {
-          ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NULL);
-          ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
+          ProgramState stateNull = setConstraint(programState, rhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, rhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
         } else if (isNull(programState, rhs)) {
-          ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NULL);
-          ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
+          ProgramState stateNull = setConstraint(programState, lhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, lhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
         }
         break;
@@ -134,12 +135,12 @@ public class ConstraintManager {
         SymbolicValue lhs = eval(programState, notEqualTo.leftOperand());
         SymbolicValue rhs = eval(programState, notEqualTo.rightOperand());
         if (isNull(programState, lhs)) {
-          ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NULL);
-          ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, rhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
+          ProgramState stateNull = setConstraint(programState, rhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, rhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNull, stateNotNull);
         } else if (isNull(programState, rhs)) {
-          ProgramState stateNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NULL);
-          ProgramState stateNotNull = ExplodedGraphWalker.setConstraint(programState, lhs, SymbolicValue.NullSymbolicValue.NOT_NULL);
+          ProgramState stateNull = setConstraint(programState, lhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, lhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNull, stateNotNull);
         }
         break;
@@ -160,4 +161,21 @@ public class ConstraintManager {
     return new Pair<>(programState, programState);
   }
 
+  //FIXME should probably return null if constraint is not possible (sv is known to be null and we want to constrained it to null)
+  static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, NullConstraint nullConstraint) {
+    Object data = programState.constraints.get(sv);
+    // update program state only for a different constraint
+    if (data == null || !data.equals(nullConstraint)) {
+      Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+      temp.put(sv, nullConstraint);
+      return new ProgramState(programState.values, temp);
+    }
+    return programState;
+  }
+
+  public enum NullConstraint {
+    NULL,
+    NOT_NULL,
+    UNKNOWN
+  }
 }
