@@ -21,8 +21,10 @@ package org.sonar.java.se.checkers;
 
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.PrintStream;
@@ -35,15 +37,31 @@ public class NullDereferenceChecker extends SEChecker {
 
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    ProgramState programState = setNullConstraint(context, syntaxNode);
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
       SymbolicValue val = context.getVal(((MemberSelectExpressionTree) syntaxNode).expression());
-      if(val != null && val.isNull()) {
+      if(context.isNull(val)) {
         out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
         context.createSink();
         return;
       }
     }
     // TODO : improve next state with assumption on not null value as we can safely assume that if we did not sink, value is not null.
-    context.addTransition(context.getState());
+    context.addTransition(programState);
+  }
+
+  private ProgramState setNullConstraint(CheckerContext context, Tree syntaxNode) {
+    SymbolicValue val = context.getVal(syntaxNode);
+    switch (syntaxNode.kind()) {
+      case NULL_LITERAL:
+        return context.setConstraint(val, SymbolicValue.NullSymbolicValue.NULL);
+      case METHOD_INVOCATION:
+        ProgramState ps = context.getState();
+        if(((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+          ps = context.setConstraint(val, SymbolicValue.NullSymbolicValue.NULL);
+        }
+        return ps;
+    }
+    return context.getState();
   }
 }
