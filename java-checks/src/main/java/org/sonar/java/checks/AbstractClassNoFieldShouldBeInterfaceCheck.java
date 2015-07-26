@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,13 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -33,50 +32,46 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
-  key = AbstractClassNoFieldShouldBeInterfaceCheck.RULE_KEY,
+  key = "S1610",
   name = "Abstract classes without fields should be converted to interfaces",
   tags = {"java8"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
-public class AbstractClassNoFieldShouldBeInterfaceCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-
-  public static final String RULE_KEY = "S1610";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private JavaFileScannerContext context;
+public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if(classIsAbstract(tree) && classHasNoField(tree) && !classHasProtectedMethod(tree)) {
-      context.addIssue(tree, RULE, "Convert the abstract class \""+tree.simpleName().name()+"\" into an interface");
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (classIsAbstract(classTree) && classHasNoField(classTree) && !classHasProtectedMethod(classTree)) {
+      addIssue(classTree, "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface");
     }
-    super.visitClass(tree);
   }
 
-  private boolean classHasProtectedMethod(ClassTree tree) {
-    for(Tree member : tree.members()) {
-      if(member.is(Tree.Kind.METHOD) && ((MethodTree) member).modifiers().modifiers().contains(Modifier.PROTECTED)) {
+  private static boolean classHasProtectedMethod(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PROTECTED)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean classIsAbstract(ClassTree tree) {
-    return tree.modifiers().modifiers().contains(Modifier.ABSTRACT);
+  private static boolean classIsAbstract(ClassTree tree) {
+    return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT);
   }
 
-  private boolean classHasNoField(ClassTree tree) {
-    for(Tree member : tree.members()) {
-      if(member.is(Tree.Kind.VARIABLE)) {
+  private static boolean classHasNoField(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
         return false;
       }
     }

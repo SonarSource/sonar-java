@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,19 +19,20 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.java.ast.parser.TreeFactory;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.ArrayTypeTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
   key = "S1197",
@@ -41,19 +42,35 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class ArrayDesignatorOnVariableCheck extends SquidCheck<LexerlessGrammar> {
+public class ArrayDesignatorOnVariableCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(Kind.VARIABLE);
-    subscribeTo(JavaLexer.VARIABLE_DECLARATOR);
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.VARIABLE);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (node.hasDirectChildren(TreeFactory.WRAPPER_AST_NODE) || node.is(Kind.VARIABLE) && ((VariableTreeImpl) node).dims() > 0) {
-      getContext().createLineViolation(this, "Move the array designator from the variable to the type.", node);
+  public void visitNode(Tree tree) {
+    VariableTree variableTree = (VariableTree) tree;
+    TypeTree type = variableTree.type();
+    SyntaxToken identifierToken = variableTree.simpleName().identifierToken();
+    while (type.is(Tree.Kind.ARRAY_TYPE)) {
+      ArrayTypeTree arrayTypeTree = (ArrayTypeTree) type;
+      SyntaxToken arrayDesignatorToken = arrayTypeTree.ellipsisToken();
+      if (arrayDesignatorToken == null) {
+        arrayDesignatorToken = arrayTypeTree.openBracketToken();
+      }
+      if (isInvalidPosition(arrayDesignatorToken, identifierToken)) {
+        addIssue(arrayDesignatorToken, "Move the array designator from the variable to the type.");
+        break;
+      }
+      type = arrayTypeTree.type();
     }
+  }
+
+  private static boolean isInvalidPosition(SyntaxToken arrayDesignatorToken, SyntaxToken identifierToken) {
+    return identifierToken.line() < arrayDesignatorToken.line()
+      || (identifierToken.line() == arrayDesignatorToken.line() && identifierToken.column() < arrayDesignatorToken.column());
   }
 
 }

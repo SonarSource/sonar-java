@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,7 @@ import java.util.List;
 @Rule(
   key = "S1848",
   name = "Objects should not be created to be dropped immediately without being used",
-  tags = {"bug"},
+  tags = {"bug", "unused"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

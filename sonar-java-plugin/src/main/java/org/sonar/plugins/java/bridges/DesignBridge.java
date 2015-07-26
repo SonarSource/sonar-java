@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,7 +69,7 @@ public class DesignBridge {
     TimeProfiler profiler = new TimeProfiler(LOG).start("Package design analysis");
     LOG.debug("{} packages to analyze", directories.size());
 
-    IncrementalCyclesAndFESSolver<Resource> cyclesAndFESSolver = new IncrementalCyclesAndFESSolver<Resource>(graph, directories);
+    IncrementalCyclesAndFESSolver<Resource> cyclesAndFESSolver = new IncrementalCyclesAndFESSolver<>(graph, directories);
     LOG.debug("{} cycles", cyclesAndFESSolver.getCycles().size());
 
     Set<Edge> feedbackEdges = cyclesAndFESSolver.getFeedbackEdgeSet();
@@ -103,7 +103,7 @@ public class DesignBridge {
   private void onPackage(Resource sonarPackage) {
     Collection<Resource> squidFiles = getResourcesForDirectory(sonarPackage);
     if (squidFiles != null && !squidFiles.isEmpty()) {
-      IncrementalCyclesAndFESSolver<Resource> cycleDetector = new IncrementalCyclesAndFESSolver<Resource>(graph, squidFiles);
+      IncrementalCyclesAndFESSolver<Resource> cycleDetector = new IncrementalCyclesAndFESSolver<>(graph, squidFiles);
       Set<Cycle> cycles = cycleDetector.getCycles();
 
       MinimumFeedbackEdgeSetSolver solver = new MinimumFeedbackEdgeSetSolver(cycles);
@@ -136,8 +136,8 @@ public class DesignBridge {
     return total;
   }
 
-  private String serializeDsm(DirectedGraph<Resource, Dependency> graph, Collection<Resource> sources, Set<Edge> feedbackEdges) {
-    Dsm<Resource> dsm = new Dsm<Resource>(graph, sources, feedbackEdges);
+  private static String serializeDsm(DirectedGraph<Resource, Dependency> graph, Collection<Resource> sources, Set<Edge> feedbackEdges) {
+    Dsm<Resource>  dsm = new Dsm<Resource>(graph, sources, feedbackEdges);
     DsmTopologicalSorter.sort(dsm);
     return DsmSerializer.serialize(dsm);
   }

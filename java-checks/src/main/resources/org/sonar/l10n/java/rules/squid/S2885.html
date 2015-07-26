@@ -1,0 +1,16 @@
+<p>Neither <code>Calendar</code> not <code>DateFormat</code> were written to be thread-safe. Using them in a multi-threaded manner is highly likely to cause data problems or exceptions at runtime.</p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public class MyClass {
+  static private SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");  // Noncompliant
+  static private Calendar calendar = Calendar.getInstance();  // Noncompliant
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public class MyClass {
+  private SimpleDateFormat format = new SimpleDateFormat("HH-mm-ss");
+  private Calendar calendar = Calendar.getInstance();
+</pre>
+

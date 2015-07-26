@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,12 +61,12 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree) {
+  private static boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree) {
     return isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_AND, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN_OR_EQUAL_TO)
         || isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_OR, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
   }
 
-  private boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree, Tree.Kind indirectOperator, Tree.Kind comparator1, Tree.Kind comparator2) {
+  private static boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree, Tree.Kind indirectOperator, Tree.Kind comparator1, Tree.Kind comparator2) {
     if (binaryExpressionTree.is(indirectOperator) && binaryExpressionTree.leftOperand().is(comparator1, comparator2)) {
       BinaryExpressionTree leftOp = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
       if (binaryExpressionTree.rightOperand().is(comparator1, comparator2)) {
@@ -87,13 +86,12 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
   }
 
 
-  private boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
+  private static boolean isNanTest(BinaryExpressionTree binaryExpressionTree) {
     return SyntacticEquivalence.areEquivalent(binaryExpressionTree.leftOperand(), binaryExpressionTree.rightOperand());
   }
 
-  private boolean hasFloatingType(ExpressionTree expressionTree) {
-    Type symbolType = ((AbstractTypedTree) expressionTree).getSymbolType();
-    return symbolType.isTagged(Type.FLOAT) || symbolType.isTagged(Type.DOUBLE);
+  private static boolean hasFloatingType(ExpressionTree expressionTree) {
+    return expressionTree.symbolType().isPrimitive(Type.Primitives.FLOAT) || expressionTree.symbolType().isPrimitive(Type.Primitives.DOUBLE);
   }
 
 }

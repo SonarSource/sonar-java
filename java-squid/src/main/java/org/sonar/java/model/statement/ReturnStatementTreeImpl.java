@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,19 +29,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatementTree {
+  private final InternalSyntaxToken returnKeyword;
   @Nullable
   private final ExpressionTree expression;
+  private final InternalSyntaxToken semicolonToken;
 
-  public ReturnStatementTreeImpl(@Nullable ExpressionTree expression, AstNode... children) {
+  public ReturnStatementTreeImpl(InternalSyntaxToken returnKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken semicolonToken) {
     super(Kind.RETURN_STATEMENT);
+    this.returnKeyword = returnKeyword;
     this.expression = expression;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.semicolonToken = semicolonToken;
   }
 
   @Override
@@ -54,7 +52,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken returnKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.RETURN));
+    return returnKeyword;
   }
 
   @Nullable
@@ -65,7 +63,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override
@@ -75,8 +73,12 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder().add(returnKeyword);
+    if (expression != null) {
+      iteratorBuilder.add(expression);
+    }
+    iteratorBuilder.add(semicolonToken);
+    return iteratorBuilder.build().iterator();
   }
 
 }

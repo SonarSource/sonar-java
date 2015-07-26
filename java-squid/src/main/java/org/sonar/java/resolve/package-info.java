@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,4 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
 @javax.annotation.ParametersAreNonnullByDefault
+@MethodsAreNonnullByDefault
 package org.sonar.java.resolve;
+
+import org.sonar.plugins.java.api.tree.MethodsAreNonnullByDefault;
+

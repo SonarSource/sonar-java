@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,33 +23,40 @@ import com.sonar.sslr.api.RecognitionException;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
 @Rule(
-  key = "ParsingError",
-  name = "Java parser failure",
-  priority = Priority.MAJOR)
+    key = "ParsingError",
+    name = "Java parser failure",
+    priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("30min")
-public class ParsingErrorCheck extends SquidCheck<LexerlessGrammar> implements AstScannerExceptionHandler {
+public class ParsingErrorCheck implements AstScannerExceptionHandler, JavaFileScanner {
+
+  private JavaFileScannerContext context;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+  }
 
   @Override
   public void processException(Exception e) {
     StringWriter exception = new StringWriter();
     e.printStackTrace(new PrintWriter(exception));
-    getContext().createFileViolation(this, exception.toString());
+    context.addIssueOnFile(this, exception.toString());
   }
 
   @Override
   public void processRecognitionException(RecognitionException e) {
-    getContext().createLineViolation(this, "Parse error", e.getLine());
+    context.addIssue(e.getLine(), this, "Parse error");
   }
 
 }

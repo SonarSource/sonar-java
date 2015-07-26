@@ -1,0 +1,30 @@
+<p>According to the docs:</p>
+<ul>
+  <li>Nested enum types are implicitly <code>static</code>.</li>
+</ul>
+
+<p>So there's no need to declare them <code>static</code> explicitly.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public class Flower {
+  static enum Color { // Noncompliant; static is redundant here
+    RED, YELLOW, BLUE, ORANGE
+  }
+
+  // ...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+public class Flower {
+  enum Color { // Compliant
+    RED, YELLOW, BLUE, ORANGE
+  }
+
+  // ...
+}
+</pre>

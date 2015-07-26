@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,11 +21,11 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.java.resolve.Flags;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -36,7 +36,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodTreeImplTest {
 
-  private final Parser p = JavaParser.createParser(Charsets.UTF_8);
+  private final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
 
   @Test
   public void override_without_annotation_should_be_detected() {
@@ -93,12 +93,23 @@ public class MethodTreeImplTest {
 
   @Test
   public void symbol_not_set_should_lead_to_null_result() throws Exception {
-    AstNode astNode = p.parse("class A { String toString(){return \"\";}}");
-    CompilationUnitTree cut = (CompilationUnitTree) astNode;
+    CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { String toString(){return \"\";}}");
     MethodTreeImpl methodTree = (MethodTreeImpl) ((ClassTree) cut.types().get(0)).members().get(0);
     assertThat(methodTree.isOverriding()).isNull();
   }
 
+  @Test
+  public void has_all_syntax_token() {
+    MethodTreeImpl method = getUniqueMethod("class A { public void foo(int arg){} }");
+    assertThat(method.openParenToken()).isNotNull();
+    assertThat(method.closeParenToken()).isNotNull();
+    assertThat(method.semicolonToken()).isNull();
+
+    method = getUniqueMethod("abstract class A { public abstract void foo(int arg); }");
+    assertThat(method.openParenToken()).isNotNull();
+    assertThat(method.closeParenToken()).isNotNull();
+    assertThat(method.semicolonToken()).isNotNull();
+  }
 
   @Test
   public void is_main_method() throws Exception {
@@ -147,8 +158,10 @@ public class MethodTreeImplTest {
 
   @Test
   public void varargs_flag() {
-    assertThat((getUniqueMethod("class A { public static void main(String[] args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isFalse();
-    assertThat((getUniqueMethod("class A { public static void main(String... args){} }").getSymbol().flags() & Flags.VARARGS) != 0).isTrue();
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String[] args){} }").symbol();
+    assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isFalse();
+    methodSymbol = (JavaSymbol.MethodJavaSymbol) getUniqueMethod("class A { public static void main(String... args){} }").symbol();
+    assertThat((methodSymbol.flags() & Flags.VARARGS) != 0).isTrue();
   }
 
   private MethodTreeImpl getUniqueMethod(String code) {
@@ -157,8 +170,7 @@ public class MethodTreeImplTest {
   }
 
   private CompilationUnitTree createTree(String code) {
-    AstNode astNode = p.parse(code);
-    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) astNode;
+    CompilationUnitTree compilationUnitTree = (CompilationUnitTree) p.parse(code);
     SemanticModel.createFor(compilationUnitTree, Lists.<File>newArrayList());
     return compilationUnitTree;
   }

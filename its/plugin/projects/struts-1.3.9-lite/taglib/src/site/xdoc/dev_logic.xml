@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    $Id: dev_logic.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+
+    <properties>
+        <title>Logic Taglib Guide</title>
+    </properties>
+    <body>
+        <section name="Logic Taglib Guide">
+
+            <subsection href="html" name="The Logic Taglib">
+
+                <p>
+                    <strong>Note:</strong>
+                    - Many of the features in this taglib are also available
+                    in the
+                    <a href="http://java.sun.com/products/jsp/jstl/">
+                        JavaServer Pages Standard Tag Library (JSTL).</a>
+                    The Apache Struts group encourages the use of the standard tags
+                    over the Struts specific tags when possible.
+                </p>
+
+                <p>
+                    The "struts-logic" tag library contains tags that are
+                    useful in managing conditional generation of output text,
+                    looping
+                    over object collections for repetitive generation of
+                    output text, and application flow management
+                </p>
+
+            </subsection>
+
+            <subsection href="resources" name="Logic Tag Resources">
+
+                <ul>
+                    <li>
+                        <a href="apidocs/org/apache/struts/taglib/logic/package-summary.html#package_description">
+                            Logic Taglib API Package Description</a>
+                    </li>
+                    <li>
+                        <a href="tlddoc/logic/tld-summary.html">Logic
+                            Taglibdoc</a>
+                    </li>
+                    <li>
+                        <a href="tagreference.html#struts-logic.tld">Logic Tag
+                            Reference</a>
+                    </li>
+                </ul>
+
+            </subsection>
+
+        </section>
+    </body>
+</document>

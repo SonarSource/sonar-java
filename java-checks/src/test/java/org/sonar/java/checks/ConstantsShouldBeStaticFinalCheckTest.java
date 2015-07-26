@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,20 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
 
 public class ConstantsShouldBeStaticFinalCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java"), new VisitorsBridge(new ConstantsShouldBeStaticFinalCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Make this final field static too.")
-        .next().atLine(5)
-        .next().atLine(12)
-        .next().atLine(15)
-        .next().atLine(16)
-        .next().atLine(19)
-        .next().atLine(20)
-        .next().atLine(33)
-    ;
+    JavaCheckVerifier.verify("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java", new ConstantsShouldBeStaticFinalCheck());
   }
-
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,14 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.StatementTree;
 
 import java.util.List;
 
 public class BlockStatementListTreeImpl extends ListTreeImpl<StatementTree> {
 
-  public BlockStatementListTreeImpl(List<? extends StatementTree> statements, List<AstNode> children) {
-    super(JavaLexer.BLOCK_STATEMENTS, (List<StatementTree>) statements, children);
+  public BlockStatementListTreeImpl(List<? extends StatementTree> statements) {
+    super(JavaLexer.BLOCK_STATEMENTS, (List<StatementTree>) statements);
   }
 
 }

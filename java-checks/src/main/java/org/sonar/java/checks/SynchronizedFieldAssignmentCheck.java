@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -37,14 +37,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.text.MessageFormat;
 import java.util.List;
 
 @Rule(
   key = "S2445",
   name = "Blocks synchronized on fields should not contain assignments of new objects to those fields",
-  tags = {"multi-threading", "bug"},
+  tags = {"bug", "multi-threading"},
   priority = Priority.BLOCKER)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("15min")
@@ -69,10 +68,10 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
   }
 
   @CheckForNull
-  private Symbol getField(ExpressionTree tree) {
+  private static Symbol getField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
-      if (reference != null && reference.owner().isKind(Symbol.TYP)) {
+      Symbol reference = ((IdentifierTree) tree).symbol();
+      if (!reference.isUnknown() && reference.owner().isTypeSymbol()) {
         return reference;
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
@@ -84,10 +83,10 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     return null;
   }
 
-  private boolean isField(ExpressionTree tree) {
+  private static boolean isField(ExpressionTree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      Symbol reference = getSemanticModel().getReference((IdentifierTree) tree);
-      return reference != null && reference.owner().isKind(Symbol.TYP);
+      Symbol reference = ((IdentifierTree) tree).symbol();
+      return !reference.isUnknown() && reference.owner().isTypeSymbol();
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
       ExpressionTree mseExpression = mse.expression();
@@ -100,7 +99,7 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isThis(ExpressionTree expression) {
+  private static boolean isThis(ExpressionTree expression) {
     return expression.is(Kind.IDENTIFIER) && "this".equals(((IdentifierTree) expression).name());
   }
 
@@ -116,23 +115,24 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      checkSymbolAssignment((AbstractTypedTree) tree.variable());
+      checkSymbolAssignment(tree.variable());
     }
 
-    private void checkSymbolAssignment(AbstractTypedTree variable) {
+    private void checkSymbolAssignment(Tree variable) {
       if (variable.is(Kind.IDENTIFIER)) {
-        Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
+        Symbol variableSymbol = ((IdentifierTree) variable).symbol();
         if (field.equals(variableSymbol)) {
           addIssue(synchronizedStatement, getMessage(variable));
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) variable;
-        checkSymbolAssignment((AbstractTypedTree) mse.identifier());
+        checkSymbolAssignment(mse.identifier());
       }
     }
 
-    private String getMessage(AbstractTypedTree variable) {
-      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.getName(), variable.getLine());
+    private String getMessage(Tree variable) {
+      int line = FirstSyntaxTokenFinder.firstSyntaxToken(variable).line();
+      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), line);
     }
   }
 }

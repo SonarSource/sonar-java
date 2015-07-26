@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,24 +20,23 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -52,12 +51,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
-  private static final List<String> UNEVALUABLE_LONGS = Lists.newArrayList(
-    // Only 1
-    "0xffffffffffffffff",
-    // zero the LSB
-    "0xfffffffffffffffe");
-
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Kind.LEFT_SHIFT, Kind.LEFT_SHIFT_ASSIGNMENT, Kind.RIGHT_SHIFT, Kind.RIGHT_SHIFT_ASSIGNMENT);
@@ -71,6 +64,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
     if (tree.is(Kind.LEFT_SHIFT, Kind.RIGHT_SHIFT)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
       if (isZeroMaskShift(binaryExpressionTree)) {
+        // No issue should be reported for "1 << 0" or "1 >> 0"
         return;
       }
       identifier = getIdentifierName(binaryExpressionTree.leftOperand());
@@ -81,67 +75,61 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
       shift = assignmentExpressionTree.expression();
     }
 
-    int sign = shift.is(Kind.UNARY_MINUS) ? -1 : 1;
-    if (shift.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
-      shift = ((UnaryExpressionTree) shift).expression();
-    }
+    checkShift((ExpressionTree) tree, shift, identifier);
+  }
 
-    if (shift.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      int base = getBase(tree);
-      long numberBits = sign * Long.decode(LiteralUtils.trimLongSuffix(((LiteralTree) shift).value()));
-      long reducedNumberBits = numberBits % base;
-      String message = getMessage(numberBits, reducedNumberBits, base, identifier);
-      if (message != null) {
-        addIssue(tree, message);
+  private void checkShift(ExpressionTree tree, ExpressionTree shift, @Nullable String identifier) {
+    Long literalValue = LiteralUtils.longLiteralValue(shift);
+    if (literalValue != null) {
+      int numericalBase = getNumericalBase(tree);
+      long numberBits = literalValue.longValue();
+      long reducedNumberBits = numberBits % numericalBase;
+      if (isInvalidShift(reducedNumberBits, numberBits, numericalBase)) {
+        addIssue(tree, getMessage(reducedNumberBits, reducedNumberBits, numericalBase, identifier));
       }
     }
   }
 
-  private boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
-    return isLiteralValue(binaryExpressionTree.leftOperand(), 1) && isLiteralValue(binaryExpressionTree.rightOperand(), 0);
+  private static boolean isInvalidShift(long reducedNumberBits, long numberBits, int base) {
+    return reducedNumberBits == 0L || tooManyBits(numberBits, base);
   }
 
-  private boolean isLiteralValue(ExpressionTree tree, long value) {
-    if (tree.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String expressionValue = LiteralUtils.trimLongSuffix(((LiteralTree) tree).value()).toLowerCase();
-      if (UNEVALUABLE_LONGS.contains(expressionValue)) {
-        return false;
-      } else {
-        return Long.decode(expressionValue) == value;
-      }
-    }
-    return false;
+  private static boolean isZeroMaskShift(BinaryExpressionTree binaryExpressionTree) {
+    return isLiteralValue(binaryExpressionTree.leftOperand(), 1L) && isLiteralValue(binaryExpressionTree.rightOperand(), 0L);
   }
 
-  private String getMessage(long numberBits, long reducedNumberBits, int base, String identifier) {
+  private static boolean isLiteralValue(ExpressionTree tree, long value) {
+    Long evaluatedValue = LiteralUtils.longLiteralValue(tree);
+    return evaluatedValue != null && evaluatedValue.longValue() == value;
+  }
+
+  private static String getMessage(long numberBits, long reducedNumberBits, int base, @Nullable String identifier) {
     if (reducedNumberBits == 0L) {
       return "Remove this useless shift";
-    } else if (tooManyBits(numberBits, base)) {
-      if (base == 32) {
-        return MessageFormat.format(
-          identifier == null ?
-            "Either use a \"long\" or correct this shift to {0}" :
-            "Either make \"{1}\" a \"long\" or correct this shift to {0}",
-          reducedNumberBits, identifier);
-      } else {
-        return MessageFormat.format("Correct this shift to {0}", reducedNumberBits);
-      }
+    } else if (base == 32) {
+      return MessageFormat.format(
+        identifier == null ?
+          "Either use a \"long\" or correct this shift to {0}" :
+          "Either make \"{1}\" a \"long\" or correct this shift to {0}",
+        reducedNumberBits, identifier);
+    } else {
+      return MessageFormat.format("Correct this shift to {0}", reducedNumberBits);
     }
-    return null;
   }
 
-  private int getBase(Tree tree) {
-    if (((AbstractTypedTree) tree).getSymbolType().is("int")) {
+  private static int getNumericalBase(ExpressionTree tree) {
+    if (tree.symbolType().is("int")) {
       return 32;
     }
     return 64;
   }
 
-  private boolean tooManyBits(long numberBits, int base) {
+  private static boolean tooManyBits(long numberBits, int base) {
     return Math.abs(numberBits) >= base;
   }
 
-  private String getIdentifierName(ExpressionTree tree) {
+  @CheckForNull
+  private static String getIdentifierName(ExpressionTree tree) {
     if (tree.is(Kind.ARRAY_ACCESS_EXPRESSION)) {
       return getIdentifierName(((ArrayAccessExpressionTree) tree).expression());
     } else if (tree.is(Kind.IDENTIFIER)) {

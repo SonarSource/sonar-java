@@ -1,0 +1,16 @@
+<p>
+  It is needlessly complex to invert the result of a boolean comparison.
+  The opposite comparison should be made instead.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if ( !(a == 2)) { ...}  // Noncompliant
+boolean b = !(i < 10);  // Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if (a != 2) { ...}
+boolean b = (i >= 10);
+</pre>

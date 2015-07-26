@@ -1,16 +1,26 @@
 class A {
-  public int getVector()[] { /* ... */ }    // Non-Compliant
+  public int getVector()[] { /* ... */ }    // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
 
   public int[] getVector() { /* ... */ }    // Compliant
 
-  public int[] getMatrix()[] { /* ... */ }  // Non-Compliant
+  public int[] getMatrix()[] { /* ... */ }  // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
 
   public int[][] getMatrix() { /* ... */ }  // Compliant
 
-  public int f()[][][][] { /* ... */ }      // Non-Compliant
+  public int foo()[][][][] { /* ... */ }    // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
+  
+  public int 
+    bar()[] { /* ... */ }                   // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
+  
+  public int 
+    qix()
+    [] { /* ... */ }                        // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
+  
+  public int[] 
+    goo() { /* ... */ }                     // Compliant
 }
 
-interface A {
-  int f()[];                                // Non-Compliant
-  int[] f();                                // Compliant
+interface B {
+  int foo()[];                              // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
+  int[] bar();                              // Compliant
 }

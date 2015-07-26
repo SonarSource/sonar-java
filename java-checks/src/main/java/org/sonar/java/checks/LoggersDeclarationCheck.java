@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,16 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = LoggersDeclarationCheck.KEY,
+  key = "S1312",
   name = "Loggers should be \"private static final\" and should share a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -47,9 +48,6 @@ import java.util.regex.Pattern;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String KEY = "S1312";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final String DEFAULT_FORMAT = "LOG(?:GER)?";
 
@@ -72,23 +70,19 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean isPrivateStaticFinal(ModifiersTree tree) {
-    return hasModifier(tree, Modifier.PRIVATE) &&
-      hasModifier(tree, Modifier.STATIC) &&
-      hasModifier(tree, Modifier.FINAL);
-  }
-
-  private static boolean hasModifier(ModifiersTree tree, Modifier expectedModifier) {
-    for (Modifier modifier : tree.modifiers()) {
-      if (modifier.equals(expectedModifier)) {
-        return true;
-      }
-    }
-
-    return false;
+    return ModifiersUtils.hasModifier(tree, Modifier.PRIVATE) &&
+      ModifiersUtils.hasModifier(tree, Modifier.STATIC) &&
+      ModifiersUtils.hasModifier(tree, Modifier.FINAL);
   }
 
   private boolean isValidLoggerName(String name) {
     return pattern.matcher(name).matches();
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    // only scan body of the method and avoid looking at parameters
+    scan(tree.block());
   }
 
   @Override
@@ -100,11 +94,11 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
       boolean hasValidLoggerName = isValidLoggerName(tree.simpleName().name());
 
       if (!isPrivateStaticFinal && !hasValidLoggerName) {
-        context.addIssue(tree, RULE_KEY, getPrivateStaticFinalMessage(tree.simpleName().name()) + " and rename it to comply with the format \"" + format + "\".");
+        context.addIssue(tree, this, getPrivateStaticFinalMessage(tree.simpleName().name()) + " and rename it to comply with the format \"" + format + "\".");
       } else if (!isPrivateStaticFinal) {
-        context.addIssue(tree, RULE_KEY, getPrivateStaticFinalMessage(tree.simpleName().name()) + ".");
+        context.addIssue(tree, this, getPrivateStaticFinalMessage(tree.simpleName().name()) + ".");
       } else if (!hasValidLoggerName) {
-        context.addIssue(tree, RULE_KEY, "Rename the \"" + tree.simpleName() + "\" logger to comply with the format \"" + format + "\".");
+        context.addIssue(tree, this, "Rename the \"" + tree.simpleName() + "\" logger to comply with the format \"" + format + "\".");
       }
     }
   }

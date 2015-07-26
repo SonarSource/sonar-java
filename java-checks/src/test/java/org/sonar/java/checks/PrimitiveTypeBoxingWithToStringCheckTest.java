@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,36 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class PrimitiveTypeBoxingWithToStringCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/PrimitiveTypeBoxingWithToStringCheck.java"), new VisitorsBridge(
-      new PrimitiveTypeBoxingWithToStringCheck(),
-      Lists.newArrayList(new File("target/test-classes"))));
-    new CheckMessagesVerifierRule().verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Use \"Integer.toString\" instead.")
-      .next().atLine(9).withMessage("Use \"Integer.toString\" instead.")
-      .next().atLine(10).withMessage("Use \"Integer.toString\" instead.")
-      .next().atLine(12).withMessage("Use \"Boolean.toString\" instead.")
-      .next().atLine(14).withMessage("Use \"Boolean.toString\" instead.")
-      .next().atLine(19).withMessage("Use \"Byte.toString\" instead.")
-      .next().atLine(20).withMessage("Use \"Character.toString\" instead.")
-      .next().atLine(21).withMessage("Use \"Short.toString\" instead.")
-      .next().atLine(22).withMessage("Use \"Long.toString\" instead.")
-      .next().atLine(23).withMessage("Use \"Float.toString\" instead.")
-      .next().atLine(24).withMessage("Use \"Double.toString\" instead.")
-      .next().atLine(27).withMessage("Use \"Integer.toString\" instead.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/PrimitiveTypeBoxingWithToStringCheck.java", new PrimitiveTypeBoxingWithToStringCheck());
   }
 
 }

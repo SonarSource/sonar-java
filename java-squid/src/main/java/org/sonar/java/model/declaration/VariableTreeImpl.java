@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,66 +20,62 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
-import java.util.List;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
-  private Tree type;
+  private TypeTree type;
   private IdentifierTree simpleName;
   @Nullable
+  private SyntaxToken equalToken;
+  @Nullable
   private ExpressionTree initializer;
+  @Nullable
+  private SyntaxToken endToken;
 
   // FIXME(Godin): never should be null, i.e. should have default value
-  private Symbol.VariableSymbol symbol;
+  private JavaSymbol.VariableJavaSymbol symbol;
 
   // Syntax tree holders
-  private int dims;
+  @Nullable
+  private ArrayTypeTreeImpl nestedDimensions;
   private boolean vararg = false;
 
-  public VariableTreeImpl(IdentifierTreeImpl simpleName, int dims, List<AstNode> additionalChildren) {
+  public VariableTreeImpl(IdentifierTreeImpl simpleName, @Nullable ArrayTypeTreeImpl nestedDimensions) {
     super(Kind.VARIABLE);
 
     this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.simpleName = simpleName;
-    this.dims = dims;
+    this.nestedDimensions = nestedDimensions;
     this.initializer = null;
-
-    addChild((AstNode) modifiers);
-    addChild(simpleName);
-    for (AstNode child : additionalChildren) {
-      addChild(child);
-    }
   }
 
-  public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer, AstNode... children) {
+  public VariableTreeImpl(InternalSyntaxToken equalToken, ExpressionTree initializer) {
     super(Kind.VARIABLE);
-
+    this.equalToken = equalToken;
     this.initializer = initializer;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public VariableTreeImpl(IdentifierTreeImpl simpleName) {
-    this(simpleName, 0, ImmutableList.<AstNode>of());
+    this(simpleName, null);
     this.type = new InferedTypeTree();
   }
 
@@ -87,25 +83,15 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     super(kind);
     this.modifiers = Preconditions.checkNotNull(modifiers);
     this.simpleName = Preconditions.checkNotNull(simpleName);
-    this.dims = -1;
     this.initializer = initializer;
   }
 
-  public VariableTreeImpl(AstNode astNode, ModifiersTree modifiers, Tree type, IdentifierTree simpleName, @Nullable ExpressionTree initializer) {
-    super(astNode);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.type = Preconditions.checkNotNull(type);
-    this.simpleName = Preconditions.checkNotNull(simpleName);
-    this.dims = -1;
-    this.initializer = initializer;
-  }
+  public VariableTreeImpl completeType(TypeTree type) {
+    TypeTree actualType = type;
 
-  public VariableTreeImpl completeType(Tree type) {
-    Tree actualType = type;
-
-    // TODO Remove logic?
-    for (int i = isVararg() ? 1 + dims() : dims(); i > 0; i--) {
-      actualType = new ArrayTypeTreeImpl(null, actualType);
+    if (nestedDimensions != null) {
+      nestedDimensions.setLastChildType(type);
+      actualType = nestedDimensions;
     }
 
     this.type = actualType;
@@ -119,30 +105,38 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return this;
   }
 
-  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, Tree type) {
+  public VariableTreeImpl completeModifiersAndType(ModifiersTreeImpl modifiers, TypeTree type) {
     return completeModifiers(modifiers).
       completeType(type);
   }
 
-  public VariableTreeImpl completeTypeAndInitializer(Tree type, ExpressionTree initializer) {
+  public VariableTreeImpl completeTypeAndInitializer(TypeTree type, InternalSyntaxToken equalToken, ExpressionTree initializer) {
     this.initializer = initializer;
+    this.equalToken = equalToken;
 
     return completeType(type);
   }
 
-  public VariableTreeImpl completeIdentifierAndDims(IdentifierTreeImpl simpleName, int dims) {
+  public VariableTreeImpl completeIdentifierAndDims(IdentifierTreeImpl simpleName, ArrayTypeTreeImpl nestedDimensions) {
     this.simpleName = simpleName;
-    this.dims = dims;
+    if (this.nestedDimensions != null) {
+      ArrayTypeTreeImpl newType = nestedDimensions;
+      newType.completeType(this.nestedDimensions);
+      this.nestedDimensions = newType;
+    } else {
+      this.nestedDimensions = nestedDimensions;
+    }
 
     return this;
   }
 
-  public int dims() {
-    return dims;
-  }
-
-  public void setVararg(boolean vararg) {
-    this.vararg = vararg;
+  public void addEllipsisDimension(ArrayTypeTreeImpl dimension) {
+    vararg = true;
+    if (nestedDimensions != null) {
+      nestedDimensions.setLastChildType(dimension);
+    } else {
+      nestedDimensions = dimension;
+    }
   }
 
   public boolean isVararg() {
@@ -160,7 +154,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 
@@ -176,15 +170,20 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
+  public org.sonar.plugins.java.api.semantic.Symbol symbol() {
+    return symbol;
+  }
+
+  @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitVariable(this);
   }
 
-  public Symbol.VariableSymbol getSymbol() {
+  public JavaSymbol.VariableJavaSymbol getSymbol() {
     return symbol;
   }
 
-  public void setSymbol(Symbol.VariableSymbol symbol) {
+  public void setSymbol(JavaSymbol.VariableJavaSymbol symbol) {
     Preconditions.checkState(this.symbol == null);
     this.symbol = symbol;
   }
@@ -196,11 +195,22 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      modifiers,
-      type,
-      simpleName,
-      initializer
+    Iterator<Tree> initializerIterator = initializer != null ? Iterators.forArray(equalToken, initializer) : Iterators.<Tree>emptyIterator();
+    Iterator<Tree> endTokenIterator = endToken != null ? Iterators.<Tree>singletonIterator(endToken) : Iterators.<Tree>emptyIterator();
+    return Iterators.concat(
+      Iterators.forArray(modifiers, type, simpleName),
+      initializerIterator,
+      endTokenIterator
       );
+  }
+
+  @CheckForNull
+  @Override
+  public SyntaxToken endToken() {
+    return endToken;
+  }
+
+  public void setEndToken(InternalSyntaxToken endToken) {
+    this.endToken = endToken;
   }
 }

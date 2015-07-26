@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,14 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.measures.RangeDistributionBuilder;
-import org.sonar.api.resources.File;
-import org.sonar.api.resources.Project;
-import org.sonar.java.ast.visitors.AccessorVisitor;
+import org.sonar.java.ast.visitors.AccessorsUtils;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.PublicApiChecker;
@@ -53,25 +53,23 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private static final Number[] LIMITS_COMPLEXITY_METHODS = {1, 2, 4, 6, 8, 10, 12};
   private static final Number[] LIMITS_COMPLEXITY_FILES = {0, 5, 10, 20, 30, 60, 90};
 
+  private final FileSystem fs;
   private final SensorContext sensorContext;
-  private final Project project;
   private final boolean separateAccessorsFromMethods;
-  private File sonarFile;
+  private InputFile sonarFile;
   private int methods;
   private int accessors;
   private int complexityInMethods;
   private RangeDistributionBuilder methodComplexityDistribution;
 
-  private final Deque<ClassTree> classTrees = new LinkedList<ClassTree>();
-  private final AccessorVisitor accessorVisitor;
+  private final Deque<ClassTree> classTrees = new LinkedList<>();
   private Charset charset;
   private double classes;
 
-  public Measurer(Project project, SensorContext context, boolean separateAccessorsFromMethods) {
-    this.project = project;
+  public Measurer(FileSystem fs, SensorContext context, boolean separateAccessorsFromMethods) {
+    this.fs = fs;
     this.sensorContext = context;
     this.separateAccessorsFromMethods = separateAccessorsFromMethods;
-    accessorVisitor = new AccessorVisitor();
   }
 
   @Override
@@ -84,7 +82,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    sonarFile = File.fromIOFile(context.getFile(), project);
+    sonarFile = fs.inputFile(fs.predicates().is(context.getFile()));
     classTrees.clear();
     methods = 0;
     complexityInMethods = 0;
@@ -96,6 +94,9 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     }
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
+    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
+    commentLinesVisitor.analyzeCommentLines(context.getTree());
+    context.addNoSonarLines(commentLinesVisitor.noSonarLines());
     super.scanFile(context);
     //leave file.
     int fileComplexity = context.getComplexity(context.getTree());
@@ -107,7 +108,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     saveMetricOnFile(CoreMetrics.PUBLIC_API, publicApiChecker.getPublicApi());
     saveMetricOnFile(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, publicApiChecker.getDocumentedPublicApiDensity());
     saveMetricOnFile(CoreMetrics.PUBLIC_UNDOCUMENTED_API, publicApiChecker.getUndocumentedPublicApi());
-    saveMetricOnFile(CoreMetrics.COMMENT_LINES, new CommentLinesVisitor().commentLines(context.getTree()));
+    saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
     saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
     saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
 
@@ -140,7 +141,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     if (tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && classTrees.peek().simpleName() != null) {
       //don't count methods in anonymous classes.
       MethodTree methodTree = (MethodTree) tree;
-      if (separateAccessorsFromMethods && accessorVisitor.isAccessor(classTrees.peek(), methodTree)) {
+      if (separateAccessorsFromMethods && AccessorsUtils.isAccessor(classTrees.peek(), methodTree)) {
         accessors++;
       } else {
         methods++;
@@ -159,7 +160,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     }
   }
 
-  private boolean isClassTree(Tree tree) {
+  private static boolean isClassTree(Tree tree) {
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 

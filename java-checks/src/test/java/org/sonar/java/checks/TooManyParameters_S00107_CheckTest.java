@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TooManyParameters_S00107_CheckTest {
 
-  private TooManyParameters_S00107_Check check = new TooManyParameters_S00107_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyParameters.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Method has 8 parameters, which is greater than 7 authorized.")
-        .next().atLine(5).withMessage("Method has 8 parameters, which is greater than 7 authorized.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/TooManyParameters.java", new TooManyParameters_S00107_Check());
   }
 
   @Test
-  public void test2() {
+  public void custom() {
+    TooManyParameters_S00107_Check check = new TooManyParameters_S00107_Check();
     check.maximum = 8;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooManyParameters.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    check.constructorMax = 5;
+    JavaCheckVerifier.verify("src/test/files/checks/TooManyParameters.java", new TooManyParameters_S00107_Check());
   }
 
 }

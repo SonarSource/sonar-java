@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  */
 package org.sonar.java.parser.sslr;
 
-import com.sonar.sslr.api.AstNode;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.List;
@@ -38,8 +38,6 @@ public interface GrammarBuilder {
 
   <T> Optional<List<T>> zeroOrMore(T method);
 
-  AstNode invokeRule(GrammarRuleKey ruleKey);
-
-  AstNode token(String value);
+  InternalSyntaxToken token(GrammarRuleKey ruleKey);
 
 }

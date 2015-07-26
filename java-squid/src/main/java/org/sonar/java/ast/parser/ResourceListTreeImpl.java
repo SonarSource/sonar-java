@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,20 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.model.declaration.VariableTreeImpl;
+import com.google.common.collect.ImmutableList;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
-public class ResourceListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
+public class ResourceListTreeImpl extends ListTreeImpl<VariableTree> {
 
-  public ResourceListTreeImpl(List<VariableTreeImpl> resources, List<AstNode> children) {
-    super(JavaLexer.RESOURCE_SPECIFICATION, resources, children);
+  public ResourceListTreeImpl(List<VariableTree> resources, List<SyntaxToken> tokens) {
+    super(JavaLexer.RESOURCE_SPECIFICATION, resources, tokens);
   }
 
+  public static ListTree<VariableTree> emptyList() {
+    return new ResourceListTreeImpl(ImmutableList.<VariableTree>of(), ImmutableList.<SyntaxToken>of());
+  }
 }

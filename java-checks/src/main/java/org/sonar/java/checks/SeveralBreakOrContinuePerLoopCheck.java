@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -42,7 +41,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 @Rule(
-  key = SeveralBreakOrContinuePerLoopCheck.RULE_KEY,
+  key = "S135",
   name = "Loops should not contain more than a single \"break\" or \"continue\" statement",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -50,9 +49,6 @@ import java.util.Deque;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "number of extra \"break\" or \"continue\" statements.")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S135";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private final Deque<Integer> breakAndContinueCounter = new ArrayDeque<Integer>();
   private final Deque<Boolean> currentScopeIsSwitch = new ArrayDeque<Boolean>();
@@ -146,7 +142,8 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
       count = breakAndContinueCounter.pop();
     }
     if (count > 1) {
-      context.addIssue(tree, ruleKey, "Reduce the total number of break and continue statements in this loop to use at most one.");
+      double effortToFix = count - 1.0;
+      context.addIssue(tree, this, "Reduce the total number of break and continue statements in this loop to use at most one.", effortToFix);
     }
     loopCount--;
     currentScopeIsSwitch.pop();

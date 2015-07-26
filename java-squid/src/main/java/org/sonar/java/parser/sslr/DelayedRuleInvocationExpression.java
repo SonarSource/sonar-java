@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 package org.sonar.java.parser.sslr;
 
 import com.google.common.base.Throwables;
-import org.sonar.java.parser.sslr.ActionParser2.GrammarBuilderInterceptor;
+import org.sonar.java.parser.sslr.ActionParser.GrammarBuilderInterceptor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import org.sonar.sslr.internal.grammar.MutableParsingRule;
@@ -34,16 +34,14 @@ import java.util.Map;
 
 public class DelayedRuleInvocationExpression implements ParsingExpression {
 
-  private static Field DEFINITIONS_FIELD;
+  private static Field definitionsField;
   static {
     try {
-      DEFINITIONS_FIELD = LexerlessGrammarBuilder.class.getDeclaredField("definitions");
-    } catch (NoSuchFieldException e) {
-      throw Throwables.propagate(e);
-    } catch (SecurityException e) {
+      definitionsField = LexerlessGrammarBuilder.class.getDeclaredField("definitions");
+    } catch (NoSuchFieldException | SecurityException e) {
       throw Throwables.propagate(e);
     }
-    DEFINITIONS_FIELD.setAccessible(true);
+    definitionsField.setAccessible(true);
   }
 
   private final LexerlessGrammarBuilder b;
@@ -75,11 +73,10 @@ public class DelayedRuleInvocationExpression implements ParsingExpression {
     }
 
     try {
-      b.rule(ruleKey); // Ensure the MutableParsingRule is created in the definitions
-      return compiler.compile((MutableParsingRule) ((Map) DEFINITIONS_FIELD.get(b)).get(ruleKey));
-    } catch (IllegalArgumentException e) {
-      throw Throwables.propagate(e);
-    } catch (IllegalAccessException e) {
+      // Ensure the MutableParsingRule is created in the definitions
+      b.rule(ruleKey);
+      return compiler.compile((MutableParsingRule) ((Map) definitionsField.get(b)).get(ruleKey));
+    } catch (IllegalArgumentException | IllegalAccessException e) {
       throw Throwables.propagate(e);
     }
   }

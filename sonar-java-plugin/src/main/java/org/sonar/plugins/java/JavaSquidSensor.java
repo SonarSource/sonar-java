@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,8 +28,6 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.CheckFactory;
-import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
 import org.sonar.api.profiles.RulesProfile;
@@ -42,11 +40,9 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,12 +56,11 @@ public class JavaSquidSensor implements Sensor {
   private final FileSystem fs;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
-  private final CheckFactory checkFactory;
   private final RulesProfile profile;
   private final NoSonarFilter noSonarFilter;
 
   public JavaSquidSensor(RulesProfile profile, JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
-    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, CheckFactory checkFactory) {
+    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
     this.profile = profile;
     this.noSonarFilter = noSonarFilter;
     this.javaClasspath = javaClasspath;
@@ -73,7 +68,6 @@ public class JavaSquidSensor implements Sensor {
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
-    this.checkFactory = checkFactory;
   }
 
   @Override
@@ -84,14 +78,13 @@ public class JavaSquidSensor implements Sensor {
   @Override
   public void analyse(Project project, SensorContext context) {
     javaResourceLocator.setSensorContext(context);
-    Checks<CodeVisitor> checks = checkFactory.<CodeVisitor>create(CheckList.REPOSITORY_KEY).addAnnotatedChecks(CheckList.getChecks());
-    Collection<CodeVisitor> checkList = checks.all();
+    sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
+    sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     JavaConfiguration configuration = createConfiguration();
-    Measurer measurer = new Measurer(project, context, configuration.separatesAccessorsFromMethods());
-    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, checkList.toArray(new CodeVisitor[checkList.size()]));
+    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods());
+    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, checks, javaResourceLocator.getResourceMapping(),
-      sonarComponents.getResourcePerspectives(), noSonarFilter, profile);
+    new Bridges(squid, settings).save(context, project, sonarComponents, javaResourceLocator.getResourceMapping(), noSonarFilter, profile);
   }
 
   private Iterable<File> getSourceFiles() {
@@ -102,7 +95,7 @@ public class JavaSquidSensor implements Sensor {
     return toFile(fs.inputFiles(fs.predicates().and(fs.predicates().hasLanguage(Java.KEY), fs.predicates().hasType(InputFile.Type.TEST))));
   }
 
-  private Iterable<File> toFile(Iterable<InputFile> inputFiles) {
+  private static Iterable<File> toFile(Iterable<InputFile> inputFiles) {
     List<File> files = Lists.newArrayList();
     for (InputFile inputFile : inputFiles) {
       files.add(inputFile.file());

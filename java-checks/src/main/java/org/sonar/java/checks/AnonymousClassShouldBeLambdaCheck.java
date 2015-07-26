@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,13 +32,14 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-  key = AnonymousClassShouldBeLambdaCheck.RULE_KEY,
+  key = "S1604",
   name = "Anonymous inner classes containing only one method should become lambdas",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -47,8 +47,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1604";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private JavaFileScannerContext context;
   private List<IdentifierTree> enumConstants;
 
@@ -69,12 +67,25 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   @Override
   public void visitNewClass(NewClassTree tree) {
     super.visitNewClass(tree);
-    if (tree.classBody() != null) {
-      List<Tree> members = tree.classBody().members();
-      if (!useThisIdentifier(tree.classBody()) && !enumConstants.contains(tree.identifier()) && members.size() == 1 && members.get(0).is(Tree.Kind.METHOD)) {
-        context.addIssue(tree.identifier(), RULE, "Make this anonymous inner class a lambda");
+    ClassTree classBody = tree.classBody();
+    if (classBody != null) {
+      TypeTree identifier = tree.identifier();
+      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && hasOnlyOneMethod(classBody.members())) {
+        context.addIssue(identifier, this, "Make this anonymous inner class a lambda");
       }
     }
+  }
+
+  private static boolean hasOnlyOneMethod(List<Tree> members) {
+    int methodCounter = 0;
+    for (Tree tree : members) {
+      if (!tree.is(Tree.Kind.EMPTY_STATEMENT, Tree.Kind.METHOD)) {
+        return false;
+      } else if (tree.is(Tree.Kind.METHOD)) {
+        methodCounter++;
+      }
+    }
+    return methodCounter == 1;
   }
 
   private boolean useThisIdentifier(ClassTree body) {

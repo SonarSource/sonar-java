@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class JavaTokenTypeTest {
 
@@ -31,11 +29,9 @@ public class JavaTokenTypeTest {
   public void test() {
     assertThat(JavaTokenType.values()).hasSize(7);
 
-    AstNode astNode = mock(AstNode.class);
     for (JavaTokenType tokenType : JavaTokenType.values()) {
       assertThat(tokenType.getName()).isEqualTo(tokenType.name());
       assertThat(tokenType.getValue()).isNotNull();
-      assertThat(tokenType.hasToBeSkippedFromAst(astNode)).isFalse();
     }
   }
 

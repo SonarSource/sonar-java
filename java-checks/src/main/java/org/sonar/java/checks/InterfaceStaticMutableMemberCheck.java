@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,7 +56,7 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     for (Tree member : ((ClassTree) tree).members()) {
       if (member.is(Kind.VARIABLE)) {
-        VariableTreeImpl variableTree = (VariableTreeImpl) member;
+        VariableTree variableTree = (VariableTree) member;
         if (isStaticMember(variableTree) && isMutableMember(variableTree)) {
           addIssue(variableTree, MessageFormat.format("Move \"{0}\" to a class and lower its visibility", variableTree.simpleName().name()));
         }
@@ -64,19 +64,19 @@ public class InterfaceStaticMutableMemberCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isStaticMember(VariableTree variableTree) {
-    return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
+  private static boolean isStaticMember(VariableTree variableTree) {
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC);
   }
 
-  private boolean isMutableMember(VariableTreeImpl variableTree) {
-    return isArray(variableTree.type()) || isDateOrCollection(variableTree.getSymbol().getType());
+  private static boolean isMutableMember(VariableTree variableTree) {
+    return isArray(variableTree.type()) || isDateOrCollection(variableTree.type().symbolType());
   }
 
-  private boolean isArray(Tree typeTree) {
+  private static boolean isArray(Tree typeTree) {
     return typeTree.is(Kind.ARRAY_TYPE);
   }
 
-  private boolean isDateOrCollection(Type variableSymbolType) {
+  private static boolean isDateOrCollection(Type variableSymbolType) {
     return variableSymbolType.is("java.util.Date") ||
         (variableSymbolType.isSubtypeOf("java.util.Collection") && !variableSymbolType.isSubtypeOf("com.google.common.collect.ImmutableCollection"));
   }

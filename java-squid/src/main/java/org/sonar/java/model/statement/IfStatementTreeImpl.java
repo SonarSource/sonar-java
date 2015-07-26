@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -32,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
@@ -46,18 +46,14 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   @Nullable
   private final StatementTree elseStatement;
 
-  public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement, AstNode... children) {
+  public IfStatementTreeImpl(InternalSyntaxToken elseKeyword, StatementTree elseStatement) {
     super(Kind.IF_STATEMENT);
     this.elseKeyword = elseKeyword;
     this.elseStatement = Preconditions.checkNotNull(elseStatement);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public IfStatementTreeImpl(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    StatementTree thenStatement, AstNode... children) {
+    StatementTree thenStatement) {
 
     super(Kind.IF_STATEMENT);
     this.ifKeyword = ifKeyword;
@@ -67,22 +63,16 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
     this.thenStatement = Preconditions.checkNotNull(thenStatement);
     this.elseStatement = null;
     this.elseKeyword = null;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   public IfStatementTreeImpl complete(InternalSyntaxToken ifKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    StatementTree thenStatement, AstNode... children) {
+    StatementTree thenStatement) {
     Preconditions.checkState(this.condition == null, "Already completed");
     this.ifKeyword = ifKeyword;
     this.openParenToken = openParenToken;
     this.condition = Preconditions.checkNotNull(condition);
     this.closeParenToken = closeParenToken;
     this.thenStatement = Preconditions.checkNotNull(thenStatement);
-
-    prependChildren(children);
 
     return this;
   }
@@ -136,10 +126,8 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      condition,
-      thenStatement,
-      elseStatement);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
+      elseKeyword != null ? Iterators.<Tree>forArray(elseKeyword, elseStatement) : Iterators.<Tree>emptyIterator());
   }
-
 }

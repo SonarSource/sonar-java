@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -31,25 +30,28 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
 
+  @Nullable
+  private final InternalSyntaxToken openParenToken;
   private final List<VariableTree> parameters;
+  @Nullable
+  private final InternalSyntaxToken closeParenToken;
+  private final InternalSyntaxToken arrowToken;
   private final Tree body;
-  private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
 
-  public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken, Tree body, AstNode... children) {
+  public LambdaExpressionTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTree> parameters, @Nullable InternalSyntaxToken closeParenToken,
+    InternalSyntaxToken arrowToken, Tree body) {
     super(JavaLexer.LAMBDA_EXPRESSION);
     this.openParenToken = openParenToken;
     this.parameters = parameters;
     this.closeParenToken = closeParenToken;
+    this.arrowToken = arrowToken;
     this.body = body;
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -75,6 +77,11 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   }
 
   @Override
+  public SyntaxToken arrowToken() {
+    return arrowToken;
+  }
+
+  @Override
   public Tree body() {
     return body;
   }
@@ -86,9 +93,12 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
 
   @Override
   public Iterator<Tree> childrenIterator() {
+    boolean hasParentheses = openParenToken != null;
     return Iterators.concat(
+      hasParentheses ? Iterators.<Tree>singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
       parameters.iterator(),
-      Iterators.singletonIterator(body)
+      hasParentheses ? Iterators.<Tree>singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator(),
+      Iterators.forArray(arrowToken, body)
       );
   }
 

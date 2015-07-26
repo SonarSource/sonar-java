@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -51,10 +51,10 @@ public class ClassNamedLikeExceptionCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      ClassTreeImpl classTree = (ClassTreeImpl) tree;
-      TypeSymbol symbol = classTree.getSymbol();
-      String className = symbol.getName();
-      if (className.toLowerCase().endsWith("exception") && !symbol.getType().isSubtypeOf("java.lang.Exception")) {
+      ClassTree classTree = (ClassTree) tree;
+      Symbol symbol = classTree.symbol();
+      String className = symbol.name();
+      if (className.toLowerCase().endsWith("exception") && !symbol.type().isSubtypeOf("java.lang.Exception")) {
         String suffix = className.substring(className.length() - "exception".length());
         addIssue(classTree, "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
       }

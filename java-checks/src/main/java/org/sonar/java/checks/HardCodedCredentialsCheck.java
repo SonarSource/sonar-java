@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -41,7 +43,7 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S2068",
   name = "Credentials should not be hard-coded",
-  tags = {"cwe", "owasp-top10", "sans-top25", "security"},
+  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
@@ -53,7 +55,7 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT);
+    return ImmutableList.of(Tree.Kind.STRING_LITERAL, Tree.Kind.VARIABLE, Tree.Kind.ASSIGNMENT, Tree.Kind.METHOD_INVOCATION);
   }
 
   @Override
@@ -68,23 +70,53 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
       if (isStringLiteral(variable.initializer()) && isPasswordVariableName(variable.simpleName())) {
         addIssue(tree);
       }
-    } else {
+    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree assignmentExpression = (AssignmentExpressionTree) tree;
       if (isStringLiteral(assignmentExpression.expression()) && isPasswordVariable(assignmentExpression.variable())) {
+        addIssue(tree);
+      }
+    } else {
+      if (isSettingPassword((MethodInvocationTree) tree)) {
         addIssue(tree);
       }
     }
   }
 
-  private boolean isStringLiteral(ExpressionTree initializer) {
+  private static boolean isSettingPassword(MethodInvocationTree tree) {
+    List<ExpressionTree> arguments = tree.arguments();
+    return arguments.size() == 2 && argumentsAreLiterals(arguments) && isPassword((LiteralTree) arguments.get(0));
+  }
+
+  private static boolean isPassword(LiteralTree argument) {
+    return argument.is(Tree.Kind.STRING_LITERAL) && PASSWORD_VARIABLE_PATTERN.matcher(LiteralUtils.trimQuotes(argument.value())).matches();
+  }
+
+  private static boolean argumentsAreLiterals(List<ExpressionTree> arguments) {
+    for (ExpressionTree argument : arguments) {
+      if (!argument.is(
+        Kind.INT_LITERAL,
+        Kind.LONG_LITERAL,
+        Kind.FLOAT_LITERAL,
+        Kind.DOUBLE_LITERAL,
+        Kind.BOOLEAN_LITERAL,
+        Kind.CHAR_LITERAL,
+        Kind.STRING_LITERAL,
+        Kind.NULL_LITERAL)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static boolean isStringLiteral(ExpressionTree initializer) {
     return initializer != null && initializer.is(Tree.Kind.STRING_LITERAL);
   }
 
-  private boolean isPasswordVariableName(IdentifierTree identifierTree) {
+  private static boolean isPasswordVariableName(IdentifierTree identifierTree) {
     return PASSWORD_VARIABLE_PATTERN.matcher(identifierTree.name()).find();
   }
 
-  private boolean isPasswordVariable(ExpressionTree variable) {
+  private static boolean isPasswordVariable(ExpressionTree variable) {
     if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       return isPasswordVariableName(((MemberSelectExpressionTree) variable).identifier());
     } else if (variable.is(Tree.Kind.IDENTIFIER)) {

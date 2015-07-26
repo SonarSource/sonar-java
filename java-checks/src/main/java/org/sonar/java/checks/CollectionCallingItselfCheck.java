@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -56,18 +56,18 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
       Symbol symbolReference = null;
-      Symbol.MethodSymbol method = null;
+      Symbol method = null;
       String reportedName = "";
       if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
         IdentifierTree identifier = mse.identifier();
         reportedName = identifier.name();
-        method = (Symbol.MethodSymbol) getSemanticModel().getReference(identifier);
+        method = identifier.symbol();
         if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-          symbolReference = getSemanticModel().getReference((IdentifierTree) mse.expression());
+          symbolReference = ((IdentifierTree) mse.expression()).symbol();
         }
       }
-      if (symbolReference != null && method != null && isMethodFromCollection(method)) {
+      if (symbolReference != null && isMethodFromCollection(method)) {
         reportIssueForParameters(methodInvocationTree, symbolReference, reportedName);
       }
     }
@@ -76,7 +76,7 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
   private void reportIssueForParameters(MethodInvocationTree methodInvocationTree, Symbol symbolReference, String reportedName) {
     for (ExpressionTree arg : methodInvocationTree.arguments()) {
       if (arg.is(Tree.Kind.IDENTIFIER)) {
-        Symbol reference = getSemanticModel().getReference((IdentifierTree) arg);
+        Symbol reference = ((IdentifierTree) arg).symbol();
         if (reference == symbolReference) {
           addIssue(methodInvocationTree, "Remove or correct this \"" + reportedName + "\" call.");
         }
@@ -84,14 +84,12 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isMethodFromCollection(Symbol.MethodSymbol methodSymbol) {
-    Symbol.TypeSymbol owner = (Symbol.TypeSymbol) methodSymbol.owner();
-    for (Type.ClassType classType : owner.superTypes()) {
-      if (classType.is("java.util.Collection")) {
-        return true;
-      }
+  private static boolean isMethodFromCollection(Symbol methodSymbol) {
+    if(!methodSymbol.isMethodSymbol()) {
+      return false;
     }
-    return false;
+    Type ownerType = methodSymbol.owner().type();
+    return !ownerType.is("java.util.Collection") && ownerType.isSubtypeOf("java.util.Collection");
   }
 
 }

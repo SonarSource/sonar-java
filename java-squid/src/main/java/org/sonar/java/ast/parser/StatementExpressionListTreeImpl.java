@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,13 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 
 import java.util.List;
 
 public class StatementExpressionListTreeImpl extends ListTreeImpl<StatementTree> {
-
-  public StatementExpressionListTreeImpl(List<? extends StatementTree> statements) {
-    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statements, ImmutableList.<AstNode>of());
+  public StatementExpressionListTreeImpl(List<? extends StatementTree> statementTrees, List<SyntaxToken> separators) {
+    super(JavaLexer.STATEMENT_EXPRESSION, (List<StatementTree>) statementTrees, separators);
   }
-
 }

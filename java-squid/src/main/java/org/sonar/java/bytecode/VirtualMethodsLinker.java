@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ public class VirtualMethodsLinker {
     }
   }
 
-  private AsmMethod findImplementation(AsmClass asmClass, String methodKey) {
+  private static AsmMethod findImplementation(AsmClass asmClass, String methodKey) {
     AsmMethod method = asmClass.getMethod(methodKey);
     if (method != null && method.isBodyLoaded()) {
       return method;

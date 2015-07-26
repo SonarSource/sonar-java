@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,45 +20,12 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class FloatEqualityCheckTest {
 
-  private FloatEqualityCheck check = new FloatEqualityCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FloatEquality.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Equality tests should not be made with floating point values.")
-        .next().atLine(7).withMessage("Equality tests should not be made with floating point values.")
-        .next().atLine(8).withMessage("Equality tests should not be made with floating point values.")
-        .next().atLine(9)
-        .next().atLine(16)
-        .next().atLine(17)
-        .next().atLine(18)
-        .next().atLine(19)
-        .next().atLine(22)
-        .next().atLine(23)
-        .next().atLine(24)
-        .next().atLine(25)
-        .next().atLine(26)
-        .next().atLine(27)
-        .next().atLine(28)
-        .next().atLine(29)
-        .next().atLine(32)
-        .next().atLine(33)
-        .next().atLine(34)
-        .next().atLine(35)
-        .next().atLine(36)
-        .next().atLine(37)
-        .next().atLine(38)
-        .next().atLine(39)
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/FloatEquality.java", new FloatEqualityCheck());
   }
 }

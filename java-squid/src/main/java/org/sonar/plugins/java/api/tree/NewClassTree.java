@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Class instance creation expression.
@@ -45,15 +45,29 @@ public interface NewClassTree extends ExpressionTree {
   ExpressionTree enclosingExpression();
 
   /**
+   * "dot" is not null only when the enclosing expression is present  
+   */
+  @Nullable
+  SyntaxToken dotToken();
+
+  /**
+   * "new" keyword is null for {@link EnumConstantTree #initializer()}
+   */
+  @Nullable
+  SyntaxToken newKeyword();
+
+  /**
    * @since Java 1.5
    */
-  List<Tree> typeArguments();
+  TypeArguments typeArguments();
 
-  Tree identifier();
+  TypeTree identifier();
 
-  List<ExpressionTree> arguments();
+  Arguments arguments();
 
   @Nullable
   ClassTree classBody();
+
+  Symbol constructorSymbol();
 
 }

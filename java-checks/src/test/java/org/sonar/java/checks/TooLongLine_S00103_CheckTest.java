@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 
@@ -34,11 +34,30 @@ public class TooLongLine_S00103_CheckTest {
   @Test
   public void test() {
     check.maximumLineLength = 20;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LineLength.java"), new VisitorsBridge(check));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooLongLine_S00103_Check/LineLength.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
-        .next().atLine(7)
-        .noMore();
+      .next().atLine(6).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
+      .next().atLine(7)
+      .noMore();
   }
 
+  @Test
+  public void test_with_empty_import_on_first_line() {
+    check.maximumLineLength = 20;
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooLongLine_S00103_Check/LineLengthEmptyStatementInImport.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(7).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
+      .next().atLine(8)
+      .noMore();
+  }
+
+  @Test
+  public void test_with_no_import() {
+    check.maximumLineLength = 20;
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooLongLine_S00103_Check/LineLengthNoImport.java"), new VisitorsBridge(check));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(3).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
+      .next().atLine(4)
+      .noMore();
+  }
 }

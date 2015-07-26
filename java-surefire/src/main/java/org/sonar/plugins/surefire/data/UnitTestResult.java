@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,10 @@ public final class UnitTestResult {
   public static final String STATUS_FAILURE = "failure";
   public static final String STATUS_SKIPPED = "skipped";
 
-  private String name, status, stackTrace, message;
+  private String name;
+  private String status;
+  private String stackTrace;
+  private String message;
   private long durationMilliseconds = 0L;
 
   public String getName() {

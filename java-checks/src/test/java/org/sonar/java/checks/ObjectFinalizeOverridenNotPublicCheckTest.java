@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,25 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ObjectFinalizeOverridenNotPublicCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectFinalizeOverridenNotPublicCheck.java"), new VisitorsBridge(new ObjectFinalizeOverridenNotPublicCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(15).withMessage("Make this finalize() method protected.");
+    JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenNotPublicCheck.java", new ObjectFinalizeOverridenNotPublicCheck());
   }
-
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -82,7 +81,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
    * But we assume that probability of this is really low.
    */
   private static boolean isHeader(SyntaxTrivia syntaxTrivia) {
-    return ((InternalSyntaxTrivia) syntaxTrivia).getLine() == 1;
+    return syntaxTrivia.startLine() == 1;
   }
 
   /**
@@ -96,7 +95,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
         if (codeRecognizer.isLineOfCode(lines[i])) {
           // Mark all remaining lines from this comment as a commented out lines of code
           for (int j = i; j < lines.length; j++) {
-            commentedOutCodeLines.add(((InternalSyntaxTrivia) syntaxTrivia).getLine() + j);
+            commentedOutCodeLines.add(syntaxTrivia.startLine() + j);
           }
           break;
         }
@@ -123,7 +122,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
    * Documentation comments should be recognized only when placed
    * immediately before class, interface, constructor, method, or field declarations.
    */
-  private boolean isJavadoc(String comment) {
+  private static boolean isJavadoc(String comment) {
     return StringUtils.startsWith(comment, "/**");
   }
 
@@ -134,7 +133,7 @@ public class CommentedOutCodeLineCheck extends SubscriptionBaseVisitor {
    * between the end of the parameter list and the trailing semicolon.
    * A JSNI comment block begins with the exact token {@link #START_JSNI} and ends with the exact token {@link #END_JSNI}.
    */
-  private boolean isJSNI(String comment) {
+  private static boolean isJSNI(String comment) {
     return StringUtils.startsWith(comment, START_JSNI) && StringUtils.endsWith(comment, END_JSNI);
   }
 

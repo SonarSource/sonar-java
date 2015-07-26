@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -51,18 +51,18 @@ public class InterfaceOrSuperclassShadowingCheck extends SubscriptionBaseVisitor
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
+    ClassTree classTree = (ClassTree) tree;
     if (hasSemantic()) {
-      TypeSymbol classSymbol = classTree.getSymbol();
-      checkSuperType(classTree, classSymbol.getSuperclass());
-      for (Type interfaceType : classSymbol.getInterfaces()) {
+      Symbol.TypeSymbol classSymbol = classTree.symbol();
+      checkSuperType(classTree, classSymbol.superClass());
+      for (Type interfaceType : classSymbol.interfaces()) {
         checkSuperType(classTree, interfaceType);
       }
     }
   }
 
-  private void checkSuperType(ClassTreeImpl tree, Type superType) {
-    if (superType != null && superType.getSymbol().getName().equals(tree.getSymbol().getName())) {
+  private void checkSuperType(ClassTree tree, Type superType) {
+    if (superType != null && superType.symbol().name().equals(tree.symbol().name())) {
       String classOrInterface = tree.is(Tree.Kind.CLASS) ? "class" : "interface";
       addIssue(tree, "Rename this " + classOrInterface + ".");
     }

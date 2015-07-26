@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ import java.util.List;
 @Rule(
   key = "S2277",
   name = "Cryptographic RSA algorithms should always incorporate OAEP (Optimal Asymmetric Encryption Padding)",
-  tags = {"cwe", "owasp-top10", "security"},
+  tags = {"cwe", "owasp-a6", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
@@ -55,7 +55,7 @@ public class RSAUsesOAEPCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isRSA(String algorithmName) {
+  private static boolean isRSA(String algorithmName) {
     return algorithmName.startsWith("RSA/NONE");
   }
 

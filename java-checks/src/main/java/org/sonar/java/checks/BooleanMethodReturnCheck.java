@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,13 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -59,8 +59,9 @@ public class BooleanMethodReturnCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean returnsBoolean(MethodTree methodTree) {
-    return ((AbstractTypedTree) methodTree.returnType()).getSymbolType().is("java.lang.Boolean");
+  private static boolean returnsBoolean(MethodTree methodTree) {
+    TypeTree returnType = methodTree.returnType();
+    return returnType != null && returnType.symbolType().is("java.lang.Boolean");
   }
 
   private class ReturnStatementVisitor extends BaseTreeVisitor {

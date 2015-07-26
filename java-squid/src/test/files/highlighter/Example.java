@@ -8,6 +8,7 @@
 @SuppressWarnings("unused")
 class Example {
 
+  @java.lang.Deprecated
   int method() {
     return 42;
   }

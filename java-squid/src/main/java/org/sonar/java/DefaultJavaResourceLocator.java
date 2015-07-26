@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,11 +27,11 @@ import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.resources.Project;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.java.filters.SuppressWarningsFilter;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -39,11 +39,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
-public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFileScanner {
+public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaResourceLocator.class);
 
-  private final Project project;
+  private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final SuppressWarningsFilter suppressWarningsFilter;
   @VisibleForTesting
@@ -53,8 +53,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
   private final ResourceMapping resourceMapping;
   private SensorContext sensorContext;
 
-  public DefaultJavaResourceLocator(Project project, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
-    this.project = project;
+  public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
+    this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.suppressWarningsFilter = suppressWarningsFilter;
     resourcesByClass = Maps.newHashMap();
@@ -124,7 +124,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
     Preconditions.checkNotNull(sensorContext);
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     javaFilesCache.scanFile(context);
-    org.sonar.api.resources.File currentResource = org.sonar.api.resources.File.fromIOFile(context.getFile(), project);
+    InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));
+    org.sonar.api.resources.File currentResource = (org.sonar.api.resources.File) sensorContext.getResource(inputFile);
     if (currentResource == null) {
       throw new IllegalStateException("resource not found : " + context.getFileKey());
     }
@@ -136,9 +137,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator, JavaFile
       }
     }
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
-    org.sonar.api.resources.File indexedResource = sensorContext.getResource(currentResource);
-    if (indexedResource != null && javaFilesCache.hasSuppressWarningLines()) {
-      suppressWarningsFilter.addComponent(indexedResource.getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
+    if (javaFilesCache.hasSuppressWarningLines()) {
+      suppressWarningsFilter.addComponent(currentResource.getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
     }
   }
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
@@ -43,8 +43,8 @@ public class ClassComplexityCheckTest {
     check.setMax(1);
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("The Cyclomatic Complexity of this class is 4 which is greater than 1 authorized.")
-        .next().atLine(7).withMessage("The Cyclomatic Complexity of this class is 2 which is greater than 1 authorized.")
+        .next().atLine(1).withMessage("The Cyclomatic Complexity of this class is 4 which is greater than 1 authorized.").withCost(3.0)
+        .next().atLine(7).withMessage("The Cyclomatic Complexity of this class is 2 which is greater than 1 authorized.").withCost(1.0)
         .noMore();
   }
 

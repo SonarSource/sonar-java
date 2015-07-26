@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,9 +26,11 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -38,6 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -56,44 +59,48 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private static final Pattern PRINTF_PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?([-#+ 0,(\\<]*)?(\\d+)?(\\.\\d+)?([tT])?([a-zA-Z%])");
   private static final Set<String> TIME_CONVERSIONS = Sets.newHashSet(
-      "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
-      "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
-      "R", "T", "r", "D", "F", "c"
-  );
+    "H", "I", "k", "l", "M", "S", "L", "N", "p", "z", "Z", "s", "Q",
+    "B", "b", "h", "A", "a", "C", "Y", "y", "j", "m", "d", "e",
+    "R", "T", "r", "D", "F", "c"
+    );
   private static final String FORMAT_METHOD_NAME = "format";
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodInvocationMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
-        MethodInvocationMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
-    );
+      MethodMatcher.create().typeDefinition("java.lang.String").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.util.Formatter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintStream").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintStream").name("printf").withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name(FORMAT_METHOD_NAME).withNoParameterConstraint(),
+      MethodMatcher.create().typeDefinition("java.io.PrintWriter").name("printf").withNoParameterConstraint()
+      );
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree formatStringTree;
     List<ExpressionTree> args;
-    //Check type of first argument:
-    if (((AbstractTypedTree) mit.arguments().get(0)).getSymbolType().is("java.lang.String")) {
+    // Check type of first argument:
+    if (mit.arguments().get(0).symbolType().is("java.lang.String")) {
       formatStringTree = mit.arguments().get(0);
       args = mit.arguments().subList(1, mit.arguments().size());
     } else {
-      //format method with "Locale" first argument, skip that one.
+      // format method with "Locale" first argument, skip that one.
       formatStringTree = mit.arguments().get(1);
       args = mit.arguments().subList(2, mit.arguments().size());
     }
     if (formatStringTree.is(Tree.Kind.STRING_LITERAL)) {
-      String formatString = trimQuotes(((LiteralTree) formatStringTree).value());
+      String formatString = LiteralUtils.trimQuotes(((LiteralTree) formatStringTree).value());
       checkLineFeed(formatString, mit);
 
       List<String> params = getParameters(formatString, mit);
       if (usesMessageFormat(formatString, params)) {
         addIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
+        return;
+      }
+      if (params.isEmpty()) {
+        addIssue(mit, "String contains no format specifiers.");
         return;
       }
       cleanupLineSeparator(params);
@@ -102,11 +109,21 @@ public class PrintfCheck extends AbstractMethodDetection {
         return;
       }
       verifyParameters(mit, args, params);
+    } else if (isConcatenationOnSameLine(formatStringTree)) {
+      addIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
   }
 
-  private void cleanupLineSeparator(List<String> params) {
-    //Cleanup %n and %% values
+  private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
+    return formatStringTree.is(Tree.Kind.PLUS) && operandsAreOnSameLine((BinaryExpressionTree) formatStringTree);
+  }
+
+  private static boolean operandsAreOnSameLine(BinaryExpressionTree formatStringTree) {
+    return FirstSyntaxTokenFinder.firstSyntaxToken(formatStringTree.leftOperand()).line() == FirstSyntaxTokenFinder.firstSyntaxToken(formatStringTree.rightOperand()).line();
+  }
+
+  private static void cleanupLineSeparator(List<String> params) {
+    // Cleanup %n and %% values
     Iterator<String> iter = params.iterator();
     while (iter.hasNext()) {
       String param = iter.next();
@@ -130,13 +147,17 @@ public class PrintfCheck extends AbstractMethodDetection {
       int argIndex = index;
       if (param.contains("$")) {
         argIndex = Integer.valueOf(param.substring(0, param.indexOf("$"))) - 1;
+        if (argIndex == -1) {
+          addIssue(mit, "Arguments are numbered starting from 1.");
+          return;
+        }
         param = param.substring(param.indexOf("$") + 1);
       } else {
         index++;
       }
       ExpressionTree argExpressionTree = args.get(argIndex);
       unusedArgs.remove(argExpressionTree);
-      Type argType = ((AbstractTypedTree) argExpressionTree).getSymbolType();
+      Type argType = argExpressionTree.symbolType();
       if (param.startsWith("d") && !isNumerical(argType)) {
         addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
       }
@@ -170,21 +191,19 @@ public class PrintfCheck extends AbstractMethodDetection {
     }
   }
 
-
-  private boolean isNumerical(Type argType) {
+  private static boolean isNumerical(Type argType) {
     return argType.isNumerical()
-        || argType.is("java.math.BigInteger")
-        || argType.is("java.math.BigDecimal")
-        || argType.is("java.lang.Byte")
-        || argType.is("java.lang.Short")
-        || argType.is("java.lang.Integer")
-        || argType.is("java.lang.Long")
-        || argType.is("java.lang.Float")
-        || argType.is("java.lang.Double")
-        ;
+      || argType.is("java.math.BigInteger")
+      || argType.is("java.math.BigDecimal")
+      || argType.is("java.lang.Byte")
+      || argType.is("java.lang.Short")
+      || argType.is("java.lang.Integer")
+      || argType.is("java.lang.Long")
+      || argType.is("java.lang.Float")
+      || argType.is("java.lang.Double");
   }
 
-  private boolean usesMessageFormat(String formatString, List<String> params) {
+  private static boolean usesMessageFormat(String formatString, List<String> params) {
     return params.isEmpty() && (formatString.contains("{0") || formatString.contains("{1"));
   }
 
@@ -212,7 +231,7 @@ public class PrintfCheck extends AbstractMethodDetection {
         continue;
       }
       StringBuilder param = new StringBuilder();
-      for (int groupIndex : new int[]{1, 5, 6}) {
+      for (int groupIndex : new int[] {1, 5, 6}) {
         if (matcher.group(groupIndex) != null) {
           param.append(matcher.group(groupIndex));
         }
@@ -222,11 +241,8 @@ public class PrintfCheck extends AbstractMethodDetection {
     return params;
   }
 
-  private boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
+  private static boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
     return params.isEmpty() && group != null && group.startsWith("<");
   }
 
-  private String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
-  }
 }

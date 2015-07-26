@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -69,7 +69,7 @@ public class Parameter {
     return jvmJavaType == JvmJavaType.L;
   }
 
-  private String extractClassName(String classCanonicalName) {
+  private static String extractClassName(String classCanonicalName) {
     int slashIndex = classCanonicalName.lastIndexOf('/');
     int dollarIndex = classCanonicalName.lastIndexOf('$');
     if (slashIndex != -1 || dollarIndex != -1) {

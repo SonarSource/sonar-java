@@ -5,24 +5,27 @@ import java.util.List;
 
 class Animal {
 
-  public List<? extends Animal> getAnimals() {        // NOK
-    Collection<?> c = new ArrayList<String>();        // OK
+  public List<? extends Animal> getAnimals() {        // Noncompliant
+    Collection<?> c = new ArrayList<String>();        // Compliant
   }
 
-  public List<Animal> getAnimals(){                   // OK
+  public List<Animal> getAnimals(){                   // Compliant
   }
 
   class InnerCat {
-    public List<? extends Cat> getCats() {            // NOK
+    public List<? extends Cat> getCats() {            // Noncompliant
     }
   }
 
   class InnerDog extends Animal {
-    public List<? extends Animal> getAnimals() { // OK method is overriden
+    public List<? extends Animal> getAnimals() { // Compliant method is overriden
       return super.getAnimals();
    }
 
-   public List<Class<?>> foo() {} // OK Class is ignored
-   public List<? extends Class<String>> bar() {} // NOK wildcard is not in Class
+   public List<Class<?>> foo() {} // Compliant Class is ignored
+   public List<? extends Class<String>> bar() {} // Noncompliant {{Remove usage of generic wildcard type.}}
+   private List<? extends Cat> getCats() { //Compliant private method are ignored
+
+    }
   }
 }

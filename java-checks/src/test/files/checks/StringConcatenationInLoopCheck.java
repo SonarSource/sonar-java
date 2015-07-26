@@ -9,14 +9,14 @@ class A {
     Inner inner = new Inner();
     int i = 0;
     for(;i++;i<10){
-      s = i + " : " + s; //Non-Compliant
-      s += i;//Non-Compliant
-      inner.s1 = i + " : "+inner.s1; //Non-Compliant
+      s = i + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
+      s += i;// Noncompliant {{Use a StringBuilder instead.}}
+      inner.s1 = i + " : "+inner.s1; // Noncompliant {{Use a StringBuilder instead.}}
     }
     while(i<20){
-      s = i + " : " + s; //Non-Compliant
-      inner.s1 = i + inner.s1 + " : "; //Non-Compliant
-      s = ((s + " : ")); //Non-Compliant
+      s = i + " : " + s; // Noncompliant {{Use a StringBuilder instead.}}
+      inner.s1 = i + inner.s1 + " : "; // Noncompliant {{Use a StringBuilder instead.}}
+      s = ((s + " : ")); // Noncompliant {{Use a StringBuilder instead.}}
       inner = new Inner();
       i = i + 1;
       s = i + ":"; //Compliant
@@ -29,8 +29,8 @@ class A {
       myObject.stringProperty = "a" + "b";  //Compliant, var is local in the loop
       myObject.stringProperty += "a";//Compliant, var is local in the loop
       MyObject.newInstance().stringProperty = "a"+"b"; //Compliant
-      MyObject.newInstance().stringProperty += "b"; //Non-Compliant
-      MyObject.newInstance().stringProperty = "b" + MyObject.newInstance().stringProperty;
+      MyObject.newInstance().stringProperty += "b"; // Noncompliant {{Use a StringBuilder instead.}}
+      MyObject.newInstance().stringProperty = "b" + MyObject.newInstance().stringProperty; // Noncompliant {{Use a StringBuilder instead.}}
     }
   }
 

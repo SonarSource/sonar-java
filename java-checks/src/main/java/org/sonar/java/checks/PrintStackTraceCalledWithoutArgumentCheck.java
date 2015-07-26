@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,19 +39,17 @@ import java.util.Deque;
 import java.util.LinkedList;
 
 @Rule(
-  key = PrintStackTraceCalledWithoutArgumentCheck.RULE_KEY,
+  key = "S1148",
   name = "Throwable.printStackTrace(...) should not be called",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")
 public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1148";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+  private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<>();
   private JavaFileScannerContext context;
-  private final Deque<Symbol.TypeSymbol> enclosingClass = new LinkedList<Symbol.TypeSymbol>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -65,7 +59,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbol enclosingSymbol = ((ClassTreeImpl) tree).getSymbol();
+    Symbol.TypeSymbol enclosingSymbol = tree.symbol();
     enclosingClass.push(enclosingSymbol);
     super.visitClass(tree);
     enclosingClass.pop();
@@ -77,40 +71,16 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       IdentifierTree identifierTree = ((MemberSelectExpressionTree) tree.methodSelect()).identifier();
       if (!enclosingClassExtendsThrowable() && "printStackTrace".equals(identifierTree.name()) && calledOnTypeInheritedFromThrowable(tree)) {
-        context.addIssue(identifierTree, ruleKey, "Use a logger to log this exception.");
+        context.addIssue(identifierTree, this, "Use a logger to log this exception.");
       }
     }
   }
 
   private boolean enclosingClassExtendsThrowable() {
-    return enclosingClass.peek() != null && extendsThrowable((Type.ClassType) enclosingClass.peek().getType());
+    return enclosingClass.peek() != null && enclosingClass.peek().type().isSubtypeOf("java.lang.Throwable");
   }
 
-  private boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
-    // TODO this is painful way to access caller site of a method.
-    Type type = ((AbstractTypedTree) ((MemberSelectExpressionTree) tree.methodSelect()).expression()).getSymbolType();
-    if (type.isTagged(Type.CLASS)) {
-      return extendsThrowable((Type.ClassType) type);
-    }
-    return false;
+  private static boolean calledOnTypeInheritedFromThrowable(MethodInvocationTree tree) {
+    return ((MemberSelectExpressionTree) tree.methodSelect()).expression().symbolType().isSubtypeOf("java.lang.Throwable");
   }
-
-  private boolean extendsThrowable(Type.ClassType type) {
-    Symbol.TypeSymbol site = type.getSymbol();
-    if (isThrowable(site)) {
-      return true;
-    }
-    while (site.getSuperclass() != null) {
-      site = ((Type.ClassType) site.getSuperclass()).getSymbol();
-      if (isThrowable(site)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isThrowable(Symbol.TypeSymbol site) {
-    return "Throwable".equals(site.getName()) && "java.lang".equals(site.owner().getName());
-  }
-
 }

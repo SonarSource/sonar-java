@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -41,17 +40,13 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   private final InternalSyntaxToken closeParenToken;
 
   public SynchronizedStatementTreeImpl(InternalSyntaxToken synchronizedKeyword, InternalSyntaxToken openParenToken,
-    ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTree block, AstNode... children) {
+    ExpressionTree expression, InternalSyntaxToken closeParenToken, BlockTreeImpl block) {
     super(Kind.SYNCHRONIZED_STATEMENT);
     this.expression = Preconditions.checkNotNull(expression);
     this.block = Preconditions.checkNotNull(block);
     this.synchronizedKeyword = synchronizedKeyword;
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -92,7 +87,10 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      synchronizedKeyword,
+      openParenToken,
       expression,
+      closeParenToken,
       block);
   }
 

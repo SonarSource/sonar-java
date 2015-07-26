@@ -1,0 +1,53 @@
+<p>Java's garbage collection cannot be relied on to clean up everything. Specifically, connections, streams, files and other classes that implement the <code>Closeable</code> interface or it's super-interface, <code>AutoCloseable</code>, must be manually closed after creation. Failure to do so will result in a resource leak which could bring first the application and then perhaps the box it's on to their knees.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+OutputStream stream = null;
+try{
+  for (String property : propertyList) {
+    stream = new FileOutputStream("myfile.txt");  // Noncompliant
+    // ...
+  }
+}catch(Exception e){
+  // ...
+}finally{
+  stream.close();  // Multiple streams were opened. Only the last is closed.
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+OutputStream stream = null;
+try{
+  stream = new FileOutputStream("myfile.txt");
+  for (String property : propertyList) {
+    // ...
+  }
+}catch(Exception e){
+  // ...
+}finally{
+  stream.close();
+}
+</pre>
+
+<h2>Exceptions</h2>
+
+<p>Java 7 introduced the try-with-resources statement, which implicitly closes <code>Closeables</code>. All resources opened in a try-with-resources statement are ignored by this rule.</p>
+
+<pre>
+try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+  //...
+}
+catch ( ... ) {
+  //...
+}
+</pre>
+
+<h2>See</h2>
+
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/459.html">MITRE, CWE-459</a> - Incomplete Cleanup</li>
+  <li><a href="https://www.securecoding.cert.org/confluence/x/9gFqAQ">CERT, FIO04-J</a> - Release resources when they are no longer needed</li>
+</ul>

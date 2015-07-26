@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,8 @@ package org.sonar.java.checks;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.java.resolve.Type;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
@@ -38,8 +37,8 @@ public class ThrowCheckedExceptionCheckTest {
   public void detected() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThrowCheckedExceptionCheck.java"), new VisitorsBridge(new ThrowCheckedExceptionCheck()));
     checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("Remove the usage of the checked exception 'MyCheckedException'.")
-        .next().atLine(8).withMessage("Remove the usage of the checked exception 'IOException'.")
-        .noMore();
+      .next().atLine(7).withMessage("Remove the usage of the checked exception 'MyCheckedException'.")
+      .next().atLine(8).withMessage("Remove the usage of the checked exception 'IOException'.")
+      .noMore();
   }
 }

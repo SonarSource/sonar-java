@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -34,12 +32,14 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = AnonymousClassesTooBigCheck.RULE_KEY,
+  key = "S1188",
   name = "Lambdas and anonymous classes should not have too many lines",
   tags = {"java8"},
   priority = Priority.MAJOR)
@@ -48,13 +48,11 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1188";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(key = "Max",
-      defaultValue = "" + DEFAULT_MAX,
-      description = "Maximum allowed lines in an anonymous class/lambda")
+    defaultValue = "" + DEFAULT_MAX,
+    description = "Maximum allowed lines in an anonymous class/lambda")
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;
@@ -75,7 +73,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     if (tree.classBody() != null && !isEnumConstantBody) {
       int lines = getNumberOfLines(tree.classBody());
       if (lines > max) {
-        context.addIssue(tree, RULE, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
+        context.addIssue(tree, this, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
       }
     }
     isEnumConstantBody = false;
@@ -90,21 +88,28 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
-    int lines = getNumberOfLines(((JavaTree) lambdaExpressionTree.body()).getAstNode());
+    int lines = getNumberOfLines(lambdaExpressionTree);
     if (lines > max) {
-      context.addIssue(lambdaExpressionTree, RULE, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
+      context.addIssue(lambdaExpressionTree, this, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }
 
-  private int getNumberOfLines(ClassTree classTree) {
-    int startLine = ((InternalSyntaxToken) classTree.openBraceToken()).getLine();
-    int endline = ((InternalSyntaxToken) classTree.closeBraceToken()).getLine();
+  private static int getNumberOfLines(ClassTree classTree) {
+    int startLine = classTree.openBraceToken().line();
+    int endline = classTree.closeBraceToken().line();
     return endline - startLine + 1;
   }
 
-  private int getNumberOfLines(AstNode node) {
-    return node.getLastToken().getLine() - node.getTokenLine() + 1;
+  private static int getNumberOfLines(LambdaExpressionTree lambdaExpressionTree) {
+    Tree body = lambdaExpressionTree.body();
+    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(body);
+    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(body);
+    if (firstSyntaxToken == null || lastSyntaxToken == null) {
+      // Only happen if the body of the lambda expression is a Tree.Kind.OTHER
+      return 0;
+    }
+    return lastSyntaxToken.line() - firstSyntaxToken.line() + 1;
   }
 
 }

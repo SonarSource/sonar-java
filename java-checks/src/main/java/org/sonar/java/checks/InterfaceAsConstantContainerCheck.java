@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -53,7 +53,7 @@ public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasConstant(ClassTree tree) {
+  private static boolean hasConstant(ClassTree tree) {
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
         return true;

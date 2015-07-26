@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,7 +78,7 @@ public class ObjectFinalizeCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinalizeMethodMember(MethodTree methodTree) {
+  private static boolean isFinalizeMethodMember(MethodTree methodTree) {
     Tree returnType = methodTree.returnType();
     boolean returnVoid = returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
     return returnVoid && "finalize".equals(methodTree.simpleName().name());

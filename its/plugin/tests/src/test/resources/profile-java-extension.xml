@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profile>
+  <name>java-extension</name>
+  <language>java</language>
+  <rules>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>example</key>
+      <priority>MAJOR</priority>
+    </rule>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>subscriptionexamplecheck</key>
+      <priority>MAJOR</priority>
+    </rule>
+  </rules>
+</profile>

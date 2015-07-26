@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,42 +20,71 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.ArrayDimensionTreeImpl;
+import org.sonar.java.model.declaration.AnnotationTreeImpl;
+import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
+
+import javax.annotation.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
 
-  private Tree type;
-  private final List<ExpressionTree> dimensions;
-  private final List<ExpressionTree> initializers;
+  @Nullable
+  private TypeTree type;
+  @Nullable
+  private SyntaxToken newKeyword;
+  private List<ArrayDimensionTree> dimensions;
+  @Nullable
+  private SyntaxToken openCurlyBraceToken;
+  private final ListTree<ExpressionTree> initializers;
+  @Nullable
+  private SyntaxToken closeCurlyBraceToken;
 
-  public NewArrayTreeImpl(List<ExpressionTree> dimensions, List<ExpressionTree> initializers, List<AstNode> children) {
+  public NewArrayTreeImpl(List<ArrayDimensionTree> dimensions, ListTree<ExpressionTree> initializers) {
     super(Kind.NEW_ARRAY);
 
     // TODO maybe type should not be null?
     this.type = null;
     this.dimensions = Preconditions.checkNotNull(dimensions);
     this.initializers = Preconditions.checkNotNull(initializers);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
-  public NewArrayTreeImpl complete(Tree type, AstNode... children) {
+  public NewArrayTreeImpl complete(TypeTree type) {
     Preconditions.checkState(this.type == null);
     this.type = type;
 
-    prependChildren(children);
+    return this;
+  }
 
+  public NewArrayTreeImpl completeWithNewKeyword(SyntaxToken newKeyword) {
+    this.newKeyword = newKeyword;
+    return this;
+  }
+
+  public NewArrayTreeImpl completeWithCurlyBraces(SyntaxToken openCurlyBraceToken, SyntaxToken closeCurlyBraceToken) {
+    this.openCurlyBraceToken = openCurlyBraceToken;
+    this.closeCurlyBraceToken = closeCurlyBraceToken;
+    return this;
+  }
+
+  public NewArrayTreeImpl completeDimensions(List<ArrayDimensionTree> arrayDimensions) {
+    this.dimensions = ImmutableList.<ArrayDimensionTree>builder().addAll(arrayDimensions).addAll(dimensions).build();
+    return this;
+  }
+
+  public NewArrayTreeImpl completeFirstDimension(List<AnnotationTreeImpl> annotations) {
+    ((ArrayDimensionTreeImpl) this.dimensions.get(0)).completeAnnotations(annotations);
     return this;
   }
 
@@ -65,18 +94,30 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 
   @Override
-  public List<ExpressionTree> dimensions() {
+  public List<ArrayDimensionTree> dimensions() {
     return dimensions;
   }
 
+  @Nullable
   @Override
-  public List<ExpressionTree> initializers() {
+  public SyntaxToken openBraceToken() {
+    return openCurlyBraceToken;
+  }
+
+  @Override
+  public ListTree<ExpressionTree> initializers() {
     return initializers;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken closeBraceToken() {
+    return closeCurlyBraceToken;
   }
 
   @Override
@@ -86,11 +127,25 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.singletonIterator(type),
-      dimensions.iterator(),
-      initializers.iterator()
-      );
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    addIfNotNull(iteratorBuilder, newKeyword);
+    addIfNotNull(iteratorBuilder, type);
+    iteratorBuilder.addAll(dimensions);
+    addIfNotNull(iteratorBuilder, openCurlyBraceToken);
+    iteratorBuilder.add(initializers);
+    addIfNotNull(iteratorBuilder, closeCurlyBraceToken);
+    return iteratorBuilder.build().iterator();
   }
 
+  @Override
+  public SyntaxToken newKeyword() {
+    return newKeyword;
+  }
+
+  private static ImmutableList.Builder<Tree> addIfNotNull(ImmutableList.Builder<Tree> builder, Tree tree) {
+    if (tree != null) {
+      builder.add(tree);
+    }
+    return builder;
+  }
 }

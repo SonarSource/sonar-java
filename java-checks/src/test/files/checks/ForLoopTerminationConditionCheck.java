@@ -1,7 +1,7 @@
 class A {
   void myMethod() {
     int j = 0, k = 0;
-    for (    j = 1; j != 4; j += 2) {} // Noncompliant
+    for (    j = 1; j != 4; j += 2) {} // Noncompliant {{Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.}}
     for (int i = 1; i != 4; i += 2) {} // Noncompliant
     for (int i =-1; i !=-4; i -= 2) {} // Noncompliant
     for (int i = 1; i != 4; i = i+2){} // Noncompliant
@@ -44,5 +44,6 @@ class A {
     for (method() ; i != 4; i--)    {}
     for (double i = 1.; i != 4.; i += 2.) {}
     for (String s = "abc"; s.length() > 0; s = s.substring(1)) {}
+    for (Integer i = 1; i != null; i += 2) {}
   }
 }

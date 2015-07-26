@@ -1,12 +1,12 @@
 class A {
   void foo() {
-    if (something) { // Non-Compliant
+    if (something) { // Noncompliant {{Replace this if-then-else statement by a single return statement.}}
       return true;
     } else {
       return false;
     }
 
-    if (something) { // Non-Compliant
+    if (something) { // Noncompliant
       return false;
     } else {
       return true;
@@ -24,7 +24,7 @@ class A {
       return foo;
     }
 
-    if (something) // Non-Compliant
+    if (something) // Noncompliant
       return true;
     else
       return false;
@@ -63,7 +63,7 @@ class A {
     } else {
       return false;
     }
-    if (something)
+    if (something) // Noncompliant
       return true;
     else
       return false;

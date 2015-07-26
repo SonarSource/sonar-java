@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -95,7 +95,7 @@ public final class ParameterSignatureScanner {
     return new Parameter(jvmJavaType, isArray);
   }
 
-  private int searchEndOfParameterSignature(String signature, int index) {
+  private static int searchEndOfParameterSignature(String signature, int index) {
     int genericDefinitionStack = 0;
     for (; index < signature.length(); index++) {
       char character = signature.charAt(index);

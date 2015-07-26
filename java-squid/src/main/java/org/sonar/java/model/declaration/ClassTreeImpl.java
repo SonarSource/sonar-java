@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,83 +20,74 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameters;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   private final Kind kind;
+  @Nullable
+  private final SyntaxToken openBraceToken;
+  private final List<Tree> members;
+  @Nullable
+  private final SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
+  private SyntaxToken atToken;
+  private SyntaxToken declarationKeyowrd;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
   @Nullable
-  private Tree superClass;
-  private List<Tree> superInterfaces;
-  private final List<Tree> members;
-
-  // FIXME(Godin): never should be null, i.e. should have default value
+  private SyntaxToken extendsKeyword;
   @Nullable
-  private Symbol.TypeSymbol symbol;
+  private TypeTree superClass;
+  @Nullable
+  private SyntaxToken implementsKeyowrd;
+  private ListTree<TypeTree> superInterfaces;
+  private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
 
-  public ClassTreeImpl(Kind kind, List<Tree> members, List<AstNode> children) {
+  public ClassTreeImpl(Kind kind, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     super(kind);
 
     this.kind = kind;
+    this.openBraceToken = openBraceToken;
     this.members = members;
+    this.closeBraceToken = closeBraceToken;
     this.modifiers = ModifiersTreeImpl.EMPTY;
     this.typeParameters = new TypeParameterListTreeImpl();
-    this.superInterfaces = ImmutableList.of();
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
   }
 
-  public ClassTreeImpl(ModifiersTree modifiers, List<Tree> members, List<AstNode> children) {
+  public ClassTreeImpl(ModifiersTree modifiers, SyntaxToken openBraceToken, List<Tree> members, SyntaxToken closeBraceToken) {
     super(Kind.ANNOTATION_TYPE);
     this.kind = Preconditions.checkNotNull(Kind.ANNOTATION_TYPE);
     this.modifiers = modifiers;
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superClass = null;
-    this.superInterfaces = ImmutableList.of();
+    this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
+    this.openBraceToken = openBraceToken;
     this.members = Preconditions.checkNotNull(members);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
-  }
-
-  public ClassTreeImpl(
-    AstNode astNode, Kind kind,
-    ModifiersTree modifiers, @Nullable IdentifierTree simpleName, TypeParameters typeParameters, @Nullable Tree superClass, List<Tree> superInterfaces, List<Tree> members) {
-    super(astNode);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.modifiers = Preconditions.checkNotNull(modifiers);
-    this.simpleName = simpleName;
-    this.typeParameters = typeParameters;
-    this.superClass = superClass;
-    this.superInterfaces = Preconditions.checkNotNull(superInterfaces);
-    this.members = Preconditions.checkNotNull(members);
+    this.closeBraceToken = closeBraceToken;
   }
 
   public ClassTreeImpl completeModifiers(ModifiersTreeImpl modifiers) {
@@ -114,22 +105,32 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return this;
   }
 
-  public ClassTreeImpl completeSuperclass(Tree superClass) {
+  public ClassTreeImpl completeSuperclass(SyntaxToken extendsKeyword, TypeTree superClass) {
+    this.extendsKeyword = extendsKeyword;
     this.superClass = superClass;
     return this;
   }
 
-  public ClassTreeImpl completeInterfaces(QualifiedIdentifierListTreeImpl interfaces) {
-    this.superInterfaces = (List) interfaces;
+  public ClassTreeImpl completeInterfaces(SyntaxToken keyword, QualifiedIdentifierListTreeImpl interfaces) {
+    if (is(Kind.INTERFACE)) {
+      extendsKeyword = keyword;
+    } else {
+      implementsKeyowrd = keyword;
+    }
+    this.superInterfaces = interfaces;
     return this;
   }
 
   public ClassTreeImpl complete(InternalSyntaxToken atToken, InternalSyntaxToken interfaceToken, IdentifierTree simpleName) {
     Preconditions.checkState(this.simpleName == null);
-    this.simpleName = simpleName;
+    completeIdentifier(simpleName);
+    this.atToken = atToken;
+    completeDeclarationKeyword(interfaceToken);
+    return this;
+  }
 
-    prependChildren(atToken, interfaceToken, (AstNode) simpleName);
-
+  public ClassTreeImpl completeDeclarationKeyword(SyntaxToken declarationKeyword) {
+    this.declarationKeyowrd = declarationKeyword;
     return this;
   }
 
@@ -156,29 +157,19 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Nullable
   @Override
-  public Tree superClass() {
+  public TypeTree superClass() {
     return superClass;
   }
 
   @Override
-  public List<Tree> superInterfaces() {
+  public ListTree<TypeTree> superInterfaces() {
     return superInterfaces;
   }
 
+  @Nullable
   @Override
   public SyntaxToken openBraceToken() {
-    return getBrace(JavaPunctuator.LWING);
-  }
-
-  @Nullable
-  private SyntaxToken getBrace(JavaPunctuator leftOrRightBrace) {
-    if (is(Kind.ANNOTATION_TYPE)) {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
-    } else if (getAstNode().is(Kind.CLASS, Kind.ENUM, Kind.INTERFACE)) {
-      return new InternalSyntaxToken(getAstNode().getFirstChild(leftOrRightBrace).getToken());
-    }
-    return new InternalSyntaxToken(getAstNode().getFirstChild(JavaLexer.CLASS_BODY, JavaLexer.INTERFACE_BODY, JavaLexer.ENUM_BODY)
-      .getFirstChild(leftOrRightBrace).getToken());
+    return openBraceToken;
   }
 
   @Override
@@ -186,9 +177,21 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return members;
   }
 
+  @Nullable
   @Override
   public SyntaxToken closeBraceToken() {
-    return getBrace(JavaPunctuator.RWING);
+    return closeBraceToken;
+  }
+
+  @Override
+  public Symbol.TypeSymbol symbol() {
+    return symbol;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken declarationKeyword() {
+    return declarationKeyowrd;
   }
 
   @Override
@@ -196,19 +199,14 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     visitor.visitClass(this);
   }
 
-  @Nullable
-  public Symbol.TypeSymbol getSymbol() {
-    return symbol;
-  }
-
-  public void setSymbol(Symbol.TypeSymbol symbol) {
-    Preconditions.checkState(this.symbol == null);
+  public void setSymbol(JavaSymbol.TypeJavaSymbol symbol) {
+    Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
     this.symbol = symbol;
   }
 
   @Override
   public int getLine() {
-    if(simpleName==null) {
+    if (simpleName == null) {
       return super.getLine();
     }
     return ((IdentifierTreeImpl) simpleName).getLine();
@@ -216,20 +214,27 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    Iterator<TypeParameters> typeParamIterator = Iterators.emptyIterator();
-    if(typeParameters != null) {
-      typeParamIterator = Iterators.singletonIterator(typeParameters);
-    }
     return Iterators.concat(
-      Iterators.forArray(
-        modifiers,
-        simpleName
-        ),
-      typeParamIterator,
-      Iterators.singletonIterator(superClass),
-      superInterfaces.iterator(),
-      members.iterator()
+      Iterators.singletonIterator(modifiers),
+      addIfNotNull(atToken),
+      addIfNotNull(declarationKeyowrd),
+      addIfNotNull(simpleName),
+      Iterators.singletonIterator(typeParameters),
+      addIfNotNull(extendsKeyword),
+      addIfNotNull(superClass),
+      addIfNotNull(implementsKeyowrd),
+      Iterators.singletonIterator(superInterfaces),
+      addIfNotNull(openBraceToken),
+      members.iterator(),
+      addIfNotNull(closeBraceToken)
       );
+  }
+
+  private static Iterator<Tree> addIfNotNull(@Nullable Tree tree) {
+    if (tree == null) {
+      return Iterators.emptyIterator();
+    }
+    return Iterators.singletonIterator(tree);
   }
 
 }

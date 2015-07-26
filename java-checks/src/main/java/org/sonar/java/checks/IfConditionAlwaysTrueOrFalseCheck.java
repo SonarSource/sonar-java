@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,6 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -33,10 +32,9 @@ import java.util.List;
 
 @Rule(
   key = "S1145",
-  name = "\"if\" statement conditions should not unconditionally evaluate to \"true\" or to \"false\"",
-  tags = {"bug", "cwe", "misra", "security"},
+  name = "Useless \"if(true) {...}\" and \"if(false){...}\" blocks should be removed",
+  tags = {"cwe", "misra"},
   priority = Priority.MAJOR)
-@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {

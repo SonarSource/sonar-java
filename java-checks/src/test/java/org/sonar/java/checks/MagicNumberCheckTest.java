@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,28 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MagicNumberCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MagicNumberCheck.java"), new VisitorsBridge(new MagicNumberCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Assign this magic number 42 to a well-named constant, and use the constant instead.")
-        .next().atLine(9).withMessage("Assign this magic number 12L to a well-named constant, and use the constant instead.")
-        .next().atLine(10).withMessage("Assign this magic number 12.3d to a well-named constant, and use the constant instead.")
-        .next().atLine(11).withMessage("Assign this magic number 12.3F to a well-named constant, and use the constant instead.")
-    ;
+    JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheck.java", new MagicNumberCheck());
   }
 }

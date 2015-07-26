@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,75 +19,59 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
-  key = NPEThrowCheck.RULE_KEY,
+  key = "S1695",
   name = "\"NullPointerException\" should not be explicitly thrown",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")
-public class NPEThrowCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1695";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private JavaFileScannerContext context;
+public class NPEThrowCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    if (context.getSemanticModel() != null) {
-      scan(context.getTree());
-    }
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Kind.THROW_STATEMENT, Kind.METHOD, Kind.CONSTRUCTOR);
   }
 
   @Override
-  public void visitThrowStatement(ThrowStatementTree tree) {
-    raiseIssueOnNpe((AbstractTypedTree) tree.expression());
-    super.visitThrowStatement(tree);
-  }
-
-  @Override
-  public void visitMethod(MethodTree tree) {
-    for (ExpressionTree throwClause : tree.throwsClauses()) {
-      raiseIssueOnNpe((AbstractTypedTree) throwClause);
-    }
-    super.visitMethod(tree);
-  }
-
-  private void raiseIssueOnNpe(AbstractTypedTree tree) {
-    if (isNPE(tree)) {
-      context.addIssue(treeAtFault(tree), ruleKey, "Throw some other exception here, such as \"IllegalArgumentException\".");
+  public void visitNode(Tree tree) {
+    if (hasSemantic()) {
+      if (tree.is(Kind.THROW_STATEMENT)) {
+        ExpressionTree expressionTree = ((ThrowStatementTree) tree).expression();
+        raiseIssueOnNpe(expressionTree, expressionTree.symbolType());
+      } else {
+        for (TypeTree throwClause : ((MethodTree) tree).throwsClauses()) {
+          raiseIssueOnNpe(throwClause, throwClause.symbolType());
+        }
+      }
     }
   }
 
-  private Tree treeAtFault(AbstractTypedTree tree) {
+  private void raiseIssueOnNpe(Tree tree, Type type) {
+    if (type.is("java.lang.NullPointerException")) {
+      addIssue(treeAtFault(tree), "Throw some other exception here, such as \"IllegalArgumentException\".");
+    }
+  }
+
+  private static Tree treeAtFault(Tree tree) {
     return tree.is(Kind.NEW_CLASS) ? ((NewClassTree) tree).identifier() : tree;
   }
 
-  private boolean isNPE(AbstractTypedTree tree) {
-    if (tree.getSymbolType().isTagged(Type.CLASS)) {
-      Type.ClassType type = (Type.ClassType) tree.getSymbolType();
-      return "NullPointerException".equals(type.getSymbol().getName());
-    }
-    return false;
-  }
 }

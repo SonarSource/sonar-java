@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class JavaPunctuatorTest {
 
@@ -31,11 +29,9 @@ public class JavaPunctuatorTest {
   public void test() {
     assertThat(JavaPunctuator.values()).hasSize(52);
 
-    AstNode astNode = mock(AstNode.class);
     for (JavaPunctuator punctuator : JavaPunctuator.values()) {
       assertThat(punctuator.getName()).isEqualTo(punctuator.name());
       assertThat(punctuator.getValue()).isNotNull();
-      assertThat(punctuator.hasToBeSkippedFromAst(astNode)).isFalse();
     }
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,17 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -40,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Collection;
 
 @Rule(
-  key = FieldNameMatchingTypeNameCheck.RULE_KEY,
+  key = "S1700",
   name = "A field should not duplicate the name of its containing class",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -48,9 +47,6 @@ import java.util.Collection;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1700";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
   private SemanticModel semanticModel;
@@ -70,31 +66,32 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.simpleName() != null) {
-      Symbol.TypeSymbol classSymbol = ((ClassTreeImpl) tree).getSymbol();
-      Collection<Symbol> members = classSymbol.members().scopeSymbols();
+    IdentifierTree simpleName = tree.simpleName();
+    if (simpleName != null) {
+      Symbol.TypeSymbol classSymbol = tree.symbol();
+      Collection<Symbol> members = classSymbol.memberSymbols();
       for (Symbol sym : members) {
-        if (sym.isKind(Symbol.VAR) && !staticFieldSameType(classSymbol, sym)) {
+        if (sym.isVariableSymbol() && !staticFieldSameType(classSymbol, sym)) {
           //Exclude static fields of the same type.
-          fields.add(semanticModel.getTree(sym));
+          fields.add(((Symbol.VariableSymbol) sym).declaration());
         }
       }
-      currentClassName = tree.simpleName().name();
+      currentClassName = simpleName.name();
     }
     super.visitClass(tree);
     currentClassName = "";
     fields.clear();
   }
 
-  private boolean staticFieldSameType(Symbol.TypeSymbol classSymbol, Symbol sym) {
-    return sym.getType() != null && sym.getType().equals(classSymbol.getType()) && sym.isStatic();
+  private boolean staticFieldSameType(Symbol classSymbol, Symbol sym) {
+    return sym.type().equals(classSymbol.type()) && sym.isStatic();
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
     String name = tree.simpleName().name();
     if (fields.contains(tree) && currentClassName.equalsIgnoreCase(name)) {
-      context.addIssue(tree, ruleKey, "Rename field \"" + name + "\"");
+      context.addIssue(tree, this, "Rename field \"" + name + "\"");
     }
     super.visitVariable(tree);
   }

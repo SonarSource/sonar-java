@@ -5,20 +5,37 @@ class Foo {
     } else if (somethingElse) {          // Compliant
       doSomethingElse();
     }
-    else {                               // Non-Compliant
+    else {                               // Noncompliant {{Move this "else" on the same line that the previous closing curly brace.}}
        generateError();
+    }
+    
+    if (something) {
+      executeTask();
+    }                                   // Compliant
+    
+    if (something)
+      executeTask();
+    else {                              // Compliant
+      generateError();
     }
 
     try {
       generateOrder();
     }
-    catch (RuntimeException e) {         // Non-Compliant
+    catch (RuntimeException e) {         // Noncompliant {{Move this "catch" on the same line that the previous closing curly brace.}}
       log(e);
     } catch (Exception e) {              // Compliant
       log(e);
     }
-    finally {                            // Non-Compliant
+    finally {                            // Noncompliant {{Move this "finally" on the same line that the previous closing curly brace.}}
       closeConnection();
+    }
+    
+    try {
+      generateOrder();
+    }
+    catch (Exception e) {              // Noncompliant {{Move this "catch" on the same line that the previous closing curly brace.}}
+      log(e);
     }
   }
 }

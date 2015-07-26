@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.TokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum JavaPunctuator implements TokenType, GrammarRuleKey {
+public enum JavaPunctuator implements GrammarRuleKey {
 
   AT("@"),
   AND("&"),
@@ -83,23 +81,16 @@ public enum JavaPunctuator implements TokenType, GrammarRuleKey {
 
   private final String value;
 
-  private JavaPunctuator(String word) {
+  JavaPunctuator(String word) {
     this.value = word;
   }
 
-  @Override
   public String getName() {
     return name();
   }
 
-  @Override
   public String getValue() {
     return value;
-  }
-
-  @Override
-  public boolean hasToBeSkippedFromAst(AstNode node) {
-    return false;
   }
 
 }

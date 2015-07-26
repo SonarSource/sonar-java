@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,17 +26,15 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -92,19 +90,26 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       super.visitNode(tree);
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        boolean foundIssue = checkForbiddenTypes(tree, (AbstractTypedTree) variableTree.type());
+        boolean foundIssue = checkForbiddenTypes(tree, variableTree.type());
         if (foundIssue) {
           excluded.add(variableTree.initializer());
         }
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        checkForbiddenTypes(tree, (MethodInvocationTreeImpl) tree);
+        checkForbiddenTypes(tree, (MethodInvocationTree) tree);
       }
     }
   }
 
-  private boolean checkForbiddenTypes(Tree tree, AbstractTypedTree typedTree) {
+  private boolean checkForbiddenTypes(Tree tree, TypeTree typedTree) {
+    return checkForbiddenTypes(tree, typedTree.symbolType());
+  }
+
+  private boolean checkForbiddenTypes(Tree tree, ExpressionTree typedTree) {
+    return checkForbiddenTypes(tree, typedTree.symbolType());
+  }
+
+  private boolean checkForbiddenTypes(Tree tree, Type symbolType) {
     boolean foundIssue = false;
-    Type symbolType = typedTree.getSymbolType();
     for (String forbiddenType : FORBIDDEN_TYPES) {
       if (symbolType.is(forbiddenType)) {
         addIssue(tree, "Remove this use of \"" + forbiddenType + "\"");
@@ -115,7 +120,7 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       method(JAVA_LANG_STRING, "getBytes"),
       method(JAVA_LANG_STRING, "getBytes", INT, INT, BYTE_ARRAY, INT),
@@ -142,33 +147,31 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       constructor(JAVA_UTIL_SCANNER, JAVA_IO_INPUTSTREAM));
   }
 
-  private MethodInvocationMatcher method(String type, String methodName, String... argTypes) {
-    MethodInvocationMatcher matcher = MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
+  private static MethodMatcher method(String type, String methodName, String... argTypes) {
+    MethodMatcher matcher = MethodMatcher.create().typeDefinition(type).name(methodName);
     for (String argType : argTypes) {
       matcher = matcher.addParameter(argType);
     }
     return matcher;
   }
 
-  private MethodInvocationMatcher constructor(String type, String... argTypes) {
+  private static MethodMatcher constructor(String type, String... argTypes) {
     return method(type, "<init>", argTypes);
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
-    MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) mit;
-    String methodName = methodInvocationTreeImpl.getSymbol().getName();
-    addIssue(mit, "Remove this use of \"" + methodName + "\"");
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    addIssue(mit, "Remove this use of \"" + mit.symbol().name() + "\"");
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) newClassTree;
-    IdentifierTree constructorIdentifier = newClassTreeImpl.getConstructorIdentifier();
-    MethodSymbol constructor = (MethodSymbol) getSemanticModel().getReference(constructorIdentifier);
-    List<Type> parametersTypes = constructor.getParametersTypes();
-    String signature = constructor.owner().getName() + "(" + Joiner.on(',').join(parametersTypes) + ")";
-    addIssue(newClassTree, "Remove this use of constructor \"" + signature + "\"");
+    Symbol symbol = newClassTree.constructorSymbol();
+    if(symbol.isMethodSymbol()) {
+      Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
+      String signature = constructor.owner().name() + "(" + Joiner.on(',').join(constructor.parameterTypes()) + ")";
+      addIssue(newClassTree, "Remove this use of constructor \"" + signature + "\"");
+    }
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,4 +22,6 @@ package org.sonar.plugins.java.api.tree;
 import java.util.List;
 
 public interface ListTree<T> extends Tree, List<T> {
+
+  List<SyntaxToken> separators();
 }

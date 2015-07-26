@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,9 @@ import org.junit.Test;
 import org.sonar.api.rules.AnnotationRuleParser;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleParam;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -59,7 +61,6 @@ public class CheckListTest {
   @Test
   public void test() {
     List<Class> checks = CheckList.getChecks();
-
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       assertThat(getClass().getResource(testName))
@@ -68,10 +69,13 @@ public class CheckListTest {
     }
 
     Set<String> keys = Sets.newHashSet();
+    Set<String> names = Sets.newHashSet();
     List<Rule> rules = new AnnotationRuleParser().parse("repositoryKey", checks);
     for (Rule rule : rules) {
       assertThat(keys).as("Duplicate key " + rule.getKey()).excludes(rule.getKey());
+      assertThat(names).as("Duplicate name "+rule.getKey()+" : " + rule.getName()).excludes(rule.getName());
       keys.add(rule.getKey());
+      names.add(rule.getName());
 
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.getKey() + ".html"))
         .overridingErrorMessage("No description for " + rule.getKey())
@@ -100,12 +104,11 @@ public class CheckListTest {
    */
   @Test
   public void should_not_fail_on_invalid_file() throws Exception {
-    List<Class> checks = CheckList.getChecks();
 
-    for (Class check : checks) {
+    for (Class check : CheckList.getChecks()) {
       CodeVisitor visitor = (CodeVisitor) check.newInstance();
-      if (visitor instanceof SquidAstVisitor) {
-        JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), (SquidAstVisitor) visitor);
+      if (visitor instanceof JavaFileScanner) {
+        JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridge((JavaFileScanner) visitor));
       }
     }
   }

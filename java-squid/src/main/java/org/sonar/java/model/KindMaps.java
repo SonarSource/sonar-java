@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,12 +22,12 @@ package org.sonar.java.model;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.sonar.sslr.api.AstNodeType;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.api.JavaTokenType;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.Map;
 
@@ -38,10 +38,10 @@ public final class KindMaps {
   private final Map<JavaPunctuator, Tree.Kind> postfixOperators = Maps.newEnumMap(JavaPunctuator.class);
   private final Map<JavaPunctuator, Tree.Kind> binaryOperators = Maps.newEnumMap(JavaPunctuator.class);
   private final Map<JavaPunctuator, Tree.Kind> assignmentOperators = Maps.newEnumMap(JavaPunctuator.class);
-  private final Map<AstNodeType, Tree.Kind> literals;
+  private final Map<GrammarRuleKey, Tree.Kind> literals;
 
   public KindMaps() {
-    ImmutableMap.Builder<AstNodeType, Tree.Kind> literalsBuilder = ImmutableMap.builder();
+    ImmutableMap.Builder<GrammarRuleKey, Tree.Kind> literalsBuilder = ImmutableMap.builder();
     literalsBuilder.put(JavaTokenType.INTEGER_LITERAL, Tree.Kind.INT_LITERAL);
     literalsBuilder.put(JavaTokenType.LONG_LITERAL, Tree.Kind.LONG_LITERAL);
     literalsBuilder.put(JavaTokenType.FLOAT_LITERAL, Tree.Kind.FLOAT_LITERAL);
@@ -131,8 +131,8 @@ public final class KindMaps {
     return Preconditions.checkNotNull(assignmentOperators.get(punctuator), "Mapping not found for assignment operator %s", punctuator);
   }
 
-  public Tree.Kind getLiteral(AstNodeType tokenType) {
-    return Preconditions.checkNotNull(literals.get(tokenType), "Mapping not found for literal %s", tokenType);
+  public Tree.Kind getLiteral(GrammarRuleKey grammarRuleKey) {
+    return Preconditions.checkNotNull(literals.get(grammarRuleKey), "Mapping not found for literal %s", grammarRuleKey);
   }
 
 }

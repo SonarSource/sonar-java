@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -41,17 +40,13 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   private final InternalSyntaxToken closeParenToken;
 
   public WhileStatementTreeImpl(InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    StatementTree statement, AstNode... children) {
-
+    StatementTree statement) {
     super(Kind.WHILE_STATEMENT);
-    this.condition = Preconditions.checkNotNull(condition);
-    this.statement = Preconditions.checkNotNull(statement);
     this.whileKeyword = whileKeyword;
     this.openParenToken = openParenToken;
+    this.condition = Preconditions.checkNotNull(condition);
     this.closeParenToken = closeParenToken;
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.statement = Preconditions.checkNotNull(statement);
   }
 
   @Override
@@ -92,7 +87,10 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      whileKeyword,
+      openParenToken,
       condition,
+      closeParenToken,
       statement);
   }
 

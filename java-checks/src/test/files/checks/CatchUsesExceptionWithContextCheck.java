@@ -1,7 +1,7 @@
 class A {
   private void f() {
     try {
-    } catch (Exception e) {                     // Noncompliant
+    } catch (Exception e) {                     // Noncompliant {{Either log or rethrow this exception.}}
     } catch (Exception e) {                     // Compliant
       System.out.println(e);
     } catch (Exception e) {                     // Noncompliant
@@ -17,9 +17,9 @@ class A {
       try {
       } catch (Exception f) {                   // Noncompliant
       }
-    } catch (Exception e) {                     // Noncompliant
+    } catch (Exception e) {
       try {
-      } catch (Exception f) {                   // Noncompliant
+      } catch (Exception f) {                   // Noncompliant {{Either log or rethrow this exception.}}
         System.out.println("", e);
       }
     } catch (RuntimeException e) {
@@ -42,7 +42,7 @@ class A {
       throw Throwables.propagate(e);
     } catch (RuntimeException e) {              // Compliant - propagation
       throw e;
-    } catch (Exception e) {                     // Noncompliant - exception is lost
+    } catch (Exception e) {                     // Noncompliant
       throw new RuntimeException("context");
     }
 
@@ -65,7 +65,7 @@ class A {
     }
 
     try {
-    } catch (IOException e) {                    // Compliant - checked to unchecked
+    } catch (IOException e) {                    // Compliant
       throw Throwables.propagate(e);
     }
 
@@ -142,7 +142,7 @@ class A {
     } catch (Exception e) {                       // Compliant
       throw wrapHttpException ? null : e;
     }
-    catch (Exception e) {                     // Compliant
+    catch (Exception e) {                     // Noncompliant
       try {
       } catch (Exception f) {                   // Noncompliant
        System.out.println("", e.getCause());

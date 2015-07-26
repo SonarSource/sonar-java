@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -42,7 +41,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 @Rule(
-  key = SunPackagesUsedCheck.RULE_KEY,
+  key = "S1191",
   name = "Classes from \"sun.*\" packages should not be used",
   tags = {"lock-in", "pitfall"},
   priority = Priority.MAJOR)
@@ -51,8 +50,7 @@ import java.util.Set;
 @SqaleConstantRemediation("1h")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1191";
-  private Set<Integer> reportedLines = new HashSet<Integer>();
+  private Set<Integer> reportedLines = new HashSet<>();
 
   private static final String DEFAULT_EXCLUDE = "";
 
@@ -63,7 +61,6 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   public String exclude = DEFAULT_EXCLUDE;
   private String[] excludePackages = null;
   private JavaFileScannerContext context;
-  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -77,20 +74,20 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     String reference = merge(tree);
     if (!isExcluded(reference)) {
-      int line = ((JavaTree) tree).getLine();
+      int line = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
       if (!reportedLines.contains(line) && isSunClass(reference)) {
-        context.addIssue(line, ruleKey, "Replace this usage of Sun classes by ones from the Java API.");
+        context.addIssue(line, this, "Replace this usage of Sun classes by ones from the Java API.");
         reportedLines.add(line);
       }
       super.visitMemberSelectExpression(tree);
     }
   }
 
-  private boolean isSunClass(String reference) {
+  private static boolean isSunClass(String reference) {
     return "com.sun".equals(reference) || reference.matches("sun\\.[^\\.]*");
   }
 
-  private String merge(ExpressionTree tree) {
+  private static String merge(ExpressionTree tree) {
     Deque<String> pieces = new LinkedList<String>();
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {

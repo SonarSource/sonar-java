@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ConcurrentLinkedQueueSizeCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ConcurrentLinkedQueueSizeCheck.java"),
-        new VisitorsBridge(new ConcurrentLinkedQueueSizeCheck(), ImmutableList.of(new File("target/test-classes"))));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Remove this call to \"ConcurrentLinkedQueue.size()\"")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ConcurrentLinkedQueueSizeCheck.java", new ConcurrentLinkedQueueSizeCheck());
   }
 
 }

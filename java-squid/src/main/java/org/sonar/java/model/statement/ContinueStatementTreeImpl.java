@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,9 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -32,19 +30,21 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
+  
+  private final InternalSyntaxToken continueKeyword;
   @Nullable
   private final IdentifierTree label;
+  private final InternalSyntaxToken semicolonToken;
 
-  public ContinueStatementTreeImpl(@Nullable IdentifierTree label, AstNode... children) {
+  public ContinueStatementTreeImpl(InternalSyntaxToken continueKeyword, @Nullable IdentifierTreeImpl label, InternalSyntaxToken semicolonToken) {
     super(Kind.CONTINUE_STATEMENT);
+    this.continueKeyword = continueKeyword;
     this.label = label;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.semicolonToken = semicolonToken;
   }
 
   @Override
@@ -54,7 +54,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken continueKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.CONTINUE));
+    return continueKeyword;
   }
 
   @Nullable
@@ -65,7 +65,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override
@@ -75,8 +75,10 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      label);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(continueKeyword),
+      label != null ? Iterators.<Tree>singletonIterator(continueKeyword) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
-import java.util.List;
 
 /**
  * Method invocation expression.
@@ -47,10 +47,8 @@ public interface MethodInvocationTree extends ExpressionTree {
 
   ExpressionTree methodSelect();
 
-  SyntaxToken openParenToken();
+  Arguments arguments();
 
-  List<ExpressionTree> arguments();
-
-  SyntaxToken closeParenToken();
+  Symbol symbol();
 
 }

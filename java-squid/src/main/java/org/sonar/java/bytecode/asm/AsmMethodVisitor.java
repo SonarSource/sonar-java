@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -57,7 +57,7 @@ public class AsmMethodVisitor extends MethodVisitor {
     emptyMethod = false;
   }
 
-  private boolean isNotCallToJavaArrayMethod(String internalName) {
+  private static boolean isNotCallToJavaArrayMethod(String internalName) {
     return internalName.charAt(0) != '[';
   }
 

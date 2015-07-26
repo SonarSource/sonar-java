@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,17 +24,16 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -48,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "S2440",
   name = "Classes with only \"static\" methods should not be instantiated",
-  priority = Priority.MAJOR,
-  tags = {"clumsy"})
+  tags = {"clumsy"},
+  priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
@@ -62,8 +61,8 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
 
   @Override
   public void visitNode(Tree tree) {
-    Tree identifier = ((NewClassTree) tree).identifier();
-    TypeSymbol newClassTypeSymbol = ((AbstractTypedTree) identifier).getSymbolType().getSymbol();
+    TypeTree identifier = ((NewClassTree) tree).identifier();
+    Symbol.TypeSymbol newClassTypeSymbol = identifier.symbolType().symbol();
     if (!newClassTypeSymbol.isEnum() && hasOnlyStaticMethods(newClassTypeSymbol) && !instantiateOwnClass(identifier, newClassTypeSymbol)) {
       String message = "Remove this instantiation.";
       String name = getNewClassName(identifier);
@@ -74,13 +73,13 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     }
   }
 
-  private boolean instantiateOwnClass(Tree identifier, TypeSymbol newClassTypeSymbol) {
-    Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).getType();
-    return enclosingClassType.equals(newClassTypeSymbol.getType());
+  private boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbol newClassTypeSymbol) {
+    Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).type();
+    return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 
-  private boolean hasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
-    Collection<MethodSymbol> methods = filterMethods(newClassTypeSymbol.members().scopeSymbols());
+  private static boolean hasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
+    Collection<MethodSymbol> methods = filterMethods(newClassTypeSymbol.memberSymbols());
     if (methods.isEmpty()) {
       return false;
     }
@@ -92,30 +91,30 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
     return superClassHasOnlyStaticMethods(newClassTypeSymbol);
   }
 
-  private boolean superClassHasOnlyStaticMethods(TypeSymbol newClassTypeSymbol) {
-    Type superClass = newClassTypeSymbol.getSuperclass();
-    if (!superClass.is("java.lang.Object")) {
-      return hasOnlyStaticMethods(superClass.getSymbol());
+  private static boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
+    Type superClass = newClassTypeSymbol.superClass();
+    if (superClass != null && !superClass.is("java.lang.Object")) {
+      return hasOnlyStaticMethods(superClass.symbol());
     }
     return true;
   }
 
-  private Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
+  private static Collection<MethodSymbol> filterMethods(Collection<Symbol> symbols) {
     List<MethodSymbol> methods = Lists.newArrayList();
     for (Symbol symbol : symbols) {
-      if (symbol.isKind(Symbol.MTH) && !isConstructor(symbol)) {
+      if (symbol.isMethodSymbol() && !isConstructor(symbol)) {
         methods.add((MethodSymbol) symbol);
       }
     }
     return methods;
   }
 
-  private boolean isConstructor(Symbol symbol) {
-    return "<init>".equals(symbol.getName());
+  private static boolean isConstructor(Symbol symbol) {
+    return "<init>".equals(symbol.name());
   }
 
   @Nullable
-  private String getNewClassName(Tree tree) {
+  private static String getNewClassName(Tree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree).name();
     } else if (tree.is(Kind.MEMBER_SELECT)) {

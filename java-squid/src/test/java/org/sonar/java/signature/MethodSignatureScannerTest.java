@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package org.sonar.java.signature;
 
 import com.google.common.base.Charsets;
-import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -76,7 +76,7 @@ public class MethodSignatureScannerTest {
 
   @Test
   public void scanMethodTree() {
-    Parser p = JavaParser.createParser(Charsets.UTF_8);
+    ActionParser p = JavaParser.createParser(Charsets.UTF_8);
     List<Tree> members = ((ClassTree) ((CompilationUnitTree) p.parse("class A { " +
       "A(){} " +
       "String[] method(int a){} " +

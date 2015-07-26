@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -49,12 +48,14 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
 @Rule(
-  key = ClassCouplingCheck.RULE_KEY,
+  key = "S1200",
   name = "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -62,7 +63,6 @@ import java.util.Stack;
 @SqaleConstantRemediation("2h")
 public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1200";
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(
@@ -71,10 +71,9 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Stack<Set<String>> nesting = new Stack<Set<String>>();
+  private final Deque<Set<String>> nesting = new LinkedList<>();
   private Set<String> types;
   private JavaFileScannerContext context;
-  private RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -89,13 +88,13 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
       types = Sets.newHashSet();
     }
     checkTypes(tree.superClass());
-    checkTypes(tree.superInterfaces());
+    checkTypes((List<? extends Tree>) tree.superInterfaces());
     super.visitClass(tree);
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (types.size() > max) {
         context.addIssue(
             tree,
-            ruleKey,
+            this,
             "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
                 types.size() + " to the maximum authorized " + max + " or less.");
       }
@@ -129,30 +128,33 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
 
   @Override
   public void visitTypeParameter(TypeParameterTree typeParameter) {
-    checkTypes(typeParameter.bounds());
+    checkTypes((List<? extends Tree>) typeParameter.bounds());
     checkTypes(typeParameter.identifier());
     super.visitTypeParameter(typeParameter);
   }
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    checkTypes(tree.typeAlternatives());
+    // can not be visited because of visitCatch excluding exceptions
+    checkTypes((List<? extends Tree>) tree.typeAlternatives());
     super.visitUnionType(tree);
   }
 
   @Override
   public void visitParameterizedType(ParameterizedTypeTree tree) {
     checkTypes(tree.type());
-    checkTypes(tree.typeArguments());
+    checkTypes((List<Tree>) tree.typeArguments());
     super.visitParameterizedType(tree);
   }
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    checkTypes(tree.typeArguments());
+    if (tree.typeArguments() != null) {
+      checkTypes((List<Tree>) tree.typeArguments());
+    }
     if (tree.identifier().is(Tree.Kind.PARAMETERIZED_TYPE)) {
       scan(tree.enclosingExpression());
-      checkTypes(((ParameterizedTypeTree) tree.identifier()).typeArguments());
+      checkTypes((List<Tree>) ((ParameterizedTypeTree) tree.identifier()).typeArguments());
       scan(tree.typeArguments());
       scan(tree.arguments());
       scan(tree.classBody());

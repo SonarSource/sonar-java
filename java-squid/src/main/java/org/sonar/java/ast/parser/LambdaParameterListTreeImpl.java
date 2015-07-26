@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,11 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> {
@@ -32,8 +32,8 @@ public class LambdaParameterListTreeImpl extends ListTreeImpl<VariableTreeImpl> 
   private final InternalSyntaxToken closeParenToken;
 
   public LambdaParameterListTreeImpl(@Nullable InternalSyntaxToken openParenToken, List<VariableTreeImpl> params,
-    @Nullable InternalSyntaxToken closeParenToken, List<AstNode> children) {
-    super(JavaLexer.LAMBDA_PARAMETERS, params, children);
+    @Nullable InternalSyntaxToken closeParenToken) {
+    super(JavaLexer.LAMBDA_PARAMETERS, params);
 
     this.openParenToken = openParenToken;
     this.closeParenToken = closeParenToken;

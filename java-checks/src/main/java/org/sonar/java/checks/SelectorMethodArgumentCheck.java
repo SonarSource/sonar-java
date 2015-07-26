@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,9 +25,9 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -66,36 +66,35 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
-    List<VariableSymbol> booleanParameterSymbols = getBooleanParametersAsSymbol(methodTree.parameters());
+    List<Symbol> booleanParameterSymbols = getBooleanParametersAsSymbol(methodTree.parameters());
     BlockTree blockTree = methodTree.block();
 
     if (isPublic(methodTree) && blockTree != null && !booleanParameterSymbols.isEmpty()) {
-      for (VariableSymbol variable : booleanParameterSymbols) {
-        Collection<IdentifierTree> usages = getSemanticModel().getUsages(variable);
+      for (Symbol variable : booleanParameterSymbols) {
+        Collection<IdentifierTree> usages = variable.usages();
         if (usages.size() == 1) {
-          blockTree.accept(new ConditionalStatementVisitor(variable.getName(), Iterables.get(usages, 0), tree));
+          blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), tree));
         }
       }
     }
   }
 
-  private boolean isPublic(MethodTree methodTree) {
-    return methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
+  private static boolean isPublic(MethodTree methodTree) {
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
-  private List<VariableSymbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
-    List<VariableSymbol> booleanParameters = Lists.newLinkedList();
+  private static List<Symbol> getBooleanParametersAsSymbol(List<VariableTree> parameters) {
+    List<Symbol> booleanParameters = Lists.newLinkedList();
     for (VariableTree variableTree : parameters) {
-      VariableSymbol variableSymbol = ((VariableTreeImpl) variableTree).getSymbol();
-      if (isBooleanVariable(variableSymbol)) {
-        booleanParameters.add(variableSymbol);
+      if (isBooleanVariable(variableTree)) {
+        booleanParameters.add(variableTree.symbol());
       }
     }
     return booleanParameters;
   }
 
-  private boolean isBooleanVariable(VariableSymbol variableSymbol) {
-    return variableSymbol.getType().isTagged(Type.BOOLEAN);
+  private static boolean isBooleanVariable(VariableTree variableTree) {
+    return variableTree.type().symbolType().isPrimitive(Type.Primitives.BOOLEAN);
   }
 
   private class ConditionalStatementVisitor extends BaseTreeVisitor {

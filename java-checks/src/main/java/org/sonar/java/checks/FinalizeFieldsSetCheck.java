@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -62,15 +62,15 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinalizeDeclaration(MethodTree tree) {
+  private static boolean isFinalizeDeclaration(MethodTree tree) {
     return isMethodNamedFinalize(tree) && hasNoParameters(tree);
   }
 
-  private boolean isMethodNamedFinalize(MethodTree tree) {
+  private static boolean isMethodNamedFinalize(MethodTree tree) {
     return "finalize".equals(tree.simpleName().name());
   }
 
-  private boolean hasNoParameters(MethodTree tree) {
+  private static boolean hasNoParameters(MethodTree tree) {
     return tree.parameters().isEmpty();
   }
 
@@ -97,8 +97,8 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
         variable = memberSelectExpressionTree.identifier();
       }
       if (variable.is(Kind.IDENTIFIER)) {
-        Symbol variableSymbol = getSemanticModel().getReference((IdentifierTree) variable);
-        return variableSymbol != null && variableSymbol.owner().isKind(Symbol.TYP);
+        Symbol variableSymbol = ((IdentifierTree) variable).symbol();
+        return variableSymbol.owner().isTypeSymbol();
       }
       return false;
     }

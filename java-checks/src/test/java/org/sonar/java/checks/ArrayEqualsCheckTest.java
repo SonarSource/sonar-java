@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,25 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
 
 public class ArrayEqualsCheckTest {
 
-  private final ArrayEqualsCheck check = new ArrayEqualsCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ArrayEqualsCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Use the '==' operator instead of calling the equals() method to prevent any misunderstandings")
-        .next().atLine(9).withMessage("Use the '==' operator instead of calling the equals() method to prevent any misunderstandings")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ArrayEqualsCheck.java", new ArrayEqualsCheck());
   }
 
 }

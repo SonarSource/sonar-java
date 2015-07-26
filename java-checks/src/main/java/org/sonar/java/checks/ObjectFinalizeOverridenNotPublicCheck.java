@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -56,11 +57,11 @@ public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisit
     }
   }
 
-  private boolean isPublic(MethodTree methodTree) {
-    return methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
+  private static boolean isPublic(MethodTree methodTree) {
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
-  private boolean isFinalize(MethodTree methodTree) {
+  private static boolean isFinalize(MethodTree methodTree) {
     if("finalize".equals(methodTree.simpleName().name()) ) {
       Tree returnType = methodTree.returnType();
       if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {

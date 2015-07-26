@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -36,16 +36,15 @@ import java.util.List;
 import java.util.Set;
 
 @Rule(
-  key = RedundantThrowsDeclarationCheck.RULE_KEY,
-  name = "Throws declarations should not be redundant",
-  tags = {"error-handling"},
+  key = "RedundantThrowsDeclarationCheck",
+  name = "Throws declarations should not be superfluous",
+  tags = {"error-handling", "security"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "RedundantThrowsDeclarationCheck";
   private AsmClass asmClass;
 
   @Override
@@ -79,7 +78,7 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
     }
   }
 
-  private String getIssueMessage(List<AsmClass> thrownClasses, AsmClass thrownClass) {
+  private static String getIssueMessage(List<AsmClass> thrownClasses, AsmClass thrownClass) {
     String thrownClassName = thrownClass.getDisplayName();
     if (isSubClassOfAny(thrownClass, thrownClasses)) {
       return "Remove the declaration of thrown exception '" + thrownClassName + "' which is a subclass of another one.";
@@ -121,11 +120,6 @@ public class RedundantThrowsDeclarationCheck extends BytecodeVisitor {
       }
     }
     return false;
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

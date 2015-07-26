@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@ import com.google.common.collect.Iterators;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
@@ -35,10 +36,9 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   private final InternalSyntaxToken token;
 
   public LiteralTreeImpl(Kind kind, InternalSyntaxToken token) {
-    super(kind, token.getToken());
+    super(kind);
     this.kind = Preconditions.checkNotNull(kind);
     this.token = token;
-    addChild(token);
   }
 
   @Override
@@ -49,6 +49,11 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   @Override
   public String value() {
     return token.text();
+  }
+
+  @Override
+  public SyntaxToken token() {
+    return token;
   }
 
   @Override

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,25 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BadAbstractClassName_S00118_CheckTest {
 
-  private final BadAbstractClassName_S00118_Check check = new BadAbstractClassName_S00118_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadAbstractClassName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Make this class abstract or rename it, since it matches the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
-        .next().atLine(7).withMessage("Rename this abstract class name to match the regular expression '^Abstract[A-Z][a-zA-Z0-9]*$'.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/BadAbstractClassName.java", new BadAbstractClassName_S00118_Check());
   }
 
 }

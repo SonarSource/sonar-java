@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,12 +24,10 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -66,7 +64,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTreeImpl variableTree = (VariableTreeImpl) tree;
-        Type variableType = variableTree.getSymbol().getType();
+        Type variableType = variableTree.type().symbolType();
         PrimitiveCheck primitiveCheck = getPrimitiveCheck(variableType);
         ExpressionTree initializer = variableTree.initializer();
         if (primitiveCheck != null && initializer != null) {
@@ -86,7 +84,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
       return null;
     }
     for (PrimitiveCheck primitiveCheck : primitiveChecks) {
-      if (type.isTagged(primitiveCheck.tag)) {
+      if (type.isPrimitive(primitiveCheck.tag)) {
         return primitiveCheck;
       }
     }
@@ -95,39 +93,39 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
 
   private List<PrimitiveCheck> buildPrimitiveChecks() {
     return ImmutableList.of(
-      new PrimitiveCheck("int", "Integer", Type.INT),
-      new PrimitiveCheck("boolean", "Boolean", Type.BOOLEAN),
-      new PrimitiveCheck("byte", "Byte", Type.BYTE),
-      new PrimitiveCheck("double", "Double", Type.DOUBLE),
-      new PrimitiveCheck("float", "Float", Type.FLOAT),
-      new PrimitiveCheck("long", "Long", Type.LONG),
-      new PrimitiveCheck("short", "Short", Type.SHORT));
+      new PrimitiveCheck("int", "Integer", Type.Primitives.INT),
+      new PrimitiveCheck("boolean", "Boolean", Type.Primitives.BOOLEAN),
+      new PrimitiveCheck("byte", "Byte", Type.Primitives.BYTE),
+      new PrimitiveCheck("double", "Double", Type.Primitives.DOUBLE),
+      new PrimitiveCheck("float", "Float", Type.Primitives.FLOAT),
+      new PrimitiveCheck("long", "Long", Type.Primitives.LONG),
+      new PrimitiveCheck("short", "Short", Type.Primitives.SHORT));
   }
 
   private class PrimitiveCheck {
     private final String primitiveName;
     private final String className;
-    private final int tag;
+    private final Type.Primitives tag;
     private final String message;
-    private final MethodInvocationMatcher unboxingInvocationMatcher;
-    private final MethodInvocationMatcher valueOfInvocationMatcher;
+    private final MethodMatcher unboxingInvocationMatcher;
+    private final MethodMatcher valueOfInvocationMatcher;
 
-    private PrimitiveCheck(String primitiveName, String className, int tag) {
+    private PrimitiveCheck(String primitiveName, String className, Type.Primitives tag) {
       this.primitiveName = primitiveName;
       this.className = className;
       this.tag = tag;
       this.message = "Use \"" + parseMethodName() + "\" for this string-to-" + primitiveName + " conversion.";
-      this.unboxingInvocationMatcher = MethodInvocationMatcher.create()
+      this.unboxingInvocationMatcher = MethodMatcher.create()
         .typeDefinition("java.lang." + className)
         .name(primitiveName + "Value");
-      this.valueOfInvocationMatcher = MethodInvocationMatcher.create()
+      this.valueOfInvocationMatcher = MethodMatcher.create()
         .typeDefinition("java.lang." + className)
         .name("valueOf")
         .addParameter("java.lang.String");
     }
 
     private void checkMethodInvocation(MethodInvocationTree methodInvocationTree) {
-      if (unboxingInvocationMatcher.matches(methodInvocationTree, getSemanticModel())) {
+      if (unboxingInvocationMatcher.matches(methodInvocationTree)) {
         MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
         checkInstanciation(methodSelect.expression());
       }
@@ -144,25 +142,24 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
       if (expression.is(Tree.Kind.NEW_CLASS)) {
         result = isStringBasedConstructor((NewClassTree) expression);
       } else if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        result = valueOfInvocationMatcher.matches((MethodInvocationTree) expression, getSemanticModel());
+        result = valueOfInvocationMatcher.matches((MethodInvocationTree) expression);
       } else if (expression.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) expression;
-        Symbol reference = getSemanticModel().getReference(identifier);
-        if (reference != null && reference.isKind(Symbol.VAR) && getSemanticModel().getUsages(reference).size() == 1) {
-          VariableSymbol variableSymbol = (VariableSymbol) reference;
+        Symbol reference = identifier.symbol();
+        if (reference.isVariableSymbol() && reference.usages().size() == 1) {
+          Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) reference;
           result = isBadlyInstanciatedVariable(variableSymbol);
         }
       }
       return result;
     }
 
-    private boolean isBadlyInstanciatedVariable(VariableSymbol variableSymbol) {
-      Tree tree = getSemanticModel().getTree(variableSymbol);
-      if (tree != null && tree.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) tree;
+    private boolean isBadlyInstanciatedVariable(Symbol.VariableSymbol variableSymbol) {
+      VariableTree variableTree = variableSymbol.declaration();
+      if (variableTree != null) {
         ExpressionTree initializer = variableTree.initializer();
         if (initializer != null) {
-          return isBadlyInstanciated(variableTree.initializer());
+          return isBadlyInstanciated(initializer);
         }
       }
       return false;
@@ -170,7 +167,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
 
     private boolean isStringBasedConstructor(NewClassTree newClassTree) {
       List<ExpressionTree> arguments = newClassTree.arguments();
-      return ((AbstractTypedTree) arguments.get(0)).getSymbolType().is("java.lang.String");
+      return arguments.get(0).symbolType().is("java.lang.String");
     }
 
     private String parseMethodName() {

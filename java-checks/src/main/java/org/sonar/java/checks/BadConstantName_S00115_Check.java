@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,92 +19,89 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = BadConstantName_S00115_Check.RULE_KEY,
+  key = "S00115",
   name = "Constant names should comply with a naming convention",
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class BadConstantName_S00115_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00115";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
+public class BadConstantName_S00115_Check extends SubscriptionBaseVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$";
-
   @RuleProperty(
-      key = "format",
-      description = "Regular expression used to check the constant names against.",
-      defaultValue = "" + DEFAULT_FORMAT)
+    key = "format",
+    description = "Regular expression used to check the constant names against.",
+    defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
-  private JavaFileScannerContext context;
-  private SemanticModel semanticModel;
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE);
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     if (pattern == null) {
       pattern = Pattern.compile(format, Pattern.DOTALL);
     }
-    this.context = context;
-    this.semanticModel = (SemanticModel) context.getSemanticModel();
-    scan(context.getTree());
+    super.scanFile(context);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.VARIABLE) && semanticModel != null) {
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    for (Tree member : classTree.members()) {
+      if (member.is(Tree.Kind.VARIABLE) && hasSemantic()) {
         VariableTree variableTree = (VariableTree) member;
-        Type symbolType = ((VariableTreeImpl) variableTree).getSymbol().getType();
-        if (isConstantType(symbolType) && (tree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) || isStaticFinal(variableTree))) {
+        Type symbolType = variableTree.type().symbolType();
+        if (isConstantType(symbolType) && (classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) || isStaticFinal(variableTree))) {
           checkName(variableTree);
         }
       } else if (member.is(Tree.Kind.ENUM_CONSTANT)) {
         checkName((VariableTree) member);
       }
     }
-    super.visitClass(tree);
   }
 
-  private boolean isConstantType(Type symbolType) {
-    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || symbolType.isPrimitiveWrapper();
+  private static boolean isConstantType(Type symbolType) {
+    return symbolType.isPrimitive() || symbolType.is("java.lang.String") || ((JavaType) symbolType).isPrimitiveWrapper();
   }
 
   private void checkName(VariableTree variableTree) {
     if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName().name()) && !pattern.matcher(variableTree.simpleName().name()).matches()) {
-      context.addIssue(variableTree, ruleKey, "Rename this constant name to match the regular expression '" + format + "'.");
+      addIssue(variableTree, "Rename this constant name to match the regular expression '" + format + "'.");
     }
   }
 
-  private boolean isStaticFinal(VariableTree variableTree) {
+  private static boolean isStaticFinal(VariableTree variableTree) {
     boolean isStatic = false;
     boolean isFinal = false;
-    for (Modifier modifier : variableTree.modifiers().modifiers()) {
+    for (ModifierKeywordTree modifierKeywordTree : variableTree.modifiers().modifiers()) {
+      Modifier modifier = modifierKeywordTree.modifier();
       if (modifier == Modifier.STATIC) {
         isStatic = true;
       }

@@ -1,0 +1,22 @@
+language: java
+sudo: false
+
+jdk:
+  - oraclejdk7
+
+install: true
+script: ./travis.sh
+env:
+  - TESTS=CI
+  - TESTS=IT-DEV
+  - TESTS=RULING
+  - TESTS=IT-LATEST
+matrix:
+  fast_finish: true
+
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+
+notifications:
+  email: false

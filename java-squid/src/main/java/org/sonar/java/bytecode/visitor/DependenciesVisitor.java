@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,7 +79,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
     return dependency;
   }
 
-  private boolean canWeLinkNodes(@Nullable Resource from, @Nullable Resource to) {
+  private static boolean canWeLinkNodes(@Nullable Resource from, @Nullable Resource to) {
     return from != null && to != null && !from.equals(to);
   }
 

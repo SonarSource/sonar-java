@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,10 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -41,7 +42,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class StrutsTest {
 
@@ -55,19 +55,19 @@ public class StrutsTest {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
-    Project sonarProject = mock(Project.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    when(pfs.getBasedir()).thenReturn(prjDir);
-    when(sonarProject.getFileSystem()).thenReturn(pfs);
-    Measurer measurer = new Measurer(sonarProject, context, separateAccessorsFromMethods);
-    JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
+    DefaultFileSystem fs = new DefaultFileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
+    for (File file : files) {
+      fs.add(new DefaultInputFile(file.getPath()));
+    }
+    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods);
+    JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 
   private Map<String, Double> getMetrics() {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    verify(context, atLeastOnce()).saveMeasure(any(org.sonar.api.resources.File.class), captor.capture());
+    verify(context, atLeastOnce()).saveMeasure(any(InputFile.class), captor.capture());
     Map<String, Double> metrics = new HashMap<String, Double>();
     for (Measure measure : captor.getAllValues()) {
       if (measure.getValue() != null) {
@@ -85,7 +85,7 @@ public class StrutsTest {
     assertThat(metrics.get("classes").intValue()).isEqualTo(146);
     assertThat(metrics.get("lines").intValue()).isEqualTo(32878);
     assertThat(metrics.get("ncloc").intValue()).isEqualTo(14007);
-    assertThat(metrics.get("statements").intValue()).isEqualTo(6403);
+    assertThat(metrics.get("statements").intValue()).isEqualTo(6403 /* empty statements between members of class */+ 3);
     assertThat(metrics.get("comment_lines").intValue()).isEqualTo(7605);
   }
 

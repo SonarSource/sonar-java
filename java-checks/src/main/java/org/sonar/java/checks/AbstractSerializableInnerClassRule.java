@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 
@@ -39,39 +39,39 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      visitClassTree((ClassTreeImpl) tree);
+      visitClassTree((ClassTree) tree);
     }
   }
 
-  private void visitClassTree(ClassTreeImpl classTree) {
-    TypeSymbol symbol = classTree.getSymbol();
+  private void visitClassTree(ClassTree classTree) {
+    Symbol.TypeSymbol symbol = classTree.symbol();
     if (isInnerClass(symbol) && directlyImplementsSerializable(symbol)) {
       Symbol owner = symbol.owner();
-      if (owner.isKind(Symbol.TYP)) {
-        TypeSymbol ownerType = (TypeSymbol) owner;
-        if (isMatchingOuterClass(ownerType.getType()) && !symbol.isStatic()) {
+      if (owner.isTypeSymbol()) {
+        Symbol.TypeSymbol ownerType = (Symbol.TypeSymbol) owner;
+        if (isMatchingOuterClass(ownerType.type()) && !symbol.isStatic()) {
           addIssue(classTree, "Make this inner class static");
         }
-      } else if (owner.isKind(Symbol.MTH)) {
-        TypeSymbol methodOwner = (TypeSymbol) owner.owner();
-        if (isMatchingOuterClass(methodOwner.getType()) && !owner.isStatic()) {
-          String methodName = owner.getName();
+      } else if (owner.isMethodSymbol()) {
+        Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) owner.owner();
+        if (isMatchingOuterClass(methodOwner.type()) && !owner.isStatic()) {
+          String methodName = owner.name();
           addIssue(classTree, "Make \"" + methodName + "\" static");
         }
       }
     }
   }
 
-  private boolean isInnerClass(TypeSymbol typeSymbol) {
-    return !typeSymbol.equals(typeSymbol.outermostClass());
+  private static boolean isInnerClass(Symbol.TypeSymbol typeSymbol) {
+    return !typeSymbol.equals(((JavaSymbol.TypeJavaSymbol) typeSymbol).outermostClass());
   }
 
   protected boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean directlyImplementsSerializable(TypeSymbol symbol) {
-    for (Type type : symbol.getInterfaces()) {
+  private static boolean directlyImplementsSerializable(Symbol.TypeSymbol symbol) {
+    for (org.sonar.plugins.java.api.semantic.Type type : symbol.interfaces()) {
       if (type.is("java.io.Serializable")) {
         return true;
       }

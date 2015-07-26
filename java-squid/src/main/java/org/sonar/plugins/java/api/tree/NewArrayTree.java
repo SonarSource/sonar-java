@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,8 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -37,10 +39,19 @@ import java.util.List;
 @Beta
 public interface NewArrayTree extends ExpressionTree {
 
-  Tree type();
+  @Nullable
+  TypeTree type();
 
-  List<ExpressionTree> dimensions();
+  @Nullable
+  SyntaxToken newKeyword();
 
-  List<ExpressionTree> initializers();
+  List<ArrayDimensionTree> dimensions();
 
+  @Nullable
+  SyntaxToken openBraceToken();
+
+  ListTree<ExpressionTree> initializers();
+
+  @Nullable
+  SyntaxToken closeBraceToken();
 }

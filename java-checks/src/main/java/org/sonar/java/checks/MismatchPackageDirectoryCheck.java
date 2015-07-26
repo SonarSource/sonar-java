@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,28 +19,23 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
-import java.util.Deque;
-import java.util.LinkedList;
 
 @Rule(
-  key = MismatchPackageDirectoryCheck.RULE_KEY,
+  key = "S1598",
   name = "Package declaration should match source file directory",
   tags = {"pitfall"},
   priority = Priority.MAJOR)
@@ -48,9 +43,6 @@ import java.util.LinkedList;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1598";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -63,35 +55,15 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageName() != null) {
-      String packageName = concatenate(tree.packageName());
+    if (tree.packageDeclaration() != null) {
+      ExpressionTree packageNameExpression = tree.packageDeclaration().packageName();
+      String packageName = PackageUtils.packageName(tree.packageDeclaration(), File.separator);
       File javaFile = context.getFile();
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
-        context.addIssue(tree.packageName(), ruleKey, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
+        context.addIssue(packageNameExpression, this, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
       }
     }
   }
 
-  private String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
-
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(File.separator);
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece : pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
-  }
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,7 @@ public class ResourceMapping {
   public ResourceMapping() {
     directories = ArrayListMultimap.create();
     subDependencies = ArrayListMultimap.create();
-    fileKeyByResource = new HashMap<File, String>();
+    fileKeyByResource = new HashMap<>();
   }
 
   public void addResource(File resource, String fileKey) {

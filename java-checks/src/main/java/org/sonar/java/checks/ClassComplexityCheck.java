@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,13 +39,13 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point over the threshold")
+@SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point over the threshold" )
 public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;
 
   @RuleProperty(defaultValue = "" + DEFAULT_MAX,
-      description = "Maximum complexity allowed.")
+    description = "Maximum complexity allowed.")
   private int max = DEFAULT_MAX;
 
   @Override
@@ -57,7 +57,9 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     int complexity = context.getComplexity(tree);
     if (complexity > max) {
-      addIssue(tree, MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max));
+      addIssue(tree,
+        MessageFormat.format("The Cyclomatic Complexity of this class is {0,number,integer} which is greater than {1,number,integer} authorized.", complexity, max),
+          (double) complexity - max);
     }
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,14 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 public class ImmediatelyReturnedVariableCheckTest {
 
@@ -35,11 +31,7 @@ public class ImmediatelyReturnedVariableCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner
-      .scanSingleFile(new File("src/test/files/checks/ImmediatelyReturnedVariableCheck.java"), new VisitorsBridge(new ImmediatelyReturnedVariableCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Immediately return this expression instead of assigning it to the temporary variable \"duration\".")
-      .next().atLine(9).withMessage("Immediately throw this expression instead of assigning it to the temporary variable \"myException\".");
+    JavaCheckVerifier.verify("src/test/files/checks/ImmediatelyReturnedVariableCheck.java", new ImmediatelyReturnedVariableCheck());
   }
 
 }

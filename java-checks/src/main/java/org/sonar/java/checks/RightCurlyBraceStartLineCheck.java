@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,18 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
+
+import java.util.List;
 
 @Rule(
   key = "RightCurlyBraceStartLineCheck",
@@ -40,43 +43,39 @@ import org.sonar.sslr.parser.LexerlessGrammar;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class RightCurlyBraceStartLineCheck extends SquidCheck<LexerlessGrammar> {
+public class RightCurlyBraceStartLineCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaPunctuator.RWING);
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(
+      Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER, Tree.Kind.INITIALIZER,
+      Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM);
   }
 
   @Override
-  public void visitNode(AstNode node) {
-    if (!isExcluded(node) && hasSomeCodeBefore(node)) {
-      getContext().createLineViolation(this, "Move this closing curly brace to the next line.", node);
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER, Tree.Kind.INITIALIZER)) {
+      BlockTree blockTree = (BlockTree) tree;
+      checkBlockBody(blockTree.openBraceToken(), blockTree.closeBraceToken(), blockTree.body());
+    } else {
+      ClassTree classTree = (ClassTree) tree;
+      checkBlockBody(classTree.openBraceToken(), classTree.closeBraceToken(), classTree.members());
     }
   }
 
-  private static boolean hasSomeCodeBefore(AstNode node) {
-    Token previousToken = getPreviousToken(node);
-    return previousToken != null && previousToken.getLine() == node.getTokenLine();
-  }
-
-  private static boolean isExcluded(AstNode node) {
-    return node.getParent().is(Kind.NEW_ARRAY);
-  }
-
-  private static Token getPreviousToken(AstNode node) {
-    AstNode result = node.getPreviousAstNode();
-
-    while (result != null && !result.hasToken()) {
-      while (result != null && !result.hasToken()) {
-        result = result.getPreviousAstNode();
-      }
-
-      while (result != null && result.getLastChild() != null) {
-        result = result.getLastChild();
+  private void checkBlockBody(SyntaxToken openBraceToken, SyntaxToken closeBraceToken, List<? extends Tree> trees) {
+    if (openBraceToken.line() == closeBraceToken.line()) {
+      insertIssue(closeBraceToken);
+    } else if (!trees.isEmpty()) {
+      Tree lastTree = trees.get(trees.size() - 1);
+      SyntaxToken lastToken = LastSyntaxTokenFinder.lastSyntaxToken(lastTree);
+      if (lastToken.line() == closeBraceToken.line()) {
+        insertIssue(closeBraceToken);
       }
     }
-
-    return result == null ? null : result.getToken();
   }
 
+  private void insertIssue(SyntaxToken token) {
+    addIssue(token, "Move this closing curly brace to the next line.");
+  }
 }

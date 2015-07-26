@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,8 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.base.Charsets;
-import com.sonar.sslr.impl.Parser;
 import org.junit.Test;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -30,16 +30,18 @@ public class PrinterVisitorTest {
 
   @Test
   public void testName() throws Exception {
-    final Parser p = JavaParser.createParser(Charsets.UTF_8);
+    final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) p.parse("class A { void foo(){}}");
     String expectedOutput = "CompilationUnitTree 1 : [\n" +
         "  ClassTree 1\n" +
         "    ModifiersTree\n" +
-        "    TypeParameters : [\n"+
+        "    TypeParameters\n"+
+        "    ListTree : [\n"+
         "    MethodTree 1\n" +
         "      ModifiersTree\n" +
         "      TypeParameters\n"+
-        "      PrimitiveTypeTree 1 null\n" +
+        "      PrimitiveTypeTree 1\n" +
+        "      ListTree\n"+
         "      BlockTree 1\n" +
         "    ]\n" +
         "  ]\n";

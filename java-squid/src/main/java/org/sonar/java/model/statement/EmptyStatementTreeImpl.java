@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,6 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
@@ -32,10 +30,11 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTree {
+  private final InternalSyntaxToken semicolonToken;
 
-  public EmptyStatementTreeImpl(AstNode astNode) {
+  public EmptyStatementTreeImpl(InternalSyntaxToken semicolonToken) {
     super(Kind.EMPTY_STATEMENT);
-    addChild(astNode);
+    this.semicolonToken = semicolonToken;
   }
 
   @Override
@@ -50,12 +49,12 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.emptyIterator();
+    return Iterators.<Tree>singletonIterator(semicolonToken);
   }
 
 }

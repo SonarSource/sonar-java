@@ -1,37 +1,60 @@
 <p>
 A reference to <code>null</code> should never be dereferenced/accessed.
-Doing so will cause a <code>NullPointerException</code> to be thrown which will at best cause abrupt program termination.
-At worst, it could expose debugging formation that would be useful to an attacker or it could allow an attacker to bypass security measures.
+Doing so will cause a <code>NullPointerException</code> to be thrown. At best, such an exception will cause abrupt program termination.
+At worst, it could expose debugging information that would be useful to an attacker, or it could allow an attacker to bypass security measures.
+</p>
+
+<p>
+Note that when they are present, this rule takes advantage of <code>@CheckForNull</code> and <code>@Nonnull</code> annotations defined in
+<a href="https://jcp.org/en/jsr/detail?id=305">JSR-305</a> to understand which values are or are not nullable.
+</p>
+
+<p>
+@Nullable denotes that, under some unspecified circumstances, the value might be null. To keep false positives low, this annotation is ignored.
+Whether an explicit test is required or not is left to the developer's discretion.
 </p>
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-String str = null;
+@CheckForNull
+String getName() {...}
 
-if (str.length() > 0) { // Noncompliant
-  // ...
-}
-
-@Nullable
-Object foo()  {
-   return null;
-}
-void fun() {
-  foo().toString(); // NonCompliant: potential null pointer dereference.
+public boolean isNameEmpty() {
+  return getName().length() == 0; // Noncompliant; the result of getName() could be null, but isn't null-checked
 }
 </pre>
 
-<h2>Compliant Solution</h2>
 <pre>
-if (str != null &amp;&amp; str.length() > 0) {
+Connection conn = null;
+Statement stmt = null;
+try {
+  conn = DriverManager.getConnection(DB_URL,USER,PASS);
+  stmt = conn.createStatement();
   // ...
-}
 
-void fun() {
-  Object obj = foo();
-  if (obj != null) {
-    obj.toString(); // NonCompliant: potential null pointer dereference.
+} catch(Exception e) {
+  e.printStackTrace();
+} finally {
+  stmt.close(); // Noncompliant; stmt could be null if an exception was thrown in the try{} block
+  conn.close(); // Noncompliant; conn could be null if an exception was thrown
+}
+</pre>
+
+<pre>
+private void merge(@Nonnull Color firstColor, @Nonnull Color secondColor){...}
+
+public void append(@CheckForNull Color color) {
+    merge(currentColor, color); // Noncompliant; color should be null-checked because merge(...) doesn't accept nullable parameters
+}
+</pre>
+
+<pre>
+void paint(Color color) {
+  if(color == null) {
+    System.out.println("Unable to apply color " + color.toString()); // Noncompliant; NullPointerException will be thrown
+    return;
   }
+  ...
 }
 </pre>
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -35,7 +34,7 @@ import java.util.List;
 @Rule(
   key = "S1162",
   name = "Checked Exception should not be thrown",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1h")
@@ -49,24 +48,10 @@ public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
-    Type symbolType = ((AbstractTypedTree) throwStatementTree.expression()).getSymbolType();
-    //do not handle unknown symbols.
-    if (symbolType.isTagged(Type.CLASS) && isCheckedException((Type.ClassType) symbolType)) {
-      addIssue(tree, "Remove the usage of the checked exception '"+symbolType.getSymbol().getName()+"'.");
+    Type symbolType = throwStatementTree.expression().symbolType();
+    if (symbolType.isSubtypeOf("java.lang.Exception") && !symbolType.isSubtypeOf("java.lang.RuntimeException")) {
+      addIssue(tree, "Remove the usage of the checked exception '" + symbolType.name() + "'.");
     }
   }
 
-  private boolean isCheckedException(Type.ClassType symbolType) {
-    Type.ClassType superType = symbolType;
-    while (superType != null) {
-      if (superType.is("java.lang.RuntimeException")) {
-        return false;
-      }
-      if (superType.is("java.lang.Exception")) {
-        return true;
-      }
-      superType = (Type.ClassType) superType.getSymbol().getSuperclass();
-    }
-    return false;
-  }
 }

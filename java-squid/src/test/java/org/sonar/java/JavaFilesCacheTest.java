@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
@@ -47,7 +48,6 @@ public class JavaFilesCacheTest {
   public void method_start_lines_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
-
     assertThat(javaFilesCache.methodStartLines.keySet()).hasSize(5);
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$I#foo()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B$1#foo()V");

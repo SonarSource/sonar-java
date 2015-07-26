@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,20 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
-public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<ExpressionTree> {
+public class QualifiedIdentifierListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public QualifiedIdentifierListTreeImpl(List<? extends ExpressionTree> qualifiedIdentifiers, List<AstNode> children) {
-    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, (List<ExpressionTree>) qualifiedIdentifiers, children);
+  public static QualifiedIdentifierListTreeImpl emptyList() {
+    return new QualifiedIdentifierListTreeImpl(Lists.<TypeTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
+  }
+
+  public QualifiedIdentifierListTreeImpl(List<TypeTree> qualifiedIdentifiers, List<SyntaxToken> separators) {
+    super(JavaLexer.QUALIFIED_IDENTIFIER_LIST, qualifiedIdentifiers, separators);
   }
 
 }

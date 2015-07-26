@@ -11,13 +11,13 @@ class A {
     MyNonSerializable myNonSerializable1 = new MyNonSerializable();
     MyNonSerializable myNonSerializable2 = new MyNonSerializable();
     if (myNonSerializable2 instanceof Runnable) {
-      out.writeObject(myNonSerializable1); // Noncompliant
+      out.writeObject(myNonSerializable1); // Noncompliant {{Make the "MyNonSerializable" class "Serializable" or don't write it.}}
     }
     if (myNonSerializable2 instanceof Serializable) {
       out.writeObject(myNonSerializable2);
     }
     if (x.toString() instanceof Serializable) {
-      out.writeObject(new MyNonSerializable()); // Noncompliant
+      out.writeObject(new MyNonSerializable()); // Noncompliant {{Make the "MyNonSerializable" class "Serializable" or don't write it.}}
     }
     out.writeObject(array);
   }

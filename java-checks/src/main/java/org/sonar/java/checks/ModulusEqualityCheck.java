@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,13 +24,10 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -76,8 +73,7 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
     } else {
       MethodTree methodTree = (MethodTree) tree;
       for (VariableTree variableTree : methodTree.parameters()) {
-        VariableSymbol symbol = ((VariableTreeImpl) variableTree).getSymbol();
-        methodParams.add(symbol);
+        methodParams.add(variableTree.symbol());
       }
     }
   }
@@ -100,7 +96,7 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
   private boolean isMethodParameter(ExpressionTree expressionTree) {
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expressionTree;
-      Symbol symbol = getSemanticModel().getReference(identifier);
+      Symbol symbol = identifier.symbol();
       return methodParams.contains(symbol);
     } else if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expressionTree;
@@ -112,10 +108,10 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isSizeAccessor(ExpressionTree expressionTree) {
+  private static boolean isSizeAccessor(ExpressionTree expressionTree) {
     if (expressionTree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) expressionTree;
-      Type type = ((AbstractTypedTree) memberSelectExpressionTree.expression()).getSymbolType();
+      Type type = memberSelectExpressionTree.expression().symbolType();
       String memberName = memberSelectExpressionTree.identifier().name();
       return isCollectionSize(type, memberName) || isStringLength(type, memberName) || isArrayLength(type, memberName);
     } else if (expressionTree.is(Kind.METHOD_INVOCATION)) {
@@ -125,15 +121,15 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isArrayLength(Type type, String memberName) {
-    return type.isTagged(Type.ARRAY) && "length".equals(memberName);
+  private static boolean isArrayLength(Type type, String memberName) {
+    return type.isArray() && "length".equals(memberName);
   }
 
-  private boolean isStringLength(Type type, String memberName) {
+  private static boolean isStringLength(Type type, String memberName) {
     return type.is("java.lang.String") && "length".equals(memberName);
   }
 
-  private boolean isCollectionSize(Type type, String memberName) {
+  private static boolean isCollectionSize(Type type, String memberName) {
     return type.isSubtypeOf("java.util.Collection") && "size".equals(memberName);
   }
 }

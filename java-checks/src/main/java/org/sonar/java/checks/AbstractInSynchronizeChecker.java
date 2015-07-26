@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -50,7 +51,7 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       super.visitNode(tree);
     } else if (tree.is(Tree.Kind.METHOD)) {
-      withinSynchronizedBlock.push(((MethodTree) tree).modifiers().modifiers().contains(Modifier.SYNCHRONIZED));
+      withinSynchronizedBlock.push(ModifiersUtils.hasModifier(((MethodTree) tree).modifiers(), Modifier.SYNCHRONIZED));
     } else if (tree.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
       withinSynchronizedBlock.push(true);
     }
@@ -65,6 +66,10 @@ public abstract class AbstractInSynchronizeChecker extends AbstractMethodDetecti
 
   public boolean isInSyncBlock() {
     return withinSynchronizedBlock.peek();
+  }
+
+  public boolean hasAnyParentSync() {
+    return withinSynchronizedBlock.contains(true);
   }
 
 }

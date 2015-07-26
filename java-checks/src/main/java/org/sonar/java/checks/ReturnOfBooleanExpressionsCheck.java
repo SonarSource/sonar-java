@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,7 @@ public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasOneReturnBoolean(@Nullable StatementTree statementTree) {
+  private static boolean hasOneReturnBoolean(@Nullable StatementTree statementTree) {
     if (statementTree == null) {
       return false;
     }
@@ -71,7 +71,7 @@ public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
     return isReturnBooleanLiteral(statementTree);
   }
 
-  private boolean isReturnBooleanLiteral(StatementTree statementTree) {
+  private static boolean isReturnBooleanLiteral(StatementTree statementTree) {
     if(statementTree.is(Kind.RETURN_STATEMENT)) {
       ReturnStatementTree returnStatement = (ReturnStatementTree) statementTree;
       return returnStatement.expression() != null && returnStatement.expression().is(Kind.BOOLEAN_LITERAL);

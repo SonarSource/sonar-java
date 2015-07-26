@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,31 +20,12 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CollectionInappropriateCallsCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CollectionInappropriateCallsCheck.java"), new VisitorsBridge(
-      new CollectionInappropriateCallsCheck()));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(25).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
-      .next().atLine(26).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
-      .next().atLine(28).withMessage("A \"ArrayList<B>\" cannot contain a \"Integer\"")
-      .next().atLine(29).withMessage("A \"List<Set>\" cannot contain a \"String\"")
-      .next().atLine(30).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      .next().atLine(31).withMessage("A \"List<Set>\" cannot contain a \"Integer\"")
-      .next().atLine(34).withMessage("A \"List<String>\" cannot contain a \"Integer[]\"")
-      .next().atLine(35).withMessage("A \"List<String>\" cannot contain a \"Integer\"")
-      .next().atLine(66).withMessage("A \"List<Integer>\" cannot contain a \"long\"")
-      .next().atLine(69).withMessage("A \"List<String>\" cannot contain a \"int\"")
-      .next().atLine(73)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CollectionInappropriateCallsCheck.java", new CollectionInappropriateCallsCheck());
   }
 }

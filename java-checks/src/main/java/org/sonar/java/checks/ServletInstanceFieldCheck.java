@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -40,7 +39,7 @@ import java.util.List;
 @Rule(
   key = "S2226",
   name = "Servlets should never have mutable instance fields",
-  tags = {"bug", "cert", "multi-threading", "struts"},
+  tags = {"bug", "cert", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
@@ -60,23 +59,14 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isOwnedByAServlet(VariableTree variable) {
-    VariableTreeImpl vti = (VariableTreeImpl) variable;
-    Symbol owner = vti.getSymbol().owner();
-    if (owner.isKind(Symbol.TYP)) {
-      TypeSymbol ownerType = (TypeSymbol) owner;
-      for (ClassType classType : ownerType.superTypes()) {
-        if (classType.is("javax.servlet.http.HttpServlet") || classType.is("org.apache.struts.action.Action")) {
-          return true;
-        }
-      }
-    }
-    return false;
+  private static boolean isOwnedByAServlet(VariableTree variable) {
+    Symbol owner = variable.symbol().owner();
+    return owner.isTypeSymbol() && (owner.type().isSubtypeOf("javax.servlet.http.HttpServlet") || owner.type().isSubtypeOf("org.apache.struts.action.Action"));
   }
 
-  private boolean isStaticOrFinal(VariableTree variable) {
-    List<Modifier> modifiers = variable.modifiers().modifiers();
-    return modifiers.contains(Modifier.STATIC) || modifiers.contains(Modifier.FINAL);
+  private static boolean isStaticOrFinal(VariableTree variable) {
+    ModifiersTree modifiers = variable.modifiers();
+    return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) || ModifiersUtils.hasModifier(modifiers, Modifier.FINAL);
   }
 
 }

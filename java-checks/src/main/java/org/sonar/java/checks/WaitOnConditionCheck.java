@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -44,17 +44,17 @@ import java.util.List;
 public class WaitOnConditionCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     TypeCriteria conditionSubType = TypeCriteria.subtypeOf("java.util.concurrent.locks.Condition");
-    return ImmutableList.<MethodInvocationMatcher>builder()
-        .add(MethodInvocationMatcher.create().callSite(conditionSubType).name("wait"))
-        .add(MethodInvocationMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"))
-        .add(MethodInvocationMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"))
+    return ImmutableList.<MethodMatcher>builder()
+        .add(MethodMatcher.create().callSite(conditionSubType).name("wait"))
+        .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"))
+        .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"))
         .build();
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     addIssue(mit, "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
   }
 }

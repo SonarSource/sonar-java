@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -44,3 +44,13 @@ class ParametrizedExtend<S> {
 
 interface ParametrizedInterface1<U> {}
 interface ParametrizedInterface2<V> {}
+
+class ForwardParameterInMethod {
+  public <X extends List<Y>, Y> List<X> bar(X x, Y y) {
+    return null;
+  }
+}
+
+class ForwardParameterInClass<X extends List<Y>, Y> {
+  int bar;
+}

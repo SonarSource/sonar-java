@@ -3,17 +3,17 @@ class A {
   private void method(){
     try {
       a.equals(null);
-    } catch(NullPointerException npe) {
+    } catch(NullPointerException npe) { // Noncompliant {{Avoid catching NullPointerException.}}
       log.info("argument was null");
     }
     try {
       a.equals(null);
-    } catch(java.lang.NullPointerException npe) {
+    } catch(java.lang.NullPointerException npe) { // Noncompliant {{Avoid catching NullPointerException.}}
       log.info("argument was null");
     }
     try {
       a.equals(null);
-    } catch(java.lang.NullPointerException | RuntimeException runtimeException) {
+    } catch(java.lang.NullPointerException | RuntimeException runtimeException) { // Noncompliant {{Avoid catching NullPointerException.}}
       log.info("argument was null");
     }
   }

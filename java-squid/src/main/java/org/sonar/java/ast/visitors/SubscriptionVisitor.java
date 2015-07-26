@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,27 +19,25 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.sonar.sslr.api.Token;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisitor {
+public abstract class SubscriptionVisitor implements JavaFileScanner {
 
 
   protected JavaFileScannerContext context;
   private Collection<Tree.Kind> nodesToVisit;
+  private boolean visitToken;
+  private boolean visitTrivia;
   private SemanticModel semanticModel;
 
   public abstract List<Tree.Kind> nodesToVisit();
@@ -65,43 +63,47 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
     this.context = context;
     semanticModel = (SemanticModel) context.getSemanticModel();
     scanTree(context.getTree());
-    visitTokens(context.getTree());
   }
 
   protected void scanTree(Tree tree) {
     nodesToVisit = nodesToVisit();
+    visitToken = isVisitingTokens();
+    visitTrivia = isVisitingTrivia();
     visit(tree);
   }
 
-  protected void visitTokens(CompilationUnitTree compilationUnitTree) {
-    if (nodesToVisit().contains(Tree.Kind.TOKEN) || nodesToVisit().contains(Tree.Kind.TRIVIA)) {
-      //FIXME relying on ASTNode to iterate over tokens.
-      for (Token token : ((JavaTree) compilationUnitTree).getAstNode().getTokens()) {
-        SyntaxToken syntaxToken = new InternalSyntaxToken(token);
-        visitToken(syntaxToken);
-        if (nodesToVisit().contains(Tree.Kind.TRIVIA)) {
-          for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
-            visitTrivia(syntaxTrivia);
-          }
-        }
-      }
-    }
-  }
-
-
   private void visit(Tree tree) {
     boolean isSubscribed = isSubscribed(tree);
-    if(isSubscribed) {
+    boolean isSyntaxToken = tree.is(Tree.Kind.TOKEN);
+    if (isSyntaxToken) {
+      SyntaxToken syntaxToken = (SyntaxToken) tree;
+      if (visitToken) {
+        visitToken(syntaxToken);
+      }
+      if (visitTrivia) {
+        for (SyntaxTrivia syntaxTrivia : syntaxToken.trivias()) {
+          visitTrivia(syntaxTrivia);
+        }
+      }
+    } else if (isSubscribed) {
       visitNode(tree);
     }
     visitChildren(tree);
-    if(isSubscribed) {
+    if (!isSyntaxToken && isSubscribed) {
       leaveNode(tree);
     }
   }
 
-  protected boolean isSubscribed(Tree tree) {
+  private boolean isSubscribed(Tree tree) {
     return nodesToVisit.contains(((JavaTree) tree).getKind());
+  }
+
+  private boolean isVisitingTrivia() {
+    return nodesToVisit.contains(Tree.Kind.TRIVIA);
+  }
+
+  private boolean isVisitingTokens() {
+    return nodesToVisit.contains(Tree.Kind.TOKEN);
   }
 
   private void visitChildren(Tree tree) {
@@ -114,10 +116,6 @@ public abstract class SubscriptionVisitor implements JavaFileScanner, CodeVisito
         }
       }
     }
-  }
-
-  public SemanticModel getSemanticModel() {
-    return semanticModel;
   }
 
   public boolean hasSemantic(){

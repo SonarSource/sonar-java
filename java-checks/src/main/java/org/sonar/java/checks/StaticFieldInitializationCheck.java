@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -84,20 +84,20 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
     super.leaveNode(tree);
   }
 
-  private boolean isStaticNotVolatileObject(IdentifierTree variable) {
-    Symbol symbol = getSemanticModel().getReference(variable);
-    if (symbol != null) {
-      return isStaticNotFinalNotVolatile(symbol) && !symbol.getType().isPrimitive();
+  private static boolean isStaticNotVolatileObject(IdentifierTree variable) {
+    Symbol symbol = variable.symbol();
+    if (symbol.isUnknown()) {
+      return false;
     }
-    return false;
+    return isStaticNotFinalNotVolatile(symbol) && !symbol.type().isPrimitive();
   }
 
-  private boolean isStaticNotFinalNotVolatile(Symbol symbol) {
+  private static boolean isStaticNotFinalNotVolatile(Symbol symbol) {
     return symbol.isStatic() && !symbol.isVolatile() && !symbol.isFinal();
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of();
   }
 

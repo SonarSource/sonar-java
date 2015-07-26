@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,7 @@ import java.util.Set;
 public class CommentLinesVisitor extends SubscriptionVisitor {
 
   private Set<Integer> comments = Sets.newHashSet();
+  private Set<Integer> noSonarLines = Sets.newHashSet();
   private boolean seenFirstToken;
   private JavaCommentAnalyser commentAnalyser = new JavaCommentAnalyser();
 
@@ -41,11 +42,11 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
     return ImmutableList.of(Tree.Kind.TOKEN);
   }
 
-  public int commentLines(CompilationUnitTree tree) {
+  public void analyzeCommentLines(CompilationUnitTree tree) {
     comments.clear();
+    noSonarLines.clear();
     seenFirstToken = false;
-    visitTokens(tree);
-    return comments.size();
+    scanTree(tree);
   }
 
   @Override
@@ -56,7 +57,9 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
             .split("(\r)?\n|\r", -1);
         int line = trivia.startLine();
         for (String commentLine : commentLines) {
-          if (!commentLine.contains("NOSONAR") && !commentAnalyser.isBlank(commentLine)) {
+          if(commentLine.contains("NOSONAR")) {
+            noSonarLines.add(line);
+          } else if (!commentAnalyser.isBlank(commentLine)) {
             comments.add(line);
           }
           line++;
@@ -66,6 +69,14 @@ public class CommentLinesVisitor extends SubscriptionVisitor {
       }
     }
     seenFirstToken = true;
+  }
+
+  public Set<Integer> noSonarLines() {
+    return noSonarLines;
+  }
+
+  public int commentLinesMetric() {
+    return comments.size();
   }
 
   public static class JavaCommentAnalyser extends CommentAnalyser {

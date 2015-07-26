@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,8 @@ package org.sonar.java.checks;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
 
 public class IteratorNextExceptionCheckTest {
 
@@ -35,13 +31,7 @@ public class IteratorNextExceptionCheckTest {
 
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IteratorNextExceptionCheck.java"),
-      new VisitorsBridge(new IteratorNextExceptionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Add a \"NoSuchElementException\" for iteration beyond the end of the collection.")
-      .next().atLine(17)
-      .next().atLine(47)
-      .next().atLine(97);
+    JavaCheckVerifier.verify("src/test/files/checks/IteratorNextExceptionCheck.java", new IteratorNextExceptionCheck());
   }
 
 }

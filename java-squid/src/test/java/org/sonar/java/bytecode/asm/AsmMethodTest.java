@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -84,7 +84,7 @@ public class AsmMethodTest {
     assertThat(javaBean.getMethod("addFirstName(Ljava/lang/String;)V").isAccessor()).isTrue();
     assertThat(javaBean.getMethod("getNameOrDefault()Ljava/lang/String;").isAccessor()).isTrue();
     assertThat(javaBean.getMethod("accessorWithABunchOfCalls()V").isAccessor()).isTrue();
-    assertThat(javaBean.getMethod("accessNameAndDumpStuffSoNotAccessor()V").isAccessor());
+    assertThat(javaBean.getMethod("accessNameAndDumpStuffSoNotAccessor()V").isAccessor()).isFalse();
     assertThat(javaBean.getMethod("iShouldBeAStaticSetter()V").isAccessor()).isFalse();
     assertThat(javaBean.getMethod("getFirstName()Ljava/lang/String;").isAccessor()).isTrue();
     assertThat(javaBean.getMethod("getFirstNameAndOneArgument(Ljava/lang/String;)Ljava/lang/String;").isAccessor()).isTrue();

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,37 +21,34 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.resolve.Symbols;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
-import java.util.List;
 
 public class MethodInvocationTreeImpl extends AbstractTypedTree implements MethodInvocationTree {
 
   private final ExpressionTree methodSelect;
-  private final List<ExpressionTree> arguments;
+  private final Arguments arguments;
   @Nullable
   private TypeArguments typeArguments;
-  private Symbol symbol;
+  private Symbol symbol = Symbols.unknownSymbol;
 
-  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, List<ExpressionTree> arguments, AstNode... children) {
+  public MethodInvocationTreeImpl(ExpressionTree methodSelect, @Nullable TypeArguments typeArguments, ArgumentListTreeImpl arguments) {
     super(Kind.METHOD_INVOCATION);
     this.methodSelect = Preconditions.checkNotNull(methodSelect);
     this.typeArguments = typeArguments;
     this.arguments = Preconditions.checkNotNull(arguments);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -59,6 +56,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
     return Kind.METHOD_INVOCATION;
   }
 
+  @Nullable
   @Override
   public TypeArguments typeArguments() {
     return typeArguments;
@@ -70,18 +68,13 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
-  public SyntaxToken openParenToken() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public List<ExpressionTree> arguments() {
+  public Arguments arguments() {
     return arguments;
   }
 
   @Override
-  public SyntaxToken closeParenToken() {
-    throw new UnsupportedOperationException();
+  public Symbol symbol() {
+    return symbol;
   }
 
   @Override
@@ -92,21 +85,12 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(methodSelect),
-      Iterators.singletonIterator(typeArguments),
-      arguments.iterator()
-      );
-  }
-
-  public Symbol getSymbol() {
-    if(symbol==null) {
-      throw new IllegalStateException("Symbol method should not be null");
-    }
-    return symbol;
+      typeArguments != null ? Iterators.<Tree>singletonIterator(typeArguments) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>forArray(methodSelect, arguments));
   }
 
   public void setSymbol(Symbol symbol) {
-    Preconditions.checkState(this.symbol == null);
+    Preconditions.checkState(this.symbol.equals(Symbols.unknownSymbol));
     this.symbol = symbol;
   }
 }

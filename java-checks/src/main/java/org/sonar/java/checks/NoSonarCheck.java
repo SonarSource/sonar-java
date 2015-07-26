@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ import java.util.List;
  */
 @Rule(
   key = "NoSonar",
-  name = "\"NOSONAR\" marker should not be used to switch-off issues",
+  name = "\"NOSONAR\" should not be used to switch off issues",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)

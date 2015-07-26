@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,8 @@ package org.sonar.java.checks;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
@@ -44,18 +45,14 @@ public class UselessImportCheckTest {
       .next().atLine(15).withMessage("Remove this unnecessary import: java.lang classes are always implicitly imported.")
       .next().atLine(16)
       .next().atLine(17).withMessage("Remove this duplicated import.")
-      .next().atLine(19).withMessage("Remove this unnecessary import: same package classes are always implicitly imported.")
-      .next().atLine(24)
+      .next().atLine(21).withMessage("Remove this unnecessary import: same package classes are always implicitly imported.")
+      .next().atLine(26)
       .noMore();
   }
 
   @Test
   public void detected_without_package() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/UselessImportCheck/WithoutPackage.java"),
-      new VisitorsBridge(new UselessImportCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2);
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithoutPackage.java", new UselessImportCheck());
   }
 
 }

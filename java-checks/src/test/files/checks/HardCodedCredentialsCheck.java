@@ -17,10 +17,22 @@ class A {
  
     String[] array = {};
     array[0] = "xx";
+    
+    A myA = new A();
+    myA.setProperty("password", "xxxxx"); // Noncompliant
+    myA.setProperty("password", new Object());
+    myA.setProperty("xxxxx", "password");
+    myA.setProperty(12, "xxxxx");
+    myA.setProperty(new Object(), new Object());
+    
+    MyUnknownClass.myUnknownMethod("password", "xxxxx"); // Noncompliant
   }
 
   private String retrievePassword() {
     return null;
+  }
+  
+  private void setProperty(Object property, Object Value) {
   }
   
 }

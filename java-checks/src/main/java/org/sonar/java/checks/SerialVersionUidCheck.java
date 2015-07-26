@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,13 +26,12 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.AnnotationValue;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Symbol.VariableSymbol;
-import org.sonar.java.resolve.Type;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
+import org.sonar.java.resolve.JavaType.ClassJavaType;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -58,14 +57,14 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      visitClassTree((ClassTreeImpl) tree);
+      visitClassTree((ClassTree) tree);
     }
   }
 
-  private void visitClassTree(ClassTreeImpl classTree) {
-    TypeSymbol symbol = classTree.getSymbol();
-    if (!isAnonymous(classTree) && isSerializable(symbol.getType())) {
-      VariableSymbol serialVersionUidSymbol = findSerialVersionUid(symbol);
+  private void visitClassTree(ClassTree classTree) {
+    Symbol.TypeSymbol symbol = classTree.symbol();
+    if (!isAnonymous(classTree) && isSerializable(symbol.type())) {
+      Symbol.VariableSymbol serialVersionUidSymbol = findSerialVersionUid(symbol);
       if (serialVersionUidSymbol == null) {
         if (!isExclusion(symbol)) {
           addIssue(classTree, "Add a \"static final long serialVersionUID\" field to this class.");
@@ -76,11 +75,11 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isAnonymous(ClassTreeImpl classTree) {
+  private static boolean isAnonymous(ClassTree classTree) {
     return classTree.simpleName() == null;
   }
 
-  private void checkModifiers(VariableSymbol serialVersionUidSymbol) {
+  private void checkModifiers(Symbol.VariableSymbol serialVersionUidSymbol) {
     List<String> missingModifiers = Lists.newArrayList();
     if (!serialVersionUidSymbol.isStatic()) {
       missingModifiers.add("static");
@@ -88,38 +87,38 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     if (!serialVersionUidSymbol.isFinal()) {
       missingModifiers.add("final");
     }
-    if (!serialVersionUidSymbol.getType().is("long")) {
+    if (!serialVersionUidSymbol.type().is("long")) {
       missingModifiers.add("long");
     }
-    if (!missingModifiers.isEmpty()) {
-      Tree tree = getSemanticModel().getTree(serialVersionUidSymbol);
+    Tree tree = serialVersionUidSymbol.declaration();
+    if (tree != null && !missingModifiers.isEmpty()) {
       addIssue(tree, "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
     }
   }
 
-  private VariableSymbol findSerialVersionUid(TypeSymbol symbol) {
-    for (Symbol member : symbol.members().lookup("serialVersionUID")) {
-      if (member.isKind(Symbol.VAR)) {
-        return (VariableSymbol) member;
+  private static Symbol.VariableSymbol findSerialVersionUid(Symbol.TypeSymbol symbol) {
+    for (Symbol member : symbol.lookupSymbols("serialVersionUID")) {
+      if (member.isVariableSymbol()) {
+        return (Symbol.VariableSymbol) member;
       }
     }
     return null;
   }
 
-  private boolean isSerializable(Type type) {
+  private static boolean isSerializable(Type type) {
     return type.isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isExclusion(TypeSymbol symbol) {
+  private static boolean isExclusion(Symbol.TypeSymbol symbol) {
     return symbol.isAbstract()
-      || symbol.getType().isSubtypeOf("java.lang.Throwable")
-      || isGuiClass(symbol)
-      || hasSuppressWarningAnnotation(symbol);
+      || symbol.type().isSubtypeOf("java.lang.Throwable")
+      || isGuiClass((TypeJavaSymbol) symbol)
+      || hasSuppressWarningAnnotation((TypeJavaSymbol) symbol);
   }
 
-  private boolean isGuiClass(TypeSymbol symbol) {
-    for (ClassType superType : symbol.superTypes()) {
-      TypeSymbol superTypeSymbol = superType.getSymbol();
+  private static boolean isGuiClass(TypeJavaSymbol symbol) {
+    for (ClassJavaType superType : symbol.superTypes()) {
+      TypeJavaSymbol superTypeSymbol = superType.getSymbol();
       if (hasGuiPackage(superTypeSymbol)) {
         return true;
       }
@@ -127,15 +126,15 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return hasGuiPackage(symbol) || (!symbol.equals(symbol.outermostClass()) && isGuiClass(symbol.outermostClass()));
   }
 
-  private boolean hasGuiPackage(TypeSymbol superTypeSymbol) {
+  private static boolean hasGuiPackage(TypeJavaSymbol superTypeSymbol) {
     String fullyQualifiedName = superTypeSymbol.getFullyQualifiedName();
     return fullyQualifiedName.startsWith("javax.swing.") || fullyQualifiedName.startsWith("java.awt.");
   }
 
-  private boolean hasSuppressWarningAnnotation(TypeSymbol symbol) {
-    List<AnnotationValue> annotations = symbol.metadata().getValuesFor("java.lang.SuppressWarnings");
+  private static boolean hasSuppressWarningAnnotation(TypeJavaSymbol symbol) {
+    List<SymbolMetadata.AnnotationValue> annotations = symbol.metadata().valuesForAnnotation("java.lang.SuppressWarnings");
     if (annotations != null) {
-      for (AnnotationValue annotationValue : annotations) {
+      for (SymbolMetadata.AnnotationValue annotationValue : annotations) {
         if ("serial".equals(stringLiteralValue(annotationValue.value()))) {
           return true;
         }
@@ -144,7 +143,7 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private String stringLiteralValue(Object object) {
+  private static String stringLiteralValue(Object object) {
     if (object instanceof LiteralTree) {
       LiteralTree literal = (LiteralTree) object;
       return LiteralUtils.trimQuotes(literal.value());

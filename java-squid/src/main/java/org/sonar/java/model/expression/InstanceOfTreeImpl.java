@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -29,6 +27,7 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.Iterator;
 
@@ -36,23 +35,16 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
 
   private ExpressionTree expression;
   private final InternalSyntaxToken instanceofToken;
-  private final Tree type;
+  private final TypeTree type;
 
-  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, Tree type, AstNode child) {
+  public InstanceOfTreeImpl(InternalSyntaxToken instanceofToken, TypeTree type) {
     super(Kind.INSTANCE_OF);
     this.instanceofToken = instanceofToken;
-    this.type = Preconditions.checkNotNull(type);
-
-    addChild(instanceofToken);
-    addChild(child);
+    this.type = type;
   }
 
   public InstanceOfTreeImpl complete(ExpressionTree expression) {
-    Preconditions.checkState(this.expression == null);
     this.expression = expression;
-
-    prependChildren((AstNode) expression);
-
     return this;
   }
 
@@ -72,7 +64,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
   }
 
@@ -85,6 +77,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
       expression,
+      instanceofToken,
       type
       );
   }

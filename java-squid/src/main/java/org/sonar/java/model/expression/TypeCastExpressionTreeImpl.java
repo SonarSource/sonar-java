@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,50 +21,51 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
+import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
-import java.util.List;
 
 public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
 
   private InternalSyntaxToken openParenToken;
-  private InternalSyntaxToken closeParenToken;
-
-  private final Tree type;
+  private final TypeTree type;
+  @Nullable
+  private final InternalSyntaxToken andToken;
+  private final ListTree<Tree> bounds;
+  private final InternalSyntaxToken closeParenToken;
   private final ExpressionTree expression;
 
-  public TypeCastExpressionTreeImpl(Tree type, ExpressionTree expression, InternalSyntaxToken closeParenToken, List<AstNode> children) {
+  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
     super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
-    this.expression = Preconditions.checkNotNull(expression);
-
+    this.bounds = BoundListTreeImpl.emptyList();
     this.closeParenToken = closeParenToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.expression = Preconditions.checkNotNull(expression);
+    andToken = null;
   }
 
-  public TypeCastExpressionTreeImpl(AstNode astNode, Tree type, ExpressionTree expression) {
-    super(astNode);
+  public TypeCastExpressionTreeImpl(TypeTree type, InternalSyntaxToken andToken, ListTree<Tree> bounds, InternalSyntaxToken closeParenToken, ExpressionTree expression) {
+    super(Kind.TYPE_CAST);
     this.type = Preconditions.checkNotNull(type);
+    this.bounds = bounds;
+    this.closeParenToken = closeParenToken;
     this.expression = Preconditions.checkNotNull(expression);
+    this.andToken = andToken;
   }
 
   public TypeCastExpressionTreeImpl complete(InternalSyntaxToken openParenToken) {
     Preconditions.checkState(this.openParenToken == null && closeParenToken != null);
     this.openParenToken = openParenToken;
-
-    prependChildren(openParenToken);
 
     return this;
   }
@@ -76,17 +77,28 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
-  public Tree type() {
+  public TypeTree type() {
     return type;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken andToken() {
+    return andToken;
+  }
+
+  @Override
+  public ListTree<Tree> bounds() {
+    return bounds;
   }
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
@@ -101,9 +113,12 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
-      type,
-      expression
+    Iterator<Tree> andTokenIterator = andToken == null ? Iterators.<Tree>emptyIterator() : Iterators.<Tree>singletonIterator(andToken());
+    return Iterators.concat(
+      Iterators.forArray(openParenToken, type),
+      andTokenIterator,
+      Iterators.singletonIterator(bounds),
+      Iterators.forArray(closeParenToken, expression)
       );
   }
 

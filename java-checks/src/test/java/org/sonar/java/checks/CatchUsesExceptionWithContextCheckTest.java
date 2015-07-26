@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,41 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
 
 public class CatchUsesExceptionWithContextCheckTest {
 
-  public CatchUsesExceptionWithContextCheck check = new CatchUsesExceptionWithContextCheck();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchUsesExceptionWithContextCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Either log or rethrow this exception.")
-      .next().atLine(7)
-      .next().atLine(11)
-      .next().atLine(18)
-      .next().atLine(22)
-      .next().atLine(45)
-      .next().atLine(62)
-      .next().atLine(64)
-      .next().atLine(75)
-      .next().atLine(107)
-      .next().atLine(113)
-      .next().atLine(128)
-      .next().atLine(129)
-      .next().atLine(130)
-      .next().atLine(131)
-      .next().atLine(132)
-      .next().atLine(145)
-      .next().atLine(147)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CatchUsesExceptionWithContextCheck.java", new CatchUsesExceptionWithContextCheck());
   }
 
 }

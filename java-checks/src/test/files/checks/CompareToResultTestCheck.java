@@ -7,7 +7,7 @@ class MyComparable implements Comparable<MyComparable> {
   }
   
   public void aMethod(MyComparable other, NotComparable notComparable) {
-    if (compareTo(other) == -1) {} // Noncompliant
+    if (compareTo(other) == -1) {} // Noncompliant {{Only the sign of the result should be examined.}}
     if (compareTo(other) == -5) {} // Noncompliant
     if (compareTo(other) == 0) {}
     if (compareTo(other) == 1) {} // Noncompliant
@@ -20,7 +20,8 @@ class MyComparable implements Comparable<MyComparable> {
     if (compareTo(other) == - hashCode()) {}
     if (compareTo(other, other) == 1) {}
     if (1 == compareTo("", "", "")) {}
-    if (1 == compareTo(notComparable)) {} // False positive...
+    //false positive:
+    if (1 == compareTo(notComparable)) {} // Noncompliant
     if (0 == compareTo(other)) {}
     
     int c1 = compareTo(other);

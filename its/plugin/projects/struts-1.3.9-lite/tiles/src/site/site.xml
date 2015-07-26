@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    $Id$
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<project name="Struts Tiles">
+    <bannerLeft>
+        <name>Apache Software Foundation</name>
+        <src>http://www.apache.org/images/asf-logo.gif</src>
+        <href>http://www.apache.org/</href>
+    </bannerLeft>
+    <bannerRight>
+        <name>Apache Struts</name>
+        <src>http://struts.apache.org/images/struts.gif</src>
+        <href>http://struts.apache.org/</href>
+    </bannerRight>     
+    <body>
+        <links>
+            <item name="Apache" href="http://www.apache.org/" /> 
+            <item name="Struts 1" href="http://struts.apache.org/1.x/" />
+            <item name="Struts 2" href="http://struts.apache.org/2.x/" />
+        </links>
+        <menu name="Struts Tiles">
+            <item href="index.html" name="Welcome"/>
+            <item href="faq.html" name="FAQ"/>
+            <item href="installation.html" name="Installation"/>
+            <item href="userGuide.html" name="User Guide"/>
+            <item href="examples.html" name="Creating Templates"/>
+            <item href="tagreference.html" name="Taglib Reference"/>    
+        </menu>
+        
+        <menu name="Components">
+        
+            <item   name="Struts Apps"
+                    href="../struts-apps/index.html" />
+
+            <item   name="Struts EL"
+                    href="../struts-el/index.html" />
+
+            <item   name="Struts Extras"
+                    href="../struts-extras/index.html" />
+
+            <item   name="Struts Faces"
+                    href="../struts-faces/index.html" />
+
+            <item   name="Struts Scripting"
+                    href="../struts-scripting/index.html" />
+
+            <item   name="Struts Taglib"
+                    href="../struts-taglib/index.html" />
+
+            <item   name="Struts Tiles"
+                    href="../struts-tiles/index.html" />
+
+        </menu>
+ 
+        <menu name="Quick Links">
+            <item
+                    name="Javadoc"
+                    href="apidocs/index.html"/>
+            <item
+                    name="Struts 1"
+                    href="../index.html"/>
+        </menu>
+        ${reports}
+    </body>
+</project>

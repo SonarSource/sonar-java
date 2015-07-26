@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -58,9 +58,8 @@ public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisit
 
   @Override
   public void visitToken(SyntaxToken token) {
-    InternalSyntaxToken internalSyntaxToken = (InternalSyntaxToken) token;
-    if (internalSyntaxToken.isEOF()) {
-      int lines = internalSyntaxToken.getLine();
+    if (((InternalSyntaxToken) token).isEOF()) {
+      int lines = token.line();
       if (lines > maximum) {
         addIssueOnFile(MessageFormat.format("This file has {0} lines, which is greater than {1} authorized. Split it into smaller files.", lines, maximum));
       }

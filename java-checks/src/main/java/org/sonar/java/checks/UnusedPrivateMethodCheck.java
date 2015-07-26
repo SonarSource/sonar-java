@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -39,7 +39,7 @@ import org.sonar.squidbridge.api.SourceFile;
 import java.util.List;
 
 @Rule(
-  key = UnusedPrivateMethodCheck.RULE_KEY,
+  key = "UnusedPrivateMethod",
   name = "Unused private method should be removed",
   tags = {"unused"},
   priority = Priority.MAJOR)
@@ -48,7 +48,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "UnusedPrivateMethod";
   private AsmClass asmClass;
 
   @Override
@@ -82,17 +81,12 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
     }
   }
 
-  private boolean isPrivateUnused(AsmMethod asmMethod) {
+  private static boolean isPrivateUnused(AsmMethod asmMethod) {
     return !asmMethod.isUsed() && asmMethod.isPrivate();
   }
 
-  private boolean isExcludedFromCheck(AsmMethod asmMethod) {
+  private static boolean isExcludedFromCheck(AsmMethod asmMethod) {
     return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

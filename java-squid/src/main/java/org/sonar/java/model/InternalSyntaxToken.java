@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,63 +19,59 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.GenericTokenType;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import java.util.Iterator;
 import java.util.List;
 
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
-  private final Token token;
   private List<SyntaxTrivia> trivias;
+  private int startIndex;
+  private int endIndex;
+  private final int line;
+  private final int column;
+  private final String value;
+  private final boolean isEOF;
 
-  public InternalSyntaxToken(AstNodeType astNodeType, Token token, int fromIndex, int toIndex) {
-    // Must pass token to super's constructor
-    super(astNodeType, token);
-    this.token = token;
-    this.trivias = createTrivias(token);
-    setFromIndex(fromIndex);
-    setToIndex(toIndex);
+  protected InternalSyntaxToken(InternalSyntaxToken internalSyntaxToken) {
+    super(null);
+    this.value = internalSyntaxToken.value;
+    this.line = internalSyntaxToken.line;
+    this.column = internalSyntaxToken.column;
+    this.trivias = internalSyntaxToken.trivias;
+    this.startIndex = internalSyntaxToken.startIndex;
+    this.endIndex = internalSyntaxToken.endIndex;
+    this.isEOF = internalSyntaxToken.isEOF;
   }
 
-  private InternalSyntaxToken(AstNode astNode) {
-    super(astNode);
-    this.token = astNode.getToken();
-    this.trivias = createTrivias(token);
+  public InternalSyntaxToken(int line, int column, String value, List<SyntaxTrivia> trivias, int startIndex, int endIndex, boolean isEOF) {
+    super(null);
+    this.value = value;
+    this.line = line;
+    this.column = column;
+    this.trivias = trivias;
+    this.startIndex = startIndex;
+    this.endIndex = endIndex;
+    this.isEOF = isEOF;
   }
 
-  public InternalSyntaxToken(Token token) {
-    super((AstNode)null);
-    this.token = token;
-    this.trivias = createTrivias(token);
+  public int fromIndex() {
+    return startIndex;
   }
 
   @Override
   public String text() {
-    return token.getValue();
+    return value;
   }
 
   @Override
   public List<SyntaxTrivia> trivias() {
     return trivias;
-  }
-
-  private List<SyntaxTrivia> createTrivias(Token token) {
-    List<SyntaxTrivia> result = Lists.newArrayList();
-    for (Trivia trivia : token.getTrivia()) {
-      result.add(InternalSyntaxTrivia.create(trivia.getToken().getValue(), trivia.getToken().getLine()));
-    }
-    return result;
   }
 
   @Override
@@ -85,7 +81,17 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
 
   @Override
   public int getLine() {
-    return token.getLine();
+    return line;
+  }
+
+  @Override
+  public int line() {
+    return line;
+  }
+
+  @Override
+  public int column() {
+    return column;
   }
 
   @Override
@@ -98,8 +104,8 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     return true;
   }
 
-  public boolean isEOF(){
-    return token.getType() == GenericTokenType.EOF;
+  public boolean isEOF() {
+    return isEOF;
   }
 
   @Override
@@ -107,14 +113,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
     throw new UnsupportedOperationException();
   }
 
-  public static InternalSyntaxToken create(AstNode astNode) {
-    Preconditions.checkArgument(astNode.hasToken(), "has no token");
-    Preconditions.checkArgument(astNode.getToken() == astNode.getLastToken(), "has several tokens");
-    return new InternalSyntaxToken(astNode.getType(), astNode.getToken(), astNode.getFromIndex(), astNode.getToIndex());
+  public void setGrammarRuleKey(GrammarRuleKey grammarRuleKey) {
+    this.grammarRuleKey = grammarRuleKey;
   }
-
-  public static InternalSyntaxToken createLegacy(AstNode astNode) {
-    return new InternalSyntaxToken(astNode);
-  }
-
 }

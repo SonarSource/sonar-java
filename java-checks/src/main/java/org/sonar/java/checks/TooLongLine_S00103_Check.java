@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,9 +27,11 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.EmptyStatementTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
+import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -82,13 +84,25 @@ public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements
   }
 
   public void ignoreLines(CompilationUnitTree tree) {
-    if (!tree.imports().isEmpty()) {
-      int start = ((InternalSyntaxToken) tree.imports().get(0).importKeyword()).getLine();
-      int end = ((InternalSyntaxToken) tree.imports().get(tree.imports().size() - 1).semicolonToken()).getLine();
+    List<ImportClauseTree> imports = tree.imports();
+    if (!imports.isEmpty()) {
+      int start = getLine(imports.get(0), true);
+      int end = getLine(imports.get(imports.size() - 1), false);
       for (int i = start; i <= end; i++) {
         ignoredLines.add(i);
       }
     }
+  }
+
+  private static int getLine(ImportClauseTree importClauseTree, boolean fromStart) {
+    if (importClauseTree.is(Tree.Kind.IMPORT)) {
+      if (fromStart) {
+        return ((ImportTree) importClauseTree).importKeyword().line();
+      } else {
+        return ((ImportTree) importClauseTree).semicolonToken().line();
+      }
+    }
+    return ((EmptyStatementTree) importClauseTree).semicolonToken().line();
   }
 
   private void visitFile(File file) {

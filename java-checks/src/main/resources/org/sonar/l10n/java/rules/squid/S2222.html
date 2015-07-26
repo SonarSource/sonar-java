@@ -1,0 +1,37 @@
+<p>The logic in a method should ensure that locks are released in the methods in which they were acquired. Failure to release a lock increases the potential for deadlocks and could result in runtime errors in production.</p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public class MyClass {
+  Lock lock = new Lock();
+
+  public void acquireLock() {
+    lock.lock();  // Noncompliant;
+  }
+
+  public void releaseLock() {
+    lock.unlock();
+  }
+
+  public void doTheThing() {
+    acquireLock();
+    // do work...
+    releaseLock();
+  }
+}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public class MyClass {
+  Lock lock = new Lock();
+
+  public void doTheThing() {
+    lock.lock();
+    // do work...
+    lock.unlock();
+  }
+
+}
+</pre>
+

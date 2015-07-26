@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,18 +21,15 @@ package org.sonar.java.model.declaration;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements ModifiersTree {
@@ -44,27 +41,25 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
     return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
   }
 
-  private final List<Modifier> modifiers;
+  private final List<ModifierKeywordTree> modifiers;
   private final List<AnnotationTree> annotations;
 
   private ModifiersTreeImpl() {
-    super(null);
+    super(null, Collections.<ModifierTree>emptyList());
     this.annotations = Lists.newArrayList();
     modifiers = Lists.newArrayList();
   }
 
   public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
-    super(JavaLexer.MODIFIERS, javaTrees, ImmutableList.<AstNode>of());
-    ImmutableList.Builder<Modifier> modifierBuilder = ImmutableList.builder();
+    super(JavaLexer.MODIFIERS, javaTrees);
+    ImmutableList.Builder<ModifierKeywordTree> modifierBuilder = ImmutableList.builder();
     ImmutableList.Builder<AnnotationTree> annotationBuilder = ImmutableList.builder();
     for (ModifierTree modifierTree : this) {
       if (modifierTree.is(Kind.ANNOTATION)) {
         annotationBuilder.add((AnnotationTree) modifierTree);
       } else {
-        ModifierKeywordTree modifierKeywordTree = (ModifierKeywordTree) modifierTree;
-        modifierBuilder.add(modifierKeywordTree.modifier());
+        modifierBuilder.add((ModifierKeywordTree) modifierTree);
       }
-      addChild((AstNode) modifierTree);
     }
     this.annotations = annotationBuilder.build();
     this.modifiers = modifierBuilder.build();
@@ -77,7 +72,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   }
 
   @Override
-  public List<Modifier> modifiers() {
+  public List<ModifierKeywordTree> modifiers() {
     return modifiers;
   }
 
@@ -89,16 +84,6 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
   @Override
   public void accept(TreeVisitor visitor) {
     visitor.visitModifier(this);
-  }
-
-  @Override
-  public boolean isLeaf() {
-    return false;
-  }
-
-  @Override
-  public Iterator<Tree> childrenIterator() {
-    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
   }
 
 }

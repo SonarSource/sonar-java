@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,10 +24,11 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
@@ -55,12 +56,16 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (!isOverriding(methodTree)) {
+    if (!isPrivate(methodTree) && !isOverriding(methodTree)) {
       methodTree.returnType().accept(new CheckWildcard());
     }
   }
 
-  private boolean isOverriding(MethodTree tree) {
+  private static boolean isPrivate(MethodTree methodTree) {
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE);
+  }
+
+  private static boolean isOverriding(MethodTree tree) {
     return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
   }
 
@@ -70,18 +75,17 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitParameterizedType(ParameterizedTypeTree tree) {
-      classType = ((AbstractTypedTree)tree.type()).getSymbolType().is("java.lang.Class");
+      classType = tree.type().symbolType().is("java.lang.Class");
       super.visitParameterizedType(tree);
       classType = false;
     }
 
     @Override
     public void visitWildcard(WildcardTree tree) {
-      if(!classType) {
+      if (!classType) {
         addIssue(tree, "Remove usage of generic wildcard type.");
       }
     }
   }
-
 
 }

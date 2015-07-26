@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,13 +24,14 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -40,6 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -52,6 +54,7 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends SubscriptionBaseVisitor {
 
+  private static final String FINALIZE = "finalize";
 
   private MethodInvocationTree lastStatementTree;
 
@@ -62,16 +65,16 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
 
   @Override
   public void visitNode(Tree tree) {
-    if (tree.is(Kind.METHOD_INVOCATION)) {
-      MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-      if (methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
-        if ("finalize".equals(mset.identifier().name()) && mset.expression().is(Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
-          lastStatementTree = methodInvocationTree;
+    if (hasSemantic()) {
+      if (tree.is(Kind.METHOD_INVOCATION)) {
+        MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
+        if (methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree mset = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
+          if (FINALIZE.equals(mset.identifier().name()) && mset.expression().is(Kind.IDENTIFIER) && "super".equals(((IdentifierTree) mset.expression()).name())) {
+            lastStatementTree = methodInvocationTree;
+          }
         }
-      }
-    } else {
-      if (isFinalize((MethodTree) tree)) {
+      } else if (isFinalize(((MethodTree) tree).symbol())) {
         lastStatementTree = null;
       }
     }
@@ -79,21 +82,23 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Kind.METHOD) && isFinalize((MethodTree) tree)) {
+    if (hasSemantic() && tree.is(Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
-      if (lastStatementTree == null) {
-        addIssue(methodTree.simpleName(), "Add a call to super.finalize() at the end of this Object.finalize() implementation.");
-      } else if (!isLastStatement(methodTree, lastStatementTree)) {
-        addIssue(lastStatementTree, "Move this super.finalize() call to the end of this Object.finalize() implementation.");
+      if (isFinalize(methodTree.symbol()) && doesOverrideFinalize(methodTree.symbol().owner())) {
+        if (lastStatementTree == null) {
+          addIssue(methodTree.simpleName(), "Add a call to super.finalize() at the end of this Object.finalize() implementation.");
+        } else if (!isLastStatement(methodTree, lastStatementTree)) {
+          addIssue(lastStatementTree, "Move this super.finalize() call to the end of this Object.finalize() implementation.");
+        }
       }
     }
   }
 
-  private boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
+  private static boolean isLastStatement(MethodTree methodTree, MethodInvocationTree lastStatementTree) {
     BlockTree blockTree = methodTree.block();
-    if(blockTree != null) {
+    if (blockTree != null) {
       for (StatementTree statementTree : blockTree.body()) {
-        if(statementTree.is(Kind.TRY_STATEMENT) && isLastStatement(((TryStatementTree) statementTree).finallyBlock(), lastStatementTree)) {
+        if (statementTree.is(Kind.TRY_STATEMENT) && isLastStatement(((TryStatementTree) statementTree).finallyBlock(), lastStatementTree)) {
           return true;
         }
       }
@@ -101,7 +106,7 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
     return isLastStatement(blockTree, lastStatementTree);
   }
 
-  private boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
+  private static boolean isLastStatement(@Nullable BlockTree blockTree, MethodInvocationTree lastStatementTree) {
     if (blockTree != null) {
       StatementTree last = Iterables.getLast(blockTree.body());
       if (last.is(Kind.EXPRESSION_STATEMENT)) {
@@ -113,13 +118,30 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
     return false;
   }
 
-  private boolean isFinalize(MethodTree methodTree) {
-    if ("finalize".equals(methodTree.simpleName().name()) && methodTree.parameters().isEmpty()) {
-      Tree returnType = methodTree.returnType();
-      if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
-        return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
+  private static boolean isFinalize(Symbol symbol) {
+    if (FINALIZE.equals(symbol.name()) && symbol.isMethodSymbol()) {
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+      if ("void".equals(methodSymbol.returnType().name()) && methodSymbol.parameterTypes().isEmpty()) {
+        return true;
       }
     }
     return false;
   }
+
+  private static boolean doesOverrideFinalize(Symbol classSymbol) {
+    if (classSymbol.isTypeSymbol()) {
+      Type superClassType = ((Symbol.TypeSymbol) classSymbol).superClass();
+      while (superClassType != null && !superClassType.is("java.lang.Object")) {
+        Symbol.TypeSymbol currentClass = superClassType.symbol();
+        for (Symbol symbol : currentClass.lookupSymbols(FINALIZE)) {
+          if (isFinalize(symbol)) {
+            return true;
+          }
+        }
+        superClassType = currentClass.superClass();
+      }
+    }
+    return false;
+  }
+
 }

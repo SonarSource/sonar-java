@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
 
+import javax.annotation.Nullable;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BytecodeCompleter implements Symbol.Completer {
+public class BytecodeCompleter implements JavaSymbol.Completer {
 
   private static final Logger LOG = LoggerFactory.getLogger(BytecodeCompleter.class);
 
@@ -54,8 +55,8 @@ public class BytecodeCompleter implements Symbol.Completer {
   /**
    * Indexed by flat name.
    */
-  private final Map<String, Symbol.TypeSymbol> classes = new HashMap<String, Symbol.TypeSymbol>();
-  private final Map<String, Symbol.PackageSymbol> packages = new HashMap<String, Symbol.PackageSymbol>();
+  private final Map<String, JavaSymbol.TypeJavaSymbol> classes = new HashMap<String, JavaSymbol.TypeJavaSymbol>();
+  private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<String, JavaSymbol.PackageJavaSymbol>();
 
   private ClassLoader classLoader;
 
@@ -68,7 +69,7 @@ public class BytecodeCompleter implements Symbol.Completer {
     this.symbols = symbols;
   }
 
-  public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
+  public JavaSymbol.TypeJavaSymbol registerClass(JavaSymbol.TypeJavaSymbol classSymbol) {
     String flatName = formFullName(classSymbol);
     Preconditions.checkState(!classes.containsKey(flatName), "Registering class 2 times : " + flatName);
     classes.put(flatName, classSymbol);
@@ -76,21 +77,23 @@ public class BytecodeCompleter implements Symbol.Completer {
   }
 
   @Override
-  public void complete(Symbol symbol) {
+  public void complete(JavaSymbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
     //complete outer class to set flags for inner class properly.
-    if (symbol.owner.isKind(Symbol.TYP)) {
+    if (symbol.owner.isKind(JavaSymbol.TYP)) {
       symbol.owner.complete();
     }
     String bytecodeName = formFullName(symbol);
-    Symbol.TypeSymbol classSymbol = getClassSymbol(bytecodeName);
+    JavaSymbol.TypeJavaSymbol classSymbol = getClassSymbol(bytecodeName);
     Preconditions.checkState(classSymbol == symbol);
 
     InputStream inputStream = null;
     ClassReader classReader = null;
     try {
       inputStream = inputStreamFor(bytecodeName);
-      classReader = new ClassReader(inputStream);
+      if(inputStream != null) {
+        classReader = new ClassReader(inputStream);
+      }
     } catch (IOException e) {
       throw Throwables.propagate(e);
     } finally {
@@ -98,11 +101,12 @@ public class BytecodeCompleter implements Symbol.Completer {
     }
     if (classReader != null) {
       classReader.accept(
-          new BytecodeVisitor(this, symbols, (Symbol.TypeSymbol) symbol, parametrizedTypeCache),
+          new BytecodeVisitor(this, symbols, (JavaSymbol.TypeJavaSymbol) symbol, parametrizedTypeCache),
           ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES | ClassReader.SKIP_DEBUG);
     }
   }
 
+  @Nullable
   private InputStream inputStreamFor(String fullname) {
     return getClassLoader().getResourceAsStream(Convert.bytecodeName(fullname) + ".class");
   }
@@ -114,17 +118,17 @@ public class BytecodeCompleter implements Symbol.Completer {
     return classLoader;
   }
 
-  public String formFullName(Symbol symbol) {
+  public String formFullName(JavaSymbol symbol) {
     return formFullName(symbol.name, symbol.owner);
   }
 
-  public String formFullName(String name, Symbol site) {
+  public String formFullName(String name, JavaSymbol site) {
     String result = name;
-    Symbol owner = site;
+    JavaSymbol owner = site;
     while (owner != symbols.defaultPackage) {
       //Handle inner classes, if owner is a type, separate by $
       String separator = ".";
-      if (owner.kind == Symbol.TYP) {
+      if (owner.kind == JavaSymbol.TYP) {
         separator = "$";
       }
       result = owner.name + separator + result;
@@ -134,23 +138,23 @@ public class BytecodeCompleter implements Symbol.Completer {
   }
 
   @VisibleForTesting
-  Symbol.TypeSymbol getClassSymbol(String bytecodeName) {
+  JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName) {
     return getClassSymbol(bytecodeName, 0);
   }
 
   // FIXME(Godin): or parameter must be renamed, or should not receive flat name, in a former case - first transformation in this method seems useless
-  Symbol.TypeSymbol getClassSymbol(String bytecodeName, int flags) {
+  JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName, int flags) {
     String flatName = Convert.flatName(bytecodeName);
-    Symbol.TypeSymbol symbol = classes.get(flatName);
+    JavaSymbol.TypeJavaSymbol symbol = classes.get(flatName);
     if (symbol == null) {
       String shortName = Convert.shortName(flatName);
       String packageName = Convert.packagePart(flatName);
       String enclosingClassName = Convert.enclosingClassName(shortName);
       if (StringUtils.isNotEmpty(enclosingClassName)) {
         //handle innerClasses
-        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(Convert.fullName(packageName, enclosingClassName)));
+        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(Convert.fullName(packageName, enclosingClassName)));
       } else {
-        symbol = new Symbol.TypeSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
+        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
       symbol.members = new Scope(symbol);
       symbol.typeParameters = new Scope(symbol);
@@ -160,8 +164,8 @@ public class BytecodeCompleter implements Symbol.Completer {
         symbol.completer = this;
       } else {
         LOG.error("Class not found: " + bytecodeName);
-        // TODO(Godin): why only interfaces, but not supertype for example?
-        ((Type.ClassType) symbol.type).interfaces = ImmutableList.of();
+        ((JavaType.ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+        ((JavaType.ClassJavaType) symbol.type).supertype = Symbols.unknownType;
       }
 
       classes.put(flatName, symbol);
@@ -178,11 +182,11 @@ public class BytecodeCompleter implements Symbol.Completer {
    * This method performs check of class name within file in order to avoid such situation.
    * This is definitely not the best solution in terms of performance, but acceptable for now.
    *
-   * @return symbol for requested class, if corresponding class file exists, and {@link Resolve.SymbolNotFound} otherwise
+   * @return symbol for requested class, if corresponding class file exists, and {@link org.sonar.java.resolve.Resolve.JavaSymbolNotFound} otherwise
    */
   // TODO(Godin): Method name is misleading because of lazy loading.
-  public Symbol loadClass(String fullname) {
-    Symbol.TypeSymbol symbol = classes.get(fullname);
+  public JavaSymbol loadClass(String fullname) {
+    JavaSymbol.TypeJavaSymbol symbol = classes.get(fullname);
     if (symbol != null) {
       return symbol;
     }
@@ -192,14 +196,14 @@ public class BytecodeCompleter implements Symbol.Completer {
     String bytecodeName = Convert.bytecodeName(fullname);
 
     if (inputStream == null) {
-      return new Resolve.SymbolNotFound();
+      return new Resolve.JavaSymbolNotFound();
     }
 
     try {
       ClassReader classReader = new ClassReader(inputStream);
       String className = classReader.getClassName();
       if (!className.equals(bytecodeName)) {
-        return new Resolve.SymbolNotFound();
+        return new Resolve.JavaSymbolNotFound();
       }
     } catch (IOException e) {
       throw Throwables.propagate(e);
@@ -210,13 +214,13 @@ public class BytecodeCompleter implements Symbol.Completer {
     return getClassSymbol(fullname);
   }
 
-  public Symbol.PackageSymbol enterPackage(String fullname) {
+  public JavaSymbol.PackageJavaSymbol enterPackage(String fullname) {
     if (StringUtils.isBlank(fullname)) {
       return symbols.defaultPackage;
     }
-    Symbol.PackageSymbol result = packages.get(fullname);
+    JavaSymbol.PackageJavaSymbol result = packages.get(fullname);
     if (result == null) {
-      result = new Symbol.PackageSymbol(fullname, symbols.defaultPackage);
+      result = new JavaSymbol.PackageJavaSymbol(fullname, symbols.defaultPackage);
       packages.put(fullname, result);
     }
     return result;

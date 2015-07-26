@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -64,7 +63,7 @@ public class MethodTooBigCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private int getLines(BlockTree block) {
-    return 1 + ((InternalSyntaxToken) block.closeBraceToken()).getLine() - ((InternalSyntaxToken) block.openBraceToken()).getLine();
+  private static int getLines(BlockTree block) {
+    return 1 + block.closeBraceToken().line() - block.openBraceToken().line();
   }
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ClassWithOnlyStaticMethodsInstantiationCheckTest {
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new
-      File("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java"),
-      new VisitorsBridge(new ClassWithOnlyStaticMethodsInstantiationCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Remove this instantiation of \"A\".")
-      .next().atLine(6).withMessage("Remove this instantiation of \"D\".")
-      .next().atLine(7).withMessage("Remove this instantiation of \"E\".")
-      .next().atLine(8).withMessage("Remove this instantiation of \"F\".")
-      .next().atLine(9).withMessage("Remove this instantiation of \"InnerClass\".")
-      .next().atLine(10).withMessage("Remove this instantiation of \"InnerClass\".")
-      .next().atLine(11).withMessage("Remove this instantiation of \"J\".")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ClassWithOnlyStaticMethodsInstantiationCheck.java", new ClassWithOnlyStaticMethodsInstantiationCheck());
   }
 }

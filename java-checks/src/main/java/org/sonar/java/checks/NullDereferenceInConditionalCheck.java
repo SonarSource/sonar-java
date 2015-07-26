@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -37,16 +36,13 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = NullDereferenceInConditionalCheck.RULE_KEY,
+  key = "S1697",
   name = "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
   tags = {"bug"},
   priority = Priority.BLOCKER)
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.FAULT_TOLERANCE)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1697";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -65,7 +61,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
         IdentifierVisitor visitor = new IdentifierVisitor(identifierTree);
         tree.rightOperand().accept(visitor);
         if (visitor.raiseIssue) {
-          context.addIssue(tree, ruleKey, "Either reverse the equality operator in the \"" +
+          context.addIssue(tree, this, "Either reverse the equality operator in the \"" +
               identifierTree.name() + "\" null test, or reverse the logical operator that follows it.");
         }
       }
@@ -73,7 +69,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     super.visitBinaryExpression(tree);
   }
 
-  private IdentifierTree getIdentifier(Tree nonNullOperand) {
+  private static IdentifierTree getIdentifier(Tree nonNullOperand) {
     if (nonNullOperand.is(Tree.Kind.IDENTIFIER)) {
       return (IdentifierTree) nonNullOperand;
     } else if (nonNullOperand.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
@@ -82,11 +78,11 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     return null;
   }
 
-  private boolean isAndWithNullComparison(BinaryExpressionTree tree) {
+  private static boolean isAndWithNullComparison(BinaryExpressionTree tree) {
     return tree.is(Tree.Kind.CONDITIONAL_AND) && isEqualNullComparison(tree.leftOperand());
   }
 
-  private boolean isOrWithNullExclusion(BinaryExpressionTree tree) {
+  private static boolean isOrWithNullExclusion(BinaryExpressionTree tree) {
     return tree.is(Tree.Kind.CONDITIONAL_OR) && isNotEqualNullComparison(tree.leftOperand());
   }
 
@@ -145,15 +141,15 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     }
   }
 
-  private boolean isEqualNullComparison(Tree tree) {
+  private static boolean isEqualNullComparison(Tree tree) {
     return isNullComparison(tree, Tree.Kind.EQUAL_TO);
   }
 
-  private boolean isNotEqualNullComparison(Tree tree) {
+  private static boolean isNotEqualNullComparison(Tree tree) {
     return isNullComparison(tree, Tree.Kind.NOT_EQUAL_TO);
   }
 
-  private boolean isNullComparison(Tree tree, Tree.Kind comparatorKind) {
+  private static boolean isNullComparison(Tree tree, Tree.Kind comparatorKind) {
     boolean result = false;
     if (tree.is(comparatorKind)) {
       BinaryExpressionTree binary = (BinaryExpressionTree) tree;
@@ -164,7 +160,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     return result;
   }
 
-  private Tree getNonNullOperand(Tree tree) {
+  private static Tree getNonNullOperand(Tree tree) {
     if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
       return getNonNullOperand(((ParenthesizedTree) tree).expression());
     }

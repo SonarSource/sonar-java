@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -45,8 +45,8 @@ public class AbstractMethodDetectionTest {
   public void detected() {
 
     Visitor visitor = new Visitor(ImmutableList.of(
-      MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("int"),
-      MethodInvocationMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
+      MethodMatcher.create().typeDefinition("A").name("method").addParameter("int"),
+      MethodMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
       ));
     JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
@@ -57,7 +57,7 @@ public class AbstractMethodDetectionTest {
   @Test
   public void withNoParameterConstraint() throws Exception {
     Visitor visitor = new Visitor(ImmutableList.of(
-      MethodInvocationMatcher.create().typeDefinition("A").name("method").withNoParameterConstraint()
+      MethodMatcher.create().typeDefinition("A").name("method").withNoParameterConstraint()
       ));
     JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
@@ -68,19 +68,19 @@ public class AbstractMethodDetectionTest {
   class Visitor extends AbstractMethodDetection {
 
     public List<Integer> lines = Lists.newArrayList();
-    private List<MethodInvocationMatcher> methodInvocationMatchers;
+    private List<MethodMatcher> methodInvocationMatchers;
 
-    public Visitor(List<MethodInvocationMatcher> methodInvocationMatchers) {
+    public Visitor(List<MethodMatcher> methodInvocationMatchers) {
       this.methodInvocationMatchers = methodInvocationMatchers;
     }
 
     @Override
-    protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+    protected List<MethodMatcher> getMethodInvocationMatchers() {
       return methodInvocationMatchers;
     }
 
     @Override
-    protected void onMethodFound(MethodInvocationTree tree) {
+    protected void onMethodInvocationFound(MethodInvocationTree tree) {
       lines.add(((JavaTree) tree).getLine());
     }
 

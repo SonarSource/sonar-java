@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -70,13 +70,16 @@ public class SurefireJavaParser implements BatchExtension {
     if (dir == null) {
       return new File[0];
     } else if (!dir.isDirectory()) {
-      LOGGER.warn("Reports path not found: " + dir.getAbsolutePath());
+      LOGGER.error("Reports path not found or is not a directory: " + dir.getAbsolutePath());
       return new File[0];
     }
     File[] unitTestResultFiles = findXMLFilesStartingWith(dir, "TEST-");
     if (unitTestResultFiles.length == 0) {
       // maybe there's only a test suite result file
       unitTestResultFiles = findXMLFilesStartingWith(dir, "TESTS-");
+    }
+    if(unitTestResultFiles.length == 0) {
+      LOGGER.warn("Reports path contains no files matching TEST-.*.xml : "+dir.getAbsolutePath());
     }
     return unitTestResultFiles;
   }
@@ -97,7 +100,7 @@ public class SurefireJavaParser implements BatchExtension {
     save(index, context);
   }
 
-  private void parseFiles(File[] reports, UnitTestIndex index) {
+  private static void parseFiles(File[] reports, UnitTestIndex index) {
     SurefireStaxHandler staxParser = new SurefireStaxHandler(index);
     StaxParser parser = new StaxParser(staxParser, false);
     for (File report : reports) {
@@ -109,7 +112,7 @@ public class SurefireJavaParser implements BatchExtension {
     }
   }
 
-  private void sanitize(UnitTestIndex index) {
+  private static void sanitize(UnitTestIndex index) {
     for (String classname : index.getClassnames()) {
       if (StringUtils.contains(classname, "$")) {
         // Surefire reports classes whereas sonar supports files
@@ -171,7 +174,7 @@ public class SurefireJavaParser implements BatchExtension {
     return javaResourceLocator.findResourceByClassName(classKey);
   }
 
-  private void saveMeasure(SensorContext context, Resource resource, Metric metric, double value) {
+  private static void saveMeasure(SensorContext context, Resource resource, Metric metric, double value) {
     if (!Double.isNaN(value)) {
       context.saveMeasure(resource, metric, value);
     }

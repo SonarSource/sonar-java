@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,18 +25,18 @@ import java.util.Map;
 
 public class ParametrizedTypeCache {
 
-  private Map<Symbol, Map<Map<Type.TypeVariableType, Type>, Type.ParametrizedTypeType>> typeCache = Maps.newHashMap();
+  private Map<JavaSymbol, Map<TypeSubstitution, JavaType.ParametrizedTypeJavaType>> typeCache = Maps.newHashMap();
 
-  public Type getParametrizedTypeType(Symbol.TypeSymbol symbol, Map<Type.TypeVariableType, Type> typeSubstitution) {
-    if (symbol.getType().isTagged(Type.UNKNOWN)) {
+  public JavaType getParametrizedTypeType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
+    if (symbol.getType().isTagged(JavaType.UNKNOWN)) {
       return symbol.getType();
     }
     if (typeCache.get(symbol) == null) {
-      Map<Map<Type.TypeVariableType, Type>, Type.ParametrizedTypeType> map = Maps.newHashMap();
+      Map<TypeSubstitution, JavaType.ParametrizedTypeJavaType> map = Maps.newHashMap();
       typeCache.put(symbol, map);
     }
     if (typeCache.get(symbol).get(typeSubstitution) == null) {
-      typeCache.get(symbol).put(typeSubstitution, new Type.ParametrizedTypeType(symbol, typeSubstitution));
+      typeCache.get(symbol).put(typeSubstitution, new JavaType.ParametrizedTypeJavaType(symbol, typeSubstitution));
     }
     return typeCache.get(symbol).get(typeSubstitution);
   }

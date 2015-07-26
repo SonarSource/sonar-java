@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -55,7 +55,7 @@ public class ObjectFinalizeOverridenCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinalize(MethodTree methodTree) {
+  private static boolean isFinalize(MethodTree methodTree) {
     if("finalize".equals(methodTree.simpleName().name()) ) {
       Tree returnType = methodTree.returnType();
       if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {

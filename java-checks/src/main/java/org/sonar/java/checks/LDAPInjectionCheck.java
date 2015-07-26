@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,8 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -34,25 +33,25 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S2078",
   name = "Values passed to LDAP queries should be sanitized",
-  tags = {"cwe", "owasp-top10", "security"},
+  tags = {"cwe", "owasp-a1", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")
 public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
-  private static final MethodInvocationMatcher LDAP_SEARCH_MATCHER = MethodInvocationMatcher.create()
-      .typeDefinition("javax.naming.directory.DirContext")
-      .name("search").withNoParameterConstraint();
+  private static final MethodMatcher LDAP_SEARCH_MATCHER = MethodMatcher.create()
+    .typeDefinition("javax.naming.directory.DirContext")
+    .name("search").withNoParameterConstraint();
 
-  private static final MethodInvocationMatcher SEARCH_CONTROLS_MATCHER = MethodInvocationMatcher.create()
-      .typeDefinition("javax.naming.directory.SearchControls")
-      .name("setReturningAttributes").addParameter("java.lang.String[]");
+  private static final MethodMatcher SEARCH_CONTROLS_MATCHER = MethodMatcher.create()
+    .typeDefinition("javax.naming.directory.SearchControls")
+    .name("setReturningAttributes").addParameter("java.lang.String[]");
 
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
     if (isDirContextSearchCall(mit)) {
-      //Check the first two arguments of search method
+      // Check the first two arguments of search method
       checkDirContextArg(mit.arguments().get(0), mit);
       checkDirContextArg(mit.arguments().get(1), mit);
     } else if (isSearchControlCall(mit)) {
@@ -64,7 +63,7 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   }
 
   private void checkDirContextArg(ExpressionTree arg1, MethodInvocationTree mit) {
-    if (((AbstractTypedTree) arg1).getSymbolType().is("java.lang.String") && isDynamicString(mit, arg1, null)) {
+    if (arg1.symbolType().is("java.lang.String") && isDynamicString(mit, arg1, null)) {
       createIssue(arg1);
     }
   }
@@ -72,7 +71,6 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   private void createIssue(Tree tree) {
     addIssue(tree, "Make sure that \"" + parameterName + "\" is sanitized before use in this LDAP request.");
   }
-
 
   private boolean isDynamicArray(ExpressionTree arg, MethodInvocationTree mit) {
     if (arg.is(Tree.Kind.NEW_ARRAY)) {
@@ -89,11 +87,11 @@ public class LDAPInjectionCheck extends AbstractInjectionChecker {
   }
 
   private boolean isDirContextSearchCall(MethodInvocationTree methodTree) {
-    return hasSemantic() && LDAP_SEARCH_MATCHER.matches(methodTree, getSemanticModel());
+    return hasSemantic() && LDAP_SEARCH_MATCHER.matches(methodTree);
   }
 
   private boolean isSearchControlCall(MethodInvocationTree methodTree) {
-    return hasSemantic() && SEARCH_CONTROLS_MATCHER.matches(methodTree, getSemanticModel());
+    return hasSemantic() && SEARCH_CONTROLS_MATCHER.matches(methodTree);
   }
 
 }

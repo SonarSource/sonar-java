@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,7 +33,9 @@ public class FormalParametersTest {
 
     assertThat(b, JavaLexer.FORMAL_PARAMETERS)
       .matches("( )")
-      .matches("( int foo, int... bar )");
+      .matches("( int foo, int... bar )")
+        // Java 4 syntax : enum is not a keyword
+      .matches("( int enum, int... bar )");
   }
 
 }

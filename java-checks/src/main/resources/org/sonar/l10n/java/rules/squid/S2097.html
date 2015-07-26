@@ -1,0 +1,24 @@
+<p>Because the <code>equals</code> method takes a generic <code>Object</code> as a parameter, any type of object may be passed to it. The method should not assume it will only be used to test objects of its class type. It must instead check the parameter's type.</p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public boolean equals(Object obj) {
+  MyClass mc = (MyClass)obj;  // Noncompliant
+  // ...
+}
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public boolean equals(Object obj) {
+  if (obj == null)
+    return false;
+
+  if (this.getClass() != obj.getClass())
+    return false;
+
+  MyClass mc = (MyClass)obj;
+  // ...
+}
+</pre>
+

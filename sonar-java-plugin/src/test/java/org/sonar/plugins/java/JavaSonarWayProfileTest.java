@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,13 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.rules.ActiveRule;
 import org.sonar.api.rules.Rule;
 import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.java.checks.CheckList;
+
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
@@ -34,6 +37,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class JavaSonarWayProfileTest {
+
+  private final static int NUMBER_OF_RULES_IN_PROFILE = 219;
 
   @Test
   public void should_create_sonar_way_profile() {
@@ -43,7 +48,10 @@ public class JavaSonarWayProfileTest {
     RulesProfile profile = definition.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
-    assertThat(profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY)).hasSize(190);
+    List<ActiveRule> activeRules = profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY);
+    assertThat(activeRules)
+      .overridingErrorMessage("Expected " + NUMBER_OF_RULES_IN_PROFILE + " rules for Sonar Way profile, but got " + activeRules.size() + " active rules.")
+      .hasSize(NUMBER_OF_RULES_IN_PROFILE);
     assertThat(profile.getName()).isEqualTo("Sonar way");
     assertThat(validation.hasErrors()).isFalse();
   }

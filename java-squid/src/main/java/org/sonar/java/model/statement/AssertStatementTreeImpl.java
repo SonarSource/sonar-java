@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,9 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -33,40 +30,38 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
-  private ExpressionTree condition;
 
+  private InternalSyntaxToken assertToken;
+  private ExpressionTree condition;
+  @Nullable
+  private final InternalSyntaxToken colonToken;
   @Nullable
   private final ExpressionTree detail;
+  private InternalSyntaxToken semicolonToken;
 
-  public AssertStatementTreeImpl(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
+  public AssertStatementTreeImpl(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
     super(Kind.ASSERT_STATEMENT);
+    this.assertToken = assertToken;
     this.condition = Preconditions.checkNotNull(condition);
+    this.colonToken = null;
     this.detail = null;
-
-    addChild(assertToken);
-    addChild(expression);
-    addChild(semicolonToken);
+    this.semicolonToken = semicolonToken;
   }
 
-  public AssertStatementTreeImpl(ExpressionTree detail, AstNode colonToken, AstNode expression) {
+  public AssertStatementTreeImpl(InternalSyntaxToken colonToken, ExpressionTree detail) {
     super(Kind.ASSERT_STATEMENT);
+    this.colonToken = colonToken;
     this.detail = Preconditions.checkNotNull(detail);
-
-    addChild(colonToken);
-    addChild(expression);
   }
 
-  public AssertStatementTreeImpl complete(ExpressionTree condition, AstNode assertToken, AstNode expression, AstNode semicolonToken) {
+  public AssertStatementTreeImpl complete(InternalSyntaxToken assertToken, ExpressionTree condition, InternalSyntaxToken semicolonToken) {
+    this.assertToken = assertToken;
     this.condition = Preconditions.checkNotNull(condition);
-
-    prependChildren(
-      assertToken,
-      expression);
-    // optional: colonToken, expression
-    addChild(semicolonToken);
+    this.semicolonToken = semicolonToken;
 
     return this;
   }
@@ -78,7 +73,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken assertKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.ASSERT));
+    return assertToken;
   }
 
   @Override
@@ -89,7 +84,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   @Nullable
   @Override
   public SyntaxToken colonToken() {
-    return detail == null ? null : InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Nullable
@@ -100,7 +95,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public SyntaxToken semicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.SEMI));
+    return semicolonToken;
   }
 
   @Override
@@ -110,9 +105,11 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
-      condition,
-      detail);
+    Iterator<Tree> detailIterator = colonToken != null ? Iterators.<Tree>forArray(colonToken, detail) : Iterators.<Tree>emptyIterator();
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>forArray(assertToken, condition),
+      detailIterator,
+      Iterators.<Tree>singletonIterator(semicolonToken));
   }
 
 }

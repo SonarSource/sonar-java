@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,11 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -53,10 +52,10 @@ public class CatchIllegalMonitorStateExceptionCheck extends SubscriptionBaseVisi
   @Override
   public void visitNode(Tree tree) {
     CatchTree catchTree = (CatchTree) tree;
-    Tree parameterTypeTree = catchTree.parameter().type();
+    TypeTree parameterTypeTree = catchTree.parameter().type();
     if (parameterTypeTree.is(Kind.UNION_TYPE)) {
       UnionTypeTree unionTypeTree = (UnionTypeTree) parameterTypeTree;
-      for (Tree exceptionTypeTree : unionTypeTree.typeAlternatives()) {
+      for (TypeTree exceptionTypeTree : unionTypeTree.typeAlternatives()) {
         checkExceptionType(exceptionTypeTree);
       }
     } else {
@@ -64,9 +63,8 @@ public class CatchIllegalMonitorStateExceptionCheck extends SubscriptionBaseVisi
     }
   }
 
-  private void checkExceptionType(Tree exceptionTypeTree) {
-    Type exceptionType = ((AbstractTypedTree) exceptionTypeTree).getSymbolType();
-    if (exceptionType.is("java.lang.IllegalMonitorStateException")) {
+  private void checkExceptionType(TypeTree exceptionTypeTree) {
+    if (exceptionTypeTree.symbolType().is("java.lang.IllegalMonitorStateException")) {
       addIssue(exceptionTypeTree, "Refactor this piece of code to not catch IllegalMonitorStateException");
     }
   }

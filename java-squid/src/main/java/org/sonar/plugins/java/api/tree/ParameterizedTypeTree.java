@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,6 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import java.util.List;
-
 /**
  * Parameterized type.
  *
@@ -35,10 +33,10 @@ import java.util.List;
  * @since Java 1.5
  */
 @Beta
-public interface ParameterizedTypeTree extends Tree {
+public interface ParameterizedTypeTree extends TypeTree {
 
-  Tree type();
+  TypeTree type();
 
-  List<Tree> typeArguments();
+  TypeArguments typeArguments();
 
 }

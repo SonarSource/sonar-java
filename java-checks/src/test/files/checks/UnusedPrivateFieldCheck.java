@@ -1,9 +1,9 @@
 class FooClass {
 
-  private int unusedField; // Noncompliant
+  private int unusedField; // Noncompliant {{Remove this unused "unusedField" private field.}}
 
   @UsedBySomeFramework
-  private int foo; // Noncompliant
+  private int foo; // Noncompliant {{Remove this unused "foo" private field.}}
 
   int usedField; // Compliant
 
@@ -12,13 +12,13 @@ class FooClass {
   private static final long serialVersionUID = 4858622370623524688L; // Compliant
   
   private int usedPrivateField;
-  private int unreadField; // Noncompliant
+  private int unreadField; // Noncompliant {{Remove this unused "unreadField" private field.}}
   private int usedOnlyInAccessWithPostIncrement;
   private int usedOnlyInAssignmentExpression;
 
   private static class InnerClass {
     private int innerClassUsedField;
-    private int innerClassUnreadField; // Noncompliant
+    private int innerClassUnreadField; // Noncompliant {{Remove this unused "innerClassUnreadField" private field.}}
   }
   
   public void f(int unusedParameter) {
@@ -40,10 +40,10 @@ class FooClass {
     } catch (Exception e) { // Compliant
     }
 
-    try (Stream foo = new Stream()) { // Noncompliant
+    try (Stream foo = new Stream()) {
     }
 
-    for (int a: new int[]{ 0, 1, 2 }) { // Noncompliant
+    for (int a: new int[]{ 0, 1, 2 }) {
     }
   }
 
@@ -68,14 +68,50 @@ class SpecialAnnotations {
 
   @javax.enterprise.inject.Produces
   private int bar; // Compliant
-  
+
+  @lombok.Setter
+  private int foo2; // Compliant
 }
 
 @lombok.Getter
 class ClassLevelAnnotations {
-  
   private int foo; // Compliant
-
+}
+@lombok.Setter
+class ClassLevelAnnotations2 {
+  private int foo; // Compliant
+}
+@lombok.Data
+class ClassLevelAnnotations3 {
+  private int foo; // Compliant
+}
+@lombok.Value
+class ClassLevelAnnotations4 {
+  private int foo; // Compliant
+}
+@lombok.Builder
+class ClassLevelAnnotations5 {
+  private int foo; // Compliant
+}
+@lombok.ToString
+class ClassLevelAnnotations6 {
+  private int foo; // Compliant
+}
+@lombok.RequiredArgsConstructor
+class ClassLevelAnnotations7 {
+  private int foo; // Compliant
+}
+@lombok.AllArgsConstructor
+class ClassLevelAnnotations8 {
+  private int foo; // Compliant
+}
+@lombok.NoArgsConstructor
+class ClassLevelAnnotations9 {
+  private int foo; // Compliant
+}
+@lombok.EqualsAndHashCode
+class ClassLevelAnnotations10 {
+  private int foo; // Compliant
 }
 
 class TestSonar {

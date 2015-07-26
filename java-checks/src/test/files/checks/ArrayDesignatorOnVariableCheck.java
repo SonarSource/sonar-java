@@ -1,28 +1,34 @@
 class A {
   int[] a,
         b,
-        c[][][][][], // Non-Compliant - just once
-        d[], // Non-Compliant
-        e;
+        c[][][][][], // Noncompliant {{Move the array designator from the variable to the type.}}
+        d[], // Noncompliant {{Move the array designator from the variable to the type.}}
+        e,
+        f
+        []; // Noncompliant {{Move the array designator from the variable to the type.}}
 }
 
-interface A {
-  int a[] = null; // Non-Compliant
+interface B {
+  int a[] = null; // Noncompliant {{Move the array designator from the variable to the type.}}
   int[] b = null; // Compliant
 }
 
-class A {
-  private void f(
+class C {
+  private void foo(
       int[] a,
-      int b[]) { // Non-Compliant
-    for (String a[]: null) { // Non-Compliant
+      int b[]) { // Noncompliant {{Move the array designator from the variable to the type.}}
+    for (String a[]: null) { // Noncompliant {{Move the array designator from the variable to the type.}}
     }
 
     for (String[] a: null) { // Compliant
     }
   }
 
-  private int f()[] { // Compliant
-    return null;
+  private int bar()[] { // Compliant
+    return 0;
+  }
+  
+  private int lum(int ... a) {// Compliant
+    return 0;
   }
 }

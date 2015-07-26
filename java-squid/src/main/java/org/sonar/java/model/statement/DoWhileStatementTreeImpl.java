@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -44,7 +43,7 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
 
   public DoWhileStatementTreeImpl(InternalSyntaxToken doKeyword, StatementTree statement,
     InternalSyntaxToken whileKeyword, InternalSyntaxToken openParenToken, ExpressionTree condition, InternalSyntaxToken closeParenToken,
-    InternalSyntaxToken semicolonToken, AstNode... children) {
+    InternalSyntaxToken semicolonToken) {
 
     super(Kind.DO_STATEMENT);
     this.statement = Preconditions.checkNotNull(statement);
@@ -54,10 +53,6 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
     this.openParenToken = openParenToken;
     this.semicolonToken = semicolonToken;
     this.closeParenToken = closeParenToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -108,8 +103,13 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.forArray(
+      doKeyword,
       statement,
-      condition);
+      whileKeyword,
+      openParenToken,
+      condition,
+      closeParenToken,
+      semicolonToken);
   }
 
 }

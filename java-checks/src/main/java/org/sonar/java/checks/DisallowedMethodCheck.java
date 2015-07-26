@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.NoSqale;
 import org.sonar.squidbridge.annotations.RuleTemplate;
@@ -51,11 +51,11 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
   private String argumentTypes = "";
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     if(StringUtils.isEmpty(methodName)) {
       return ImmutableList.of();
     }
-    MethodInvocationMatcher invocationMatcher = MethodInvocationMatcher.create().name(methodName);
+    MethodMatcher invocationMatcher = MethodMatcher.create().name(methodName);
     if(StringUtils.isNotEmpty(className)) {
       invocationMatcher.typeDefinition(className);
     }
@@ -67,7 +67,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     context.addIssue(mit, new CheckMessage(this, "Remove this forbidden call"));
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,13 +23,15 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Collection;
 import java.util.List;
 
 @Rule(
@@ -49,20 +51,25 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    Symbol.TypeSymbol classSymbol = classTree.getSymbol();
-    if (classSymbol != null && classSymbol.getSuperclass().is("java.lang.Thread") && !overridesRunMethod(classSymbol)) {
+    ClassTree classTree = (ClassTree) tree;
+    Symbol.TypeSymbol classSymbol = classTree.symbol();
+    if (classSymbol != null && isDirectSubtypeOfThread(classSymbol) && !overridesRunMethod(classSymbol)) {
       addIssue(tree, "Stop extending the Thread class as the \"run\" method is not overridden");
     }
   }
 
-  private boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
-    List<Symbol> runSymbols = classSymbol.members().lookup("run");
+  private static boolean isDirectSubtypeOfThread(Symbol.TypeSymbol classSymbol) {
+    Type superClass = classSymbol.superClass();
+    return superClass != null && superClass.is("java.lang.Thread");
+  }
+
+  private static boolean overridesRunMethod(Symbol.TypeSymbol classSymbol) {
+    Collection<Symbol> runSymbols = classSymbol.lookupSymbols("run");
     boolean overridesRunMethod = false;
     for (Symbol run : runSymbols) {
-      if (run.isKind(Symbol.MTH)) {
+      if (run.isMethodSymbol()) {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) run;
-        if (methodSymbol.getParametersTypes().isEmpty()) {
+        if (methodSymbol.parameterTypes().isEmpty()) {
           overridesRunMethod = true;
           break;
         }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,13 +20,12 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.Token;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
-import javax.annotation.Nullable;
-
+/**
+ * This class is intended for internal use during semantic analysis and should not be used in checks.
+ */
 public abstract class AbstractTypedTree extends JavaTree {
 
   /**
@@ -35,24 +34,23 @@ public abstract class AbstractTypedTree extends JavaTree {
   // TODO(Godin): never should be null, i.e. better to assign default value
   private Type type;
 
-  public AbstractTypedTree(@Nullable AstNode astNode) {
-    super(astNode);
+  public AbstractTypedTree(GrammarRuleKey grammarRuleKey) {
+    super(grammarRuleKey);
   }
 
-  public AbstractTypedTree(AstNodeType astNodeType) {
-    super(astNodeType);
+  /**
+   * This method is intended for internal use only during semantic analysis.
+   */
+  public boolean isTypeSet() {
+    return type != null;
   }
 
-  public AbstractTypedTree(AstNodeType astNodeType, Token token) {
-    super(astNodeType, token);
-  }
-
-  public Type getSymbolType() {
+  public Type symbolType() {
     return type;
   }
 
   public void setType(Type type) {
-    //type are computed and set only once
+    // type are computed and set only once
     Preconditions.checkState(this.type == null);
     this.type = type;
   }

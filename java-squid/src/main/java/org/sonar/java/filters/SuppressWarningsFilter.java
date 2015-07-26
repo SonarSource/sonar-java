@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -66,12 +66,12 @@ public class SuppressWarningsFilter implements IssueFilter {
     return Sets.newTreeSet();
   }
 
-  private boolean issueShouldNotBeReported(String warning, Issue issue) {
+  private static boolean issueShouldNotBeReported(String warning, Issue issue) {
     RuleKey ruleKey = issue.ruleKey();
     return (warningIsRuleKey(warning, ruleKey) || "all".equals(warning)) && !isSuppressWarningRule(ruleKey);
   }
 
-  private boolean warningIsRuleKey(String warning, RuleKey ruleKey) {
+  private static boolean warningIsRuleKey(String warning, RuleKey ruleKey) {
     try {
       return ruleKey.equals(RuleKey.parse(warning));
     } catch (IllegalArgumentException e) {
@@ -79,7 +79,7 @@ public class SuppressWarningsFilter implements IssueFilter {
     }
   }
 
-  private boolean isSuppressWarningRule(RuleKey ruleKey) {
+  private static boolean isSuppressWarningRule(RuleKey ruleKey) {
     return "S1309".equals(ruleKey.rule());
   }
 }

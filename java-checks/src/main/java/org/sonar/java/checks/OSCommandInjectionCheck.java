@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -34,20 +33,21 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
   key = "S2076",
   name = "Values passed to OS commands should be sanitized",
-  tags = {"cwe", "owasp-top10", "sans-top25", "security"},
+  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
-  private static final MethodInvocationMatcher RUNTIME_EXEC_MATCHER = MethodInvocationMatcher.create()
-      .typeDefinition("java.lang.Runtime")
-      .name("exec").withNoParameterConstraint();
+  private static final MethodMatcher RUNTIME_EXEC_MATCHER = MethodMatcher.create()
+    .typeDefinition("java.lang.Runtime")
+    .name("exec").withNoParameterConstraint();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -57,10 +57,10 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree, getSemanticModel())) {
+      if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
         checkForIssue(tree, mit.arguments().get(0));
-      } else if (tree.is(Tree.Kind.NEW_CLASS) && ((AbstractTypedTree) tree).getSymbolType().is("java.lang.ProcessBuilder")) {
+      } else if (tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) tree).symbolType().is("java.lang.ProcessBuilder")) {
         for (ExpressionTree expressionTree : ((NewClassTree) tree).arguments()) {
           checkForIssue(tree, expressionTree);
         }
@@ -70,7 +70,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private void checkForIssue(Tree tree, ExpressionTree arg) {
     if (isDynamicArray(arg, tree)) {
-      addIssue(arg, "Make sure \""+parameterName+"\" is properly sanitized before use in this OS command.");
+      addIssue(arg, "Make sure \"" + parameterName + "\" is properly sanitized before use in this OS command.");
     }
   }
 
@@ -88,7 +88,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
       return false;
     }
     setParameterNameFromArgument(arg);
-    boolean argIsString = ((AbstractTypedTree) arg).getSymbolType().is("java.lang.String");
+    boolean argIsString = arg.symbolType().is("java.lang.String");
     return !argIsString || isDynamicString(mit, arg, null);
   }
 

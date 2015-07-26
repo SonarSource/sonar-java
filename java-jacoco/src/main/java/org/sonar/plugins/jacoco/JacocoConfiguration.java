@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2010 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -87,7 +87,7 @@ public class JacocoConfiguration implements BatchExtension {
             .onQualifiers(Qualifiers.PROJECT, Qualifiers.MODULE)
             .build(),
         PropertyDefinition.builder(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO)
-            .defaultValue(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE + "")
+            .defaultValue(Boolean.toString(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO_DEFAULT_VALUE))
             .name("Force zero coverage")
             .category(CoreProperties.CATEGORY_JAVA)
             .subCategory(subCategory)

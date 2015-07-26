@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -45,15 +44,15 @@ import java.util.List;
 public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.<MethodInvocationMatcher>builder()
-        .add(MethodInvocationMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"))
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.<MethodMatcher>builder()
+        .add(MethodMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"))
         .build();
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
-    Type symbolType = ((AbstractTypedTree) mit.arguments().get(0)).getSymbolType();
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    Type symbolType = mit.arguments().get(0).symbolType();
     if (!(symbolType.is("long") || symbolType.is("java.lang.Long"))) {
       addIssue(mit, "Remove this \"Double.longBitsToDouble\" call.");
     }

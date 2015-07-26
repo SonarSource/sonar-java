@@ -10,7 +10,9 @@ class Example<T> {
     label:
     return 42;
   }
-  enum MyEnum {
+  enum MyEnumWithLongName {
     MY_ENUM;
+    MyEnumWithLongName(){
+    }
   }
 }

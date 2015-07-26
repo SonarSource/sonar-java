@@ -9,7 +9,7 @@ public class Outer {
   public void plop() {  }
   public class Inner extends Parent {
     public void doTheThing() {
-      foo();  // Noncompliant; was Outer.this.foo() intended instead?
+      foo();  // Noncompliant {{Prefix this call to "foo" with "super.".}}
       super.foo(); //Compliant: unambiguous
       Outer.this.foo(); //Compliant: unambiguous
       bar();//Compliant : symbol is unresolved.
@@ -20,7 +20,7 @@ public class Outer {
   }
   public interface I extends I2{
     default void toto() {
-      plop();//NonCompliant
+      plop();// Noncompliant {{Prefix this call to "plop" with "super.".}}
     }
   }
   public interface I2  {
@@ -59,6 +59,18 @@ class OuterClass3 {
     void foo() {}
     void fun() {
       foo();
+    }
+  }
+}
+
+class GenericParent<T> {
+  T foo(){}
+}
+class OuterClass4 {
+  Object foo();
+  class innerClass<T> extends GenericParent<T> {
+    void bar() {
+      foo(); // Noncompliant {{Prefix this call to "foo" with "super.".}}
     }
   }
 }

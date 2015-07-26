@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,10 +19,12 @@
  */
 package org.sonar.java.ast.visitors;
 
+import com.google.common.collect.Lists;
 import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.resolve.Symbols;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,6 +37,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.List;
 
 public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
@@ -63,36 +67,42 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.simpleName() != null) {
-      createSymbol(tree, tree.simpleName());
+    IdentifierTree simpleName = tree.simpleName();
+    if (simpleName != null) {
+      createSymbol(simpleName, tree.symbol().usages());
     }
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
-      createSymbol(typeParameterTree, typeParameterTree.identifier());
+      createSymbol(typeParameterTree.identifier(), typeParameterTree);
     }
     super.visitClass(tree);
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    createSymbol(tree, tree.simpleName());
+    createSymbol(tree.simpleName(), tree.symbol().usages());
     super.visitVariable(tree);
   }
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    createSymbol(tree, tree.simpleName());
+    createSymbol(tree.simpleName(), tree);
     super.visitEnumConstant(tree);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    createSymbol(tree, tree.simpleName());
+    //as long as SONAR-5894 is not fixed, do not provide references to enum constructors
+    if(tree.symbol().returnType() == null && tree.symbol().owner().isEnum()) {
+      createSymbol(tree.simpleName(), Lists.<IdentifierTree>newArrayList());
+    } else {
+      createSymbol(tree.simpleName(), tree.symbol().usages());
+    }
     super.visitMethod(tree);
   }
 
   @Override
   public void visitLabeledStatement(LabeledStatementTree tree) {
-    createSymbol(tree, tree.label());
+    createSymbol(tree.label(), tree.symbol().usages());
     super.visitLabeledStatement(tree);
   }
 
@@ -106,24 +116,32 @@ public class SonarSymbolTableVisitor extends BaseTreeVisitor {
     }
     // Exclude on demands imports
     if (!"*".equals(identifierTree.name())) {
-      createSymbol(tree, identifierTree);
+      createSymbol(identifierTree, tree);
     }
     super.visitImport(tree);
   }
 
-  private void createSymbol(Tree tree, IdentifierTree identifier) {
-    Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(identifier), endOffsetFor(identifier));
-    for (IdentifierTree usage : semanticModel.getUsages(semanticModel.getSymbol(tree))) {
+  private void createSymbol(IdentifierTree declaration, Tree tree) {
+    org.sonar.plugins.java.api.semantic.Symbol semanticSymbol = semanticModel.getSymbol(tree);
+    if (semanticSymbol == null) {
+      semanticSymbol = Symbols.unknownSymbol;
+    }
+    createSymbol(declaration, semanticSymbol.usages());
+  }
+
+  private void createSymbol(IdentifierTree declaration, List<IdentifierTree> usages) {
+    Symbol symbol = symbolTableBuilder.newSymbol(startOffsetFor(declaration), endOffsetFor(declaration));
+    for (IdentifierTree usage : usages) {
       symbolTableBuilder.newReference(symbol, startOffsetFor(usage));
     }
   }
 
-  private int startOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex();
+  private static int startOffsetFor(IdentifierTree tree) {
+    return ((InternalSyntaxToken) tree.identifierToken()).fromIndex();
   }
 
-  private int endOffsetFor(IdentifierTree tree) {
-    return ((InternalSyntaxToken) tree.identifierToken()).getFromIndex() + tree.identifierToken().text().length();
+  private static int endOffsetFor(IdentifierTree tree) {
+    return ((InternalSyntaxToken) tree.identifierToken()).fromIndex() + tree.identifierToken().text().length();
   }
 
 }

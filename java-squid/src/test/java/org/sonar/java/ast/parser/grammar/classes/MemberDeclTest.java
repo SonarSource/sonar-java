@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,9 @@ public class MemberDeclTest {
       .matches("Map<SomeType<?>,SomeType<?>> member;")
       .matches("Map < SomeType < ? > , SomeType < ? > > member;")
       .matches("int member()@Foo[]{}")
-      .matches("int member() throws @Foo IllegalStateException {}");
+      .matches("int member() throws @Foo IllegalStateException {}")
+      // javac accepts empty statements in member declarations
+      .matches(";");
   }
 
 }

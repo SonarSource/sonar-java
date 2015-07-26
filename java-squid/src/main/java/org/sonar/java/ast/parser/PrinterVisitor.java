@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,19 +22,20 @@ package org.sonar.java.ast.parser;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.impl.Parser;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.parser.sslr.ActionParser;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -50,7 +51,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
 
   private final StringBuilder sb;
   private final SemanticModel semanticModel;
-  private final Map<IdentifierTree, Symbol> idents = new HashMap<IdentifierTree, Symbol>();
+  private final Map<IdentifierTree, JavaSymbol> idents = new HashMap<>();
   private int indentLevel;
 
   public PrinterVisitor(@Nullable SemanticModel semanticModel) {
@@ -94,7 +95,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
   @Override
   protected void scan(@Nullable Tree tree) {
     if (tree != null) {
-      Symbol sym = null;
+      JavaSymbol sym = null;
       try {
         Method getSymbol = null;
         for (Method method : tree.getClass().getMethods()) {
@@ -103,7 +104,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
           }
         }
         if (getSymbol != null) {
-          sym = (Symbol) getSymbol.invoke(tree);
+          sym = (JavaSymbol) getSymbol.invoke(tree);
         }
       } catch (Exception e) {
         LOG.error("An error occured while retrieving symbol ", e);
@@ -115,27 +116,32 @@ public class PrinterVisitor extends BaseTreeVisitor {
         nodeName = kind.getAssociatedInterface().getSimpleName();
       }
       indent().append(nodeName);
-      int line = -1;
-      AstNode node = ((JavaTree) tree).getAstNode();
-      if (node != null && node.hasToken()) {
-        line = node.getTokenLine();
+      int line = ((JavaTree) tree).getLine();
+      if(line >= 0) {
         sb.append(" ").append(line);
       }
       if (idents.get(tree) != null) {
         Preconditions.checkState(sym == null);
         sym = idents.get(tree);
       }
-      if (tree instanceof AbstractTypedTree) {
-        sb.append(" ").append(((AbstractTypedTree) tree).getSymbolType());
+      Type type = null;
+      if (tree instanceof ExpressionTree) {
+        type = ((ExpressionTree) tree).symbolType();
+
+      } else if (tree instanceof TypeTree) {
+        type = ((TypeTree) tree).symbolType();
+      }
+      if(type != null) {
+        sb.append(" ").append(type.fullyQualifiedName());
       }
 
       if (sym != null && semanticModel != null) {
         //No forward reference possible... Need another visitor to build this info ?
-        for (IdentifierTree identifierTree : semanticModel.getUsages(sym)) {
+        for (IdentifierTree identifierTree : sym.usages()) {
           idents.put(identifierTree, sym);
           sb.append(" ").append(sym.getName());
         }
-        int refLine = ((JavaTree) semanticModel.getTree(sym)).getTokenLine();
+        int refLine = ((JavaTree) sym.declaration()).getLine();
         if (refLine != line) {
           sb.append(" ref#").append(refLine);
         }
@@ -148,7 +154,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
   }
 
   public static String printFile(String file, String bytecodePath) {
-    final Parser p = JavaParser.createParser(Charsets.UTF_8);
+    final ActionParser p = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) p.parse(new File(file));
     List<File> bytecodeFiles = Lists.newArrayList();
     if (!bytecodePath.isEmpty()) {

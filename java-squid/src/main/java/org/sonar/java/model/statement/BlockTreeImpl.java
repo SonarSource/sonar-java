@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -40,30 +39,17 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   private final List<StatementTree> body;
   private final InternalSyntaxToken closeBraceToken;
 
-  public BlockTreeImpl(InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken, AstNode... children) {
-    this(Kind.BLOCK, openBraceToken, body, closeBraceToken, children);
+  public BlockTreeImpl(InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken) {
+    this(Kind.BLOCK, openBraceToken, body, closeBraceToken);
   }
 
-  public BlockTreeImpl(Kind kind, InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken, AstNode... children) {
+  public BlockTreeImpl(Kind kind, InternalSyntaxToken openBraceToken, List<StatementTree> body, InternalSyntaxToken closeBraceToken) {
     super(kind);
 
     this.kind = kind;
     this.openBraceToken = openBraceToken;
     this.body = Preconditions.checkNotNull(body);
     this.closeBraceToken = closeBraceToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
-  }
-
-  public BlockTreeImpl(AstNode astNode, Kind newKind, BlockTreeImpl block) {
-    super(astNode);
-
-    this.kind = newKind;
-    this.openBraceToken = block.openBraceToken;
-    this.body = block.body;
-    this.closeBraceToken = block.closeBraceToken;
   }
 
   @Override
@@ -94,9 +80,9 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      // (Godin): workaround for generics
-      Iterators.<Tree>emptyIterator(),
-      body.iterator());
+      Iterators.singletonIterator(openBraceToken),
+      body.iterator(),
+      Iterators.singletonIterator(closeBraceToken));
   }
 
 }

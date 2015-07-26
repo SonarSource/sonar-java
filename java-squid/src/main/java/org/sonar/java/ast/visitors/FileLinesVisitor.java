@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,18 +20,16 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.GenericTokenType;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.java.SonarComponents;
-import org.sonar.squidbridge.SquidAstVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -41,7 +39,7 @@ import java.util.Set;
 /**
  * Saves information about lines directly into Sonar by using {@link FileLinesContext}.
  */
-public class FileLinesVisitor extends SquidAstVisitor<LexerlessGrammar> implements AstAndTokenVisitor {
+public class FileLinesVisitor extends SubscriptionVisitor {
 
   private final SonarComponents sonarComponents;
   private final Charset charset;
@@ -54,13 +52,19 @@ public class FileLinesVisitor extends SquidAstVisitor<LexerlessGrammar> implemen
   }
 
   @Override
-  public void leaveFile(AstNode astNode) {
-    FileLinesContext fileLinesContext = sonarComponents.fileLinesContextFor(getContext().getFile());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.TOKEN);
+  }
 
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+
+    FileLinesContext fileLinesContext = sonarComponents.fileLinesContextFor(context.getFile());
     // TODO minimize access to files, another one in LinesVisitor
     int fileLength;
     try {
-      fileLength = Files.readLines(getContext().getFile(), charset).size();
+      fileLength = Files.readLines(context.getFile(), charset).size();
     } catch (IOException e) {
       throw Throwables.propagate(e);
     }
@@ -75,22 +79,14 @@ public class FileLinesVisitor extends SquidAstVisitor<LexerlessGrammar> implemen
   }
 
   @Override
-  public void visitToken(Token token) {
-    if (token.getType().equals(GenericTokenType.EOF)) {
-      return;
-    }
-
-    linesOfCode.add(token.getLine());
-    List<Trivia> trivias = token.getTrivia();
-    for (Trivia trivia : trivias) {
-      if (trivia.isComment()) {
-        int baseLine = trivia.getToken().getLine();
-        String[] lines = trivia.getToken().getOriginalValue().split("(\r)?\n|\r", -1);
-        for (int i = 0; i < lines.length; i++) {
-          linesOfComments.add(baseLine + i);
-        }
+  public void visitToken(SyntaxToken syntaxToken) {
+    linesOfCode.add(syntaxToken.line());
+    for (SyntaxTrivia trivia : syntaxToken.trivias()) {
+      int baseLine = trivia.startLine();
+      String[] lines = trivia.comment().split("(\r)?\n|\r", -1);
+      for (int i = 0; i < lines.length; i++) {
+        linesOfComments.add(baseLine + i);
       }
     }
   }
-
 }

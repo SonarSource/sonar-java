@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,8 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -39,7 +39,7 @@ import java.util.List;
 @Rule(
   key = "S1160",
   name = "Public methods should throw at most one checked exception",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
@@ -62,43 +62,42 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
     }
   }
 
-  private boolean isNotOverriden(MethodTree methodTree) {
+  private static boolean isNotOverriden(MethodTree methodTree) {
     return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriding());
   }
 
-  private boolean isPublic(MethodTree methodTree) {
-    return ((MethodTreeImpl) methodTree).getSymbol().isPublic();
+  private static boolean isPublic(MethodTree methodTree) {
+    return methodTree.symbol().isPublic();
   }
 
-  private List<String> getThrownCheckedExceptions(MethodTree methodTree) {
-    List<Symbol.TypeSymbol> thrownClasses = ((MethodTreeImpl) methodTree).getSymbol().getThrownTypes();
+  private static List<String> getThrownCheckedExceptions(MethodTree methodTree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
-    for (Symbol.TypeSymbol thrownClass : thrownClasses) {
+    for (Type thrownClass : methodTree.symbol().thrownTypes()) {
       if (!isSubClassOfRuntimeException(thrownClass)) {
-        builder.add(thrownClass.owner().getName() + "." + thrownClass.getName());
+        builder.add(thrownClass.fullyQualifiedName());
       }
     }
     return builder.build();
   }
 
-  private static boolean isSubClassOfRuntimeException(Symbol.TypeSymbol thrownClass) {
-    Symbol.TypeSymbol typeSymbol = thrownClass;
+  private static boolean isSubClassOfRuntimeException(Type thrownClass) {
+    Symbol.TypeSymbol typeSymbol = thrownClass.symbol();
     while (typeSymbol != null) {
-      if (isRuntimeException(typeSymbol)) {
+      if (isRuntimeException(typeSymbol.type())) {
         return true;
       }
-      Type superType = typeSymbol.getSuperclass();
+      Type superType = typeSymbol.superClass();
       if (superType == null) {
         typeSymbol = null;
       } else {
-        typeSymbol = ((Type.ClassType) superType).getSymbol();
+        typeSymbol = superType.symbol();
       }
     }
     return false;
   }
 
-  private static boolean isRuntimeException(Symbol.TypeSymbol thrownClass) {
-    return "RuntimeException".equals(thrownClass.getName()) && "java.lang".equals(thrownClass.owner().getName());
+  private static boolean isRuntimeException(Type thrownClass) {
+    return thrownClass.is("java.lang.RuntimeException");
   }
 
 }

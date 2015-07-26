@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -53,7 +54,7 @@ public class ProtectedMemberInFinalClassCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (classTree.modifiers().modifiers().contains(Modifier.FINAL)) {
+    if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
       for (Tree member : classTree.members()) {
         checkMember(member);
       }
@@ -73,7 +74,7 @@ public class ProtectedMemberInFinalClassCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkMemberModifier(ModifiersTree modifiers, Tree reportingTree) {
-    if (modifiers.modifiers().contains(Modifier.PROTECTED)) {
+    if (ModifiersUtils.hasModifier(modifiers, Modifier.PROTECTED)) {
       addIssue(reportingTree, "Remove this \"protected\" modifier.");
     }
   }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -63,22 +63,25 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     }
   }
 
-  private String getClassname(SMInputCursor testCaseCursor, String defaultClassname) throws XMLStreamException {
+  private static String getClassname(SMInputCursor testCaseCursor, String defaultClassname) throws XMLStreamException {
     String testClassName = testCaseCursor.getAttrValue("classname");
+    if(StringUtils.isNotBlank(testClassName) && testClassName.endsWith(")")) {
+      testClassName = testClassName.substring(0, testClassName.indexOf("("));
+    }
     return StringUtils.defaultIfBlank(testClassName, defaultClassname);
   }
 
-  private void parseTestCase(SMInputCursor testCaseCursor, UnitTestClassReport report) throws XMLStreamException {
+  private static void parseTestCase(SMInputCursor testCaseCursor, UnitTestClassReport report) throws XMLStreamException {
     report.add(parseTestResult(testCaseCursor));
   }
 
-  private void setStackAndMessage(UnitTestResult result, SMInputCursor stackAndMessageCursor) throws XMLStreamException {
+  private static void setStackAndMessage(UnitTestResult result, SMInputCursor stackAndMessageCursor) throws XMLStreamException {
     result.setMessage(stackAndMessageCursor.getAttrValue("message"));
     String stack = stackAndMessageCursor.collectDescendantText();
     result.setStackTrace(stack);
   }
 
-  private UnitTestResult parseTestResult(SMInputCursor testCaseCursor) throws XMLStreamException {
+  private static UnitTestResult parseTestResult(SMInputCursor testCaseCursor) throws XMLStreamException {
     UnitTestResult detail = new UnitTestResult();
     String name = getTestCaseName(testCaseCursor);
     detail.setName(name);
@@ -111,7 +114,7 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     return detail;
   }
 
-  private long getTimeAttributeInMS(SMInputCursor testCaseCursor) throws XMLStreamException {
+  private static long getTimeAttributeInMS(SMInputCursor testCaseCursor) throws XMLStreamException {
     // hardcoded to Locale.ENGLISH see http://jira.codehaus.org/browse/SONAR-602
     try {
       Double time = ParsingUtils.parseNumber(testCaseCursor.getAttrValue("time"), Locale.ENGLISH);
@@ -121,7 +124,7 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     }
   }
 
-  private String getTestCaseName(SMInputCursor testCaseCursor) throws XMLStreamException {
+  private static String getTestCaseName(SMInputCursor testCaseCursor) throws XMLStreamException {
     String classname = testCaseCursor.getAttrValue("classname");
     String name = testCaseCursor.getAttrValue("name");
     if (StringUtils.contains(classname, "$")) {

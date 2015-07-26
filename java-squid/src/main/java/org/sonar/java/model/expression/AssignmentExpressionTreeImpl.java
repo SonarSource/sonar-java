@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -46,18 +45,6 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
 
     this.variable = variable;
     this.operatorToken = operatorToken;
-    this.expression = Preconditions.checkNotNull(expression);
-
-    addChild((AstNode) variable);
-    addChild(operatorToken);
-    addChild((AstNode) expression);
-  }
-
-  public AssignmentExpressionTreeImpl(AstNode astNode, ExpressionTree variable, Kind kind, ExpressionTree expression) {
-    super(astNode);
-    this.variable = Preconditions.checkNotNull(variable);
-    this.kind = Preconditions.checkNotNull(kind);
-    this.operatorToken = InternalSyntaxToken.createLegacy(getAstNode());
     this.expression = Preconditions.checkNotNull(expression);
   }
 
@@ -90,6 +77,7 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
       variable,
+      operatorToken,
       expression
       );
   }

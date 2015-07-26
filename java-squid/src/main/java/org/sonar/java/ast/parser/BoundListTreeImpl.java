@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,20 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
 public class BoundListTreeImpl extends ListTreeImpl<Tree> {
 
-  public BoundListTreeImpl(List<Tree> classTypes, List<AstNode> children) {
-    super(JavaLexer.BOUND, classTypes, children);
+  public BoundListTreeImpl(List<? extends Tree> typeTrees, List<SyntaxToken> separators) {
+    super(JavaLexer.BOUND, (List<Tree>) typeTrees, separators);
   }
 
+  public static BoundListTreeImpl emptyList() {
+    return new BoundListTreeImpl(Lists.<TypeTree>newArrayList(), Lists.<SyntaxToken>newArrayList());
+  }
 }

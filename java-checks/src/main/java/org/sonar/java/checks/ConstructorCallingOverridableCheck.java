@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
+import org.sonar.java.resolve.JavaType.ClassJavaType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -57,7 +57,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       MethodTree methodTree = (MethodTree) tree;
-      TypeSymbol constructorType = (TypeSymbol) getSemanticModel().getEnclosingClass(tree);
+      TypeJavaSymbol constructorType = (TypeJavaSymbol) getSemanticModel().getEnclosingClass(tree);
       if (!constructorType.isFinal()) {
         ConstructorBodyVisitor constructorBodyVisitor = new ConstructorBodyVisitor(constructorType);
         methodTree.block().accept(constructorBodyVisitor);
@@ -67,9 +67,9 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
 
   private class ConstructorBodyVisitor extends BaseTreeVisitor {
 
-    private TypeSymbol constructorType;
+    private TypeJavaSymbol constructorType;
 
-    public ConstructorBodyVisitor(TypeSymbol constructorType) {
+    public ConstructorBodyVisitor(TypeJavaSymbol constructorType) {
       this.constructorType = constructorType;
     }
 
@@ -87,8 +87,8 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
         isInvocationOnSelf = isThisOrSuper(memberSelect.expression());
       }
       if (isInvocationOnSelf) {
-        Symbol symbol = getSemanticModel().getReference(methodIdentifier);
-        if (symbol != null && isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
+        Symbol symbol = methodIdentifier.symbol();
+        if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
           addIssue(tree, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
@@ -104,8 +104,8 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {
-      TypeSymbol methodEnclosingClass = symbol.enclosingClass();
-      for (ClassType superType : constructorType.superTypes()) {
+      TypeJavaSymbol methodEnclosingClass = (TypeJavaSymbol) symbol.enclosingClass();
+      for (ClassJavaType superType : constructorType.superTypes()) {
         if (superType.getSymbol().equals(methodEnclosingClass)) {
           return true;
         }
@@ -114,11 +114,8 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isOverridableMethod(Symbol symbol) {
-      if (symbol.isKind(Symbol.MTH)) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-        if (!methodSymbol.isPrivate() && !methodSymbol.isFinal() && !methodSymbol.isStatic()) {
-          return true;
-        }
+      if (symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic()) {
+        return true;
       }
       return false;
     }

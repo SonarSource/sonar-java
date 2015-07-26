@@ -29,7 +29,7 @@ class A {
     m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant
     m = new MyClass(0); // Compliant
     m = new MyClass(0, new Runnable[] {}); // Compliant
-
+    m = new MyClass(0, null, r, null); // Compliant
     m.bar(myThread); // Compliant
     m.qix(); // Compliant
   }

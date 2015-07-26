@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2010 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import com.google.common.io.Closeables;
-import org.jacoco.core.data.ExecutionDataReader;
-import org.jacoco.core.data.ExecutionDataStore;
-import org.jacoco.core.data.ExecutionDataWriter;
-import org.jacoco.core.data.SessionInfoStore;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -33,17 +28,10 @@ import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 
 public class JaCoCoOverallSensor implements Sensor {
@@ -87,48 +75,9 @@ public class JaCoCoOverallSensor implements Sensor {
     File reportOverall = new File(fileSystem.workingDir(), JACOCO_OVERALL);
     reportOverall.getParentFile().mkdirs();
 
-    mergeReports(reportOverall, reportUTs, reportITs);
+    JaCoCoReportMerger.mergeReports(reportOverall, reportUTs, reportITs);
 
     new OverallAnalyzer(reportOverall, perspectives).analyse(project, context);
-  }
-
-  private void mergeReports(File reportOverall, File... reports) {
-    SessionInfoStore infoStore = new SessionInfoStore();
-    ExecutionDataStore dataStore = new ExecutionDataStore();
-
-    loadSourceFiles(infoStore, dataStore, reports);
-
-    BufferedOutputStream outputStream = null;
-    try {
-      outputStream = new BufferedOutputStream(new FileOutputStream(reportOverall));
-      ExecutionDataWriter dataWriter = new ExecutionDataWriter(outputStream);
-
-      infoStore.accept(dataWriter);
-      dataStore.accept(dataWriter);
-    } catch (IOException e) {
-      throw new SonarException(String.format("Unable to write overall coverage report %s", reportOverall.getAbsolutePath()), e);
-    } finally {
-      Closeables.closeQuietly(outputStream);
-    }
-  }
-
-  private void loadSourceFiles(SessionInfoStore infoStore, ExecutionDataStore dataStore, File... reports) {
-    for (File report : reports) {
-      if(report.isFile()) {
-        InputStream resourceStream = null;
-        try {
-          resourceStream = new BufferedInputStream(new FileInputStream(report));
-          ExecutionDataReader reader = new ExecutionDataReader(resourceStream);
-          reader.setSessionInfoVisitor(infoStore);
-          reader.setExecutionDataVisitor(dataStore);
-          reader.read();
-        } catch (IOException e) {
-          throw new SonarException(String.format("Unable to read %s", report.getAbsolutePath()), e);
-        } finally {
-          Closeables.closeQuietly(resourceStream);
-        }
-      }
-    }
   }
 
   class OverallAnalyzer extends AbstractAnalyzer {

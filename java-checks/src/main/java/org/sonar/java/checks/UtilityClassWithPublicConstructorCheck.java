@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -76,7 +77,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
       return false;
     }
     for (Tree member : classTree.members()) {
-      if (!isConstructor(member) && !isStatic(member)) {
+      if (!isConstructor(member) && !isStatic(member) && !member.is(Tree.Kind.EMPTY_STATEMENT)) {
         return false;
       }
     }
@@ -104,7 +105,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   }
 
   private static boolean hasStaticModifier(ModifiersTree modifiers) {
-    return modifiers.modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC);
   }
 
   private static List<Tree> getExplicitConstructors(ClassTree classTree) {
@@ -126,7 +127,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   }
 
   private static boolean hasPublicModifier(MethodTree methodTree) {
-    return methodTree.modifiers().modifiers().contains(Modifier.PUBLIC);
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
   }
 
 }

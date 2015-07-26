@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -28,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -35,8 +35,8 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = PublicStaticFieldShouldBeFinalCheck.RULE_KEY,
-  name = "\"public static\" fields should always be constant",
+  key = "S1444",
+  name = "\"public static\" fields should be constant",
   tags = {"cert", "cwe", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
@@ -44,9 +44,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1444";
   private JavaFileScannerContext context;
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -59,17 +57,20 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
     if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) {
       for (Tree member : tree.members()) {
         if (member.is(Tree.Kind.VARIABLE) && isPublicStaticNotFinal((VariableTree) member)) {
-          context.addIssue(member, ruleKey, "Make this \"public static " + ((VariableTree) member).simpleName() + "\" field final");
+          context.addIssue(member, this, "Make this \"public static " + ((VariableTree) member).simpleName() + "\" field final");
         }
       }
     }
     super.visitClass(tree);
   }
 
-  private boolean isPublicStaticNotFinal(VariableTree tree) {
-    boolean isPublic = false, isStatic = false, isFinal = false;
+  private static boolean isPublicStaticNotFinal(VariableTree tree) {
+    boolean isPublic = false;
+    boolean isStatic = false;
+    boolean isFinal = false;
 
-    for (Modifier modifier : tree.modifiers().modifiers()) {
+    for (ModifierKeywordTree modifierKeywordTree : tree.modifiers().modifiers()) {
+      Modifier modifier = modifierKeywordTree.modifier();
       if (modifier == Modifier.PUBLIC) {
         isPublic = true;
       } else if (modifier == Modifier.STATIC) {

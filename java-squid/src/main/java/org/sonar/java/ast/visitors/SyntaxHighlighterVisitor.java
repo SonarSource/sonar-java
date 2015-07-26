@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,32 +20,37 @@
 package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.AstNodeType;
-import com.sonar.sslr.api.Token;
-import com.sonar.sslr.api.Trivia;
 import org.sonar.api.source.Highlightable;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.parser.JavaLexer;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.SquidAstVisitor;
-import org.sonar.sslr.parser.LexerlessGrammar;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.SyntaxTrivia;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class SyntaxHighlighterVisitor extends SquidAstVisitor<LexerlessGrammar> implements AstAndTokenVisitor {
+public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
 
   private final SonarComponents sonarComponents;
-  private final Map<AstNodeType, String> types;
+  private final Map<Tree.Kind, String> typesByKind;
+  private final Set<String> keywords;
   private final Charset charset;
 
   private Highlightable.HighlightingBuilder highlighting;
@@ -55,78 +60,79 @@ public class SyntaxHighlighterVisitor extends SquidAstVisitor<LexerlessGrammar> 
     this.sonarComponents = sonarComponents;
     this.charset = charset;
 
-    ImmutableMap.Builder<AstNodeType, String> typesBuilder = ImmutableMap.builder();
-    for (AstNodeType type : JavaKeyword.values()) {
-      typesBuilder.put(type, "k");
-    }
-    typesBuilder.put(Kind.STRING_LITERAL, "s");
-    typesBuilder.put(Kind.CHAR_LITERAL, "s");
-    typesBuilder.put(Kind.FLOAT_LITERAL, "c");
-    typesBuilder.put(Kind.DOUBLE_LITERAL, "c");
-    typesBuilder.put(Kind.LONG_LITERAL, "c");
-    typesBuilder.put(Kind.INT_LITERAL, "c");
-    typesBuilder.put(Kind.ANNOTATION, "a");
-    types = typesBuilder.build();
+    ImmutableSet.Builder<String> keywordsBuilder = ImmutableSet.builder();
+    keywordsBuilder.add(JavaKeyword.keywordValues());
+    keywords = keywordsBuilder.build();
+
+    ImmutableMap.Builder<Tree.Kind, String> typesByKindBuilder = ImmutableMap.builder();
+    typesByKindBuilder.put(Tree.Kind.STRING_LITERAL, "s");
+    typesByKindBuilder.put(Tree.Kind.CHAR_LITERAL, "s");
+    typesByKindBuilder.put(Tree.Kind.FLOAT_LITERAL, "c");
+    typesByKindBuilder.put(Tree.Kind.DOUBLE_LITERAL, "c");
+    typesByKindBuilder.put(Tree.Kind.LONG_LITERAL, "c");
+    typesByKindBuilder.put(Tree.Kind.INT_LITERAL, "c");
+    typesByKindBuilder.put(Tree.Kind.ANNOTATION, "a");
+    typesByKind = typesByKindBuilder.build();
   }
 
   @Override
-  public void init() {
-    for (AstNodeType type : types.keySet()) {
-      subscribeTo(type);
-    }
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.<Tree.Kind>builder()
+      .addAll(typesByKind.keySet().iterator())
+      .add(Tree.Kind.TOKEN)
+      .add(Tree.Kind.TRIVIA)
+      .build();
   }
 
   @Override
-  public void visitFile(AstNode astNode) {
-    if (astNode == null) {
-      // parse error
-      return;
-    }
+  public void scanFile(JavaFileScannerContext context) {
+    File file = context.getFile();
+    highlighting = sonarComponents.highlightableFor(file).newHighlighting();
+    lineStart = startLines(file, this.charset);
 
-    highlighting = sonarComponents.highlightableFor(getContext().getFile()).newHighlighting();
+    super.scanFile(context);
 
-    lineStart = Lists.newArrayList();
-    final String content;
-    try {
-      content = Files.toString(getContext().getFile(), charset);
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
-    }
-    lineStart.add(0);
-    for (int i = 0; i < content.length(); i++) {
-      if (content.charAt(i) == '\n' || content.charAt(i) == '\r' && i + 1 < content.length() && content.charAt(i + 1) != '\n') {
-        lineStart.add(i + 1);
-      }
-    }
+    highlighting.done();
+    lineStart.clear();
   }
 
   @Override
-  public void visitNode(AstNode astNode) {
-    if (astNode.is(Kind.ANNOTATION)) {
-      highlighting.highlight(astNode.getFromIndex(), ((AstNode) ((AnnotationTree) astNode).annotationType()).getToIndex(), types.get(astNode.getType()));
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.ANNOTATION)) {
+      AnnotationTree annotationTree = (AnnotationTree) tree;
+      highlighting.highlight(start(annotationTree), end(annotationTree), typesByKind.get(Tree.Kind.ANNOTATION));
     } else {
-      // FIXME Hack to support prepending of keywords in literals, such as "default 0" in annotation type methods
-      AstNode target = astNode;
-      if (astNode.hasChildren()) {
-        for (AstNode child : astNode.getChildren()) {
-          if (!child.is(JavaLexer.SPACING)) {
-            target = child;
-          }
-        }
+      Tree.Kind kind = ((JavaTree) tree).getKind();
+      if (typesByKind.containsKey(kind)) {
+        SyntaxToken token = ((LiteralTree) tree).token();
+        highlighting.highlight(start(token), end(token), typesByKind.get(kind));
       }
-      highlighting.highlight(target.getFromIndex(), target.getToIndex(), types.get(astNode.getType()));
     }
   }
 
   @Override
-  public void visitToken(Token token) {
-    for (Trivia trivia : token.getTrivia()) {
-      if (trivia.isComment()) {
-        Token triviaToken = trivia.getToken();
-        int offset = getOffset(triviaToken.getLine(), triviaToken.getColumn());
-        highlighting.highlight(offset, offset + triviaToken.getValue().length(), "cppd");
-      }
+  public void visitToken(SyntaxToken syntaxToken) {
+    String text = syntaxToken.text();
+    if (keywords.contains(text)) {
+      highlighting.highlight(start(syntaxToken), end(syntaxToken), "k");
     }
+  }
+
+  @Override
+  public void visitTrivia(SyntaxTrivia syntaxTrivia) {
+    highlighting.highlight(start(syntaxTrivia), end(syntaxTrivia), "cppd");
+  }
+
+  private int start(AnnotationTree annotationTree) {
+    return start(annotationTree.atToken());
+  }
+
+  private int start(SyntaxToken token) {
+    return getOffset(token.line(), token.column());
+  }
+
+  private int start(SyntaxTrivia syntaxTrivia) {
+    return getOffset(syntaxTrivia.startLine(), syntaxTrivia.column());
   }
 
   /**
@@ -137,14 +143,39 @@ public class SyntaxHighlighterVisitor extends SquidAstVisitor<LexerlessGrammar> 
     return lineStart.get(line - 1) + column;
   }
 
-  @Override
-  public void leaveFile(AstNode astNode) {
-    if (astNode == null) {
-      // parse error
-      return;
+  private int end(AnnotationTree annotationTree) {
+    TypeTree annotationType = annotationTree.annotationType();
+    SyntaxToken token;
+    if (annotationType.is(Tree.Kind.MEMBER_SELECT)) {
+      token = ((MemberSelectExpressionTree) annotationType).identifier().identifierToken();
+    } else {
+      token = ((IdentifierTree) annotationType).identifierToken();
     }
-
-    highlighting.done();
+    return end(token);
   }
 
+  private int end(SyntaxToken token) {
+    return getOffset(token.line(), token.column()) + token.text().length();
+  }
+
+  private int end(SyntaxTrivia trivia) {
+    return getOffset(trivia.startLine(), trivia.column()) + trivia.comment().length();
+  }
+
+  private static List<Integer> startLines(File file, Charset charset) {
+    List<Integer> startLines = Lists.newArrayList();
+    final String content;
+    try {
+      content = Files.toString(file, charset);
+    } catch (IOException e) {
+      throw Throwables.propagate(e);
+    }
+    startLines.add(0);
+    for (int i = 0; i < content.length(); i++) {
+      if (content.charAt(i) == '\n' || (content.charAt(i) == '\r' && i + 1 < content.length() && content.charAt(i + 1) != '\n')) {
+        startLines.add(i + 1);
+      }
+    }
+    return startLines;
+  }
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -36,11 +35,15 @@ public interface JavaFileScannerContext {
 
   CompilationUnitTree getTree();
 
-  void addIssue(Tree tree, RuleKey ruleKey, String message);
+  void addIssue(Tree tree, JavaCheck check, String message);
 
-  void addIssueOnFile(RuleKey ruleKey, String message);
+  void addIssue(Tree tree, JavaCheck check, String message, @Nullable Double cost);
 
-  void addIssue(int line, RuleKey ruleKey, String message);
+  void addIssueOnFile(JavaCheck check, String message);
+
+  void addIssue(int line, JavaCheck check, String message);
+
+  void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost);
 
   void addIssue(Tree tree, CheckMessage checkMessage);
 

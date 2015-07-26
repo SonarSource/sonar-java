@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -28,15 +27,11 @@ import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -49,12 +44,6 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
-
-  private static final List<String> UNEVALUABLE_LONGS = Lists.newArrayList(
-    // Only 1
-    "0xffffffffffffffff",
-    // Zero the LSB
-    "0xfffffffffffffffe");
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -70,13 +59,13 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     Long identityElement = getBitwiseOperationIdentityElement(tree);
-    Long evaluatedExpression = evaluateExpression(getExpression(tree));
+    Long evaluatedExpression = LiteralUtils.longLiteralValue(getExpression(tree));
     if (evaluatedExpression != null && identityElement.equals(evaluatedExpression)) {
       addIssue(tree, "Remove this silly bit operation.");
     }
   }
 
-  private Long getBitwiseOperationIdentityElement(Tree tree) {
+  private static Long getBitwiseOperationIdentityElement(Tree tree) {
     Long identityElement = 0L;
     if (tree.is(Kind.AND, Kind.AND_ASSIGNMENT)) {
       identityElement = -1L;
@@ -84,7 +73,7 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
     return identityElement;
   }
 
-  private ExpressionTree getExpression(Tree tree) {
+  private static ExpressionTree getExpression(Tree tree) {
     ExpressionTree expression;
     if (tree.is(Kind.OR, Kind.XOR, Kind.AND)) {
       expression = ((BinaryExpressionTree) tree).rightOperand();
@@ -92,23 +81,5 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
       expression = ((AssignmentExpressionTree) tree).expression();
     }
     return expression;
-  }
-
-  @Nullable
-  private Long evaluateExpression(ExpressionTree tree) {
-    ExpressionTree expression = tree;
-
-    int sign = expression.is(Kind.UNARY_MINUS) ? -1 : 1;
-    if (expression.is(Kind.UNARY_MINUS, Kind.UNARY_PLUS)) {
-      expression = ((UnaryExpressionTree) expression).expression();
-    }
-
-    if (expression.is(Kind.INT_LITERAL, Kind.LONG_LITERAL)) {
-      String value = LiteralUtils.trimLongSuffix(((LiteralTree) expression).value()).toLowerCase();
-      if (!UNEVALUABLE_LONGS.contains(value)) {
-        return sign * Long.decode(value);
-      }
-    }
-    return null;
   }
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import java.util.List;
+import javax.annotation.Nullable;
 
 /**
  * Type parameter.
@@ -40,6 +40,9 @@ public interface TypeParameterTree extends Tree {
 
   IdentifierTree identifier();
 
-  List<Tree> bounds();
+  @Nullable
+  SyntaxToken extendToken();
+
+  ListTree<Tree> bounds();
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -40,7 +41,7 @@ import java.util.List;
 
 @Rule(
   key = "S1170",
-  name = "Public constants should be declared \"static final\" rather than merely \"final\"",
+  name = "Public constants and fields initialized at declaration should be \"static final\" rather than merely \"final\"",
   tags = {"convention"},
   priority = Priority.MINOR)
 @ActivatedByDefault
@@ -86,7 +87,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean staticNonFinal(VariableTree variableTree) {
+  private static boolean staticNonFinal(VariableTree variableTree) {
     return isFinal(variableTree) && !isStatic(variableTree);
   }
 
@@ -95,19 +96,20 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
     nestedClassesLevel--;
   }
 
-  private boolean hasConstantInitializer(VariableTree variableTree) {
+  private static boolean hasConstantInitializer(VariableTree variableTree) {
     Tree init = variableTree.initializer();
     if (init != null) {
       if (init.is(Tree.Kind.NEW_ARRAY)) {
         //exclude allocations : new int[6] but allow initialization new int[]{1,2};
-        return ((NewArrayTree) init).dimensions().isEmpty();
+        NewArrayTree newArrayTree = (NewArrayTree) init;
+        return newArrayTree.dimensions().isEmpty() || newArrayTree.openBraceToken() != null;
       }
       return !containsChildrenOfKind((JavaTree) init, Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
     }
     return false;
   }
 
-  private boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
+  private static boolean containsChildrenOfKind(JavaTree tree, Tree.Kind... kinds) {
     for (Tree.Kind kind : kinds) {
       if (tree.is(kind)) {
         return true;
@@ -126,10 +128,10 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isFinal(VariableTree variableTree) {
-    return variableTree.modifiers().modifiers().contains(Modifier.FINAL);
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.FINAL);
   }
 
   private static boolean isStatic(VariableTree variableTree) {
-    return variableTree.modifiers().modifiers().contains(Modifier.STATIC);
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC);
   }
 }

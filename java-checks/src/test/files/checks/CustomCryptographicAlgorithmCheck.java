@@ -4,7 +4,7 @@ import java.util.Observable;
 class A { // Compliant
 }
 
-abstract class B extends MessageDigest { // Noncompliant
+abstract class B extends MessageDigest { // Noncompliant {{Use a standard algorithm instead of creating a custom one.}}
   protected B(String algorithm) {
     super(algorithm);
   }

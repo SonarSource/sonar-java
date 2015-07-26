@@ -1,0 +1,36 @@
+<p>When a method is called that returns data read from some data source, that data should be stored rather than thrown away. Any other course of action is surely a bug.</p>
+
+<p>This rule raises an issue when the return value of any of the following is ignored or merely null-checked: <code>Reader.read()</code>, <code>BufferedReader.readLine()</code>, and these methods in any child classes.</p>
+
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public void doSomethingWithFile(String fileName) {
+  BufferedReader buffReader = null;
+  try {
+    buffReader = new BufferedReader(new FileReader(fileName));
+    while (buffReader.readLine() != null) { // Noncompliant
+      // ...
+    }
+  } catch (IOException e) {
+    // ...
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+
+<pre>
+public void doSomethingWithFile(String fileName) {
+  BufferedReader buffReader = null;
+  try {
+    buffReader = new BufferedReader(new FileReader(fileName));
+    String line = null;
+    while ((line = buffReader.readLine()) != null) {
+      // ...
+    }
+  } catch (IOException e) {
+    // ...
+  }
+}
+</pre>

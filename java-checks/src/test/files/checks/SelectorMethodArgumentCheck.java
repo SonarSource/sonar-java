@@ -1,5 +1,5 @@
 class A {
-  public void tempt(String name, boolean ofAge) { // Noncompliant
+  public void tempt(String name, boolean ofAge) { // Noncompliant {{Provide multiple methods instead of using "ofAge" to determine which action to take.}}
     if (ofAge) {
       offerLiquor(name);
     } else {
@@ -17,7 +17,7 @@ class A {
     offerLiquor(name);
   }
 
-  public void doOtherStuff(boolean willingly) { // Noncompliant
+  public void doOtherStuff(boolean willingly) { // Noncompliant {{Provide multiple methods instead of using "willingly" to determine which action to take.}}
     if (willingly) {
     } else {
     }
@@ -34,7 +34,7 @@ class A {
 }
 
 abstract class B {
-  public int foo(int a, boolean b, boolean c) { // Noncompliant - b and c
+  public int foo(int a, boolean b, boolean c) { // Noncompliant 2
     if (b) {
     } else {
     }
@@ -53,7 +53,7 @@ abstract class B {
     return 0;
   }
 
-  public int hop(int a, boolean b) { // Noncompliant - b is used as selector in the inner class
+  public int hop(int a, boolean b) { // Noncompliant {{Provide multiple methods instead of using "b" to determine which action to take.}}
     class InnerClass {
       int foo() {
         if (b) {
@@ -65,7 +65,7 @@ abstract class B {
     return 0;
   }
 
-  public int tuc(int a, boolean b) { // Noncompliant
+  public int tuc(int a, boolean b) { // Noncompliant {{Provide multiple methods instead of using "b" to determine which action to take.}}
     return b ? a+1 : a-1;
   }
 

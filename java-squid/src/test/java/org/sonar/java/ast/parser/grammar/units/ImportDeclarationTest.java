@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -32,7 +32,9 @@ public class ImportDeclarationTest {
       .matches("import org.example.HelloWorld;")
       .matches("import org.example.*;")
       .matches("import static org.junit.Assert.assertThat;")
-      .matches("import static org.junit.Assert.*;");
+      .matches("import static org.junit.Assert.*;")
+      // javac accepts empty statements in import declarations
+      .matches(";");
   }
 
 }

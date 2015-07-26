@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,16 +21,14 @@ package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
 
-import java.util.List;
-
 /**
  * Union type expression in a multi-catch.
  *
  * @since Java 1.7
  */
 @Beta
-public interface UnionTypeTree extends Tree {
+public interface UnionTypeTree extends TypeTree {
 
-  List<Tree> typeAlternatives();
+  ListTree<TypeTree> typeAlternatives();
 
 }

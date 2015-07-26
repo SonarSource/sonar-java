@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,13 +21,12 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.model.InternalSyntaxTrivia;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -58,26 +57,45 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
   public String legalCommentPattern = DEFAULT_LEGAL_COMMENT_PATTERN;
 
   private Pattern pattern;
+  private boolean ignoreMultipleOccurences;
+  private Set<SyntaxToken> visitedTokens;
   private int previousTokenLine;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.TRIVIA);
+    return ImmutableList.of(
+      Tree.Kind.TOKEN,
+      Tree.Kind.VARIABLE);
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     previousTokenLine = -1;
     pattern = Pattern.compile(legalCommentPattern);
+    visitedTokens = Sets.newHashSet();
     super.scanFile(context);
+    visitedTokens.clear();
+  }
+
+  @Override
+  public void visitNode(Tree tree) {
+    ignoreMultipleOccurences = true;
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    ignoreMultipleOccurences = false;
   }
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    int tokenLine = ((InternalSyntaxToken) syntaxToken).getLine();
+    if (ignoreMultipleOccurences && !visitedTokens.add(syntaxToken)) {
+      return;
+    }
+    int tokenLine = syntaxToken.line();
     if (tokenLine != previousTokenLine) {
       for (SyntaxTrivia trivia : syntaxToken.trivias()) {
-        if (((InternalSyntaxTrivia)trivia).getLine() == previousTokenLine) {
+        if (trivia.startLine() == previousTokenLine) {
           String comment = trivia.comment();
 
           comment = comment.startsWith("//") ? comment.substring(2) : comment.substring(2, comment.length() - 2);
@@ -93,7 +111,7 @@ public class TrailingCommentCheck extends SubscriptionBaseVisitor {
     previousTokenLine = tokenLine;
   }
 
-  private boolean containsExcludedPattern(String comment) {
+  private static boolean containsExcludedPattern(String comment) {
     for (String excludePattern : EXCLUDED_PATTERNS) {
       if (StringUtils.containsIgnoreCase(comment, excludePattern)) {
         return true;

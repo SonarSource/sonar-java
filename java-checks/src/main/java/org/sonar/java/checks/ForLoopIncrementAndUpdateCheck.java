@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,9 +25,10 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -72,21 +73,21 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private Collection<Symbol> getUpdatedSymbols(ForStatementTree forStatementTree) {
+  private static Collection<Symbol> getUpdatedSymbols(ForStatementTree forStatementTree) {
     UpdateVisitor updateVisitor = new UpdateVisitor();
     forStatementTree.accept(updateVisitor);
     return updateVisitor.symbols;
   }
 
-  private String getSymbols(Collection<Symbol> updateSymbols) {
+  private static String getSymbols(Collection<Symbol> updateSymbols) {
     List<String> names = Lists.newArrayList();
     for (Symbol updateSymbol : updateSymbols) {
-      names.add(updateSymbol.getName());
+      names.add(updateSymbol.name());
     }
     return Joiner.on(", ").join(names);
   }
 
-  private class UpdateVisitor extends BaseTreeVisitor {
+  private static class UpdateVisitor extends BaseTreeVisitor {
     Collection<Symbol> symbols = Lists.newArrayList();
 
     @Override
@@ -96,29 +97,33 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitUnaryExpression(UnaryExpressionTree tree) {
-      if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
-        addSymbol((IdentifierTree) tree.expression());
-      }
+      checkIdentifier(tree.expression());
       super.visitUnaryExpression(tree);
     }
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (tree.variable().is(Tree.Kind.IDENTIFIER)) {
-        addSymbol((IdentifierTree) tree.variable());
-      }
+      checkIdentifier(tree.variable());
       super.visitAssignmentExpression(tree);
     }
 
+    private void checkIdentifier(ExpressionTree expression) {
+      if (expression.is(Tree.Kind.IDENTIFIER)) {
+        addSymbol((IdentifierTree) expression);
+      } else if (expression.is(Tree.Kind.MEMBER_SELECT)) {
+        addSymbol(((MemberSelectExpressionTree) expression).identifier());
+      }
+    }
+
     private void addSymbol(IdentifierTree identifierTree) {
-      Symbol symbol = getSemanticModel().getReference(identifierTree);
-      if (symbol != null) {
+      Symbol symbol = identifierTree.symbol();
+      if (!symbol.isUnknown()) {
         symbols.add(symbol);
       }
     }
   }
 
-  private class ConditionVisitor extends BaseTreeVisitor {
+  private static class ConditionVisitor extends BaseTreeVisitor {
     private final Collection<Symbol> updateSymbols;
     private final Collection<String> conditionNames;
     private boolean shouldRaiseIssue;
@@ -138,7 +143,13 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if(tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        checkIdentifier(((MemberSelectExpressionTree) tree.methodSelect()).identifier());
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree.methodSelect();
+        ExpressionTree expression = mset.expression();
+        if (expression.is(Tree.Kind.IDENTIFIER)) {
+          checkIdentifier((IdentifierTree) expression);
+        } else {
+          checkIdentifier(mset.identifier());
+        }
       } else {
         scan(tree.methodSelect());
       }
@@ -152,9 +163,9 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
     }
 
     private void checkIdentifier(IdentifierTree tree) {
-      Symbol reference = getSemanticModel().getReference(tree);
+      Symbol reference = tree.symbol();
       String name = tree.name();
-      if (reference != null && reference.isKind(Symbol.MTH)) {
+      if (reference.isMethodSymbol()) {
         name += "()";
       }
       conditionNames.add(name);

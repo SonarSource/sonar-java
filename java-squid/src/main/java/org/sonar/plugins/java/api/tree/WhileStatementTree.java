@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,7 +27,7 @@ import com.google.common.annotations.Beta;
  * JLS 14.12
  *
  * <pre>
- *   while ({@link #condition()} {@link #statement}
+ *   while ({@link #condition()}) {@link #statement}
  * </pre>
  *
  * @since Java 1.3

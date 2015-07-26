@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,17 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import com.sonar.sslr.api.AstNode;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.ast.api.JavaPunctuator;
-import org.sonar.java.ast.parser.JavaLexer;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 @Rule(
   key = "LeftCurlyBraceEndLineCheck",
@@ -38,35 +33,12 @@ import org.sonar.sslr.parser.LexerlessGrammar;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class LeftCurlyBraceEndLineCheck extends SquidCheck<LexerlessGrammar> {
+public class LeftCurlyBraceEndLineCheck extends LeftCurlyBraceBaseTreeVisitor {
 
   @Override
-  public void init() {
-    subscribeTo(JavaPunctuator.LWING);
-  }
-
-  @Override
-  public void visitNode(AstNode node) {
-    if (!isExcluded(node) && node.getPreviousAstNode().getLastToken() != null && node.getPreviousAstNode().getLastToken().getLine() != node.getTokenLine()) {
-      getContext().createLineViolation(this, "Move this left curly brace to the end of previous line of code.", node);
+  protected void checkTokens(SyntaxToken lastToken, SyntaxToken openBraceToken) {
+    if (lastToken.line() != openBraceToken.line()) {
+      addIssue(openBraceToken, this, "Move this left curly brace to the end of previous line of code.");
     }
   }
-
-  private static boolean isExcluded(AstNode node) {
-    return node.getParent().is(Kind.NEW_ARRAY) ||
-      isExcludedBlock(node.getParent());
-  }
-
-  private static boolean isExcludedBlock(AstNode node) {
-    return isInitializer(node) || isBlock(node);
-  }
-
-  private static boolean isInitializer(AstNode node) {
-    return node.is(Kind.INITIALIZER, Kind.STATIC_INITIALIZER);
-  }
-
-  private static boolean isBlock(AstNode node) {
-    return node.getParent().is(JavaLexer.BLOCK_STATEMENTS);
-  }
-
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,14 +23,15 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -52,21 +53,20 @@ public class ExtendDeprecatedSymbolCheck extends AbstractDeprecatedChecker {
     ClassTree classTree = (ClassTree) tree;
     if (!hasDeprecatedAnnotation(tree)) {
       checkSuperTypeDeprecation(classTree.superClass(), false);
-      for (Tree superInterface : classTree.superInterfaces()) {
+      for (TypeTree superInterface : classTree.superInterfaces()) {
         checkSuperTypeDeprecation(superInterface, true);
       }
     }
   }
 
-  private void checkSuperTypeDeprecation(@Nullable Tree superTypeTree, boolean isInterface) {
+  private void checkSuperTypeDeprecation(@Nullable TypeTree superTypeTree, boolean isInterface) {
     if (superTypeTree != null) {
-      Type symbolType = ((AbstractTypedTree) superTypeTree).getSymbolType();
-      if (symbolType.isTagged(Type.CLASS) && ((Type.ClassType) symbolType).getSymbol().isDeprecated()) {
-        addIssue(superTypeTree, "\""+((Type.ClassType) symbolType).getSymbol().getName()+"\""+" is deprecated, "
-            + (isInterface ? "implement" : "extend") + " the suggested replacement instead.");
+      Type symbolType = superTypeTree.symbolType();
+      if (symbolType.isClass() && symbolType.symbol().isDeprecated()) {
+        addIssue(superTypeTree, "\"" + symbolType.symbol().name() + "\"" + " is deprecated, "
+          + (isInterface ? "implement" : "extend") + " the suggested replacement instead.");
       }
     }
   }
-
 
 }

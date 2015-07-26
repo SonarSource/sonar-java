@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,11 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -54,8 +55,8 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
 
   @Override
   public void visitNode(Tree tree) {
-    ClassTreeImpl classTree = (ClassTreeImpl) tree;
-    if (hasSemantic() && isNotSerializable(classTree.getSymbol())) {
+    ClassTree classTree = (ClassTree) tree;
+    if (hasSemantic() && isNotSerializable(classTree.symbol())) {
       for (Tree member : classTree.members()) {
         if (isTransient(member)) {
           addIssue(member, "Remove the \"transient\" modifier from this field.");
@@ -64,19 +65,19 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     }
   }
 
-  private boolean isNotSerializable(TypeSymbol symbol) {
-    for (ClassType superType : symbol.superTypes()) {
-      if (superType.isTagged(Type.UNKNOWN)) {
+  private static boolean isNotSerializable(Symbol.TypeSymbol symbol) {
+    for (Type superType : ((TypeJavaSymbol) symbol).superTypes()) {
+      if (superType.isUnknown()) {
         return false;
       }
     }
-    return !symbol.getType().isSubtypeOf("java.io.Serializable");
+    return !symbol.type().isSubtypeOf("java.io.Serializable");
   }
 
-  private boolean isTransient(Tree tree) {
+  private static boolean isTransient(Tree tree) {
     if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
-      return variable.modifiers().modifiers().contains(Modifier.TRANSIENT);
+      return ModifiersUtils.hasModifier(variable.modifiers(), Modifier.TRANSIENT);
     }
     return false;
   }

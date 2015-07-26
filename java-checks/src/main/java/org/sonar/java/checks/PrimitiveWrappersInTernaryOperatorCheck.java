@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.resolve.JavaType;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -52,15 +52,19 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends SubscriptionBaseVis
   @Override
   public void visitNode(Tree tree) {
     ConditionalExpressionTree cet = (ConditionalExpressionTree) tree;
-    Type trueExpressionType = ((AbstractTypedTree) cet.trueExpression()).getSymbolType();
-    Type falseExpressionType = ((AbstractTypedTree) cet.falseExpression()).getSymbolType();
+    Type trueExpressionType = cet.trueExpression().symbolType();
+    Type falseExpressionType = cet.falseExpression().symbolType();
     if (dissimilarPrimitiveTypeWrappers(trueExpressionType, falseExpressionType)) {
       addIssue(tree, "Add an explicit cast to match types of operands.");
     }
   }
 
-  private boolean dissimilarPrimitiveTypeWrappers(Type trueExprType, Type falseExprType) {
-    return trueExprType.isPrimitiveWrapper() && falseExprType.isPrimitiveWrapper() && !trueExprType.equals(falseExprType);
+  private static boolean dissimilarPrimitiveTypeWrappers(Type trueExprType, Type falseExprType) {
+    return isPrimitiveWrapper(trueExprType) && isPrimitiveWrapper(falseExprType) && !trueExprType.equals(falseExprType);
+  }
+
+  private static boolean isPrimitiveWrapper(Type type) {
+    return ((JavaType) type).isPrimitiveWrapper();
   }
 
 }

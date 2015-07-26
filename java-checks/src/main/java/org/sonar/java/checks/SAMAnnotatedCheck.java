@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,22 +23,19 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.model.declaration.VariableTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -47,16 +44,14 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = SAMAnnotatedCheck.RULE_KEY,
+  key = "S1609",
   name = "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
   tags = {"java8"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
-public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {
 
-  public static final String RULE_KEY = "S1609";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
   private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>().
       put("equals", ImmutableList.of("Object")).
       put("getClass", ImmutableList.<String>of()).
@@ -69,24 +64,20 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
       put("wait", ImmutableList.of("long", "int")).
       build();
 
-  private JavaFileScannerContext context;
-
-
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.INTERFACE);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if (isSAM(tree) && !isAnnotated(tree)) {
-      context.addIssue(tree, RULE, "Annotate the \"" + tree.simpleName().name() + "\" interface with the @FunctionInterface annotation");
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (hasOneAbstractMethod(classTree) && !isAnnotated(classTree)) {
+      addIssue(tree, "Annotate the \"" + classTree.simpleName().name() + "\" interface with the @FunctionInterface annotation");
     }
-    super.visitClass(tree);
   }
 
-  private boolean isAnnotated(ClassTree tree) {
+  private static boolean isAnnotated(ClassTree tree) {
     for (AnnotationTree annotationTree : tree.modifiers().annotations()) {
       Tree annotationType = annotationTree.annotationType();
       if (annotationType.is(Tree.Kind.IDENTIFIER) && "FunctionalInterface".equals(((IdentifierTree) annotationType).name())) {
@@ -96,18 +87,12 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return false;
   }
 
-  //JLS8 9.8
-  private boolean isSAM(ClassTree tree) {
-    return tree.is(Tree.Kind.INTERFACE) && hasOneAbstractMethod(tree);
-  }
-
-  private boolean hasOneAbstractMethod(ClassTree classTree) {
-
-    Symbol.TypeSymbol symbol = ((ClassTreeImpl) classTree).getSymbol();
+  private static boolean hasOneAbstractMethod(ClassTree classTree) {
+    TypeSymbol symbol = classTree.symbol();
     if (symbol != null) {
-      List<Type> types = symbol.getInterfaces();
+      List<Type> types = symbol.interfaces();
       for (Type type : types) {
-        if (!((Type.ClassType) type).getSymbol().members().scopeSymbols().isEmpty()) {
+        if (!type.symbol().memberSymbols().isEmpty()) {
           return false;
         }
       }
@@ -125,18 +110,14 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return methods == 1;
   }
 
-  private boolean isNotObjectMethod(MethodTree method) {
+  private static boolean isNotObjectMethod(MethodTree method) {
     ImmutableCollection<List<String>> methods = OBJECT_METHODS.get(method.simpleName().name());
     if (methods != null) {
       for (List<String> arguments : methods) {
         List<String> args = Lists.newArrayList(arguments);
         if (method.parameters().size() == args.size()) {
           for (VariableTree var : method.parameters()) {
-            Symbol.VariableSymbol symbol = ((VariableTreeImpl) var).getSymbol();
-            // TODO(Godin): get rid of null check
-            if (symbol != null) {
-              args.remove(symbol.type());
-            }
+            args.remove(var.type().symbolType().name());
           }
           if (args.isEmpty()) {
             return false;
@@ -147,12 +128,12 @@ public class SAMAnnotatedCheck extends BaseTreeVisitor implements JavaFileScanne
     return true;
   }
 
-  private boolean isNonStaticNonDefaultMethod(Tree memberTree) {
+  private static boolean isNonStaticNonDefaultMethod(Tree memberTree) {
     boolean result = memberTree.is(Tree.Kind.METHOD);
     if (result) {
       MethodTree methodTree = (MethodTree) memberTree;
-      List<Modifier> modifiers = methodTree.modifiers().modifiers();
-      result = !modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.DEFAULT);
+      ModifiersTree modifiers = methodTree.modifiers();
+      result = !ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) && !ModifiersUtils.hasModifier(modifiers, Modifier.DEFAULT);
     }
     return result;
   }

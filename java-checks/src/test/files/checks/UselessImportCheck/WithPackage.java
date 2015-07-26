@@ -16,8 +16,10 @@ import java.lang.String;            // Non-Compliant
 import java.lang.*;                 // Non-Compliant
 import a.b.c.Foo;                   // Non-Compliant
 
+;  // Compliant
+
 import checks.UselessImportCheck.*;              // Non-Compliant
-import checks.UselessImportCheckClose.*;              // Non-Compliant
+import checks.UselessImportCheckClose.*;         // Compliant
 import static checks.UselessImportCheck.Foo.*;   // Compliant
 import checks.UselessImportCheck.foo.*;          // Compliant
 
@@ -30,14 +32,19 @@ import pkg.CompliantClass4;         // Compliant
 
 import java.lang.reflect.Array;     // Compliant
 
-import javax.annotation.Nullable; //Compliant
+import javax.annotation.Nullable;   //Compliant
 import javax.annotation.ParametersAreNonnullByDefault; // Compliant
 
 import java.lang.annotation.*;      // Compliant
-import java.util.ArrayList;
+import java.util.ArrayList;         // Compliant
+import java.util.Map;               // Compliant
+import java.util.HashMap;           // Compliant
+import javax.annotation.Nonnull;    // Compliant
 
 class Foo2 extends Foo {
   Bar a = new Baz<String>();
+  
+  Map<@Nonnull String, @Nonnull String> modulesMap = new HashMap<>();
 
   @Qux
   void test() throws MyException, MyException2 {

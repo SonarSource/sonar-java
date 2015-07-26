@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,8 +25,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,6 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
@@ -63,14 +64,13 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   private static final String[] DATE_GET_METHODS = {"getDate", "getMonth", "getHours", "getMinutes", "getSeconds"};
   private static final String[] DATE_SET_METHODS = {"setDate", "setMonth", "setHours", "setMinutes", "setSeconds"};
 
-
-  private static final List<MethodInvocationMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodInvocationMatcher>builder()
-    .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
+  private static final List<MethodMatcher> DATE_METHODS_COMPARISON = ImmutableList.<MethodMatcher>builder()
+    .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("get").addParameter("int"))
     .addAll(dateGetMatchers())
     .build();
 
-  private static List<MethodInvocationMatcher> dateGetMatchers() {
-    ImmutableList.Builder<MethodInvocationMatcher> builder = ImmutableList.builder();
+  private static List<MethodMatcher> dateGetMatchers() {
+    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
     for (String dateGetMethod : DATE_GET_METHODS) {
       builder.add(dateMethodInvocationMatcherGetter(JAVA_UTIL_DATE, dateGetMethod));
       builder.add(dateMethodInvocationMatcherGetter(JAVA_SQL_DATE, dateGetMethod));
@@ -108,12 +108,12 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   @CheckForNull
-  private String getThresholdToCheck(ExpressionTree tree) {
+  private static String getThresholdToCheck(ExpressionTree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
       String name = getMethodName(mit);
-      for (MethodInvocationMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
-        if (methodInvocationMatcher.matches(mit, getSemanticModel())) {
+      for (MethodMatcher methodInvocationMatcher : DATE_METHODS_COMPARISON) {
+        if (methodInvocationMatcher.matches(mit)) {
           if ("get".equals(name)) {
             // Calendar
             return getReferencedCalendarName(mit.arguments().get(0));
@@ -127,47 +127,47 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   @CheckForNull
-  private String getReferencedCalendarName(ExpressionTree argument) {
+  private static String getReferencedCalendarName(ExpressionTree argument) {
     if (argument.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) argument;
-      Symbol reference = getSemanticModel().getReference(mse.identifier());
-      if (reference.owner().getType().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.getName()) != null) {
-        return reference.getName();
+      Symbol reference = mse.identifier().symbol();
+      if (reference.owner().type().is(JAVA_UTIL_CALENDAR) && Threshold.getThreshold(reference.name()) != null) {
+        return reference.name();
       }
     }
     return null;
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    ImmutableList.Builder<MethodInvocationMatcher> builder = ImmutableList.builder();
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    ImmutableList.Builder<MethodMatcher> builder = ImmutableList.builder();
     for (String dateSetMethod : DATE_SET_METHODS) {
       builder.add(dateMethodInvocationMatcherSetter(JAVA_UTIL_DATE, dateSetMethod));
       builder.add(dateMethodInvocationMatcherSetter(JAVA_SQL_DATE, dateSetMethod));
     }
     return builder
-      .add(MethodInvocationMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
-      .add(MethodInvocationMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
+      .add(MethodMatcher.create().typeDefinition(JAVA_UTIL_CALENDAR).name("set").addParameter("int").addParameter("int"))
+      .add(MethodMatcher.create().typeDefinition("java.util.GregorianCalendar").name("<init>").withNoParameterConstraint())
       .build();
   }
 
-  private static MethodInvocationMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
-    return MethodInvocationMatcher.create().typeDefinition(type).name(methodName);
+  private static MethodMatcher dateMethodInvocationMatcherGetter(String type, String methodName) {
+    return MethodMatcher.create().typeDefinition(type).name(methodName);
   }
 
-  private static MethodInvocationMatcher dateMethodInvocationMatcherSetter(String type, String methodName) {
-    return MethodInvocationMatcher.create().typeDefinition(type).name(methodName).addParameter("int");
+  private static MethodMatcher dateMethodInvocationMatcherSetter(String type, String methodName) {
+    return MethodMatcher.create().typeDefinition(type).name(methodName).addParameter("int");
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String name = getMethodName(mit);
     if ("set".equals(name)) {
       // Calendar method
       ExpressionTree arg0 = mit.arguments().get(0);
       ExpressionTree arg1 = mit.arguments().get(1);
       String referenceName = getReferencedCalendarName(arg0);
-      if(referenceName != null) {
+      if (referenceName != null) {
         checkArgument(arg1, referenceName, "\"{0}\" is not a valid value for setting \"{1}\".");
       }
     } else {
@@ -190,7 +190,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     if (arg.is(Tree.Kind.INT_LITERAL)) {
       literal = (LiteralTree) arg;
     } else if (arg.is(Tree.Kind.UNARY_MINUS, Tree.Kind.UNARY_PLUS) && ((UnaryExpressionTree) arg).expression().is(Tree.Kind.INT_LITERAL)) {
-      if(arg.is(Tree.Kind.UNARY_MINUS)) {
+      if (arg.is(Tree.Kind.UNARY_MINUS)) {
         sign = -1;
       }
       literal = (LiteralTree) ((UnaryExpressionTree) arg).expression();
@@ -203,7 +203,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     }
   }
 
-  private String getMethodName(MethodInvocationTree mit) {
+  private static String getMethodName(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       return ((MemberSelectExpressionTree) methodSelect).identifier().name();
@@ -211,7 +211,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     return ((IdentifierTree) methodSelect).name();
   }
 
-  private static enum Threshold {
+  private enum Threshold {
     MONTH(11, "setMonth", "getMonth", "MONTH", "month"),
     DATE(31, "setDate", "getDate", "DAY_OF_MONTH", "dayOfMonth"),
     HOURS(23, "setHours", "getHours", "HOUR_OF_DAY", "hourOfDay"),

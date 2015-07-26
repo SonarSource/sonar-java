@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,9 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
+import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -34,18 +35,13 @@ import java.util.Iterator;
 import java.util.List;
 
 public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
-  private final List<CaseLabelTreeImpl> labels;
+  private final List<CaseLabelTree> labels;
   private final List<StatementTree> body;
 
-  public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, List<StatementTree> body, AstNode child) {
+  public CaseGroupTreeImpl(List<CaseLabelTreeImpl> labels, BlockStatementListTreeImpl body) {
     super(JavaLexer.SWITCH_BLOCK_STATEMENT_GROUP);
-    this.labels = Preconditions.checkNotNull(labels);
+    this.labels = ImmutableList.<CaseLabelTree>builder().addAll(Preconditions.checkNotNull(labels)).build();
     this.body = Preconditions.checkNotNull(body);
-
-    for (CaseLabelTreeImpl label : labels) {
-      addChild(label);
-    }
-    addChild(child);
   }
 
   @Override
@@ -55,8 +51,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
 
   @Override
   public List<CaseLabelTree> labels() {
-    // FIXME
-    return (List) labels;
+    return labels;
   }
 
   @Override

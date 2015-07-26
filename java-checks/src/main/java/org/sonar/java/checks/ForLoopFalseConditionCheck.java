@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -54,7 +54,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
     }
   }
 
-  private boolean isAlwaysFalseCondition(ExpressionTree expression) {
+  private static boolean isAlwaysFalseCondition(ExpressionTree expression) {
     if (expression.is(Tree.Kind.BOOLEAN_LITERAL)) {
       return BooleanUtils.isFalse(booleanLiteralValue(expression));
     }
@@ -66,14 +66,14 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
   }
 
   @CheckForNull
-  private Boolean booleanLiteralValue(ExpressionTree expression) {
+  private static Boolean booleanLiteralValue(ExpressionTree expression) {
     if (expression.is(Tree.Kind.BOOLEAN_LITERAL)) {
       return Boolean.valueOf(((LiteralTree) expression).value());
     }
     return null;
   }
 
-  private boolean isConditionFalseAtInitialization(ForStatementTree forStatement) {
+  private static boolean isConditionFalseAtInitialization(ForStatementTree forStatement) {
     Iterable<ForLoopInitializer> initializers = ForLoopInitializer.list(forStatement);
     ExpressionTree condition = forStatement.condition();
     if (!condition.is(Tree.Kind.GREATER_THAN, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN, Tree.Kind.LESS_THAN_OR_EQUAL_TO)) {
@@ -88,7 +88,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
     return false;
   }
 
-  private boolean evaluateCondition(ExpressionTree condition, int leftOperand, int rightOperand) {
+  private static boolean evaluateCondition(ExpressionTree condition, int leftOperand, int rightOperand) {
     boolean conditionValue = true;
     if (condition.is(Tree.Kind.GREATER_THAN)) {
       conditionValue = leftOperand > rightOperand;
@@ -102,7 +102,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
     return conditionValue;
   }
 
-  private Integer eval(ExpressionTree expression, Iterable<ForLoopInitializer> initializers) {
+  private static Integer eval(ExpressionTree expression, Iterable<ForLoopInitializer> initializers) {
     Integer intLiteralValue = LiteralUtils.intLiteralValue(expression);
     if (intLiteralValue == null) {
       for (ForLoopInitializer initializer : initializers) {

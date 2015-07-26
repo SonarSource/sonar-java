@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,8 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class Resolve {
 
-  private final SymbolNotFound symbolNotFound = new SymbolNotFound();
+  private final JavaSymbolNotFound symbolNotFound = new JavaSymbolNotFound();
 
   private final BytecodeCompleter bytecodeCompleter;
   private final ParametrizedTypeCache parametrizedTypeCache;
@@ -53,39 +53,41 @@ public class Resolve {
     this.parametrizedTypeCache = parametrizedTypeCache;
   }
 
-  private static Symbol.TypeSymbol superclassSymbol(Symbol.TypeSymbol c) {
-    Type supertype = c.getSuperclass();
+  @Nullable
+  private static JavaSymbol.TypeJavaSymbol superclassSymbol(JavaSymbol.TypeJavaSymbol c) {
+    JavaType supertype = c.getSuperclass();
     return supertype == null ? null : supertype.symbol;
   }
 
-  public Symbol.TypeSymbol registerClass(Symbol.TypeSymbol classSymbol) {
+  public JavaSymbol.TypeJavaSymbol registerClass(JavaSymbol.TypeJavaSymbol classSymbol) {
     return bytecodeCompleter.registerClass(classSymbol);
   }
 
-  public Scope createStarImportScope(Symbol owner) {
+  public Scope createStarImportScope(JavaSymbol owner) {
     return new Scope.StarImportScope(owner, bytecodeCompleter);
   }
 
-  public Scope createStaticStarImportScope(Symbol owner) {
+  public Scope createStaticStarImportScope(JavaSymbol owner) {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
   }
 
-  public Type resolveTypeSubstitution(Type type, Type definition) {
-    if(definition instanceof Type.ParametrizedTypeType) {
-      return substituteTypeParameter(type, ((Type.ParametrizedTypeType) definition).typeSubstitution);
+  public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
+    if(definition instanceof JavaType.ParametrizedTypeJavaType) {
+      return substituteTypeParameter(type, ((JavaType.ParametrizedTypeJavaType) definition).typeSubstitution);
     }
     return type;
   }
 
-  private Type substituteTypeParameter(Type type, Map<Type.TypeVariableType, Type> substitution) {
-    if(substitution.get(type) != null) {
-      return substitution.get(type);
+  private JavaType substituteTypeParameter(JavaType type, TypeSubstitution substitution) {
+    JavaType substitutedType = substitution.substitutedType(type);
+    if (substitutedType != null) {
+      return substitutedType;
     }
-    if(type instanceof Type.ParametrizedTypeType) {
-      Type.ParametrizedTypeType ptt = (Type.ParametrizedTypeType) type;
-      Map<Type.TypeVariableType, Type> newSubstitution = Maps.newHashMap();
-      for (Map.Entry<Type.TypeVariableType, Type> entry : ptt.typeSubstitution.entrySet()) {
-        newSubstitution.put(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
+    if(type instanceof JavaType.ParametrizedTypeJavaType) {
+      JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) type;
+      TypeSubstitution newSubstitution = new TypeSubstitution();
+      for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry : ptt.typeSubstitution.substitutionEntries()) {
+        newSubstitution.add(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
       }
       return parametrizedTypeCache.getParametrizedTypeType(ptt.rawType.getSymbol(), newSubstitution);
     }
@@ -95,17 +97,17 @@ public class Resolve {
   /**
    * Finds field with given name.
    */
-  private Resolution findField(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
+  private Resolution findField(Env env, JavaSymbol.TypeJavaSymbol site, String name, JavaSymbol.TypeJavaSymbol c) {
     Resolution bestSoFar = unresolved();
     Resolution resolution = new Resolution();
-    for (Symbol symbol : c.members().lookup(name)) {
-      if (symbol.kind == Symbol.VAR) {
+    for (JavaSymbol symbol : c.members().lookup(name)) {
+      if (symbol.kind == JavaSymbol.VAR) {
         if(isAccessible(env, site, symbol)) {
           resolution.symbol = symbol;
           resolution.type = resolveTypeSubstitution(symbol.type, c.type);
           return resolution;
         } else {
-          return Resolution.resolution(new AccessErrorSymbol(symbol, symbols.unknownType));
+          return Resolution.resolution(new AccessErrorJavaSymbol(symbol, Symbols.unknownType));
         }
       }
     }
@@ -116,7 +118,7 @@ public class Resolve {
         bestSoFar = resolution;
       }
     }
-    for (Type interfaceType : c.getInterfaces()) {
+    for (JavaType interfaceType : c.getInterfaces()) {
       resolution = findField(env, site, name, interfaceType.symbol);
       if (resolution.symbol.kind < bestSoFar.symbol.kind) {
         bestSoFar = resolution;
@@ -134,15 +136,15 @@ public class Resolve {
     Env env1 = env;
     while (env1.outer() != null) {
       Resolution sym = new Resolution();
-      for (Symbol symbol : env1.scope().lookup(name)) {
-        if (symbol.kind == Symbol.VAR) {
+      for (JavaSymbol symbol : env1.scope().lookup(name)) {
+        if (symbol.kind == JavaSymbol.VAR) {
           sym.symbol = symbol;
         }
       }
       if (sym.symbol == null) {
         sym = findField(env1, env1.enclosingClass(), name, env1.enclosingClass());
       }
-      if (sym.symbol.kind < Symbol.ERRONEOUS) {
+      if (sym.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
         return sym;
       } else if (sym.symbol.kind < bestSoFar.symbol.kind) {
@@ -151,8 +153,8 @@ public class Resolve {
       env1 = env1.outer();
     }
 
-    Symbol symbol = findInStaticImport(env, name, Symbol.VAR);
-    if (symbol.kind < Symbol.ERRONEOUS) {
+    JavaSymbol symbol = findInStaticImport(env, name, JavaSymbol.VAR);
+    if (symbol.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
       return Resolution.resolution(symbol);
     } else if (symbol.kind < bestSoFar.symbol.kind) {
@@ -162,18 +164,18 @@ public class Resolve {
   }
 
   /**
-   * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#MTH}
+   * @param kind subset of {@link JavaSymbol#VAR}, {@link JavaSymbol#MTH}
    */
-  private Symbol findInStaticImport(Env env, String name, int kind) {
-    Symbol bestSoFar = symbolNotFound;
+  private JavaSymbol findInStaticImport(Env env, String name, int kind) {
+    JavaSymbol bestSoFar = symbolNotFound;
     //imports
     //Ok because clash of name between type and var/method result in compile error: JLS8 7.5.3
-    for (Symbol symbol : env.namedImports().lookup(name)) {
+    for (JavaSymbol symbol : env.namedImports().lookup(name)) {
       if ((kind & symbol.kind) != 0) {
         return symbol;
       }
     }
-    for (Symbol symbol : env.staticStarImports().lookup(name)) {
+    for (JavaSymbol symbol : env.staticStarImports().lookup(name)) {
       if ((kind & symbol.kind) != 0) {
         return symbol;
       }
@@ -181,23 +183,23 @@ public class Resolve {
     return bestSoFar;
   }
 
-  private Symbol findMemberType(Env env, Symbol.TypeSymbol site, String name, Symbol.TypeSymbol c) {
-    Symbol bestSoFar = symbolNotFound;
-    for (Symbol symbol : c.members().lookup(name)) {
-      if (symbol.kind == Symbol.TYP) {
+  private JavaSymbol findMemberType(Env env, JavaSymbol.TypeJavaSymbol site, String name, JavaSymbol.TypeJavaSymbol c) {
+    JavaSymbol bestSoFar = symbolNotFound;
+    for (JavaSymbol symbol : c.members().lookup(name)) {
+      if (symbol.kind == JavaSymbol.TYP) {
         return isAccessible(env, site, symbol)
             ? symbol
-            : new AccessErrorSymbol(symbol, symbols.unknownType);
+            : new AccessErrorJavaSymbol(symbol, Symbols.unknownType);
       }
     }
     if (c.getSuperclass() != null) {
-      Symbol symbol = findMemberType(env, site, name, c.getSuperclass().symbol);
+      JavaSymbol symbol = findMemberType(env, site, name, c.getSuperclass().symbol);
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
     }
-    for (Type interfaceType : c.getInterfaces()) {
-      Symbol symbol = findMemberType(env, site, name, interfaceType.symbol);
+    for (JavaType interfaceType : c.getInterfaces()) {
+      JavaSymbol symbol = findMemberType(env, site, name, interfaceType.symbol);
       if (symbol.kind < bestSoFar.kind) {
         bestSoFar = symbol;
       }
@@ -208,17 +210,17 @@ public class Resolve {
   /**
    * Finds type with given name.
    */
-  private Symbol findType(Env env, String name) {
-    Symbol bestSoFar = symbolNotFound;
+  private JavaSymbol findType(Env env, String name) {
+    JavaSymbol bestSoFar = symbolNotFound;
     for (Env env1 = env; env1 != null; env1 = env1.outer()) {
-      for (Symbol symbol : env1.scope().lookup(name)) {
-        if (symbol.kind == Symbol.TYP) {
+      for (JavaSymbol symbol : env1.scope().lookup(name)) {
+        if (symbol.kind == JavaSymbol.TYP) {
           return symbol;
         }
       }
       if (env1.outer != null) {
-        Symbol symbol = findMemberType(env1, env1.enclosingClass(), name, env1.enclosingClass());
-        if (symbol.kind < Symbol.ERRONEOUS) {
+        JavaSymbol symbol = findMemberType(env1, env1.enclosingClass(), name, env1.enclosingClass());
+        if (symbol.kind < JavaSymbol.ERRONEOUS) {
           // symbol exists
           return symbol;
         } else if (symbol.kind < bestSoFar.kind) {
@@ -228,33 +230,33 @@ public class Resolve {
     }
 
     //checks predefined types
-    Symbol predefinedSymbol = findMemberType(env, symbols.predefClass, name, symbols.predefClass);
+    JavaSymbol predefinedSymbol = findMemberType(env, symbols.predefClass, name, symbols.predefClass);
     if (predefinedSymbol.kind < bestSoFar.kind) {
       return predefinedSymbol;
     }
 
     //JLS8 6.4.1 Shadowing rules
     //named imports
-    for (Symbol symbol : env.namedImports().lookup(name)) {
-      if (symbol.kind == Symbol.TYP) {
+    for (JavaSymbol symbol : env.namedImports().lookup(name)) {
+      if (symbol.kind == JavaSymbol.TYP) {
         return symbol;
       }
     }
     //package types
-    Symbol sym = findIdentInPackage(env.packge(), name, Symbol.TYP);
+    JavaSymbol sym = findIdentInPackage(env.packge(), name, JavaSymbol.TYP);
     if (sym.kind < bestSoFar.kind) {
       return sym;
     }
     //on demand imports
-    for (Symbol symbol : env.starImports().lookup(name)) {
-      if (symbol.kind == Symbol.TYP) {
+    for (JavaSymbol symbol : env.starImports().lookup(name)) {
+      if (symbol.kind == JavaSymbol.TYP) {
         return symbol;
       }
     }
     //java.lang
-    Symbol.PackageSymbol javaLang = bytecodeCompleter.enterPackage("java.lang");
-    for (Symbol symbol : javaLang.members().lookup(name)) {
-      if (symbol.kind == Symbol.TYP) {
+    JavaSymbol.PackageJavaSymbol javaLang = bytecodeCompleter.enterPackage("java.lang");
+    for (JavaSymbol symbol : javaLang.members().lookup(name)) {
+      if (symbol.kind == JavaSymbol.TYP) {
         return symbol;
       }
     }
@@ -262,33 +264,33 @@ public class Resolve {
   }
 
   /**
-   * @param kind subset of {@link org.sonar.java.resolve.Symbol#VAR}, {@link org.sonar.java.resolve.Symbol#TYP}, {@link org.sonar.java.resolve.Symbol#PCK}
+   * @param kind subset of {@link JavaSymbol#VAR}, {@link JavaSymbol#TYP}, {@link JavaSymbol#PCK}
    */
   public Resolution findIdent(Env env, String name, int kind) {
     Resolution bestSoFar = unresolved();
-    if ((kind & Symbol.VAR) != 0) {
+    if ((kind & JavaSymbol.VAR) != 0) {
       Resolution res = findVar(env, name);
-      if (res.symbol.kind < Symbol.ERRONEOUS) {
+      if (res.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
         return res;
       } else if (res.symbol.kind < bestSoFar.symbol.kind) {
         bestSoFar = res;
       }
     }
-    if ((kind & Symbol.TYP) != 0) {
+    if ((kind & JavaSymbol.TYP) != 0) {
       Resolution res = new Resolution();
       res.symbol = findType(env, name);
-      if (res.symbol.kind < Symbol.ERRONEOUS) {
+      if (res.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
         return res;
       } else if (res.symbol.kind < bestSoFar.symbol.kind) {
         bestSoFar = res;
       }
     }
-    if ((kind & Symbol.PCK) != 0) {
+    if ((kind & JavaSymbol.PCK) != 0) {
       Resolution res = new Resolution();
-      res.symbol = findIdentInPackage(symbols.defaultPackage, name, Symbol.PCK);
-      if (res.symbol.kind < Symbol.ERRONEOUS) {
+      res.symbol = findIdentInPackage(symbols.defaultPackage, name, JavaSymbol.PCK);
+      if (res.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
         return res;
       } else if (res.symbol.kind < bestSoFar.symbol.kind) {
@@ -299,47 +301,48 @@ public class Resolve {
   }
 
   /**
-   * @param kind subset of {@link Symbol#TYP}, {@link Symbol#PCK}
+   * @param kind subset of {@link JavaSymbol#TYP}, {@link JavaSymbol#PCK}
    */
-  public Symbol findIdentInPackage(Symbol site, String name, int kind) {
+  public JavaSymbol findIdentInPackage(JavaSymbol site, String name, int kind) {
     String fullname = bytecodeCompleter.formFullName(name, site);
-    Symbol bestSoFar = symbolNotFound;
+    JavaSymbol bestSoFar = symbolNotFound;
     //Try to find a type matching the name.
-    if ((kind & Symbol.TYP) != 0) {
-      Symbol sym = bytecodeCompleter.loadClass(fullname);
+    if ((kind & JavaSymbol.TYP) != 0) {
+      JavaSymbol sym = bytecodeCompleter.loadClass(fullname);
       if (sym.kind < bestSoFar.kind) {
         bestSoFar = sym;
       }
     }
     //We did not find the class so identifier must be a package.
-    if ((kind & Symbol.PCK) != 0 && bestSoFar.kind >= symbolNotFound.kind) {
+    if ((kind & JavaSymbol.PCK) != 0 && bestSoFar.kind >= symbolNotFound.kind) {
       bestSoFar = bytecodeCompleter.enterPackage(fullname);
     }
     return bestSoFar;
   }
 
   /**
-   * @param kind subset of {@link Symbol#VAR}, {@link Symbol#TYP}
+   * @param kind subset of {@link JavaSymbol#VAR}, {@link JavaSymbol#TYP}
    */
-  public Symbol findIdentInType(Env env, Symbol.TypeSymbol site, String name, int kind) {
-    Symbol bestSoFar = symbolNotFound;
-    Symbol symbol;
-    if ((kind & Symbol.VAR) != 0) {
-      symbol = findField(env, site, name, site).symbol;
-      if (symbol.kind < Symbol.ERRONEOUS) {
+  public Resolution findIdentInType(Env env, JavaSymbol.TypeJavaSymbol site, String name, int kind) {
+    Resolution bestSoFar = unresolved();
+    Resolution resolution;
+    JavaSymbol symbol;
+    if ((kind & JavaSymbol.VAR) != 0) {
+      resolution = findField(env, site, name, site);
+      if (resolution.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return resolution;
+      } else if (resolution.symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = resolution;
       }
     }
-    if ((kind & Symbol.TYP) != 0) {
+    if ((kind & JavaSymbol.TYP) != 0) {
       symbol = findMemberType(env, site, name, site);
-      if (symbol.kind < Symbol.ERRONEOUS) {
+      if (symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
-        return symbol;
-      } else if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+        return Resolution.resolution(symbol);
+      } else if (symbol.kind < bestSoFar.symbol.kind) {
+        bestSoFar = Resolution.resolution(symbol);
       }
     }
     return bestSoFar;
@@ -348,12 +351,12 @@ public class Resolve {
   /**
    * Finds method matching given name and types of arguments.
    */
-  public Resolution findMethod(Env env, String name, List<Type> argTypes, List<Type> typeParamTypes) {
+  public Resolution findMethod(Env env, String name, List<JavaType> argTypes, List<JavaType> typeParamTypes) {
     Resolution bestSoFar = unresolved();
     Env env1 = env;
     while (env1.outer() != null) {
       Resolution res = findMethod(env1, env1.enclosingClass().getType(), name, argTypes, typeParamTypes);
-      if (res.symbol.kind < Symbol.ERRONEOUS) {
+      if (res.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
         return res;
       } else if (res.symbol.kind < bestSoFar.symbol.kind) {
@@ -361,8 +364,8 @@ public class Resolve {
       }
       env1 = env1.outer;
     }
-    Symbol sym = findInStaticImport(env, name, Symbol.MTH);
-    if (sym.kind < Symbol.ERRONEOUS) {
+    JavaSymbol sym = findInStaticImport(env, name, JavaSymbol.MTH);
+    if (sym.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
       return Resolution.resolution(sym);
     } else if (sym.kind < bestSoFar.symbol.kind) {
@@ -371,22 +374,22 @@ public class Resolve {
     return bestSoFar;
   }
 
-  public Resolution findMethod(Env env, Type site, String name, List<Type> argTypes) {
-    return findMethod(env, site, name, argTypes, ImmutableList.<Type>of(), false);
+  public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes) {
+    return findMethod(env, site, name, argTypes, ImmutableList.<JavaType>of(), false);
   }
-  public Resolution findMethod(Env env, Type site, String name, List<Type> argTypes, List<Type> typeParams) {
+  public Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams) {
     return findMethod(env, site, name, argTypes, typeParams, false);
   }
 
-  private Resolution findMethod(Env env, Type site, String name, List<Type> argTypes, List<Type> typeParams, boolean autoboxing) {
+  private Resolution findMethod(Env env, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
     Resolution bestSoFar = unresolved();
-    for (Symbol symbol : site.getSymbol().members().lookup(name)) {
-      if (symbol.kind == Symbol.MTH) {
-        Symbol best = selectBest(env, site.getSymbol(), argTypes, symbol, bestSoFar.symbol, autoboxing);
+    for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
+      if (symbol.kind == JavaSymbol.MTH) {
+        JavaSymbol best = selectBest(env, site.getSymbol(), argTypes, symbol, bestSoFar.symbol, autoboxing);
         if(best == symbol) {
           bestSoFar = Resolution.resolution(best);
-          bestSoFar.type = resolveTypeSubstitution(((Type.MethodType) best.type).resultType, site);
-          Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) best;
+          bestSoFar.type = resolveTypeSubstitution(((JavaType.MethodJavaType) best.type).resultType, site);
+          JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) best;
           bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
         }
       }
@@ -394,33 +397,33 @@ public class Resolve {
     //look in supertypes for more specialized method (overloading).
     if (site.getSymbol().getSuperclass() != null) {
       Resolution method = findMethod(env, site.getSymbol().getSuperclass(), name, argTypes, typeParams);
-      Symbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
+      JavaSymbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
       }
     }
-    for (Type interfaceType : site.getSymbol().getInterfaces()) {
+    for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, interfaceType, name, argTypes, typeParams);
-      Symbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
+      JavaSymbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
       }
     }
-    if(bestSoFar.symbol.kind >= Symbol.ERRONEOUS && !autoboxing) {
+    if(bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS && !autoboxing) {
       bestSoFar = findMethod(env, site, name, argTypes, typeParams, true);
     }
     return bestSoFar;
   }
 
-  private Type handleTypeArguments(List<Type> typeParams, Type type, Symbol.MethodSymbol methodSymbol) {
-    if(!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size()==typeParams.size()) {
-      Map<Type.TypeVariableType, Type> substitution = Maps.newHashMap();
+  private JavaType handleTypeArguments(List<JavaType> typeParams, JavaType type, JavaSymbol.MethodJavaSymbol methodSymbol) {
+    if (!typeParams.isEmpty() && methodSymbol.typeVariableTypes.size() == typeParams.size()) {
+      TypeSubstitution typeSubstitution = new TypeSubstitution();
       int i = 0;
-      for (Type.TypeVariableType typeVariableType : methodSymbol.typeVariableTypes) {
-        substitution.put(typeVariableType, typeParams.get(i));
+      for (JavaType.TypeVariableJavaType typeVariableType : methodSymbol.typeVariableTypes) {
+        typeSubstitution.add(typeVariableType, typeParams.get(i));
         i++;
       }
-      return substituteTypeParameter(type, substitution);
+      return substituteTypeParameter(type, typeSubstitution);
     }
     return type;
   }
@@ -429,21 +432,21 @@ public class Resolve {
    * @param symbol    candidate
    * @param bestSoFar previously found best match
    */
-  private Symbol selectBest(Env env, Symbol.TypeSymbol site, List<Type> argTypes, Symbol symbol, Symbol bestSoFar, boolean autoboxing) {
+  private JavaSymbol selectBest(Env env, JavaSymbol.TypeJavaSymbol site, List<JavaType> argTypes, JavaSymbol symbol, JavaSymbol bestSoFar, boolean autoboxing) {
     // TODO get rid of null check
-    if (symbol.kind >= Symbol.ERRONEOUS || !isInheritedIn(symbol, site) || symbol.type == null) {
+    if (symbol.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(symbol, site) || symbol.type == null) {
       return bestSoFar;
     }
-    boolean isVarArgs = ((Symbol.MethodSymbol) symbol).isVarArgs();
-    if (!isArgumentsAcceptable(argTypes, ((Type.MethodType) symbol.type).argTypes, isVarArgs, autoboxing)) {
+    boolean isVarArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
+    if (!isArgumentsAcceptable(argTypes, ((JavaType.MethodJavaType) symbol.type).argTypes, isVarArgs, autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
     if (!isAccessible(env, site, symbol)) {
-      return new AccessErrorSymbol(symbol, symbols.unknownType);
+      return new AccessErrorJavaSymbol(symbol, Symbols.unknownType);
     }
-    Symbol mostSpecific = selectMostSpecific(symbol, bestSoFar, argTypes);
-    if (mostSpecific.isKind(Symbol.AMBIGUOUS)) {
+    JavaSymbol mostSpecific = selectMostSpecific(symbol, bestSoFar, argTypes);
+    if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       //same signature, we keep the first symbol found (overrides the other one).
       mostSpecific = bestSoFar;
     }
@@ -454,7 +457,7 @@ public class Resolve {
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
    */
-  private boolean isArgumentsAcceptable(List<Type> argTypes, List<Type> formals, boolean isVarArgs, boolean autoboxing) {
+  private boolean isArgumentsAcceptable(List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
     int nbArgToCheck = argsSize - formalsSize;
@@ -470,8 +473,8 @@ public class Resolve {
       return false;
     }
     for (int i = 1; i <= nbArgToCheck; i++) {
-      Type.ArrayType lastFormal = (Type.ArrayType) formals.get(formalsSize - 1);
-      Type argType = argTypes.get(argsSize - i);
+      JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
+      JavaType argType = argTypes.get(argsSize - i);
       //Check type of element of array or if we invoke with an array that it is a compatible array type
       if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
         return false;
@@ -485,15 +488,15 @@ public class Resolve {
     return true;
   }
 
-  private boolean isAcceptableType(Type arg, Type formal, boolean autoboxing) {
-    return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal));
+  private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
+    return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
-  private boolean isAcceptableByAutoboxing(Type expressionType, Type formalType) {
+  private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {
     if (expressionType.isPrimitive()) {
       return types.isSubtype(symbols.boxedTypes.get(expressionType), formalType);
     } else {
-      Type unboxedType = symbols.boxedTypes.inverse().get(expressionType);
+      JavaType unboxedType = symbols.boxedTypes.inverse().get(expressionType);
       if (unboxedType != null) {
         return types.isSubtype(unboxedType, formalType);
       }
@@ -504,51 +507,51 @@ public class Resolve {
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
    */
-  private Symbol selectMostSpecific(Symbol m1, Symbol m2, List<Type> argTypes) {
+  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes) {
     // FIXME get rig of null check
-    if (m2.type == null || !m2.isKind(Symbol.MTH)) {
+    if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
     }
     boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2);
     boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
-      return new AmbiguityErrorSymbol();
+      return new AmbiguityErrorJavaSymbol();
     } else if (m1SignatureMoreSpecific) {
       return m1;
     } else if (m2SignatureMoreSpecific) {
       return m2;
     } else {
-      return new AmbiguityErrorSymbol();
+      return new AmbiguityErrorJavaSymbol();
     }
   }
 
   /**
    * @return true, if signature of m1 is more specific than signature of m2
    */
-  private boolean isSignatureMoreSpecific(Symbol m1, Symbol m2) {
+  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2) {
     //TODO handle specific signature with varargs
     // ((MethodSymbol) m2).isVarArgs()
-    return isArgumentsAcceptable(((Type.MethodType) m1.type).argTypes, ((Type.MethodType) m2.type).argTypes, false, false);
+    return isArgumentsAcceptable(((JavaType.MethodJavaType) m1.type).argTypes, ((JavaType.MethodJavaType) m2.type).argTypes, false, false);
   }
 
   /**
    * Is class accessible in given environment?
    */
   @VisibleForTesting
-  boolean isAccessible(Env env, Symbol.TypeSymbol c) {
+  boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol c) {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
-        result = (env.enclosingClass().outermostClass() == c.owner().outermostClass());
+        result = env.enclosingClass().outermostClass() == c.owner().outermostClass();
         break;
       case 0:
-        result = (env.packge() == c.packge());
+        result = env.packge() == c.packge();
         break;
       case Flags.PUBLIC:
         result = true;
         break;
       case Flags.PROTECTED:
-        result = (env.packge() == c.packge()) || isInnerSubClass(env.enclosingClass(), c.owner());
+        result = env.packge() == c.packge() || isInnerSubClass(env.enclosingClass(), c.owner());
         break;
       default:
         throw new IllegalStateException();
@@ -560,7 +563,7 @@ public class Resolve {
   /**
    * Is given class a subclass of given base class, or an inner class of a subclass?
    */
-  private boolean isInnerSubClass(Symbol.TypeSymbol c, Symbol base) {
+  private boolean isInnerSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
     while (c != null && isSubClass(c, base)) {
       c = c.owner().enclosingClass();
     }
@@ -571,7 +574,7 @@ public class Resolve {
    * Is given class a subclass of given base class?
    */
   @VisibleForTesting
-  boolean isSubClass(Symbol.TypeSymbol c, Symbol base) {
+  boolean isSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
     // TODO get rid of null check
     if (c == null) {
       return false;
@@ -582,7 +585,7 @@ public class Resolve {
       return true;
     } else if ((base.flags() & Flags.INTERFACE) != 0) {
       // check if class implements base
-      for (Type interfaceType : c.getInterfaces()) {
+      for (JavaType interfaceType : c.getInterfaces()) {
         if (isSubClass(interfaceType.symbol, base)) {
           return true;
         }
@@ -600,7 +603,7 @@ public class Resolve {
    * <p/>
    * Symbol is accessible only if not overridden by another symbol. If overridden, then strictly speaking it is not a member.
    */
-  private boolean isAccessible(Env env, Symbol.TypeSymbol site, Symbol symbol) {
+  private boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
         //if enclosing class is null, we are checking accessibility for imports so we return false.
@@ -624,7 +627,7 @@ public class Resolve {
     }
   }
 
-  private boolean notOverriddenIn(Symbol.TypeSymbol site, Symbol symbol) {
+  private static boolean notOverriddenIn(JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
     // TODO see Javac
     return true;
   }
@@ -633,7 +636,7 @@ public class Resolve {
    * Is symbol inherited in given class?
    */
   @VisibleForTesting
-  boolean isInheritedIn(Symbol symbol, Symbol.TypeSymbol clazz) {
+  boolean isInheritedIn(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol clazz) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PUBLIC:
         return true;
@@ -644,8 +647,8 @@ public class Resolve {
         return true;
       case 0:
         // TODO see Javac
-        Symbol.PackageSymbol thisPackage = symbol.packge();
-        for (Symbol.TypeSymbol sup = clazz; sup != null && sup != symbol.owner(); sup = superclassSymbol(sup)) {
+        JavaSymbol.PackageJavaSymbol thisPackage = symbol.packge();
+        for (JavaSymbol.TypeJavaSymbol sup = clazz; sup != null && sup != symbol.owner(); sup = superclassSymbol(sup)) {
           if (sup.packge() != thisPackage) {
             return false;
           }
@@ -656,14 +659,14 @@ public class Resolve {
     }
   }
 
-  private boolean isProtectedAccessible(Symbol symbol, Symbol.TypeSymbol c, Symbol.TypeSymbol site) {
+  private static boolean isProtectedAccessible(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol c, JavaSymbol.TypeJavaSymbol site) {
     // TODO see Javac
     return true;
   }
 
-  private Resolution unresolved() {
+  Resolution unresolved() {
     Resolution resolution = new Resolution(symbolNotFound);
-    resolution.type = symbols.unknownType;
+    resolution.type = Symbols.unknownType;
     return resolution;
   }
 
@@ -673,28 +676,31 @@ public class Resolve {
    */
   static class Resolution {
 
-    private Symbol symbol;
-    private Type type;
+    private JavaSymbol symbol;
+    private JavaType type;
 
-    private Resolution(Symbol symbol) {
+    private Resolution(JavaSymbol symbol) {
       this.symbol = symbol;
     }
 
     Resolution() {
     }
 
-    static Resolution resolution(Symbol symbol) {
+    static Resolution resolution(JavaSymbol symbol) {
       return new Resolution(symbol);
     }
 
-    Symbol symbol() {
+    JavaSymbol symbol() {
       return symbol;
     }
 
-    public Type type() {
+    public JavaType type() {
       if (type == null) {
-        if(symbol.isKind(Symbol.MTH)) {
-          return ((Type.MethodType)symbol.type).resultType;
+        if(symbol.isKind(JavaSymbol.MTH)) {
+          return ((JavaType.MethodJavaType)symbol.type).resultType;
+        }
+        if(symbol.isUnknown() || symbol.isKind(JavaSymbol.PCK)) {
+          return Symbols.unknownType;
         }
         return symbol.type;
       }
@@ -713,24 +719,25 @@ public class Resolve {
      */
     Env outer;
 
-    Symbol.PackageSymbol packge;
+    JavaSymbol.PackageJavaSymbol packge;
 
-    Symbol.TypeSymbol enclosingClass;
+    JavaSymbol.TypeJavaSymbol enclosingClass;
 
     Scope scope;
     Scope namedImports;
     Scope starImports;
     Scope staticStarImports;
 
+    @Nullable
     Env outer() {
       return outer;
     }
 
-    Symbol.TypeSymbol enclosingClass() {
+    JavaSymbol.TypeJavaSymbol enclosingClass() {
       return enclosingClass;
     }
 
-    public Symbol.PackageSymbol packge() {
+    public JavaSymbol.PackageJavaSymbol packge() {
       return packge;
     }
 
@@ -765,26 +772,31 @@ public class Resolve {
 
   }
 
-  public static class SymbolNotFound extends Symbol {
-    public SymbolNotFound() {
-      super(Symbol.ABSENT, 0, null, null);
+  public static class JavaSymbolNotFound extends JavaSymbol {
+    public JavaSymbolNotFound() {
+      super(JavaSymbol.ABSENT, 0, null, Symbols.unknownSymbol);
+    }
+
+    @Override
+    public boolean isUnknown() {
+      return true;
     }
   }
 
-  public static class AmbiguityErrorSymbol extends Symbol {
-    public AmbiguityErrorSymbol() {
-      super(Symbol.AMBIGUOUS, 0, null, null);
+  public static class AmbiguityErrorJavaSymbol extends JavaSymbol {
+    public AmbiguityErrorJavaSymbol() {
+      super(JavaSymbol.AMBIGUOUS, 0, null, null);
     }
   }
 
-  public static class AccessErrorSymbol extends Symbol {
+  public static class AccessErrorJavaSymbol extends JavaSymbol {
     /**
      * The invalid symbol found during resolution.
      */
-    Symbol symbol;
+    JavaSymbol symbol;
 
-    public AccessErrorSymbol(Symbol symbol, Type type) {
-      super(Symbol.ERRONEOUS, 0, null, null);
+    public AccessErrorJavaSymbol(JavaSymbol symbol, JavaType type) {
+      super(JavaSymbol.ERRONEOUS, 0, null, null);
       this.symbol = symbol;
       this.type = type;
     }

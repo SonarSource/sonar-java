@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,52 +28,52 @@ public class Types {
   /**
    * JLS7 4.10. Subtyping
    */
-  public boolean isSubtype(Type t, Type s) {
+  public boolean isSubtype(JavaType t, JavaType s) {
     boolean result;
 
     if (t == s) {
       result = true;
     } else {
       switch (t.tag) {
-        case Type.BYTE:
-        case Type.CHAR:
-          result = t.tag == s.tag || t.tag + /* skip char for byte and short for char */2 <= s.tag && s.tag <= Type.DOUBLE;
+        case JavaType.BYTE:
+        case JavaType.CHAR:
+          result = t.tag == s.tag || (t.tag + /* skip char for byte and short for char */2 <= s.tag && s.tag <= JavaType.DOUBLE);
           break;
-        case Type.SHORT:
-        case Type.INT:
-        case Type.LONG:
-        case Type.FLOAT:
-        case Type.DOUBLE:
-          result = t.tag <= s.tag && s.tag <= Type.DOUBLE;
+        case JavaType.SHORT:
+        case JavaType.INT:
+        case JavaType.LONG:
+        case JavaType.FLOAT:
+        case JavaType.DOUBLE:
+          result = t.tag <= s.tag && s.tag <= JavaType.DOUBLE;
           break;
-        case Type.BOOLEAN:
-        case Type.VOID:
+        case JavaType.BOOLEAN:
+        case JavaType.VOID:
           result = t.tag == s.tag;
           break;
-        case Type.ARRAY:
+        case JavaType.ARRAY:
           if(t.tag != s.tag) {
             //t is array, if tags are different then the only way t is subtype of s is s to be object ie: superclass of arrayClass
             result = t.getSymbol().getSuperclass() == s;
             break;
           }
-          result = isSubtype(((Type.ArrayType) t).elementType(), ((Type.ArrayType) s).elementType());
+          result = isSubtype(((JavaType.ArrayJavaType) t).elementType(), ((JavaType.ArrayJavaType) s).elementType());
           break;
-        case Type.CLASS:
+        case JavaType.CLASS:
           if(t.tag != s.tag) {
             result = false;
             break;
           }
 
           //FIXME work on erased types while generics method is not implemented/read from bytecode.
-          Set<Type> erasedTypes = Sets.newHashSet();
-          for (Type.ClassType classType : t.getSymbol().superTypes()) {
+          Set<JavaType> erasedTypes = Sets.newHashSet();
+          for (JavaType.ClassJavaType classType : t.getSymbol().superTypes()) {
             erasedTypes.add(classType.erasure());
           }
 
           result = erasedTypes.contains(s);
           break;
-        case Type.BOT:
-          result = s.tag == Type.BOT || s.tag == Type.CLASS || s.tag == Type.ARRAY;
+        case JavaType.BOT:
+          result = s.tag == JavaType.BOT || s.tag == JavaType.CLASS || s.tag == JavaType.ARRAY;
           break;
         default:
           // TODO error recovery, but should be rewritten to not happen at all

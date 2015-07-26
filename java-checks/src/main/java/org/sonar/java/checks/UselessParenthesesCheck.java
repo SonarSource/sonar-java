@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,8 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
-import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -46,11 +47,14 @@ import java.util.List;
 @SqaleConstantRemediation("1min")
 public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
 
-  private final Deque<Tree> parent = new LinkedList<Tree>();
+  private final Deque<Tree> parent = new LinkedList<>();
   private static final Kind[] PARENT_EXPRESSION =  {
       Kind.ANNOTATION,
+      Kind.LIST,
       Kind.ARRAY_ACCESS_EXPRESSION,
+      Kind.ARRAY_DIMENSION,
       Kind.ASSERT_STATEMENT,
+      Kind.ASSIGNMENT,
       Kind.CASE_LABEL,
       Kind.CONDITIONAL_EXPRESSION,
       Kind.DO_STATEMENT,
@@ -59,7 +63,7 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
       Kind.FOR_STATEMENT,
       Kind.IF_STATEMENT,
       Kind.LAMBDA_EXPRESSION,
-      Kind.METHOD_INVOCATION,
+      Kind.ARGUMENTS,
       Kind.METHOD,
       Kind.NEW_ARRAY,
       Kind.NEW_CLASS,
@@ -81,21 +85,19 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression(tree)) {
+    if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression((ParenthesizedTree) tree)) {
       addIssue(tree, "Remove those useless parentheses.");
     }
     parent.push(tree);
   }
 
-  private boolean hasParentExpression(Tree tree) {
+  private boolean hasParentExpression(ParenthesizedTree tree) {
     Tree parentTree = this.parent.peek();
-    //Exclude condition of conditional expression
     if(parentTree.is(Kind.CONDITIONAL_EXPRESSION)) {
-      ConditionalExpressionTree conditionalExpressionTree = (ConditionalExpressionTree) parentTree;
-      return !(tree.equals(conditionalExpressionTree.condition()) || tree.equals(conditionalExpressionTree.falseExpression()));
+      return tree.expression().is(Kind.METHOD_INVOCATION, Kind.IDENTIFIER, Kind.MEMBER_SELECT) || tree.expression() instanceof LiteralTree;
     }
     //Exclude expression of array access expression
-    if(parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression()) ) {
+    if (parentTree.is(Kind.ARRAY_ACCESS_EXPRESSION) && tree.equals(((ArrayAccessExpressionTree) parentTree).expression())) {
       return false;
     }
     return parentTree.is(PARENT_EXPRESSION);

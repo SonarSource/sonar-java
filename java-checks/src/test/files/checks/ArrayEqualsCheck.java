@@ -2,11 +2,11 @@ class A {
   int[] a, b;
   String c, d;
   void fun() {
-    if(a.equals(b)){ }
+    if(a.equals(b)){ } // Noncompliant {{Use the '==' operator instead of calling the equals() method to prevent any misunderstandings}}
     else if (a == b) {}
     else if (c.equals(d)) {}
     else if (c.equals(d)) {}
-    else if (method().equals(b)) {}
+    else if (method().equals(b)) {} // Noncompliant {{Use the '==' operator instead of calling the equals() method to prevent any misunderstandings}}
     else if ((matrix()[0].c).equals(d)) {}
   }
 

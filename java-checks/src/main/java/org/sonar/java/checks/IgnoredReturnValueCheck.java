@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -46,7 +44,7 @@ import java.util.List;
 @SqaleConstantRemediation("10min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
 
-  private static List<String> CHECKED_TYPES = ImmutableList.<String>builder()
+  private static final List<String> CHECKED_TYPES = ImmutableList.<String>builder()
       .add("java.lang.String")
       .add("java.lang.Boolean")
       .add("java.lang.Integer")
@@ -68,32 +66,32 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     ExpressionStatementTree est = (ExpressionStatementTree) tree;
     if (est.expression().is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
-      Type methodType = ((AbstractTypedTree) mit).getSymbolType();
+      Type methodType = mit.symbolType();
       if (!returnsVoid(methodType) && isCheckedType(mit)) {
         addIssue(tree, "The return value of \"" + methodName(mit) + "\" must be used.");
       }
     }
   }
 
-  private boolean isCheckedType(MethodInvocationTree mit) {
-    Symbol owner = ((MethodInvocationTreeImpl) mit).getSymbol().owner();
+  private static boolean isCheckedType(MethodInvocationTree mit) {
+    Symbol owner = mit.symbol().owner();
     for (String type : CHECKED_TYPES) {
-      if (owner.getType().is(type)) {
+      if (owner.type().is(type)) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean returnsVoid(Type methodType) {
-    return methodType.isTagged(Type.VOID) || methodType.isTagged(Type.UNKNOWN);
+  private static boolean returnsVoid(Type methodType) {
+    return methodType.isVoid() || methodType.isUnknown();
   }
 
-  private String methodName(MethodInvocationTree mit) {
+  private static String methodName(MethodInvocationTree mit) {
     return getIdentifier(mit).name();
   }
 
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();

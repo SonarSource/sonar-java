@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,12 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.AnnotationInstance;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -40,16 +37,13 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.List;
 
 @Rule(
-  key = RepeatAnnotationCheck.RULE_KEY,
+  key = "S1710",
   name = "Annotation repetitions should not be wrapped",
   tags = {"java8"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2 min")
+@SqaleConstantRemediation("2min")
 public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1710";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -64,23 +58,17 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     if (isArrayInitialized(annotationTree)) {
       NewArrayTree arrayTree = (NewArrayTree) annotationTree.arguments().get(0);
       if (isAllSameAnnotation(arrayTree.initializers()) && isAnnotationRepeatable(arrayTree.initializers().get(0))) {
-        context.addIssue(annotationTree, ruleKey, "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group");
+        context.addIssue(annotationTree, this, "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group");
       }
     }
     super.visitAnnotation(annotationTree);
   }
 
-  private boolean isAnnotationRepeatable(ExpressionTree expressionTree) {
-    List<AnnotationInstance> annotations = ((AbstractTypedTree) expressionTree).getSymbolType().getSymbol().metadata().annotations();
-    for (AnnotationInstance annotation : annotations) {
-      if(annotation.isTyped("java.lang.annotation.Repeatable")) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean isAnnotationRepeatable(ExpressionTree expressionTree) {
+    return expressionTree.symbolType().symbol().metadata().isAnnotatedWith("java.lang.annotation.Repeatable");
   }
 
-  private boolean isAllSameAnnotation(List<ExpressionTree> initializers) {
+  private static boolean isAllSameAnnotation(List<ExpressionTree> initializers) {
     if (initializers.isEmpty()) {
       return false;
     }
@@ -96,7 +84,7 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     return true;
   }
 
-  private String getAnnotationName(ExpressionTree initializer) {
+  private static String getAnnotationName(ExpressionTree initializer) {
     String result = "";
     if (initializer.is(Tree.Kind.ANNOTATION)) {
       Tree annotationType = ((AnnotationTree) initializer).annotationType();
@@ -109,14 +97,14 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     return result;
   }
 
-  private String fullName(MemberSelectExpressionTree tree) {
+  private static String fullName(MemberSelectExpressionTree tree) {
     if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) tree.expression()).name() + "." + tree.identifier().name();
     }
     return fullName((MemberSelectExpressionTree) tree.expression()) + "." + tree.identifier().name();
   }
 
-  private boolean isArrayInitialized(AnnotationTree annotationTree) {
+  private static boolean isArrayInitialized(AnnotationTree annotationTree) {
     return annotationTree.arguments().size() == 1 && annotationTree.arguments().get(0).is(Tree.Kind.NEW_ARRAY);
   }
 }

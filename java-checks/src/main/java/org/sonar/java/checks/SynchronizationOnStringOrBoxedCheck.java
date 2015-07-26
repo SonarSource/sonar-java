@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -36,8 +35,8 @@ import java.util.List;
 
 @Rule(
   key = "S1860",
-  name = "Synchronisation should not be based on Strings or boxed primitives",
-  tags = {"bug", "cert"},
+  name = "Synchronization should not be based on Strings or boxed primitives",
+  tags = {"bug", "cert", "multi-threading"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
@@ -63,14 +62,13 @@ public class SynchronizationOnStringOrBoxedCheck extends SubscriptionBaseVisitor
   @Override
   public void visitNode(Tree tree) {
     SynchronizedStatementTree syncStatement = (SynchronizedStatementTree) tree;
-    AbstractTypedTree expression = (AbstractTypedTree) syncStatement.expression();
-    Type expressionType = expression.getSymbolType();
+    Type expressionType = syncStatement.expression().symbolType();
     if (expressionType.isPrimitive() || isForbiddenType(expressionType)) {
       addIssue(syncStatement, "Synchronize on a new \"Object\" instead.");
     }
   }
 
-  private boolean isForbiddenType(Type expressionType) {
+  private static boolean isForbiddenType(Type expressionType) {
     for (String forbiddenType : FORBIDDEN_TYPES) {
       if (expressionType.is(forbiddenType)) {
         return true;

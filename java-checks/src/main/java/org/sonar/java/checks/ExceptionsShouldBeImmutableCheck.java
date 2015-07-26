@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -37,7 +38,7 @@ import java.util.List;
 @Rule(
   key = "S1165",
   name = "Exception classes should be immutable",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
@@ -57,11 +58,11 @@ public class ExceptionsShouldBeImmutableCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isFinal(VariableTree member) {
-    return member.modifiers().modifiers().contains(Modifier.FINAL);
+  private static boolean isFinal(VariableTree member) {
+    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.FINAL);
   }
 
-  private boolean isException(ClassTree classTree) {
+  private static boolean isException(ClassTree classTree) {
     IdentifierTree simpleName = classTree.simpleName();
     return simpleName != null && (simpleName.name().endsWith("Exception") || simpleName.name().endsWith("Error"));
   }

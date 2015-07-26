@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,11 +24,9 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -45,14 +43,14 @@ import java.util.List;
 @Rule(
   key = "S2092",
   name = "Cookies should be \"secure\"",
-  tags = {"cwe", "owasp-top10", "security"},
+  tags = {"cwe", "owasp-a2", "owasp-a6", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")
 public class SecureCookieCheck extends SubscriptionBaseVisitor {
 
-  private List<Symbol> unsecuredCookies = Lists.newArrayList();
+  private List<Symbol.VariableSymbol> unsecuredCookies = Lists.newArrayList();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -63,8 +61,8 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
   public void scanFile(JavaFileScannerContext context) {
     unsecuredCookies.clear();
     super.scanFile(context);
-    for (Symbol unsecuredCookie : unsecuredCookies) {
-      addIssue(getSemanticModel().getTree(unsecuredCookie), "Add the \"secure\" attribute to this cookie");
+    for (Symbol.VariableSymbol unsecuredCookie : unsecuredCookies) {
+      addIssue(unsecuredCookie.declaration(), "Add the \"secure\" attribute to this cookie");
     }
   }
 
@@ -73,33 +71,42 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        Type type = ((AbstractTypedTree) variableTree.type()).getSymbolType();
-        if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
-          Symbol variableSymbol = getSemanticModel().getSymbol(variableTree);
-          //Ignore field variables
-          if (variableSymbol.owner().getType().isTagged(Type.METHOD)) {
-            unsecuredCookies.add(variableSymbol);
-          }
-        }
+        addToUnsecuredCookies(variableTree);
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-        if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-          MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-          if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
-            Symbol reference = getSemanticModel().getReference((IdentifierTree) mse.expression());
-            unsecuredCookies.remove(reference);
-          }
-        }
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
+        checkSecureCall(mit);
       }
     }
   }
 
-  private boolean isConstructorInitialized(VariableTree variableTree) {
-    return variableTree.initializer() != null && variableTree.initializer().is(Tree.Kind.NEW_CLASS);
+  private void addToUnsecuredCookies(VariableTree variableTree) {
+    Type type = variableTree.type().symbolType();
+    if (type.is("javax.servlet.http.Cookie") && isConstructorInitialized(variableTree)) {
+      Symbol variableSymbol = variableTree.symbol();
+      //Ignore field variables
+      if (variableSymbol.isVariableSymbol() && variableSymbol.owner().isMethodSymbol()) {
+        unsecuredCookies.add((Symbol.VariableSymbol) variableSymbol);
+      }
+    }
   }
 
-  private boolean isSetSecureCall(MethodInvocationTreeImpl mit) {
-    Symbol methodSymbol = mit.getSymbol();
+  private void checkSecureCall(MethodInvocationTree mit) {
+    if (isSetSecureCall(mit) && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
+      if (mse.expression().is(Tree.Kind.IDENTIFIER)) {
+        Symbol reference = ((IdentifierTree) mse.expression()).symbol();
+        unsecuredCookies.remove(reference);
+      }
+    }
+  }
+
+  private static boolean isConstructorInitialized(VariableTree variableTree) {
+    ExpressionTree initializer = variableTree.initializer();
+    return initializer != null && initializer.is(Tree.Kind.NEW_CLASS);
+  }
+
+  private static boolean isSetSecureCall(MethodInvocationTree mit) {
+    Symbol methodSymbol = mit.symbol();
     boolean hasArityOne = mit.arguments().size() == 1;
     if (hasArityOne && isCallSiteCookie(methodSymbol)) {
       ExpressionTree expressionTree = mit.arguments().get(0);
@@ -111,11 +118,11 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCallSiteCookie(Symbol methodSymbol) {
-    return !methodSymbol.isKind(Symbol.ERRONEOUS) && methodSymbol.owner().getType().is("javax.servlet.http.Cookie");
+  private static boolean isCallSiteCookie(Symbol methodSymbol) {
+    return methodSymbol.isMethodSymbol() && methodSymbol.owner().type().is("javax.servlet.http.Cookie");
   }
 
-  private IdentifierTree getIdentifier(MethodInvocationTree mit) {
+  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
     IdentifierTree id;
     if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
       id = (IdentifierTree) mit.methodSelect();

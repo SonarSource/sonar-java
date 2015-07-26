@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -56,24 +57,24 @@ public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isStaticFinalNotPrivate(VariableTree variableTree) {
+  private static boolean isStaticFinalNotPrivate(VariableTree variableTree) {
     return isStatic(variableTree) && isFinal(variableTree) && !isPrivate(variableTree);
   }
 
-  private boolean isStatic(VariableTree variableTree) {
+  private static boolean isStatic(VariableTree variableTree) {
     return hasModifier(variableTree, Modifier.STATIC);
   }
 
-  private boolean isFinal(VariableTree variableTree) {
+  private static boolean isFinal(VariableTree variableTree) {
     return hasModifier(variableTree, Modifier.FINAL);
   }
 
-  private boolean isPrivate(VariableTree variableTree) {
+  private static boolean isPrivate(VariableTree variableTree) {
     return hasModifier(variableTree, Modifier.PRIVATE);
   }
 
-  private boolean hasModifier(VariableTree variableTree, Modifier modifier) {
-    return variableTree.modifiers().modifiers().contains(modifier);
+  private static boolean hasModifier(VariableTree variableTree, Modifier modifier) {
+    return ModifiersUtils.hasModifier(variableTree.modifiers(), modifier);
   }
 
 }

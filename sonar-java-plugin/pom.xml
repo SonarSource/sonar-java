@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.codehaus.sonar-plugins.java</groupId>
+    <groupId>org.sonarsource.java</groupId>
     <artifactId>java</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>3.5-SNAPSHOT</version>
   </parent>
 
   <artifactId>sonar-java-plugin</artifactId>
@@ -28,12 +28,12 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>java-surefire</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>java-jacoco</artifactId>
       <version>${project.version}</version>
     </dependency>
@@ -57,11 +57,6 @@
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar.common-rules</groupId>
-      <artifactId>sonar-common-rules</artifactId>
-      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>com.google.collections</groupId>
@@ -109,7 +104,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>2500000</maxsize>
+                  <maxsize>3300000</maxsize>
                   <minsize>2000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>

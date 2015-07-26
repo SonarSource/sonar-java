@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -37,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2442",
   name = "\"Lock\" objects should not be \"synchronized\"",
-  tags = {"multi-threading", "clumsy"},
+  tags = {"clumsy", "multi-threading"},
   priority = Priority.BLOCKER)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
@@ -51,7 +50,7 @@ public class SynchronizedLockCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Type syncArgumentType = ((AbstractTypedTree) ((SynchronizedStatementTree) tree).expression()).getSymbolType();
+    Type syncArgumentType = ((SynchronizedStatementTree) tree).expression().symbolType();
     if (syncArgumentType.isSubtypeOf("java.util.concurrent.locks.Lock")) {
       addIssue(tree, "Synchronize on this \"Lock\" object using \"acquire/release\".");
     }

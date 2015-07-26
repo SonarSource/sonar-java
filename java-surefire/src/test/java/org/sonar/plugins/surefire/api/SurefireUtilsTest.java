@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,13 @@
 package org.sonar.plugins.surefire.api;
 
 import org.junit.Test;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MavenTestUtils;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -34,17 +38,25 @@ public class SurefireUtilsTest {
   public void shouldGetReportsFromProperty() {
     Settings settings = mock(Settings.class);
     when(settings.getString("sonar.junit.reportsPath")).thenReturn("target/surefire");
-
+    DefaultFileSystem fs = new DefaultFileSystem();
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
-    assertThat(SurefireUtils.getReportsDirectory(settings, project).exists()).isTrue();
-    assertThat(SurefireUtils.getReportsDirectory(settings, project).isDirectory()).isTrue();
+    fs.setBaseDir(project.getFileSystem().getBasedir());
+    PathResolver pathResolver = new PathResolver();
+    assertThat(SurefireUtils.getReportsDirectory(settings, fs, pathResolver).exists()).isTrue();
+    assertThat(SurefireUtils.getReportsDirectory(settings, fs, pathResolver).isDirectory()).isTrue();
   }
+
 
   @Test
-  public void shouldGetReportsFromPluginConfiguration() {
-    Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromPluginConfiguration/pom.xml");
-    assertThat(SurefireUtils.getReportsDirectory(mock(Settings.class), project).exists()).isTrue();
-    assertThat(SurefireUtils.getReportsDirectory(mock(Settings.class), project).isDirectory()).isTrue();
+  public void return_default_value_if_property_unset() throws Exception {
+    Settings settings = mock(Settings.class);
+    DefaultFileSystem fs = new DefaultFileSystem();
+    Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
+    fs.setBaseDir(project.getFileSystem().getBasedir());
+    PathResolver pathResolver = new PathResolver();
+    File directory = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
+    assertThat(directory.getCanonicalPath()).endsWith("target"+File.separator+"surefire-reports");
+    assertThat(directory.exists()).isFalse();
+    assertThat(directory.isDirectory()).isFalse();
   }
-
 }

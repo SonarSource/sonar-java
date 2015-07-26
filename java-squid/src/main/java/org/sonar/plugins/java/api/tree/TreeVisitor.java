@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -133,4 +133,8 @@ public interface TreeVisitor {
   void visitOther(Tree tree);
 
   void visitMethodReference(MethodReferenceTree methodReferenceTree);
+
+  void visitPackage(PackageDeclarationTree tree);
+
+  void visitArrayDimension(ArrayDimensionTree tree);
 }

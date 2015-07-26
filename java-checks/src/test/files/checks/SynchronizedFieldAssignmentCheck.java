@@ -6,7 +6,7 @@ class A {
 
 
   private void doSomething() {
-    synchronized (color) { // Noncompliant
+    synchronized (color) { // Noncompliant {{Don't synchronize on "color" or remove its reassignment on line 10.}}
       color = "green";
     }
 
@@ -19,31 +19,31 @@ class A {
       array[0] = color;
     }
 
-    synchronized (b) { // Noncompliant
+    synchronized (b) { // Noncompliant {{Don't synchronize on "b" or remove its reassignment on line 23.}}
       b = new B();
     }
 
-    synchronized (this.color) { // Noncompliant
+    synchronized (this.color) { // Noncompliant {{Don't synchronize on "color" or remove its reassignment on line 27.}}
       color = "green";
     }
 
-    synchronized (color) { // Noncompliant
+    synchronized (color) { // Noncompliant {{Don't synchronize on "color" or remove its reassignment on line 31.}}
       this.color = "green";
     }
 
-    synchronized (this.b.val) { // Noncompliant
+    synchronized (this.b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 35.}}
       b.val = foo();
     }
 
-    synchronized (b.val) { // Noncompliant
+    synchronized (b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 39.}}
       this.b.val = foo();
     }
 
-    synchronized (a.b.val) { // Noncompliant
+    synchronized (a.b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 43.}}
       this.a.b.val = foo();
     }
 
-    synchronized (this.a.b.val) { // Noncompliant
+    synchronized (this.a.b.val) { // Noncompliant {{Don't synchronize on "val" or remove its reassignment on line 47.}}
       a.b.val = foo();
     }
 

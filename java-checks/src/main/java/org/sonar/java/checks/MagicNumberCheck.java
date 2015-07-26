@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -37,10 +39,9 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.ParseException;
-import java.util.List;
 
 @Rule(
-  key = MagicNumberCheck.RULE_KEY,
+  key = "S109",
   name = "Magic numbers should not be used",
   tags = {"brain-overload"},
   priority = Priority.MINOR)
@@ -48,15 +49,17 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S109";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
   private JavaFileScannerContext context;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     scan(context.getTree());
+  }
+
+  @Override
+  public void visitEnumConstant(EnumConstantTree tree) {
+    scan(tree.initializer().classBody());
   }
 
   @Override
@@ -68,39 +71,34 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
       try {
         checked = (BigDecimal) decimalFormat.parse(tree.value());
       } catch (ParseException e) {
-        //noop case not encountered
-
+        // noop case not encountered
       }
       if (checked != null && !isExcluded(checked)) {
-        context.addIssue(tree, ruleKey, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");
+        context.addIssue(tree, this, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");
       }
     }
   }
 
-  private boolean isNumberLiteral(LiteralTree tree) {
-    return tree.is(Tree.Kind.DOUBLE_LITERAL)
-        || tree.is(Tree.Kind.FLOAT_LITERAL)
-        || tree.is(Tree.Kind.LONG_LITERAL)
-        || tree.is(Tree.Kind.INT_LITERAL);
+  private static boolean isNumberLiteral(LiteralTree tree) {
+    return tree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL, Tree.Kind.LONG_LITERAL, Tree.Kind.INT_LITERAL);
   }
 
-  private boolean isExcluded(BigDecimal bigDecimal) {
+  private static boolean isExcluded(BigDecimal bigDecimal) {
     return bigDecimal.compareTo(BigDecimal.ONE) == 0
-        || bigDecimal.compareTo(BigDecimal.ZERO) == 0
-        || bigDecimal.compareTo(BigDecimal.ONE.negate()) == 0;
+      || bigDecimal.compareTo(BigDecimal.ZERO) == 0
+      || bigDecimal.compareTo(BigDecimal.ONE.negate()) == 0;
   }
-
 
   @Override
   public void visitAnnotation(AnnotationTree annotationTree) {
-    //Ignore literals within annotation
+    // Ignore literals within annotation
   }
 
   @Override
   public void visitVariable(VariableTree tree) {
-    //skip static final variables
-    List<Modifier> modifiers = tree.modifiers().modifiers();
-    if (!(modifiers.contains(Modifier.STATIC) && modifiers.contains(Modifier.FINAL))) {
+    // skip static final variables
+    ModifiersTree modifiers = tree.modifiers();
+    if (!(ModifiersUtils.hasModifier(modifiers, Modifier.STATIC) && ModifiersUtils.hasModifier(modifiers, Modifier.FINAL))) {
       super.visitVariable(tree);
     }
   }

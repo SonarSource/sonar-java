@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -50,9 +50,9 @@ public class SerializableComparatorCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      ClassTreeImpl classTree = (ClassTreeImpl) tree;
-      TypeSymbol symbol = classTree.getSymbol();
-      Type type = symbol.getType();
+      ClassTree classTree = (ClassTree) tree;
+      Symbol.TypeSymbol symbol = classTree.symbol();
+      Type type = symbol.type();
       if (classTree.simpleName() != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
         addIssue(classTree, "Make this class \"Serializable\".");
       }

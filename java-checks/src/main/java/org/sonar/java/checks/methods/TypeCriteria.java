@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks.methods;
 
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Type;
 
 public abstract class TypeCriteria {
   public static TypeCriteria subtypeOf(String fullyQualifiedName) {
@@ -28,6 +28,10 @@ public abstract class TypeCriteria {
 
   public static TypeCriteria is(String fullyQualifiedName) {
     return new FullyQualifiedNameTypeCriteria(fullyQualifiedName);
+  }
+
+  public static TypeCriteria anyType() {
+    return new AnyTypeCriteria();
   }
 
   public abstract boolean matches(Type type);
@@ -54,17 +58,15 @@ public abstract class TypeCriteria {
 
     @Override
     public boolean matches(Type type) {
-      if (type.is(superTypeName)) {
-        return true;
-      }
-      if (type.isTagged(Type.CLASS)) {
-        for (Type.ClassType classType : type.getSymbol().superTypes()) {
-          if (classType.is(superTypeName)) {
-            return true;
-          }
-        }
-      }
-      return false;
+      return type.isSubtypeOf(superTypeName);
+    }
+  }
+
+  private static class AnyTypeCriteria extends TypeCriteria {
+
+    @Override
+    public boolean matches(Type type) {
+      return true;
     }
   }
 }

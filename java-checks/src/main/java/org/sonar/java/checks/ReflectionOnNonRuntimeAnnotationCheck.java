@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,19 +24,21 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.AnnotationValue;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -51,27 +53,47 @@ import java.util.List;
 public class ReflectionOnNonRuntimeAnnotationCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create()
-        .typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AnnotatedElement"))
-        .name("isAnnotationPresent").withNoParameterConstraint());
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf("java.lang.reflect.AnnotatedElement"))
+      .name("isAnnotationPresent").withNoParameterConstraint());
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree expressionTree = mit.arguments().get(0);
-    //For now ignore everything that is not a .class expression
+    // For now ignore everything that is not a .class expression
     if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
-      Type symbolType = ((AbstractTypedTree) ((MemberSelectExpressionTree) expressionTree).expression()).getSymbolType();
-      if (isNotRuntimeAnnotation(symbolType)) {
-        addIssue(mit, "\"@" + symbolType.getSymbol().getName() + "\" is not available at runtime and cannot be seen with reflection.");
+      Type symbolType = ((MemberSelectExpressionTree) expressionTree).expression().symbolType();
+      if (!symbolType.isUnknown() && isNotRuntimeAnnotation(symbolType)) {
+        addIssue(mit, "\"@" + symbolType.name() + "\" is not available at runtime and cannot be seen with reflection.");
       }
     }
   }
 
-  private boolean isNotRuntimeAnnotation(Type symbolType) {
-    List<AnnotationValue> valuesFor = symbolType.getSymbol().metadata().getValuesFor("java.lang.annotation.Retention");
-    //default policy is CLASS
-    return valuesFor == null || !"RUNTIME".equals(((Symbol.VariableSymbol) valuesFor.get(0).value()).getName());
+  private static boolean isNotRuntimeAnnotation(Type symbolType) {
+    List<SymbolMetadata.AnnotationValue> valuesFor = symbolType.symbol().metadata().valuesForAnnotation("java.lang.annotation.Retention");
+    // default policy is CLASS
+    if (valuesFor == null) {
+      return true;
+    }
+    String retentionValue = getRetentionValue(valuesFor.get(0).value());
+    return !"RUNTIME".equals(retentionValue);
+  }
+
+  @Nullable
+  private static String getRetentionValue(Object value) {
+    String retentionValue = null;
+    if (value instanceof Tree) {
+      Tree tree = (Tree) value;
+      if (tree.is(Tree.Kind.MEMBER_SELECT)) {
+        retentionValue = ((MemberSelectExpressionTree) tree).identifier().name();
+      } else if (tree.is(Tree.Kind.IDENTIFIER)) {
+        retentionValue = ((IdentifierTree) tree).name();
+      }
+    } else if (value instanceof Symbol.VariableSymbol) {
+      retentionValue = ((Symbol.VariableSymbol) value).name();
+    }
+    return retentionValue;
   }
 }

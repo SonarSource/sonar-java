@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
   public int linesOfCode(CompilationUnitTree tree) {
     lines.clear();
-    visitTokens(tree);
+    scanTree(tree);
     return lines.size();
   }
 
@@ -46,9 +46,8 @@ public class LinesOfCodeVisitor extends SubscriptionVisitor{
 
   @Override
   public void visitToken(SyntaxToken syntaxToken) {
-    InternalSyntaxToken internalSyntaxToken = (InternalSyntaxToken) syntaxToken;
-    if(!internalSyntaxToken.isEOF()) {
-      lines.add(internalSyntaxToken.getLine());
+    if (!((InternalSyntaxToken) syntaxToken).isEOF()) {
+      lines.add(syntaxToken.line());
     }
   }
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,8 +24,8 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -63,15 +63,15 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
           CaseLabelTree labelToReport = getLastLabel(cases.get(i));
           if (!reportedLabels.contains(labelToReport)) {
             reportedLabels.add(labelToReport);
-            addIssue(labelToReport,
-                "Either merge this case with the identical one on line \"" + ((JavaTree) getLastLabel(caseGroupTree)).getLine() + "\" or change one of the implementations.");
+            int line = FirstSyntaxTokenFinder.firstSyntaxToken(caseGroupTree).line();
+            addIssue(labelToReport, "Either merge this case with the identical one on line \"" + line + "\" or change one of the implementations.");
           }
         }
       }
     }
   }
 
-  private CaseLabelTree getLastLabel(CaseGroupTree cases) {
+  private static CaseLabelTree getLastLabel(CaseGroupTree cases) {
     return cases.labels().get(cases.labels().size() - 1);
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -100,7 +102,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       MethodTree methodTree = (MethodTree) tree;
       excludedVariables.peek().addAll(methodTree.parameters());
       flattenExcludedVariables.addAll(methodTree.parameters());
-      if (methodTree.modifiers().modifiers().contains(Modifier.STATIC)) {
+      if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.STATIC)) {
         excludeVariablesFromBlock(methodTree.block());
       }
     }
@@ -114,13 +116,14 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       String identifier = variableTree.simpleName().name();
       VariableTree hiddenVariable = variables.get(identifier);
       if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
-        addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + ((JavaTree) hiddenVariable).getLine() + ".");
+        int line = FirstSyntaxTokenFinder.firstSyntaxToken(hiddenVariable).line();
+        addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }
     }
   }
 
-  private boolean isClassTree(Tree tree) {
+  private static boolean isClassTree(Tree tree) {
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 

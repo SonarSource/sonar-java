@@ -5,9 +5,9 @@ class A {
     int i = 0;
     int j = 0;
 
-    i = i++; // Noncompliant; i is still zero
-    A.var = A.var++;
-    return j++; // Noncompliant; 0 returned
+    i = i++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
+    A.var = A.var++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
+    return j++; // Noncompliant {{Remove this increment or correct the code not to waste it.}}
   }
 
 

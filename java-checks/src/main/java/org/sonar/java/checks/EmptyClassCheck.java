@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,11 +52,20 @@ public class EmptyClassCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isEmptyClass(ClassTree tree) {
-    return tree.simpleName() != null && isNotExtending(tree) && tree.members().isEmpty();
+  private static boolean isEmptyClass(ClassTree tree) {
+    return tree.simpleName() != null && isNotExtending(tree) && isEmpty(tree);
   }
 
-  private boolean isNotExtending(ClassTree tree) {
+  private static boolean isNotExtending(ClassTree tree) {
     return tree.superClass() == null && tree.superInterfaces().isEmpty();
+  }
+
+  private static boolean isEmpty(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (!member.is(Tree.Kind.EMPTY_STATEMENT)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

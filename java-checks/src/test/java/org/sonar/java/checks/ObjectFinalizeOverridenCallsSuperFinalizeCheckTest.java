@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,32 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ObjectFinalizeOverridenCallsSuperFinalizeCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-        new File("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java"),
-        new VisitorsBridge(new ObjectFinalizeOverridenCallsSuperFinalizeCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Move this super.finalize() call to the end of this Object.finalize() implementation.")
-        .next().atLine(15).withMessage("Add a call to super.finalize() at the end of this Object.finalize() implementation.")
-        .next().atLine(19)
-        .next().atLine(35)
-        .next().atLine(53)
-        .next().atLine(62);
+    JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenCallsSuperFinalizeCheck.java", new ObjectFinalizeOverridenCallsSuperFinalizeCheck());
   }
-
 }

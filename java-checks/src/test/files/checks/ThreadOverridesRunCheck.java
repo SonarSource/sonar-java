@@ -1,4 +1,4 @@
-class A extends Thread{ //NonCompliant
+class A extends Thread{ // Noncompliant {{Stop extending the Thread class as the "run" method is not overridden}}
 
 }
 
@@ -13,7 +13,7 @@ class C extends Thread { //Compliant
 }
 class D {
   void run(){
-    Thread t1 = new Thread() {//NonCompliant
+    Thread t1 = new Thread() {// Noncompliant {{Stop extending the Thread class as the "run" method is not overridden}}
 
     };
     Thread t1 = new Thread() {//Compliant

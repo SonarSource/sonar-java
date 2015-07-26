@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,17 +23,15 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.model.expression.NewClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -53,9 +51,9 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher NEXT_INVOCATION_MATCHER =
-    MethodInvocationMatcher.create()
-      .typeDefinition("java.util.Iterator")
+  private static final MethodMatcher NEXT_INVOCATION_MATCHER =
+    MethodMatcher.create()
+      .typeDefinition(TypeCriteria.subtypeOf("java.util.Iterator"))
       .name("next");
 
   @Override
@@ -65,8 +63,8 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if (hasSemantic() && isIteratorNextMethod(methodTree.getSymbol()) && methodTree.block() != null) {
+    MethodTree methodTree = (MethodTree) tree;
+    if (hasSemantic() && isIteratorNextMethod(methodTree.symbol()) && methodTree.block() != null) {
       NextMethodBodyVisitor visitor = new NextMethodBodyVisitor();
       tree.accept(visitor);
       if (!visitor.foundThrow) {
@@ -75,20 +73,15 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isIteratorNextMethod(MethodSymbol symbol) {
-    return "next".equals(symbol.getName()) && symbol.getParametersTypes().isEmpty() && isIterator(symbol.enclosingClass());
+  private static boolean isIteratorNextMethod(Symbol.MethodSymbol symbol) {
+    return "next".equals(symbol.name()) && symbol.parameterTypes().isEmpty() && isIterator(symbol.enclosingClass());
   }
 
-  private boolean isIterator(TypeSymbol typeSymbol) {
-    for (ClassType superType : typeSymbol.superTypes()) {
-      if (superType.is("java.util.Iterator")) {
-        return true;
-      }
-    }
-    return false;
+  private static boolean isIterator(Symbol.TypeSymbol typeSymbol) {
+    return typeSymbol.type().isSubtypeOf("java.util.Iterator");
   }
 
-  private class NextMethodBodyVisitor extends BaseTreeVisitor {
+  private static class NextMethodBodyVisitor extends BaseTreeVisitor {
 
     private boolean foundThrow = false;
 
@@ -96,8 +89,8 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
     public void visitThrowStatement(ThrowStatementTree throwStatementTree) {
       ExpressionTree expression = throwStatementTree.expression();
       if (expression.is(Tree.Kind.NEW_CLASS)) {
-        NewClassTreeImpl newClassTree = (NewClassTreeImpl) expression;
-        if (newClassTree.getSymbolType().is("java.util.NoSuchElementException")) {
+        NewClassTree newClassTree = (NewClassTree) expression;
+        if (newClassTree.symbolType().is("java.util.NoSuchElementException")) {
           foundThrow = true;
         }
       }
@@ -106,24 +99,21 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-      if (NEXT_INVOCATION_MATCHER.matches(methodInvocation, getSemanticModel()) || throwsNoSuchElementException(methodInvocation)) {
+      if (NEXT_INVOCATION_MATCHER.matches(methodInvocation) || throwsNoSuchElementException(methodInvocation)) {
         foundThrow = true;
       }
       super.visitMethodInvocation(methodInvocation);
     }
 
     public boolean throwsNoSuchElementException(MethodInvocationTree methodInvocationTree) {
-      MethodInvocationTreeImpl methodInvocationTreeImpl = (MethodInvocationTreeImpl) methodInvocationTree;
-      Symbol symbol = methodInvocationTreeImpl.getSymbol();
-      if (!symbol.isKind(Symbol.MTH)) {
+      Symbol symbol = methodInvocationTree.symbol();
+      if (!symbol.isMethodSymbol()) {
         return false;
       }
-      MethodSymbol methodSymbol = (MethodSymbol) symbol;
-      if (methodSymbol.getThrownTypes() != null) {
-        for (TypeSymbol thrownType : methodSymbol.getThrownTypes()) {
-          if (thrownType.getType().is("java.util.NoSuchElementException")) {
-            return true;
-          }
+      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+      for (Type thrownType : methodSymbol.thrownTypes()) {
+        if (thrownType.is("java.util.NoSuchElementException")) {
+          return true;
         }
       }
       return false;

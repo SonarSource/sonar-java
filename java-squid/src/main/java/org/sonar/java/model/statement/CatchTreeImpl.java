@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -49,12 +49,6 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
     this.parameter = Preconditions.checkNotNull(parameter);
     this.closeParenToken = closeParenToken;
     this.block = Preconditions.checkNotNull(block);
-
-    addChild(catchToken);
-    addChild(openParenToken);
-    addChild(parameter);
-    addChild(closeParenToken);
-    addChild(block);
   }
 
   @Override
@@ -95,7 +89,10 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.<Tree>forArray(
+      catchToken,
+      openParenToken,
       parameter,
+      closeParenToken,
       block);
   }
 

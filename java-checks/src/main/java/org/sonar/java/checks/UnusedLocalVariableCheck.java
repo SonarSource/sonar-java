@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -70,7 +70,7 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
     Tree.Kind.XOR_ASSIGNMENT,
     Tree.Kind.OR_ASSIGNMENT
   };
-  
+
   private static final Tree.Kind[] INCREMENT_KINDS = {
     Tree.Kind.POSTFIX_DECREMENT,
     Tree.Kind.POSTFIX_INCREMENT,
@@ -127,8 +127,8 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
 
   private void checkVariableUsages() {
     for (VariableTree variableTree : variables) {
-      Symbol symbol = getSemanticModel().getSymbol(variableTree);
-      if (getSemanticModel().getUsages(symbol).size() == assignments.get(symbol).size()) {
+      Symbol symbol = variableTree.symbol();
+      if (symbol.usages().size() == assignments.get(symbol).size()) {
         addIssue(variableTree, "Remove this unused \"" + variableTree.simpleName() + "\" local variable.");
       }
     }
@@ -153,8 +153,8 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
   }
 
   private void addAssignment(IdentifierTree identifier) {
-    Symbol reference = getSemanticModel().getReference(identifier);
-    if (reference != null) {
+    Symbol reference = identifier.symbol();
+    if (!reference.isUnknown()) {
       assignments.put(reference, identifier);
     }
   }

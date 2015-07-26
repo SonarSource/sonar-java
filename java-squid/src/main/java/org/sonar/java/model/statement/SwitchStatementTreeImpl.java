@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,8 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -37,7 +37,7 @@ import java.util.List;
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
 
   private final ExpressionTree expression;
-  private final List<CaseGroupTreeImpl> cases;
+  private final List<CaseGroupTree> cases;
   private final InternalSyntaxToken switchKeyword;
   private final InternalSyntaxToken openParenToken;
   private final InternalSyntaxToken closeParenToken;
@@ -45,20 +45,15 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   private final InternalSyntaxToken closeBraceToken;
 
   public SwitchStatementTreeImpl(InternalSyntaxToken switchKeyword, InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken,
-    InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken,
-    List<AstNode> children) {
+    InternalSyntaxToken openBraceToken, List<CaseGroupTreeImpl> groups, InternalSyntaxToken closeBraceToken) {
     super(Kind.SWITCH_STATEMENT);
     this.switchKeyword = switchKeyword;
     this.openParenToken = openParenToken;
     this.expression = Preconditions.checkNotNull(expression);
     this.closeParenToken = closeParenToken;
     this.openBraceToken = openBraceToken;
-    this.cases = Preconditions.checkNotNull(groups);
+    this.cases = ImmutableList.<CaseGroupTree>builder().addAll(Preconditions.checkNotNull(groups)).build();
     this.closeBraceToken = closeBraceToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -93,8 +88,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
 
   @Override
   public List<CaseGroupTree> cases() {
-    // FIXME
-    return (List) cases;
+    return cases;
   }
 
   @Override
@@ -110,8 +104,9 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-      Iterators.singletonIterator(expression),
-      cases.iterator());
+      Iterators.forArray(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
+      cases.iterator(),
+      Iterators.singletonIterator(closeBraceToken));
   }
 
 }

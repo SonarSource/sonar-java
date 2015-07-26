@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,8 +21,6 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,15 +32,15 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import java.util.Iterator;
 
 public class ParenthesizedTreeImpl extends AbstractTypedTree implements ParenthesizedTree {
+  private final InternalSyntaxToken openParenToken;
   private final ExpressionTree expression;
+  private final InternalSyntaxToken closeParenToken;
 
-  public ParenthesizedTreeImpl(ExpressionTree expression, AstNode... children) {
+  public ParenthesizedTreeImpl(InternalSyntaxToken openParenToken, ExpressionTree expression, InternalSyntaxToken closeParenToken) {
     super(Kind.PARENTHESIZED_EXPRESSION);
+    this.openParenToken = openParenToken;
     this.expression = Preconditions.checkNotNull(expression);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.closeParenToken = closeParenToken;
   }
 
   @Override
@@ -52,7 +50,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
@@ -62,7 +60,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
@@ -72,8 +70,10 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>forArray(
+      openParenToken,
+      expression,
+      closeParenToken);
   }
 
 }

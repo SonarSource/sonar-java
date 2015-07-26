@@ -1,0 +1,30 @@
+<p>
+  Using <code>File.createTempFile</code> as the first step in creating a temporary directory causes a race condition
+  and is inherently unreliable and insecure. Instead, <code>Files.createTempDirectory</code> (Java 7+) or
+  a library function such as Guava's similarly-named <code>Files.createTempDir</code> should be used.
+</p>
+<p>This rule raises an issue when the following steps are taken in immediate sequence:</p>
+<ul>
+  <li>call to <code>File.createTempFile</code></li>
+  <li>delete resulting file</li>
+  <li>call <code>mkdir</code> on the File object</li>
+</ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+File tempDir;
+tempDir = File.createTempFile("", ".");
+tempDir.delete();
+tempDir.mkdir();  // Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+Path tempPath = Files.createTempDirectory("");
+File tempDir = tempPath.toFile();
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li><a href="https://www.owasp.org/index.php/Top_10_2013-A9-Using_Components_with_Known_Vulnerabilities">OWAPS Top Ten 2013 Category A9 - Using Components with Known Vulnerabilities</a></li>
+</ul>

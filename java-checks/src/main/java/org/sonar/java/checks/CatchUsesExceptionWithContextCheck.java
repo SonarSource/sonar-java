@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,15 +22,14 @@ package org.sonar.java.checks;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -51,17 +50,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
-  key = CatchUsesExceptionWithContextCheck.RULE_KEY,
+  key = "S1166",
   name = "Exception handlers should preserve the original exception",
-  tags = {"error-handling"},
+  tags = {"error-handling", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1166";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +
       "java.lang.NumberFormatException, " +
@@ -79,17 +75,19 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   private Deque<Collection<IdentifierTree>> validUsagesStack;
   private Iterable<String> exceptions;
   private List<String> exceptionIdentifiers;
+  private SemanticModel semanticModel;
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    validUsagesStack = new ArrayDeque<Collection<IdentifierTree>>();
+    validUsagesStack = new ArrayDeque<>();
     exceptions = Splitter.on(",").trimResults().split(exceptionsCommaSeparated);
     exceptionIdentifiers = Lists.newArrayList();
     for (String exception : exceptions) {
       exceptionIdentifiers.add(exception.substring(exception.lastIndexOf(".") + 1));
     }
-    if (context.getSemanticModel() != null) {
+    semanticModel = (SemanticModel) context.getSemanticModel();
+    if (semanticModel != null) {
       scan(context.getTree());
     }
   }
@@ -97,13 +95,12 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
   @Override
   public void visitCatch(CatchTree tree) {
     if (!isExcludedType(tree.parameter().type())) {
-      SemanticModel semanticModel = (SemanticModel) context.getSemanticModel();
-      Symbol exception = semanticModel.getSymbol(tree.parameter());
-      validUsagesStack.addFirst(Lists.newArrayList(semanticModel.getUsages(exception)));
+      Symbol exception = tree.parameter().symbol();
+      validUsagesStack.addFirst(exception.usages());
       super.visitCatch(tree);
       Collection<IdentifierTree> usages = validUsagesStack.pop();
       if (usages.isEmpty()) {
-        context.addIssue(tree, ruleKey, "Either log or rethrow this exception.");
+        context.addIssue(tree, this, "Either log or rethrow this exception.");
       }
     }
   }
@@ -141,7 +138,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     if (!tree.is(Kind.MEMBER_SELECT)) {
       return false;
     }
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
     ExpressionTree expr = (MemberSelectExpressionTree) tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;

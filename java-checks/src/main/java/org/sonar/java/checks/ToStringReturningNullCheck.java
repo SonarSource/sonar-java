@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -66,11 +66,11 @@ public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isToStringDeclaration(MethodTree method) {
+  private static boolean isToStringDeclaration(MethodTree method) {
     return "toString".equals(method.simpleName().name()) && method.parameters().isEmpty();
   }
 
-  private boolean isReturnNull(ReturnStatementTree returnStatement) {
+  private static boolean isReturnNull(ReturnStatementTree returnStatement) {
     return returnStatement.expression().is(Tree.Kind.NULL_LITERAL);
   }
 

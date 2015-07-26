@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,8 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.Iterators;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -37,17 +36,11 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   private final InternalSyntaxToken openBracketToken;
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_ARGUMENTS, expressions, ImmutableList.<AstNode>of());
+  public TypeArgumentListTreeImpl(InternalSyntaxToken openBracketToken, List<Tree> expressions, List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
+    super(JavaLexer.TYPE_ARGUMENTS, expressions, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
-
-    addChild(openBracketToken);
-    for (AstNode child : children) {
-      addChild(child);
-    }
-    addChild(closeBracketToken);
   }
 
   @Override
@@ -67,7 +60,10 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
+    return Iterators.concat(
+        Iterators.singletonIterator(openBracketToken),
+        super.childrenIterator(),
+        Iterators.singletonIterator(closeBracketToken));
   }
 
   @Override

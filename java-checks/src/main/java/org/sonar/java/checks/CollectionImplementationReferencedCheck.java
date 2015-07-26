@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,26 +20,30 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableMap;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 @Rule(
-  key = CollectionImplementationReferencedCheck.KEY,
+  key = "S1319",
   name = "Declarations should use Java collection interfaces such as \"List\" rather than specific implementation classes such as \"LinkedList\"",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
@@ -47,9 +51,6 @@ import java.util.Map;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
 public class CollectionImplementationReferencedCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String KEY = "S1319";
-  private static final RuleKey RULE_KEY = RuleKey.of(CheckList.REPOSITORY_KEY, KEY);
 
   private static final String DEQUE = "Deque";
   private static final String LIST = "List";
@@ -107,38 +108,42 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-
-    String collectionImplementation = getTypeIdentifierOrNull(tree.type());
-    String collectionInterface = MAPPING.get(collectionImplementation);
-
-    if (collectionInterface != null) {
-      context.addIssue(
-        tree.type(),
-        RULE_KEY,
-        "The type of the \"" + tree.simpleName() + "\" object " + messageRemainder(collectionImplementation, collectionInterface));
+    if (isPublic(tree.modifiers())) {
+      checkIfAllowed(tree.type(), "The type of the \"" + tree.simpleName() + "\" object ");
     }
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
+    if (isPublic(tree.modifiers())) {
+      checkIfAllowed(tree.returnType(), "The return type of this method ");
+      for (VariableTree variableTree : tree.parameters()) {
+        checkIfAllowed(variableTree.type(), "The type of the \"" + variableTree.simpleName() + "\" object ");
+      }
+    }
+  }
 
-    String collectionImplementation = getTypeIdentifierOrNull(tree.returnType());
+  private void checkIfAllowed(@Nullable TypeTree tree, String messagePrefix) {
+    if (tree == null) {
+      return;
+    }
+    String collectionImplementation = getTypeIdentifier(tree);
     String collectionInterface = MAPPING.get(collectionImplementation);
 
     if (collectionInterface != null) {
       context.addIssue(
-        tree.returnType(),
-        RULE_KEY,
-        "The return type of this method " + messageRemainder(collectionImplementation, collectionInterface));
+        tree,
+        this,
+        messagePrefix + messageRemainder(collectionImplementation, collectionInterface));
     }
   }
 
-  private static String getTypeIdentifierOrNull(Tree tree) {
-    if (tree == null) {
-      return null;
-    }
+  private static boolean isPublic(ModifiersTree modifiers) {
+    return ModifiersUtils.hasModifier(modifiers, Modifier.PUBLIC);
+  }
 
+  private static String getTypeIdentifier(Tree tree) {
     Tree actualTree = tree.is(Tree.Kind.PARAMETERIZED_TYPE) ? ((ParameterizedTypeTree) tree).type() : tree;
     return actualTree.is(Tree.Kind.IDENTIFIER) ? ((IdentifierTree) actualTree).name() : null;
   }

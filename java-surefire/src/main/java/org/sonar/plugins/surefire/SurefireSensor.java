@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,14 +21,13 @@ package org.sonar.plugins.surefire;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.sonar.api.batch.CoverageExtension;
 import org.sonar.api.batch.DependedUpon;
-import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
@@ -41,16 +40,13 @@ public class SurefireSensor implements Sensor {
   private final SurefireJavaParser surefireJavaParser;
   private final Settings settings;
   private final FileSystem fs;
+  private final PathResolver pathResolver;
 
-  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings, FileSystem fs) {
+  public SurefireSensor(SurefireJavaParser surefireJavaParser, Settings settings, FileSystem fs, PathResolver pathResolver) {
     this.surefireJavaParser = surefireJavaParser;
     this.settings = settings;
     this.fs = fs;
-  }
-
-  @DependsUpon
-  public Class dependsUponCoverageSensors() {
-    return CoverageExtension.class;
+    this.pathResolver = pathResolver;
   }
 
   @Override
@@ -60,7 +56,7 @@ public class SurefireSensor implements Sensor {
 
   @Override
   public void analyse(Project project, SensorContext context) {
-    File dir = SurefireUtils.getReportsDirectory(settings, project);
+    File dir = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
     collect(context, dir);
   }
 

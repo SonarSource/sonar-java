@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BadFieldName_S00116_CheckTest {
 
-  private BadFieldName_S00116_Check check = new BadFieldName_S00116_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadFieldName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Rename this field name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.")
-        .next().atLine(9)
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/BadFieldName.java", new BadFieldName_S00116_Check());
   }
 
   @Test
   public void test2() {
+    BadFieldName_S00116_Check check = new BadFieldName_S00116_Check();
     check.format = "^[a-zA-Z0-9_]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadFieldName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadFieldName2.java", check);
   }
 
 }

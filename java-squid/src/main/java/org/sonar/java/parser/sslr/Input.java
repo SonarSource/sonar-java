@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -79,7 +79,7 @@ public class Input {
 
   private int lineAt(int index) {
     int i = Arrays.binarySearch(newLineIndexes, index);
-    return i >= 0 ? i + 2 : -i;
+    return i >= 0 ? (i + 2) : -i;
   }
 
   private int lineStartIndex(int line) {
@@ -91,7 +91,7 @@ public class Input {
    */
   private static final boolean isNewLine(char[] input, int i) {
     return input[i] == '\n' ||
-      input[i] == '\r' && (i + 1 == input.length || input[i + 1] != '\n');
+      (input[i] == '\r' && (i + 1 == input.length || input[i + 1] != '\n'));
   }
 
 }

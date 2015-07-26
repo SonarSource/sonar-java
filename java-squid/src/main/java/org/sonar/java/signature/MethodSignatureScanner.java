@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -86,7 +86,7 @@ public final class MethodSignatureScanner {
     return new MethodSignature(name, returnTypeParam, argumentTypes);
   }
 
-  private Parameter getParameter(Tree typeTree) {
+  private static Parameter getParameter(Tree typeTree) {
     Parameter parameter;
     boolean isArray = false;
     Tree type = typeTree;
@@ -105,7 +105,7 @@ public final class MethodSignatureScanner {
     return parameter;
   }
 
-  private String getTypeName(Tree typeTree) {
+  private static String getTypeName(Tree typeTree) {
     if (typeTree.is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) typeTree).name();
     } else if (typeTree.is(Tree.Kind.MEMBER_SELECT)) {
@@ -116,7 +116,7 @@ public final class MethodSignatureScanner {
     return "";
   }
 
-  private JvmJavaType jvmJavaTypeOf(Tree type) {
+  private static JvmJavaType jvmJavaTypeOf(Tree type) {
     if (type.is(Tree.Kind.PRIMITIVE_TYPE)) {
       return JAVA_TYPE_MAPPING.get(((PrimitiveTypeTree) type).keyword().text());
     }

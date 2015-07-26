@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,7 +41,7 @@ import java.util.List;
 
 @Rule(
   key = "S2274",
-  name = "\"Object.wait(...)\" and \"Condition.await(...)\" should always be called inside a \"while\" loop",
+  name = "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
   tags = {"bug", "cert", "multi-threading"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
@@ -83,7 +83,7 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (!inWhileLoop.peek()) {
       String methodName;
       if(mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
@@ -97,12 +97,12 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodInvocationMatcher.create().name("wait"),
-        MethodInvocationMatcher.create().name("wait").addParameter("long"),
-        MethodInvocationMatcher.create().name("wait").addParameter("long").addParameter("int"),
-        MethodInvocationMatcher.create().typeDefinition("java.util.concurrent.locks.Condition").name("await").withNoParameterConstraint()
+        MethodMatcher.create().name("wait"),
+        MethodMatcher.create().name("wait").addParameter("long"),
+        MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),
+        MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Condition").name("await").withNoParameterConstraint()
     );
   }
 }

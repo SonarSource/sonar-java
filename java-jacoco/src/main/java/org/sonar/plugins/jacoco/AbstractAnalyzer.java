@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2010 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,16 +19,14 @@
  */
 package org.sonar.plugins.jacoco;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.io.Closeables;
 import org.apache.commons.lang.StringUtils;
-import org.jacoco.core.analysis.Analyzer;
 import org.jacoco.core.analysis.CoverageBuilder;
 import org.jacoco.core.analysis.ICounter;
 import org.jacoco.core.analysis.ILine;
 import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
-import org.jacoco.core.data.ExecutionDataReader;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -43,15 +41,10 @@ import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.MutableTestable;
 import org.sonar.api.test.Testable;
-import org.sonar.api.utils.SonarException;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -68,13 +61,15 @@ public abstract class AbstractAnalyzer {
 
   private Map<String, File> classFilesCache;
   private JavaClasspath javaClasspath;
+  private JacocoReportReader jacocoReportReader;
 
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
-                          JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
+    JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, true);
   }
+
   public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem,
-                          PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
+    PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;
     this.pathResolver = pathResolver;
@@ -84,7 +79,7 @@ public abstract class AbstractAnalyzer {
   }
 
   private static String fullyQualifiedClassName(String packageName, String simpleClassName) {
-    return ("".equals(packageName) ? "" : packageName + "/") + StringUtils.substringBeforeLast(simpleClassName, ".");
+    return ("".equals(packageName) ? "" : (packageName + "/")) + StringUtils.substringBeforeLast(simpleClassName, ".");
   }
 
   private Resource getResource(ISourceFileCoverage coverage, SensorContext context) {
@@ -116,11 +111,7 @@ public abstract class AbstractAnalyzer {
     String path = getReportPath(project);
     File jacocoExecutionData = pathResolver.relativeFile(fileSystem.baseDir(), path);
 
-    try {
-      readExecutionData(jacocoExecutionData, context);
-    } catch (IOException e) {
-      throw new SonarException(e);
-    }
+    readExecutionData(jacocoExecutionData, context);
 
     classFilesCache = null;
   }
@@ -140,30 +131,17 @@ public abstract class AbstractAnalyzer {
     }
   }
 
-  public final void readExecutionData(File jacocoExecutionData, SensorContext context) throws IOException {
-    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
-
+  private void readExecutionData(File jacocoExecutionData, SensorContext context) {
     if (jacocoExecutionData == null || !jacocoExecutionData.isFile()) {
       JaCoCoExtensions.LOG.info("Project coverage is set to 0% as no JaCoCo execution data has been dumped: {}", jacocoExecutionData);
       jacocoExecutionData = null;
-    } else {
-      JaCoCoExtensions.LOG.info("Analysing {}", jacocoExecutionData);
-
-      InputStream inputStream = null;
-      try {
-        inputStream = new BufferedInputStream(new FileInputStream(jacocoExecutionData));
-        ExecutionDataReader reader = new ExecutionDataReader(inputStream);
-        reader.setSessionInfoVisitor(executionDataVisitor);
-        reader.setExecutionDataVisitor(executionDataVisitor);
-        reader.read();
-      } finally {
-        Closeables.closeQuietly(inputStream);
-      }
     }
+    ExecutionDataVisitor executionDataVisitor = new ExecutionDataVisitor();
+    jacocoReportReader = new JacocoReportReader(jacocoExecutionData).readJacocoReport(executionDataVisitor, executionDataVisitor);
 
     boolean collectedCoveragePerTest = readCoveragePerTests(context, executionDataVisitor);
 
-    CoverageBuilder coverageBuilder = analyze(executionDataVisitor.getMerged());
+    CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataVisitor.getMerged(), classFilesCache.values());
     int analyzedResources = 0;
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
@@ -184,7 +162,7 @@ public abstract class AbstractAnalyzer {
 
   private boolean readCoveragePerTests(SensorContext context, ExecutionDataVisitor executionDataVisitor) {
     boolean collectedCoveragePerTest = false;
-    if(readCoveragePerTests) {
+    if (readCoveragePerTests) {
       for (Map.Entry<String, ExecutionDataStore> entry : executionDataVisitor.getSessions().entrySet()) {
         if (analyzeLinesCoveredByTests(entry.getKey(), entry.getValue(), context)) {
           collectedCoveragePerTest = true;
@@ -208,7 +186,7 @@ public abstract class AbstractAnalyzer {
     }
 
     boolean result = false;
-    CoverageBuilder coverageBuilder = analyze2(executionDataStore);
+    CoverageBuilder coverageBuilder = jacocoReportReader.analyzeFiles(executionDataStore, classFilesOfStore(executionDataStore));
     for (ISourceFileCoverage coverage : coverageBuilder.getSourceFiles()) {
       Resource resource = getResource(coverage, context);
       if (resource != null) {
@@ -222,20 +200,19 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageBuilder analyze2(ExecutionDataStore executionDataStore) {
-    CoverageBuilder coverageBuilder = new CoverageBuilder();
-    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
+  private Collection<File> classFilesOfStore(ExecutionDataStore executionDataStore) {
+    Collection<File> result = Lists.newArrayList();
     for (ExecutionData data : executionDataStore.getContents()) {
       String vmClassName = data.getName();
       File classFile = classFilesCache.get(vmClassName);
       if (classFile != null) {
-        analyzeClassFile(analyzer, classFile);
+        result.add(classFile);
       }
     }
-    return coverageBuilder;
+    return result;
   }
 
-  private List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
+  private static List<Integer> getCoveredLines(CoverageMeasuresBuilder builder) {
     List<Integer> linesCover = newArrayList();
     for (Map.Entry<Integer, Integer> hitsByLine : builder.getHitsByLine().entrySet()) {
       if (hitsByLine.getValue() > 0) {
@@ -260,32 +237,7 @@ public abstract class AbstractAnalyzer {
     return result;
   }
 
-  private CoverageBuilder analyze(ExecutionDataStore executionDataStore) {
-    CoverageBuilder coverageBuilder = new CoverageBuilder();
-    Analyzer analyzer = new Analyzer(executionDataStore, coverageBuilder);
-    for (File classFile : classFilesCache.values()) {
-      analyzeClassFile(analyzer, classFile);
-    }
-    return coverageBuilder;
-  }
-
-  /**
-   * Caller must guarantee that {@code classFile} is actually class file.
-   */
-  private void analyzeClassFile(Analyzer analyzer, File classFile) {
-    InputStream inputStream = null;
-    try {
-      inputStream = new FileInputStream(classFile);
-      analyzer.analyzeClass(inputStream, classFile.getPath());
-    } catch (IOException e) {
-      // (Godin): in fact JaCoCo includes name into exception
-      JaCoCoExtensions.LOG.warn("Exception during analysis of file " + classFile.getAbsolutePath(), e);
-    } finally {
-      Closeables.closeQuietly(inputStream);
-    }
-  }
-
-  private CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
+  private static CoverageMeasuresBuilder analyzeFile(Resource resource, ISourceFileCoverage coverage) {
     CoverageMeasuresBuilder builder = CoverageMeasuresBuilder.create();
     for (int lineId = coverage.getFirstLine(); lineId <= coverage.getLastLine(); lineId++) {
       final int hits;

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,20 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeTree;
+
+import javax.annotation.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
@@ -37,51 +42,47 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   private ExpressionTree expression;
 
-  private final int dims;
+  @Nullable
+  private final ArrayTypeTreeImpl nestedDimensions;
+  private InternalSyntaxToken dotToken;
   private final IdentifierTree identifier;
+  private List<AnnotationTree> annotations;
 
-  public MemberSelectExpressionTreeImpl(int dims, IdentifierTreeImpl identifier, List<AstNode> children) {
+  public MemberSelectExpressionTreeImpl(@Nullable ArrayTypeTreeImpl nestedDimensions, InternalSyntaxToken dotToken, IdentifierTreeImpl identifier) {
     super(Kind.MEMBER_SELECT);
 
-    this.dims = dims;
+    this.nestedDimensions = nestedDimensions;
+    this.dotToken = dotToken;
     this.identifier = identifier;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.annotations = ImmutableList.<AnnotationTree>of();
   }
 
-  public MemberSelectExpressionTreeImpl(ExpressionTree expression, IdentifierTree identifier, AstNode... children) {
+  public MemberSelectExpressionTreeImpl(ExpressionTree expression, InternalSyntaxToken dotToken, IdentifierTree identifier) {
     super(Kind.MEMBER_SELECT);
 
-    this.dims = -1;
+    this.nestedDimensions = null;
     this.expression = Preconditions.checkNotNull(expression);
+    this.dotToken = dotToken;
     this.identifier = Preconditions.checkNotNull(identifier);
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
-  }
-
-  public MemberSelectExpressionTreeImpl(AstNode astNode, ExpressionTree expression, IdentifierTree identifier) {
-    super(astNode);
-
-    this.dims = -1;
-    this.expression = Preconditions.checkNotNull(expression);
-    this.identifier = Preconditions.checkNotNull(identifier);
+    this.annotations = ImmutableList.<AnnotationTree>of();
   }
 
   public MemberSelectExpressionTreeImpl completeWithExpression(ExpressionTree expression) {
-    Preconditions.checkState(dims >= 0 && this.expression == null);
+    Preconditions.checkState(this.expression == null);
     ExpressionTree result = expression;
 
-    // TODO Remove logic?
-    for (int i = 0; i < dims; i++) {
-      result = new ArrayTypeTreeImpl(null, result);
+    if (nestedDimensions != null) {
+      nestedDimensions.setLastChildType((TypeTree) expression);
+      result = nestedDimensions;
     }
 
     this.expression = result;
 
+    return this;
+  }
+
+  public MemberSelectExpressionTreeImpl complete(List<AnnotationTree> annotations) {
+    this.annotations = annotations;
     return this;
   }
 
@@ -91,13 +92,18 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   }
 
   @Override
+  public List<AnnotationTree> annotations() {
+    return annotations;
+  }
+
+  @Override
   public ExpressionTree expression() {
     return expression;
   }
 
   @Override
   public SyntaxToken operatorToken() {
-    throw new UnsupportedOperationException();
+    return dotToken;
   }
 
   @Override
@@ -112,9 +118,12 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>forArray(
-      expression,
-      identifier);
-  }
 
+    return Iterators.<Tree>concat(
+      annotations.iterator(),
+      Iterators.<Tree>forArray(
+        expression,
+        dotToken,
+        identifier));
+  }
 }

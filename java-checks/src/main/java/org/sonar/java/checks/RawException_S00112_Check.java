@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -29,12 +28,12 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -42,17 +41,14 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Set;
 
 @Rule(
-  key = RawException_S00112_Check.RULE_KEY,
+  key = "S00112",
   name = "Generic exceptions should never be thrown",
-  tags = {"cwe", "error-handling"},
+  tags = {"cwe", "error-handling", "security"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")
 public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S00112";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("Throwable", "Error", "Exception", "RuntimeException");
 
@@ -67,7 +63,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
   @Override
   public void visitMethod(MethodTree tree) {
     if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && !((MethodTreeImpl) tree).isMainMethod()) {
-      for (ExpressionTree throwClause : tree.throwsClauses()) {
+      for (TypeTree throwClause : tree.throwsClauses()) {
         checkExceptionAndRaiseIssue(throwClause);
       }
     }
@@ -84,15 +80,15 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   private void checkExceptionAndRaiseIssue(Tree tree) {
     if (isRawException(tree)) {
-      context.addIssue(tree, ruleKey, "Define and throw a dedicated exception instead of using a generic one.");
+      context.addIssue(tree, this, "Define and throw a dedicated exception instead of using a generic one.");
     }
   }
 
-  private boolean isRawException(Tree tree) {
+  private static boolean isRawException(Tree tree) {
     return tree.is(Tree.Kind.IDENTIFIER) && RAW_EXCEPTIONS.contains(((IdentifierTree) tree).name());
   }
 
-  private boolean isNotOverriden(MethodTree tree) {
+  private static boolean isNotOverriden(MethodTree tree) {
     return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
   }
 

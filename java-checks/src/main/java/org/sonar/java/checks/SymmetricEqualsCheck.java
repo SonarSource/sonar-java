@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,9 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -55,10 +54,10 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(hasSemantic()) {
+    if (hasSemantic()) {
       MethodTreeImpl methodTree = (MethodTreeImpl) tree;
       if (methodTree.isEqualsMethod() && methodTree.block() != null) {
-        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.getSymbol().owner()));
+        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol().owner()));
       }
     }
   }
@@ -77,8 +76,8 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitInstanceOf(InstanceOfTree tree) {
-      if (((AbstractTypedTree) tree.type()).getSymbolType().equals(owner.getType())) {
-        if(!isOwnerFinal()) {
+      if (tree.type().symbolType().equals(owner.type())) {
+        if (!isOwnerFinal()) {
           addIssue(tree, "Compare to \"this.getClass()\" instead.");
         }
       } else {
@@ -115,7 +114,7 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
     }
 
     private boolean isClassOfOwner(MemberSelectExpressionTree mset) {
-      return ((AbstractTypedTree) mset.expression()).getSymbolType().equals(owner.getType());
+      return mset.expression().symbolType().equals(owner.type());
     }
 
   }

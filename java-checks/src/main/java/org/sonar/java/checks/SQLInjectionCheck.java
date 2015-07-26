@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,9 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -36,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S2077",
   name = "Values passed to SQL commands should be sanitized",
-  tags = {"cwe", "hibernate", "injection", "owasp-top10", "sans-top25", "security", "sql"},
+  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security", "sql", "hibernate"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
@@ -61,7 +60,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     }
   }
 
-  private boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
+  private static boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
     if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
       return !methodTree.arguments().isEmpty() && (isMethodCall("java.sql.Statement", "executeQuery", memberSelectExpressionTree)
@@ -72,7 +71,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     return false;
   }
 
-  private boolean isHibernateCall(MethodInvocationTree methodTree) {
+  private static boolean isHibernateCall(MethodInvocationTree methodTree) {
     if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
       return !methodTree.arguments().isEmpty() && isMethodCall("org.hibernate.Session", "createQuery", memberSelectExpressionTree);
@@ -80,24 +79,21 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     return false;
   }
 
-  private boolean isMethodCall(String typeName, String methodName, MemberSelectExpressionTree memberSelectExpressionTree) {
+  private static boolean isMethodCall(String typeName, String methodName, MemberSelectExpressionTree memberSelectExpressionTree) {
     return methodName.equals(memberSelectExpressionTree.identifier().name()) && isInvokedOnType(typeName, memberSelectExpressionTree.expression());
   }
 
-  private boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
-    Type selectorType = ((AbstractTypedTree) expressionTree).getSymbolType();
-    if (selectorType.isTagged(Type.CLASS)) {
-      Symbol.TypeSymbol symbol = selectorType.getSymbol();
-      String selector = symbol.owner().getName() + "." + symbol.getName();
-      return type.equals(selector) || checkInterfaces(type, symbol);
+  private static boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
+    Type selectorType = expressionTree.symbolType();
+    if (selectorType.isClass()) {
+      return type.equals(selectorType.fullyQualifiedName()) || checkInterfaces(type, selectorType.symbol());
     }
     return false;
   }
 
-  private boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
-    for (Type interfaceType : symbol.getInterfaces()) {
-      Symbol.TypeSymbol interfaceSymbol = interfaceType.getSymbol();
-      if (type.equals(interfaceSymbol.owner().getName() + "." + interfaceSymbol.getName()) || checkInterfaces(type, interfaceSymbol)) {
+  private static boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
+    for (Type interfaceType : symbol.interfaces()) {
+      if (type.equals(interfaceType.fullyQualifiedName()) || checkInterfaces(type, interfaceType.symbol())) {
         return true;
       }
     }

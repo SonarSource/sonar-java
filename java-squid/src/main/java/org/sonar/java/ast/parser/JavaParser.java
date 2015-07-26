@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,7 @@
  */
 package org.sonar.java.ast.parser;
 
-import org.sonar.java.parser.sslr.ActionParser2;
+import org.sonar.java.parser.sslr.ActionParser;
 
 import java.nio.charset.Charset;
 
@@ -28,8 +28,8 @@ public class JavaParser {
   private JavaParser() {
   }
 
-  public static ActionParser2 createParser(Charset charset) {
-    return new ActionParser2(
+  public static ActionParser createParser(Charset charset) {
+    return new ActionParser(
       charset,
       JavaLexer.createGrammarBuilder(),
       JavaGrammar.class,

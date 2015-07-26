@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -88,11 +88,6 @@ public class ArchitectureCheckTest {
     CheckMessage value = messageCaptor.getValue();
     assertThat(value.getLine()).isNull();
 
-  }
-
-  @Test
-  public void test_toString() {
-    assertThat(check.toString()).isEqualTo("ArchitecturalConstraint rule");
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -209,7 +209,7 @@ public class AsmMethod extends AsmResource {
   }
 
   private boolean isMethodNotAccessorOrAccessingDifferentField(AsmMethod method) {
-    return !method.isAccessor() || accessedField != null && !accessedField.equals(method.getAccessedField());
+    return !method.isAccessor() || (accessedField != null && !accessedField.equals(method.getAccessedField()));
   }
 
   private boolean isFieldAccesingDifferentField(AsmField field) {

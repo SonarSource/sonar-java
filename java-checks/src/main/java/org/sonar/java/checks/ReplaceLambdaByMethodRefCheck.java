@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -34,17 +33,16 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
+
 @Rule(
-  key = ReplaceLambdaByMethodRefCheck.RULE_KEY,
+  key = "S1612",
   name = "Replace lambdas with method references when possible",
   tags = {"java8"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1612";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -57,16 +55,16 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isMethodInvocation(tree.body()) || isBlockInvokingMethod(tree.body())) {
-      context.addIssue(tree, ruleKey, "Replace this lambda with a method reference.");
+      context.addIssue(tree, this, "Replace this lambda with a method reference.");
     }
     super.visitLambdaExpression(tree);
   }
 
-  private boolean isMethodInvocation(Tree tree) {
+  private static boolean isMethodInvocation(@Nullable Tree tree) {
     return tree != null && tree.is(Tree.Kind.METHOD_INVOCATION);
   }
 
-  private boolean isBlockInvokingMethod(Tree tree) {
+  private static boolean isBlockInvokingMethod(Tree tree) {
     if (isBlockWithOneStatement(tree)) {
       Tree statement = ((BlockTree) tree).body().get(0);
       return isExpressionStatementInvokingMethod(statement) || isReturnStatementInvokingMethod(statement);
@@ -74,15 +72,15 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
     return false;
   }
 
-  private boolean isReturnStatementInvokingMethod(Tree statement) {
+  private static boolean isReturnStatementInvokingMethod(Tree statement) {
     return statement.is(Tree.Kind.RETURN_STATEMENT) && isMethodInvocation(((ReturnStatementTree) statement).expression());
   }
 
-  private boolean isExpressionStatementInvokingMethod(Tree statement) {
+  private static boolean isExpressionStatementInvokingMethod(Tree statement) {
     return statement.is(Tree.Kind.EXPRESSION_STATEMENT) && isMethodInvocation(((ExpressionStatementTree) statement).expression());
   }
 
-  private boolean isBlockWithOneStatement(Tree tree) {
+  private static boolean isBlockWithOneStatement(Tree tree) {
     return tree.is(Tree.Kind.BLOCK) && ((BlockTree) tree).body().size() == 1;
   }
 

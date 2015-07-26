@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,17 +22,17 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -42,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,7 +51,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Rule(
-  key = UselessImportCheck.RULE_KEY,
+  key = "UselessImportCheck",
   name = "Useless imports should be removed",
   tags = {"unused"},
   priority = Priority.MINOR)
@@ -58,9 +59,6 @@ import java.util.Set;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "UselessImportCheck";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();
   private final Set<String> pendingImports = Sets.newHashSet();
@@ -73,25 +71,33 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     CompilationUnitTree cut = context.getTree();
+    ExpressionTree packageName = getPackageName(cut);
 
     pendingReferences.clear();
     lineByImportReference.clear();
     pendingImports.clear();
-    currentPackage = concatenate(cut.packageName());
-    for (ImportTree importTree : cut.imports()) {
-      if (!importTree.isStatic()) {
+
+    currentPackage = concatenate(packageName);
+    for (ImportClauseTree importClauseTree : cut.imports()) {
+      ImportTree importTree = null;
+
+      if (importClauseTree.is(Tree.Kind.IMPORT)) {
+        importTree = (ImportTree) importClauseTree;
+      }
+
+      if (importTree != null && !importTree.isStatic()) {
         String importName = concatenate((ExpressionTree) importTree.qualifiedIdentifier());
         if ("java.lang.*".equals(importName)) {
-          context.addIssue(importTree, ruleKey, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+          context.addIssue(importTree, this, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
         } else if (isImportFromSamePackage(importName)) {
-          context.addIssue(importTree, ruleKey, "Remove this unnecessary import: same package classes are always implicitly imported.");
+          context.addIssue(importTree, this, "Remove this unnecessary import: same package classes are always implicitly imported.");
         } else if (!isImportOnDemand(importName)) {
           if (isJavaLangImport(importName)) {
-            context.addIssue(importTree, ruleKey, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
+            context.addIssue(importTree, this, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
           } else if (isDuplicatedImport(importName)) {
-            context.addIssue(importTree, ruleKey, "Remove this duplicated import.");
+            context.addIssue(importTree, this, "Remove this duplicated import.");
           } else {
-            lineByImportReference.put(importName, ((JavaTree) importTree).getLine());
+            lineByImportReference.put(importName, FirstSyntaxTokenFinder.firstSyntaxToken(importTree).line());
             pendingImports.add(importName);
           }
         }
@@ -104,24 +110,32 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     leaveFile();
   }
 
-  private boolean isImportOnDemand(String name) {
+  private static ExpressionTree getPackageName(CompilationUnitTree cut) {
+    return cut.packageDeclaration() != null ? cut.packageDeclaration().packageName() : null;
+  }
+
+  private static boolean isImportOnDemand(String name) {
     return name.endsWith("*");
   }
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
     //do not scan imports and package name identifiers.
-    scan(tree.packageAnnotations());
+    if (tree.packageDeclaration() != null) {
+      scan(tree.packageDeclaration().annotations());
+    }
     scan(tree.types());
   }
 
   @Override
   public void visitIdentifier(IdentifierTree tree) {
+    scan(tree.annotations());
     pendingReferences.add(tree.name());
   }
 
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    scan(tree.annotations());
     pendingReferences.add(concatenate(tree));
     //Don't visit identifiers of a member select expression.
     if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
@@ -132,7 +146,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   private boolean isImportFromSamePackage(String reference) {
     String importName = reference;
     if (isImportOnDemand(reference)) {
-      //strip out .* to compare lenght with current package.
+      //strip out .* to compare length with current package.
       importName = reference.substring(0, reference.length() - 2);
     }
     return !currentPackage.isEmpty() &&
@@ -144,7 +158,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     return pendingImports.contains(reference);
   }
 
-  private boolean isJavaLangImport(String reference) {
+  private static boolean isJavaLangImport(String reference) {
     return reference.startsWith("java.lang.") && reference.indexOf('.', "java.lang.".length()) == -1;
   }
 
@@ -154,7 +168,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     }
 
     for (String pendingImport : pendingImports) {
-      context.addIssue(lineByImportReference.get(pendingImport), ruleKey, "Remove this unused import '" + pendingImport + "'.");
+      context.addIssue(lineByImportReference.get(pendingImport), this, "Remove this unused import '" + pendingImport + "'.");
     }
   }
 
@@ -182,11 +196,11 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   }
 
 
-  private String concatenate(@Nullable ExpressionTree tree) {
+  private static String concatenate(@Nullable ExpressionTree tree) {
     if (tree == null) {
       return "";
     }
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
 
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
@@ -217,7 +231,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
 
     public void checkImportsFromComments(CompilationUnitTree cut, Set<String> pendingImports) {
       this.pendingImports = pendingImports;
-      visitTokens(cut);
+      scanTree(cut);
     }
 
     @Override
@@ -235,7 +249,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       }
     }
 
-    private String extractLastClassName(String reference) {
+    private static String extractLastClassName(String reference) {
       int lastIndexOfDot = reference.lastIndexOf('.');
       return lastIndexOfDot == -1 ? reference : reference.substring(lastIndexOfDot + 1);
     }

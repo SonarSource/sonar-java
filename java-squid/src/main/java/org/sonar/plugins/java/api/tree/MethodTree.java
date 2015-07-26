@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,10 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -29,15 +31,15 @@ import java.util.List;
  * <p>
  * JLS 8.8. Constructor ({@link Tree.Kind#CONSTRUCTOR}):
  * <pre>
- *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
+ *   {@link #modifiers()} {@link #typeParameters()} {@link #simpleName()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
  * JLS 8.4, 9.4. Method ({@link Tree.Kind#METHOD}):
  * <pre>
- *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
+ *   {@link #modifiers()} {@link #typeParameters()} {@link #returnType()} {@link #simpleName()} ( {@link #parameters()} ) throws {@link #throwsClauses()} {@link #block()}
  * </pre>
  * JLS 9.6.1, 9.6.2. Annotation type element ({@link Tree.Kind#METHOD}):
  * <pre>
- *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} ()} default {@link #defaultValue()} ;
+ *   {@link #modifiers()} {@link #returnType()} {@link #simpleName()} default {@link #defaultValue()} ;
  * </pre>
  * </p>
  *
@@ -54,16 +56,23 @@ public interface MethodTree extends Tree {
    * @return null in case of constructor
    */
   @Nullable
-  Tree returnType();
+  TypeTree returnType();
 
   IdentifierTree simpleName();
 
+  SyntaxToken openParenToken();
+
   List<VariableTree> parameters();
 
-  List<ExpressionTree> throwsClauses();
+  SyntaxToken closeParenToken();
+
+  ListTree<TypeTree> throwsClauses();
 
   @Nullable
   BlockTree block();
+
+  @Nullable
+  SyntaxToken semicolonToken();
 
   /**
    * @since Java 1.5
@@ -76,5 +85,7 @@ public interface MethodTree extends Tree {
    */
   @Nullable
   ExpressionTree defaultValue();
+
+  Symbol.MethodSymbol symbol();
 
 }

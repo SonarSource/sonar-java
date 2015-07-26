@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,51 +19,67 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
+import org.sonar.plugins.java.api.tree.TypeArguments;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
-import java.util.List;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
+  @Nullable
   private ExpressionTree enclosingExpression;
-  private ExpressionTree identifier;
-  private final List<ExpressionTree> arguments;
+  @Nullable
+  private SyntaxToken dotToken;
+  @Nullable
+  private SyntaxToken newKeyword;
+  @Nullable
+  private TypeArguments typeArguments;
+  private TypeTree identifier;
+  private final Arguments arguments;
   @Nullable
   private final ClassTree classBody;
 
-  public NewClassTreeImpl(List arguments, @Nullable ClassTreeImpl classBody, AstNode... children) {
+  public NewClassTreeImpl(Arguments arguments, @Nullable ClassTreeImpl classBody) {
     super(Kind.NEW_CLASS);
     this.enclosingExpression = null;
-    this.arguments = Preconditions.checkNotNull(arguments);
+    this.arguments = arguments;
     this.classBody = classBody;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
-  public NewClassTreeImpl completeWithIdentifier(ExpressionTree identifier) {
+  public NewClassTreeImpl completeWithIdentifier(TypeTree identifier) {
     this.identifier = identifier;
     return this;
   }
 
   public NewClassTreeImpl completeWithEnclosingExpression(ExpressionTree enclosingExpression) {
     this.enclosingExpression = enclosingExpression;
+    return this;
+  }
+
+  public NewClassTreeImpl completeWithNewKeyword(SyntaxToken newKeyword) {
+    this.newKeyword = newKeyword;
+    return this;
+  }
+
+  public NewClassTreeImpl completeWithTypeArguments(TypeArgumentListTreeImpl typeArguments) {
+    this.typeArguments = typeArguments;
     return this;
   }
 
@@ -78,19 +94,19 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return enclosingExpression;
   }
 
+  @Nullable
   @Override
-  public List<Tree> typeArguments() {
-    // TODO implement
-    return ImmutableList.of();
+  public TypeArguments typeArguments() {
+    return typeArguments;
   }
 
   @Override
-  public Tree identifier() {
+  public TypeTree identifier() {
     return identifier;
   }
 
   @Override
-  public List<ExpressionTree> arguments() {
+  public Arguments arguments() {
     return arguments;
   }
 
@@ -107,14 +123,15 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.forArray(
-        enclosingExpression,
-        identifier
-        ),
-      arguments.iterator(),
-      Iterators.singletonIterator(classBody)
-      );
+    Iterator<Tree> result = Iterators.<Tree>emptyIterator();
+    result = addIfNotNull(result, enclosingExpression, dotToken, newKeyword, typeArguments);
+    result = add(result, identifier, arguments);
+    result = addIfNotNull(result, classBody);
+    return result;
+  }
+
+  private static Iterator<Tree> add(Iterator<Tree> iterator, Tree... trees) {
+    return Iterators.concat(iterator, Iterators.forArray(trees));
   }
 
   public IdentifierTree getConstructorIdentifier() {
@@ -134,5 +151,35 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
       throw new IllegalStateException("Constructor select is not of the expected type " + constructorSelect);
     }
     return constructorIdentifier;
+  }
+  @Nullable
+  @Override
+  public SyntaxToken newKeyword() {
+    return newKeyword;
+  }
+
+  public void completeWithDotToken(InternalSyntaxToken dotToken) {
+    this.dotToken = dotToken;
+  }
+
+  @Nullable
+  @Override
+  public SyntaxToken dotToken() {
+    return dotToken;
+  }
+
+  @Override
+  public Symbol constructorSymbol() {
+    return this.getConstructorIdentifier().symbol();
+  }
+
+  private static Iterator<Tree> addIfNotNull(Iterator<Tree> iterator, Tree... trees) {
+    Iterator<Tree> result = iterator;
+    for (Tree tree : trees) {
+      if (tree != null) {
+        result = Iterators.concat(result, Iterators.singletonIterator(tree));
+      }
+    }
+    return result;
   }
 }

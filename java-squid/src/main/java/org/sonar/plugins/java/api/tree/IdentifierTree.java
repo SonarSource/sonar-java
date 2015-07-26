@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 /**
  * Identifier expression.
@@ -33,10 +34,12 @@ import com.google.common.annotations.Beta;
  * @since Java 1.3
  */
 @Beta
-public interface IdentifierTree extends ExpressionTree {
+public interface IdentifierTree extends ExpressionTree, TypeTree {
 
   SyntaxToken identifierToken();
 
   String name();
+
+  Symbol symbol();
 
 }

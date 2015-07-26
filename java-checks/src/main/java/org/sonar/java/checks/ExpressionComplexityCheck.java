@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -152,7 +152,7 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
       if (currentLevel == 1) {
         int opCount = count.pop();
         if (opCount > max) {
-          addIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").");
+          addIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").", (double) opCount - max);
         }
         count.push(0);
       }

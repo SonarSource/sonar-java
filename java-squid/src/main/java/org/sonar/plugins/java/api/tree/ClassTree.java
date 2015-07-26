@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,10 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -59,6 +61,9 @@ import java.util.List;
 public interface ClassTree extends StatementTree {
 
   @Nullable
+  SyntaxToken declarationKeyword();
+
+  @Nullable
   IdentifierTree simpleName();
 
   TypeParameters typeParameters();
@@ -66,9 +71,9 @@ public interface ClassTree extends StatementTree {
   ModifiersTree modifiers();
 
   @Nullable
-  Tree superClass();
+  TypeTree superClass();
 
-  List<Tree> superInterfaces();
+  ListTree<TypeTree> superInterfaces();
 
   @Nullable
   SyntaxToken openBraceToken();
@@ -77,4 +82,6 @@ public interface ClassTree extends StatementTree {
 
   @Nullable
   SyntaxToken closeBraceToken();
+
+  Symbol.TypeSymbol symbol();
 }

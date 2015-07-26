@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -63,8 +64,8 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
   }
 
   protected boolean isIdentifierDynamicString(Tree methodTree, IdentifierTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
-    Symbol symbol = getSemanticModel().getReference(arg);
-    if (symbol.equals(currentlyChecking) || isConstant(symbol)) {
+    Symbol symbol = arg.symbol();
+    if (isExcluded(currentlyChecking, symbol)) {
       return false;
     }
 
@@ -74,19 +75,24 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
       //symbol is a local variable, check it is not a dynamic string.
 
       //Check declaration
-      VariableTree declaration = (VariableTree) getSemanticModel().getTree(symbol);
-      if (declaration.initializer() != null && isDynamicString(methodTree, declaration.initializer(), currentlyChecking)) {
+      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+      ExpressionTree initializer = declaration.initializer();
+      if (initializer != null && isDynamicString(methodTree, initializer, currentlyChecking)) {
         return true;
       }
       //check usages by revisiting the enclosing tree.
-      Collection<IdentifierTree> usages = getSemanticModel().getUsages(symbol);
+      Collection<IdentifierTree> usages = symbol.usages();
       LocalVariableDynamicStringVisitor visitor = new LocalVariableDynamicStringVisitor(symbol, usages, methodTree);
       argEnclosingDeclarationTree.accept(visitor);
       return visitor.dynamicString;
     }
     //arg is not a local variable nor a constant, so it is a parameter or a field.
     parameterName = arg.name();
-    return symbol.owner().isKind(Symbol.MTH) && !firstLevel;
+    return symbol.owner().isMethodSymbol() && !firstLevel;
+  }
+
+  private boolean isExcluded(@Nullable Symbol currentlyChecking, Symbol symbol) {
+    return !symbol.isVariableSymbol() || symbol.equals(currentlyChecking) || isConstant(symbol);
   }
 
   public boolean isConstant(Symbol symbol) {

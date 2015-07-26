@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -78,7 +78,7 @@ public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isNotOverriden(MethodTree methodTree) {
+  private static boolean isNotOverriden(MethodTree methodTree) {
     return BooleanUtils.isFalse(((MethodTreeImpl) methodTree).isOverriding());
   }
 }

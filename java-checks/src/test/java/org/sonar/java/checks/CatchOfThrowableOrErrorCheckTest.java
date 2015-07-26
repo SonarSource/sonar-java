@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,30 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CatchOfThrowableOrErrorCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CatchOfThrowableOrErrorCheck.java"), new VisitorsBridge(new CatchOfThrowableOrErrorCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(6).withMessage("Catch Exception instead of Error.")
-      .next().atLine(9).withMessage("Catch Exception instead of Error.")
-      .next().atLine(13)
-      .next().atLine(15).withMessage("Catch Exception instead of Throwable.")
-      .next().atLine(16).withMessage("Catch Exception instead of Error.");
+    JavaCheckVerifier.verify("src/test/files/checks/CatchOfThrowableOrErrorCheck.java", new CatchOfThrowableOrErrorCheck());
   }
-
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,7 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -42,7 +43,7 @@ import java.util.Map;
 @Rule(
   key = "S2070",
   name = "SHA-1 and Message-Digest hash algorithms should not be used",
-  tags = {"cwe", "owasp-top10", "sans-top25", "security"},
+  tags = {"cwe", "owasp-a6", "sans-top25-porous", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("30min")
@@ -64,24 +65,24 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     .build();
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    Builder<MethodInvocationMatcher> builder = ImmutableList.<MethodInvocationMatcher>builder()
-      .add(MethodInvocationMatcher.create()
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    Builder<MethodMatcher> builder = ImmutableList.<MethodMatcher>builder()
+      .add(MethodMatcher.create()
         .typeDefinition("java.security.MessageDigest")
         .name("getInstance")
         .addParameter("java.lang.String"))
-      .add(MethodInvocationMatcher.create()
+      .add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name("getDigest")
         .addParameter("java.lang.String"));
     for (String methodName : ALGORITHM_BY_METHOD_NAME.keySet()) {
-      builder.add(MethodInvocationMatcher.create()
+      builder.add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name(methodName)
         .withNoParameterConstraint());
     }
     for (String methodName : ImmutableList.of("md5", "sha1")) {
-      builder.add(MethodInvocationMatcher.create()
+      builder.add(MethodMatcher.create()
         .typeDefinition("com.google.common.hash.Hashing")
         .name(methodName));
     }
@@ -89,7 +90,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = methodName(mit);
     String algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
     if (algorithm == null) {
@@ -101,7 +102,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     }
   }
 
-  private String methodName(MethodInvocationTree mit) {
+  private static String methodName(MethodInvocationTree mit) {
     String name = null;
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
@@ -114,10 +115,9 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     return name;
   }
 
-  private String algorithm(ExpressionTree invocationArgument) {
+  private static String algorithm(ExpressionTree invocationArgument) {
     if (invocationArgument.is(Tree.Kind.STRING_LITERAL)) {
-      String value = ((LiteralTree) invocationArgument).value();
-      return value.substring(1, value.length() - 1);
+      return LiteralUtils.trimQuotes(((LiteralTree) invocationArgument).value());
     }
     return null;
   }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,10 +20,9 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import org.sonar.squidbridge.api.CodeVisitor;
 
 @Beta
-public interface JavaFileScanner extends CodeVisitor {
+public interface JavaFileScanner extends JavaCheck {
 
   void scanFile(JavaFileScannerContext context);
 

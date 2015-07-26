@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -27,17 +27,17 @@ import org.objectweb.asm.Type;
 import java.util.List;
 
 public class BytecodeAnnotationVisitor extends AnnotationVisitor {
-  private final AnnotationInstance annotationInstance;
+  private final AnnotationInstanceResolve annotationInstance;
   private final BytecodeVisitor bytecodeVisitor;
 
-  public BytecodeAnnotationVisitor(AnnotationInstance annotationInstance, BytecodeVisitor bytecodeVisitor) {
+  public BytecodeAnnotationVisitor(AnnotationInstanceResolve annotationInstance, BytecodeVisitor bytecodeVisitor) {
     super(Opcodes.ASM5);
     this.annotationInstance = annotationInstance;
     this.bytecodeVisitor = bytecodeVisitor;
   }
 
   private void addValue(String name, Object value) {
-    annotationInstance.addValue(new AnnotationValue(name, value));
+    annotationInstance.addValue(new AnnotationValueResolve(name, value));
   }
 
   @Override
@@ -47,16 +47,15 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
 
   @Override
   public AnnotationVisitor visitAnnotation(String name, String desc) {
-    Symbol.TypeSymbol annotationSymbol = getSymbol(desc);
-    AnnotationInstance paramAnnotation = new AnnotationInstance(annotationSymbol);
-    return new BytecodeAnnotationVisitor(paramAnnotation, bytecodeVisitor);
+    JavaSymbol.TypeJavaSymbol annotationSymbol = getSymbol(desc);
+    return new BytecodeAnnotationVisitor(new AnnotationInstanceResolve(annotationSymbol), bytecodeVisitor);
   }
 
   @Override
   public void visitEnum(String name, String desc, String value) {
-    List<Symbol> lookup = getSymbol(desc).members().lookup(value);
-    for (Symbol symbol : lookup) {
-      if (symbol.isKind(Symbol.VAR)) {
+    List<JavaSymbol> lookup = getSymbol(desc).members().lookup(value);
+    for (JavaSymbol symbol : lookup) {
+      if (symbol.isKind(JavaSymbol.VAR)) {
         addValue(name, symbol);
       }
     }
@@ -79,7 +78,7 @@ public class BytecodeAnnotationVisitor extends AnnotationVisitor {
     };
   }
 
-  private Symbol.TypeSymbol getSymbol(String desc) {
+  private JavaSymbol.TypeJavaSymbol getSymbol(String desc) {
     return bytecodeVisitor.convertAsmType(Type.getType(desc)).getSymbol();
   }
 }

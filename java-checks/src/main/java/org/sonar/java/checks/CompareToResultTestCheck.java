@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,16 +23,15 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.expression.MethodInvocationTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Symbol.TypeSymbol;
-import org.sonar.java.resolve.Type.ClassType;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -43,7 +42,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Rule(
   key = "S2200",
@@ -69,14 +67,14 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   }
 
   private boolean isInvalidTest(ExpressionTree operand1, ExpressionTree operand2) {
-    return isNonZeroInt(operand1) && isCompareToResult(operand2)
-      || isNonZeroInt(operand2) && isCompareToResult(operand1);
+    return (isNonZeroInt(operand1) && isCompareToResult(operand2))
+      || (isNonZeroInt(operand2) && isCompareToResult(operand1));
   }
 
   private boolean isCompareToResult(ExpressionTree expression) {
     if (hasSemantic()) {
       if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
-        return isCompareToInvocation((MethodInvocationTreeImpl) expression);
+        return isCompareToInvocation((MethodInvocationTree) expression);
       }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         return isIdentifierContainingCompareToResult((IdentifierTree) expression);
@@ -85,47 +83,41 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private boolean isCompareToInvocation(MethodInvocationTreeImpl invocation) {
-    Symbol method = invocation.getSymbol();
-    if ("compareTo".equals(method.getName()) && invocation.arguments().size() == 1) {
-      TypeSymbol methodOwner = method.owner().enclosingClass();
-      Set<ClassType> superTypes = methodOwner.superTypes();
-      for (ClassType classType : superTypes) {
-        if (classType.is("java.lang.Comparable")) {
-          return true;
-        }
-      }
+  private static boolean isCompareToInvocation(MethodInvocationTree invocation) {
+    Symbol method = invocation.symbol();
+    if ("compareTo".equals(method.name()) && invocation.arguments().size() == 1) {
+      return method.owner().enclosingClass().type().isSubtypeOf("java.lang.Comparable");
     }
     return false;
   }
 
-  private boolean isIdentifierContainingCompareToResult(IdentifierTree identifier) {
-    Symbol variableSymbol = getSemanticModel().getReference(identifier);
-    if (variableSymbol == null) {
+  private static boolean isIdentifierContainingCompareToResult(IdentifierTree identifier) {
+    Symbol variableSymbol = identifier.symbol();
+    if (!variableSymbol.isVariableSymbol()) {
       return false;
     }
-    VariableTree variableDefinition = (VariableTree) getSemanticModel().getTree(variableSymbol);
+    VariableTree variableDefinition = ((Symbol.VariableSymbol) variableSymbol).declaration();
     if (variableDefinition != null) {
       ExpressionTree initializer = variableDefinition.initializer();
-      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isKind(Symbol.MTH)) {
-        Tree method = getSemanticModel().getTree(variableSymbol.owner());
-        return isCompareToInvocation((MethodInvocationTreeImpl) initializer) && !isReassigned(variableSymbol, method);
+      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION) && variableSymbol.owner().isMethodSymbol()) {
+        MethodTree method = ((Symbol.MethodSymbol) variableSymbol.owner()).declaration();
+        return method != null && isCompareToInvocation((MethodInvocationTree) initializer) && !isReassigned(variableSymbol, method);
       }
     }
     return false;
   }
 
-  private boolean isNonZeroInt(ExpressionTree expression) {
+  private static boolean isNonZeroInt(ExpressionTree expression) {
     return isNonZeroIntLiteral(expression)
-      || expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression());
+      || (expression.is(Tree.Kind.UNARY_MINUS) && isNonZeroIntLiteral(((UnaryExpressionTree) expression).expression()));
   }
 
-  private boolean isNonZeroIntLiteral(ExpressionTree expression) {
+  private static boolean isNonZeroIntLiteral(ExpressionTree expression) {
     return expression.is(Tree.Kind.INT_LITERAL) && !"0".equals(((LiteralTree) expression).value());
   }
   
-  private boolean isReassigned(Symbol variableSymbol, Tree method) {
-    Collection<IdentifierTree> usages = getSemanticModel().getUsages(variableSymbol);
+  private static boolean isReassigned(Symbol variableSymbol, Tree method) {
+    Collection<IdentifierTree> usages = variableSymbol.usages();
     ReAssignmentFinder reAssignmentFinder = new ReAssignmentFinder(usages);
     method.accept(reAssignmentFinder);
     return reAssignmentFinder.foundReAssignment;

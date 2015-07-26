@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,25 +19,27 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = CollectionIsEmptyCheck.RULE_KEY,
+  key = "S1155",
   name = "Collection.isEmpty() should be used to test for emptiness",
   tags = {"clumsy"},
   priority = Priority.MAJOR)
@@ -46,9 +48,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("2min")
 public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1155";
-  private static final RuleKey RULE = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
+  private static final String JAVA_UTIL_COLLECTION = "java.util.Collection";
+  private static final MethodMatcher SIZE_METHOD = getSizeMethodInvocationMatcher();
   private JavaFileScannerContext context;
 
   @Override
@@ -59,11 +60,20 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   @Override
+  public void visitClass(ClassTree tree) {
+    for (Tree member : tree.members()) {
+      if (!tree.symbol().type().isSubtypeOf(JAVA_UTIL_COLLECTION) || !member.is(Tree.Kind.METHOD)) {
+        scan(member);
+      }
+    }
+  }
+
+  @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
 
     if (hasCallToSizeMethod(tree) && isEmptyComparison(tree)) {
-      context.addIssue(tree, RULE, "Use isEmpty() to check whether the collection is empty or not.");
+      context.addIssue(tree, this, "Use isEmpty() to check whether the collection is empty or not.");
     }
   }
 
@@ -76,11 +86,7 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
     if (!tree.is(Kind.METHOD_INVOCATION)) {
       return false;
     }
-
-    MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-    return methodInvocationTree.arguments().isEmpty() &&
-      methodInvocationTree.methodSelect().is(Kind.MEMBER_SELECT) &&
-      "size".equals(((MemberSelectExpressionTree) methodInvocationTree.methodSelect()).identifier().name());
+    return SIZE_METHOD.matches((MethodInvocationTree) tree);
   }
 
   private static boolean isEmptyComparison(BinaryExpressionTree tree) {
@@ -112,6 +118,10 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
   private static boolean isOne(ExpressionTree tree) {
     return tree.is(Kind.INT_LITERAL) &&
       "1".equals(((LiteralTree) tree).value());
+  }
+
+  private static MethodMatcher getSizeMethodInvocationMatcher() {
+    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(JAVA_UTIL_COLLECTION)).name("size").withNoParameterConstraint();
   }
 
 }

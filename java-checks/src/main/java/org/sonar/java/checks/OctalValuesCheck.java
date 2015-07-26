@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -33,17 +32,14 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = OctalValuesCheck.RULE_KEY,
+  key = "S1314",
   name = "Octal values should not be used",
-  tags = {"misra", "pitfall"},
+  tags = {"cert", "misra", "pitfall"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1314";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -56,7 +52,7 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(tree.value())) {
-      context.addIssue(tree, ruleKey, "Use decimal values instead of octal ones.");
+      context.addIssue(tree, this, "Use decimal values instead of octal ones.");
     }
   }
 

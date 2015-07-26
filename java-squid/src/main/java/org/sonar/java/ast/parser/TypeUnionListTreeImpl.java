@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,15 +19,15 @@
  */
 package org.sonar.java.ast.parser;
 
-import com.sonar.sslr.api.AstNode;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.TypeTree;
 
 import java.util.List;
 
-public class TypeUnionListTreeImpl extends ListTreeImpl<Tree> {
+public class TypeUnionListTreeImpl extends ListTreeImpl<TypeTree> {
 
-  public TypeUnionListTreeImpl(List<Tree> types, List<AstNode> children) {
-    super(JavaLexer.CATCH_TYPE, types, children);
+  public TypeUnionListTreeImpl(List<TypeTree> types, List<SyntaxToken> separatorsList) {
+    super(JavaLexer.CATCH_TYPE, types, separatorsList);
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,33 +22,46 @@ package org.sonar.java.resolve;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.resolve.Symbol.MethodSymbol;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 
 public class BytecodeMethodVisitor extends MethodVisitor {
 
-  private final MethodSymbol methodSymbol;
+  private final MethodJavaSymbol methodSymbol;
   private final BytecodeVisitor bytecodeVisitor;
+  /**
+   * This counter counts the number of argument annotated with java.lang.Synthetic.
+   * This annotation is added by the asm library for arguments that are in the method descriptor but not in the method signature.
+   * As we rely on method signature (when available) we might end up with less parameter in the method symbol than in the method descriptor (which makes sense as we want to be
+   * more compliant with source than with bytecode). So we assume all synthetic params are the first parameters and count them as we visit.
+   * Then we substract that number from the parameter index to be compliant with what is in MethodSymbol.
+   */
+  private int syntheticArgs;
 
-  BytecodeMethodVisitor(MethodSymbol methodSymbol, BytecodeVisitor bytecodeVisitor) {
+  BytecodeMethodVisitor(MethodJavaSymbol methodSymbol, BytecodeVisitor bytecodeVisitor) {
     super(Opcodes.ASM5);
     this.methodSymbol = methodSymbol;
     this.bytecodeVisitor = bytecodeVisitor;
+    this.syntheticArgs = 0;
   }
 
   @Override
   public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
-    AnnotationInstance annotationInstance = new AnnotationInstance(annotationType.getSymbol());
+    JavaType annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
+    AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
     methodSymbol.metadata().addAnnotation(annotationInstance);
     return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
   }
 
   @Override
   public AnnotationVisitor visitParameterAnnotation(int parameter, String desc, boolean visible) {
-    Type annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
-    AnnotationInstance annotationInstance = new AnnotationInstance(annotationType.getSymbol());
-    methodSymbol.getParameters().scopeSymbols().get(parameter).metadata().addAnnotation(annotationInstance);
-    return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
+    JavaType annotationType = bytecodeVisitor.convertAsmType(org.objectweb.asm.Type.getType(desc));
+    if (annotationType.is("java.lang.Synthetic")) {
+      syntheticArgs++;
+    } else {
+      AnnotationInstanceResolve annotationInstance = new AnnotationInstanceResolve(annotationType.getSymbol());
+      methodSymbol.getParameters().scopeSymbols().get(parameter - syntheticArgs).metadata().addAnnotation(annotationInstance);
+      return new BytecodeAnnotationVisitor(annotationInstance, bytecodeVisitor);
+    }
+    return null;
   }
-
 }

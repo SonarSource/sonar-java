@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,11 +24,9 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
@@ -51,7 +49,7 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 
-  private static final MethodInvocationMatcher WRITE_OBJECT_MATCHER = MethodInvocationMatcher.create()
+  private static final MethodMatcher WRITE_OBJECT_MATCHER = MethodMatcher.create()
     .typeDefinition("java.io.ObjectOutputStream")
     .name("writeObject")
     .addParameter("java.lang.Object");
@@ -82,35 +80,34 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
 
   private void visitInstanceOf(InstanceOfTree instanceOfTree) {
     ExpressionTree expression = instanceOfTree.expression();
-    AbstractTypedTree testedType = (AbstractTypedTree) instanceOfTree.type();
-    if (expression.is(Tree.Kind.IDENTIFIER) && testedType.getSymbolType().is("java.io.Serializable")) {
-      testedSymbols.add(getSemanticModel().getReference((IdentifierTree) expression));
+    if (expression.is(Tree.Kind.IDENTIFIER) && instanceOfTree.type().symbolType().is("java.io.Serializable")) {
+      testedSymbols.add(((IdentifierTree) expression).symbol());
     }
   }
 
   // If we met a test such as "x instanceof Serializable", we suppose that symbol x is Serializable
-  private boolean isTestedSymbol(AbstractTypedTree tree) {
+  private boolean isTestedSymbol(ExpressionTree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = getSemanticModel().getReference((IdentifierTree) tree);
+      Symbol symbol = ((IdentifierTree) tree).symbol();
       return testedSymbols.contains(symbol);
     }
     return false;
   }
 
   private void visitMethodInvocation(MethodInvocationTree methodInvocation) {
-    if (WRITE_OBJECT_MATCHER.matches(methodInvocation, getSemanticModel())) {
-      AbstractTypedTree argument = (AbstractTypedTree) methodInvocation.arguments().get(0);
-      if (!isAcceptableType(argument.getSymbolType()) && !isTestedSymbol(argument)) {
-        addIssue(methodInvocation, "Make the \"" + argument.getSymbolType() + "\" class \"Serializable\" or don't write it.");
+    if (WRITE_OBJECT_MATCHER.matches(methodInvocation)) {
+      ExpressionTree argument = methodInvocation.arguments().get(0);
+      if (!isAcceptableType(argument.symbolType()) && !isTestedSymbol(argument)) {
+        addIssue(methodInvocation, "Make the \"" + argument.symbolType().fullyQualifiedName() + "\" class \"Serializable\" or don't write it.");
       }
     }
   }
 
-  private boolean isAcceptableType(Type argType) {
+  private static boolean isAcceptableType(org.sonar.plugins.java.api.semantic.Type argType) {
     return argType.isSubtypeOf("java.io.Serializable")
       || argType.is("java.lang.Object")
       || argType.isPrimitive()
-      || !argType.isTagged(Type.CLASS);
+      || !argType.isClass();
   }
 
 }

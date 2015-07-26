@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,11 +72,11 @@ public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean hasCommentInside(BlockTree tree) {
+  private static boolean hasCommentInside(BlockTree tree) {
     return tree.closeBraceToken() == null || !tree.closeBraceToken().trivias().isEmpty();
   }
 
-  private boolean hasStatements(BlockTree tree) {
+  private static boolean hasStatements(BlockTree tree) {
     return !tree.body().isEmpty();
   }
 

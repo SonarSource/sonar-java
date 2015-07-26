@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,21 +22,19 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.model.PackageUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -48,24 +46,22 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = UndocumentedApiCheck.RULE_KEY,
+  key = "UndocumentedApi",
   name = "Public types, methods and fields (API) should be documented with Javadoc",
   tags = {"convention"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("30min")
+@SqaleConstantRemediation("10min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();
   private static final Kind[] METHOD_KINDS = PublicApiChecker.methodKinds();
 
   private static final String DEFAULT_FOR_CLASSES = "**";
-  public static final String RULE_KEY = "UndocumentedApi";
 
   @RuleProperty(
     key = "forClasses",
@@ -82,7 +78,6 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private final Pattern setterPattern = Pattern.compile("set[A-Z].*");
   private final Pattern getterPattern = Pattern.compile("(get|is)[A-Z].*");
   private JavaFileScannerContext context;
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -97,9 +92,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageName() != null) {
-      packageName = concatenate(tree.packageName());
-    }
+    packageName = PackageUtils.packageName(tree.packageDeclaration(), "/");
     super.visitCompilationUnit(tree);
   }
 
@@ -131,22 +124,22 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private void visitNode(Tree tree) {
     if (!isExcluded(tree)) {
-      String javadoc = publicApiChecker.getApiJavadoc(tree);
+      String javadoc = PublicApiChecker.getApiJavadoc(tree);
       if (javadoc == null) {
-        context.addIssue(tree, ruleKey, "Document this public " + getType(tree) + ".");
+        context.addIssue(tree, this, "Document this public " + getType(tree) + ".");
       } else if (!javadoc.contains("{@inheritDoc}")) {
         List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
         if (!undocumentedParameters.isEmpty()) {
-          context.addIssue(tree, ruleKey, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
+          context.addIssue(tree, this, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
         }
         if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
-          context.addIssue(tree, ruleKey, "Document this method return value.");
+          context.addIssue(tree, this, "Document this method return value.");
         }
       }
     }
   }
 
-  private String getType(Tree tree) {
+  private static String getType(Tree tree) {
     String result = "";
     if (tree.is(Tree.Kind.CLASS)) {
       result = "class";
@@ -174,8 +167,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     if (!classTrees.isEmpty() && !classTrees.peek().is(Tree.Kind.INTERFACE) && tree.is(Tree.Kind.METHOD)) {
       MethodTree methodTree = (MethodTree) tree;
       String name = methodTree.simpleName().name();
-      return setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1 ||
-        getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty();
+      return (setterPattern.matcher(name).matches() && methodTree.parameters().size() == 1) ||
+        (getterPattern.matcher(name).matches() && methodTree.parameters().isEmpty());
     }
     return false;
   }
@@ -212,7 +205,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return patterns;
   }
 
-  private List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
+  private static List<String> getUndocumentedParameters(String javadoc, List<String> parameters) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     for (String parameter : parameters) {
       if (!hasParamJavadoc(javadoc, parameter)) {
@@ -222,7 +215,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return builder.build();
   }
 
-  private List<String> getParameters(Tree tree) {
+  private static List<String> getParameters(Tree tree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     if (tree.is(METHOD_KINDS)) {
       MethodTree methodTree = (MethodTree) tree;
@@ -251,30 +244,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
     return false;
   }
 
-  private boolean hasReturnJavadoc(String comment) {
+  private static boolean hasReturnJavadoc(String comment) {
     return comment.contains("@return");
-  }
-
-  private String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
-
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push("/");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece : pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
   }
 
 }

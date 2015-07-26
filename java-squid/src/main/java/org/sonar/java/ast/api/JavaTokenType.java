@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.TokenType;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-public enum JavaTokenType implements TokenType, GrammarRuleKey {
+public enum JavaTokenType implements GrammarRuleKey {
   CHARACTER_LITERAL,
   INTEGER_LITERAL,
   FLOAT_LITERAL,
@@ -35,19 +33,12 @@ public enum JavaTokenType implements TokenType, GrammarRuleKey {
 
   IDENTIFIER;
 
-  @Override
   public String getName() {
     return name();
   }
 
-  @Override
   public String getValue() {
     return name();
-  }
-
-  @Override
-  public boolean hasToBeSkippedFromAst(AstNode node) {
-    return false;
   }
 
 }

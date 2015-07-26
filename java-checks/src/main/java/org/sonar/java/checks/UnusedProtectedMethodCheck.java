@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
-  key = UnusedProtectedMethodCheck.RULE_KEY,
+  key = "UnusedProtectedMethod",
   name = "Unused protected methods should be removed",
   tags = {"unused"},
   priority = Priority.MAJOR)
@@ -39,7 +39,6 @@ import org.sonar.squidbridge.api.SourceFile;
 @SqaleConstantRemediation("10min")
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
-  public static final String RULE_KEY = "UnusedProtectedMethod";
   private AsmClass asmClass;
 
   @Override
@@ -49,8 +48,7 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   @Override
   public void visitMethod(AsmMethod asmMethod) {
-    if (!asmMethod.isUsed() && asmMethod.isProtected() && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)
-      && !asmMethod.isInherited()) {
+    if (isUnusedNonOverridenProtectedMethod(asmMethod) && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)) {
       CheckMessage message = new CheckMessage(this, "Protected method '" + asmMethod.getName() + "(...)' is never used.");
       int line = getMethodLineNumber(asmMethod);
       if (line > 0) {
@@ -61,9 +59,8 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
     }
   }
 
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
+  private static boolean isUnusedNonOverridenProtectedMethod(AsmMethod asmMethod) {
+    return !asmMethod.isUsed() && asmMethod.isProtected() && !asmMethod.isInherited();
   }
 
 }

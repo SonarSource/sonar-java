@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,9 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
+import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class MethodReferenceTreeImpl extends AbstractTypedTree implements MethodReferenceTree {
@@ -40,16 +41,13 @@ public class MethodReferenceTreeImpl extends AbstractTypedTree implements Method
   private IdentifierTree method;
   private TypeArguments typeArgument;
 
-  public MethodReferenceTreeImpl(Tree expression, SyntaxToken doubleColon, AstNode... children) {
+  public MethodReferenceTreeImpl(Tree expression, InternalSyntaxToken doubleColon) {
     super(JavaLexer.METHOD_REFERENCE);
     this.expression = expression;
     this.doubleColon = doubleColon;
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
-  public void complete(@Nullable TypeArguments typeArgument, IdentifierTree method) {
+  public void complete(@Nullable TypeArguments typeArgument, IdentifierTreeImpl method) {
     this.typeArgument = typeArgument;
     this.method = method;
   }
@@ -67,8 +65,8 @@ public class MethodReferenceTreeImpl extends AbstractTypedTree implements Method
   @Override
   public Iterator<Tree> childrenIterator() {
     return Iterators.concat(
-        Iterators.singletonIterator(expression),
-        Iterators.singletonIterator(method));
+      typeArgument != null ? Iterators.<Tree>singletonIterator(typeArgument) : Iterators.<Tree>emptyIterator(),
+      Iterators.forArray(expression, doubleColon, method));
   }
 
   @Override

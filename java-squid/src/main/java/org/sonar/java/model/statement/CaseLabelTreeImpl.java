@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,9 +20,6 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -33,19 +30,20 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
+  private final InternalSyntaxToken caseOrDefaultKeyword;
   @Nullable
   private final ExpressionTree expression;
+  private final InternalSyntaxToken colonToken;
 
-  public CaseLabelTreeImpl(@Nullable ExpressionTree expression, AstNode... children) {
+  public CaseLabelTreeImpl(InternalSyntaxToken caseOrDefaultKeyword, @Nullable ExpressionTree expression, InternalSyntaxToken colonToken) {
     super(JavaLexer.SWITCH_LABEL);
+    this.caseOrDefaultKeyword = caseOrDefaultKeyword;
     this.expression = expression;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
+    this.colonToken = colonToken;
   }
 
   @Override
@@ -55,7 +53,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken caseOrDefaultKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.CASE, JavaKeyword.DEFAULT));
+    return caseOrDefaultKeyword;
   }
 
   @Nullable
@@ -66,7 +64,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public SyntaxToken colonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.COLON));
+    return colonToken;
   }
 
   @Override
@@ -76,8 +74,10 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(caseOrDefaultKeyword),
+      expression != null ? Iterators.<Tree>singletonIterator(expression) : Iterators.<Tree>emptyIterator(),
+      Iterators.<Tree>singletonIterator(colonToken));
   }
 
 }

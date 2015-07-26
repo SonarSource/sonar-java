@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.resolve.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -67,7 +67,7 @@ public class UnusedTypeParameterCheck extends SubscriptionBaseVisitor {
       }
       for (TypeParameterTree typeParameter : typeParameters) {
         Symbol symbol = getSemanticModel().getSymbol(typeParameter);
-        if (getSemanticModel().getUsages(symbol).isEmpty()) {
+        if (symbol.usages().isEmpty()) {
           String message = new StringBuilder(typeParameter.identifier().name())
               .append(" is not used in the ")
               .append(messageEnd).toString();

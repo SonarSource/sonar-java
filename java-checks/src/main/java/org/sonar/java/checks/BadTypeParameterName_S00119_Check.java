@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
 @SqaleConstantRemediation("10min")
 public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
-  private static final String DEFAULT_FORMAT = "^[A-Z]$";
+  private static final String DEFAULT_FORMAT = "^[A-Z][0-9]?$";
 
   @RuleProperty(
       key = "format",

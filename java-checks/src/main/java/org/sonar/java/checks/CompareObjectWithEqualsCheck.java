@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,35 +19,29 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = CompareObjectWithEqualsCheck.RULE_KEY,
+  key = "S1698",
   name = "Objects should be compared with \"equals()\"",
   tags = {"cert", "cwe"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1698";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   private JavaFileScannerContext context;
 
@@ -66,59 +60,48 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
     }
   }
 
-  // TODO(Godin): It seems to be quite common need - operate with signature of methods, so this operation should be generalized and simplified.
-  private boolean isEquals(MethodTree tree) {
-    String methodName = tree.simpleName().name();
-    return "equals".equals(methodName) && hasObjectParam(tree) && returnsBoolean(tree);
-  }
-
-  private boolean returnsBoolean(MethodTree tree) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    // TODO(Godin): Not very convenient way to get a return type
-    return (methodSymbol != null) && (methodSymbol.getReturnType().getType().isTagged(Type.BOOLEAN));
-  }
-
-  private boolean hasObjectParam(MethodTree tree) {
-    boolean result = false;
-    if (tree.parameters().size() == 1 && tree.parameters().get(0).type().is(Tree.Kind.IDENTIFIER)) {
-      result = ((IdentifierTree) tree.parameters().get(0).type()).name().endsWith("Object");
-    }
-    return result;
+  private static boolean isEquals(MethodTree tree) {
+    return ((MethodTreeImpl) tree).isEqualsMethod();
   }
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     super.visitBinaryExpression(tree);
     if (tree.is(Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO)) {
-      Type leftOpType = ((AbstractTypedTree) tree.leftOperand()).getSymbolType();
-      Type rightOpType = ((AbstractTypedTree) tree.rightOperand()).getSymbolType();
+      Type leftOpType = tree.leftOperand().symbolType();
+      Type rightOpType = tree.rightOperand().symbolType();
       if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)) {
-        context.addIssue(tree, ruleKey, "Change this comparison to use the equals method.");
+        context.addIssue(tree, this, "Change this comparison to use the equals method.");
       }
     }
   }
 
-  private boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
+  private static boolean hasObjectOperand(Type leftOpType, Type rightOpType) {
     return isObject(leftOpType) || isObject(rightOpType);
   }
 
-  private boolean isExcluded(Type leftOpType, Type rightOpType) {
+  private static boolean isExcluded(Type leftOpType, Type rightOpType) {
     return isNullComparison(leftOpType, rightOpType) || isNumericalComparison(leftOpType, rightOpType) || isJavaLangClassComparison(leftOpType, rightOpType);
   }
 
-  private boolean isObject(Type operandType) {
-    return operandType.erasure().isTagged(Type.CLASS) && !operandType.getSymbol().isEnum();
+  private static boolean isObject(Type operandType) {
+    return operandType.erasure().isClass() && !operandType.symbol().isEnum();
   }
 
-  private boolean isNullComparison(Type leftOpType, Type rightOpType) {
-    return leftOpType.isTagged(Type.BOT) || rightOpType.isTagged(Type.BOT);
+  private static boolean isNullComparison(Type leftOpType, Type rightOpType) {
+    return isBot(leftOpType) || isBot(rightOpType);
   }
 
-  private boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
+  private static boolean isNumericalComparison(Type leftOperandType, Type rightOperandType) {
     return leftOperandType.isNumerical() || rightOperandType.isNumerical();
   }
 
-  private boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
+  private static boolean isJavaLangClassComparison(Type leftOpType, Type rightOpType) {
     return leftOpType.is("java.lang.Class") || rightOpType.is("java.lang.Class");
+  }
+
+  private static boolean isBot(Type type) {
+    return ((JavaType) type).isTagged(JavaType.BOT);
+
   }
 }

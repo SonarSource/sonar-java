@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,33 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ConcatenationWithStringValueOfCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/ConcatenationWithStringValueOfCheck.java"),
-      new VisitorsBridge(new ConcatenationWithStringValueOfCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Directly append the argument of String.valueOf().")
-      .next().atLine(9)
-      .next().atLine(10)
-      .next().atLine(19)
-      .next().atLine(20)
-      .next().atLine(23)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ConcatenationWithStringValueOfCheck.java", new ConcatenationWithStringValueOfCheck());
   }
 
 }

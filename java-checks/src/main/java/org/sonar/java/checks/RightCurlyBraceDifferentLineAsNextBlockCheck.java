@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,19 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
-import com.sonar.sslr.api.AstAndTokenVisitor;
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.checks.SquidCheck;
-import org.sonar.sslr.parser.LexerlessGrammar;
-
-import java.util.Set;
 
 @Rule(
   key = "RightCurlyBraceDifferentLineAsNextBlockCheck",
@@ -40,30 +34,12 @@ import java.util.Set;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class RightCurlyBraceDifferentLineAsNextBlockCheck extends SquidCheck<LexerlessGrammar> implements AstAndTokenVisitor {
-
-  private static final Set<String> NEXT_BLOCKS = ImmutableSet.of(
-      "else",
-      "catch",
-      "finally");
-
-  private boolean lastTokenIsRightCurlyBrace;
-  private int lastTokenLine;
+public class RightCurlyBraceDifferentLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {
 
   @Override
-  public void visitFile(AstNode astNode) {
-    lastTokenIsRightCurlyBrace = false;
-    lastTokenLine = -1;
-  }
-
-  @Override
-  public void visitToken(Token token) {
-    if (lastTokenIsRightCurlyBrace && lastTokenLine == token.getLine() && NEXT_BLOCKS.contains(token.getValue())) {
-      getContext().createLineViolation(this, "Move this \"" + token.getValue() + "\" keyword to a new dedicated line.", token);
+  protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
+    if (syntaxToken.line() == previousBlock.closeBraceToken().line()) {
+      addIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" keyword to a new dedicated line.");
     }
-
-    lastTokenIsRightCurlyBrace = "}".equals(token.getValue());
-    lastTokenLine = token.getLine();
   }
-
 }

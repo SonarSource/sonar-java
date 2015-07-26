@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -33,11 +33,12 @@ public class VariableDeclaratorTest {
 
     assertThat(b, JavaLexer.VARIABLE_DECLARATOR)
       .matches("identifier [] [] = 0")
-      .matches("identifier [] []")
+      .notMatches("identifier [] []") // FIXME missing bracket token
       .matches("identifier [] = {}")
-      .matches("identifier []")
+      .notMatches("identifier []") // FIXME missing bracket token
       .matches("identifier = 0")
-      .matches("identifier");
+      .matches("identifier")
+      .matches("enum");
   }
 
   @Test

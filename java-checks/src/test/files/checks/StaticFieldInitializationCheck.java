@@ -6,7 +6,7 @@ class A {
       return instance;
     }
 
-    instance = new Object();  // Noncompliant
+    instance = new Object();  // Noncompliant {{Synchronize this lazy initialization of 'instance'}}
     return instance;
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
-import com.sonar.sslr.api.AstNodeType;
+import org.sonar.sslr.grammar.GrammarRuleKey;
 
 /**
  * Common interface for all nodes in a syntax tree.
@@ -34,7 +34,7 @@ public interface Tree {
 
   void accept(TreeVisitor visitor);
 
-  public enum Kind implements AstNodeType {
+  enum Kind implements GrammarRuleKey {
     /**
      * {@link CompilationUnitTree}
      */
@@ -77,9 +77,9 @@ public interface Tree {
     INITIALIZER(BlockTree.class),
 
     /**
-     * {@link BlockTree}
+     * {@link StaticInitializerTree}
      */
-    STATIC_INITIALIZER(BlockTree.class),
+    STATIC_INITIALIZER(StaticInitializerTree.class),
 
     /**
      * {@link MethodTree}
@@ -599,7 +599,20 @@ public interface Tree {
      */
     TYPE_PARAMETER(TypeParameterTree.class),
 
+    /**
+     * {@link ImportTree}
+     */
     IMPORT(ImportTree.class),
+
+    /**
+     * {@link PackageTree}
+     */
+    PACKAGE(PackageDeclarationTree.class),
+
+    /**
+     * {@link ArrayDimensionTree}
+     */
+    ARRAY_DIMENSION(ArrayDimensionTree.class),
 
     /**
      *An implementation-reserved node.
@@ -624,11 +637,19 @@ public interface Tree {
     /**
      * {@link TypeParameters}
      */
-    TYPE_PARAMETERS(TypeParameters.class);
+    TYPE_PARAMETERS(TypeParameters.class),
+    /**
+     * {@link Arguments}
+     */
+    ARGUMENTS(Arguments.class),
+    /**
+     * {@link ListTree}
+     */
+    LIST(ListTree.class);
 
     final Class<? extends Tree> associatedInterface;
 
-    private Kind(Class<? extends Tree> associatedInterface) {
+    Kind(Class<? extends Tree> associatedInterface) {
       this.associatedInterface = associatedInterface;
     }
 

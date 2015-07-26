@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api.tree;
 
 import com.google.common.annotations.Beta;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.Nullable;
 
@@ -29,7 +30,7 @@ import javax.annotation.Nullable;
  * JLS 8.3, 14.4
  *
  * <pre>
- *   {@link #modifiers()} {@link #type()} {@link #simpleName()} {@link #initializer()} ;
+ *   {@link #modifiers()} {@link #type()} {@link #simpleName()} {@link #initializer()} {@link #endToken()}
  * </pre>
  *
  * @since Java 1.3
@@ -39,11 +40,16 @@ public interface VariableTree extends StatementTree {
 
   ModifiersTree modifiers();
 
-  Tree type();
+  TypeTree type();
 
   IdentifierTree simpleName();
 
   @Nullable
   ExpressionTree initializer();
+
+  Symbol symbol();
+
+  @Nullable
+  SyntaxToken endToken();
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,7 +60,7 @@ public class GarbageCollectorCalledCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isGarbageCollectorCall(MemberSelectExpressionTree mset) {
+  private static boolean isGarbageCollectorCall(MemberSelectExpressionTree mset) {
     if ("gc".equals(mset.identifier().name())) {
       if (mset.expression().is(Tree.Kind.IDENTIFIER)) {
         //detect call to System.gc()

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,8 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-import org.apache.maven.model.Build;
-import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
@@ -58,7 +56,7 @@ public class JavaClasspathTest {
 
   @Test
   public void properties() throws Exception {
-    assertThat(JavaClasspathProperties.getProperties()).hasSize(2);
+    assertThat(JavaClasspathProperties.getProperties()).hasSize(4);
   }
 
   @Test
@@ -72,21 +70,7 @@ public class JavaClasspathTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "lib/hello.jar");
 
-    javaClasspath = new JavaClasspath(project, settings, fs, mock(MavenProject.class));
-    assertThat(javaClasspath.getElements()).hasSize(2);
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
-    assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
-  }
-
-  @Test
-  public void old_maven_mojo_binaries_filled_but_not_libraries() throws Exception {
-    settings.setProperty("sonar.binaries", "bin");
-    MavenProject pom = mock(MavenProject.class);
-    when(pom.getCompileClasspathElements()).thenReturn(Lists.newArrayList("hello.jar"));
-    Build build = mock(Build.class);
-    when(build.getOutputDirectory()).thenReturn("src/test/files/classpath/bin");
-    when(pom.getBuild()).thenReturn(build);
-    javaClasspath = new JavaClasspath(project, settings, fs, pom);
+    javaClasspath = new JavaClasspath(project, settings, fs);
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
@@ -116,6 +100,17 @@ public class JavaClasspathTest {
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
+  }
+
+  @Test
+  public void directory_specified_for_library_should_find_jars() {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "lib");
+    javaClasspath = createJavaClasspath();
+    assertThat(javaClasspath.getElements()).hasSize(3);
+    assertThat(javaClasspath.getElements().get(0)).exists();
+    assertThat(javaClasspath.getElements().get(1)).exists();
+    assertThat(javaClasspath.getElements().get(2)).exists();
+    assertThat(javaClasspath.getElements()).onProperty("name").contains("lib","hello.jar", "world.jar");
   }
 
   @Test
@@ -243,7 +238,7 @@ public class JavaClasspathTest {
 
   @Test
   public void invalid_sonar_java_binaries_should_fail_analysis() {
-    settings.setProperty("sonar.java.binaries", "dummyDir");
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
     checkIllegalStateException("No files nor directories matching 'dummyDir'");
   }
 

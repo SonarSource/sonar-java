@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,11 +20,10 @@
 package org.sonar.java.checks;
 
 import org.mockito.Matchers;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
+import org.sonar.api.batch.fs.InputPath;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
@@ -57,19 +56,10 @@ public class BytecodeFixture {
       throw new IllegalArgumentException("File '" + file.getName() + "' not found.");
     }
     SensorContext sensorContext = mock(SensorContext.class);
-    when(sensorContext.getResource(Matchers.any(org.sonar.api.resources.File.class))).thenAnswer(new Answer<org.sonar.api.resources.File>() {
-      @Override
-      public org.sonar.api.resources.File answer(InvocationOnMock invocation) throws Throwable {
-        org.sonar.api.resources.File response = (org.sonar.api.resources.File) invocation.getArguments()[0];
-        response.setEffectiveKey("");
-        return response;
-      }
-    });
-    Project project = mock(Project.class);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
-    when(project.getFileSystem()).thenReturn(pfs);
-    when(pfs.getBasedir()).thenReturn(baseDir);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(project, null, new SuppressWarningsFilter());
+    when(sensorContext.getResource(Matchers.any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
+    DefaultFileSystem fs = new DefaultFileSystem();
+    fs.add(new DefaultInputFile(file.getPath()));
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
     javaResourceLocator.setSensorContext(sensorContext);
     JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), javaResourceLocator, visitor);
     javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));

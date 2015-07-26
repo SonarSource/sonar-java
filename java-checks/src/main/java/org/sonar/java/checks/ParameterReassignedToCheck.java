@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,15 +20,13 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.resolve.Symbol;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -45,7 +43,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.Set;
 
 @Rule(
-  key = ParameterReassignedToCheck.RULE_KEY,
+  key = "S1226",
   name = "Method parameters, caught exceptions and foreach variables should not be reassigned",
   tags = {"misra", "pitfall"},
   priority = Priority.MAJOR)
@@ -54,10 +52,7 @@ import java.util.Set;
 @SqaleConstantRemediation("5min")
 public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1226";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
-  private final Set<Symbol.VariableSymbol> variables = Sets.newHashSet();
+  private final Set<Symbol> variables = Sets.newHashSet();
 
   private JavaFileScannerContext context;
   private SemanticModel semanticModel;
@@ -77,19 +72,19 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
   @Override
   public void visitMethod(MethodTree tree) {
     for (VariableTree parameterTree : tree.parameters()) {
-      variables.add(((VariableTreeImpl) parameterTree).getSymbol());
+      variables.add(parameterTree.symbol());
     }
     super.visitMethod(tree);
     for (VariableTree parameterTree : tree.parameters()) {
-      variables.remove(((VariableTreeImpl) parameterTree).getSymbol());
+      variables.remove(parameterTree.symbol());
     }
   }
 
   @Override
   public void visitCatch(CatchTree tree) {
-    variables.add(((VariableTreeImpl) tree.parameter()).getSymbol());
+    variables.add(tree.parameter().symbol());
     super.visitCatch(tree);
-    variables.remove(((VariableTreeImpl) tree.parameter()).getSymbol());
+    variables.remove(tree.parameter().symbol());
   }
 
   @Override
@@ -114,9 +109,9 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
   private void checkExpression(ExpressionTree tree) {
     if (hasSemanticModel() && tree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) tree;
-      Symbol reference = semanticModel.getReference(identifier);
-      if (reference != null && reference.isKind(Symbol.VAR) && variables.contains(reference)) {
-        context.addIssue(identifier, ruleKey, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
+      Symbol reference = identifier.symbol();
+      if (reference.isVariableSymbol() && variables.contains(reference)) {
+        context.addIssue(identifier, this, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
       }
     }
   }

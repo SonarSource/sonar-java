@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<!--
+    $Id: ssl.xml 481833 2006-12-03 17:32:52Z niallp $
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+   
+         http://www.apache.org/licenses/LICENSE-2.0
+   
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<!--
+// ======================================================================== 78
+-->
+<document>
+
+    <properties>
+        <title>Secure Socket Layer and Web Applications</title>
+    </properties>
+
+    <body>
+
+        <section href="ssl" name="Secure Socket Layer and Web Applications">
+
+            <a name="overview"/>
+            <subsection name="Overview">
+
+                <p>
+                    Many web applications, especially those deployed for
+                    e-commerce, necessitate the
+                    transmission of sensitive data between the web server and
+                    the client browser. This data
+                    may include passwords, credit card numbers, bank account
+                    numbers or any other
+                    information that users would not want to divulge to the
+                    general public. To protect
+                    sensitive data during transmission, application developers
+                    typically use the Secure
+                    Sockets Layer (SSL) and its companion protocol, HTTP over
+                    Secure Sockets Layer
+                    (HTTPS). HTTPS employs SSL to protect data by encrypting
+                    it at the source, be it the
+                    server or the client, and decrypting it at the
+                    destination. This prevents anyone monitoring
+                    Internet data transmissions from easily capturing this
+                    data. The client and server
+                    exchange public keys to enable encryption and decryption
+                    to occur.
+                </p>
+
+                <p>
+                    The encryption/decryption process comes at a performance
+                    price, however. The
+                    throughput of data for a web server transmitting via HTTPS
+                    is often as little as one-tenth
+                    that of data transmission via HTTP. For this reason, it is
+                    undesirable to deploy an entire
+                    web application under SSL. For fastest performance, it is
+                    best to deploy a web
+                    application under HTTP and employ HTTPS only for those
+                    pages and processes that
+                    transmit sensitive data.
+                </p>
+
+            </subsection>
+
+            <a name="mixing"/>
+            <subsection name="Mixing Protocols in Web Applications">
+
+                <p>
+                    Switching back and forth between the two protocols can
+                    require hard-coding the protocol
+                    and full URL in every link to each resource in the web
+                    application. This creates an
+                    ongoing maintenance headache for developers each time a
+                    server name changes or secure
+                    protocol requirements change for resources in the web app.
+                </p>
+
+                <p>
+                    Another significant hazard is that there is nothing to
+                    prevent a user from specifying the
+                    wrong protocol by manually entering a URL into the
+                    browser. The penalty for manually
+                    specifying HTTPS for a page or servlet that does not
+                    require HTTPS is reduced
+                    performance. Far worse is the penalty for manually
+                    specifying HTTP for non-secure
+                    access of a page that does require HTTPS: public exposure
+                    of sensitive data.
+                </p>
+
+            </subsection>
+
+            <a name="help"/>
+            <subsection name="Help from Deployment Descriptor">
+
+                <p>
+                    To help overcome the problem of non-secure access of
+                    sensitive data, the Java Servlet
+                    Specification (versions 2.2 and 2.3) defines the
+                    transport-guarantee element of the
+                    web.xml deployment descriptor file. The
+                    transport-guarantee element must specify one
+                    of three types of protection for communication between
+                    client and server: NONE,
+                    INTEGRAL, or CONFIDENTIAL. For most containers a
+                    specification of INTEGRAL
+                    or CONFIDENTIAL is treated as a requirement for SSL usage.
+                    Web application
+                    containers will prevent users from accessing web resources
+                    over HTTP if they have been
+                    so specified.
+                </p>
+
+                <p>
+                    The implementation for blocking HTTP access to web
+                    resources specified as INTEGRAL
+                    or CONFIDENTIAL varies from container to container. If a
+                    user attempts to access such
+                    a resource over HTTP, some containers will present that
+                    user with an error message
+                    instructing them to use the HTTPS protocol for accessing
+                    the requested resource. Other
+                    containers will actually redirect the request using the
+                    HTTPS protocol, but then continue
+                    using the HTTPS protocol for all subsequent requests, even
+                    those for resources with a
+                    transport-guarantee specification of NONE.
+                </p>
+
+            </subsection>
+
+            <a name="sslext"/>
+            <subsection name="The sslext Extension">
+
+                <p>
+                    An extension to version 1.1, named sslext, helps solve many
+                    of the HTTP/HTTPS switching issues. It extends the ActionConfig class,
+                    RequestProcessor, and Plugin classes to
+                    define a framework where developers may specify the
+                    transmission protocol behavior for
+                    Struts applications. Within the Struts configuration file,
+                    developers specify which action
+                    requests require HTTPS transmission and which should use
+                    HTTP. Developers can also
+                    specify whether to redirect "improperly-protocoled"
+                    requests to the correct protocol.
+                </p>
+
+                <p>
+                    In addition to these extensions, the &lt;html:link> and
+                    the &lt;html:form> tags have been
+                    extended. In these extensions, the Struts actions
+                    specified in either of these tags are
+                    analyzed to determine the protocol that should be used in
+                    requesting that action. The
+                    HTML generated by these tags will specify the proper
+                    protocol. An additional custom
+                    tag is defined for allowing users to specify the
+                    transmission protocol for an individual
+                    JSP. This is most often used for form-based authentication
+                    pages.
+                </p>
+
+                <p>
+                    The sslext library may be obtained from
+                    <a href="http://sslext.sourceforge.net">
+                        http://sslext.sourceforge.net</a>
+                </p>
+
+            </subsection>
+
+            <a name="legacy"/>
+            <subsection name="Legacy Browser Issue">
+
+                <p>
+                    One additional complication faced by developers of web
+                    applications is that some
+                    browsers (e.g. pre-6.0 versions of Netscape Navigator)
+                    will treat requests to different
+                    protocols and ports on the same server as requests to
+                    different domains. This causes
+                    these browsers to initiate a new session each time a
+                    different protocol or port is specified
+                    in a request. This problem can only be solved at the
+                    container level. Some containers
+                    have a "session domain" or "cookie domain" configuration
+                    parameter to allow the session
+                    to be shared across different servers in the same domain.
+                    As an example, the Weblogic
+                    Server has a "CookieDomain" property configured in its
+                    weblogic.xml deployment
+                    descriptor. Thankfully, the effects of this problem are
+                    diminishing as people upgrade
+                    their browsers to the current versions.
+                </p>
+
+            </subsection>
+
+            <a name="containers"/>
+            <subsection name="Configuring Containers for SSL">
+                <p>
+                    The procedure for configuring SSL for a container will be
+                    specific to that container. The
+                    procedure for enabling SSL for Tomcat can be found
+                    <a href="http://tomcat.apache.org/tomcat-5.5-doc/ssl-howto.html">
+                        here</a>
+                    .
+                </p>
+            </subsection>
+
+        </section>
+    </body>
+</document>

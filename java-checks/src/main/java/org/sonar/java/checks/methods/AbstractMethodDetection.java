@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,7 @@ import java.util.List;
 
 public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
 
-  private List<MethodInvocationMatcher> matchers;
+  private List<MethodMatcher> matchers;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -39,37 +39,37 @@ public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      for (MethodInvocationMatcher invocationMatcher : matchers()) {
+      for (MethodMatcher invocationMatcher : matchers()) {
         checkInvocation(tree, invocationMatcher);
       }
     }
   }
 
-  private void checkInvocation(Tree tree, MethodInvocationMatcher invocationMatcher) {
+  private void checkInvocation(Tree tree, MethodMatcher invocationMatcher) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) tree;
-      if (invocationMatcher.matches(mit, getSemanticModel())) {
-        onMethodFound(mit);
+      if (invocationMatcher.matches(mit)) {
+        onMethodInvocationFound(mit);
       }
     } else if (tree.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) tree;
-      if (invocationMatcher.matches(newClassTree, getSemanticModel())) {
+      if (invocationMatcher.matches(newClassTree)) {
         onConstructorFound(newClassTree);
       }
     }
   }
 
-  protected abstract List<MethodInvocationMatcher> getMethodInvocationMatchers();
+  protected abstract List<MethodMatcher> getMethodInvocationMatchers();
 
-  protected void onMethodFound(MethodInvocationTree mit) {
-    //Do nothing by default
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    // Do nothing by default
   }
 
   protected void onConstructorFound(NewClassTree newClassTree) {
     // Do nothing by default
   }
 
-  private List<MethodInvocationMatcher> matchers() {
+  private List<MethodMatcher> matchers() {
     if (matchers == null) {
       matchers = getMethodInvocationMatchers();
     }

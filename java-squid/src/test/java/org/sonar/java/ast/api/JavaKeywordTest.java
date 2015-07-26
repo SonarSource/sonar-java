@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,11 +19,9 @@
  */
 package org.sonar.java.ast.api;
 
-import com.sonar.sslr.api.AstNode;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class JavaKeywordTest {
 
@@ -32,11 +30,9 @@ public class JavaKeywordTest {
     assertThat(JavaKeyword.values()).hasSize(51);
     assertThat(JavaKeyword.keywordValues()).hasSize(JavaKeyword.values().length);
 
-    AstNode astNode = mock(AstNode.class);
     for (JavaKeyword keyword : JavaKeyword.values()) {
       assertThat(keyword.getName()).isEqualTo(keyword.name());
       assertThat(keyword.getValue()).isNotNull();
-      assertThat(keyword.hasToBeSkippedFromAst(astNode)).isFalse();
     }
   }
 

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -38,7 +38,7 @@ import java.util.Set;
 
 @Rule(
   key = "S1158",
-  name = "Primitive wrappers should not be instantiated only to perform a \"toString\" conversion",
+  name = "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
   tags = {"clumsy"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
@@ -73,7 +73,7 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private String getNewlyCreatedClassName(MethodInvocationTree mit) {
+  private static String getNewlyCreatedClassName(MethodInvocationTree mit) {
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
     if (mset.expression().is(Tree.Kind.NEW_CLASS)) {
       Tree classId = ((NewClassTree) mset.expression()).identifier();
@@ -86,7 +86,7 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     return "";
   }
 
-  private boolean isCallingToString(MethodInvocationTree mit) {
+  private static boolean isCallingToString(MethodInvocationTree mit) {
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
       return "toString".equals(mset.identifier().name());

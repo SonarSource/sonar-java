@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
-import com.sonar.sslr.api.AstNode;
+import com.google.common.collect.Iterators;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,21 +40,16 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   @Nullable
   private final InternalSyntaxToken closeBracketToken;
 
-  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters, List<AstNode> children, InternalSyntaxToken closeBracketToken) {
-    super(JavaLexer.TYPE_PARAMETERS, typeParameters, ImmutableList.<AstNode>of());
+  public TypeParameterListTreeImpl(InternalSyntaxToken openBracketToken, List<TypeParameterTree> typeParameters,
+    List<SyntaxToken> separators, InternalSyntaxToken closeBracketToken) {
+    super(JavaLexer.TYPE_PARAMETERS, typeParameters, separators);
 
     this.openBracketToken = openBracketToken;
     this.closeBracketToken = closeBracketToken;
-
-    addChild(openBracketToken);
-    for (AstNode child : children) {
-      addChild(child);
-    }
-    addChild(closeBracketToken);
   }
 
-  public TypeParameterListTreeImpl(){
-    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<AstNode>of());
+  public TypeParameterListTreeImpl() {
+    super(JavaLexer.TYPE_PARAMETERS, ImmutableList.<TypeParameterTree>of(), ImmutableList.<SyntaxToken>of());
     this.openBracketToken = null;
     this.closeBracketToken = null;
   }
@@ -77,12 +73,10 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return ImmutableList.<Tree>builder().addAll(this).build().iterator();
-  }
-
-  @Override
-  public boolean isLeaf() {
-    return false;
+    return Iterators.concat(
+      Iterators.singletonIterator(openBracketToken),
+      super.childrenIterator(),
+      Iterators.singletonIterator(closeBracketToken));
   }
 
   @Override

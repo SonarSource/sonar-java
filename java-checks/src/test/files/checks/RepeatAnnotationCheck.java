@@ -1,5 +1,5 @@
 class A{
-  @SomeAnnotations({ //Non-Compliant
+  @SomeAnnotations({ // Noncompliant {{Remove the 'SomeAnnotations' wrapper from this annotation group}}
       @SomeAnnotation("a"),
       @SomeAnnotation("b"),
       @SomeAnnotation("c"),

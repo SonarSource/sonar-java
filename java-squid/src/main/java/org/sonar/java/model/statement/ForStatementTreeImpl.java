@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,34 +20,45 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.ast.api.JavaPunctuator;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
-import java.util.List;
 
 public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
-  private final List<StatementTree> initializer;
+  private final InternalSyntaxToken forKeyword;
+  private final InternalSyntaxToken openParenToken;
+  private final ListTree<StatementTree> initializer;
+  private final InternalSyntaxToken firstSemicolonToken;
   @Nullable
   private final ExpressionTree condition;
-  private final List<StatementTree> update;
+  private final InternalSyntaxToken secondSemicolonToken;
+  private final ListTree<StatementTree> update;
+  private final InternalSyntaxToken closeParenToken;
   private final StatementTree statement;
 
-  public ForStatementTreeImpl(List<StatementTree> initializer, @Nullable ExpressionTree condition, List<StatementTree> update, StatementTree statement) {
+  public ForStatementTreeImpl(InternalSyntaxToken forKeyword, InternalSyntaxToken openParenToken, ListTree<StatementTree> initializer,
+    InternalSyntaxToken firstSemicolonToken, ExpressionTree condition, InternalSyntaxToken secondSemicolonToken, ListTree<StatementTree> update,
+    InternalSyntaxToken closeParenToken, StatementTree statement) {
     super(Kind.FOR_STATEMENT);
+    this.forKeyword = forKeyword;
+    this.openParenToken = openParenToken;
     this.initializer = Preconditions.checkNotNull(initializer);
+    this.firstSemicolonToken = firstSemicolonToken;
     this.condition = condition;
+    this.secondSemicolonToken = secondSemicolonToken;
     this.update = Preconditions.checkNotNull(update);
+    this.closeParenToken = closeParenToken;
     this.statement = Preconditions.checkNotNull(statement);
   }
 
@@ -58,22 +69,22 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public SyntaxToken forKeyword() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaKeyword.FOR));
+    return forKeyword;
   }
 
   @Override
   public SyntaxToken openParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.LPAR));
+    return openParenToken;
   }
 
   @Override
-  public List<StatementTree> initializer() {
+  public ListTree<StatementTree> initializer() {
     return initializer;
   }
 
   @Override
   public SyntaxToken firstSemicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getChildren(JavaPunctuator.SEMI).get(0));
+    return firstSemicolonToken;
   }
 
   @Nullable
@@ -84,17 +95,17 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public SyntaxToken secondSemicolonToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getChildren(JavaPunctuator.SEMI).get(1));
+    return secondSemicolonToken;
   }
 
   @Override
-  public List<StatementTree> update() {
+  public ListTree<StatementTree> update() {
     return update;
   }
 
   @Override
   public SyntaxToken closeParenToken() {
-    return InternalSyntaxToken.createLegacy(getAstNode().getFirstChild(JavaPunctuator.RPAR));
+    return closeParenToken;
   }
 
   @Override
@@ -109,11 +120,18 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      initializer.iterator(),
-      Iterators.singletonIterator(condition),
-      update.iterator(),
-      Iterators.singletonIterator(statement));
+    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
+    iteratorBuilder.add(forKeyword, openParenToken);
+    iteratorBuilder.add(initializer);
+    iteratorBuilder.add(firstSemicolonToken);
+    if (condition != null) {
+      iteratorBuilder.add(condition);
+    }
+    iteratorBuilder.add(secondSemicolonToken);
+    iteratorBuilder.add(update);
+    iteratorBuilder.add(closeParenToken, statement);
+
+    return iteratorBuilder.build().iterator();
   }
 
 }

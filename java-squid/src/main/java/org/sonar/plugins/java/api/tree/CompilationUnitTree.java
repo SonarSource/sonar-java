@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,6 +22,7 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -34,16 +35,13 @@ import java.util.List;
 @Beta
 public interface CompilationUnitTree extends Tree {
 
-  /**
-   * @since Java 1.5
-   */
-  List<AnnotationTree> packageAnnotations();
-
   @Nullable
-  ExpressionTree packageName();
+  PackageDeclarationTree packageDeclaration();
 
-  List<ImportTree> imports();
+  List<ImportClauseTree> imports();
 
   List<Tree> types();
+
+  SyntaxToken eofToken();
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,38 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ForLoopCounterChangedCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopCounterChangedCheck.java"), new VisitorsBridge(new ForLoopCounterChangedCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(10).withMessage("Refactor the code in order to not assign to this loop counter from within the loop body.")
-        .next().atLine(18)
-        .next().atLine(19)
-        .next().atLine(24)
-        .next().atLine(27)
-        .next().atLine(28)
-        .next().atLine(30)
-        .next().atLine(37)
-        .next().atLine(38)
-        .next().atLine(46)
-        .next().atLine(47)
-        .next().atLine(48)
-        .next().atLine(49)
-        .next().atLine(53)
-        .next().atLine(62);
+  public void detected() {
+    JavaCheckVerifier.verify("src/test/files/checks/ForLoopCounterChangedCheck.java", new ForLoopCounterChangedCheck());
   }
 
 }

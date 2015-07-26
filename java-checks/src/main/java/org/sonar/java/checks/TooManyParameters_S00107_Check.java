@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -28,12 +27,13 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = TooManyParameters_S00107_Check.RULE_KEY,
+  key = "S00107",
   name = "Methods should not have too many parameters",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
@@ -42,9 +42,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S00107";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-
   private static final int DEFAULT_MAXIMUM = 7;
 
   @RuleProperty(
@@ -52,6 +49,12 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
     description = "Maximum authorized number of parameters",
     defaultValue = "" + DEFAULT_MAXIMUM)
   public int maximum = DEFAULT_MAXIMUM;
+
+  @RuleProperty(
+    key = "constructorMax",
+    description = "Maximum authorized number of parameters for a constructor",
+    defaultValue = "" + DEFAULT_MAXIMUM)
+  public int constructorMax = DEFAULT_MAXIMUM;
 
   private JavaFileScannerContext context;
 
@@ -63,11 +66,19 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
 
   @Override
   public void visitMethod(MethodTree tree) {
-    int count = tree.parameters().size();
-    if (count > maximum) {
-      context.addIssue(tree, ruleKey, "Method has " + count + " parameters, which is greater than " + maximum + " authorized.");
+    int max;
+    String partialMessage;
+    if (tree.is(Tree.Kind.CONSTRUCTOR)) {
+      max = constructorMax;
+      partialMessage = "Constructor";
+    } else {
+      max = maximum;
+      partialMessage = "Method";
     }
-
+    int size = tree.parameters().size();
+    if (size > max) {
+      context.addIssue(tree, this, partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
+    }
     super.visitMethod(tree);
   }
 

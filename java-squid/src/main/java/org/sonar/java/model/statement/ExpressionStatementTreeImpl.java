@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
-import com.sonar.sslr.api.AstNode;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -31,6 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionStatementTree {
@@ -38,15 +38,11 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   private final ExpressionTree expression;
   private final InternalSyntaxToken semicolonToken;
 
-  public ExpressionStatementTreeImpl(ExpressionTree expression, /* FIXME */@Nullable InternalSyntaxToken semicolonToken, AstNode... children) {
+  public ExpressionStatementTreeImpl(ExpressionTree expression, /* FIXME */@Nullable InternalSyntaxToken semicolonToken) {
     super(Kind.EXPRESSION_STATEMENT);
 
     this.expression = Preconditions.checkNotNull(expression);
     this.semicolonToken = semicolonToken;
-
-    for (AstNode child : children) {
-      addChild(child);
-    }
   }
 
   @Override
@@ -72,8 +68,9 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
 
   @Override
   public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(
-      expression);
+    return Iterators.<Tree>concat(
+      Iterators.<Tree>singletonIterator(expression),
+      semicolonToken != null ? Iterators.<Tree>singletonIterator(semicolonToken) : Iterators.<Tree>emptyIterator());
   }
 
 }

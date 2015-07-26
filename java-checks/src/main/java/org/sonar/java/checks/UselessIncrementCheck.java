@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -72,7 +72,7 @@ public class UselessIncrementCheck extends SubscriptionBaseVisitor {
     addIssue(expression, "Remove this increment or correct the code not to waste it.");
   }
 
-  private boolean isPostfix(ExpressionTree tree) {
+  private static boolean isPostfix(ExpressionTree tree) {
     return tree.is(Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.POSTFIX_DECREMENT);
   }
 

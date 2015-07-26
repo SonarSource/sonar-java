@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,7 +62,7 @@ public class BooleanLiteralCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private String getBooleanLiteral(Tree tree) {
+  private static String getBooleanLiteral(Tree tree) {
     String result = null;
     if (tree.is(Kind.BOOLEAN_LITERAL)) {
       result = ((LiteralTree) tree).value();
@@ -70,7 +70,7 @@ public class BooleanLiteralCheck extends SubscriptionBaseVisitor {
     return result;
   }
 
-  private String getBooleanLiteralOperands(BinaryExpressionTree tree) {
+  private static String getBooleanLiteralOperands(BinaryExpressionTree tree) {
     String result = getBooleanLiteral(tree.leftOperand());
     if (result == null) {
       result = getBooleanLiteral(tree.rightOperand());

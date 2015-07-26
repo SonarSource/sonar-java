@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@ import org.sonar.api.resources.Qualifiers;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
+import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
@@ -42,6 +43,7 @@ public class JavaPlugin extends SonarPlugin {
 
   public static final String SQUID_ANALYSE_ACCESSORS_PROPERTY = "sonar.squid.analyse.property.accessors";
   public static final boolean SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE = true;
+  public static final String JSON_OUTPUT_FOLDER = "sonar.java.jsonoutput.folder";
 
   @Override
   public List getExtensions() {
@@ -51,6 +53,7 @@ public class JavaPlugin extends SonarPlugin {
     builder.addAll(JavaClasspathProperties.getProperties());
     builder.add(
         JavaClasspath.class,
+        JavaTestClasspath.class,
         JavaCommonRulesEngine.class,
         JavaCommonRulesDecorator.class,
         Java.class,
@@ -63,7 +66,7 @@ public class JavaPlugin extends SonarPlugin {
             .onQualifiers(Qualifiers.PROJECT)
             .build(),
         PropertyDefinition.builder(JavaPlugin.SQUID_ANALYSE_ACCESSORS_PROPERTY)
-            .defaultValue(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE + "")
+            .defaultValue(Boolean.toString(JavaPlugin.SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE))
             .category(JAVA_CATEGORY)
             .subCategory(GENERAL_SUBCATEGORY)
             .name("Separate Accessors")
@@ -73,11 +76,18 @@ public class JavaPlugin extends SonarPlugin {
             .onQualifiers(Qualifiers.PROJECT)
             .build(),
         PropertyDefinition.builder(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY)
-            .defaultValue(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE + "")
+            .defaultValue(Boolean.toString(CoreProperties.DESIGN_SKIP_DESIGN_DEFAULT_VALUE))
             .category(JAVA_CATEGORY)
             .subCategory(GENERAL_SUBCATEGORY)
             .name("Skip design analysis")
             .type(PropertyType.BOOLEAN)
+            .hidden()
+            .build(),
+        PropertyDefinition.builder(JavaPlugin.JSON_OUTPUT_FOLDER)
+            .category(JAVA_CATEGORY)
+            .subCategory(GENERAL_SUBCATEGORY)
+            .name("Output folder of issues as Json files")
+            .type(PropertyType.STRING)
             .hidden()
             .build(),
 

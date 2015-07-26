@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,8 +24,6 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -67,10 +65,8 @@ public class NonShortCircuitLogicCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isBoolean(ExpressionTree expression) {
-    AbstractTypedTree typedExpression = (AbstractTypedTree) expression;
-    Type symbolType = typedExpression.getSymbolType();
-    return symbolType.is("boolean") || symbolType.is("java.lang.Boolean");
+  private static boolean isBoolean(ExpressionTree expression) {
+    return expression.symbolType().is("boolean") || expression.symbolType().is("java.lang.Boolean");
   }
 
 }

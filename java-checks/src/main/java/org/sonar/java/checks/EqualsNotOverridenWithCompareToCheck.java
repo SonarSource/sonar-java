@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,52 +19,45 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.rule.RuleKey;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
-  key = EqualsNotOverridenWithCompareToCheck.RULE_KEY,
+  key = "S1210",
   name = "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
   tags = {"bug"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "S1210";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
-  private JavaFileScannerContext context;
+public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if ((tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) && isComparable(tree)) {
+  public void visitNode(Tree tree) {
+    ClassTree classTree = (ClassTree) tree;
+    if (isComparable(classTree)) {
       boolean hasEquals = false;
       Tree compare = null;
 
-      for (Tree member : tree.members()) {
+      for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.METHOD)) {
           MethodTree method = (MethodTree) member;
 
@@ -77,52 +70,32 @@ public class EqualsNotOverridenWithCompareToCheck extends BaseTreeVisitor implem
       }
 
       if (compare != null && !hasEquals) {
-        context.addIssue(compare, ruleKey, "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
+        addIssue(compare, "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
       }
     }
-    super.visitClass(tree);
   }
 
-  private boolean isCompareToMethod(MethodTree method) {
+  private static boolean isCompareToMethod(MethodTree method) {
     String name = method.simpleName().name();
     return "compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1;
   }
 
-  private boolean isEqualsMethod(MethodTree method) {
-    String name = method.simpleName().name();
-    return "equals".equals(name) && hasObjectParam(method) && returnsBoolean(method);
+  private static boolean isEqualsMethod(MethodTree method) {
+    return ((MethodTreeImpl) method).isEqualsMethod();
   }
 
-
-  private boolean isComparable(ClassTree tree) {
-    Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
-    if (typeSymbol == null) {
-      return false;
-    }
-    for (Type type : typeSymbol.getInterfaces()) {
-      if ("Comparable".equals(((Type.ClassType) type).getSymbol().getName())) {
+  private static boolean isComparable(ClassTree tree) {
+    for (Type type : tree.symbol().interfaces()) {
+      if (type.is("java.lang.Comparable")) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean hasObjectParam(MethodTree tree) {
-    boolean result = false;
-    if (tree.parameters().size() == 1 && tree.parameters().get(0).type().is(Tree.Kind.IDENTIFIER)) {
-      result = ((IdentifierTree) tree.parameters().get(0).type()).name().endsWith("Object");
-    }
-    return result;
-  }
-
-  private boolean returnsBoolean(MethodTree tree) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(Type.BOOLEAN);
-  }
-
-  private boolean returnsInt(MethodTree tree) {
-    Symbol.MethodSymbol methodSymbol = ((MethodTreeImpl) tree).getSymbol();
-    return methodSymbol != null && methodSymbol.getReturnType().getType().isTagged(Type.INT);
+  private static boolean returnsInt(MethodTree tree) {
+    TypeTree typeTree = tree.returnType();
+    return typeTree != null && typeTree.symbolType().isPrimitive(Type.Primitives.INT);
   }
 
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodInvocationMatcher;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -36,23 +37,23 @@ import java.util.List;
 
 @Rule(
   key = "S2278",
-  name = "DES (Data Encryption Standard) and DESede (3DES) should not be used",
-  tags = {"cwe", "owasp-top10", "security"},
+  name = "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
+  tags = {"cwe", "owasp-a6", "security"},
   priority = Priority.CRITICAL)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")
 public class AvoidDESCheck extends AbstractMethodDetection {
 
   @Override
-  protected List<MethodInvocationMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodInvocationMatcher.create().typeDefinition("javax.crypto.Cipher").name("getInstance").withNoParameterConstraint());
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("javax.crypto.Cipher").name("getInstance").withNoParameterConstraint());
   }
 
   @Override
-  protected void onMethodFound(MethodInvocationTree mit) {
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArg = mit.arguments().get(0);
     if (firstArg.is(Tree.Kind.STRING_LITERAL)) {
-      String tranformation = trimQuotes(((LiteralTree) firstArg).value());
+      String tranformation = LiteralUtils.trimQuotes(((LiteralTree) firstArg).value());
       String[] transformationElements = tranformation.split("/");
       if (transformationElements.length > 0 && isExcludedAlgorithm(transformationElements[0])) {
         addIssue(mit, "Use the recommended AES (Advanced Encryption Standard) instead.");
@@ -60,11 +61,8 @@ public class AvoidDESCheck extends AbstractMethodDetection {
     }
   }
 
-  private boolean isExcludedAlgorithm(String algorithm) {
+  private static boolean isExcludedAlgorithm(String algorithm) {
     return "DES".equals(algorithm) || "DESede".equals(algorithm);
   }
 
-  private String trimQuotes(String value) {
-    return value.substring(1, value.length() - 1);
-  }
 }

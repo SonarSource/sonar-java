@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -20,32 +20,26 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.declaration.ClassTreeImpl;
-import org.sonar.java.resolve.Symbol;
-import org.sonar.java.resolve.Type;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = DITCheck.RULE_KEY,
+  key = "MaximumInheritanceDepth",
   name = "Inheritance tree of classes should not be too deep",
   tags = {"design"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("4h")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  public static final String RULE_KEY = "MaximumInheritanceDepth";
-  private final RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, RULE_KEY);
 
   public static final int DEFAULT_MAX = 5;
 
@@ -68,14 +62,14 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitClass(ClassTree tree) {
-    Symbol.TypeSymbol typeSymbol = ((ClassTreeImpl) tree).getSymbol();
+    Type superClass = tree.symbol().superClass();
     int dit = 0;
-    while(typeSymbol.getSuperclass() != null ){
+    while(superClass != null ){
       dit++;
-      typeSymbol = ((Type.ClassType) typeSymbol.getSuperclass()).getSymbol();
+      superClass = superClass.symbol().superClass();
     }
     if(dit > max) {
-      context.addIssue(tree, ruleKey, "This class has "+dit+" parents which is greater than "+max+" authorized.");
+      context.addIssue(tree, this, "This class has "+dit+" parents which is greater than "+max+" authorized.");
     }
     super.visitClass(tree);
   }
@@ -83,11 +77,6 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
   @VisibleForTesting
   void setMax(int max) {
     this.max = max;
-  }
-
-  @Override
-  public String toString() {
-    return RULE_KEY + " rule";
   }
 
 }

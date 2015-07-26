@@ -12,7 +12,7 @@ class Foo {
   }
 
   @Override
-  public void finalize() throws Throwable {    // Non-Compliant
+  public void finalize() throws Throwable {    // Noncompliant {{Make this finalize() method protected.}}
   }
 
 }

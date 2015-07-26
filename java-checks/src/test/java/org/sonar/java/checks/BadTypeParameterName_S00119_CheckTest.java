@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.JavaAstScanner;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.squidbridge.api.SourceFile;
 
 import java.io.File;
@@ -35,7 +35,7 @@ public class BadTypeParameterName_S00119_CheckTest {
   public void test() {
     SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Rename this generic name to match the regular expression '^[A-Z]$'.")
+        .next().atLine(1).withMessage("Rename this generic name to match the regular expression '^[A-Z][0-9]?$'.")
         .next().atLine(2)
         .noMore();
   }

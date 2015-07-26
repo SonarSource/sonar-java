@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.io.Files;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -30,6 +29,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +37,8 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Rule(
   key = "S1451",
@@ -48,16 +50,24 @@ import java.util.List;
 public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
 
   private static final String DEFAULT_HEADER_FORMAT = "";
+  private static final String MESSAGE = "Add or update the header of this file.";
 
   @RuleProperty(
     key = "headerFormat",
-    description = "Expected copyright and license header (plain text)",
+    description = "Expected copyright and license header",
     type = "TEXT",
     defaultValue = DEFAULT_HEADER_FORMAT)
   public String headerFormat = DEFAULT_HEADER_FORMAT;
 
+  @RuleProperty(
+    key = "isRegularExpression",
+    description = "Whether the headerFormat is a regular expression",
+    defaultValue = "false")
+  public boolean isRegularExpression = false;
+
   private Charset charset;
   private String[] expectedLines;
+  private Pattern searchPattern = null;
 
   @Override
   public void setCharset(Charset charset) {
@@ -72,20 +82,46 @@ public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetA
   @Override
   public void scanFile(JavaFileScannerContext context) {
     super.context = context;
-    expectedLines = headerFormat.split("(?:\r)?\n|\r");
+    if (isRegularExpression) {
+      if (searchPattern == null) {
+        try {
+          searchPattern = Pattern.compile(headerFormat, Pattern.DOTALL);
+        } catch (IllegalArgumentException e) {
+          throw new IllegalArgumentException("[" + getClass().getSimpleName() + "] Unable to compile the regular expression: " + headerFormat, e);
+        }
+      }
+    } else {
+      expectedLines = headerFormat.split("(?:\r)?\n|\r");
+    }
     visitFile(context.getFile());
   }
 
   public void visitFile(File file) {
-    List<String> lines;
-    try {
-      lines = Files.readLines(file, charset);
-    } catch (IOException e) {
-      throw new SonarException(e);
+    if (isRegularExpression) {
+      String fileContent;
+      try {
+        fileContent = Files.toString(file, charset);
+      } catch (IOException e) {
+        throw new AnalysisException(e);
+      }
+      checkRegularExpression(fileContent);
+    } else {
+      List<String> lines;
+      try {
+        lines = Files.readLines(file, charset);
+      } catch (IOException e) {
+        throw new AnalysisException(e);
+      }
+      if (!matches(expectedLines, lines)) {
+        addIssueOnFile(MESSAGE);
+      }
     }
+  }
 
-    if (!matches(expectedLines, lines)) {
-      addIssueOnFile("Add or update the header of this file.");
+  private void checkRegularExpression(String fileContent) {
+    Matcher matcher = searchPattern.matcher(fileContent);
+    if (!matcher.find() || matcher.start() != 0) {
+      addIssueOnFile(MESSAGE);
     }
   }
 

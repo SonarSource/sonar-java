@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,134 +19,50 @@
  */
 package org.sonar.java.ast.visitors;
 
-import com.sonar.sslr.api.AstNode;
-import com.sonar.sslr.api.Token;
-import org.sonar.squidbridge.CommentAnalyser;
-import org.sonar.squidbridge.SquidAstVisitorContext;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.CodeCheck;
 import org.sonar.squidbridge.api.SourceCode;
 import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.squidbridge.api.SourceProject;
-import org.sonar.sslr.parser.LexerlessGrammar;
 
 import java.io.File;
-import java.util.Stack;
+import java.util.Deque;
+import java.util.LinkedList;
 
-/**
- * Replacement for {@link com.sonar.sslr.squid.SquidAstVisitorContextImpl<JavaGrammar>}.
- */
-public class VisitorContext extends SquidAstVisitorContext<LexerlessGrammar> {
+public class VisitorContext {
 
-  private final Stack<SourceCode> sourceCodeStack = new Stack<SourceCode>();
+  private final Deque<SourceCode> sourceCodeStack = new LinkedList<>();
   private final SourceProject project;
   private File file;
-  private CommentAnalyser commentAnalyser;
 
   public VisitorContext(SourceProject project) {
     if (project == null) {
       throw new IllegalArgumentException("project cannot be null.");
     }
     this.project = project;
-    sourceCodeStack.add(project);
+    sourceCodeStack.push(project);
   }
 
-  public void setCommentAnalyser(CommentAnalyser commentAnalyser) {
-    this.commentAnalyser = commentAnalyser;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public CommentAnalyser getCommentAnalyser() {
-    return commentAnalyser;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void addSourceCode(SourceCode child) {
+  private void addSourceCode(SourceCode child) {
     peekSourceCode().addChild(child);
-    sourceCodeStack.add(child);
+    sourceCodeStack.push(child);
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public void popSourceCode() {
-    sourceCodeStack.pop();
-  }
-
-  /** {@inheritDoc} */
-  @Override
   public SourceCode peekSourceCode() {
     return sourceCodeStack.peek();
   }
 
   public void setFile(File file) {
     popTillSourceProject();
+    addSourceCode(new SourceFile(file.getAbsolutePath(), file.getPath()));
     this.file = file;
   }
 
   private void popTillSourceProject() {
-    while (!(peekSourceCode() instanceof SourceProject)) {
-      popSourceCode();
+    while (!(peekSourceCode().equals(project))) {
+      sourceCodeStack.pop();
     }
   }
 
-  /** {@inheritDoc} */
-  @Override
   public File getFile() {
     return file;
   }
-
-  public SourceProject getProject() {
-    return project;
-  }
-
-  /**
-   * @deprecated
-   */
-  @Override
-  @Deprecated
-  public LexerlessGrammar getGrammar() {
-    return null;
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void createFileViolation(CodeCheck check, String message, Object... messageParameters) {
-    createLineViolation(check, message, -1, messageParameters);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void createLineViolation(CodeCheck check, String message, AstNode node, Object... messageParameters) {
-    createLineViolation(check, message, node.getToken(), messageParameters);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void createLineViolation(CodeCheck check, String message, Token token, Object... messageParameters) {
-    createLineViolation(check, message, token.getLine(), messageParameters);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public void createLineViolation(CodeCheck check, String message, int line, Object... messageParameters) {
-    CheckMessage checkMessage = new CheckMessage(check, message, messageParameters);
-    if (line > 0) {
-      checkMessage.setLine(line);
-    }
-    log(checkMessage);
-  }
-
-  @Override
-  public void log(CheckMessage message) {
-    if (peekSourceCode() instanceof SourceFile) {
-      peekSourceCode().log(message);
-    } else if (peekSourceCode().getParent(SourceFile.class) != null) {
-      peekSourceCode().getParent(SourceFile.class).log(message);
-    } else {
-      throw new IllegalStateException("Unable to log a check message on source code '" + (peekSourceCode() == null ? "[NULL]" : peekSourceCode().getKey()) + "'");
-    }
-  }
-
 }

@@ -1,7 +1,7 @@
 /*
  * SonarQube Java
  * Copyright (C) 2012 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.parser.sslr.ActionParser2;
+import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
@@ -44,7 +44,7 @@ public class SafetyNetTest {
 
   @Test
   public void test() {
-    ActionParser2 parser = JavaParser.createParser(Charsets.UTF_8);
+    ActionParser parser = JavaParser.createParser(Charsets.UTF_8);
     for (String dir : dirs) {
       for (File file : FileUtils.listFiles(new File(dir), new String[] {"java"}, true)) {
         try {
