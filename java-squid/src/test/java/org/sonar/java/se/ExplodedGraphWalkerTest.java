@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.apache.commons.collections.ListUtils;
@@ -144,7 +145,7 @@ public class ExplodedGraphWalkerTest {
     while (matcher.find()) {
       issueRaised.add(Integer.valueOf(matcher.group(1)));
     }
-    Collections.sort(issueRaised);
+    issueRaised = Lists.newArrayList(Sets.newTreeSet(issueRaised));
 
 
     List falseNegatives = ListUtils.subtract(expectedLines, issueRaised);
