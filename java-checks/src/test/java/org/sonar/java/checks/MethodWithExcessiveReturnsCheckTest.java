@@ -19,39 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MethodWithExcessiveReturnsCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), new VisitorsBridge(new MethodWithExcessiveReturnsCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(19).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
-        .next().atLine(26).withMessage("Reduce the number of returns of this method 4, down to the maximum allowed 3.")
-        .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 3.")
-        .next().atLine(51).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 3.");
+    JavaCheckVerifier.verify("src/test/files/checks/MethodWithExcessiveReturnsCheck.java", new MethodWithExcessiveReturnsCheck());
   }
 
   @Test
   public void custom() {
     MethodWithExcessiveReturnsCheck check = new MethodWithExcessiveReturnsCheck();
     check.max = 4;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodWithExcessiveReturnsCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(31).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.")
-        .next().atLine(51).withMessage("Reduce the number of returns of this method 5, down to the maximum allowed 4.");
+    JavaCheckVerifier.verify("src/test/files/checks/MethodWithExcessiveReturnsCheckCustom.java", check);
   }
 
 }

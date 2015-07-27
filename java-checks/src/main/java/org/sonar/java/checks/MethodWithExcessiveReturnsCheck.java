@@ -50,7 +50,7 @@ public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
   public int max = DEFAULT_MAX;
 
   private final Multiset<Tree> returnStatementCounter = HashMultiset.create();
-  private final Deque<Tree> methods = new LinkedList<Tree>();
+  private final Deque<Tree> methods = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -60,7 +60,7 @@ public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD);
+    return ImmutableList.of(Tree.Kind.RETURN_STATEMENT, Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION);
   }
 
   @Override
@@ -72,11 +72,9 @@ public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
     }
   }
 
-
-
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD)) {
+    if (tree.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION)) {
       int count = returnStatementCounter.count(tree);
       if (count > max) {
         addIssue(tree, "Reduce the number of returns of this method " + count + ", down to the maximum allowed " + max + ".");

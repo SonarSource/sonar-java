@@ -16,19 +16,19 @@ class A {
    return false;
   }
 
-  boolean foo2() { // Non-Compliant
+  boolean foo2() { // Noncompliant {{Reduce the number of returns of this method 4, down to the maximum allowed 3.}}
     return true;
     return false;
     return true;
     return false;
   }
 
-  void foo3() { // Non-Compliant
+  void foo3() { // Noncompliant {{Reduce the number of returns of this method 4, down to the maximum allowed 3.}}
     return;
     return;
 
     new A() {
-      public void f() { // Non-Compliant
+      public void f() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 3.}}
         return;
         return;
         return;
@@ -48,7 +48,7 @@ class A {
   }
 }
 interface B {
-  default void method() { //non-compliant
+  default void method() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 3.}}
     return;
     return;
     return;
