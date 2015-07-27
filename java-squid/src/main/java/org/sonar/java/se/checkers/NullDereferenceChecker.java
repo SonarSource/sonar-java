@@ -46,12 +46,16 @@ public class NullDereferenceChecker extends SEChecker {
     } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
       val = context.getVal(((SwitchStatementTree) syntaxNode).expression());
     }
-    if (val != null && context.isNull(val)) {
-      out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
-      context.createSink();
-      return;
+    if (val != null) {
+      if (context.isNull(val)) {
+        out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
+        context.createSink();
+        return;
+      } else {
+        //we dereferenced the symbolic value so we can assume it is not null
+        programState = context.setConstraint(val, ConstraintManager.NullConstraint.NOT_NULL);
+      }
     }
-    // TODO : improve next state with assumption on not null value as we can safely assume that if we did not sink, value is not null.
     context.addTransition(programState);
   }
 
