@@ -76,7 +76,6 @@ public class ExplodedGraphWalkerTest {
   public void test_reassignement() throws Exception {
     getGraphWalker("class A  { Object a; Object b; void func() { if(b == null) {\na = b; \n a.toString();\n }} } ");
     String output = out.toString();
-    System.out.println(output);
     assertThat(output).contains("Null pointer dereference at line 3");
   }
 

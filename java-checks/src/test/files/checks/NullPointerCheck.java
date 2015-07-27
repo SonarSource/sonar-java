@@ -155,9 +155,10 @@ class NullPointerTest {
 //      null, // false negative Noncompliant {{method 'method2' does not accept nullable argument}}
 //      null); // false negative Noncompliant {{method 'method2' does not accept nullable argument}}
   }
-
-  public void testIf(Object argument1, Object argument2, Object argument3) {
+  public void testIf(Object argument1) {
     argument1.hashCode(); // Compliant
+  }
+  public void testIf(Object argument1, Object argument2, Object argument3) {
     if (argument1 == null) {
       argument1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument1' is nullable here}}
       argument1 = argument3;
