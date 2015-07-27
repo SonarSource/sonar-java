@@ -92,6 +92,10 @@ public class CFG {
     return methodSymbol;
   }
 
+  private final Deque<Block> breakTargets = new LinkedList<>();
+
+  private final Deque<Block> switches = new LinkedList<>();
+
   public Block entry() {
     return currentBlock;
   }
@@ -180,6 +184,12 @@ public class CFG {
   public static CFG build(MethodTree tree) {
     Preconditions.checkArgument(tree.block() != null, "Cannot build CFG for method with no body.");
     return new CFG(tree.block(), tree.symbol());
+  }
+
+  private void build(List<? extends Tree> trees) {
+    for (Tree tree : Lists.reverse(trees)) {
+      build(tree);
+    }
   }
 
   private void build(List<? extends Tree> trees) {
@@ -691,6 +701,15 @@ public class CFG {
     currentBlock.elements.add(tree);
     build(Lists.reverse(tree.dimensions()));
     build(Lists.reverse(tree.initializers()));
+  }
+
+  private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {
+    Block result = createBlock();
+    result.terminator = terminator;
+    if (target != null) {
+      result.successors.add(target);
+    }
+    return result;
   }
 
   private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {
