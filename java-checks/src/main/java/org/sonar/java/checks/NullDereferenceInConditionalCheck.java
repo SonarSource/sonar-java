@@ -23,14 +23,15 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -55,7 +56,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     if (isAndWithNullComparison(tree) || isOrWithNullExclusion(tree)) {
-      Tree nonNullOperand = getNonNullOperand(tree.leftOperand());
+      ExpressionTree nonNullOperand = getNonNullOperand(tree.leftOperand());
       IdentifierTree identifierTree = getIdentifier(nonNullOperand);
       if (identifierTree != null) {
         IdentifierVisitor visitor = new IdentifierVisitor(identifierTree);
@@ -69,11 +70,10 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
     super.visitBinaryExpression(tree);
   }
 
-  private static IdentifierTree getIdentifier(Tree nonNullOperand) {
+  private static IdentifierTree getIdentifier(ExpressionTree tree) {
+    ExpressionTree nonNullOperand = ExpressionsHelper.skipParentheses(tree);
     if (nonNullOperand.is(Tree.Kind.IDENTIFIER)) {
       return (IdentifierTree) nonNullOperand;
-    } else if (nonNullOperand.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      return getIdentifier(((ParenthesizedTree) nonNullOperand).expression());
     }
     return null;
   }
@@ -136,35 +136,31 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
       return identifierTree.name().equals(tree.name());
     }
 
-    private boolean isIdentifierWithSameName(Tree tree) {
+    private boolean isIdentifierWithSameName(ExpressionTree tree) {
       return tree.is(Tree.Kind.IDENTIFIER) && equalsIdentName((IdentifierTree) tree);
     }
   }
 
-  private static boolean isEqualNullComparison(Tree tree) {
+  private static boolean isEqualNullComparison(ExpressionTree tree) {
     return isNullComparison(tree, Tree.Kind.EQUAL_TO);
   }
 
-  private static boolean isNotEqualNullComparison(Tree tree) {
+  private static boolean isNotEqualNullComparison(ExpressionTree tree) {
     return isNullComparison(tree, Tree.Kind.NOT_EQUAL_TO);
   }
 
-  private static boolean isNullComparison(Tree tree, Tree.Kind comparatorKind) {
+  private static boolean isNullComparison(ExpressionTree expressionTree, Tree.Kind comparatorKind) {
+    ExpressionTree tree = ExpressionsHelper.skipParentheses(expressionTree);
     boolean result = false;
     if (tree.is(comparatorKind)) {
       BinaryExpressionTree binary = (BinaryExpressionTree) tree;
       result = binary.leftOperand().is(Tree.Kind.NULL_LITERAL) || binary.rightOperand().is(Tree.Kind.NULL_LITERAL);
-    } else if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      return isNullComparison(((ParenthesizedTree) tree).expression(), comparatorKind);
     }
     return result;
   }
 
-  private static Tree getNonNullOperand(Tree tree) {
-    if (tree.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      return getNonNullOperand(((ParenthesizedTree) tree).expression());
-    }
-    BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
+  private static ExpressionTree getNonNullOperand(ExpressionTree expressionTree) {
+    BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) ExpressionsHelper.skipParentheses(expressionTree);
     if (binaryExpressionTree.leftOperand().is(Tree.Kind.NULL_LITERAL)) {
       return binaryExpressionTree.rightOperand();
     }

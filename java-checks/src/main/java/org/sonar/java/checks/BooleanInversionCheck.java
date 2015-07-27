@@ -24,9 +24,9 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -60,7 +60,7 @@ public class BooleanInversionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree expression = removeParenthesis(((UnaryExpressionTree) tree).expression());
+    ExpressionTree expression = ExpressionsHelper.skipParentheses(((UnaryExpressionTree) tree).expression());
     if (expression.is(
         Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO,
         Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,
@@ -69,11 +69,4 @@ public class BooleanInversionCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
-  }
 }

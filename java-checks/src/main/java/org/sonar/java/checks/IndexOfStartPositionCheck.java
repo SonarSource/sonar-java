@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -30,7 +31,6 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -62,8 +62,8 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ExpressionTree leftOperand = removeParenthesis(((BinaryExpressionTree) tree).leftOperand());
-    ExpressionTree rightOperand = removeParenthesis(((BinaryExpressionTree) tree).rightOperand());
+    ExpressionTree leftOperand = ExpressionsHelper.skipParentheses(((BinaryExpressionTree) tree).leftOperand());
+    ExpressionTree rightOperand = ExpressionsHelper.skipParentheses(((BinaryExpressionTree) tree).rightOperand());
     if (leftOperand.is(Tree.Kind.METHOD_INVOCATION)) {
       checkIndexOfInvocation((MethodInvocationTree) leftOperand, rightOperand);
     } else if (rightOperand.is(Tree.Kind.METHOD_INVOCATION)) {
@@ -87,14 +87,6 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
         addIssue(mit, "Use \".indexOf(" + replaceMessage + ",n) > -1\" instead.");
       }
     }
-  }
-
-  private static ExpressionTree removeParenthesis(ExpressionTree expression) {
-    ExpressionTree result = expression;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
   }
 
 }

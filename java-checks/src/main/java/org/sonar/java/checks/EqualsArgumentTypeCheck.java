@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -36,7 +37,6 @@ import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -85,19 +85,8 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (true) {
-      if (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-        result = ((ParenthesizedTree) result).expression();
-      } else {
-        return result;
-      }
-    }
-  }
-
   private static boolean isArgument(ExpressionTree tree, Symbol parameterSymbol) {
-    ExpressionTree expressionTree = removeParenthesis(tree);
+    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree);
     return expressionTree.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expressionTree).symbol().equals(parameterSymbol);
   }
 
@@ -203,7 +192,7 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
     }
 
     private boolean isGetClassOnArgument(ExpressionTree tree) {
-      ExpressionTree expressionTree = removeParenthesis(tree);
+      ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree);
       return expressionTree.is(Tree.Kind.METHOD_INVOCATION)
         && GETCLASS_MATCHER.matches((MethodInvocationTree) expressionTree)
         && isInvocationOnArgument((MethodInvocationTree) expressionTree);

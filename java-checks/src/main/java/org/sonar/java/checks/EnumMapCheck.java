@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -31,7 +32,6 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -62,7 +62,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     if (tree.type().symbolType().isSubtypeOf("java.util.Map")) {
       ExpressionTree initializer = tree.initializer();
       if (initializer != null) {
-        checkNewMap(tree, removeParenthesis(initializer), hasEnumKey(tree.type().symbolType()));
+        checkNewMap(tree, initializer, hasEnumKey(tree.type().symbolType()));
       }
     } else {
       super.visitVariable(tree);
@@ -72,7 +72,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     if (tree.variable().symbolType().isSubtypeOf("java.util.Map")) {
-      checkNewMap(tree, removeParenthesis(tree.expression()), hasEnumKey(tree.variable().symbolType()));
+      checkNewMap(tree, tree.expression(), hasEnumKey(tree.variable().symbolType()));
     } else {
       super.visitAssignmentExpression(tree);
     }
@@ -87,7 +87,8 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     }
   }
 
-  private void checkNewMap(Tree tree, ExpressionTree expression, boolean useEnumKey) {
+  private void checkNewMap(Tree tree, ExpressionTree given, boolean useEnumKey) {
+    ExpressionTree expression = ExpressionsHelper.skipParentheses(given);
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) expression;
       if (newClassTree.symbolType().isSubtypeOf("java.util.HashMap") && (useEnumKey || hasEnumKey(newClassTree.identifier().symbolType()))) {
@@ -111,11 +112,4 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     context.addIssue(typeTree, this, "Convert this Map to an EnumMap.");
   }
 
-  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
-  }
 }

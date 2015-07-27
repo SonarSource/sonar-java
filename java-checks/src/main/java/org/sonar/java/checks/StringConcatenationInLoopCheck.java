@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -37,7 +38,6 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -118,9 +118,11 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private static boolean isConcatenation(AssignmentExpressionTree tree) {
-    return tree.is(Tree.Kind.PLUS_ASSIGNMENT) || (tree.is(Tree.Kind.ASSIGNMENT) && removeParenthesis(tree.expression()).is(Tree.Kind.PLUS)
-      && concatenateVariable(tree.variable(), (BinaryExpressionTree) removeParenthesis(tree.expression()))
-    );
+    if (tree.is(Tree.Kind.ASSIGNMENT)) {
+      ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree.expression());
+      return expressionTree.is(Tree.Kind.PLUS) && concatenateVariable(tree.variable(), (BinaryExpressionTree) expressionTree);
+    }
+    return tree.is(Tree.Kind.PLUS_ASSIGNMENT);
   }
 
   private static boolean concatenateVariable(ExpressionTree variable, BinaryExpressionTree plus) {
@@ -132,14 +134,6 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
       return concatenateVariable(variable, (BinaryExpressionTree) operand);
     }
     return SyntacticEquivalence.areEquivalent(variable, operand);
-  }
-
-  private static Tree removeParenthesis(Tree tree) {
-    Tree result = tree;
-    while(result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
   }
 
   @Override

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -33,7 +34,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -110,7 +110,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
   }
 
   private static boolean isFileCreateTempFile(ExpressionTree givenExpression) {
-    ExpressionTree expressionTree = removeParenthesis(givenExpression);
+    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(givenExpression);
     return expressionTree.is(Tree.Kind.METHOD_INVOCATION) && FILE_CREATE_TEMP_FILE.matches((MethodInvocationTree) expressionTree);
   }
 
@@ -141,11 +141,4 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     return null;
   }
 
-  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
-  }
 }

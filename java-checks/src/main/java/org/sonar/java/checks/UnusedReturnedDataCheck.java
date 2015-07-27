@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -30,14 +31,12 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -89,7 +88,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
 
   @CheckForNull
   private static Symbol isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
-    Tree expression = removeParenthesis(tree);
+    Tree expression = ExpressionsHelper.skipParentheses(tree);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
       if (matcher.matches(methodInvocation)) {
@@ -100,15 +99,7 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isTreeLiteralNull(ExpressionTree tree) {
-    return removeParenthesis(tree).is(Tree.Kind.NULL_LITERAL);
-  }
-
-  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
+    return ExpressionsHelper.skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
   }
 
   private void raiseIssue(Tree tree, String methodName) {

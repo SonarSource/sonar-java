@@ -23,8 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -32,7 +33,6 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -40,7 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -126,7 +125,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
   }
 
   private static boolean isTruncation(MethodInvocationTree methodTree) {
-    return TRUNCATION_METHODS.anyMatch(methodTree) && isCastFromIntegralToFloating(removeParenthesis(methodTree.arguments().get(0)));
+    return TRUNCATION_METHODS.anyMatch(methodTree) && isCastFromIntegralToFloating(ExpressionsHelper.skipParentheses(methodTree.arguments().get(0)));
   }
 
   private static boolean isConstantWithLiteral(MethodInvocationTree methodTree) {
@@ -165,23 +164,15 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
   }
 
   private static ExpressionTree getInnerExpression(ExpressionTree tree) {
-    ExpressionTree result = removeParenthesis(tree);
+    ExpressionTree result = ExpressionsHelper.skipParentheses(tree);
     while (result.is(Tree.Kind.TYPE_CAST)) {
-      result = removeParenthesis(((TypeCastTree) result).expression());
+      result = ExpressionsHelper.skipParentheses(((TypeCastTree) result).expression());
     }
     return result;
   }
 
   private static Type getInnerType(ExpressionTree tree) {
     return getInnerExpression(tree).symbolType();
-  }
-
-  private static ExpressionTree removeParenthesis(ExpressionTree tree) {
-    ExpressionTree result = tree;
-    while (result.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      result = ((ParenthesizedTree) result).expression();
-    }
-    return result;
   }
 
   private static boolean isFloatingZero(ExpressionTree tree) {
@@ -195,7 +186,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
 
   @CheckForNull
   private static Integer getFloatingZeroOrOne(ExpressionTree tree) {
-    ExpressionTree expressionTree = removeParenthesis(tree);
+    ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(tree);
     if (expressionTree.is(Tree.Kind.DOUBLE_LITERAL, Tree.Kind.FLOAT_LITERAL)) {
       String value = ((LiteralTree) expressionTree).value();
       if ("0.0".equals(value) || "0.0d".equalsIgnoreCase(value) || "0.0f".equalsIgnoreCase(value)) {
