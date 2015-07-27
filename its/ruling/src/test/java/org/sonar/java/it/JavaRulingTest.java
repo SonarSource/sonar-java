@@ -21,6 +21,7 @@ package org.sonar.java.it;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarRunner;
@@ -28,6 +29,7 @@ import com.sonar.orchestrator.locator.FileLocation;
 import difflib.DiffUtils;
 import difflib.Patch;
 import org.apache.commons.io.FileUtils;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -53,9 +55,33 @@ public class JavaRulingTest {
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
       .addPlugin("java")
       .setMainPluginKey("java")
-      .restoreProfileAtStartup(FileLocation.of("src/test/resources/profile.xml"))
       .build();
   private File actual;
+
+  @BeforeClass
+  public static void prepare_quality_profiles() {
+    ImmutableMap<String, ImmutableMap<String, String>> rulesParameters = ImmutableMap.<String, ImmutableMap<String, String>>builder()
+      .put(
+        "IndentationCheck",
+        ImmutableMap.of("indentationLevel", "4"))
+      .put(
+        "S1451",
+        ImmutableMap.of(
+          "headerFormat",
+          "\n/*\n" +
+          " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
+          " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
+      .build();
+    ImmutableSet<String> disabledRules = ImmutableSet.of(
+      // disable bytecodeVisitor rules
+      "UnusedPrivateMethod",
+      "CallToDeprecatedMethod",
+      "CycleBetweenPackages",
+      // disable because it generates too many issues, performance reasons
+      "LeftCurlyBraceStartLineCheck"
+    );
+    ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
+  }
 
   @Test
   public void test() throws Exception {
