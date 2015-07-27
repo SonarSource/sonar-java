@@ -26,6 +26,7 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.PrintStream;
@@ -39,13 +40,16 @@ public class NullDereferenceChecker extends SEChecker {
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
     ProgramState programState = setNullConstraint(context, syntaxNode);
+    SymbolicValue val = null;
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      SymbolicValue val = context.getVal(((MemberSelectExpressionTree) syntaxNode).expression());
-      if(context.isNull(val)) {
-        out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
-        context.createSink();
-        return;
-      }
+      val = context.getVal(((MemberSelectExpressionTree) syntaxNode).expression());
+    } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
+      val = context.getVal(((SwitchStatementTree) syntaxNode).expression());
+    }
+    if (val != null && context.isNull(val)) {
+      out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
+      context.createSink();
+      return;
     }
     // TODO : improve next state with assumption on not null value as we can safely assume that if we did not sink, value is not null.
     context.addTransition(programState);
@@ -58,7 +62,7 @@ public class NullDereferenceChecker extends SEChecker {
         return context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
       case METHOD_INVOCATION:
         ProgramState ps = context.getState();
-        if(((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+        if (((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
           ps = context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
         }
         return ps;
