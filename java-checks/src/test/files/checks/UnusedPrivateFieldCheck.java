@@ -3,7 +3,7 @@ class FooClass {
   private int unusedField; // Noncompliant {{Remove this unused "unusedField" private field.}}
 
   @UsedBySomeFramework
-  private int foo; // Noncompliant {{Remove this unused "foo" private field.}}
+  private int foo;
 
   int usedField; // Compliant
 
@@ -20,7 +20,7 @@ class FooClass {
     private int innerClassUsedField;
     private int innerClassUnreadField; // Noncompliant {{Remove this unused "innerClassUnreadField" private field.}}
   }
-  
+
   public void f(int unusedParameter) {
     InnerClass innerClass = new InnerClass();
     unreadField = -usedPrivateField + usedOnlyInAccessWithPostIncrement++;
@@ -29,7 +29,7 @@ class FooClass {
     unreadField += 1;
     unreadField = (usedOnlyInAssignmentExpression += 1);
     
-    unknownVar = 3;
+    ((unknownVar)) = 3;
     
     int unusedLocalVariable;
 

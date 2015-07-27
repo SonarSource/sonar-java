@@ -26,6 +26,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -56,12 +57,6 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
-
-  private static final List<String> EXCLUDED_ANNOTATIONS_FIELD = ImmutableList.<String>builder()
-      .add("lombok.Getter")
-      .add("lombok.Setter")
-      .add("javax.enterprise.inject.Produces")
-      .build();
 
   private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
       .add("lombok.Getter")
@@ -144,24 +139,17 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
 
 
   public void checkIfUnused(VariableTree tree) {
-    if (ModifiersUtils.hasModifier(tree.modifiers(), Modifier.PRIVATE) && !"serialVersionUID".equals(tree.simpleName().name())) {
+    if (tree.modifiers().annotations().isEmpty()) {
       Symbol symbol = tree.symbol();
-      if (symbol.usages().size() == assignments.get(symbol).size() && !hasExcludedAnnotation(tree)) {
-        addIssue(tree, "Remove this unused \"" + tree.simpleName() + "\" private field.");
+      String name = symbol.name();
+      if (symbol.isPrivate() && !"serialVersionUID".equals(name) && symbol.usages().size() == assignments.get(symbol).size()) {
+        addIssue(tree, "Remove this unused \"" + name + "\" private field.");
       }
     }
   }
   private static boolean hasExcludedAnnotation(ClassTree classTree) {
-    return hasExcludedAnnotation(classTree.modifiers(), EXCLUDED_ANNOTATIONS_TYPE);
-  }
-
-  private static boolean hasExcludedAnnotation(VariableTree tree) {
-    return hasExcludedAnnotation(tree.modifiers(), EXCLUDED_ANNOTATIONS_FIELD);
-  }
-
-  private static boolean hasExcludedAnnotation(ModifiersTree modifiers, List<String> excludedAnnotations) {
-    for (String excludedAnnotation : excludedAnnotations) {
-      if(hasAnnotation(modifiers, excludedAnnotation)) {
+    for (String excludedAnnotation : EXCLUDED_ANNOTATIONS_TYPE) {
+      if (hasAnnotation(classTree.modifiers(), excludedAnnotation)) {
         return true;
       }
     }
@@ -177,7 +165,8 @@ public class UnusedPrivateFieldCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private void addAssignment(ExpressionTree variable) {
+  private void addAssignment(ExpressionTree tree) {
+    ExpressionTree variable = ExpressionsHelper.skipParentheses(tree);
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       addAssignment((IdentifierTree) variable);
     } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
