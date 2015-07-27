@@ -346,10 +346,26 @@ class NullPointerTest {
   }
 
   public void testSwitch() {
-    String str1 = null, str2 = null, str3 = null;
+    String str1 = null, str2 = "", str3 = "";
     switch(str1) { // Noncompliant {{NullPointerException might be thrown as 'str1' is nullable here}}
     case "ONE":
+      str2.length();
+    }
+    str3.length();
+  }
+  public void testSwitch2() {
+    String str1 = "", str2 = null, str3 = "";
+    switch(str1) {
+    case "ONE":
       str2.length(); // Noncompliant {{NullPointerException might be thrown as 'str2' is nullable here}}
+    }
+    str3.length();
+  }
+  public void testSwitch3() {
+    String str1 = "", str2 = "", str3 = null;
+    switch(str1) {
+      case "ONE":
+        str2.length();
     }
     str3.length(); // Noncompliant {{NullPointerException might be thrown as 'str3' is nullable here}}
   }
@@ -373,19 +389,20 @@ class NullPointerTest {
 
   public void testComplexLoop(@Nullable Object nullableObject) {
     Object object1 = null, object11 = null, object12 = null;
-    for(int i = 0; object11 == null; i += 1) {
+    for (int i = 0; object11 == null; i += 1) {
       object11.hashCode(); // False negative
       object12.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object12' is nullable here}}
       nullableObject.hashCode(); // False negative, @Nullable is ignored
-      if(i == 1) {
+      if (i == 1) {
         object1.hashCode(); // Compliant
-      } else if(i == 0) {
+      } else if (i == 0) {
         object1 = new Object();
       }
       object11 = null;
     }
     object1.hashCode(); // False negative
-
+  }
+  public void testComplexLoop2(@Nullable Object nullableObject) {
     Object object2 = null, object21 = null, object22 = null;
     int i = 0;
     while(object21 == null) {
