@@ -605,7 +605,7 @@ public interface Tree {
     IMPORT(ImportTree.class),
 
     /**
-     * {@link PackageTree}
+     * {@link PackageDeclarationTree}
      */
     PACKAGE(PackageDeclarationTree.class),
 
