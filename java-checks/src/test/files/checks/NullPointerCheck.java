@@ -217,13 +217,13 @@ class NullPointerTest {
 
   public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {
     int result1 = argument1 == null ? 0 : argument1.hashCode(); // Compliant
-    argument1.hashCode(); // Compliant
+    argument1.hashCode(); // Noncompliant
     int result2 = argument2 == null ? argument2.hashCode() : 0; // Noncompliant {{NullPointerException might be thrown as 'argument2' is nullable here}}
     argument2.hashCode(); // Compliant
     int result3 = argument3 != null ? 0 : argument3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument3' is nullable here}}
     argument3.hashCode(); // Compliant
     int result4 = argument4 != null ? argument4.hashCode() : 0; // Compliant
-    argument4.hashCode(); // Compliant
+    argument4.hashCode(); // Noncompliant
   }
 
   public void testCondition() {
@@ -370,6 +370,13 @@ class NullPointerTest {
     str3.length(); // Noncompliant {{NullPointerException might be thrown as 'str3' is nullable here}}
   }
 
+  public void testMergeOnParameter(@CheckForNull Object o) {
+    if(o != null) {
+      return;
+    }
+    o.toString(); // Noncompliant
+  }
+
   public void testMergeOnParameter(@Nullable Object o) {
     if(o == null) {
       return;
@@ -437,12 +444,12 @@ class NullPointerTest {
       object1 = new Object();
       break;
     case "TWO":
-      object1.hashCode(); // False negative
+      object1.hashCode(); // Noncompliant
       break;
     case "THREE":
       object2 = new Object();
     case "FOUR":
-      object2.hashCode(); // Compliant
+      object2.hashCode(); // Noncompliant
       break;
     case "FIVE":
       object3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object3' is nullable here}}
@@ -460,9 +467,8 @@ class NullPointerTest {
   }
 
   public void testAssignSelfMember() {
-    LinkedListEntry entry1 = entry1.parent(); // Compliant
     LinkedListEntry entry2;
-    entry2 = entry2.parent(); // Compliant
+    entry2 = entry2.parent(); // Noncompliant
   }
 
   @interface CoverageAnnotation {
