@@ -55,7 +55,6 @@ public class ExplodedGraphWalkerTest {
   public void test() throws Exception {
     getGraphWalker("class A  { Object a; void func() { if(a==null)\n a.toString();\n } } ");
     String output = out.toString();
-    System.out.println(output);
     assertThat(output).contains("Null pointer dereference at line 2");
   }
 
@@ -164,6 +163,13 @@ public class ExplodedGraphWalkerTest {
 //      fail(error);
     }
 
+  }
+
+  @Test
+  public void test_npe_in_conditional_and() throws Exception {
+    getGraphWalker("class A  { \nvoid func(Object a) {\n boolean b1 = str == null && str.length() == 0;}\n } ");
+    String output = out.toString();
+    assertThat(output).contains("Null pointer dereference at line 3");
   }
 
   private ExplodedGraphWalker getGraphWalker(String source) {
