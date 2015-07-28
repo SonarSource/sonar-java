@@ -22,10 +22,18 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class NoTestInTestClassCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheck.java", new NoTestInTestClassCheck());
+  }
+
+  @Test
+  public void noClasspath() {
+    JavaCheckVerifier.verify("src/test/files/checks/NoTestInTestClassCheckNoClasspath.java", new NoTestInTestClassCheck(), new ArrayList<File>());
   }
 }

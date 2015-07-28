@@ -19,11 +19,15 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -46,6 +50,14 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("30min")
 public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
+
+  private static final Predicate<SymbolMetadata.AnnotationInstance> PREDICATE_ANNOTATION_TEST_OR_UNKNOWN = new Predicate<SymbolMetadata.AnnotationInstance>() {
+    @Override
+    public boolean apply(SymbolMetadata.AnnotationInstance input) {
+      Type type = input.symbol().type();
+      return type.isUnknown() || type.is("org.junit.Test");
+    }
+  };
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -93,6 +105,9 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isTestMethod(boolean forJunit4, MethodTree member) {
-    return (forJunit4 && member.symbol().metadata().isAnnotatedWith("org.junit.Test")) || member.simpleName().name().startsWith("test");
+    if (forJunit4) {
+      return Iterables.any(member.symbol().metadata().annotations(), PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
+    }
+    return member.simpleName().name().startsWith("test");
   }
 }

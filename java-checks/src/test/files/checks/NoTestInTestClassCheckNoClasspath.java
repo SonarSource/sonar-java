@@ -1,16 +1,14 @@
-import java.lang.Deprecated;
-
 class A extends junit.framework.TestCase {
   void testFoo() {
   }
 }
-class B extends junit.framework.TestCase { // Noncompliant {{Add some tests to this class.}}
+class B extends junit.framework.TestCase {
   void foo() {
   }
 }
 
 class ATest { // Noncompliant {{Add some tests to this class.}}
-  @Deprecated
+  ATest() {}
   void foo() {
     new AnonymousClass() {
       void testfoo(){
