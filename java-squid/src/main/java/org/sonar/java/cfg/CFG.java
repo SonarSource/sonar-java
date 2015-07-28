@@ -93,6 +93,7 @@ public class CFG {
   }
 
   private final Deque<Block> breakTargets = new LinkedList<>();
+  private final Deque<Block> continueTargets = new LinkedList<>();
 
   private final Deque<Block> switches = new LinkedList<>();
 
@@ -514,6 +515,66 @@ public class CFG {
           currentBlock = createBlock(currentBlock);
         }
       }
+      case CONTINUE_STATEMENT: {
+        if (continueTargets.isEmpty()) {
+          throw new IllegalStateException("'break' statement not in loop or switch statement");
+        }
+        currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
+        break;
+      }
+      case FOR_STATEMENT: {
+        ForStatementTree s = (ForStatementTree) tree;
+        Block falseBranch = currentBlock;
+        // process step
+        currentBlock = createBlock();
+        Block stepBlock = currentBlock;
+        for (StatementTree updateTree : Lists.reverse(s.update())) {
+          build(updateTree);
+        }
+        // process body
+        currentBlock = createBlock(currentBlock);
+        continueTargets.addLast(stepBlock);
+        breakTargets.addLast(falseBranch);
+        build(s.statement());
+        breakTargets.removeLast();
+        continueTargets.removeLast();
+        Block body = currentBlock;
+        // process condition
+        currentBlock = createBranch(s, body, falseBranch);
+        ExpressionTree condition = s.condition();
+        if (condition != null) {
+          buildCondition(condition, body, falseBranch);
+        }
+        stepBlock.successors.add(currentBlock);
+        // process init
+        currentBlock = createBlock(currentBlock);
+        for (StatementTree init : Lists.reverse(s.initializer())) {
+          build(init);
+        }
+        break;
+      }
+      case POSTFIX_INCREMENT:
+      case POSTFIX_DECREMENT:
+      case PREFIX_INCREMENT:
+      case PREFIX_DECREMENT:
+      case UNARY_MINUS:
+      case UNARY_PLUS:
+      case BITWISE_COMPLEMENT:
+      case LOGICAL_COMPLEMENT:
+        UnaryExpressionTree e = (UnaryExpressionTree) tree;
+        currentBlock.elements.add(e);
+        build(e.expression());
+        break;
+      case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
+      case CHAR_LITERAL:
+      case FLOAT_LITERAL:
+      case STRING_LITERAL:
+      case BOOLEAN_LITERAL:
+      case NULL_LITERAL:
+      default:
+        currentBlock.elements.add(tree);
     }
     breakTargets.removeLast();
     // process condition
