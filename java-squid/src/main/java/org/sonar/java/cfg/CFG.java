@@ -594,6 +594,18 @@ public class CFG {
         }
         break;
       }
+      case TRY_STATEMENT: {
+        //FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
+        TryStatementTree tryStatementTree = (TryStatementTree) tree;
+        currentBlock = createBlock(currentBlock);
+        BlockTree finallyBlock = tryStatementTree.finallyBlock();
+        if(finallyBlock != null) {
+          build(finallyBlock);
+        }
+        currentBlock = createBlock(currentBlock);
+        build(tryStatementTree.block());
+        break;
+      }
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
       case PREFIX_INCREMENT:

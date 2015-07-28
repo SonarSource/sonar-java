@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 
 public class ExplodedGraphWalkerTest {
 
@@ -159,8 +160,7 @@ public class ExplodedGraphWalkerTest {
       error += "False positives at lines : "+Joiner.on(", ").join(falsePositives);
     }
     if(!error.isEmpty()) {
-      System.out.println(error);
-//      fail(error);
+      fail(error);
     }
 
   }
