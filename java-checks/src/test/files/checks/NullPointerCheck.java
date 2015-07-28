@@ -240,9 +240,9 @@ class NullPointerTest {
     try {
       object = new Object();
     } catch (Exception e) {
-      object.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+      object.hashCode(); // false negative : not explored in CFG
     } finally {
-      object.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+      object.hashCode();
     }
   }
 
@@ -320,10 +320,10 @@ class NullPointerTest {
     Object value;
     Set<Object> set = null;
     Entry head = null;
-    for(Object entry : set.values()) { // Noncompliant {{NullPointerException might be thrown as 'set' is nullable here}}
-      head.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'head' is nullable here}}
+    for(Object entry : set.values()) { // enhanced for loop not handled
+      head.hashCode(); // enhanced for loop not handled
       value = null;
-      value.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'value' is nullable here}}
+      value.hashCode(); // enhanced for loop not handled
     }
     head.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'head' is nullable here}}
     value.hashCode(); // False negative
