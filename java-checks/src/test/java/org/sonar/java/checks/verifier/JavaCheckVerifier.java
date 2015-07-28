@@ -68,6 +68,10 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     scanFile(filename, check, new JavaCheckVerifier());
   }
 
+  public static void verify(String filename, JavaFileScanner check, Collection<File> classpath) {
+    scanFile(filename, check, new JavaCheckVerifier(), classpath);
+  }
+
   public static void verifyNoIssue(String filename, JavaFileScanner check) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectNoIssues = true;
@@ -87,6 +91,9 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null));
   }
 
+  private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
+    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null));
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -179,7 +186,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   private void assertNoIssues(SourceCode sourceCode) {
-    assertThat(sourceCode.getCheckMessages()).overridingErrorMessage("No issues expected").isEmpty();
+    assertThat(sourceCode.getCheckMessages()).overridingErrorMessage("No issues expected but got: " + sourceCode.getCheckMessages()).isEmpty();
     // make sure we do not copy&paste verifyNoIssue call when we intend to call verify
     assertThat(expected.isEmpty()).overridingErrorMessage("The file should not declare noncompliants when no issues are expected").isTrue();
   }
