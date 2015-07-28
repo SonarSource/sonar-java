@@ -105,7 +105,7 @@ public class ExplodedGraphWalkerTest {
   public void test_assign_null() throws Exception {
     ExplodedGraphWalker graphWalker = getGraphWalker("class A  { \nvoid func(Object a) {\n if(a != null){ a = null;\n a.toString();\n }}\n } ");
     //Only two steps as we sink into the second because of the NPE.
-    assertThat(graphWalker.steps).isEqualTo(9);
+    assertThat(graphWalker.steps).isEqualTo(11);
     String output = out.toString();
     assertThat(output).contains("Null pointer dereference at line 4");
   }
