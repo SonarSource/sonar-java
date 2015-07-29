@@ -62,11 +62,13 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
-    if (pattern == null) {
-      pattern = Pattern.compile(format);
+    if (context.getSemanticModel() != null) {
+      if (pattern == null) {
+        pattern = Pattern.compile(format);
+      }
+      this.context = context;
+      scan(context.getTree());
     }
-    this.context = context;
-    scan(context.getTree());
   }
 
   private static boolean isPrivateStaticFinal(ModifiersTree tree) {
@@ -88,7 +90,9 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
   @Override
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
-
+    if (tree.symbol().type().is("org.apache.maven.plugin.logging.Log")) {
+      return;
+    }
     if (isLoggerType(tree.type())) {
       boolean isPrivateStaticFinal = isPrivateStaticFinal(tree.modifiers());
       boolean hasValidLoggerName = isValidLoggerName(tree.simpleName().name());

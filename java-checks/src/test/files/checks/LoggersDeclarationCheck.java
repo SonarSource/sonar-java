@@ -1,5 +1,7 @@
 class A {
 
+  private org.apache.maven.plugin.logging.Log foo = getLog();
+
   private static final Logger LOG; // Compliant
 
   static final Logger LOG; // Noncompliant

@@ -97,6 +97,12 @@
                   <version>1.16.4</version>
                   <type>jar</type>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.apache.maven</groupId>
+                  <artifactId>maven-plugin-api</artifactId>
+                  <version>3.3.3</version>
+                  <type>jar</type>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
