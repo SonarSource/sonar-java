@@ -199,6 +199,15 @@ class NullPointerTest {
     }
     argument2.hashCode(); // Compliant
 
+    if (condition) {
+      argument4 = null;
+    } else {
+      argument4 = null;
+    }
+    argument4.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument4' is nullable here}}
+  }
+
+  public void testIfMerge2(Object argument1, Object argument2, Object argument3, Object argument4, boolean condition) {
     if (argument3 == null) {
       if (condition) {
         argument3 = new Object();
@@ -208,13 +217,6 @@ class NullPointerTest {
       argument3.hashCode(); // Compliant
     }
     argument3.hashCode(); // Compliant
-
-    if (condition) {
-      argument4 = null;
-    } else {
-      argument4 = null;
-    }
-    argument4.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument4' is nullable here}}
   }
 
   public void testConditional(Object argument1, Object argument2, Object argument3, Object argument4) {

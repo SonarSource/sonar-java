@@ -26,6 +26,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checkers.NullDereferenceChecker;
 import org.sonar.java.se.checkers.SEChecker;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -50,7 +51,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 400;
+  private static final int MAX_STEPS = 250;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
   private final PrintStream out;
@@ -62,9 +63,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   int steps;
   ConstraintManager constraintManager;
 
-  public ExplodedGraphWalker(PrintStream out) {
+  public static class MaximumStepsReachedException extends RuntimeException {
+    public MaximumStepsReachedException(String s) {
+      super(s);
+    }
+  }
+
+  public ExplodedGraphWalker(PrintStream out, JavaFileScannerContext context) throws MaximumStepsReachedException {
     this.out = out;
-    this.checkerDispatcher = new CheckerDispatcher(this, Lists.<SEChecker>newArrayList(new NullDereferenceChecker(out)));
+    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SEChecker>newArrayList(new NullDereferenceChecker(out)));
   }
 
   @Override
@@ -98,7 +105,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
-        throw new IllegalStateException("reached limit of " + MAX_STEPS + " steps");
+        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps");
       }
       // LIFO:
       node = workList.removeFirst();
@@ -113,19 +120,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
       if (programPosition.i < programPosition.block.elements().size()) {
         // process block element
-        out.println("process block element " + programPosition.i);
         visit(programPosition.block.elements().get(programPosition.i));
       } else if (programPosition.block.terminator == null) {
         // process block exit, which is unconditional jump such as goto-statement or return-statement
-        out.println("terminator is null");
         handleBlockExit(programPosition);
       } else if (programPosition.i == programPosition.block.elements().size()) {
-        out.println("process block element " + programPosition.i);
         // process block exist, which is conditional jump such as if-statement
         checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator);
       } else {
         // process branch
-        out.println("process branch");
         handleBlockExit(programPosition);
       }
     }
