@@ -51,7 +51,7 @@ public class JavaNodeBuilder implements NodeBuilder {
 
   @Override
   public Object createTerminal(Input input, int startIndex, int endIndex, List<Trivia> trivias, TokenType type) {
-    boolean isEof = GenericTokenType.EOF == type;
+    boolean isEof = GenericTokenType.EOF.equals(type);
     LineColumnValue lineColumnValue = tokenPosition(input, startIndex, endIndex);
     return new InternalSyntaxToken(lineColumnValue.line, lineColumnValue.column, lineColumnValue.value,
       createTrivias(trivias), startIndex, endIndex, isEof);
