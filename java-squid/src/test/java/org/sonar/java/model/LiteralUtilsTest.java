@@ -40,6 +40,7 @@ public class LiteralUtilsTest {
   int x5 = -x1;
   int x6 = 0xff;
   int x7 = 0b0100;
+  int x8 = 56_78;
 
   long y1 = 42;
   long y2 = 42L;
@@ -56,11 +57,12 @@ public class LiteralUtilsTest {
   long y13 = 0x7FFFFFFFFFFFFFFFL;
   long y14 = 0x7FFF_FFFF_FFFF_FFFFL;
   long y15 = 0b11010010_01101001_10010100_10010010;
+  long y16 = 100_10;
 
   @Test
   public void test_int_and_long_value() throws Exception {
-    Integer[] expectedIntegerValues = {42, -7, 3, null, null, null, null};
-    Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 255L, null, null, null, Long.MAX_VALUE, Long.MAX_VALUE, null};
+    Integer[] expectedIntegerValues = {42, -7, 3, null, null, null, null, 5678};
+    Long[] expectedLongValues = {42L, 42L, -7L, -7L, +3L, +3L, null, null, 255L, null, null, null, Long.MAX_VALUE, Long.MAX_VALUE, null, 10010L};
     File file = new File("src/test/java/org/sonar/java/model/LiteralUtilsTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);

@@ -50,7 +50,7 @@ public class LiteralUtils {
 
   @CheckForNull
   private static Integer intLiteralValue(LiteralTree literal) {
-    String literalValue = literal.value();
+    String literalValue = literal.value().replaceAll("_", "");
     if (literalValue.startsWith("0x") || literalValue.startsWith("0b")) {
       return null;
     }
