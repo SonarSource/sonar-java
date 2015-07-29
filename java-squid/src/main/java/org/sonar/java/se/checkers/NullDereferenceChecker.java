@@ -33,6 +33,8 @@ import java.io.PrintStream;
 
 public class NullDereferenceChecker extends SEChecker {
 
+  private static final String RULE_KEY = "S2259";
+
   public NullDereferenceChecker(PrintStream out) {
     super(out);
   }
@@ -48,6 +50,7 @@ public class NullDereferenceChecker extends SEChecker {
     }
     if (val != null) {
       if (context.isNull(val)) {
+        context.addIssue(syntaxNode, RULE_KEY, "NullPointerException might be thrown as '' is nullable here");
         out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
         context.createSink();
         return;
