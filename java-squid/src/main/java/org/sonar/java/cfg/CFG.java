@@ -96,6 +96,8 @@ public class CFG {
   private final Deque<Block> continueTargets = new LinkedList<>();
 
   private final Deque<Block> switches = new LinkedList<>();
+  private Map<String, Block> labels = Maps.newHashMap();
+  private final List<Block> gotos = new LinkedList<>();
 
   public Block entry() {
     return currentBlock;
@@ -519,7 +521,13 @@ public class CFG {
         if (continueTargets.isEmpty()) {
           throw new IllegalStateException("'break' statement not in loop or switch statement");
         }
-        currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
+        ContinueStatementTree continueStatementTree = (ContinueStatementTree) tree;
+        if(continueStatementTree.label() == null) {
+          currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
+        } else {
+          currentBlock = createUnconditionalJump(tree, null);
+          gotos.add(currentBlock);
+        }
         break;
       }
       case WHILE_STATEMENT: {
@@ -618,6 +626,10 @@ public class CFG {
         currentBlock.elements.add(e);
         build(e.expression());
         break;
+      case PARENTHESIZED_EXPRESSION:
+        build(((ParenthesizedTree) tree).expression());
+        break;
+      case IDENTIFIER:
       case INT_LITERAL:
       case LONG_LITERAL:
       case DOUBLE_LITERAL:
