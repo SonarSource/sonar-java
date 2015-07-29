@@ -97,6 +97,12 @@
                   <version>1.16.4</version>
                   <type>jar</type>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>javax</groupId>
+                  <artifactId>javaee-api</artifactId>
+                  <version>7.0</version>
+                  <type>jar</type>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
