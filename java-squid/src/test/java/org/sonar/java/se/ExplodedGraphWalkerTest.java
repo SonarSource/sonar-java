@@ -28,8 +28,10 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.Charsets;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -140,7 +142,6 @@ public class ExplodedGraphWalkerTest {
     }
     getGraphWalker(Joiner.on("\n").join(unitTestNPE));
     String output = out.toString();
-//    System.out.println(output);
     Matcher matcher = pattern.matcher(output);
     List<Integer> issueRaised = Lists.newArrayList();
     while (matcher.find()) {
@@ -176,7 +177,7 @@ public class ExplodedGraphWalkerTest {
     ActionParser<Tree> parser = JavaParser.createParser(Charsets.UTF_8);
     CompilationUnitTree cut = (CompilationUnitTree) parser.parse(source);
     SemanticModel.createFor(cut, Lists.<File>newArrayList());
-    ExplodedGraphWalker graphWalker = new ExplodedGraphWalker(new PrintStream(out));
+    ExplodedGraphWalker graphWalker = new ExplodedGraphWalker(new PrintStream(out), Mockito.mock(JavaFileScannerContext.class));
     cut.accept(graphWalker);
     return graphWalker;
   }

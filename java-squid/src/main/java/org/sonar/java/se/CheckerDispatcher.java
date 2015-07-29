@@ -20,19 +20,23 @@
 package org.sonar.java.se;
 
 import org.sonar.java.se.checkers.SEChecker;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.api.CheckMessage;
 
 import java.util.List;
 
 public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;
+  private final JavaFileScannerContext context;
   private final List<SEChecker> checkers;
   private Tree syntaxNode;
   private int currentCheckerIndex = 0;
   private boolean transition = false;
 
-  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<SEChecker> checkers) {
+  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, JavaFileScannerContext context, List<SEChecker> checkers) {
     this.explodedGraphWalker = explodedGraphWalker;
+    this.context = context;
     this.checkers = checkers;
   }
 
@@ -65,6 +69,11 @@ public class CheckerDispatcher implements CheckerContext {
   @Override
   public boolean isNull(SymbolicValue val) {
     return explodedGraphWalker.constraintManager.isNull(getState(), val);
+  }
+
+  @Override
+  public void addIssue(Tree tree, String ruleKey, String message) {
+    context.addIssue(tree, new CheckMessage(ruleKey, message));
   }
 
 

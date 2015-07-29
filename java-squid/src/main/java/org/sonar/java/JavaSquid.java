@@ -111,7 +111,8 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
   private static InternalVisitorsBridge createVisitorBridge(
       Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
-    InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents);
+    boolean enableSymbolicExecution = true;
+    InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     return visitorsBridge;
