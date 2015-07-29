@@ -14,7 +14,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.sonar.sslr</groupId>
+      <groupId>org.sonarsource.sslr</groupId>
       <artifactId>sslr-core</artifactId>
     </dependency>
     <dependency>
@@ -33,7 +33,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.sonar.sslr</groupId>
+      <groupId>org.sonarsource.sslr</groupId>
       <artifactId>sslr-testing-harness</artifactId>
       <scope>test</scope>
     </dependency>
