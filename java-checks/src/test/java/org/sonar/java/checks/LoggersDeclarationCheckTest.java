@@ -19,14 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 public class LoggersDeclarationCheckTest {
 
@@ -35,29 +31,14 @@ public class LoggersDeclarationCheckTest {
 
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LoggersDeclarationCheck.java"), new VisitorsBridge(new LoggersDeclarationCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5)
-      .next().atLine(6)
-      .next().atLine(7)
-      .next().atLine(9)
-      .next().atLine(14).withMessage("Rename the \"foo\" logger to comply with the format \"LOG(?:GER)?\".")
-      .next().atLine(20).withMessage("Make the \"foo\" logger private static final and rename it to comply with the format \"LOG(?:GER)?\".")
-      .next().atLine(23).withMessage("Make the \"LOG\" logger private static final.");
+    JavaCheckVerifier.verify("src/test/files/checks/LoggersDeclarationCheck.java", new LoggersDeclarationCheck());
   }
 
   @Test
   public void custom() {
     LoggersDeclarationCheck check = new LoggersDeclarationCheck();
     check.format = ".*";
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LoggersDeclarationCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5)
-      .next().atLine(6)
-      .next().atLine(7)
-      .next().atLine(20)
-      .next().atLine(23);
+    JavaCheckVerifier.verify("src/test/files/checks/LoggersDeclarationCheckCustom.java", check);
   }
 
 }
