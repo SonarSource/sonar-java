@@ -19,22 +19,31 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.collect.Lists;
+import org.apache.commons.io.output.NullOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public interface CheckerContext {
+import java.io.PrintStream;
+import java.util.List;
 
+public class SymbolicExecutionVisitor extends SubscriptionVisitor {
+  public static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
 
-  Object createSink();
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return Lists.newArrayList(Tree.Kind.METHOD);
+  }
 
-  SymbolicValue getVal(Tree expression);
+  @Override
+  public void visitNode(Tree tree) {
+    try {
+      tree.accept(new ExplodedGraphWalker(new PrintStream(NullOutputStream.NULL_OUTPUT_STREAM), context));
+    }catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+      LOG.error("Could not complete symbolic execution: ", exception);
+    }
 
-  void addIssue(Tree tree, String ruleKey, String message);
-
-  void addTransition(ProgramState state);
-
-  ProgramState getState();
-
-  ProgramState setConstraint(SymbolicValue val, ConstraintManager.NullConstraint nl);
-
-  boolean isNull(SymbolicValue val);
+  }
 }
