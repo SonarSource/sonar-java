@@ -22,14 +22,16 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -49,6 +51,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
+  private static final MethodMatcher ASSERTJ_ASSERT_ALL = MethodMatcher.create()
+    .typeDefinition("org.assertj.core.api.SoftAssertions").name("assertAll");
   private static final MethodMatcher ASSERT_THAT = MethodMatcher.create()
     .typeDefinition(TypeCriteria.anyType()).name("assertThat").addParameter(TypeCriteria.anyType());
   private static final MethodMatcher FEST_AS_METHOD = MethodMatcher.create()
@@ -69,11 +73,20 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // fest 2.x
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.api.AbstractAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.fest.assertions.api.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    // assertJ
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.assertj.core.api.AbstractAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.assertj.core.api.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.assertj.core.api.Fail").name(NameCriteria.is("shouldHaveThrown")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.assertj.core.api.Assertions").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition("org.assertj.core.api.Assertions").name(NameCriteria.is("shouldHaveThrown")).withNoParameterConstraint(),
     // Mockito
     MethodMatcher.create().typeDefinition("org.mockito.Mockito").name("verifyNoMoreInteractions").withNoParameterConstraint()
   );
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
+  private final Deque<Boolean> methodContainsAssertjSoftAssertionUsage = new ArrayDeque<>();
+  private final Deque<Boolean> methodContainsJunitSoftAssertionUsage = new ArrayDeque<>();
+  private final Deque<Boolean> methodContainsAssertjAssertAll = new ArrayDeque<>();
   private final Deque<Boolean> inUnitTest = new ArrayDeque<>();
   private final Deque<ChainedMethods> chainedTo = new ArrayDeque<>();
   private JavaFileScannerContext context;
@@ -95,18 +108,31 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     boolean isUnitTest = isUnitTest(methodTree);
     inUnitTest.push(isUnitTest);
     methodContainsAssertion.push(false);
+    methodContainsAssertjSoftAssertionUsage.push(false);
+    methodContainsAssertjAssertAll.push(false);
+    methodContainsJunitSoftAssertionUsage.push(false);
     super.visitMethod(methodTree);
     inUnitTest.pop();
     Boolean containsAssertion = methodContainsAssertion.pop();
-    if (isUnitTest && !containsAssertion) {
+    Boolean containsSoftAssertionDecl = methodContainsAssertjSoftAssertionUsage.pop();
+    Boolean containsAssertjAssertAll = methodContainsAssertjAssertAll.pop();
+    Boolean containsJunitSoftAssertionUsage = methodContainsJunitSoftAssertionUsage.pop();
+    if (isUnitTest && (!containsAssertion || badSoftAssertionUsage(containsSoftAssertionDecl, containsAssertjAssertAll, containsJunitSoftAssertionUsage))) {
       context.addIssue(methodTree, this, "Add at least one assertion to this test case.");
     }
   }
 
+  private static boolean badSoftAssertionUsage(Boolean containsSoftAssertionDecl, Boolean containsAssertjAssertAll, Boolean containsJunitSoftAssertionUsage) {
+    return containsSoftAssertionDecl && !containsJunitSoftAssertionUsage && !containsAssertjAssertAll;
+  }
+
   @Override
   public void visitMethodInvocation(MethodInvocationTree mit) {
-    if (inUnitTest.isEmpty() || !inUnitTest.peek() || methodContainsAssertion.peek()) {
-      // if not in test case or assertion already found let's skip method
+    if (!inUnitTest()) {
+      return;
+    }
+    checkForAssertjSoftAssertions(mit);
+    if (methodContainsAssertion.peek()) {
       return;
     }
     chainedTo.push(ChainedMethods.NONE);
@@ -124,6 +150,38 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
         chainedTo.pop();
         chainedTo.push(ChainedMethods.MOCKITO_VERIFY);
       }
+    }
+  }
+
+  @Override
+  public void visitIdentifier(IdentifierTree tree) {
+    if (inUnitTest()) {
+      Symbol symbol = tree.symbol();
+      Type type = symbol.type();
+      if (type != null && type.isSubtypeOf("org.assertj.core.api.AbstractStandardSoftAssertions")){
+        setTrue(methodContainsAssertjSoftAssertionUsage);
+        if (symbol.metadata().isAnnotatedWith("org.junit.Rule")) {
+          setTrue(methodContainsJunitSoftAssertionUsage);
+        }
+      }
+    }
+    super.visitIdentifier(tree);
+  }
+
+  private boolean inUnitTest() {
+    return !inUnitTest.isEmpty() && inUnitTest.peek();
+  }
+
+  private static void setTrue(Deque<Boolean> collection) {
+    if (!collection.peek()) {
+      collection.pop();
+      collection.push(true);
+    }
+  }
+
+  private void checkForAssertjSoftAssertions(MethodInvocationTree mit) {
+    if (ASSERTJ_ASSERT_ALL.matches(mit)) {
+      setTrue(methodContainsAssertjAssertAll);
     }
   }
 

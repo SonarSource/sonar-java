@@ -34,4 +34,9 @@ public class AssertionsInTestsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit4.java", new AssertionsInTestsCheck());
   }
 
+  @Test
+  public void assertJ() {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckAssertJ.java", new AssertionsInTestsCheck());
+  }
+
 }
