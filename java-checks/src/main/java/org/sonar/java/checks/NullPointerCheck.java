@@ -91,7 +91,7 @@ public class NullPointerCheck extends BaseTreeVisitor implements JavaFileScanner
     this.context = context;
     semanticModel = (SemanticModel) context.getSemanticModel();
     if (semanticModel != null) {
-      context.getTree().accept(this);
+//      context.getTree().accept(this);
     }
   }
 
