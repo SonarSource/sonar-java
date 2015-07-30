@@ -59,13 +59,13 @@ import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
-  private final DefaultFileSystem fileSystem = new DefaultFileSystem();
+  private final DefaultFileSystem fileSystem = new DefaultFileSystem(null);
   private JavaSquidSensor sensor;
 
   @Before
   public void setUp() {
     sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class),
-      new Settings(), new DefaultFileSystem()), mock(SonarComponents.class), fileSystem,
+      new Settings(), new DefaultFileSystem(null)), mock(SonarComponents.class), fileSystem,
       mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
   }
 
@@ -84,7 +84,7 @@ public class JavaSquidSensorTest {
     RulesProfile qp = RulesProfile.create("test", Java.KEY);
     Settings settings = new Settings();
     settings.setProperty(JavaPlugin.JSON_OUTPUT_FOLDER, "target");
-    DefaultFileSystem fs = new DefaultFileSystem();
+    DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/java/"));
     File file = new File("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java");
     DefaultInputFile defaultInputFile = new DefaultInputFile(file.getPath()).setFile(file).setLanguage("java");
     fs.add(defaultInputFile);

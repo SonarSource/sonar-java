@@ -212,7 +212,7 @@ public class JaCoCoSensorTest {
   public void force_coverage_to_zero_when_no_report() {
     ModuleFileSystem fs = mock(ModuleFileSystem.class);
     Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", JacocoConfiguration.REPORT_PATH_PROPERTY, "foo");
-    DefaultFileSystem fileSystem = new DefaultFileSystem();
+    DefaultFileSystem fileSystem = new DefaultFileSystem(null);
     fileSystem.add(new DefaultInputFile("foo").setLanguage("java"));
     JacocoConfiguration configuration = new JacocoConfiguration(new Settings().addProperties(props), fileSystem);
     JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fs, pathResolver, javaResourceLocator, javaClasspath);

@@ -44,8 +44,7 @@ public class JavaClasspathTest {
 
   @Before
   public void setUp() throws Exception {
-    fs = new DefaultFileSystem();
-    fs.setBaseDir(new File("src/test/files/classpath/"));
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     DefaultInputFile inputFile = new DefaultInputFile("foo.java");
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.MAIN);
@@ -226,8 +225,7 @@ public class JavaClasspathTest {
   @Test
   public void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
-    fs = new DefaultFileSystem();
-    fs.setBaseDir(new File("src/test/files/classpath/"));
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     DefaultInputFile inputFile = new DefaultInputFile("plop.java");
     inputFile.setType(InputFile.Type.TEST);
     inputFile.setLanguage("java");

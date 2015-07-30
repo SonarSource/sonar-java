@@ -49,8 +49,8 @@ public class MeasurerTest {
 
   @Before
   public void setUp() throws Exception {
-    fs = new DefaultFileSystem();
     baseDir = new File("src/test/files/metrics");
+    fs = new DefaultFileSystem(baseDir);
   }
 
   @Test

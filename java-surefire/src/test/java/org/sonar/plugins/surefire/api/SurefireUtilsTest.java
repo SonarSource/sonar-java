@@ -38,9 +38,8 @@ public class SurefireUtilsTest {
   public void shouldGetReportsFromProperty() {
     Settings settings = mock(Settings.class);
     when(settings.getString("sonar.junit.reportsPath")).thenReturn("target/surefire");
-    DefaultFileSystem fs = new DefaultFileSystem();
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
-    fs.setBaseDir(project.getFileSystem().getBasedir());
+    DefaultFileSystem fs = new DefaultFileSystem(project.getFileSystem().getBasedir());
     PathResolver pathResolver = new PathResolver();
     assertThat(SurefireUtils.getReportsDirectory(settings, fs, pathResolver).exists()).isTrue();
     assertThat(SurefireUtils.getReportsDirectory(settings, fs, pathResolver).isDirectory()).isTrue();
@@ -50,9 +49,8 @@ public class SurefireUtilsTest {
   @Test
   public void return_default_value_if_property_unset() throws Exception {
     Settings settings = mock(Settings.class);
-    DefaultFileSystem fs = new DefaultFileSystem();
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
-    fs.setBaseDir(project.getFileSystem().getBasedir());
+    DefaultFileSystem fs = new DefaultFileSystem(project.getFileSystem().getBasedir());
     PathResolver pathResolver = new PathResolver();
     File directory = SurefireUtils.getReportsDirectory(settings, fs, pathResolver);
     assertThat(directory.getCanonicalPath()).endsWith("target"+File.separator+"surefire-reports");

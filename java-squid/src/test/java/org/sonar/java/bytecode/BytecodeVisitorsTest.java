@@ -81,7 +81,7 @@ public class BytecodeVisitorsTest {
       }
     });
     Collection<File> files = FileUtils.listFiles(baseDir, new String[] {"java"}, true);
-    DefaultFileSystem fs = new DefaultFileSystem();
+    DefaultFileSystem fs = new DefaultFileSystem(baseDir);
     fs.setBaseDir(baseDir);
     for (File javaFile : files) {
       DefaultInputFile inputFile = new DefaultInputFile(javaFile.getPath());

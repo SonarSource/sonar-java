@@ -67,8 +67,7 @@ public class SurefireSensorTest {
   @Before
   public void before() {
     project = mock(Project.class);
-    fs = new DefaultFileSystem();
-    fs.setBaseDir(new File("src/test/resource"));
+    fs = new DefaultFileSystem(new File("src/test/resource"));
     DefaultInputFile javaFile = new DefaultInputFile("src/org/foo/java");
     javaFile.setLanguage("java");
     fs.add(javaFile);
@@ -99,7 +98,7 @@ public class SurefireSensorTest {
 
   @Test
   public void should_not_execute_if_filesystem_does_not_contains_java_files() {
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem(), pathResolver);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem(null), pathResolver);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isFalse();
   }
 

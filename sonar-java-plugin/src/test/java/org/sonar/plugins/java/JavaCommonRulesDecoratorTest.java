@@ -30,7 +30,7 @@ import static org.mockito.Mockito.mock;
 public class JavaCommonRulesDecoratorTest {
   @Test
   public void test_declaration() throws Exception {
-    JavaCommonRulesDecorator decorator = new JavaCommonRulesDecorator(new DefaultFileSystem(), mock(CheckFactory.class), mock(ResourcePerspectives.class));
+    JavaCommonRulesDecorator decorator = new JavaCommonRulesDecorator(new DefaultFileSystem(null), mock(CheckFactory.class), mock(ResourcePerspectives.class));
     assertThat(decorator.language()).isEqualTo(Java.KEY);
   }
 }

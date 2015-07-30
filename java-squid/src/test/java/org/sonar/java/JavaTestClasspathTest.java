@@ -42,8 +42,7 @@ public class JavaTestClasspathTest {
 
   @Before
   public void setUp() throws Exception {
-    fs = new DefaultFileSystem();
-    fs.setBaseDir(new File("src/test/files/classpath/"));
+    fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
     DefaultInputFile inputFile = new DefaultInputFile("foo.java");
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.TEST);

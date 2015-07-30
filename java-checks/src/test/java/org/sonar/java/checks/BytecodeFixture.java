@@ -57,7 +57,7 @@ public class BytecodeFixture {
     }
     SensorContext sensorContext = mock(SensorContext.class);
     when(sensorContext.getResource(Matchers.any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
-    DefaultFileSystem fs = new DefaultFileSystem();
+    DefaultFileSystem fs = new DefaultFileSystem(null);
     fs.add(new DefaultInputFile(file.getPath()));
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
     javaResourceLocator.setSensorContext(sensorContext);

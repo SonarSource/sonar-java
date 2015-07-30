@@ -48,7 +48,7 @@ public class DefaultJavaResourceLocatorTest {
     SensorContext sensorContext = mock(SensorContext.class);
     File file = new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
     when(sensorContext.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
-    DefaultFileSystem fs = new DefaultFileSystem();
+    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     fs.add(new DefaultInputFile(file.getPath()));
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(fs, javaClasspath, new SuppressWarningsFilter());
     jrl.setSensorContext(sensorContext);

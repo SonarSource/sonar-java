@@ -55,7 +55,7 @@ public class StrutsTest {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
-    DefaultFileSystem fs = new DefaultFileSystem();
+    DefaultFileSystem fs = new DefaultFileSystem(prjDir);
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
       fs.add(new DefaultInputFile(file.getPath()));
