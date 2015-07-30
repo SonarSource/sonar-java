@@ -20,11 +20,11 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.base.Charsets;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.sonar.java.parser.sslr.ActionParser;
 
 import java.io.File;
 import java.io.IOException;

@@ -23,15 +23,17 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.Rule;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.fest.assertions.GenericAssert;
 import org.sonar.java.ast.parser.FormalParametersListTreeImpl;
 import org.sonar.java.ast.parser.JavaGrammar;
 import org.sonar.java.ast.parser.JavaLexer;
+import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.ast.parser.TreeFactory;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.parser.sslr.ActionParser;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
@@ -46,17 +48,18 @@ public class Assertions {
   }
 
   public static ParserAssert assertThat(LexerlessGrammarBuilder b, GrammarRuleKey rule) {
-    return new ParserAssert(new ActionParser(
+    return new ParserAssert(new ActionParser<Tree>(
       Charsets.UTF_8,
       b,
       JavaGrammar.class,
       new TreeFactory(),
+      new JavaNodeBuilder(),
       rule));
   }
 
-  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser> {
+  public static class ParserAssert extends GenericAssert<ParserAssert, ActionParser<Tree>> {
 
-    public ParserAssert(ActionParser actual) {
+    public ParserAssert(ActionParser<Tree> actual) {
       super(ParserAssert.class, actual);
     }
 
