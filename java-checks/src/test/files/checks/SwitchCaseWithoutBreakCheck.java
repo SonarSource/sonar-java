@@ -1,8 +1,9 @@
 class A {
   private void f() {
+    int myVariable = 0;
     switch (myVariable) {
       case 0:
-      case 1: // Non-Compliant
+      case 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
         System.out.println();
       case 2: // Compliant
         break;
@@ -10,14 +11,12 @@ class A {
         return;
       case 4: // Compliant
         throw new IllegalStateException();
-      case 5: // Non-Compliant
+      case 5: // Noncompliant
         System.out.println();
-      default: // Non-Compliant
+      default: // Noncompliant
         System.out.println();
-      case 6: // Non-Compliant
+      case 6: // Noncompliant
         int a = 0;
-      case 7: // Compliant
-        continue;
       case 8: { // Compliant
         if (false) {
           break;
@@ -28,8 +27,18 @@ class A {
       case 9: // Compliant
     }
 
+    for (int i = 0; i < 1; i++) {
+      switch (myVariable) {
+        case 0: // Noncompliant
+          continue; // belongs to for loop
+        case 1:
+          break;
+      }
+
+    }
+
     switch (myVariable) {
-      case 0: // Non Compliant
+      case 0: // Noncompliant
         switch (myVariable) {
           case 0:
           case 1: // Noncompliant
@@ -49,8 +58,8 @@ class A {
           case 1: // Compliant
             System.out.println();
             switch (myVariable){
-              case 0:
-                System.out.println(); // Non Compliant
+              case 0: // Noncompliant
+                System.out.println();
               case 1:
                 break;
             }
@@ -60,6 +69,10 @@ class A {
         }
         break;
       case 2: // Compliant
+    }
+
+    switch(myVariable) {
+
     }
   }
 }

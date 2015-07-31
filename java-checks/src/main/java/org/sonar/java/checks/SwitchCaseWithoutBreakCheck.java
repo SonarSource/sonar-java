@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
-import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -51,19 +50,19 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
 
   private JavaFileScannerContext context;
 
-  private final Deque<CaseGroupTree> invalidCaseGroups = new ArrayDeque<CaseGroupTree>();
+  private final Deque<CaseGroupTree> invalidCaseGroups = new ArrayDeque<>();
   private CaseGroupTree currentTree = null;
+
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-
     scan(context.getTree());
   }
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
     scan(tree.expression());
-    if(!tree.cases().isEmpty()){
+    if (!tree.cases().isEmpty()){
       scan(tree.cases().subList(0, tree.cases().size() - 1));
     }
   }
@@ -76,7 +75,7 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
     super.visitCaseGroup(tree);
 
     if (invalidCaseGroups.remove(tree)) {
-      context.addIssue(Iterables.getLast(tree.labels()), this, "End this switch case with an unconditional break, continue, return or throw statement.");
+      context.addIssue(Iterables.getLast(tree.labels()), this, "End this switch case with an unconditional break, return or throw statement.");
     }
     currentTree = invalidCaseGroups.peek();
   }
@@ -84,12 +83,6 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
     super.visitBreakStatement(tree);
-    markSwitchCasesAsCompliant();
-  }
-
-  @Override
-  public void visitContinueStatement(ContinueStatementTree tree) {
-    super.visitContinueStatement(tree);
     markSwitchCasesAsCompliant();
   }
 
