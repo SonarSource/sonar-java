@@ -24,10 +24,14 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -47,14 +51,23 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT);
+    return ImmutableList.of(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.IF_STATEMENT, Tree.Kind.CONDITIONAL_EXPRESSION);
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
+  public void visitNode(Tree node) {
+    if (node.is(Tree.Kind.SWITCH_STATEMENT)) {
+      checkSwitchStatement((SwitchStatementTree) node);
+    } else if (node.is(Tree.Kind.IF_STATEMENT)) {
+      checkIfStatement((IfStatementTree) node);
+    } else {
+      checkConditionalExpression((ConditionalExpressionTree) node);
+    }
+  }
+
+  public void checkSwitchStatement(SwitchStatementTree node) {
     int index = 0;
-    List<CaseGroupTree> cases = switchStatementTree.cases();
+    List<CaseGroupTree> cases = node.cases();
     Set<CaseLabelTree> reportedLabels = Sets.newHashSet();
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
@@ -63,11 +76,36 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
           CaseLabelTree labelToReport = getLastLabel(cases.get(i));
           if (!reportedLabels.contains(labelToReport)) {
             reportedLabels.add(labelToReport);
-            int line = FirstSyntaxTokenFinder.firstSyntaxToken(caseGroupTree).line();
-            addIssue(labelToReport, "Either merge this case with the identical one on line \"" + line + "\" or change one of the implementations.");
+            addIssue(labelToReport, issueMessage("case", caseGroupTree));
           }
         }
       }
+    }
+  }
+
+  private void checkIfStatement(IfStatementTree node) {
+    StatementTree thenStatement = node.thenStatement();
+    StatementTree elseStatement = node.elseStatement();
+    while (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
+      IfStatementTree ifStatement = (IfStatementTree) elseStatement;
+      if (SyntacticEquivalence.areEquivalent(thenStatement, ifStatement.thenStatement())) {
+        addIssue(ifStatement.thenStatement(), issueMessage("branch", thenStatement));
+        break;
+      }
+      elseStatement = ifStatement.elseStatement();
+    }
+    if (elseStatement != null && SyntacticEquivalence.areEquivalent(thenStatement, elseStatement)) {
+      addIssue(elseStatement, issueMessage("branch", thenStatement));
+    }
+  }
+
+  private static String issueMessage(String type, Tree node) {
+    return "This " + type + "'s code block is the same as the block for the " + type + " on line " + FirstSyntaxTokenFinder.firstSyntaxToken(node).line() + ".";
+  }
+
+  private void checkConditionalExpression(ConditionalExpressionTree node) {
+    if (SyntacticEquivalence.areEquivalent(ExpressionsHelper.skipParentheses(node.trueExpression()), ExpressionsHelper.skipParentheses(node.falseExpression()))) {
+      addIssue(node, "This conditional operation returns the same value whether the condition is \"true\" or \"false\".");
     }
   }
 
