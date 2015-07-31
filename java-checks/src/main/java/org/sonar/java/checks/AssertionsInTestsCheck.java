@@ -29,6 +29,7 @@ import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -39,6 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 
 @Rule(
   key = "S2699",
@@ -117,9 +119,23 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     Boolean containsSoftAssertionDecl = methodContainsAssertjSoftAssertionUsage.pop();
     Boolean containsAssertjAssertAll = methodContainsAssertjAssertAll.pop();
     Boolean containsJunitSoftAssertionUsage = methodContainsJunitSoftAssertionUsage.pop();
-    if (isUnitTest && (!containsAssertion || badSoftAssertionUsage(containsSoftAssertionDecl, containsAssertjAssertAll, containsJunitSoftAssertionUsage))) {
+    if (isUnitTest &&
+        !expectAssertion(methodTree) &&
+        (!containsAssertion || badSoftAssertionUsage(containsSoftAssertionDecl, containsAssertjAssertAll, containsJunitSoftAssertionUsage))) {
       context.addIssue(methodTree, this, "Add at least one assertion to this test case.");
     }
+  }
+
+  private static boolean expectAssertion(MethodTree methodTree) {
+    List<SymbolMetadata.AnnotationValue> annotationValues = methodTree.symbol().metadata().valuesForAnnotation("org.junit.Test");
+    if (annotationValues != null) {
+      for (SymbolMetadata.AnnotationValue annotationValue : annotationValues) {
+        if ("expected".equals(annotationValue.name())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private static boolean badSoftAssertionUsage(Boolean containsSoftAssertionDecl, Boolean containsAssertjAssertAll, Boolean containsJunitSoftAssertionUsage) {

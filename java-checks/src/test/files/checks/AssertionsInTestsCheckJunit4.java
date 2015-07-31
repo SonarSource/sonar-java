@@ -100,6 +100,11 @@ public class AssertionsInTestsCheckTest {
     throw new IllegalStateException("message");
   }
 
+  @Test(expected = IllegalStateException.class)
+  public void compliant15() {
+    throw new IllegalStateException("message");
+  }
+
   @Test
   public void nonCompliant1() { // Noncompliant {{Add at least one assertion to this test case.}}
   }
@@ -145,7 +150,7 @@ public class AssertionsInTestsCheckTest {
     verify(mockedList); // verify alone is noncompliant
   }
 
-  @Test
+  @Test(timeout = 0L)
   public void nonCompliant9() { // Noncompliant
     throw new IllegalStateException("message");
   }
