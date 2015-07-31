@@ -19,17 +19,17 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S1656",
@@ -38,22 +38,19 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("3min")
-public class SelfAssignementCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class SelfAssignementCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.ASSIGNMENT);
   }
 
   @Override
-  public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-    //Check only = kind of assignements (not +=, *=, etc.)
-    if (tree.is(Tree.Kind.ASSIGNMENT) && SyntacticEquivalence.areEquivalent(tree.expression(), tree.variable())) {
-      context.addIssue(tree, this, "Remove or correct this useless self-assignment");
+  public void visitNode(Tree tree) {
+    AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
+    if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
+      addIssue(tree, "Remove or correct this useless self-assignment.");
     }
-    super.visitAssignmentExpression(tree);
   }
+
 }
