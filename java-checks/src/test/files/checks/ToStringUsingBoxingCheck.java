@@ -9,6 +9,8 @@ class A {
     new Character('a').toString(); // Noncompliant {{Call the static method Character.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
     new Boolean(false).toString(); // Noncompliant {{Call the static method Boolean.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
     new Integer(0).toString(0); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
+    new Integer(0).compareTo(0); // Noncompliant {{Call the static method Integer.compare(...) instead of instantiating a temporary object to perform this to string conversion.}}
+    new Boolean(false).compareTo(true); // Noncompliant {{Call the static method Boolean.compare(...) instead of instantiating a temporary object to perform this to string conversion.}}
 
     new RuntimeException("").toString(); // Compliant
     Integer.toString(0); // Compliant
@@ -20,5 +22,6 @@ class A {
     foo++; // Compliant
     new Integer(0).this; // Compliant
     (foo).toString(); // Compliant
+    foo();
   }
 }

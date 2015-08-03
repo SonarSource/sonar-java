@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -33,6 +34,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 import java.util.Set;
 
@@ -64,11 +66,13 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (isCallingToString(mit)) {
+    String callingToStringOrCompareTo = isCallingToStringOrCompareTo(mit.methodSelect());
+    if (callingToStringOrCompareTo != null) {
       String newlyCreatedClassName = getNewlyCreatedClassName(mit);
       if (PRIMITIVE_WRAPPERS.contains(newlyCreatedClassName)) {
         addIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(),
-            "Call the static method " + newlyCreatedClassName + ".toString(...) instead of instantiating a temporary object to perform this to string conversion.");
+          "Call the static method " + newlyCreatedClassName + "." + callingToStringOrCompareTo +
+          "(...) instead of instantiating a temporary object to perform this to string conversion.");
       }
     }
   }
@@ -86,11 +90,16 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     return "";
   }
 
-  private static boolean isCallingToString(MethodInvocationTree mit) {
-    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
-      return "toString".equals(mset.identifier().name());
+  @CheckForNull
+  private static String isCallingToStringOrCompareTo(ExpressionTree methodSelect) {
+    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      String name = ((MemberSelectExpressionTree) methodSelect).identifier().name();
+      if ("toString".equals(name)) {
+        return name;
+      } else if ("compareTo".equals(name)) {
+        return "compare";
+      }
     }
-    return false;
+    return null;
   }
 }
