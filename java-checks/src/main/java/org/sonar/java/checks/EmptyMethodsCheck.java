@@ -20,9 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,7 +42,7 @@ import java.util.List;
 @Rule(
   key = "S1186",
   name = "Methods should not be empty",
-  tags = {"bug"},
+  tags = {"suspicious"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
@@ -57,30 +59,27 @@ public class EmptyMethodsCheck extends SubscriptionBaseVisitor {
     ClassTree classTree = (ClassTree) tree;
     if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
       for (Tree member : classTree.members()) {
-        if (member.is(Kind.METHOD)) {
+        if (member.is(Kind.METHOD) || isPublicNoArgConstructor(member)) {
           checkMethod((MethodTree) member);
         }
       }
     }
   }
 
+  private static boolean isPublicNoArgConstructor(Tree node) {
+    return node.is(Kind.CONSTRUCTOR) && ModifiersUtils.hasModifier(((MethodTree) node).modifiers(), Modifier.PUBLIC) && ((MethodTree) node).parameters().isEmpty();
+  }
+
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null && isEmpty(block) && !containsComment(block)) {
-      context.addIssue(methodTree, this, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+      addIssue(methodTree, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
     }
   }
 
   private static boolean isEmpty(BlockTree block) {
     List<StatementTree> body = block.body();
-    if (!body.isEmpty()) {
-      for (StatementTree statementTree : body) {
-        if (!statementTree.is(Tree.Kind.EMPTY_STATEMENT)) {
-          return false;
-        }
-      }
-    }
-    return true;
+    return body.isEmpty() || Iterables.all(body, SyntaxNodePredicates.kind(Kind.EMPTY_STATEMENT));
   }
 
   private static boolean containsComment(BlockTree block) {

@@ -1,6 +1,9 @@
 class A {
-  // Compliant
+  // Noncompliant@+1
   public A() {
+  }
+
+  public A(int c) {
   }
 
   // Compliant
