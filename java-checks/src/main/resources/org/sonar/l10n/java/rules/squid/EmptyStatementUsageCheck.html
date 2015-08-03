@@ -6,13 +6,13 @@
 <h2>Noncompliant Code Example</h2>
 <pre>
 void doSomething() {
-  ;                                                       // Non-Compliant - was used as a kind of TODO marker
+  ;                                                       // Noncompliant - was used as a kind of TODO marker
 }
 
 void doSomethingElse() {
-  System.out.println("Hello, world!");;                     // Non-Compliant - double ;
+  System.out.println("Hello, world!");;                     // Noncompliant - double ;
   ...
-  for (int i = 0; i &lt; 3; System.out.println(i), i++);       // Non-Compliant - Rarely, they are used on purpose as the body of a loop. It is a bad practice to have side-effects outside of the loop body
+  for (int i = 0; i &lt; 3; System.out.println(i), i++);       // Noncompliant - Rarely, they are used on purpose as the body of a loop. It is a bad practice to have side-effects outside of the loop body
   ...
 }
 </pre>

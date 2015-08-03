@@ -6,7 +6,7 @@
 class MyClass {
   private static final Map&lt;String, String&gt; MY_MAP = new HashMap&lt;String, String&gt;() {
 
-    // Non-Compliant - HashMap should be extended only to add behavior, not for initialization
+    // Noncompliant - HashMap should be extended only to add behavior, not for initialization
     {
       put("a", "b");
     }

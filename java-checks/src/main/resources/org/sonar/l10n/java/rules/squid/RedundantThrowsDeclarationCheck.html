@@ -13,9 +13,9 @@ The following code:
 </p>
 
 <pre>
-void foo() throws MyException, MyException {}  // Non-Compliant - should be listed once
-void bar() throws Throwable, Exception {}      // Non-Compliant - Exception is a subclass of Throwable
-void baz() throws RuntimeException {}          // Non-Compliant - RuntimeException can always be thrown
+void foo() throws MyException, MyException {}  // Noncompliant - should be listed once
+void bar() throws Throwable, Exception {}      // Noncompliant - Exception is a subclass of Throwable
+void baz() throws RuntimeException {}          // Noncompliant - RuntimeException can always be thrown
 </pre>
 
 <p>

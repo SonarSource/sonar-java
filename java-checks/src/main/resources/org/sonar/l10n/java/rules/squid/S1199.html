@@ -5,7 +5,7 @@
 public void evaluate(int operator) {
   switch (operator) {
     /* ... */
-    case ADD: {                                // Non-Compliant - nested code block '{' ... '}'
+    case ADD: {                                // Noncompliant - nested code block '{' ... '}'
         int a = stack.pop();
         int b = stack.pop();
         int result = a + b;

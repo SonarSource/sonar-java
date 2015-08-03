@@ -16,7 +16,7 @@ public static void doSomethingWhichThrowsException() {
     throw new RuntimeException();
   } finally {
     /* ... */
-    return;      // Non-Compliant - prevents the RuntimeException from being propagated
+    return;      // Noncompliant - prevents the RuntimeException from being propagated
   }
 }
 </pre>

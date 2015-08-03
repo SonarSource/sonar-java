@@ -9,12 +9,12 @@ Leaving them in reduces the code's readability, since their presence can be conf
 <pre>
 package my.company;
 
-import java.lang.String;        // Non-Compliant - java.lang classes are always implicitly imported
-import my.company.SomeClass;    // Non-Compliant - same package files are always implicitly imported
-import java.io.File;            // Non-Compliant - File is not used
+import java.lang.String;        // Noncompliant - java.lang classes are always implicitly imported
+import my.company.SomeClass;    // Noncompliant - same package files are always implicitly imported
+import java.io.File;            // Noncompliant - File is not used
 
 import my.company2.SomeType;
-import my.company2.SomeType;    // Non-Compliant - 'SomeType' is already imported
+import my.company2.SomeType;    // Noncompliant - 'SomeType' is already imported
 
 class ExampleClass {
 

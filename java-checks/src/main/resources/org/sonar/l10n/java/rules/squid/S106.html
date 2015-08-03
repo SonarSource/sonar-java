@@ -6,7 +6,7 @@
 <p>If a program directly writes to the standard outputs, there is absolutely no way to comply with those requirements. That's why defining and using a dedicated logger is highly recommended.</p>
 <p>The following code snippet illustrates this rule:</p>
 <pre>
-System.out.println("My Message");  //Non-Compliant
+System.out.println("My Message");  //Noncompliant
 
 logger.log("My Message");          //Compliant
 </pre>

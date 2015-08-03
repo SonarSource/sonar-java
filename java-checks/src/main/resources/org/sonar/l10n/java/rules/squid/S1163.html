@@ -11,7 +11,7 @@ try {
   throw new IllegalArgumentException();
 } finally {
   /* clean up */
-  throw new RuntimeException();                          // Non-Compliant - will mask the IllegalArgumentException
+  throw new RuntimeException();                          // Noncompliant - will mask the IllegalArgumentException
 }
 </pre>
 

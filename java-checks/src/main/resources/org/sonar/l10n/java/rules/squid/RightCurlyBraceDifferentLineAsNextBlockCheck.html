@@ -5,7 +5,7 @@
 public void myMethod() {
   if(something) {
     executeTask();
-  } else if (somethingElse) {          // Non-Compliant
+  } else if (somethingElse) {          // Noncompliant
     doSomethingElse();
   }
   else {                               // Compliant
@@ -14,7 +14,7 @@ public void myMethod() {
 
   try {
     generateOrder();
-  } catch (Exception e) {              // Non-Compliant
+  } catch (Exception e) {              // Noncompliant
     log(e);
   }
   finally {                            // Compliant

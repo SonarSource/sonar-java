@@ -6,7 +6,7 @@
 class MyClass {
   private int foo = 1;
 
-  public boolean equals(MyClass o) {                    // Non-Compliant - "equals" method which does not override Object.equals(Object)
+  public boolean equals(MyClass o) {                    // Noncompliant - "equals" method which does not override Object.equals(Object)
     return o != null &amp;&amp; o.foo == this.foo;
   }
 

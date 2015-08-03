@@ -14,7 +14,7 @@ int matrix[][] = {
   {7, 8, 9}
 };
 
-outer: for (int row = 0; row < matrix.length; row++) {   // Non-Compliant
+outer: for (int row = 0; row < matrix.length; row++) {   // Noncompliant
   for (int col = 0; col < matrix[row].length; col++) {
     if (col == row) {
       continue outer;

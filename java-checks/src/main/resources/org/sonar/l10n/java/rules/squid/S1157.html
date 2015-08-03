@@ -5,9 +5,9 @@ Using <code>toLowerCase()</code> or <code>toUpperCase()</code> to make case inse
 <p>The following code:</p>
 
 <pre>
-boolean result1 = foo.toUpperCase().equals(bar);             // Non-Compliant
-boolean result2 = foo.equals(bar.toUpperCase());             // Non-Compliant
-boolean result3 = foo.toLowerCase().equals(bar.LowerCase()); // Non-Compliant
+boolean result1 = foo.toUpperCase().equals(bar);             // Noncompliant
+boolean result2 = foo.equals(bar.toUpperCase());             // Noncompliant
+boolean result3 = foo.toLowerCase().equals(bar.LowerCase()); // Noncompliant
 </pre>
 
 <p>should be refactored into:</p>
