@@ -1,13 +1,20 @@
 <p>Even if it is legal, mixing case and non-case labels in the body of a switch statement is very confusing and can even be the result of a typing error.</p>
-<h2>Noncompliant Code Examples</h2>
-
-<p>Case 1, the code is syntactically correct but the behavior is not the expected one</p>
+<h2>Noncompliant Code Example</h2>
 <pre>
+switch (day) {
+  case MONDAY:
+  case TUESDAY:
+  WEDNESDAY:   // Noncompliant; syntactically correct, but behavior is not what's expected
+    doSomething();
+    break;
+  ...
+}
+
 switch (day) {
   case MONDAY:
     break;
   case TUESDAY:
-    foo:for(int i = 0 ; i &lt; X ; i++) {
+    foo:for(int i = 0 ; i &lt; X ; i++) {  // Noncompliant; the code is correct and behaves as expected but is barely readable 
          /* ... */
         break foo;  // this break statement doesn't relate to the nesting case TUESDAY
          /* ... */
@@ -18,7 +25,6 @@ switch (day) {
 </pre>
 <h2>Compliant Solution</h2>
 
-<p>Case 1</p>
 <pre>
 switch (day) {
   case MONDAY:
@@ -28,9 +34,7 @@ switch (day) {
     break;
   ...
 }
-</pre>
-<p>Case 2</p>
-<pre>
+
 switch (day) {
   case MONDAY:
     break;
@@ -44,8 +48,8 @@ switch (day) {
 <h2>See</h2>
 
 <ul>
-<li> MISRA C:2004, 15.0 - The MISRA C <em>switch</em> syntax shall be used.</li>
-<li> MISRA C++:2008, 6-4-3 - A switch statement shall be a well-formed switch statement.</li>
-<li> MISRA C:2012, 16.1 - All switch statements shall be well-formed</li>
-</ul>
+<li> MISRA C:2004, 15.0 - The MISRA C <em>switch</em> syntax shall be used.
+</li><li> MISRA C++:2008, 6-4-3 - A switch statement shall be a well-formed switch statement.
+</li><li> MISRA C:2012, 16.1 - All switch statements shall be well-formed
+</li></ul>
 

@@ -9,7 +9,7 @@ This prevents null pointer exceptions from being raised, as a string literal can
 String myString = null;
 
 System.out.println("Equal? " + myString.equals("foo"));                        // Noncompliant - will raise a NPE
-System.out.println("Equal? " + (myString != null && myString.equals("foo")));  // Noncompliant - null check could be removed
+System.out.println("Equal? " + (myString != null &amp;&amp; myString.equals("foo")));  // Noncompliant - null check could be removed
 </pre>
 
 <p>should be refactored into:</p>

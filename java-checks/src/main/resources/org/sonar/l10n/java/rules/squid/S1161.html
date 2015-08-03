@@ -9,7 +9,7 @@ class ParentClass {
   public boolean doSomething(){...}
 }
 class FirstChildClass extends ParentClass {
-  public boolean doSomething(){...}  //Noncompliant
+  public boolean doSomething(){...}  // Noncompliant
 }
 </pre>
 
@@ -20,6 +20,6 @@ class ParentClass {
 }
 class FirstChildClass extends ParentClass {
   @Override
-  public boolean doSomething(){...}  //Compliant
+  public boolean doSomething(){...}  // Compliant
 }
 </pre>

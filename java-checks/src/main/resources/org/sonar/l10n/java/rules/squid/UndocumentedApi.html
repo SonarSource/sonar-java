@@ -3,7 +3,7 @@
 <ul>
 <li> Parameters, using <code>@param parameterName</code>.</li>
 <li> Method return values, using <code>@return</code>.</li>
-<li> Generic types, using <code>@param &amp;lt;T&amp;gt;</code>.</li>
+<li> Generic types, using <code>@param &lt;T&gt;</code>.</li>
 </ul>
 <p>The following public methods and constructors are not taken into account by this rule:</p>
 <ul>
@@ -55,7 +55,7 @@ public class MyClass&lt;T&gt; implements Runnable {    // Noncompliant - missing
   * This is a Javadoc comment
   * @param &lt;T&gt; ...
   */
-public class MyClass&amp;lt;T&amp;gt; implements Runnable {
+public class MyClass&lt;T&gt; implements Runnable {
 
   public static final DEFAULT_STATUS = 0;
   private int status;

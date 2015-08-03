@@ -5,7 +5,6 @@
 <p>The same advice is also found for the <code>Object.wait(...)</code> method:</p>
 <blockquote>
 <p>waits should always occur in loops, like this one:</p>
-</blockquote>
 <pre>
 synchronized (obj) {
   while (&lt;condition does not hold&gt;){
@@ -13,7 +12,7 @@ synchronized (obj) {
   }
    ... // Perform action appropriate to condition
 }
-</pre> 
+</pre>
 </blockquote>
 <h2>Noncompliant Code Example</h2>
 
@@ -38,6 +37,6 @@ synchronized (obj) {
 <h2>See</h2>
 
 <ul>
-<li> <a href="https://www.securecoding.cert.org/confluence/display/java/THI03-J.+Always+invoke+wait%28%29+and+await%28%29+methods+inside+a+loop">CERT THI03-J</a> - Always invoke wait() and await() methods inside a loop</li>
-</ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/display/java/THI03-J.+Always+invoke+wait%28%29+and+await%28%29+methods+inside+a+loop">CERT THI03-J</a> - Always invoke wait() and await() methods inside a loop
+</li></ul>
 

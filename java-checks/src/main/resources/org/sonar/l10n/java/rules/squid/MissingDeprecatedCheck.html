@@ -2,19 +2,19 @@
 
 <p>The following code illustrates this rule:</p>
 
-<h2>Noncompliant Code Sample</h2>
+<h2>Noncompliant Code Example</h2>
 <pre>
 class MyClass {
 
-@Deprecated
-public void foo1() {
-}
+  @Deprecated
+  public void foo1() {
+  }
 
-/**
-* @deprecated
-*/
-public void foo2() {    // Noncompliant
-}
+  /**
+    * @deprecated
+    */
+  public void foo2() {    // Noncompliant
+  }
 
 }
 </pre>
@@ -23,19 +23,19 @@ public void foo2() {    // Noncompliant
 <pre>
 class MyClass {
 
-/**
-* @deprecated (when, why, refactoring advice...)
-*/
-@Deprecated
-public void foo1() {
-}
+  /**
+    * @deprecated (when, why, refactoring advice...)
+    */
+  @Deprecated
+  public void foo1() {
+  }
 
-/**
-* @deprecated (when, why, refactoring advice...)
-*/
-@Deprecated
-public void foo2() {    // Noncompliant
-}
+  /**
+    * @deprecated (when, why, refactoring advice...)
+    */
+  @Deprecated
+  public void foo2() {
+  }
 
 }
 </pre>
@@ -45,22 +45,22 @@ public void foo2() {    // Noncompliant
 
 <pre>
 /**
-* @deprecated (when, why, &etc...)
-*/
+ * @deprecated (when, why, etc...)
+ */
 @Deprecated
 class Qix  {
 
-public void foo() {} // Compliant; class is deprecated
+  public void foo() {} // Compliant; class is deprecated
 
 }
 
 /**
-* @deprecated (when, why, &etc...)
-*/
+ * @deprecated (when, why, etc...)
+ */
 @Deprecated
 interface Plop {
 
-void bar();
+  void bar();
 
 }
 </pre>
