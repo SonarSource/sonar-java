@@ -39,7 +39,7 @@ import java.util.List;
 
 @Rule(
   key = "S2055",
-  name = "The non-serializable super class of a \"Serializable\" class must have a no-argument constructor",
+  name = "The non-serializable super class of a \"Serializable\" class should have a no-argument constructor",
   tags = {"bug", "serialization"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault

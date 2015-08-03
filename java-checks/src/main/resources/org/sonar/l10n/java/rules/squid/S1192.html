@@ -2,6 +2,7 @@
 <p>On the other hand, constants can be referenced from many places, but only need to be updated in a single place.</p>
 <h2>Noncompliant Code Example</h2>
 
+<p>With the default threshold of 3:</p>
 <pre>
 public void run() {
   prepare("action1");                              // Noncompliant - "action1" is duplicated 3 times
@@ -33,4 +34,3 @@ public void run() {
 <h2>Exceptions</h2>
 
 <p>To prevent generating some false-positives, literals having less than 5 characters are excluded.</p>
-

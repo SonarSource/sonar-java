@@ -38,7 +38,7 @@ import java.util.Map;
 
 @Rule(
   key = "ArchitecturalConstraint",
-  name = "Architectural constraint",
+  name = "Architectural constraints should be followed",
   priority = Priority.MAJOR)
 @RuleTemplate
 @NoSqale

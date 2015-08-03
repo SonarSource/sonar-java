@@ -37,7 +37,7 @@ import java.util.List;
 
 @Rule(
   key = "S1142",
-  name = "Methods should not contain too many return statements",
+  name = "Methods should not have too many return statements",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)

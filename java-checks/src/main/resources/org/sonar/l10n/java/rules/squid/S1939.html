@@ -1,13 +1,13 @@
 <p>
-All classes extend <code>Object</code> implicitly. Doing so explicitly is redundant, and redundant declarations needlessly clutter the code and can be confusing.
+All classes extend <code>Object</code> implicitly. Doing so explicitly is redundant.
 </p>
 
 <p>
-Further, declaring the implementation of an interface and one if its parents is also redundant. If you implement the interface, you also implicitly implement its parents and there's no need to do so explicitly.
+  Further, declaring the implementation of an interface <i>and</i> one if its parents is also redundant.
+  If you implement the interface, you also implicitly implement its parents and there's no need to do so explicitly.
 </p>
 
 <h2>Noncompliant Code Example</h2>
-
 <pre>
 public interface MyFace {
   // ...
@@ -25,7 +25,6 @@ public class Foo
 </pre>
 
 <h2>Compliant Solution</h2>
-
 <pre>
 public interface MyFace {
   // ...

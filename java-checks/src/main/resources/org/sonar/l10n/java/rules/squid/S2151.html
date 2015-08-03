@@ -4,6 +4,19 @@
 <p>It may result in finalizers being called on live objects while other threads are concurrently manipulating those objects, resulting in erratic behavior or deadlock.</p>
 </blockquote>
 <p>If you really want to be execute something when the virtual machine begins its shutdown sequence, you should attach a shutdown hook. </p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public static void main(String [] args) {
+  ...
+  System.runFinalizersOnExit(true);  // Noncompliant
+  ...
+}
+
+protected void finalize(){
+  doSomething();
+}
+</pre>
 <h2>Compliant Solution</h2>
 
 <pre>
@@ -20,4 +33,3 @@ public static void main(String [] args) {
 <ul>
 <li> <a href="https://www.securecoding.cert.org/confluence/x/H4cbAQ">CERT, MET12-J</a> - Do not use finalizers</li>
 </ul>
-

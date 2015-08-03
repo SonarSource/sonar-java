@@ -37,7 +37,7 @@ import javax.annotation.Nullable;
 
 @Rule(
   key = "S1612",
-  name = "Replace lambdas with method references when possible",
+  name = "Lambdas should be replaced with method references",
   tags = {"java8"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

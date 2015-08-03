@@ -7,10 +7,17 @@
 <tr><td>goto</td><td>reserved</td></tr>
 <tr><td>strictfp</td><td>1.2</td></tr>
 </table>
-<p>The following code snippet illustrates this rule:</p>
+
+<h2>Noncompliant Code Example</h2>
 <pre>
 public void doSomething() {
   int enum = 42;            // Noncompliant
 }
 </pre>
 
+<h2>Compliant Solution</h2>
+<pre>
+public void doSomething() {
+  int magic = 42;
+}
+</pre>

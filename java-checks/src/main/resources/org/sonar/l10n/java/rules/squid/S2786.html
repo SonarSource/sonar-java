@@ -1,12 +1,8 @@
-<p>According to the docs:</p>
-<ul>
-  <li>Nested enum types are implicitly <code>static</code>.</li>
-</ul>
-
+<p>According to <a href="http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.9">the docs</a>:</p>
+<blockquote>Nested enum types are implicitly <code>static</code>.</blockquote>
 <p>So there's no need to declare them <code>static</code> explicitly.</p>
 
 <h2>Noncompliant Code Example</h2>
-
 <pre>
 public class Flower {
   static enum Color { // Noncompliant; static is redundant here
@@ -18,7 +14,6 @@ public class Flower {
 </pre>
 
 <h2>Compliant Solution</h2>
-
 <pre>
 public class Flower {
   enum Color { // Compliant

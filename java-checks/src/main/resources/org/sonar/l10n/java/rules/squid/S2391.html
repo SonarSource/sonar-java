@@ -10,7 +10,7 @@
 
 <h2>Noncompliant Code Example</h2>
 <pre>
-Test suite() { ... }  // Noncomplant; must be public static
+Test suite() { ... }  // Noncompliant; must be public static
 public static boolean suite() { ... }  // Noncompliant; wrong return type
 public static Test suit() { ... }  // Noncompliant; typo in method name
 public static Test suite(int count) { ... } // Noncompliant; must be no-arg

@@ -34,7 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
  */
 @Rule(
   key = CycleBetweenPackagesCheck.KEY,
-  name = "Avoid cycle between java packages",
+  name = "Cycles between packages should be removed",
   tags = {"design"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)

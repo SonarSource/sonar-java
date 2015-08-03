@@ -38,7 +38,7 @@ import java.util.List;
 
 @Rule(
   key = "S00121",
-  name = "Control structures should always use curly braces",
+  name = "Control structures should use curly braces",
   tags = {"cert", "cwe", "misra", "pitfall"},
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

@@ -35,7 +35,7 @@ import java.util.List;
 
 @Rule(
   key = "S106",
-  name = "Standard ouputs should not be used directly to log anything",
+  name = "Standard outputs should not be used directly to log anything",
   tags = {"bad-practice"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
