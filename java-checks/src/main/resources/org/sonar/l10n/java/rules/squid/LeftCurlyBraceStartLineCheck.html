@@ -1,14 +1,26 @@
 <p>Shared coding conventions make it possible to collaborate efficiently. This rule make it mandatory to place the open curly brace at the beginning of a line.</p>
-<p>The following code snippet illustrates this rule:</p>
+
+<h2>Noncompliant Code Example</h2>
 <pre>
-public void myMethod 
-{                                               //Compliant
-  if(something)
-  {                                             //Compliant
+public void myMethod {  // Noncompliant
+  if(something) {  // Noncompliant
     executeTask();
-  } else {                                    //Noncompliant
+  } else {  // Noncompliant
     doSomethingElse();
   }
 }
 </pre>
 
+<h2>Compliant Solution</h2>
+<pre>
+public void myMethod
+{
+  if(something)
+  {
+    executeTask();
+  } else
+  {
+    doSomethingElse();
+  }
+}
+</pre>

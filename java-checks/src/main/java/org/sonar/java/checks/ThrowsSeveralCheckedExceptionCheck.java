@@ -43,7 +43,7 @@ import java.util.List;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1h")
+@SqaleConstantRemediation("20min")
 public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override

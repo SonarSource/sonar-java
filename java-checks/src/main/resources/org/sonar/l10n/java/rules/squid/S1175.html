@@ -1,4 +1,4 @@
-<p><code>Object.finalize()</code> is called by the Garbage Collector sometime after the object became unreferenced.</p>
+<p><code>Object.finalize()</code> is called by the Garbage Collector sometime after the object becomes unreferenced.</p>
 <p>Overloading this method is misleading:</p>
 <ul>
 <li> The overload will not be called by the Garbage Collector.</li>
@@ -8,14 +8,14 @@
 <h2>Noncompliant Code Example</h2>
 
 <pre>
-public void finalize(int someParameter) {        // Noncompliant
+public int finalize(int someParameter) {        // Noncompliant
   /* ... */
 }
 </pre>
 <h2>Compliant Solution</h2>
 
 <pre>
-public void someBetterName(int someParameter) {  // Compliant
+public int someBetterName(int someParameter) {  // Compliant
   /* ... */
 }
 </pre>

@@ -47,7 +47,7 @@ import java.util.Deque;
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "number of extra \"break\" or \"continue\" statements.")
+@SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "per extra \"break\" or \"continue\" statement")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Deque<Integer> breakAndContinueCounter = new ArrayDeque<Integer>();

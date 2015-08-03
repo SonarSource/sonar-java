@@ -8,7 +8,7 @@ Java adds an implicit public constructor to every class which does not define at
 Hence, at least one non-public constructor should be defined.
 </p>
 
-<p>The following code:</p>
+<h2>Noncompliant Code Example</h2>
 
 <pre>
 class StringUtils { // Noncompliant
@@ -20,7 +20,7 @@ class StringUtils { // Noncompliant
 }
 </pre>
 
-<p>should be refactored into:</p>
+<h2>Compliant Solution</h2>
 
 <pre>
 class StringUtils { // Compliant
