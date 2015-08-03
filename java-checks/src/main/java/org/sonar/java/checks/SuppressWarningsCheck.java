@@ -23,6 +23,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -38,8 +39,6 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.List;
-
 @Rule(
   key = "S1309",
   name = "The @SuppressWarnings annotation should not be used",
@@ -50,12 +49,18 @@ import java.util.List;
 public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
 
   @RuleProperty(
-    key = "listOfWarnings",
-    description = "Comma separated list of warnings that can't be suppressed. Example: 'unchecked, cast, all, boxing'. An empty list means that no warning can be suppressed.",
-    defaultValue = "")
-  public String warningsCommaSeparated = "";
+    key = "whitelistMode",
+    defaultValue = "false",
+    description = "Enable/disable WHITELIST mode.")
+  boolean whitelistModeEnabled;
 
-  private List<String> forbiddenWarnings;
+  @RuleProperty(
+    key = "listOfWarnings",
+    description = "Comma separated list of warnings, example: 'unchecked, cast, all, boxing'. An empty list always means that no warning can be suppressed.",
+    defaultValue = "")
+  String warningsCommaSeparated = "";
+
+  private List<String> warnings;
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -65,7 +70,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     AnnotationTree annotationTree = (AnnotationTree) tree;
-    List<String> ruleWarnings = getForbiddenWarnings();
+    List<String> ruleWarnings = getWarnings();
 
     if (isJavaLangSuppressWarnings(annotationTree)) {
       if (ruleWarnings.isEmpty()) {
@@ -74,7 +79,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
         List<String> suppressedWarnings = getSuppressedWarnings(annotationTree.arguments().get(0));
         List<String> issues = Lists.newArrayList();
         for (String currentWarning : suppressedWarnings) {
-          if (ruleWarnings.contains(currentWarning)) {
+          if (whitelistModeEnabled ^ ruleWarnings.contains(currentWarning)) {
             issues.add(new StringBuilder().append("'").append(currentWarning).append("'").toString());
           }
         }
@@ -91,20 +96,19 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     return tree.symbolType().is("java.lang.SuppressWarnings");
   }
 
-  private List<String> getForbiddenWarnings() {
-    if (forbiddenWarnings != null) {
-      return forbiddenWarnings;
+  private List<String> getWarnings() {
+    if (warnings != null) {
+      return warnings;
     }
 
-    forbiddenWarnings = Lists.newArrayList();
+    warnings = Lists.newArrayList();
     Iterable<String> listOfWarnings = Splitter.on(",").trimResults().split(warningsCommaSeparated);
     for (String warning : listOfWarnings) {
       if (StringUtils.isNotBlank(warning)) {
-        forbiddenWarnings.add(warning);
+        warnings.add(warning);
       }
     }
-
-    return forbiddenWarnings;
+    return warnings;
   }
 
   private static List<String> getSuppressedWarnings(ExpressionTree argument) {
@@ -121,5 +125,4 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     }
     return result;
   }
-
 }
