@@ -354,6 +354,7 @@ public final class CheckList {
         .add(AssertionsInTestsCheck.class)
         .add(JunitMethodDeclarationCheck.class)
         .add(AssertionsCompletenessCheck.class)
+        .add(ThreadSleepInTestsCheck.class)
         .build();
   }
 }

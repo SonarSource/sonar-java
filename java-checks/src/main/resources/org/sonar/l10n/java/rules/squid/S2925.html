@@ -1,0 +1,17 @@
+<p>
+  Using <code>Thread.sleep</code> in a test is just generally a bad idea.
+  It creates brittle tests that can fail unpredictably depending on environment ("Passes on my machine!") or load.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+@Test
+public void testDoTheThing(){
+
+  MyClass myClass = new MyClass();
+  myClass.doTheThing();
+
+  Thread.sleep(500);  // Noncompliant
+  // assertions...
+}
+</pre>
