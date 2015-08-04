@@ -38,8 +38,6 @@ import static org.mockito.Mockito.when;
 
 public class JavaSonarWayProfileTest {
 
-  private final static int NUMBER_OF_RULES_IN_PROFILE = 220;
-
   @Test
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
@@ -49,9 +47,7 @@ public class JavaSonarWayProfileTest {
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     List<ActiveRule> activeRules = profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY);
-    assertThat(activeRules)
-      .overridingErrorMessage("Expected " + NUMBER_OF_RULES_IN_PROFILE + " rules for Sonar Way profile, but got " + activeRules.size() + " active rules.")
-      .hasSize(NUMBER_OF_RULES_IN_PROFILE);
+    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThan(220);
     assertThat(profile.getName()).isEqualTo("Sonar way");
     assertThat(validation.hasErrors()).isFalse();
   }
