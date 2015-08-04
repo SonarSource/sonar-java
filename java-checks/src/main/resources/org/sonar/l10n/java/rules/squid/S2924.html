@@ -1,0 +1,37 @@
+<p>
+  While some <code>TestRule</code> classes have the desired effect without ever being directly referenced by a test,
+  several others do no, and there's no reason to leave them cluttering up the file if they're not in use.
+</p>
+<p>
+  This rule raises an issue when <code>Test</code> class fields of the following types aren't used by any
+  of the test methods: <code>TemporaryFolder</code>, and <code>TestName</code>.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class ProjectDefinitionTest {
+
+  @Rule
+  public TemporaryFolder temp = new TemporaryFolder();  // Noncompliant
+
+  @Test
+  public void shouldSetKey() {
+    ProjectDefinition def = ProjectDefinition.create();
+    def.setKey("mykey");
+    assertThat(def.getKey(), is("mykey"));
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class ProjectDefinitionTest {
+
+  @Test
+  public void shouldSetKey() {
+    ProjectDefinition def = ProjectDefinition.create();
+    def.setKey("mykey");
+    assertThat(def.getKey(), is("mykey"));
+  }
+}
+</pre>
