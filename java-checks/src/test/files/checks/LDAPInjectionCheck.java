@@ -1,3 +1,4 @@
+import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
@@ -27,6 +28,14 @@ class A {
     sc.setReturningAttributes(new String[]{" ", username});  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
     sc.setReturningAttributes(new String[]{" ", " Foo"});  // compliant
     sc.setReturningAttributes(requestedAttrsLocal);  // Noncompliant {{Make sure that "requestedAttrsLocal" is sanitized before use in this LDAP request.}}
+
+    javax.naming.directory.InitialDirContext idc = org.owasp.benchmark.helpers.Utils.getInitialDirContext();
+    idc.search("name", filter, new javax.naming.directory.SearchControls()); // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
+
+    idc.search("name", getAttributes(), null); // Compliant
   }
 
+  private static Attributes getAttributes() {
+    return null;
+  }
 }
