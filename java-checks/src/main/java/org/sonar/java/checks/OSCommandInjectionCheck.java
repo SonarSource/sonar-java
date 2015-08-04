@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -31,8 +32,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -47,7 +46,13 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodMatcher RUNTIME_EXEC_MATCHER = MethodMatcher.create()
     .typeDefinition("java.lang.Runtime")
-    .name("exec").withNoParameterConstraint();
+    .name("exec")
+    .withNoParameterConstraint();
+
+  private static final MethodMatcher PROCESS_BUILDER_COMMAND_MATCHER = MethodMatcher.create()
+    .typeDefinition("java.lang.ProcessBuilder")
+    .name("command")
+    .withNoParameterConstraint();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -57,27 +62,33 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      if (tree.is(Tree.Kind.METHOD_INVOCATION) && RUNTIME_EXEC_MATCHER.matches((MethodInvocationTree) tree)) {
+      if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
-        checkForIssue(tree, mit.arguments().get(0));
-      } else if (tree.is(Tree.Kind.NEW_CLASS) && ((NewClassTree) tree).symbolType().is("java.lang.ProcessBuilder")) {
-        for (ExpressionTree expressionTree : ((NewClassTree) tree).arguments()) {
-          checkForIssue(tree, expressionTree);
+        Arguments arguments = mit.arguments();
+        if (RUNTIME_EXEC_MATCHER.matches(mit)) {
+          checkForIssue(tree, arguments.get(0));
+        } else if (PROCESS_BUILDER_COMMAND_MATCHER.matches(mit) && !arguments.isEmpty()) {
+          checkForIssue(tree, arguments);
         }
+      } else if (((NewClassTree) tree).symbolType().is("java.lang.ProcessBuilder")) {
+        checkForIssue(tree, ((NewClassTree) tree).arguments());
       }
     }
   }
 
+  private void checkForIssue(Tree tree, Arguments arguments) {
+    for (ExpressionTree arg : arguments) {
+      checkForIssue(tree, arg);
+    }
+  }
+
   private void checkForIssue(Tree tree, ExpressionTree arg) {
-    if (isDynamicArray(arg, tree)) {
+    if (isDynamicArray(arg, tree) && !arg.symbolType().isSubtypeOf("java.util.List")) {
       addIssue(arg, "Make sure \"" + parameterName + "\" is properly sanitized before use in this OS command.");
     }
   }
 
-  private boolean isDynamicArray(@Nullable ExpressionTree arg, Tree mit) {
-    if (arg == null) {
-      return false;
-    }
+  private boolean isDynamicArray(ExpressionTree arg, Tree mit) {
     if (arg.is(Tree.Kind.NEW_ARRAY)) {
       NewArrayTree nat = (NewArrayTree) arg;
       for (ExpressionTree expressionTree : nat.initializers()) {
@@ -87,9 +98,9 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
       }
       return false;
     }
+
     setParameterNameFromArgument(arg);
     boolean argIsString = arg.symbolType().is("java.lang.String");
     return !argIsString || isDynamicString(mit, arg, null);
   }
-
 }
