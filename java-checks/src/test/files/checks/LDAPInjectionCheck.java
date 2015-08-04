@@ -10,21 +10,23 @@ class A {
     DirContext dctx = new InitialDirContext(env);
     String[] requestedAttrsLocal = new String[12];
     SearchControls sc = new SearchControls();
-    sc.setReturningAttributes(requestedAttrs);  // Noncompliant
+    sc.setReturningAttributes(requestedAttrs);  // Noncompliant {{Make sure that "requestedAttrs" is sanitized before use in this LDAP request.}}
     sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
     String filter = "(&(objectClass=user)(sAMAccountName=" + username + "))";
 
-    NamingEnumeration results = dctx.search(base,  // Noncompliant
-        filter,  // Noncompliant; parameter concatenated directly into string
+    NamingEnumeration results = dctx.search(base,  // Noncompliant {{Make sure that "base" is sanitized before use in this LDAP request.}}
+        // parameter concatenated directly into string
+        filter,  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
         sc);
-    NamingEnumeration results = dctx.search(base+"",  // Noncompliant
-        filter,  // Noncompliant; parameter concatenated directly into string
+    NamingEnumeration results = dctx.search(base+"",  // Noncompliant {{Make sure that "base" is sanitized before use in this LDAP request.}}
+        // parameter concatenated directly into string
+        filter,  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
         sc);
-    sc.setReturningAttributes(requestedAttrsField);  // Noncompliant
-    sc.setReturningAttributes(new String[]{" ", username});  // Noncompliant
+    sc.setReturningAttributes(requestedAttrsField);  // Noncompliant {{Make sure that "requestedAttrsField" is sanitized before use in this LDAP request.}}
+    sc.setReturningAttributes(new String[]{" ", username});  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
     sc.setReturningAttributes(new String[]{" ", " Foo"});  // compliant
-    sc.setReturningAttributes(requestedAttrsLocal);  // Noncompliant
+    sc.setReturningAttributes(requestedAttrsLocal);  // Noncompliant {{Make sure that "requestedAttrsLocal" is sanitized before use in this LDAP request.}}
   }
 
 }

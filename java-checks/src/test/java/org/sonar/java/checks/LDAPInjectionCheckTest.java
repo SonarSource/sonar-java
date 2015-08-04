@@ -19,32 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class LDAPInjectionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LDAPInjectionCheck.java"), new VisitorsBridge(new LDAPInjectionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(13).withMessage("Make sure that \"requestedAttrs\" is sanitized before use in this LDAP request.")
-        .next().atLine(18).withMessage("Make sure that \"base\" is sanitized before use in this LDAP request.")
-        .next().atLine(19).withMessage("Make sure that \"username\" is sanitized before use in this LDAP request.")
-        .next().atLine(21).withMessage("Make sure that \"base\" is sanitized before use in this LDAP request.")
-        .next().atLine(22).withMessage("Make sure that \"username\" is sanitized before use in this LDAP request.")
-        .next().atLine(24).withMessage("Make sure that \"requestedAttrsField\" is sanitized before use in this LDAP request.")
-        .next().atLine(25).withMessage("Make sure that \"username\" is sanitized before use in this LDAP request.")
-        .next().atLine(27).withMessage("Make sure that \"requestedAttrsLocal\" is sanitized before use in this LDAP request.")
-    ;
+    JavaCheckVerifier.verify("src/test/files/checks/LDAPInjectionCheck.java", new LDAPInjectionCheck());
   }
 }
