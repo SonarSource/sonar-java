@@ -82,7 +82,8 @@ public class SuppressWarningsCheckTest {
   }
 
   private SourceFile getSourceFile(String listOfWarnings) {
-    SuppressWarningsCheck checker = new SuppressWarningsCheck(listOfWarnings);
+    SuppressWarningsCheck checker = new SuppressWarningsCheck();
+    checker.warningsCommaSeparated = listOfWarnings;
     return JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(checker));
   }
 }

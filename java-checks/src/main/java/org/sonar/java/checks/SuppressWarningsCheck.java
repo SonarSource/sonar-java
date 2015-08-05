@@ -52,15 +52,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
     key = "listOfWarnings",
     description = "Comma separated list of warnings that can be suppressed (example: unchecked, cast, boxing). An empty list means that no warning can be suppressed.",
     defaultValue = "")
-  private String warningsCommaSeparated = "";
-
-  public SuppressWarningsCheck() {
-    // do nothing
-  }
-
-  public SuppressWarningsCheck(String listOfWarnings) {
-    warningsCommaSeparated = listOfWarnings;
-  }
+  public String warningsCommaSeparated = "";
 
   private List<String> allowedWarnings;
 
