@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.GregorianCalendar;
+import java.util.Map;
+import java.util.Map.Entry;
 
 class A {
   void foo(Connection connection) throws SQLException {
@@ -54,7 +56,41 @@ class A {
     ps2.setDate(0, new Date(0)); // Noncompliant {{PreparedStatement indices start at 1.}}
     ps2.setDouble(3, 0.0); // Compliant - Query of the preparedStatement is unknown
   }
-
+  
+  void hio(boolean test) throws SQLException {
+    PreparedStatement ps = getPreparedStatement("SELECT fname, lname FROM employees where hireDate > 1986");
+    
+    if (test) {
+      ps = getPreparedStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
+      ps.setDouble(1, 0.0); // Compliant - last assignment is used
+      ps.setDouble(2, 0.0); // Compliant
+    }
+    
+    ps = getPreparedStatement("SELECT fname, lname FROM employees where hireDate > 1986");
+    
+    PreparedStatement ps2 = getPreparedStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
+    ps2.setDouble(1, 0.0); // Compliant
+    
+    int a;
+    a = 2;
+    
+    int[] b = new int[1];
+    b[0] = 3;
+  }
+  
+  void false_negative(boolean test) throws SQLException {
+    PreparedStatement ps;
+    
+    if (test) {
+      ps = getPreparedStatement("SELECT fname, lname FROM employees where hireDate > ?");
+    } else {
+      ps = getPreparedStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
+    }
+    
+    ps.setDouble(1, 0.0); // Compliant - last assignment is used
+    ps.setDouble(2, 0.0); // Compliant FALSE NEGATIVE - in then would have been applied, there would be no 2nd parameter (CFG?)
+  }
+  
   int getIntValue() {
     return 0;
   }
@@ -63,4 +99,64 @@ class A {
     return null;
   }
   
+  public void updateCoffeeSales(HashMap<String, Integer> salesForWeek, Connection con, String param) throws SQLException {
+
+    String dbName = "doug";
+    
+    PreparedStatement updateSales = null;
+    PreparedStatement updateTotal = null;
+    PreparedStatement other = null;
+    
+    String updateString = "update " + dbName + ".COFFEES set SALES = ?";
+    
+    String updateStatement =
+          "update " + dbName + ".COFFEES " +
+                  "set TOTAL = TOTAL + ? " +
+                  "where COF_NAME = ?";
+    
+    try {
+      PreparedStatement ps = con.prepareStatement(updateStatement);
+      ps.setInt(1, 1); // Compliant
+      ps.setString(3, "three"); // Noncompliant
+      ps.setString(72, "boom"); // Noncompliant
+      
+      ps = con.prepareStatement(updateStatement);
+      ps.setInt(1, 2); // Compliant
+      ps.setString(2, "three"); // Compliant
+      
+      updateSales = con.prepareStatement(updateString);
+      updateTotal = con.prepareStatement(updateStatement);
+      other = con.prepareStatement("update " + dbName + ".COFFEES set SALES = ?");
+      
+      for (Map.Entry<String, Integer> e : salesForWeek.entrySet()) {
+        updateSales.setInt(1, e.getValue().intValue()); // Compliant
+        updateSales.setString(2, e.getKey());  // Noncompliant
+        updateTotal.setInt(1, e.getValue().intValue()); // Compliant
+        updateTotal.setString(2, e.getKey()); // Compliant
+        other.setInt(2, getIntValue()); // Noncompliant
+      }
+      
+      updateString = "update " + param + ".COFFEES set SALES = ?";
+      
+      PreparedStatement testParam = con.prepareStatement(updateString);
+      testParam.setInt(3, 0); // Noncompliant
+      
+      testParam = con.prepareStatement(param + " update");
+      testParam.setInt(3, 0); // Noncompliant
+      
+      testParam = con.prepareStatement(param + param);
+      testParam.setInt(3, 0); // Compliant
+      
+      String[] array = new String[]{""};
+      PreparedStatement qix = con.prepareStatement(array[0]);
+      qix.setString(3, ""); // Compliant
+      
+      
+    } catch(SQLException e) {
+    }
+  }
+  
+  private String getQuery() {
+    return null;
+  }
 }
