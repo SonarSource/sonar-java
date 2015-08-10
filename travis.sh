@@ -30,8 +30,7 @@ RULING)
 
   mvn install -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
-  git clone https://github.com/SonarSource/ruling_java.git it_sources
-  export SONAR_IT_SOURCES=$(pwd)/it_sources
+  export SONAR_IT_SOURCES=$(pwd)/its/sources
 
   cd its/ruling
   mvn clean install -Dmaven.test.redirectTestOutputToFile=false -DjavaVersion=DEV -Dsonar.runtimeVersion=5.1.1
