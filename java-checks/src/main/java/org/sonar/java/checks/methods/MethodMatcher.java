@@ -111,13 +111,7 @@ public class MethodMatcher {
   }
 
   private boolean matches(Symbol symbol, Type callSiteType) {
-    if (symbol.isMethodSymbol()) {
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-      if (isSearchedMethod(methodSymbol, callSiteType)) {
-        return true;
-      }
-    }
-    return false;
+    return symbol.isMethodSymbol() && isSearchedMethod((MethodSymbol) symbol, callSiteType);
   }
 
   private static Type getCallSiteType(MethodInvocationTree mit) {
