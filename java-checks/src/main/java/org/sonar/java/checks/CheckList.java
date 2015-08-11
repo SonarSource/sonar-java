@@ -341,6 +341,7 @@ public final class CheckList {
       .add(FinalClassCheck.class)
       .add(OneDeclarationPerLineCheck.class)
       .add(ServletMethodsExceptionsThrownCheck.class)
+      .add(DynamicClassLoadCheck.class)
       .build();
   }
 
