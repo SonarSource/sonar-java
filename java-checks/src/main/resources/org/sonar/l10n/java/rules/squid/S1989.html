@@ -1,0 +1,43 @@
+<p>
+  Even though the signatures for methods in a servlet include <code>throws IOException, ServletException</code>,
+  it's a bad idea to let such exceptions be thrown.
+  Failure to catch exceptions in a servlet could leave a system in a vulnerable state,
+  possibly resulting in denial-of-service attacks, or the exposure of sensitive information because when
+  a servlet throws an exception, the servlet container typically sends debugging information back to the user.
+  And that information which could be very valuable to an attacker.
+</p>
+<p>
+  This rule checks all exceptions in methods named "do*" are explicitly handled in servlet classes.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void doGet(HttpServletRequest request, HttpServletResponse response)
+  throws IOException, ServletException {
+  String ip = request.getRemoteAddr();
+  InetAddress addr = InetAddress.getByName(ip); // Noncompliant; getByName(String) throws UnknownHostException
+  //...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public void doGet(HttpServletRequest request, HttpServletResponse response)
+  throws IOException, ServletException {
+  try {
+    String ip = request.getRemoteAddr();
+    InetAddress addr = InetAddress.getByName(ip);
+    //...
+  }
+  catch (UnknownHostException uhex) {
+    //...
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/600.html">MITRE, CWE-600</a> - Uncaught Exception in Servlet</li>
+  <li><a href="https://www.securecoding.cert.org/confluence/x/s4EVAQ">CERT, ERR01-J</a> - Do not allow exceptions to expose sensitive information</li>
+  <li><a href="https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure">OWASP Top Ten Category A6</a> - Sensitive Data Exposure</li>
+</ul>

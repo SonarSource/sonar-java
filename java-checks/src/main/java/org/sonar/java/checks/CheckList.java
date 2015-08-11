@@ -340,6 +340,7 @@ public final class CheckList {
       .add(WildcardImportsShouldNotBeUsedCheck.class)
       .add(FinalClassCheck.class)
       .add(OneDeclarationPerLineCheck.class)
+      .add(ServletMethodsExceptionsThrownCheck.class)
       .build();
   }
 
