@@ -7,10 +7,10 @@ class A {
     } catch (Exception e) {
       throw new IllegalAccessError();
     } finally {
-      throw new IllegalAccessError();   // Non-Compliant
+      throw new IllegalAccessError(); // Noncompliant {{Refactor this code to not throw exceptions in finally blocks.}}
 
       if (false) {
-        throw new IllegalAccessError(); // Non-Compliant
+        throw new IllegalAccessError(); // Noncompliant
       }
 
       new A() {
@@ -23,7 +23,7 @@ class A {
       }catch (Exception e){
 
       }
-      throw new IllegalAccessError();
+      throw new IllegalAccessError(); // Noncompliant
     }
   }
 

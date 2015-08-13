@@ -7,17 +7,17 @@ class A {
       break;
     }
 
-    for (int i = 0; i < 42; i++) { // Non-Compliant
+    for (int i = 0; i < 42; i++) { // Noncompliant {{Reduce the total number of break and continue statements in this loop to use at most one.}}
       break;
       break;
     }
 
-    for (int i = 0; i < 42; i++) { // Non-Compliant
+    for (int i = 0; i < 42; i++) { // Noncompliant
       break;
       continue;
     }
 
-    while (true) { // Non-Compliant
+    while (true) { // Noncompliant
       continue;
       continue;
     }
@@ -38,7 +38,7 @@ class A {
     continue;
     continue;
 
-    do { // Non-Compliant
+    do { // Noncompliant
       break;
       switch (foo) {
         case 0:
@@ -64,7 +64,7 @@ class A {
 
     switch (foo) {
       case 0:
-        do{ //non-compliant
+        do{ // Noncompliant
           if(false){
             continue;
           }

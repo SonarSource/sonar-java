@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ReturnInFinallyCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ReturnInFinallyCheck.java"), new VisitorsBridge(new ReturnInFinallyCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Remove this return statement from this finally block.")
-        .next().atLine(28).withMessage("Remove this return statement from this finally block.")
-    ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ReturnInFinallyCheck.java", new ReturnInFinallyCheck());
   }
 
 }

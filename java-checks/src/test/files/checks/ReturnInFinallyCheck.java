@@ -5,7 +5,7 @@ class B {
     } catch (Exception e) {
       return; // Compliant
     } finally {
-      return; // Non-Compliant
+      return; // Noncompliant {{Remove this return statement from this finally block.}}
     }
 
     try {
@@ -25,7 +25,7 @@ class B {
     }finally {
       try {
       }catch (Exception e){
-        return;
+        return; // Noncompliant {{Remove this return statement from this finally block.}}
       }
     }
   }
