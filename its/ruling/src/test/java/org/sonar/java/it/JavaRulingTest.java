@@ -19,13 +19,16 @@
  */
 package org.sonar.java.it;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.io.Files;
+import com.google.common.collect.Lists;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.SonarRunner;
 import com.sonar.orchestrator.locator.FileLocation;
-import com.sonar.orchestrator.locator.MavenLocation;
+import difflib.DiffUtils;
+import difflib.Patch;
+import org.apache.commons.io.FileUtils;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -33,8 +36,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.wsclient.SonarClient;
 
+import javax.annotation.Nullable;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,8 +55,8 @@ public class JavaRulingTest {
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
       .addPlugin("java")
       .setMainPluginKey("java")
-      .addPlugin(MavenLocation.create("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.5-SNAPSHOT"))
       .build();
+  private File actual;
 
   @BeforeClass
   public static void prepare_quality_profiles() {
@@ -81,7 +88,9 @@ public class JavaRulingTest {
     instantiateTemplateRuleS2253();
     File classes = new File("target/test-classes");
     File sslr_jdk7_source = FileLocation.ofShared("sslr/oracle-jdk-1.7.0.3").getFile();
-    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
+    actual = new File(sslr_jdk7_source, "actual");
+    actual.delete();
+    actual.mkdir();
     SonarRunner build = SonarRunner.create(sslr_jdk7_source)
         .setProjectKey("project")
         .setProjectName("project")
@@ -91,15 +100,13 @@ public class JavaRulingTest {
         .setProperty("sonar.cpd.skip", "true")
         .setProperty("sonar.skipPackageDesign", "true")
         .setProperty("sonar.analysis.mode", "preview")
-        .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/expected").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath())
+        .setProperty("sonar.java.jsonoutput", "true")
+        .setProperty("sonar.java.jsonoutput.folder", "actual")
         .setProperty("sonar.java.libraries", classes.getAbsolutePath())
         .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx2500m");
     orchestrator.executeBuild(build);
 
-    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+    assertThatNoDifferences();
   }
 
   private void instantiateTemplateRuleS2253() {
@@ -128,5 +135,42 @@ public class JavaRulingTest {
       LOG.error("Could not retrieve profile key : Template rule S2253 has not been activated ");
     }
   }
+  private void assertThatNoDifferences() throws IOException {
+
+    List<File> expectedFiles = Lists.newArrayList(FileLocation.of("src/test/resources/expected").getFile().listFiles());
+    List<File> actualFiles = Lists.newArrayList(actual.listFiles());
+    Collections.sort(expectedFiles);
+    Collections.sort(actualFiles);
+    List<String> errors = new ArrayList<>();
+    for (File actualFile : actualFiles) {
+      File expectedFile = matchingExpectedFile(expectedFiles, actualFile);
+      if(expectedFile == null) {
+        errors.add("only in actual files "+actualFile.getName());
+      } else {
+        expectedFiles.remove(expectedFile);
+        List<String> originalLines = FileUtils.readLines(expectedFile);
+        Patch patch = DiffUtils.diff(originalLines, FileUtils.readLines(actualFile));
+        if(!patch.getDeltas().isEmpty()) {
+          errors.addAll(DiffUtils.generateUnifiedDiff(expectedFile.getName(), actualFile.getName(), originalLines, patch, 1));
+        }
+      }
+    }
+    //remaining expected file
+    for (File expectedFile : expectedFiles) {
+      errors.add("only in expected files "+expectedFile.getName());
+    }
+    assertThat(errors).as(Joiner.on("\n").join(errors)).isEmpty();
+  }
+
+  @Nullable
+  private File matchingExpectedFile(List<File> expectedFiles, File actualFile) {
+    for (File expectedFile : expectedFiles) {
+      if(expectedFile.getName().equals(actualFile.getName())) {
+        return expectedFile;
+      }
+    }
+    return null;
+  }
+
 
 }
