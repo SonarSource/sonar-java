@@ -33,57 +33,45 @@ public class JavaFilesCacheTest {
   @Test
   public void resource_file_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
+    JavaAstScanner.scanSingleFile(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
 
-    assertThat(javaFilesCache.resourcesCache.keySet()).hasSize(6);
+    assertThat(javaFilesCache.resourcesCache.keySet()).hasSize(7);
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$plop");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$I");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B");
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B$1");
+    assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$2");
   }
 
   @Test
   public void method_start_lines_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
-    assertThat(javaFilesCache.methodStartLines.keySet()).hasSize(5);
+    JavaAstScanner.scanSingleFile(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
+    assertThat(javaFilesCache.methodStartLines.keySet()).hasSize(6);
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$I#foo()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B$1#foo()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#method_start_lines_mapping()V");
+    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#foo()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A#method()V");
-    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#resource_file_mapping()V");
-    assertThat(javaFilesCache.suppressWarningLines.keySet()).hasSize(13);
-    for (Integer line : Lists.newArrayList(68, 69, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83)) {
+    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest#bar()V");
+    assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$2#foo()V");
+  }
+
+  @Test
+  public void suppressWarning_lines_mapping() {
+    JavaFilesCache javaFilesCache = new JavaFilesCache();
+    JavaAstScanner.scanSingleFile(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
+    assertThat(javaFilesCache.suppressWarningLines.keySet()).hasSize(21);
+    for (Integer line : Lists.newArrayList(14, 15, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29)) {
       assertThat(javaFilesCache.suppressWarningLines.get(line)).contains("all");
     }
-    for (Integer line : Lists.newArrayList(77, 78, 79, 80, 81)) {
+    for (Integer line : Lists.newArrayList(23, 24, 25, 26, 27)) {
       assertThat(javaFilesCache.suppressWarningLines.get(line)).contains("foo", "bar");
     }
-  }
 
-  static class A {
-    interface I {
-      @SuppressWarnings("all")
-      void foo();
-    }
-
-    private void method() {
-      @SuppressWarnings("all")
-      class B {
-        Object obj = new I() {
-
-          @SuppressWarnings({"foo", "bar"})
-          @Override
-          public void foo() {
-
-          }
-        };
-      }
+    for (Integer line : Lists.newArrayList(10, 11, 32, 33, 34, 35, 36, 37)) {
+      assertThat(javaFilesCache.suppressWarningLines.get(line)).contains("qix");
     }
   }
-  @interface plop {
-  }
-
 }

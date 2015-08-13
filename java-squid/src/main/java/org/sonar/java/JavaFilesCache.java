@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Deque;
@@ -133,7 +134,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   public void visitMethod(MethodTree tree) {
     parent.push(tree);
     String methodKey = currentClassKey.peek() + "#" + MethodSignaturePrinter.print(MethodSignatureScanner.scan(tree));
-    methodStartLines.put(methodKey, ((JavaTree) tree.simpleName()).getLine());
+    methodStartLines.put(methodKey, tree.simpleName().identifierToken().line());
     handleSuppressWarning(tree);
     super.visitMethod(tree);
     parent.pop();
@@ -142,10 +143,24 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   private void handleSuppressWarning(ClassTree tree) {
     int endLine = tree.closeBraceToken().line();
     handleSuppressWarning(tree.modifiers().annotations(), endLine);
+
+    for (Tree member : tree.members()) {
+      if (member.is(Tree.Kind.VARIABLE)) {
+        handleSuppressWarning((VariableTree) member);
+      }
+    }
+  }
+
+  private void handleSuppressWarning(VariableTree variable) {
+    int variableEndLine = variable.simpleName().identifierToken().line();
+    if (variable.initializer() != null) {
+      variableEndLine = variable.endToken().line();
+    }
+    handleSuppressWarning(variable.modifiers().annotations(), variableEndLine);
   }
 
   private void handleSuppressWarning(MethodTree tree) {
-    int endLine = ((JavaTree) tree.simpleName()).getLine();
+    int endLine = tree.simpleName().identifierToken().line();
     // if we have no block, then we assume method is on one line on the method name line.
     if (tree.block() != null) {
       endLine = tree.block().closeBraceToken().line();
