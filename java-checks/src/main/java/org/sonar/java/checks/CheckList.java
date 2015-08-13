@@ -343,6 +343,7 @@ public final class CheckList {
       .add(ServletMethodsExceptionsThrownCheck.class)
       .add(DynamicClassLoadCheck.class)
       .add(MembersDifferOnlyByCapitalizationCheck.class)
+      .add(LoopsOnSameSetCheck.class)
       .build();
   }
 
