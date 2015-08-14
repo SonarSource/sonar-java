@@ -29,14 +29,25 @@ public class JavaFilesCacheTest {
       }
     }
     
-    @SuppressWarnings({"qix"})
+    @java.lang.SuppressWarnings({"qix"})
     I implem = new I() {
       @Override
       public void foo() {
       }
     };
+    
+    private void foo(@SuppressWarnings("gul") int b) {
+      
+      @SuppressWarnings("gul")
+      Object obj = new I() {
+        @Override
+        public void foo() {
+        }
+      };
+    }
   }
   
+  @java.lang.Deprecated
   @interface plop {
   }
 }

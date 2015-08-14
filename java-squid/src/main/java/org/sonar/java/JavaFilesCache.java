@@ -30,6 +30,7 @@ import org.sonar.java.model.JavaTree.PackageDeclarationTreeImpl;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -38,7 +39,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -140,21 +140,21 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     parent.pop();
   }
 
+  @Override
+  public void visitVariable(VariableTree tree) {
+    handleSuppressWarning(tree);
+    super.visitVariable(tree);
+  }
+
   private void handleSuppressWarning(ClassTree tree) {
     int endLine = tree.closeBraceToken().line();
     handleSuppressWarning(tree.modifiers().annotations(), endLine);
-
-    for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        handleSuppressWarning((VariableTree) member);
-      }
-    }
   }
 
   private void handleSuppressWarning(VariableTree variable) {
     int variableEndLine = variable.simpleName().identifierToken().line();
     if (variable.initializer() != null) {
-      variableEndLine = variable.endToken().line();
+      variableEndLine = LastSyntaxTokenFinder.lastSyntaxToken(variable).line();
     }
     handleSuppressWarning(variable.modifiers().annotations(), variableEndLine);
   }
@@ -184,16 +184,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private static boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {
-    boolean suppressWarningsType = false;
-    Tree type = annotationTree.annotationType();
-    if (type.is(Tree.Kind.IDENTIFIER)) {
-      suppressWarningsType = "SuppressWarnings".equals(((IdentifierTree) type).name());
-    } else if (type.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mset = (MemberSelectExpressionTree) type;
-      suppressWarningsType = "SuppressWarnings".equals(mset.identifier().name()) &&
-        mset.expression().is(Tree.Kind.MEMBER_SELECT) && "lang".equals(((MemberSelectExpressionTree) mset.expression()).identifier().name());
-    }
-    return suppressWarningsType;
+    return annotationTree.annotationType().symbolType().is("java.lang.SuppressWarnings");
   }
 
   private static List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
