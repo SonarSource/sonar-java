@@ -11,16 +11,21 @@ class A {
         })
         .map(this::square) //Compliant
         .forEach(System.out::println);
-    IntStream.range(1, 5)
-        .forEach(x -> System.out.println(x)); // Noncompliant
-    IntStream.range(1, 5)
-        .forEach(x -> { // Noncompliant
+    IntStream.range(1, 5).forEach(x -> System.out.println(x)); // Noncompliant
+    IntStream.range(1, 5).forEach(x -> { // Noncompliant
           System.out.println(x);
         });
-    IntStream.range(1, 5).forEach(x -> {return;});
+    IntStream.range(1, 5).forEach(x -> {return;}); // Compliant
+    
+    Arrays.asList("bar").stream().filter(string -> string.startsWith("b")); // Compliant
+    Arrays.asList(new A()).stream().filter(a -> a.coolerThan(0, a)); // Compliant
   }
 
   int square(int x) {
     return x * x;
+  }
+  
+  boolean coolerThan(int i, A a) {
+    return true;
   }
 }
