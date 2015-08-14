@@ -86,7 +86,7 @@ public class JavaRulingTest {
   @Test
   public void test() throws Exception {
     instantiateTemplateRuleS2253();
-    File classes = new File("target/test-classes");
+
     File sslr_jdk7_source = FileLocation.ofShared("sslr/oracle-jdk-1.7.0.3").getFile();
     actual = new File(sslr_jdk7_source, "actual");
     actual.delete();
@@ -102,7 +102,7 @@ public class JavaRulingTest {
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.java.jsonoutput", "true")
         .setProperty("sonar.java.jsonoutput.folder", "actual")
-        .setProperty("sonar.java.libraries", classes.getAbsolutePath())
+        .setProperty("sonar.java.libraries", "bin/rt_openJDK_1.7_u55_linux.jar")
         .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx2500m");
     orchestrator.executeBuild(build);
 
