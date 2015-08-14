@@ -139,6 +139,7 @@ switch ($env:RUN_ITS)
 
 		if ($env:RUN_ITS -eq "ruling")
 		{
+			BuildSnapshot "SonarSource/sonar-lits"
 			$currentDir=$pwd.Path
 			$env:SONAR_IT_SOURCES="${currentDir}/its/sources"
 			pushd its/ruling
