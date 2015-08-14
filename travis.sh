@@ -30,6 +30,8 @@ RULING)
 
   mvn install -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
+  build_snapshot "SonarSource/sonar-lits"
+
   export SONAR_IT_SOURCES=$(pwd)/its/sources
 
   cd its/ruling
