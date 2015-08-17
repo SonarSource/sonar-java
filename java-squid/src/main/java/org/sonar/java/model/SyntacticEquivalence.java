@@ -66,14 +66,11 @@ public final class SyntacticEquivalence {
     if (leftNode == null || rightNode == null) {
       return false;
     }
-    if (leftNode.getKind() != rightNode.getKind()) {
+    if (leftNode.getKind() != rightNode.getKind() || leftNode.is(Tree.Kind.OTHER)) {
       return false;
     } else if (leftNode.isLeaf()) {
       return areLeafsEquivalent(leftNode, rightNode);
-    } else if (leftNode.is(Tree.Kind.OTHER)) {
-      return false;
     }
-
     Iterator<Tree> iteratorA = leftNode.childrenIterator();
     Iterator<Tree> iteratorB = rightNode.childrenIterator();
 

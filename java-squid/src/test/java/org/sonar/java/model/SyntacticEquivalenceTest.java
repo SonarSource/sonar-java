@@ -71,6 +71,13 @@ public class SyntacticEquivalenceTest {
     assertAreNotEquivalent("foo(qix->0)", "foo(bar->0)");
   }
 
+  @Test
+  public void not_implemented_tree() {
+    JavaTree.NotImplementedTreeImpl notImplementedTree = new JavaTree.NotImplementedTreeImpl();
+    assertThat(SyntacticEquivalence.areEquivalent(notImplementedTree, notImplementedTree)).isTrue();
+    assertThat(SyntacticEquivalence.areEquivalent(notImplementedTree, new JavaTree.NotImplementedTreeImpl())).isFalse();
+  }
+
   private void assertAreEquivalent(String statement1, String statement2) {
     assertAreEquivalent(Lists.newArrayList(statement1), Lists.newArrayList(statement2));
   }
