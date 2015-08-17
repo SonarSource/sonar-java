@@ -46,7 +46,7 @@ import java.util.List;
 @Rule(
   key = "S1989",
   name = "Exceptions should not be thrown from servlet methods",
-  tags = {"cert", "cwe", "owasp-a6", "security"},
+  tags = {"cert", "cwe", "owasp-a6", "security", "error-handling"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)

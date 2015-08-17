@@ -38,7 +38,7 @@ import java.util.Set;
 @Rule(
   key = "S2924",
   name = "JUnit rules should be used",
-  tags = {"unused"},
+  tags = {"unused", "junit"},
   priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
