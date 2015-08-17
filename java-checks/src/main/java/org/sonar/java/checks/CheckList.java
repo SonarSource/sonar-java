@@ -344,6 +344,7 @@ public final class CheckList {
       .add(DynamicClassLoadCheck.class)
       .add(MembersDifferOnlyByCapitalizationCheck.class)
       .add(LoopsOnSameSetCheck.class)
+      .add(PublicStaticMutableMembersCheck.class)
       .build();
   }
 

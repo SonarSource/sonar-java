@@ -1,0 +1,45 @@
+<p>
+  Mutable <code>static</code> members which are accessed directly, rather than through getters and setters,
+  should be protected to the degree possible. That can be done by reducing visibility or
+  making the field <code>final</code> if appropriate. Note that making a mutable field,
+  such as an array, <code>final</code> will keep the variable from being reassigned,
+  but doing so has no effect on the mutability of the internal state of the array
+  (i.e. it doesn't accomplish the goal).
+</p>
+<p>
+  This rule checks that <code>static</code> arrays, <code>Collection</code>, <code>Date</code> or <code>awt.Point</code> are not <code>public</code>.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class A {
+  public static String [] strings1 = {"first","second"};  // Noncompliant
+  public static String [] strings2 = {"first","second"};  // Noncompliant
+  public static List&lt;String&gt; strings3 = new ArrayList&lt;&gt;;  // Noncompliant
+  // ...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class A {
+  protected static final String [] strings1 = {"first","second"};  // access limited
+  private static String [] strings2 = {"first","second"};  // made private with getter, setter
+  private static List&lt;String&gt; strings3 = new ArrayList&lt;&gt;;
+
+  public static String [] getStrings2() {
+    return strings2.clone();
+  }
+
+  public static void setStrings2(String [] strings) {
+    strings2 = strings.clone();
+  }
+
+  // ...
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+  <li><a href="http://cwe.mitre.org/data/definitions/607">MITRE, CWE-607</a> - Public Static Final Field References Mutable Object</li>
+</ul>

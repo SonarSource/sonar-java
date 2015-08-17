@@ -17,34 +17,17 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks.helpers;
+package org.sonar.java.checks;
 
-import com.google.common.base.Predicate;
-import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.junit.Test;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SyntaxNodePredicates {
+public class PublicStaticMutableMembersCheckTest {
 
-  private SyntaxNodePredicates() {
-    // Useful predicates to be used with syntax nodes
-  }
-
-  public static Predicate<Tree> kind(final Tree.Kind syntaxNodeKind) {
-    return new Predicate<Tree>() {
-      @Override
-      public boolean apply(Tree syntaxNode) {
-        return syntaxNode.is(syntaxNodeKind);
-      }
-    };
-  }
-
-  public static Predicate<String> isSubtypeOf(final Type type) {
-    return new Predicate<String>() {
-      @Override
-      public boolean apply(String input) {
-        return type.isSubtypeOf(input);
-      }
-    };
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/PublicStaticMutableMembersCheck.java", new PublicStaticMutableMembersCheck());
   }
 
 }
+
