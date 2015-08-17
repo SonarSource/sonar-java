@@ -20,20 +20,21 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S2391",
@@ -43,46 +44,42 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
-public class JunitMethodDeclarationCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class JunitMethodDeclarationCheck extends SubscriptionBaseVisitor {
 
   private static final String JUNIT_SETUP = "setUp";
   private static final String JUNIT_TEARDOWN = "tearDown";
   private static final String JUNIT_SUITE = "suite";
   private static final int MAX_STRING_DISTANCE = 3;
 
-  private JavaFileScannerContext context;
-
   @Override
-  public void scanFile(final JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitClass(ClassTree tree) {
-    if (isJunit3Class(tree)) {
-      super.visitClass(tree);
+  public void visitNode(Tree tree) {
+    if (isJunit3Class(((ClassTree) tree))) {
+      for (Tree member : ((ClassTree) tree).members()) {
+        if (member.is(Tree.Kind.METHOD)) {
+          visitMethod((MethodTree) member);
+        }
+      }
     }
   }
 
-  @Override
-  public void visitMethod(MethodTree methodTree) {
+  private void visitMethod(MethodTree methodTree) {
     String name = methodTree.simpleName().name();
     TypeTree returnType = methodTree.returnType();
-    if (JUNIT_SETUP.equals(name)) {
-      checkSetupTearDownSignature(methodTree);
-    } else if (JUNIT_TEARDOWN.equals(name)) {
+    if (JUNIT_SETUP.equals(name) || JUNIT_TEARDOWN.equals(name)) {
       checkSetupTearDownSignature(methodTree);
     } else if (JUNIT_SUITE.equals(name)) {
       checkSuiteSignature(methodTree);
-    } else if (returnType != null && returnType.symbolType().isSubtypeOf("junit.framework.Test")) {
+    } else if ((returnType != null && returnType.symbolType().isSubtypeOf("junit.framework.Test")) || areVerySimilarStrings(JUNIT_SUITE, name)) {
       addIssueForMethodBadName(methodTree, JUNIT_SUITE, name);
     } else if (areVerySimilarStrings(JUNIT_SETUP, name)) {
       addIssueForMethodBadName(methodTree, JUNIT_SETUP, name);
     } else if (areVerySimilarStrings(JUNIT_TEARDOWN, name)) {
       addIssueForMethodBadName(methodTree, JUNIT_TEARDOWN, name);
-    } else if (areVerySimilarStrings(JUNIT_SUITE, name)) {
-      addIssueForMethodBadName(methodTree, JUNIT_SUITE, name);
     }
   }
 
@@ -95,15 +92,15 @@ public class JunitMethodDeclarationCheck extends BaseTreeVisitor implements Java
   private void checkSuiteSignature(MethodTree methodTree) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
     if (!symbol.isPublic()) {
-      context.addIssue(methodTree, this, "Make this method \"public\".");
+      addIssue(methodTree, "Make this method \"public\".");
     } else if (!symbol.isStatic()) {
-      context.addIssue(methodTree, this, "Make this method \"static\".");
+      addIssue(methodTree, "Make this method \"static\".");
     } else if (!methodTree.parameters().isEmpty()) {
-      context.addIssue(methodTree, this, "This method does not accept parameters.");
+      addIssue(methodTree, "This method does not accept parameters.");
     } else {
       TypeTree returnType = methodTree.returnType();
       if (returnType != null && !returnType.symbolType().isSubtypeOf("junit.framework.Test")) {
-        context.addIssue(methodTree, this, "This method should return either a \"junit.framework.Test\" or a \"junit.framework.TestSuite\".");
+        addIssue(methodTree, "This method should return either a \"junit.framework.Test\" or a \"junit.framework.TestSuite\".");
       }
     }
   }
@@ -111,19 +108,19 @@ public class JunitMethodDeclarationCheck extends BaseTreeVisitor implements Java
   private void checkSetupTearDownSignature(MethodTree methodTree) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
     if (!symbol.isPublic()) {
-      context.addIssue(methodTree, this, "Make this method \"public\".");
+      addIssue(methodTree, "Make this method \"public\".");
     } else if (!methodTree.parameters().isEmpty()) {
-      context.addIssue(methodTree, this, "This method does not accept parameters.");
+      addIssue(methodTree, "This method does not accept parameters.");
     } else {
       TypeTree returnType = methodTree.returnType();
       if (returnType != null && !returnType.symbolType().isVoid()) {
-        context.addIssue(methodTree, this, "Make this method return \"void\".");
+        addIssue(methodTree, "Make this method return \"void\".");
       }
     }
   }
 
   private void addIssueForMethodBadName(MethodTree methodTree, String expected, String actual) {
-    context.addIssue(methodTree, this, "This method should be named \"" + expected + "\" not \"" + actual + "\".");
+    addIssue(methodTree, "This method should be named \"" + expected + "\" not \"" + actual + "\".");
   }
 
   private static boolean isJunit3Class(ClassTree classTree) {
