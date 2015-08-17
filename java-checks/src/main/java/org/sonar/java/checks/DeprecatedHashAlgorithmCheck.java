@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -49,8 +50,9 @@ import java.util.Map;
 @SqaleConstantRemediation("30min")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
+  private static final String JAVA_LANG_STRING = "java.lang.String";
   private static final String MD5 = "MD5";
-  private static final String SHA1 = "SHA-1";
+  private static final String SHA1 = "SHA1";
 
   private static final Map<String, String> ALGORITHM_BY_METHOD_NAME = ImmutableMap.<String, String>builder()
     .put("getMd5Digest", MD5)
@@ -70,11 +72,16 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
       .add(MethodMatcher.create()
         .typeDefinition("java.security.MessageDigest")
         .name("getInstance")
-        .addParameter("java.lang.String"))
+        .addParameter(JAVA_LANG_STRING))
+      .add(MethodMatcher.create()
+        .typeDefinition("java.security.MessageDigest")
+        .name("getInstance")
+        .addParameter(JAVA_LANG_STRING)
+        .addParameter(TypeCriteria.anyType()))
       .add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
         .name("getDigest")
-        .addParameter("java.lang.String"));
+        .addParameter(JAVA_LANG_STRING));
     for (String methodName : ALGORITHM_BY_METHOD_NAME.keySet()) {
       builder.add(MethodMatcher.create()
         .typeDefinition("org.apache.commons.codec.digest.DigestUtils")
@@ -94,11 +101,13 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     String methodName = methodName(mit);
     String algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
     if (algorithm == null) {
-      List<ExpressionTree> arguments = mit.arguments();
-      algorithm = algorithm(arguments.get(0));
+      algorithm = algorithm(mit.arguments().get(0));
     }
-    if (MD5.equals(algorithm) || SHA1.equals(algorithm)) {
-      addIssue(mit, "Use a stronger encryption algorithm than " + algorithm + ".");
+    boolean isMd5 = MD5.equalsIgnoreCase(algorithm);
+    boolean isSha1 = SHA1.equalsIgnoreCase(algorithm);
+    if (isMd5 || isSha1) {
+      String msgAlgo = isSha1 ? "SHA-1" : algorithm;
+      addIssue(mit, "Use a stronger encryption algorithm than " + msgAlgo + ".");
     }
   }
 
@@ -106,18 +115,17 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     String name = null;
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodSelect;
-      name = memberSelectExpressionTree.identifier().name();
+      name = ((MemberSelectExpressionTree) methodSelect).identifier().name();
     } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifier = (IdentifierTree) methodSelect;
-      name = identifier.name();
+      name = ((IdentifierTree) methodSelect).name();
     }
     return name;
   }
 
   private static String algorithm(ExpressionTree invocationArgument) {
     if (invocationArgument.is(Tree.Kind.STRING_LITERAL)) {
-      return LiteralUtils.trimQuotes(((LiteralTree) invocationArgument).value());
+      String algo = LiteralUtils.trimQuotes(((LiteralTree) invocationArgument).value());
+      return algo.replaceAll("-", "");
     }
     return null;
   }
