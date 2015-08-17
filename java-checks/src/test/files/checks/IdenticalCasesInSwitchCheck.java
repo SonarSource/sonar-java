@@ -21,10 +21,14 @@ class A {
     if (true) {
       System.out.println("foo");
     } else if (true) {
+      // skip empty blocks
+    } else if (true) {
+      // skip empty blocks
+    } else if (true) {
       System.out.println("bar");
     } else if (true) { // Noncompliant {{This branch's code block is the same as the block for the branch on line 21.}}
       System.out.println("foo");
-    } else { // Noncompliant {{This branch's code block is the same as the block for the branch on line 25.}}
+    } else { // Noncompliant {{This branch's code block is the same as the block for the branch on line 29.}}
       System.out.println("foo");
     }
     if (true) {

@@ -111,9 +111,6 @@
 'project:com/sun/org/apache/bcel/internal/util/CodeHTML.java':[
 345,
 ],
-'project:com/sun/org/apache/xalan/internal/xslt/Process.java':[
-402,
-],
 'project:com/sun/org/apache/xalan/internal/xsltc/compiler/AttributeValue.java':[
 40,
 ],
@@ -539,11 +536,6 @@
 'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLDTDDescription.java':[
 168,
 ],
-'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLDTDValidator.java':[
-1682,
-1690,
-1696,
-],
 'project:com/sun/org/apache/xerces/internal/impl/dv/xs/DurationDV.java':[
 262,
 ],
@@ -622,9 +614,6 @@
 'project:com/sun/org/apache/xml/internal/dtm/ref/DTMDefaultBase.java':[
 692,
 ],
-'project:com/sun/org/apache/xml/internal/dtm/ref/DTMDocumentImpl.java':[
-2061,
-],
 'project:com/sun/org/apache/xml/internal/dtm/ref/DTMNodeProxy.java':[
 1720,
 1741,
@@ -635,9 +624,6 @@
 'project:com/sun/org/apache/xml/internal/dtm/ref/dom2dtm/DOM2DTMdefaultNamespaceDeclarationNode.java':[
 323,
 344,
-],
-'project:com/sun/org/apache/xml/internal/resolver/readers/OASISXMLCatalogReader.java':[
-322,
 ],
 'project:com/sun/org/apache/xml/internal/resolver/readers/SAXCatalogReader.java':[
 273,
@@ -775,11 +761,6 @@
 'project:java/awt/ContainerOrderFocusTraversalPolicy.java':[
 273,
 433,
-],
-'project:java/awt/DefaultKeyboardFocusManager.java':[
-115,
-117,
-130,
 ],
 'project:java/awt/GridBagLayout.java':[
 1895,
@@ -964,9 +945,6 @@
 'project:java/text/ChoiceFormat.java':[
 236,
 ],
-'project:java/text/MessageFormat.java':[
-575,
-],
 'project:java/text/PatternEntry.java':[
 167,
 223,
@@ -1002,7 +980,6 @@
 4764,
 ],
 'project:javax/management/MBeanPermission.java':[
-1103,
 1105,
 ],
 'project:javax/management/relation/RelationService.java':[
@@ -1224,9 +1201,6 @@
 1369,
 1509,
 1754,
-],
-'project:javax/xml/bind/DatatypeConverterImpl.java':[
-112,
 ],
 'project:javax/xml/bind/util/ValidationEventCollector.java':[
 92,

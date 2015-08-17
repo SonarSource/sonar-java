@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
@@ -88,15 +89,23 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
     StatementTree elseStatement = node.elseStatement();
     while (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) elseStatement;
-      if (SyntacticEquivalence.areEquivalent(thenStatement, ifStatement.thenStatement())) {
+      if (areIfBlocksSyntacticalEquivalent(thenStatement, ifStatement.thenStatement())) {
         addIssue(ifStatement.thenStatement(), issueMessage("branch", thenStatement));
         break;
       }
       elseStatement = ifStatement.elseStatement();
     }
-    if (elseStatement != null && SyntacticEquivalence.areEquivalent(thenStatement, elseStatement)) {
+    if (elseStatement != null && areIfBlocksSyntacticalEquivalent(thenStatement, elseStatement)) {
       addIssue(elseStatement, issueMessage("branch", thenStatement));
     }
+  }
+
+  private static boolean areIfBlocksSyntacticalEquivalent(StatementTree first, StatementTree second) {
+    return isNotEmptyBlock(first) && SyntacticEquivalence.areEquivalent(first, second);
+  }
+
+  private static boolean isNotEmptyBlock(StatementTree node) {
+    return !(node.is(Tree.Kind.BLOCK) && ((BlockTree) node).body().isEmpty());
   }
 
   private static String issueMessage(String type, Tree node) {
