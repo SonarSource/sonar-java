@@ -13,6 +13,12 @@ class InterfaceDeclaration {
 
     void method();
 
+    static void staticMethod() {
+    }
+
+    default void defaultMethod() {
+    }
+
     class NestedClass {
     }
 

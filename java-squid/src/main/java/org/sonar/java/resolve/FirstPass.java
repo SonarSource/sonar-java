@@ -261,7 +261,7 @@ public class FirstPass extends BaseTreeVisitor {
   }
 
   private int computeClassFlags(ClassTree tree) {
-    int flags = computeFlags(tree.modifiers());
+    int flags = computeFlags(tree.modifiers(), tree);
     if (tree.is(Tree.Kind.INTERFACE)) {
       flags |= Flags.INTERFACE;
     }else if (tree.is(Tree.Kind.ENUM)) {
@@ -269,17 +269,13 @@ public class FirstPass extends BaseTreeVisitor {
     }else if (tree.is(Tree.Kind.ANNOTATION_TYPE)) {
       flags |= Flags.INTERFACE | Flags.ANNOTATION;
     }
-    if (env.scope.owner instanceof JavaSymbol.TypeJavaSymbol && ((env.enclosingClass.flags() & Flags.INTERFACE) != 0)) {
-      // JLS7 6.6.1: All members of interfaces are implicitly public.
-      flags |= Flags.PUBLIC;
-    }
     return flags;
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
     String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
-    JavaSymbol.MethodJavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(computeFlags(tree.modifiers()), name, env.scope.owner);
+    JavaSymbol.MethodJavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(computeFlags(tree.modifiers(), tree), name, env.scope.owner);
     symbol.declaration = tree;
     if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
       //enum constructors are private.
@@ -325,21 +321,40 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitVariable(VariableTree tree) {
-    declareVariable(computeFlags(tree.modifiers()), tree.simpleName(), (VariableTreeImpl) tree);
+    declareVariable(computeFlags(tree.modifiers(), tree), tree.simpleName(), (VariableTreeImpl) tree);
     super.visitVariable(tree);
   }
 
-  private int computeFlags(ModifiersTree modifiers) {
+  private int computeFlags(ModifiersTree modifiers, Tree tree) {
     int result = 0;
-    //JLS7 6.6.1: All members of interfaces are implicitly public.
     if ((env.scope.owner.flags & Flags.INTERFACE) != 0) {
-      result = Flags.PUBLIC;
+      result = computeFlagsForInterfaceMember(tree);
     }
     for (ModifierKeywordTree modifier : modifiers.modifiers()) {
       result |= Flags.flagForModifier(modifier.modifier());
     }
     if(hasDeprecatedAnnotation(modifiers.annotations())) {
       result |= Flags.DEPRECATED;
+    }
+    return result;
+  }
+
+  private static int computeFlagsForInterfaceMember(Tree tree) {
+    int result;
+    // JLS7 6.6.1: All members of interfaces are implicitly public.
+    result = Flags.PUBLIC;
+    if (tree.is(Tree.Kind.METHOD)) {
+      if (((MethodTree) tree).block() == null) {
+        // JLS8 9.4: methods lacking a block are implicitly abstract
+        result |= Flags.ABSTRACT;
+      }
+    } else {
+      // JLS7 9.5: member type declarations are implicitly static and public
+      result |= Flags.STATIC;
+      if (tree.is(Tree.Kind.VARIABLE)) {
+        // JLS7 9.3: fields are implicitly public, static and final
+        result |= Flags.FINAL;
+      }
     }
     return result;
   }

@@ -236,23 +236,31 @@ public class SymbolTableTest {
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(interfaceSymbol);
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL);
 
     variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("SECOND_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(interfaceSymbol);
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL);
 
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("method");
     assertThat(methodSymbol.owner()).isSameAs(interfaceSymbol);
-    assertThat(methodSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(methodSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ABSTRACT);
+
+    JavaSymbol.MethodJavaSymbol staticMethodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("staticMethod");
+    assertThat(staticMethodSymbol.owner()).isSameAs(interfaceSymbol);
+    assertThat(staticMethodSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC);
+
+    JavaSymbol.MethodJavaSymbol defaultMethodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("defaultMethod");
+    assertThat(defaultMethodSymbol.owner()).isSameAs(interfaceSymbol);
+    assertThat(defaultMethodSymbol.flags()).isEqualTo(Flags.DEFAULT | Flags.PUBLIC);
 
     JavaSymbol.TypeJavaSymbol typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedClass");
     assertThat(typeSymbol.owner()).isSameAs(interfaceSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC);
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedInterface");
     assertThat(typeSymbol.owner()).isSameAs(interfaceSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.INTERFACE);
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedEnum");
     assertThat(typeSymbol.owner()).isSameAs(interfaceSymbol);
@@ -350,23 +358,23 @@ public class SymbolTableTest {
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL);
 
     variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("SECOND_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL);
 
     JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("value");
     assertThat(methodSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(methodSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(methodSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ABSTRACT);
 
     JavaSymbol.TypeJavaSymbol typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedClass");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC);
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedInterface");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.INTERFACE);
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedEnum");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
@@ -374,7 +382,7 @@ public class SymbolTableTest {
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("NestedAnnotationType");
     assertThat(typeSymbol.owner()).isSameAs(annotationSymbol);
-    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.INTERFACE | Flags.ANNOTATION);
+    assertThat(typeSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.INTERFACE | Flags.ANNOTATION);
   }
 
   @Test
