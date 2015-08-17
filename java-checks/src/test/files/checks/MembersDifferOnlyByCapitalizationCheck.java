@@ -39,6 +39,9 @@ class A implements MyInterface {
   public A() {}
   class MyInnerClass {}
   ;
+
+  public void SUPER() {} // Compliant
+  public void tHiS() {} // Compliant
 }
 
 interface MyInterface {

@@ -28,7 +28,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -130,15 +129,17 @@ public class MembersDifferOnlyByCapitalizationCheck extends SubscriptionBaseVisi
   }
 
   private static String getDefinitionPlace(Symbol symbol, Symbol knownMemberSymbol) {
-    Symbol.TypeSymbol knownMemberOwner = (Symbol.TypeSymbol) knownMemberSymbol.owner();
-    if (symbol.owner().equals(knownMemberOwner)) {
+    if (sameOwner(symbol, knownMemberSymbol)) {
       return "on line " + getDeclarationLine(knownMemberSymbol);
     }
-    return "in " + (knownMemberOwner.isInterface() ? "interface" : "superclass") + " \"" + knownMemberOwner.type().fullyQualifiedName() + "\"";
+    return "in " + (knownMemberSymbol.owner().isInterface() ? "interface" : "superclass") + " \"" + knownMemberSymbol.owner().type().fullyQualifiedName() + "\"";
   }
 
   private static int getDeclarationLine(Symbol symbol) {
-    return FirstSyntaxTokenFinder.firstSyntaxToken(symbol.declaration()).line();
+    if (symbol.isVariableSymbol()) {
+      return ((Symbol.VariableSymbol) symbol).declaration().simpleName().identifierToken().line();
+    }
+    return ((Symbol.MethodSymbol) symbol).declaration().simpleName().identifierToken().line();
   }
 
   private static String getSymbolTypeName(Symbol symbol) {
@@ -171,11 +172,16 @@ public class MembersDifferOnlyByCapitalizationCheck extends SubscriptionBaseVisi
   private static List<Symbol> extractMembers(Symbol.TypeSymbol classSymbol, boolean ignorePrivate) {
     List<Symbol> results = Lists.newLinkedList();
     for (Symbol symbol : classSymbol.memberSymbols()) {
-      if ((symbol.isVariableSymbol() || methodButNotConstructor(symbol)) && !(symbol.isPrivate() && ignorePrivate)) {
+      if ((variableButNotThisNorSuper(symbol) || methodButNotConstructor(symbol)) && !(symbol.isPrivate() && ignorePrivate)) {
         results.add(symbol);
       }
     }
     return results;
+  }
+
+  private static boolean variableButNotThisNorSuper(Symbol symbol) {
+    String name = symbol.name();
+    return symbol.isVariableSymbol() && !"this".equals(name) && !"super".equals(name);
   }
 
   private static boolean methodButNotConstructor(Symbol symbol) {
