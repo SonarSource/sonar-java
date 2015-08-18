@@ -11,6 +11,7 @@ env:
   - TESTS=IT-DEV
   #- TESTS=RULING PROJECT=hbase_protocol
   - TESTS=RULING PROJECT=apache_commons_beanutils
+  - TESTS=RULING PROJECT=guava
   - TESTS=RULING PROJECT=jdk7
   - TESTS=IT-LTS
 matrix:

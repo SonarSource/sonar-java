@@ -1,0 +1,12 @@
+{
+'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+2331,
+4123,
+],
+'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
+175,
+],
+'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+3476,
+],
+}

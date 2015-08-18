@@ -102,6 +102,24 @@ public class JavaRulingTest {
   }
 
   @Test
+  public void guava() throws Exception {
+    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
+    File hbasePom = FileLocation.of("../sources/guava/pom.xml").getFile();
+    MavenBuild mavenBuild = MavenBuild.create().setPom(hbasePom).setCleanPackageSonarGoals().addArgument("-DskipTests")
+        .setProfile("rules")
+        .setProperty("sonar.cpd.skip", "true")
+        .setProperty("sonar.skipPackageDesign", "true")
+        .setProperty("sonar.analysis.mode", "preview")
+        .setProperty("sonar.issuesReport.html.enable", "true")
+        .setProperty("dump.old", FileLocation.of("src/test/resources/guava").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
+    orchestrator.executeBuild(mavenBuild);
+    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+  }
+
+
+  @Test
   public void apache_commons_beanutils() throws Exception {
     File litsDifferencesFile = FileLocation.of("target/differences").getFile();
     File hbasePom = FileLocation.of("../sources/commons-beanutils/pom.xml").getFile();
