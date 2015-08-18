@@ -29,6 +29,7 @@ import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +93,8 @@ public class JavaRulingTest {
         .setProperty("sonar.skipPackageDesign", "true")
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/expected").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("dump.old", FileLocation.of("src/test/resources/jdk7").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/jdk7").getFile().getAbsolutePath())
         .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath())
         .setProperty("sonar.java.libraries", "bin/rt_openJDK_1.7_u55_linux.jar")
         .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx2500m");
@@ -112,7 +113,7 @@ public class JavaRulingTest {
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
         .setProperty("dump.old", FileLocation.of("src/test/resources/guava").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/guava").getFile().getAbsolutePath())
         .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
     orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
@@ -130,13 +131,14 @@ public class JavaRulingTest {
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
         .setProperty("dump.old", FileLocation.of("src/test/resources/commons-beanutils").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/commons-beanutils").getFile().getAbsolutePath())
         .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
     orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
   }
 
   @Test
+  @Ignore
   public void hbase_protocol() throws Exception {
     File litsDifferencesFile = FileLocation.of("target/differences").getFile();
     File pomFile = FileLocation.of("../sources/hbase/hbase-protocol/pom.xml").getFile();
@@ -147,7 +149,7 @@ public class JavaRulingTest {
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
         .setProperty("dump.old", FileLocation.of("src/test/resources/hbase").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/hbase").getFile().getAbsolutePath())
         .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
     orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
@@ -164,7 +166,7 @@ public class JavaRulingTest {
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
         .setProperty("dump.old", FileLocation.of("src/test/resources/fluent-http").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/fluent-http").getFile().getAbsolutePath())
         .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
     orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
