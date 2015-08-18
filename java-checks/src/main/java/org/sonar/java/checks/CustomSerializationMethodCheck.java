@@ -54,19 +54,13 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (hasSemantic() && isOwnedBySerializable(methodSymbol)) {
-      if (hasSignature(methodSymbol, "writeObject", "java.io.ObjectOutputStream")) {
+      if (hasSignature(methodSymbol, "writeObject", "java.io.ObjectOutputStream")
+        || hasSignature(methodSymbol, "readObject", "java.io.ObjectInputStream")
+        || hasSignature(methodSymbol, "readObjectNoData")) {
         checkPrivate(methodTree);
         checkNotStatic(methodTree);
-      } else if (hasSignature(methodSymbol, "readObject", "java.io.ObjectInputStream")) {
-        checkPrivate(methodTree);
-        checkNotStatic(methodTree);
-      } else if (hasSignature(methodSymbol, "readObjectNoData")) {
-        checkPrivate(methodTree);
-        checkNotStatic(methodTree);
-      } else if (hasSignature(methodSymbol, "writeReplace")) {
-        checkNotStatic(methodTree);
-        checkReturnType(methodTree, "java.lang.Object");
-      } else if (hasSignature(methodSymbol, "readResolve")) {
+      } else if (hasSignature(methodSymbol, "writeReplace")
+        || hasSignature(methodSymbol, "readResolve")) {
         checkNotStatic(methodTree);
         checkReturnType(methodTree, "java.lang.Object");
       }

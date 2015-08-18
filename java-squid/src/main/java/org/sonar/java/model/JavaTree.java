@@ -243,7 +243,7 @@ public abstract class JavaTree implements Tree {
   public static class ImportTreeImpl extends JavaTree implements ImportTree {
     private final boolean isStatic;
     private final Tree qualifiedIdentifier;
-    private final SyntaxToken semiColonToken;
+    private final SyntaxToken semicolonToken;
     private final SyntaxToken importToken;
     private final SyntaxToken staticToken;
 
@@ -253,7 +253,7 @@ public abstract class JavaTree implements Tree {
       this.importToken = importToken;
       this.staticToken = staticToken;
       this.qualifiedIdentifier = qualifiedIdentifier;
-      this.semiColonToken = semiColonToken;
+      this.semicolonToken = semiColonToken;
       isStatic = staticToken != null;
     }
 
@@ -285,7 +285,7 @@ public abstract class JavaTree implements Tree {
 
     @Override
     public SyntaxToken semicolonToken() {
-      return semiColonToken;
+      return semicolonToken;
     }
 
     @Override
@@ -299,7 +299,7 @@ public abstract class JavaTree implements Tree {
       return Iterators.concat(
         Iterators.singletonIterator(importToken),
         isStatic ? Iterators.singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
-        Iterators.forArray(qualifiedIdentifier, semiColonToken));
+        Iterators.forArray(qualifiedIdentifier, semicolonToken));
     }
   }
 
