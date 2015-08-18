@@ -79,7 +79,7 @@ public class JavaRulingTest {
   }
 
   @Test
-  public void jdk7_source() throws Exception {
+  public void jdk7() throws Exception {
     File litsDifferencesFile = FileLocation.of("target/differences").getFile();
     File sslr_jdk7_source = FileLocation.of("../sources/sslr/oracle-jdk-1.7.0.3").getFile();
     SonarRunner build = SonarRunner.create(sslr_jdk7_source)
