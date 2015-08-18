@@ -44,7 +44,7 @@ import java.util.List;
   key = "S1845",
   name = "Methods and field names should not be the same or differ only by capitalization",
   tags = {"confusing"},
-  priority = Priority.CRITICAL)
+  priority = Priority.MAJOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
@@ -99,13 +99,25 @@ public class MembersDifferOnlyByCapitalizationCheck extends SubscriptionBaseVisi
 
   private static boolean isInvalidMember(Symbol currentMember, Symbol knownMember) {
     if (!isOverriding(currentMember)) {
-      return !sameName(currentMember, knownMember) || (differentTypes(currentMember, knownMember) && bothPublic(currentMember, knownMember));
+      return differentTypes(currentMember, knownMember) ? sameVisibilityNotPrivate(currentMember, knownMember) : !sameName(currentMember, knownMember);
     }
     return false;
   }
 
   private static boolean isValidIssueLocation(Symbol currentMember, Symbol knownMember) {
     return !sameOwner(currentMember, knownMember) || isOverriding(knownMember) || getDeclarationLine(currentMember) > getDeclarationLine(knownMember);
+  }
+
+  private static boolean sameVisibilityNotPrivate(Symbol s1, Symbol s2) {
+    return bothPublic(s1, s2) || bothProtected(s1, s2) || bothPackageVisibility(s1, s2);
+  }
+
+  private static boolean bothPackageVisibility(Symbol s1, Symbol s2) {
+    return s1.isPackageVisibility() && s2.isPackageVisibility();
+  }
+
+  private static boolean bothProtected(Symbol s1, Symbol s2) {
+    return s1.isProtected() && s2.isProtected();
   }
 
   private static boolean bothPublic(Symbol s1, Symbol s2) {
@@ -172,19 +184,19 @@ public class MembersDifferOnlyByCapitalizationCheck extends SubscriptionBaseVisi
   private static List<Symbol> extractMembers(Symbol.TypeSymbol classSymbol, boolean ignorePrivate) {
     List<Symbol> results = Lists.newLinkedList();
     for (Symbol symbol : classSymbol.memberSymbols()) {
-      if ((variableButNotThisNorSuper(symbol) || methodButNotConstructor(symbol)) && !(symbol.isPrivate() && ignorePrivate)) {
+      if ((isVariableToExtract(symbol) || isMethodToExtract(symbol)) && !(symbol.isPrivate() && ignorePrivate)) {
         results.add(symbol);
       }
     }
     return results;
   }
 
-  private static boolean variableButNotThisNorSuper(Symbol symbol) {
+  private static boolean isVariableToExtract(Symbol symbol) {
     String name = symbol.name();
-    return symbol.isVariableSymbol() && !"this".equals(name) && !"super".equals(name);
+    return !symbol.isEnum() && symbol.isVariableSymbol() && !"this".equals(name) && !"super".equals(name);
   }
 
-  private static boolean methodButNotConstructor(Symbol symbol) {
+  private static boolean isMethodToExtract(Symbol symbol) {
     return symbol.isMethodSymbol() && !"<init>".equals(symbol.name());
   }
 }

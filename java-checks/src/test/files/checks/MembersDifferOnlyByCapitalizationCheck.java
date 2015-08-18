@@ -19,22 +19,10 @@ class A implements MyInterface {
   private static void gUl() {} // Noncompliant {{Rename method "gUl" to prevent any misunderstanding/clash with method "gul" defined on line 20.}}
   public void gul() {} // Compliant
 
-  public int tmp0;
-  public void tmp0() {} // Noncompliant {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0" defined on line 22.}}
-  
-  private int tmp1;
-  private void tmp1() {} // Compliant
-  
-  private int tmp2;
-  public void tmp2() {}; // Compliant
-  
-  public int tmp3;
-  private void tmp3() {}; // Compliant
-  
   private boolean qix;
   
   public Object myField; // Noncompliant
-  public void myField();
+  public void myField(); // Compliant, as it overrides the parent interface method
   
   public A() {}
   class MyInnerClass {}
@@ -60,4 +48,36 @@ class B extends A {
   public Object qix;  // Compliant
   
   public void fOo(int i) {} // Noncompliant
+}
+
+class Visibility {
+  public int tmp0;
+  private void tmp0() {}
+  public void tmp0(int i) {} // Noncompliant {{Rename method "tmp0" to prevent any misunderstanding/clash with field "tmp0" defined on line 54.}}
+  protected void tmp0(long l) {}
+  void tmp0(short s) {}
+  
+  private int tmp1;
+  private void tmp1() {} // Compliant - private members having same name are ignored
+  public void tmp1(int i) {}
+  protected void tmp1(long l) {}
+  void tmp1(short s) {}
+  
+  int tmp2;
+  private void tmp2() {}
+  public void tmp1(int i) {}
+  protected void tmp1(long l) {}
+  void tmp2(short s) {}  // Noncompliant {{Rename method "tmp2" to prevent any misunderstanding/clash with field "tmp2" defined on line 66.}}
+  
+  protected int tmp3;
+  private void tmp3() {}
+  public void tmp3(int i) {}
+  protected void tmp3(long l) {} // Noncompliant {{Rename method "tmp3" to prevent any misunderstanding/clash with field "tmp3" defined on line 72.}}
+  void tmp3(short s) {} 
+}
+
+public enum MyEnum {
+  FOO;
+  
+  public void foo() {} // Compliant
 }
