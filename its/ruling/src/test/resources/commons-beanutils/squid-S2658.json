@@ -1,0 +1,16 @@
+{
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/JDBCDynaClass.java':[
+161,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MappedPropertyDescriptor.java':[
+516,
+525,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/ResultSetDynaClass.java':[
+242,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/ClassConverter.java':[
+95,
+104,
+],
+}

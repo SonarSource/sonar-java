@@ -1,0 +1,15 @@
+{
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanMap.java':[
+809,
+872,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaBean.java':[
+543,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaMap.java':[
+255,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/WrapDynaClass.java':[
+455,
+],
+}

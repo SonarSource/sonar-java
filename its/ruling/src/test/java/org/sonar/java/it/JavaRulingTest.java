@@ -59,20 +59,20 @@ public class JavaRulingTest {
         "IndentationCheck",
         ImmutableMap.of("indentationLevel", "4"))
       .put(
-        "S1451",
-        ImmutableMap.of(
-          "headerFormat",
-          "\n/*\n" +
-          " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
-          " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
+          "S1451",
+          ImmutableMap.of(
+              "headerFormat",
+              "\n/*\n" +
+                  " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
+                  " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
       .build();
     ImmutableSet<String> disabledRules = ImmutableSet.of(
-      // disable bytecodeVisitor rules
-      "UnusedPrivateMethod",
-      "CallToDeprecatedMethod",
-      "CycleBetweenPackages",
-      // disable because it generates too many issues, performance reasons
-      "LeftCurlyBraceStartLineCheck"
+        // disable bytecodeVisitor rules
+        "UnusedPrivateMethod",
+        "CallToDeprecatedMethod",
+        "CycleBetweenPackages",
+        // disable because it generates too many issues, performance reasons
+        "LeftCurlyBraceStartLineCheck"
     );
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
     instantiateTemplateRuleS2253();
@@ -98,6 +98,23 @@ public class JavaRulingTest {
         .setProperty("sonar.java.libraries", "bin/rt_openJDK_1.7_u55_linux.jar")
         .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx2500m");
     orchestrator.executeBuild(build);
+    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+  }
+
+  @Test
+  public void apache_commons_beanutils() throws Exception {
+    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
+    File hbasePom = FileLocation.of("../sources/commons-beanutils/pom.xml").getFile();
+    MavenBuild mavenBuild = MavenBuild.create().setPom(hbasePom).setCleanPackageSonarGoals().addArgument("-DskipTests")
+        .setProfile("rules")
+        .setProperty("sonar.cpd.skip", "true")
+        .setProperty("sonar.skipPackageDesign", "true")
+        .setProperty("sonar.analysis.mode", "preview")
+        .setProperty("sonar.issuesReport.html.enable", "true")
+        .setProperty("dump.old", FileLocation.of("src/test/resources/commons-beanutils").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
+    orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
   }
 
