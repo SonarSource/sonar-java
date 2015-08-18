@@ -1,0 +1,17 @@
+{
+'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+4714,
+],
+'com.google.guava:guava:src/com/google/common/cache/LongAdder.java':[
+56,
+],
+'com.google.guava:guava:src/com/google/common/cache/RemovalNotification.java':[
+86,
+],
+'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
+99,
+],
+'com.google.guava:guava:src/com/google/common/collect/SingletonImmutableSet.java':[
+75,
+],
+}

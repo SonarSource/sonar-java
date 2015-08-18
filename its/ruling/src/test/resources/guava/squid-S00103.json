@@ -1,0 +1,10 @@
+{
+'com.google.guava:guava:src/com/google/common/annotations/GwtCompatible.java':[
+74,
+],
+'com.google.guava:guava:src/com/google/thirdparty/publicsuffix/PublicSuffixPatterns.java':[
+45,
+53,
+62,
+],
+}

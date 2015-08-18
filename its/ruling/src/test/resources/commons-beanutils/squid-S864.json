@@ -1,0 +1,16 @@
+{
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BaseDynaBeanMapDecorator.java':[
+363,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/DefaultBeanIntrospector.java':[
+133,
+150,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/FluentPropertyBeanIntrospector.java':[
+162,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/AbstractConverter.java':[
+141,
+320,
+],
+}

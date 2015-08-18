@@ -1,0 +1,15 @@
+{
+'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+2331,
+4135,
+],
+'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
+178,
+],
+'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+3478,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+137,
+],
+}

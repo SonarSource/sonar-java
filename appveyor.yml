@@ -12,16 +12,29 @@ install:
   - set MAVEN_VERSION=3.2.5
   - choco install maven -version %MAVEN_VERSION%
   - set PATH=%PATH%;C:\bin\apache-maven-%MAVEN_VERSION%\bin
-  - set JAVA_HOME=C:\Program Files\Java\jdk1.7.0
+  - echo %JAVA_HOME%
 
 environment:
   matrix:
   - RUN: ruling
+    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
     SQ_VERSION: LATEST_RELEASE
+    PROJECT: fluent_http
+  - RUN: ruling 
+    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+    SQ_VERSION: LATEST_RELEASE
+    PROJECT: apache_commons_beanutils
+  - RUN: ruling
+    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+    SQ_VERSION: LATEST_RELEASE
+    PROJECT: guava
   - RUN: its
+    JAVA_HOME: C:\Program Files\Java\jdk1.7.0
     SQ_VERSION: DEV
   - RUN: ci
+    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
   - RUN: its
+    JAVA_HOME: C:\Program Files\Java\jdk1.7.0
     SQ_VERSION: LTS_OR_OLDEST_COMPATIBLE
 
 matrix:

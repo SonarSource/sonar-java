@@ -1,0 +1,14 @@
+{
+'com.google.guava:guava:src/com/google/common/hash/Hashing.java':[
+117,
+148,
+],
+'com.google.guava:guava:src/com/google/common/hash/Murmur3_128HashFunction.java':[
+43,
+80,
+],
+'com.google.guava:guava:src/com/google/common/hash/Murmur3_32HashFunction.java':[
+47,
+155,
+],
+}

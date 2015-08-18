@@ -1,0 +1,10 @@
+{
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/BeanUtils2TestCase.java':[
+48,
+66,
+],
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/WrapDynaBeanTestCase.java':[
+66,
+87,
+],
+}
