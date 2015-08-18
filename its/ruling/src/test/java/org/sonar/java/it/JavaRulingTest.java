@@ -122,8 +122,8 @@ public class JavaRulingTest {
   @Test
   public void apache_commons_beanutils() throws Exception {
     File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File hbasePom = FileLocation.of("../sources/commons-beanutils/pom.xml").getFile();
-    MavenBuild mavenBuild = MavenBuild.create().setPom(hbasePom).setCleanPackageSonarGoals().addArgument("-DskipTests")
+    File pomFile = FileLocation.of("../sources/commons-beanutils/pom.xml").getFile();
+    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
         .setProfile("rules")
         .setProperty("sonar.cpd.skip", "true")
         .setProperty("sonar.skipPackageDesign", "true")
@@ -139,8 +139,8 @@ public class JavaRulingTest {
   @Test
   public void hbase_protocol() throws Exception {
     File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File hbasePom = FileLocation.of("../sources/hbase/hbase-protocol/pom.xml").getFile();
-    MavenBuild mavenBuild = MavenBuild.create().setPom(hbasePom).setCleanPackageSonarGoals().addArgument("-DskipTests")
+    File pomFile = FileLocation.of("../sources/hbase/hbase-protocol/pom.xml").getFile();
+    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
         .setProfile("rules")
         .setProperty("sonar.cpd.skip", "true")
         .setProperty("sonar.skipPackageDesign", "true")
@@ -152,6 +152,24 @@ public class JavaRulingTest {
     orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
   }
+
+  @Test
+  public void fluent_http() throws Exception {
+    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
+    File pomFile = FileLocation.of("../sources/fluent-http/pom.xml").getFile();
+    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
+        .setProfile("rules")
+        .setProperty("sonar.cpd.skip", "true")
+        .setProperty("sonar.skipPackageDesign", "true")
+        .setProperty("sonar.analysis.mode", "preview")
+        .setProperty("sonar.issuesReport.html.enable", "true")
+        .setProperty("dump.old", FileLocation.of("src/test/resources/fluent-http").getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/").getFile().getAbsolutePath())
+        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
+    orchestrator.executeBuild(mavenBuild);
+    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+  }
+
 
   private static void instantiateTemplateRuleS2253() {
     SonarClient sonarClient = orchestrator.getServer().adminWsClient();

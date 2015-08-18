@@ -9,13 +9,15 @@ script: ./travis.sh
 env:
   - TESTS=CI
   - TESTS=IT-DEV
-  #- TESTS=RULING PROJECT=hbase_protocol
   - TESTS=RULING PROJECT=apache_commons_beanutils
   - TESTS=RULING PROJECT=guava
   - TESTS=RULING PROJECT=jdk7
   - TESTS=IT-LTS
 matrix:
   fast_finish: true
+  include:
+    - jdk: oraclejdk8
+      env: TESTS=RULING PROJECT=fluent_http
 
 cache:
   directories:
