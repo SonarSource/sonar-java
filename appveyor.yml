@@ -31,3 +31,12 @@ build_script:
   - ps: ./appveyor.ps1
 
 test: off
+
+notifications:
+- provider: HipChat
+  room: 361097
+  auth_token:
+    secure: RW8+2GpOWo3PcoM3ehoI+mbfUr7h508RtTDyszpR6/E=
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true
