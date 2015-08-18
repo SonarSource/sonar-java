@@ -12,13 +12,13 @@ install:
 
 environment:
   matrix:
-  - RUN_ITS: false
-  - RUN_ITS: ruling
+  - RUN: ruling
     SQ_VERSION: LATEST_RELEASE
-  - RUN_ITS: true
-    SQ_VERSION: LTS_OR_OLDEST_COMPATIBLE
-  - RUN_ITS: true
+  - RUN: its
     SQ_VERSION: DEV
+  - RUN: ci
+  - RUN: its
+    SQ_VERSION: LTS_OR_OLDEST_COMPATIBLE
 
 matrix:
   fast_finish: true

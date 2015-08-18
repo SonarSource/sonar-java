@@ -115,9 +115,9 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
     }
 }
 
-switch ($env:RUN_ITS)
+switch ($env:RUN)
 {
-	"false"
+	"ci"
 	{
 		InstallAppveyorTools
 
@@ -125,7 +125,7 @@ switch ($env:RUN_ITS)
 		CheckLastExitCode
 	}
 
-	{($_ -eq "true") -or ($_ -eq "ruling")}
+	{($_ -eq "its") -or ($_ -eq "ruling")}
 	{
 		InstallAppveyorTools
 
@@ -137,7 +137,7 @@ switch ($env:RUN_ITS)
 			BuildSnapshot "SonarSource/sonarqube"
 		}
 
-		if ($env:RUN_ITS -eq "ruling")
+		if ($env:RUN -eq "ruling")
 		{
 			BuildSnapshot "SonarSource/sonar-lits"
 			$currentDir=$pwd.Path
@@ -161,6 +161,6 @@ switch ($env:RUN_ITS)
 
 	default
 	{
-		throw "RUN_ITS should be set to either ""true"", ""false"" or ""ruling"", not: ""$env:RUN_ITS"""
+		throw "RUN should be set to either ""ci"", ""its"" or ""ruling"", not: ""$env:RUN"""
 	}
 }
