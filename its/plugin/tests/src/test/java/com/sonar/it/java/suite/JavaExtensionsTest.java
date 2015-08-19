@@ -50,6 +50,8 @@ public class JavaExtensionsTest {
     assertThat(issues).hasSize(4);
     issues = issueClient.find(IssueQuery.create().rules("java-extension:subscriptionexamplecheck").componentRoots("com.sonarsource.it.projects:java-extension")).list();
     assertThat(issues).hasSize(3);
+    issues = issueClient.find(IssueQuery.create().rules("java-extension:subscriptionexampletestcheck").componentRoots("com.sonarsource.it.projects:java-extension")).list();
+    assertThat(issues).hasSize(1);
   }
 
 }

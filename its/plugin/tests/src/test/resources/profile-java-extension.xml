@@ -13,5 +13,10 @@
       <key>subscriptionexamplecheck</key>
       <priority>MAJOR</priority>
     </rule>
+    <rule>
+      <repositoryKey>java-extension</repositoryKey>
+      <key>subscriptionexampletestcheck</key>
+      <priority>MAJOR</priority>
+    </rule>
   </rules>
 </profile>

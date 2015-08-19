@@ -25,11 +25,18 @@
     </dependency>
 
     <dependency>
-      <groupId>org.codehaus.sonar-plugins.java</groupId>
+      <groupId>org.sonarsource.java</groupId>
       <artifactId>sonar-java-plugin</artifactId>
       <type>sonar-plugin</type>
       <version>3.5-SNAPSHOT</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
