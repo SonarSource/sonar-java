@@ -43,6 +43,27 @@ public static class Class extends SuperClass {
     if (parameter1 && parameter2) { // Compliant, unknown
     }
   }
+  
+  public void bitwise_and(boolean parameter1, boolean parameter2) {
+    if (false & false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (false & true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (false & parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (true & false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (true & true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (true & parameter2) { // Compliant, unknown
+    }
+    if (parameter1 & false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (parameter1 & true) { // Compliant, unknown
+    }
+    if (parameter1 & parameter2) { // Compliant, unknown
+    }
+  }
 
   public void conditional_or(boolean parameter1, boolean parameter2) {
     if (false || false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -62,6 +83,48 @@ public static class Class extends SuperClass {
     if (parameter1 || true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (parameter1 || parameter2) { // Compliant, unknown
+    }
+  }
+  
+  public void bitwise_or(boolean parameter1, boolean parameter2) {
+    if (false | false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (false | true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (false | parameter2) { // Compliant, unknown
+    }
+    if (true | false) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (true | true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (true | parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (parameter1 | false) { // Compliant, unknown
+    }
+    if (parameter1 | true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (parameter1 | parameter2) { // Compliant, unknown
+    }
+  }
+  
+  public void conditional_bitwise_xor(boolean parameter1, boolean parameter2) {
+    if (false ^ false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (false ^ true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (false ^ parameter2) { // Compliant, unknown
+    }
+    if (true ^ false) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (true ^ true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (true ^ parameter2) { // Compliant, unknown
+    }
+    if (parameter1 ^ false) { // Compliant, unknown
+    }
+    if (parameter1 ^ true) { // Compliant, unknown
+    }
+    if (parameter1 ^ parameter2) { // Compliant, unknown
     }
   }
 
@@ -90,7 +153,15 @@ public static class Class extends SuperClass {
     }
     if (parameter && !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
+    if (parameter & !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
     if (parameter || !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (parameter | !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    }
+    if (parameter ^ parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+    if (parameter ^ !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -942,6 +1013,15 @@ public static class Class extends SuperClass {
     }
     if (false ? condition : true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
+  }
+  
+  public void ternary_with_bitwise_operators() {
+    boolean b1 = false;
+    boolean b2 = false;
+    
+    int value;
+    value = (b1 ^ b2) ? 1 : 2; // False Negative - Not handled
+    value = (b1 ^ !b2) ? 1 : 2; // False Negative - Not handled
   }
 
   public overrun(boolean[] a) { // analysis aborted due to too many execution states

@@ -99,6 +99,31 @@ public class SymbolicEvaluatorTest {
   }
 
   @Test
+  public void test_condition_bitwise_and() {
+    // evaluation
+    assertThat(evaluateCondition("false & false").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("false & true").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("false & local2").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("true & false").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("true & true").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("true & local2").isUnknown()).isTrue();
+    assertThat(evaluateCondition("local1 & false").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("local1 & true").isUnknown()).isTrue();
+    assertThat(evaluateCondition("local1 & local").isUnknown()).isTrue();
+
+    // number of spawned states
+    assertOutputStates(evaluateCondition("false & false"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("false & true"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("false & local2"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("true & false"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("true & true"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("true & local2"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("local1 & false"), 0, 2, 0);
+    assertOutputStates(evaluateCondition("local1 & true"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("local1 & local2"), 1, 2, 0);
+  }
+
+  @Test
   public void test_condition_conditional_or() {
     // evaluation
     assertThat(evaluateCondition("false || false").isAlwaysFalse()).isTrue();
@@ -124,7 +149,57 @@ public class SymbolicEvaluatorTest {
   }
 
   @Test
-  public void test_expression_conditional_and() {
+  public void test_condition_bitwise_or() {
+    // evaluation
+    assertThat(evaluateCondition("false | false").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("false | true").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("false | local2").isUnknown()).isTrue();
+    assertThat(evaluateCondition("true | false").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("true | true").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("true | local2").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("local1 | false").isUnknown()).isTrue();
+    assertThat(evaluateCondition("local1 | true").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("local1 | local").isUnknown()).isTrue();
+
+    // number of spawned states
+    assertOutputStates(evaluateCondition("false | false"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("false | true"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("false | local2"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("true | false"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("true | true"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("true | local2"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("local1 | false"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("local1 | true"), 2, 0, 0);
+    assertOutputStates(evaluateCondition("local1 | local2"), 2, 1, 0);
+  }
+
+  @Test
+  public void test_condition_xor() {
+    // evaluation
+    assertThat(evaluateCondition("false ^ false").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("false ^ true").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("false ^ local2").isUnknown()).isTrue();
+    assertThat(evaluateCondition("true ^ false").isAlwaysTrue()).isTrue();
+    assertThat(evaluateCondition("true ^ true").isAlwaysFalse()).isTrue();
+    assertThat(evaluateCondition("true ^ local2").isUnknown()).isTrue();
+    assertThat(evaluateCondition("local1 ^ false").isUnknown()).isTrue();
+    assertThat(evaluateCondition("local1 ^ true").isUnknown()).isTrue();
+    assertThat(evaluateCondition("local1 ^ local").isUnknown()).isTrue();
+
+    // number of spawned states
+    assertOutputStates(evaluateCondition("false ^ false"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("false ^ true"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("false ^ local2"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("true ^ false"), 1, 0, 0);
+    assertOutputStates(evaluateCondition("true ^ true"), 0, 1, 0);
+    assertOutputStates(evaluateCondition("true ^ local2"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("local1 ^ false"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("local1 ^ true"), 1, 1, 0);
+    assertOutputStates(evaluateCondition("local1 ^ local2"), 2, 2, 0);
+  }
+
+  @Test
+  public void test_expression_and() {
     assertThat(evaluateExpression("false && false")).isSameAs(FALSE);
     assertThat(evaluateExpression("false && true")).isSameAs(FALSE);
     assertThat(evaluateExpression("false && local2")).isSameAs(FALSE);
@@ -134,10 +209,20 @@ public class SymbolicEvaluatorTest {
     assertThat(evaluateExpression("local1 && false")).isSameAs(FALSE);
     assertThat(evaluateExpression("local1 && true")).isSameAs(UNKNOWN);
     assertThat(evaluateExpression("local1 && local")).isSameAs(UNKNOWN);
+
+    assertThat(evaluateExpression("false & false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false & true")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false & local2")).isSameAs(FALSE);
+    assertThat(evaluateExpression("true & false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("true & true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true & local2")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 & false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("local1 & true")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 & local")).isSameAs(UNKNOWN);
   }
 
   @Test
-  public void test_expression_conditional_or() {
+  public void test_expression_or() {
     assertThat(evaluateExpression("false || false")).isSameAs(FALSE);
     assertThat(evaluateExpression("false || true")).isSameAs(TRUE);
     assertThat(evaluateExpression("false || local2")).isSameAs(UNKNOWN);
@@ -147,6 +232,29 @@ public class SymbolicEvaluatorTest {
     assertThat(evaluateExpression("local1 || false")).isSameAs(UNKNOWN);
     assertThat(evaluateExpression("local1 || true")).isSameAs(TRUE);
     assertThat(evaluateExpression("local1 || local")).isSameAs(UNKNOWN);
+
+    assertThat(evaluateExpression("false | false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false | true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("false | local2")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("true | false")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true | true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true | local2")).isSameAs(TRUE);
+    assertThat(evaluateExpression("local1 | false")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 | true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("local1 | local")).isSameAs(UNKNOWN);
+  }
+
+  @Test
+  public void test_expression_xor() {
+    assertThat(evaluateExpression("false ^ false")).isSameAs(FALSE);
+    assertThat(evaluateExpression("false ^ true")).isSameAs(TRUE);
+    assertThat(evaluateExpression("false ^ local2")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("true ^ false")).isSameAs(TRUE);
+    assertThat(evaluateExpression("true ^ true")).isSameAs(FALSE);
+    assertThat(evaluateExpression("true ^ local2")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 ^ false")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 ^ true")).isSameAs(UNKNOWN);
+    assertThat(evaluateExpression("local1 ^ local")).isSameAs(UNKNOWN);
   }
 
   @Test

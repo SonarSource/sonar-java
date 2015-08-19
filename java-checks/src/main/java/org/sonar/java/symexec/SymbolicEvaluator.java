@@ -128,10 +128,12 @@ public class SymbolicEvaluator {
   abstract static class BaseExpressionVisitor extends BaseTreeVisitor {
     @Override
     public final void visitBinaryExpression(BinaryExpressionTree tree) {
-      if (tree.is(Tree.Kind.CONDITIONAL_AND)) {
+      if (tree.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.AND)) {
         evaluateConditionalAnd(tree);
-      } else if (tree.is(Tree.Kind.CONDITIONAL_OR)) {
+      } else if (tree.is(Tree.Kind.CONDITIONAL_OR, Tree.Kind.OR)) {
         evaluateConditionalOr(tree);
+      } else if (tree.is(Tree.Kind.XOR)) {
+        evaluateXor(tree);
       } else if (tree.is(Tree.Kind.EQUAL_TO)) {
         evaluateRelationalOperator(tree, SymbolicRelation.EQUAL_TO);
       } else if (tree.is(Tree.Kind.GREATER_THAN)) {
@@ -150,6 +152,8 @@ public class SymbolicEvaluator {
     abstract void evaluateConditionalAnd(BinaryExpressionTree tree);
 
     abstract void evaluateConditionalOr(BinaryExpressionTree tree);
+
+    abstract void evaluateXor(BinaryExpressionTree tree);
 
     abstract void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator);
 
@@ -338,6 +342,23 @@ public class SymbolicEvaluator {
     }
 
     @Override
+    void evaluateXor(BinaryExpressionTree tree) {
+      PackedStates leftResult = evaluateCondition(currentState, tree.leftOperand());
+      for (ExecutionState leftState : leftResult.trueStates) {
+        PackedStates rightResult = evaluateCondition(leftState, tree.rightOperand());
+        currentResult.trueStates.addAll(rightResult.falseStates);
+        currentResult.falseStates.addAll(rightResult.trueStates);
+        currentResult.unknownStates.addAll(rightResult.unknownStates);
+      }
+      for (ExecutionState leftState : leftResult.falseStates) {
+        PackedStates rightResult = evaluateCondition(leftState, tree.rightOperand());
+        currentResult.trueStates.addAll(rightResult.trueStates);
+        currentResult.falseStates.addAll(rightResult.falseStates);
+        currentResult.unknownStates.addAll(rightResult.unknownStates);
+      }
+    }
+
+    @Override
     void evaluateRelationalOperator(BinaryExpressionTree tree, SymbolicRelation operator) {
       SymbolicValue leftValue = retrieveSymbolicValue(tree.leftOperand());
       SymbolicValue rightValue = retrieveSymbolicValue(tree.rightOperand());
@@ -490,6 +511,25 @@ public class SymbolicEvaluator {
         }
       }
       currentState.mergeRelations(Iterables.concat(leftStates.falseStates, leftStates.trueStates));
+    }
+
+    @Override
+    void evaluateXor(BinaryExpressionTree tree) {
+      PackedStates leftStates = evaluateCondition(currentState, tree.leftOperand());
+      currentResult = leftStates.getBooleanConstraint();
+      if (currentResult == SymbolicBooleanConstraint.FALSE) {
+        currentResult = null;
+        for (ExecutionState state : leftStates.falseStates) {
+          SymbolicBooleanConstraint newResult = evaluateExpression(state, tree.rightOperand());
+          currentResult = newResult.union(currentResult);
+        }
+      } else if (currentResult == SymbolicBooleanConstraint.TRUE) {
+        currentResult = null;
+        for (ExecutionState state : leftStates.trueStates) {
+          SymbolicBooleanConstraint newResult = evaluateExpression(state, tree.rightOperand());
+          currentResult = newResult.negate().union(currentResult);
+        }
+      }
     }
 
     @Override
