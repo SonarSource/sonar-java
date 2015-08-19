@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -123,8 +124,13 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
   }
 
   private static String algorithm(ExpressionTree invocationArgument) {
-    if (invocationArgument.is(Tree.Kind.STRING_LITERAL)) {
-      String algo = LiteralUtils.trimQuotes(((LiteralTree) invocationArgument).value());
+    ExpressionTree expectedAlgorithm = invocationArgument;
+    ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(invocationArgument);
+    if (defaultPropertyValue != null) {
+      expectedAlgorithm = defaultPropertyValue;
+    }
+    if (expectedAlgorithm.is(Tree.Kind.STRING_LITERAL)) {
+      String algo = LiteralUtils.trimQuotes(((LiteralTree) expectedAlgorithm).value());
       return algo.replaceAll("-", "");
     }
     return null;
