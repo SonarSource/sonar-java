@@ -127,13 +127,11 @@ public class SecondPass implements JavaSymbol.Completer {
       Scope enumParameters = ((JavaSymbol.TypeJavaSymbol) symbols.enumType.symbol()).typeParameters();
       JavaType.TypeVariableJavaType enumParameter = (JavaType.TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
       type.supertype = parametrizedTypeCache.getParametrizedTypeType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, type));
-    } else if (tree.is(Tree.Kind.CLASS)) {
-      // JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
+    } else if (tree.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE)) {
+      // For CLASS JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
       // the type given in the extends clause of the declaration of C
       // if an extends clause is present, or Object otherwise.
-      type.supertype = symbols.objectType;
-    } else if(tree.is(Tree.Kind.INTERFACE)) {
-      // JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are
+      // For INTERFACE JLS8 9.1.3: While every class is an extension of class Object, there is no single interface of which all interfaces are
       // extensions.
       // but we can call object method on any interface type.
       type.supertype = symbols.objectType;

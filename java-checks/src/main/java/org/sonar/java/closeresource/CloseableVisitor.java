@@ -155,16 +155,20 @@ public class CloseableVisitor extends SymbolicExecutionCheck {
 
   private static boolean usesIgnoredCloseableAsArgument(ExecutionState executionState, List<ExpressionTree> arguments) {
     for (ExpressionTree argument : arguments) {
-      if (isNewClassWithIgnoredArguments(executionState, argument)) {
-        return true;
-      } else if (isMethodInvocationWithIgnoredArguments(executionState, argument)) {
-        return true;
-      } else if (useIgnoredCloseable(executionState, argument) || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType())) {
+      if (isIgnoredCloseableArgument(executionState, argument)) {
         return true;
       }
     }
     return false;
   }
+
+  private static boolean isIgnoredCloseableArgument(ExecutionState executionState, ExpressionTree argument) {
+    return isNewClassWithIgnoredArguments(executionState, argument)
+        || isMethodInvocationWithIgnoredArguments(executionState, argument)
+        || useIgnoredCloseable(executionState, argument)
+        || isSubclassOfInputStreamOrOutputStreamWithoutClose(argument.symbolType());
+  }
+
 
   private static boolean isNewClassWithIgnoredArguments(ExecutionState executionState, ExpressionTree argument) {
     return argument.is(Tree.Kind.NEW_CLASS) && usesIgnoredCloseableAsArgument(executionState, ((NewClassTree) argument).arguments());

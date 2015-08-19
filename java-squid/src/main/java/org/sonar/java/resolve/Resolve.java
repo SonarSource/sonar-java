@@ -520,9 +520,8 @@ public class Resolve {
       return m1;
     } else if (m2SignatureMoreSpecific) {
       return m2;
-    } else {
-      return new AmbiguityErrorJavaSymbol();
     }
+    return new AmbiguityErrorJavaSymbol();
   }
 
   /**

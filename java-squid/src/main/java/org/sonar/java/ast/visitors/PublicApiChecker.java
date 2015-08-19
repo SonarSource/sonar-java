@@ -178,7 +178,8 @@ public class PublicApiChecker extends BaseTreeVisitor {
     Preconditions.checkNotNull(classTree);
     if (separateAccessorsFromMethods && AccessorsUtils.isAccessor(classTree, methodTree)) {
       return false;
-    } else if (isPublicInterface(classTree)) {
+    }
+    if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
     } else if (isEmptyDefaultConstructor(methodTree) || hasOverrideAnnotation(methodTree) || classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
       return false;
