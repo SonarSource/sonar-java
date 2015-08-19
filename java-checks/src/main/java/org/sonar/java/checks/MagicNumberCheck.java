@@ -38,7 +38,9 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
+import java.util.Locale;
 
 @Rule(
   key = "S109",
@@ -65,7 +67,9 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitLiteral(LiteralTree tree) {
     if (isNumberLiteral(tree)) {
+
       DecimalFormat decimalFormat = new DecimalFormat();
+      decimalFormat.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.ENGLISH));
       decimalFormat.setParseBigDecimal(true);
       BigDecimal checked = null;
       try {
