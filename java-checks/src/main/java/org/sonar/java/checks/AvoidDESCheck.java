@@ -23,19 +23,16 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.CheckForNull;
 
 import java.util.List;
 
@@ -56,10 +53,9 @@ public class AvoidDESCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArg = mit.arguments().get(0);
-    if (firstArg.is(Tree.Kind.IDENTIFIER)) {
-      firstArg = retrievedPropertyDefaultValue((IdentifierTree) firstArg);
-    } else if (firstArg.is(Tree.Kind.METHOD_INVOCATION)) {
-      firstArg = retrievedPropertyDefaultValue((MethodInvocationTree) firstArg);
+    ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(firstArg);
+    if (defaultPropertyValue != null) {
+      firstArg = defaultPropertyValue;
     }
     if (firstArg != null && firstArg.is(Tree.Kind.STRING_LITERAL)) {
       String algo = LiteralUtils.trimQuotes(((LiteralTree) firstArg).value());
@@ -72,34 +68,6 @@ public class AvoidDESCheck extends AbstractMethodDetection {
     if (transformationElements.length > 0 && isExcludedAlgorithm(transformationElements[0])) {
       addIssue(tree, "Use the recommended AES (Advanced Encryption Standard) instead.");
     }
-  }
-
-  @CheckForNull
-  private static ExpressionTree retrievedPropertyDefaultValue(IdentifierTree firstArg) {
-    Symbol symbol = firstArg.symbol();
-    if (symbol.usages().size() == 1) {
-      ExpressionTree initializer = ((Symbol.VariableSymbol) symbol).declaration().initializer();
-      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)) {
-        return retrievedPropertyDefaultValue((MethodInvocationTree) initializer);
-      }
-    }
-    return null;
-  }
-
-  @CheckForNull
-  private static ExpressionTree retrievedPropertyDefaultValue(MethodInvocationTree mit) {
-    if (isGetPropertyWithDefaultValue(mit)) {
-      return mit.arguments().get(1);
-    }
-    return null;
-  }
-
-  private static boolean isGetPropertyWithDefaultValue(MethodInvocationTree mit) {
-    Symbol symbol = mit.symbol();
-    if (symbol.owner().type().is("java.util.Properties")) {
-      return "getProperty".equals(symbol.name()) && mit.arguments().size() == 2;
-    }
-    return false;
   }
 
   private static boolean isExcludedAlgorithm(String algorithm) {
