@@ -136,7 +136,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return returnType == null ? Kind.CONSTRUCTOR : Kind.METHOD;
   }
 

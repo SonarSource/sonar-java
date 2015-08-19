@@ -28,7 +28,6 @@ import com.google.common.io.Files;
 import org.sonar.api.source.Highlightable;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.api.JavaKeyword;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -102,7 +101,7 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
       AnnotationTree annotationTree = (AnnotationTree) tree;
       highlighting.highlight(start(annotationTree), end(annotationTree), typesByKind.get(Tree.Kind.ANNOTATION));
     } else {
-      Tree.Kind kind = ((JavaTree) tree).getKind();
+      Tree.Kind kind = tree.kind();
       if (typesByKind.containsKey(kind)) {
         SyntaxToken token = ((LiteralTree) tree).token();
         highlighting.highlight(start(token), end(token), typesByKind.get(kind));

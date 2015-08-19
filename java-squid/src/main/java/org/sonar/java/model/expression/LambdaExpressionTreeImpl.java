@@ -55,7 +55,7 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.LAMBDA_EXPRESSION;
   }
 

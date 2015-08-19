@@ -75,7 +75,7 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
   }
 
   @Override
-  public Tree.Kind getKind() {
+  public Tree.Kind kind() {
     return Tree.Kind.ARGUMENTS;
   }
 

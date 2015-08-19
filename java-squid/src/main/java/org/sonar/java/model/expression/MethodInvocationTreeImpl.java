@@ -52,7 +52,7 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.METHOD_INVOCATION;
   }
 

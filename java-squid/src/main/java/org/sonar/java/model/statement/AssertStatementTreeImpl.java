@@ -67,7 +67,7 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.ASSERT_STATEMENT;
   }
 

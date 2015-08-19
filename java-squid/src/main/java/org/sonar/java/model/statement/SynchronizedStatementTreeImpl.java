@@ -50,7 +50,7 @@ public class SynchronizedStatementTreeImpl extends JavaTree implements Synchroni
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.SYNCHRONIZED_STATEMENT;
   }
 

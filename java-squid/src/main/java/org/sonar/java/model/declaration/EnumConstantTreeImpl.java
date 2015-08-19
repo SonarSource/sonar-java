@@ -53,7 +53,7 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.ENUM_CONSTANT;
   }
 

@@ -63,7 +63,7 @@ public class BinaryExpressionTreeImpl extends AbstractTypedTree implements Binar
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

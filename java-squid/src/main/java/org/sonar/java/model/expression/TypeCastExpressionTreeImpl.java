@@ -71,7 +71,7 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.TYPE_CAST;
   }
 

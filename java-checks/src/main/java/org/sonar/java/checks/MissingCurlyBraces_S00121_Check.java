@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -52,7 +51,7 @@ public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    switch (((JavaTree) tree).getKind()) {
+    switch (tree.kind()) {
       case WHILE_STATEMENT:
         checkStatement(((WhileStatementTree) tree).statement(), tree);
         break;

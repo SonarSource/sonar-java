@@ -36,7 +36,7 @@ public class InternalSyntaxSpacing extends JavaTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     // FIXME should have a dedicated kind associated with a dedicated interface.
     return Tree.Kind.TRIVIA;
   }

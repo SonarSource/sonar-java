@@ -89,7 +89,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.NEW_ARRAY;
   }
 

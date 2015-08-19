@@ -72,7 +72,7 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.TYPE_ARGUMENTS;
   }
 }

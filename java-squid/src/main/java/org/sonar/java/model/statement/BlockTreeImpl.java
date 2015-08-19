@@ -53,7 +53,7 @@ public class BlockTreeImpl extends JavaTree implements BlockTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

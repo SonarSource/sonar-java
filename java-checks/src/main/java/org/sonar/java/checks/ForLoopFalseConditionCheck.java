@@ -89,15 +89,22 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
   }
 
   private static boolean evaluateCondition(ExpressionTree condition, int leftOperand, int rightOperand) {
-    boolean conditionValue = true;
-    if (condition.is(Tree.Kind.GREATER_THAN)) {
-      conditionValue = leftOperand > rightOperand;
-    } else if (condition.is(Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
-      conditionValue = leftOperand >= rightOperand;
-    } else if (condition.is(Tree.Kind.LESS_THAN)) {
-      conditionValue = leftOperand < rightOperand;
-    } else if (condition.is(Tree.Kind.LESS_THAN_OR_EQUAL_TO)) {
-      conditionValue = leftOperand <= rightOperand;
+    boolean conditionValue;
+    switch (condition.kind()) {
+      case GREATER_THAN:
+        conditionValue = leftOperand > rightOperand;
+        break;
+      case GREATER_THAN_OR_EQUAL_TO:
+        conditionValue = leftOperand >= rightOperand;
+        break;
+      case LESS_THAN:
+        conditionValue = leftOperand < rightOperand;
+        break;
+      case LESS_THAN_OR_EQUAL_TO:
+        conditionValue = leftOperand <= rightOperand;
+        break;
+      default:
+        conditionValue = true;
     }
     return conditionValue;
   }

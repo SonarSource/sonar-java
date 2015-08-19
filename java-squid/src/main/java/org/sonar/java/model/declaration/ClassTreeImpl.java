@@ -135,7 +135,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

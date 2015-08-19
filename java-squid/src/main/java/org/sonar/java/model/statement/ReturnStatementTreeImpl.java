@@ -46,7 +46,7 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.RETURN_STATEMENT;
   }
 

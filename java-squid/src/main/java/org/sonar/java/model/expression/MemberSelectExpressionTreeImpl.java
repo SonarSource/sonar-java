@@ -87,7 +87,7 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.MEMBER_SELECT;
   }
 

@@ -115,7 +115,7 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.TRY_STATEMENT;
   }
 

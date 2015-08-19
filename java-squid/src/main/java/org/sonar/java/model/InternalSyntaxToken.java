@@ -95,7 +95,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.TOKEN;
   }
 

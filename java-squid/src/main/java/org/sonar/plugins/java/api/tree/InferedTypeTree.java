@@ -32,7 +32,7 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.INFERED_TYPE;
   }
 

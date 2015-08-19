@@ -95,7 +95,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   }
 
   private boolean isSubscribed(Tree tree) {
-    return nodesToVisit.contains(((JavaTree) tree).getKind());
+    return nodesToVisit.contains(tree.kind());
   }
 
   private boolean isVisitingTrivia() {

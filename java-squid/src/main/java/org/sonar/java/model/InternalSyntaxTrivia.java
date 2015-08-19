@@ -49,7 +49,7 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Tree.Kind.TRIVIA;
   }
 

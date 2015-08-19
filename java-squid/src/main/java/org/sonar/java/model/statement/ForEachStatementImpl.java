@@ -56,7 +56,7 @@ public class ForEachStatementImpl extends JavaTree implements ForEachStatement {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.FOR_EACH_STATEMENT;
   }
 

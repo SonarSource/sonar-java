@@ -44,7 +44,7 @@ public class ThrowStatementTreeImpl extends JavaTree implements ThrowStatementTr
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.THROW_STATEMENT;
   }
 

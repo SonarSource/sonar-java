@@ -53,7 +53,7 @@ public class ConditionalExpressionTreeImpl extends AbstractTypedTree implements 
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.CONDITIONAL_EXPRESSION;
   }
 

@@ -47,7 +47,7 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.CASE_LABEL;
   }
 

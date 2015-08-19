@@ -144,7 +144,7 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.VARIABLE;
   }
 

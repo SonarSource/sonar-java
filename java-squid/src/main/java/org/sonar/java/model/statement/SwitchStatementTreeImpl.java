@@ -57,7 +57,7 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.SWITCH_STATEMENT;
   }
 

@@ -45,7 +45,7 @@ public class InternalPostfixUnaryExpression extends AbstractTypedTree implements
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

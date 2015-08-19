@@ -49,7 +49,7 @@ public class InstanceOfTreeImpl extends AbstractTypedTree implements InstanceOfT
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.INSTANCE_OF;
   }
 

@@ -48,7 +48,7 @@ public class LabeledStatementTreeImpl extends JavaTree implements LabeledStateme
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.LABELED_STATEMENT;
   }
 

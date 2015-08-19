@@ -48,7 +48,7 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.CONTINUE_STATEMENT;
   }
 

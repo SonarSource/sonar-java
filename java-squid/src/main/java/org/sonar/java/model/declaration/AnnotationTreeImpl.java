@@ -56,7 +56,7 @@ public class AnnotationTreeImpl extends AbstractTypedTree implements AnnotationT
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.ANNOTATION;
   }
 

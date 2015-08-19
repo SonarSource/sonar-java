@@ -73,17 +73,15 @@ public abstract class JavaTree implements Tree {
 
   @Override
   public final boolean is(Kind... kind) {
-    if (getKind() != null) {
+    if (kind() != null) {
       for (Kind kindIter : kind) {
-        if (getKind() == kindIter) {
+        if (kind() == kindIter) {
           return true;
         }
       }
     }
     return false;
   }
-
-  public abstract Kind getKind();
 
   /**
    * Creates iterator for children of this node.
@@ -117,7 +115,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.COMPILATION_UNIT;
     }
 
@@ -203,7 +201,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Tree.Kind.PACKAGE;
     }
 
@@ -258,7 +256,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.IMPORT;
     }
 
@@ -343,7 +341,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return kind;
     }
 
@@ -396,7 +394,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.UNION_TYPE;
     }
 
@@ -428,7 +426,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.OTHER;
     }
 
@@ -465,7 +463,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.PRIMITIVE_TYPE;
     }
 
@@ -509,7 +507,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.PARAMETERIZED_TYPE;
     }
 
@@ -577,7 +575,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Kind getKind() {
+    public Kind kind() {
       return Kind.ARRAY_TYPE;
     }
 

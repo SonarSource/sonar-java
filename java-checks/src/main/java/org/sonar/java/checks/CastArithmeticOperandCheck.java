@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,7 +39,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 import java.util.Map;
 
@@ -109,7 +107,7 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
 
   private void checkExpression(Type varType, @Nullable ExpressionTree expr) {
     if (isVarTypeErrorProne(varType) && expressionIsOperationToInt(expr)) {
-      addIssue(expr, "Cast one of the operands of this " + OPERATION_BY_KIND.get(((JavaTree) expr).getKind()) + " operation to a \"" + varType.name() + "\".");
+      addIssue(expr, "Cast one of the operands of this " + OPERATION_BY_KIND.get(expr.kind()) + " operation to a \"" + varType.name() + "\".");
     }
   }
 

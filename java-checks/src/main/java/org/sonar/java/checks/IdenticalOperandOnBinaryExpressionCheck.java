@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -94,7 +93,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
     if (isNanTest(tree) || isLeftShiftOnOne(tree)) {
       return false;
     }
-    Tree.Kind binaryKind = ((JavaTree) tree).getKind();
+    Tree.Kind binaryKind = tree.kind();
     return areOperandEquivalent(tree.leftOperand(), tree.rightOperand(), binaryKind);
   }
 

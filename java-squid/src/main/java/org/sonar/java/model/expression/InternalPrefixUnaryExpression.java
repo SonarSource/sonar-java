@@ -45,7 +45,7 @@ public class InternalPrefixUnaryExpression extends AbstractTypedTree implements 
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

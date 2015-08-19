@@ -45,7 +45,7 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.CASE_GROUP;
   }
 

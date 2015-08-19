@@ -80,7 +80,7 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.TYPE_PARAMETERS;
   }
 

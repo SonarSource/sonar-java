@@ -66,7 +66,7 @@ public final class SyntacticEquivalence {
     if (leftNode == null || rightNode == null) {
       return false;
     }
-    if (leftNode.getKind() != rightNode.getKind() || leftNode.is(Tree.Kind.OTHER)) {
+    if (leftNode.kind() != rightNode.kind() || leftNode.is(Tree.Kind.OTHER)) {
       return false;
     } else if (leftNode.isLeaf()) {
       return areLeafsEquivalent(leftNode, rightNode);

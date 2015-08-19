@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -212,7 +211,7 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private JavaType resolveType(Resolve.Env env, Tree tree) {
-    Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + ((JavaTree) tree).getKind());
+    Preconditions.checkArgument(checkTypeOfTree(tree), "Kind of tree unexpected " + tree.kind());
     //FIXME(benzonico) as long as Variables share the same node type, (int i,j; or worse : int i[], j[];) check nullity to respect invariance.
     if (((AbstractTypedTree) tree).isTypeSet()) {
       return (JavaType) ((AbstractTypedTree) tree).symbolType();

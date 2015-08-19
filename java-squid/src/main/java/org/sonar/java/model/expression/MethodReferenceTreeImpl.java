@@ -53,7 +53,7 @@ public class MethodReferenceTreeImpl extends AbstractTypedTree implements Method
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.METHOD_REFERENCE;
   }
 

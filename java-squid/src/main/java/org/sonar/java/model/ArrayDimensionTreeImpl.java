@@ -85,7 +85,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
   }
 
   @Override
-  public Tree.Kind getKind() {
+  public Tree.Kind kind() {
     return Tree.Kind.ARRAY_DIMENSION;
   }
 

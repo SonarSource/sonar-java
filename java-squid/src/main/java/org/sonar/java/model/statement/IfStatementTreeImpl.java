@@ -78,7 +78,7 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.IF_STATEMENT;
   }
 

@@ -82,7 +82,7 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.TYPE_PARAMETER;
   }
 

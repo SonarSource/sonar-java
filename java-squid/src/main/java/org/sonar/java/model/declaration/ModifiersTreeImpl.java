@@ -56,7 +56,7 @@ public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements Mod
 
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.MODIFIERS;
   }
 

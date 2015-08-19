@@ -47,7 +47,7 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.BREAK_STATEMENT;
   }
 

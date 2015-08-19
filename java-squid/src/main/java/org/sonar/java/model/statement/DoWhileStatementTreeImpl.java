@@ -56,7 +56,7 @@ public class DoWhileStatementTreeImpl extends JavaTree implements DoWhileStateme
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.DO_STATEMENT;
   }
 

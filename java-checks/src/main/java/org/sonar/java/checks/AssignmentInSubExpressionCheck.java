@@ -119,12 +119,13 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
   }
 
   private static boolean isRelationalExpression(Tree tree) {
-    return tree.is(Kind.EQUAL_TO) ||
-      tree.is(Kind.NOT_EQUAL_TO) ||
-      tree.is(Kind.LESS_THAN) ||
-      tree.is(Kind.LESS_THAN_OR_EQUAL_TO) ||
-      tree.is(Kind.GREATER_THAN) ||
-      tree.is(Kind.GREATER_THAN_OR_EQUAL_TO);
+    return tree.is(
+      Kind.EQUAL_TO,
+      Kind.NOT_EQUAL_TO,
+      Kind.LESS_THAN,
+      Kind.LESS_THAN_OR_EQUAL_TO,
+      Kind.GREATER_THAN,
+      Kind.GREATER_THAN_OR_EQUAL_TO);
   }
 
   @Override

@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -71,7 +70,7 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
       BinaryExpressionTree leftOp = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
       if (binaryExpressionTree.rightOperand().is(comparator1, comparator2)) {
         BinaryExpressionTree rightOp = (BinaryExpressionTree) binaryExpressionTree.rightOperand();
-        if (((JavaTree) leftOp).getKind().equals(((JavaTree) rightOp).getKind())) {
+        if (leftOp.kind().equals(rightOp.kind())) {
           //same operator
           return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand())
               && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());

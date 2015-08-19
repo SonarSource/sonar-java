@@ -27,7 +27,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -148,7 +147,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
     Tree.Kind peek = stack.peek();
-    Tree.Kind kind = getKind(tree);
+    Tree.Kind kind = tree.kind();
     if (requiresParenthesis(peek, kind)) {
       raiseIssue(tree.operatorToken().line(), tree);
     }
@@ -165,7 +164,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
   public void visitIfStatement(IfStatementTree tree) {
     super.visitIfStatement(tree);
     ExpressionTree condition = tree.condition();
-    if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(getKind(((AssignmentExpressionTree) condition).expression()))) {
+    if (condition.is(Tree.Kind.ASSIGNMENT) && EQUALITY_RELATIONAL_OPERATORS.contains(((AssignmentExpressionTree) condition).expression().kind())) {
       raiseIssue(((AssignmentExpressionTree) condition).operatorToken().line(), tree);
     }
   }
@@ -219,10 +218,6 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
     if (reportedLines.add(line)) {
       context.addIssue(tree, this, "Add parentheses to make the operator precedence explicit.");
     }
-  }
-
-  private static Tree.Kind getKind(Tree tree) {
-    return ((JavaTree) tree).getKind();
   }
 
 }

@@ -42,7 +42,7 @@ public class LiteralTreeImpl extends AbstractTypedTree implements LiteralTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

@@ -84,7 +84,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.NEW_CLASS;
   }
 

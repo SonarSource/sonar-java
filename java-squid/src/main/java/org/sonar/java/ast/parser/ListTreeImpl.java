@@ -65,7 +65,7 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.LIST;
   }
 

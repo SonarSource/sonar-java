@@ -38,7 +38,7 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.EMPTY_STATEMENT;
   }
 

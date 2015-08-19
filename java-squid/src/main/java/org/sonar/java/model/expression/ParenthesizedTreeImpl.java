@@ -44,7 +44,7 @@ public class ParenthesizedTreeImpl extends AbstractTypedTree implements Parenthe
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.PARENTHESIZED_EXPRESSION;
   }
 

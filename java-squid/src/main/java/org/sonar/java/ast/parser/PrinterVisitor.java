@@ -110,7 +110,7 @@ public class PrinterVisitor extends BaseTreeVisitor {
         LOG.error("An error occured while retrieving symbol ", e);
       }
 
-      Tree.Kind kind = ((JavaTree) tree).getKind();
+      Tree.Kind kind = tree.kind();
       String nodeName = ((JavaTree) tree).getClass().getSimpleName();
       if (kind != null) {
         nodeName = kind.getAssociatedInterface().getSimpleName();

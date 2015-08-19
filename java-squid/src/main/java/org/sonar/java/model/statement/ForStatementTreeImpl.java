@@ -63,7 +63,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.FOR_STATEMENT;
   }
 

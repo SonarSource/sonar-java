@@ -49,7 +49,7 @@ public class AssignmentExpressionTreeImpl extends AbstractTypedTree implements A
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return kind;
   }
 

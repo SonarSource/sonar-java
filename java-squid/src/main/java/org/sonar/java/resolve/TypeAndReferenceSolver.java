@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -72,7 +71,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -514,7 +512,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    JavaType type = typesOfLiterals.get(((JavaTree) tree).getKind());
+    JavaType type = typesOfLiterals.get(tree.kind());
     registerType(tree, type);
   }
 

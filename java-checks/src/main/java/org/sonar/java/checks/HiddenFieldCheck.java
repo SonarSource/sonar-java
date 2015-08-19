@@ -185,11 +185,11 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
     }
 
     private boolean isSubscribed(Tree tree) {
-      return visitNodes.contains(((JavaTree) tree).getKind());
+      return visitNodes.contains(tree.kind());
     }
 
     private boolean isExcluded(Tree tree) {
-      return excludedNodes.contains(((JavaTree) tree).getKind());
+      return excludedNodes.contains(tree.kind());
     }
   }
 

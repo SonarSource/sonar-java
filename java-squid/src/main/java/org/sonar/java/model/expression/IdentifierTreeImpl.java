@@ -53,7 +53,7 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.IDENTIFIER;
   }
 

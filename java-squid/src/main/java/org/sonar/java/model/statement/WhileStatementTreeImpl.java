@@ -50,7 +50,7 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.WHILE_STATEMENT;
   }
 

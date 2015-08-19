@@ -52,7 +52,7 @@ public class CatchTreeImpl extends JavaTree implements CatchTree {
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.CATCH;
   }
 

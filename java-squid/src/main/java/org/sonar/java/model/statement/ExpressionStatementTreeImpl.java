@@ -46,7 +46,7 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   }
 
   @Override
-  public Kind getKind() {
+  public Kind kind() {
     return Kind.EXPRESSION_STATEMENT;
   }
 
