@@ -13,6 +13,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.EnumSet;
 
 public class A {
   public static String [] strings1 = {"first","second"};  // Noncompliant {{Make this member "protected".}}
@@ -80,10 +81,21 @@ public class A {
   public static final Map<String, String> immutableMapApache = org.apache.commons.collections4.map.UnmodifiableMap.unmodifiableMap(new HashMap<String, String>());
 
   public static final List noInitializer;
-  public static final List unknown = foo(); // Noncompliant
+  // we don't know the type of foo
+  public static final List unknown = foo();
 
   public static List emptyList = Arrays.asList();
   public void changeEmptyList() {
     emptyList = new ArrayList(); // Noncompliant {{Make member "emptyList" "protected".}}
   }
+
+  enum E {
+    A, B, C
+  }
+  // FALSE negative: no issues raised when initializer type is unknown
+  // in this case Collections.unmodifiableSet(EnumSet.of is unknown because of generics
+  public static final Set<E> set = Collections.unmodifiableSet(EnumSet.of(
+    E.A,
+    E.C
+  ));
 }

@@ -168,7 +168,8 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isAcceptedTypeOrUnmodifiableMethodCall(MethodInvocationTree mit) {
-    return isAcceptedType(mit.symbolType(), ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.anyMatch(mit);
+    Type type = mit.symbolType();
+    return type.isUnknown() || isAcceptedType(type, ACCEPTED_TYPES) || UNMODIFIABLE_METHOD_CALLS.anyMatch(mit);
   }
 
   private static boolean isAcceptedType(Type type, Set<String> accepted) {
