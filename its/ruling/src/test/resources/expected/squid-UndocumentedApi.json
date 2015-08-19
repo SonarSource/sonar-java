@@ -6560,10 +6560,8 @@
 40,
 45,
 56,
-56,
 73,
 79,
-86,
 86,
 104,
 ],
@@ -10160,6 +10158,7 @@
 240,
 246,
 269,
+278,
 323,
 345,
 349,
@@ -14591,7 +14590,6 @@
 'project:com/sun/org/apache/xalan/internal/xsltc/compiler/LangCall.java':[
 50,
 58,
-58,
 77,
 ],
 'project:com/sun/org/apache/xalan/internal/xsltc/compiler/LastCall.java':[
@@ -15964,7 +15962,6 @@
 90,
 98,
 150,
-150,
 208,
 208,
 247,
@@ -17325,6 +17322,9 @@
 'project:com/sun/org/apache/xerces/internal/impl/dtd/XML11DTDValidator.java':[
 97,
 ],
+'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLAttributeDecl.java':[
+69,
+],
 'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLContentSpec.java':[
 220,
 227,
@@ -17362,8 +17362,18 @@
 1087,
 2064,
 ],
+'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLElementDecl.java':[
+69,
+],
+'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLEntityDecl.java':[
+66,
+],
 'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLNotationDecl.java':[
+66,
 95,
+],
+'project:com/sun/org/apache/xerces/internal/impl/dtd/XMLSimpleType.java':[
+68,
 ],
 'project:com/sun/org/apache/xerces/internal/impl/dtd/models/CMAny.java':[
 106,
@@ -17395,6 +17405,9 @@
 ],
 'project:com/sun/org/apache/xerces/internal/impl/dtd/models/CMUniOp.java':[
 77,
+],
+'project:com/sun/org/apache/xerces/internal/impl/dtd/models/ContentModelValidator.java':[
+68,
 ],
 'project:com/sun/org/apache/xerces/internal/impl/dv/DVFactoryException.java':[
 35,
@@ -17736,7 +17749,6 @@
 1029,
 1316,
 1326,
-1326,
 2003,
 ],
 'project:com/sun/org/apache/xerces/internal/impl/xpath/XPathException.java':[
@@ -17773,7 +17785,6 @@
 291,
 299,
 299,
-308,
 308,
 ],
 'project:com/sun/org/apache/xerces/internal/impl/xpath/regex/RangeToken.java':[
@@ -18397,6 +18408,9 @@
 575,
 580,
 586,
+],
+'project:com/sun/org/apache/xerces/internal/impl/xs/opti/SchemaParsingConfig.java':[
+1010,
 ],
 'project:com/sun/org/apache/xerces/internal/impl/xs/opti/TextImpl.java':[
 40,
@@ -19032,6 +19046,7 @@
 423,
 ],
 'project:com/sun/org/apache/xerces/internal/parsers/DTDParser.java':[
+37,
 123,
 134,
 153,
@@ -19083,6 +19098,9 @@
 173,
 181,
 189,
+],
+'project:com/sun/org/apache/xerces/internal/parsers/XMLGrammarParser.java':[
+30,
 ],
 'project:com/sun/org/apache/xerces/internal/parsers/XMLGrammarPreparser.java':[
 152,
@@ -19555,12 +19573,14 @@
 206,
 ],
 'project:com/sun/org/apache/xerces/internal/util/XMLStringBuffer.java':[
+108,
 122,
 128,
 134,
 140,
 ],
 'project:com/sun/org/apache/xerces/internal/xinclude/MultipleScopeNamespaceSupport.java':[
+49,
 94,
 105,
 112,
@@ -19625,6 +19645,9 @@
 2670,
 2688,
 2744,
+],
+'project:com/sun/org/apache/xerces/internal/xinclude/XIncludeNamespaceSupport.java':[
+43,
 ],
 'project:com/sun/org/apache/xerces/internal/xinclude/XPointerElementHandler.java':[
 180,
@@ -19819,6 +19842,7 @@
 81,
 ],
 'project:com/sun/org/apache/xerces/internal/xpointer/XPointerHandler.java':[
+102,
 109,
 129,
 286,
@@ -20447,6 +20471,8 @@
 210,
 ],
 'project:com/sun/org/apache/xml/internal/security/c14n/implementations/Canonicalizer20010315ExclOmitComments.java':[
+30,
+36,
 41,
 46,
 ],
@@ -20482,8 +20508,10 @@
 2815,
 3529,
 3533,
+3590,
 3606,
 3610,
+3657,
 3694,
 3694,
 3698,
@@ -20500,6 +20528,10 @@
 3920,
 3949,
 3959,
+],
+'project:com/sun/org/apache/xml/internal/security/encryption/XMLEncryptionException.java':[
+28,
+37,
 ],
 'project:com/sun/org/apache/xml/internal/security/exceptions/XMLSecurityException.java':[
 179,
@@ -20636,6 +20668,9 @@
 ],
 'project:com/sun/org/apache/xml/internal/security/utils/ElementProxy.java':[
 539,
+],
+'project:com/sun/org/apache/xml/internal/security/utils/HelperNodeList.java':[
+43,
 ],
 'project:com/sun/org/apache/xml/internal/security/utils/IdResolver.java':[
 237,
@@ -23119,7 +23154,6 @@
 794,
 798,
 819,
-819,
 884,
 914,
 931,
@@ -23130,7 +23164,6 @@
 299,
 300,
 301,
-379,
 379,
 483,
 585,
@@ -23570,7 +23603,6 @@
 'project:java/lang/StringBuilder.java':[
 127,
 131,
-175,
 175,
 195,
 208,
@@ -27243,6 +27275,7 @@
 411,
 ],
 'project:javax/management/modelmbean/RequiredModelMBean.java':[
+160,
 2149,
 2181,
 2255,
@@ -27250,7 +27283,6 @@
 2505,
 2557,
 2681,
-2795,
 2795,
 ],
 'project:javax/management/monitor/CounterMonitor.java':[
@@ -33242,6 +33274,7 @@
 ],
 'project:javax/swing/undo/UndoableEditSupport.java':[
 114,
+135,
 ],
 'project:javax/tools/DiagnosticCollector.java':[
 45,
@@ -34298,9 +34331,7 @@
 ],
 'project:org/omg/CORBA_2_3/ORB.java':[
 43,
-43,
 53,
-62,
 62,
 74,
 74,

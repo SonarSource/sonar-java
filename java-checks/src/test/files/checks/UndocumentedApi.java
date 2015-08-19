@@ -102,8 +102,8 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
    return value;
  }
 
- /**
-   */
+ /** plop
+  *  */
  public int doSomething() {                     // Non-Compliant - missing '@return'
    return value;
  }
@@ -113,11 +113,11 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
  */
 interface FooInterface {
   /**
-   */
+   * void. */
   void foo(); // Compliant
 
   /**
-   */
+   * bar. */
   int foo(); // Non-Compliant
 
   /**
@@ -125,7 +125,7 @@ interface FooInterface {
    */
   int foo(); // Compliant
 
-  /**
+  /** plop.
    */
   void foo(int a); // Non-Compliant
 }
@@ -134,7 +134,7 @@ interface FooInterface {
  *
  */
 class FooClass {
-  /**
+  /** constructor.
    */
   public FooClass(int a) { // Non-Compliant
     System.out.println(a);
@@ -154,10 +154,10 @@ private class FooPrivate { // Compliant - non pubic
 class FooPackage { // Compliant - non public
 }
 
-/**
+/** Documented.
  */
 public class Foo { // Compliant
-  /**
+  /** foo.
    */
   public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
     return 0;
@@ -195,7 +195,7 @@ public class Foo { // Compliant
 }
 /**
  * */
-public interface bar {
+public interface bar { // Noncompliant empty documentation
   /**
   * @param <A>  the annotation type
   * @param annotationType  the <tt>Class</tt> object corresponding to
@@ -264,7 +264,7 @@ public class MyRunner extends Foo {
   {
   }
 
-  /**
+  /** Foo.
    */
   public interface Foo {
 

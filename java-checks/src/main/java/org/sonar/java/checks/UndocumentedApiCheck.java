@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
@@ -125,7 +126,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
   private void visitNode(Tree tree) {
     if (!isExcluded(tree)) {
       String javadoc = PublicApiChecker.getApiJavadoc(tree);
-      if (javadoc == null) {
+      if (javadoc == null || isEmptyJavadoc(javadoc)) {
         context.addIssue(tree, this, "Document this public " + getType(tree) + ".");
       } else if (!javadoc.contains("{@inheritDoc}")) {
         List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
@@ -137,6 +138,12 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
         }
       }
     }
+  }
+
+  private static boolean isEmptyJavadoc(String javadoc) {
+    //remove start and end of doc as well as stars.
+    String cleanedupJavadoc = javadoc.trim().substring(3).replace("*/", "").replace("*", "").trim();
+    return StringUtils.isBlank(cleanedupJavadoc);
   }
 
   private static String getType(Tree tree) {
