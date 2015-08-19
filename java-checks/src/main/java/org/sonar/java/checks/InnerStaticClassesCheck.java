@@ -114,6 +114,10 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
 
   private int referenceInstance(Symbol symbol) {
     Symbol owner = symbol.owner();
+    if(owner != null && owner.isMethodSymbol()) {
+      //local variable, use owner of the method
+      owner = owner.owner();
+    }
     int result = -1;
     if (owner != null && !outerClasses.peek().equals(owner)) {
       if (symbol.isUnknown()) {

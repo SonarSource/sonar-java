@@ -153,4 +153,18 @@ public class A1 {
       }
     }
   }
+
+  void usedInAnonymousClass() {
+    final String myString = "";
+    method(new toImplement() { // Compliant my String is used.
+      void fun(String s) {
+        myString.length();
+      }
+    });
+  }
+  interface toImplement {
+    void fun(String s);
+  }
+  void method(Object j) {}
+
 }
