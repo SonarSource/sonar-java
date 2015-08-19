@@ -73,7 +73,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     this.openBraceToken = openBraceToken;
     this.members = members;
     this.closeBraceToken = closeBraceToken;
-    this.modifiers = ModifiersTreeImpl.EMPTY;
+    this.modifiers = ModifiersTreeImpl.emptyModifiers();
     this.typeParameters = new TypeParameterListTreeImpl();
     this.superInterfaces = QualifiedIdentifierListTreeImpl.emptyList();
   }

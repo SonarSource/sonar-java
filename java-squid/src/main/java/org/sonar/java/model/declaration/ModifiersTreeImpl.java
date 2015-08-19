@@ -20,7 +20,6 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -29,26 +28,16 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Collections;
 import java.util.List;
 
 public class ModifiersTreeImpl extends ListTreeImpl<ModifierTree> implements ModifiersTree {
-  // TODO remove:
-  public static final org.sonar.java.model.declaration.ModifiersTreeImpl EMPTY = new ModifiersTreeImpl();
 
-  /* FIXME */
-  public static final org.sonar.java.model.declaration.ModifiersTreeImpl emptyModifiers() {
+  public static ModifiersTreeImpl emptyModifiers() {
     return new ModifiersTreeImpl(ImmutableList.<ModifierTree>of());
   }
 
   private final List<ModifierKeywordTree> modifiers;
   private final List<AnnotationTree> annotations;
-
-  private ModifiersTreeImpl() {
-    super(null, Collections.<ModifierTree>emptyList());
-    this.annotations = Lists.newArrayList();
-    modifiers = Lists.newArrayList();
-  }
 
   public ModifiersTreeImpl(List<ModifierTree> javaTrees) {
     super(JavaLexer.MODIFIERS, javaTrees);
