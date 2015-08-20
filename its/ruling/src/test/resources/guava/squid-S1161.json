@@ -42,6 +42,11 @@
 'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
 353,
 ],
+'com.google.guava:guava:src/com/google/common/reflect/Parameter.java':[
+89,
+106,
+119,
+],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AtomicDouble.java':[
 198,
 206,

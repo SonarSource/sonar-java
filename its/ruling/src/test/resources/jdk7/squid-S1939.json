@@ -77,7 +77,11 @@
 'project:javax/management/Query.java':[
 56,
 ],
+'project:javax/security/auth/kerberos/KerberosKey.java':[
+60,
+],
 'project:javax/security/auth/kerberos/KeyImpl.java':[
+51,
 51,
 ],
 'project:javax/swing/JSpinner.java':[

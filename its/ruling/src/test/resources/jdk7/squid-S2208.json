@@ -2042,9 +2042,6 @@
 'project:java/util/IdentityHashMap.java':[
 27,
 ],
-'project:java/util/LinkedHashMap.java':[
-27,
-],
 'project:java/util/PropertyPermission.java':[
 30,
 ],

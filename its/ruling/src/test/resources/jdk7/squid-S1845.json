@@ -182,9 +182,6 @@
 'project:java/util/Hashtable.java':[
 1008,
 ],
-'project:java/util/LinkedHashMap.java':[
-388,
-],
 'project:java/util/concurrent/ConcurrentHashMap.java':[
 1285,
 ],

@@ -27,6 +27,9 @@
 'project:javax/management/relation/RelationService.java':[
 1386,
 ],
+'project:javax/swing/JEditorPane.java':[
+1306,
+],
 'project:javax/swing/RepaintManager.java':[
 497,
 ],

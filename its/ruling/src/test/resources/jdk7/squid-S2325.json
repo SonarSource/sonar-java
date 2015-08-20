@@ -151,7 +151,6 @@
 ],
 'project:com/sun/imageio/plugins/bmp/BMPImageWriter.java':[
 1284,
-1332,
 1380,
 1521,
 ],
@@ -705,9 +704,6 @@
 446,
 458,
 520,
-],
-'project:java/awt/event/InputEvent.java':[
-345,
 ],
 'project:java/awt/font/NumericShaper.java':[
 1167,

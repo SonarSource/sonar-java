@@ -25,6 +25,9 @@
 67,
 67,
 ],
+'project:com/sun/org/apache/xml/internal/security/utils/ElementCheckerImpl.java':[
+7,
+],
 'project:com/sun/org/apache/xml/internal/serialize/BaseMarkupSerializer.java':[
 132,
 ],
@@ -33,6 +36,12 @@
 ],
 'project:com/sun/org/apache/xml/internal/utils/DOM2Helper.java':[
 44,
+],
+'project:javax/management/remote/rmi/RMIConnectionImpl_Stub.java':[
+7,
+],
+'project:javax/management/remote/rmi/RMIServerImpl_Stub.java':[
+7,
 ],
 'project:org/omg/CosNaming/_BindingIteratorImplBase.java':[
 34,

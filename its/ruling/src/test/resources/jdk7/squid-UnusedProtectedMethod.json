@@ -37,9 +37,6 @@
 'project:com/sun/java/swing/plaf/motif/MotifPopupMenuUI.java':[
 104,
 ],
-'project:com/sun/java/swing/plaf/motif/MotifScrollPaneUI.java':[
-65,
-],
 'project:com/sun/java/swing/plaf/windows/WindowsFileChooserUI.java':[
 0,
 0,
@@ -138,6 +135,9 @@
 'project:com/sun/org/apache/xml/internal/dtm/ref/sax2dtm/SAX2RTFDTM.java':[
 201,
 ],
+'project:com/sun/org/apache/xml/internal/security/signature/Reference.java':[
+216,
+],
 'project:com/sun/org/apache/xml/internal/serializer/ToHTMLStream.java':[
 1788,
 ],
@@ -222,9 +222,6 @@
 'project:java/net/SocksSocketImpl.java':[
 918,
 ],
-'project:java/net/URL.java':[
-661,
-],
 'project:java/rmi/server/UnicastRemoteObject.java':[
 164,
 ],
@@ -235,6 +232,7 @@
 173,
 ],
 'project:java/util/concurrent/ForkJoinPool.java':[
+1813,
 1846,
 ],
 'project:java/util/concurrent/Semaphore.java':[
@@ -281,6 +279,9 @@
 'project:javax/swing/DefaultDesktopManager.java':[
 576,
 586,
+],
+'project:javax/swing/JComponent.java':[
+0,
 ],
 'project:javax/swing/JMenu.java':[
 1087,

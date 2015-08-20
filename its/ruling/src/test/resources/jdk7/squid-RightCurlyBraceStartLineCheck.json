@@ -5572,14 +5572,6 @@
 'project:java/util/IllegalFormatException.java':[
 41,
 ],
-'project:java/util/LinkedHashMap.java':[
-401,
-405,
-409,
-413,
-414,
-415,
-],
 'project:java/util/Random.java':[
 576,
 ],

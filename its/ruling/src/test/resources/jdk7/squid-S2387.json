@@ -240,16 +240,7 @@
 55,
 ],
 'project:com/sun/org/apache/xml/internal/security/utils/resolver/implementations/ResolverDirectHTTP.java':[
-64,
-],
-'project:com/sun/org/apache/xml/internal/security/utils/resolver/implementations/ResolverFragment.java':[
-45,
-],
-'project:com/sun/org/apache/xml/internal/security/utils/resolver/implementations/ResolverLocalFilesystem.java':[
-39,
-],
-'project:com/sun/org/apache/xml/internal/security/utils/resolver/implementations/ResolverXPointer.java':[
-52,
+69,
 ],
 'project:com/sun/org/apache/xml/internal/serialize/XML11Serializer.java':[
 91,

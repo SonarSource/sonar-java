@@ -198,6 +198,9 @@
 208,
 224,
 ],
+'project:com/sun/imageio/plugins/bmp/BMPImageReader.java':[
+208,
+],
 'project:com/sun/imageio/plugins/png/PNGImageReader.java':[
 410,
 507,
@@ -379,9 +382,6 @@
 74,
 88,
 104,
-],
-'project:com/sun/jmx/snmp/agent/SnmpRequestTree.java':[
-210,
 ],
 'project:com/sun/jmx/snmp/daemon/CommunicatorServer.java':[
 253,
@@ -2370,8 +2370,6 @@
 232,
 245,
 245,
-273,
-273,
 ],
 'project:com/sun/org/apache/xml/internal/security/signature/XMLSignature.java':[
 280,
@@ -2556,10 +2554,16 @@
 'project:java/awt/KeyboardFocusManager.java':[
 243,
 504,
+535,
+591,
 670,
+704,
 775,
+803,
 875,
+904,
 1199,
+1224,
 ],
 'project:java/awt/Label.java':[
 116,
@@ -2792,6 +2796,10 @@
 314,
 ],
 'project:java/lang/Class.java':[
+895,
+1023,
+1079,
+1089,
 1371,
 1422,
 1471,
@@ -3047,10 +3055,8 @@
 'project:java/util/XMLUtils.java':[
 69,
 ],
-'project:java/util/concurrent/ConcurrentSkipListMap.java':[
-656,
-670,
-2539,
+'project:java/util/concurrent/atomic/AtomicReferenceArray.java':[
+229,
 ],
 'project:java/util/concurrent/locks/AbstractQueuedLongSynchronizer.java':[
 271,
@@ -3112,7 +3118,6 @@
 ],
 'project:java/util/zip/ZipFile.java':[
 157,
-489,
 ],
 'project:javax/accessibility/AccessibleContext.java':[
 572,

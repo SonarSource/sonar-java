@@ -23,11 +23,4 @@
 1741,
 1757,
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractExecutionThreadService.java':[
-58,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java':[
-193,
-220,
-],
 }
