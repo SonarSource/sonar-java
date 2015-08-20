@@ -19,7 +19,4 @@
 'com.google.guava:guava:src/com/google/common/escape/CharEscaper.java':[
 98,
 ],
-'com.google.guava:guava:src/com/google/common/primitives/UnsignedBytes.java':[
-358,
-],
 }

@@ -14,10 +14,16 @@
 'com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java':[
 61,
 ],
+'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+834,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/GwtFuturesCatchingSpecialization.java':[
+27,
+],
 'com.google.guava:guava:src/com/google/common/util/concurrent/Service.java':[
 255,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-149,
+146,
 ],
 }

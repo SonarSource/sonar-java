@@ -2,7 +2,4 @@
 'com.google.guava:guava:src/com/google/common/escape/Escapers.java':[
 240,
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ThreadFactoryBuilder.java':[
-71,
-],
 }

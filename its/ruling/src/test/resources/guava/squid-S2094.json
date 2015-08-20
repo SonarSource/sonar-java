@@ -1,5 +1,8 @@
 {
 'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
-133,
+137,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/GwtFuturesCatchingSpecialization.java':[
+27,
 ],
 }

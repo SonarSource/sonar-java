@@ -35,6 +35,9 @@
 'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
 0,
 ],
+'com.google.guava:guava:src/com/google/common/io/BaseEncoding.java':[
+0,
+],
 'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
 0,
 ],

@@ -2,7 +2,4 @@
 'com.google.guava:guava:src/com/google/common/collect/Hashing.java':[
 54,
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java':[
-522,
-],
 }
