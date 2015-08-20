@@ -2,20 +2,36 @@
  * some documentation
  */
 public class UndocumentedApi { // Compliant - documented
-  public String p; // Non-Compliant
+  public String p1; // Noncompliant
+
+  /***/
+  public String p2; // Noncompliant {{Document this description.}}
+
+  /** */
+  public String p3; // Noncompliant {{Document this description.}}
+
+  /**
+   */
+  public String p4; // Noncompliant {{Document this description.}}
+
+  /**
+   *
+{@link}**/
+  public String p5; // Noncompliant {{Document this description.}}
+
   private String key; // Compliant - private
 
   public UndocumentedApi() { // Compliant - empty constructor
   }
 
-  public UndocumentedApi(String key) { // Non-Compliant
+  public UndocumentedApi(String key) { // Noncompliant
     this.key = key;
   }
 
-  public void run() { // Non-Compliant
+  public void run() { // Noncompliant
   }
 
-  public interface InnerUndocumentedInterface { // Non-Compliant
+  public interface InnerUndocumentedInterface { // Noncompliant
   }
 
   /**
@@ -43,20 +59,20 @@ public class UndocumentedApi { // Compliant - documented
 
 }
 
-public enum FooEnum { // Non-Compliant
+public enum FooEnum { // Noncompliant {{Document this public enum.}}
 }
 
-public interface Ainterface { // Non-Compliant
+public interface Ainterface { // Noncompliant {{Document this public interface.}}
 }
 
-public @interface FooAnnotation { // Non-Compliant
+public @interface FooAnnotation { // Noncompliant {{Document this public annotation.}}
 }
 
-public class AClass { // Non-Compliant
+public class AClass { // Noncompliant {{Document this public class.}}
 
-  public int a; // Non-Compliant
+  public int a; // Noncompliant {{Document this public field.}}
 
-  public A() { // Non-Compliant
+  public A() { // Noncompliant {{Document this public constructor.}}
     System.out.println();
   }
 
@@ -65,7 +81,7 @@ public class AClass { // Non-Compliant
 /**
  * This is a Javadoc comment
  */
-public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@param <T>'
+public class MyClass<T> implements Runnable {    // Noncompliant {{Document the parameter(s): <T>}}
 
  private int status;                            // Compliant - not public
 
@@ -74,7 +90,7 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
    */
  public String message;                         // Compliant - well documented
 
- public MyClass() {                             // Non-Compliant - missing documentation
+ public MyClass() {                             // Noncompliant
    this.status = 0;
  }
 
@@ -90,57 +106,97 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
  }
 
  /**
+  *  Do something
    * @param value ...
    */
  public void doSomething(int value) {           // Compliant
  }
 
  /**
+  * @param value ...
+  */
+public void doSomething(int value) {           // Noncompliant {{Document this description.}}
+}
+
+
+ /**
+  * Do something
   * @return foo
-   */
- public int doSomething(int value) {            // Non-Compliant - missing '@param value'
+  */
+ public int doSomething(int value) {            // Noncompliant {{Document the parameter(s): value}}
    return value;
  }
 
  /**
-   */
- public int doSomething() {                     // Non-Compliant - missing '@return'
+  * Do someting
+  */
+public int doSomething() {                     // Noncompliant {{Document this method return value.}}
    return value;
  }
+
+/**
+ *
+ *
+ */
+public int doSomething2() {                     // Noncompliant 2
+  return value;
+}
+
 }
 
 /**
  */
-interface FooInterface {
+interface FooInterface {  // Compliant - non public
   /**
+   * Do something
    */
   void foo(); // Compliant
 
   /**
+   * @author foo
    */
-  int foo(); // Non-Compliant
+  void foo(); // Noncompliant {{Document this description.}}
 
   /**
+   * Do something
+   */
+  int foo(); // Noncompliant {{Document this method return value.}}
+
+  /**
+   * Do something
    * @return
    */
   int foo(); // Compliant
 
   /**
+   * @return
    */
-  void foo(int a); // Non-Compliant
+  int foo(); // Noncompliant {{Document this description.}}
+
+  /**
+   * Do something
+   */
+  void foo(int a); // Noncompliant {{Document the parameter(s): a}}
+
+  /**
+   * @param a a
+   */
+  void foo(int a); // Noncompliant {{Document this description.}}
 }
 
 /**
- *
+ * @see String
  */
-class FooClass {
+class FooClass { // Compliant - non public
   /**
+   * Do something
    */
-  public FooClass(int a) { // Non-Compliant
+  public FooClass(int a) { // Noncompliant {{Document the parameter(s): a}}
     System.out.println(a);
   }
 
   /**
+   * Foo bar
    * @param a
    */
   public FooClass(int a) { // Compliant
@@ -148,42 +204,77 @@ class FooClass {
   }
 }
 
-private class FooPrivate { // Compliant - non pubic
+private class FooPrivate { // Compliant - non public
 }
 
 class FooPackage { // Compliant - non public
 }
 
 /**
+ * {@link String}
  */
-public class Foo { // Compliant
+public class Foo { // Noncompliant {{Document this description.}}
   /**
+   * Do something
    */
-  public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
-    return 0;
-  }
-
-
-  public int foo(int a, int b, int c) { // Non-Compliant - single issue for complete method
+  public int foo(int a, int b, int c) { // Noncompliant 2
     return 0;
   }
 
   /**
+   * {@
+   */
+  public int foo(int a, int b, int c) { // Noncompliant 3
+    return 0;
+  }
+
+  /**
+   * Do something
+   * @param a a
+   * @param b b
+   * @param c c
+   */
+  public int foo(int a, int b, int c) { // Noncompliant {{Document this method return value.}}
+    return 0;
+  }
+
+  /**
+   * Do something
+   * @return result
+   */
+  public int foo(int a, int b, int c) { // Noncompliant {{Document the parameter(s): a, b, c}}
+    return 0;
+  }
+
+  public int foo(int a, int b, int c) { // Noncompliant {{Document this public method.}}
+    return 0;
+  }
+
+  /**
+   * Do something
     * @param <T> foo
     */
   public <T> void foo() { // Compliant - does not return anything
   }
 
-  public <T> void foo() { // Noncompliant - must document <T>
-  }
-
   /**
    * @param <T> foo
    */
-  public <T> int foo() { // Noncompliant - must document return value
+ public <T> void foo() { // Noncompliant {{Document this description.}}
+ }
+
+  public <T> void foo() { // Noncompliant {{Document this public method.}}
   }
 
   /**
+   * Do something
+   * @param <T> foo
+   */
+  public <T> int foo() { // Noncompliant {{Document this method return value.}}
+  }
+
+  /**
+   * Do something
    * @param <T> foo
    * @return foo
    */
@@ -194,9 +285,12 @@ public class Foo { // Compliant
   }
 }
 /**
+ * Bar
  * */
 public interface bar {
   /**
+   * This is the main documentation
+   *
   * @param <A>  the annotation type
   * @param annotationType  the <tt>Class</tt> object corresponding to
   *          the annotation type
@@ -205,7 +299,7 @@ public interface bar {
   * @see #getAnnotationMirrors()
   */
   <A extends Annotation> A getAnnotation(Class<A> annotationType);
-  static class A{}
+  static class A{} // Noncompliant {{Document this public class.}}
   public int i = 0;
 
   /**
@@ -220,7 +314,7 @@ public interface bar {
   /**
    *
    */
-  static final class DEFAULT {}
+  static final class DEFAULT {} // Noncompliant {{Document this description.}}
   public int i = 0;
 }
 /**
@@ -250,7 +344,7 @@ public class MyRunner extends Foo {
   /**
    * {@inheritDoc}
    */
-  public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
+  public int foo(int a, int b, int c) { // Compliant - inherited documentation
     return 0;
   }
 
@@ -259,23 +353,23 @@ public class MyRunner extends Foo {
   }
 
   public void foo
-  (
+  ( // Noncompliant
   )
   {
   }
 
   /**
    */
-  public interface Foo {
+  public interface Foo { // Noncompliant {{Document this description.}}
 
-    public foo();
+    public foo(); // Noncompliant
 
   }
 
   @Target({METHOD})
   @Retention(RUNTIME)
-  public @interface Transient {
-      boolean value() default true;
+  public @interface Transient { // Noncompliant
+      boolean value() default true; // Noncompliant
   }
 }
 class AnonymousInnerClass {
