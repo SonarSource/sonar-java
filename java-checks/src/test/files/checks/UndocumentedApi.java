@@ -2,20 +2,20 @@
  * some documentation
  */
 public class UndocumentedApi { // Compliant - documented
-  public String p; // Non-Compliant
+  public String p; // Noncompliant
   private String key; // Compliant - private
 
   public UndocumentedApi() { // Compliant - empty constructor
   }
 
-  public UndocumentedApi(String key) { // Non-Compliant
+  public UndocumentedApi(String key) { // Noncompliant
     this.key = key;
   }
 
-  public void run() { // Non-Compliant
+  public void run() { // Noncompliant
   }
 
-  public interface InnerUndocumentedInterface { // Non-Compliant
+  public interface InnerUndocumentedInterface { // Noncompliant
   }
 
   /**
@@ -43,20 +43,20 @@ public class UndocumentedApi { // Compliant - documented
 
 }
 
-public enum FooEnum { // Non-Compliant
+public enum FooEnum { // Noncompliant {{Document this public enum.}}
 }
 
-public interface Ainterface { // Non-Compliant
+public interface Ainterface { // Noncompliant {{Document this public interface.}}
 }
 
-public @interface FooAnnotation { // Non-Compliant
+public @interface FooAnnotation { // Noncompliant {{Document this public annotation.}}
 }
 
-public class AClass { // Non-Compliant
+public class AClass { // Noncompliant {{Document this public class.}}
 
-  public int a; // Non-Compliant
+  public int a; // Noncompliant {{Document this public field.}}
 
-  public A() { // Non-Compliant
+  public A() { // Noncompliant {{Document this public constructor.}}
     System.out.println();
   }
 
@@ -65,7 +65,7 @@ public class AClass { // Non-Compliant
 /**
  * This is a Javadoc comment
  */
-public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@param <T>'
+public class MyClass<T> implements Runnable {    // Noncompliant {{Document the parameter(s): <T>}}
 
  private int status;                            // Compliant - not public
 
@@ -74,7 +74,7 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
    */
  public String message;                         // Compliant - well documented
 
- public MyClass() {                             // Non-Compliant - missing documentation
+ public MyClass() {                             // Noncompliant
    this.status = 0;
  }
 
@@ -98,13 +98,13 @@ public class MyClass<T> implements Runnable {    // Non-Compliant - missing '@pa
  /**
   * @return foo
    */
- public int doSomething(int value) {            // Non-Compliant - missing '@param value'
+ public int doSomething(int value) {            // Noncompliant {{Document the parameter(s): value}}
    return value;
  }
 
  /** plop
   *  */
- public int doSomething() {                     // Non-Compliant - missing '@return'
+ public int doSomething() {                     // Noncompliant {{Document this method return value.}}
    return value;
  }
 }
@@ -118,7 +118,7 @@ interface FooInterface {
 
   /**
    * bar. */
-  int foo(); // Non-Compliant
+  int foo(); // Noncompliant
 
   /**
    * @return
@@ -127,7 +127,7 @@ interface FooInterface {
 
   /** plop.
    */
-  void foo(int a); // Non-Compliant
+  void foo(int a); // Noncompliant {{Document the parameter(s): a}}
 }
 
 /**
@@ -136,7 +136,7 @@ interface FooInterface {
 class FooClass {
   /** constructor.
    */
-  public FooClass(int a) { // Non-Compliant
+  public FooClass(int a) { // Noncompliant {{Document the parameter(s): a}}
     System.out.println(a);
   }
 
@@ -159,12 +159,12 @@ class FooPackage { // Compliant - non public
 public class Foo { // Compliant
   /** foo.
    */
-  public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
+  public int foo(int a, int b, int c) { // Noncompliant 2
     return 0;
   }
 
 
-  public int foo(int a, int b, int c) { // Non-Compliant - single issue for complete method
+  public int foo(int a, int b, int c) { // Noncompliant {{Document this public method.}}
     return 0;
   }
 
@@ -174,13 +174,13 @@ public class Foo { // Compliant
   public <T> void foo() { // Compliant - does not return anything
   }
 
-  public <T> void foo() { // Noncompliant - must document <T>
+  public <T> void foo() { // Noncompliant {{Document this public method.}}
   }
 
   /**
    * @param <T> foo
    */
-  public <T> int foo() { // Noncompliant - must document return value
+  public <T> int foo() { // Noncompliant {{Document this method return value.}}
   }
 
   /**
@@ -195,7 +195,7 @@ public class Foo { // Compliant
 }
 /**
  * */
-public interface bar { // Noncompliant empty documentation
+public interface bar { // Noncompliant {{Document this public interface.}}
   /**
   * @param <A>  the annotation type
   * @param annotationType  the <tt>Class</tt> object corresponding to
@@ -205,7 +205,7 @@ public interface bar { // Noncompliant empty documentation
   * @see #getAnnotationMirrors()
   */
   <A extends Annotation> A getAnnotation(Class<A> annotationType);
-  static class A{}
+  static class A{} // Noncompliant {{Document this public class.}}
   public int i = 0;
 
   /**
@@ -220,7 +220,7 @@ public interface bar { // Noncompliant empty documentation
   /**
    *
    */
-  static final class DEFAULT {}
+  static final class DEFAULT {} // Noncompliant {{Document this public class.}}
   public int i = 0;
 }
 /**
@@ -250,7 +250,7 @@ public class MyRunner extends Foo {
   /**
    * {@inheritDoc}
    */
-  public int foo(int a, int b, int c) { // Non-Compliant - single issue for parameters, + one for return value
+  public int foo(int a, int b, int c) { // Compliant
     return 0;
   }
 
@@ -259,7 +259,7 @@ public class MyRunner extends Foo {
   }
 
   public void foo
-  (
+  ( // Noncompliant
   )
   {
   }
@@ -268,21 +268,21 @@ public class MyRunner extends Foo {
    */
   public interface Foo {
 
-    public foo();
+    public foo(); // Noncompliant
 
   }
 
   @Target({METHOD})
   @Retention(RUNTIME)
-  public @interface Transient {
-      boolean value() default true;
+  public @interface Transient { // Noncompliant
+      boolean value() default true; // Noncompliant
   }
 }
 class AnonymousInnerClass {
   Comparator<String> doJob(){
     return new Comparator<String>() { // anon-inner-class
       class Hello { // inner-class
-        public void doJob() { // false-positive
+        public void doJob() {
         }
       }
 
