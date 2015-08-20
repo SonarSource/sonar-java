@@ -58,7 +58,7 @@ public class JunitMethodDeclarationCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (isJunit3Class(((ClassTree) tree))) {
+    if (isJunit3Class((ClassTree) tree)) {
       for (Tree member : ((ClassTree) tree).members()) {
         if (member.is(Tree.Kind.METHOD)) {
           visitMethod((MethodTree) member);
