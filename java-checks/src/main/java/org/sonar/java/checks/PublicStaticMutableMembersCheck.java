@@ -39,6 +39,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -47,17 +48,19 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
+import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Rule(
-  key = "S2385",
-  name = "Mutable \"static\" members should be protected",
-  tags = {"cwe", "unpredictable"},
+  key = "S2386",
+  name = "Mutable fields should not be \"public static\"",
+  tags = {"cwe", "unpredictable", "security"},
   priority = Priority.CRITICAL)
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("15min")
 public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
 
@@ -101,7 +104,7 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
+    return ImmutableList.of(Tree.Kind.INTERFACE, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.ASSIGNMENT);
   }
 
   @Override
@@ -122,7 +125,11 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
     Symbol symbol = variableTree.symbol();
     if (symbol != null && isPublicStatic(symbol) && isForbiddenType(symbol.type())) {
       if (isMutable(variableTree.initializer(), symbol.type())) {
-        addIssue(variableTree, "Make this member \"protected\".");
+        String message = "Make this member \"protected\".";
+        if (owner.is(Tree.Kind.INTERFACE)) {
+          message = MessageFormat.format("Move \"{0}\" to a class and lower its visibility", variableTree.simpleName().name());
+        }
+        addIssue(variableTree, message);
       } else {
         IMMUTABLE_CANDIDATES.add(symbol);
         CLASS_IMMUTABLE_CANDIDATES.put(owner, symbol);
@@ -132,6 +139,9 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
 
   private void checkAssignment(AssignmentExpressionTree node) {
     ExpressionTree variable = ExpressionsHelper.skipParentheses(node.variable());
+    if (variable.is(Tree.Kind.MEMBER_SELECT)) {
+      variable = ((MemberSelectExpressionTree) variable).identifier();
+    }
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) variable).symbol();
       if (IMMUTABLE_CANDIDATES.contains(symbol) && isMutable(node.expression(), symbol.type())) {

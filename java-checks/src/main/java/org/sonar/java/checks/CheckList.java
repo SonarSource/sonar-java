@@ -278,7 +278,6 @@ public final class CheckList {
       .add(ImmediateReverseBoxingCheck.class)
       .add(CustomCryptographicAlgorithmCheck.class)
       .add(UnusedTypeParameterCheck.class)
-      .add(InterfaceStaticMutableMemberCheck.class)
       .add(ShiftOnIntOrLongCheck.class)
       .add(CompareToReturnValueCheck.class)
       .add(FinalizeFieldsSetCheck.class)
