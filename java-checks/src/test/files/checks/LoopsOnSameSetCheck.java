@@ -7,17 +7,22 @@ public class A {
     return null;
   }
 
+  private List<String> globalStrings;
+
   public void doSomethingToAList(List<String> strings, List<String> strings2) {
     for (String str : strings);
-    for (String str : strings); // Noncompliant {{Combine this loop with the one that starts on line 11.}}
+    foo();
+    for (String str : strings); // Noncompliant {{Combine this loop with the one that starts on line 13.}}
     strings = null;
     for (String str : strings); // strings get reassigned
     for (String str : getList());
-    for (String str : getList()); // Noncompliant {{Combine this loop with the one that starts on line 15.}}
+    for (String str : getList()); // Noncompliant {{Combine this loop with the one that starts on line 18.}}
+    foo();
+    for (String str : getList()); // no issue if something in between for loops
     for (String str : foo());
     List<String> list = null;
     for (String str : list);
-    for (String str : list); // Noncompliant {{Combine this loop with the one that starts on line 19.}}
+    for (String str : list); // Noncompliant {{Combine this loop with the one that starts on line 24.}}
     if (list.size() > 10) {
       list.remove(0);
     }
@@ -35,5 +40,9 @@ public class A {
         }
       }
     };
+    for (String str : globalStrings);
+    modifyGlobalStrings();
+    // no issues for fields
+    for (String str : globalStrings);
   }
 }

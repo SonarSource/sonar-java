@@ -37,11 +37,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Rule(
   key = "S3047",
@@ -61,41 +60,42 @@ public class LoopsOnSameSetCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     Map<Symbol, Integer> forEachSymbols = new HashMap<>();
-    Set<Tree> forEachIterables = new HashSet<>();
+    Tree previousForeachIterable = null;
     for (Tree item : ((BlockTree) tree).body()) {
       if (item.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-        checkForEach(forEachSymbols, forEachIterables, (ForEachStatement) item);
+        ForEachStatement forEachStatement = (ForEachStatement) item;
+        checkForEach(forEachSymbols, previousForeachIterable, forEachStatement);
+        previousForeachIterable = forEachStatement.expression();
       } else {
+        previousForeachIterable = null;
         item.accept(new InvalidatorVisitor(forEachSymbols));
       }
     }
   }
 
-  private void checkForEach(Map<Symbol, Integer> forEachSymbols, Set<Tree> forEachIterables, ForEachStatement item) {
+  private void checkForEach(Map<Symbol, Integer> forEachSymbols, @Nullable Tree previousIterable, ForEachStatement item) {
     ExpressionTree expressionTree = ExpressionsHelper.skipParentheses(item.expression());
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       checkForEachIdentifier(forEachSymbols, (IdentifierTree) expressionTree);
-    } else {
-      checkForEachExpression(forEachIterables, expressionTree);
+    } else if (previousIterable != null) {
+      checkForEachExpression(previousIterable, expressionTree);
     }
   }
 
-  private void checkForEachExpression(Set<Tree> forEachIterables, ExpressionTree expressionTree) {
-    for (Tree subTree : forEachIterables) {
-      if (SyntacticEquivalence.areEquivalent(expressionTree, subTree)) {
-        addIssue(expressionTree, FirstSyntaxTokenFinder.firstSyntaxToken(subTree).line());
-        return;
-      }
+  private void checkForEachExpression(Tree forEachIterable, ExpressionTree expressionTree) {
+    if (SyntacticEquivalence.areEquivalent(expressionTree, forEachIterable)) {
+      addIssue(expressionTree, FirstSyntaxTokenFinder.firstSyntaxToken(forEachIterable).line());
     }
-    forEachIterables.add(expressionTree);
   }
 
   private void checkForEachIdentifier(Map<Symbol, Integer> forEachSymbols, IdentifierTree node) {
     Symbol symbol = node.symbol();
-    if (forEachSymbols.containsKey(symbol)) {
-      addIssue(node, forEachSymbols.get(symbol));
-    } else {
-      forEachSymbols.put(symbol, ((JavaTree) node).getLine());
+    if (symbol.owner().isMethodSymbol()) {
+      if (forEachSymbols.containsKey(symbol)) {
+        addIssue(node, forEachSymbols.get(symbol));
+      } else {
+        forEachSymbols.put(symbol, ((JavaTree) node).getLine());
+      }
     }
   }
 
