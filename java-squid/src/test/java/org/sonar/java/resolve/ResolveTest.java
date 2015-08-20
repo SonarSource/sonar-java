@@ -21,13 +21,13 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ResolveTest {
 
@@ -37,22 +37,25 @@ public class ResolveTest {
 
   private Resolve.Env env = mock(Resolve.Env.class);
 
+  @Before
+  public void setUp() {
+    env = new Resolve.Env();
+    env.packge = new JavaSymbol.PackageJavaSymbol(null, null);
+  }
+
   @Test
   public void access_public_class() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
-    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "TargetClass", packageSymbol);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "TargetClass", env.packge);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
   }
 
   @Test
   public void access_protected_class() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
-    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PROTECTED, "TargetClass", packageSymbol);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PROTECTED, "TargetClass", env.packge);
 
-    when(env.packge()).thenReturn(packageSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
 
-    when(env.packge()).thenReturn(new JavaSymbol.PackageJavaSymbol("AnotherPackage", null));
+    env.packge = new JavaSymbol.PackageJavaSymbol("AnotherPackage", null);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isFalse();
   }
 
@@ -68,13 +71,11 @@ public class ResolveTest {
    */
   @Test
   public void access_package_local_class() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
-    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(0, "TargetClass", packageSymbol);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(0, "TargetClass", env.packge);
 
-    when(env.packge()).thenReturn(packageSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
 
-    when(env.packge()).thenReturn(new JavaSymbol.PackageJavaSymbol("AnotherPackage", null));
+    env.packge = new JavaSymbol.PackageJavaSymbol("AnotherPackage", null);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isFalse();
   }
 
@@ -92,14 +93,12 @@ public class ResolveTest {
    */
   @Test
   public void access_private_class() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
-    JavaSymbol.TypeJavaSymbol outermostClassSymbol = new JavaSymbol.TypeJavaSymbol(0, "OutermostClass", packageSymbol);
-    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PRIVATE, "TargetClass", outermostClassSymbol);
+    env.enclosingClass = new JavaSymbol.TypeJavaSymbol(0, "OutermostClass", env.packge);
+    JavaSymbol.TypeJavaSymbol targetClassSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PRIVATE, "TargetClass", env.enclosingClass);
 
-    when(env.enclosingClass()).thenReturn(outermostClassSymbol);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isTrue();
 
-    when(env.enclosingClass()).thenReturn(new JavaSymbol.TypeJavaSymbol(0, "AnotherOutermostClass", packageSymbol));
+    env.enclosingClass = new JavaSymbol.TypeJavaSymbol(0, "AnotherOutermostClass", env.packge);
     assertThat(resolve.isAccessible(env, targetClassSymbol)).isFalse();
   }
 

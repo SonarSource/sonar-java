@@ -188,9 +188,9 @@ public class FirstPass extends BaseTreeVisitor {
       if (JavaPunctuator.STAR.getValue().equals(tree.name())) {
         //star import : we save the current symbol
         if (isStatic) {
-          env.staticStarImports().enter(currentSymbol);
+          env.staticStarImports.enter(currentSymbol);
         } else {
-          env.starImports().enter(currentSymbol);
+          env.starImports.enter(currentSymbol);
         }
         //we set current symbol to not found to do not put it in named import scope.
         currentSymbol = new Resolve.JavaSymbolNotFound();

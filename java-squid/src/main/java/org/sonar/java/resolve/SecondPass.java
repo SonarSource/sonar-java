@@ -205,7 +205,7 @@ public class SecondPass implements JavaSymbol.Completer {
     VariableTree variableTree = symbol.declaration;
     Resolve.Env env = semanticModel.getEnv(symbol);
     if (variableTree.is(Tree.Kind.ENUM_CONSTANT)) {
-      symbol.type = env.enclosingClass().type;
+      symbol.type = env.enclosingClass.type;
     } else {
       symbol.type = resolveType(env, variableTree.type());
     }

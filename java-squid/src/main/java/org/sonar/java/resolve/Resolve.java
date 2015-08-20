@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -134,15 +135,15 @@ public class Resolve {
     Resolution bestSoFar = unresolved();
 
     Env env1 = env;
-    while (env1.outer() != null) {
+    while (env1.outer != null) {
       Resolution sym = new Resolution();
-      for (JavaSymbol symbol : env1.scope().lookup(name)) {
+      for (JavaSymbol symbol : env1.scope.lookup(name)) {
         if (symbol.kind == JavaSymbol.VAR) {
           sym.symbol = symbol;
         }
       }
       if (sym.symbol == null) {
-        sym = findField(env1, env1.enclosingClass(), name, env1.enclosingClass());
+        sym = findField(env1, env1.enclosingClass, name, env1.enclosingClass);
       }
       if (sym.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
@@ -150,7 +151,7 @@ public class Resolve {
       } else if (sym.symbol.kind < bestSoFar.symbol.kind) {
         bestSoFar = sym;
       }
-      env1 = env1.outer();
+      env1 = env1.outer;
     }
 
     JavaSymbol symbol = findInStaticImport(env, name, JavaSymbol.VAR);
@@ -170,12 +171,12 @@ public class Resolve {
     JavaSymbol bestSoFar = symbolNotFound;
     //imports
     //Ok because clash of name between type and var/method result in compile error: JLS8 7.5.3
-    for (JavaSymbol symbol : env.namedImports().lookup(name)) {
+    for (JavaSymbol symbol : env.namedImports.lookup(name)) {
       if ((kind & symbol.kind) != 0) {
         return symbol;
       }
     }
-    for (JavaSymbol symbol : env.staticStarImports().lookup(name)) {
+    for (JavaSymbol symbol : env.staticStarImports.lookup(name)) {
       if ((kind & symbol.kind) != 0) {
         return symbol;
       }
@@ -212,14 +213,14 @@ public class Resolve {
    */
   private JavaSymbol findType(Env env, String name) {
     JavaSymbol bestSoFar = symbolNotFound;
-    for (Env env1 = env; env1 != null; env1 = env1.outer()) {
-      for (JavaSymbol symbol : env1.scope().lookup(name)) {
+    for (Env env1 = env; env1 != null; env1 = env1.outer) {
+      for (JavaSymbol symbol : env1.scope.lookup(name)) {
         if (symbol.kind == JavaSymbol.TYP) {
           return symbol;
         }
       }
       if (env1.outer != null) {
-        JavaSymbol symbol = findMemberType(env1, env1.enclosingClass(), name, env1.enclosingClass());
+        JavaSymbol symbol = findMemberType(env1, env1.enclosingClass, name, env1.enclosingClass);
         if (symbol.kind < JavaSymbol.ERRONEOUS) {
           // symbol exists
           return symbol;
@@ -237,25 +238,25 @@ public class Resolve {
 
     //JLS8 6.4.1 Shadowing rules
     //named imports
-    for (JavaSymbol symbol : env.namedImports().lookup(name)) {
+    for (JavaSymbol symbol : env.namedImports.lookup(name)) {
       if (symbol.kind == JavaSymbol.TYP) {
         return symbol;
       }
     }
     //package types
-    JavaSymbol sym = findIdentInPackage(env.packge(), name, JavaSymbol.TYP);
+    JavaSymbol sym = findIdentInPackage(env.packge, name, JavaSymbol.TYP);
     if (sym.kind < bestSoFar.kind) {
       return sym;
     }
     //on demand imports
-    for (JavaSymbol symbol : env.starImports().lookup(name)) {
+    for (JavaSymbol symbol : env.starImports.lookup(name)) {
       if (symbol.kind == JavaSymbol.TYP) {
         return symbol;
       }
     }
     //java.lang
     JavaSymbol.PackageJavaSymbol javaLang = bytecodeCompleter.enterPackage("java.lang");
-    for (JavaSymbol symbol : javaLang.members().lookup(name)) {
+    for (JavaSymbol symbol : javaLang.completedMembers().lookup(name)) {
       if (symbol.kind == JavaSymbol.TYP) {
         return symbol;
       }
@@ -354,8 +355,8 @@ public class Resolve {
   public Resolution findMethod(Env env, String name, List<JavaType> argTypes, List<JavaType> typeParamTypes) {
     Resolution bestSoFar = unresolved();
     Env env1 = env;
-    while (env1.outer() != null) {
-      Resolution res = findMethod(env1, env1.enclosingClass().getType(), name, argTypes, typeParamTypes);
+    while (env1.outer != null) {
+      Resolution res = findMethod(env1, env1.enclosingClass.getType(), name, argTypes, typeParamTypes);
       if (res.symbol.kind < JavaSymbol.ERRONEOUS) {
         // symbol exists
         return res;
@@ -541,16 +542,16 @@ public class Resolve {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
-        result = env.enclosingClass().outermostClass() == c.owner().outermostClass();
+        result = env.enclosingClass.outermostClass() == c.owner().outermostClass();
         break;
       case 0:
-        result = env.packge() == c.packge();
+        result = env.packge == c.packge();
         break;
       case Flags.PUBLIC:
         result = true;
         break;
       case Flags.PROTECTED:
-        result = env.packge() == c.packge() || isInnerSubClass(env.enclosingClass(), c.owner());
+        result = env.packge == c.packge() || isInnerSubClass(env.enclosingClass, c.owner());
         break;
       default:
         throw new IllegalStateException();
@@ -607,10 +608,10 @@ public class Resolve {
       case Flags.PRIVATE:
         //if enclosing class is null, we are checking accessibility for imports so we return false.
         // no check of overriding, because private members cannot be overridden
-        return env.enclosingClass != null && (env.enclosingClass().outermostClass() == symbol.owner().outermostClass())
+        return env.enclosingClass != null && (env.enclosingClass.outermostClass() == symbol.owner().outermostClass())
             && isInheritedIn(symbol, site);
       case 0:
-        return (env.packge() == symbol.packge())
+        return (env.packge == symbol.packge())
             && isAccessible(env, site)
             && isInheritedIn(symbol, site)
             && notOverriddenIn(site, symbol);
@@ -618,7 +619,7 @@ public class Resolve {
         return isAccessible(env, site)
             && notOverriddenIn(site, symbol);
       case Flags.PROTECTED:
-        return ((env.packge() == symbol.packge()) || isProtectedAccessible(symbol, env.enclosingClass, site))
+        return ((env.packge == symbol.packge()) || isProtectedAccessible(symbol, env.enclosingClass, site))
             && isAccessible(env, site)
             && notOverriddenIn(site, symbol);
       default:
@@ -716,45 +717,18 @@ public class Resolve {
     /**
      * The environment enclosing the current class.
      */
+    @Nullable
     Env outer;
 
     JavaSymbol.PackageJavaSymbol packge;
 
+    @Nullable
     JavaSymbol.TypeJavaSymbol enclosingClass;
 
     Scope scope;
     Scope namedImports;
     Scope starImports;
     Scope staticStarImports;
-
-    @Nullable
-    Env outer() {
-      return outer;
-    }
-
-    JavaSymbol.TypeJavaSymbol enclosingClass() {
-      return enclosingClass;
-    }
-
-    public JavaSymbol.PackageJavaSymbol packge() {
-      return packge;
-    }
-
-    Scope namedImports() {
-      return namedImports;
-    }
-
-    Scope starImports() {
-      return starImports;
-    }
-
-    public Scope staticStarImports() {
-      return staticStarImports;
-    }
-
-    Scope scope() {
-      return scope;
-    }
 
     public Env dup() {
       Env env = new Env();

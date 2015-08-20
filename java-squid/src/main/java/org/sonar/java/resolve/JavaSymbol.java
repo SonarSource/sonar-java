@@ -270,7 +270,7 @@ public class JavaSymbol implements Symbol {
       super(PCK, 0, name, owner);
     }
 
-    Scope members() {
+    Scope completedMembers() {
       complete();
       return members;
     }
