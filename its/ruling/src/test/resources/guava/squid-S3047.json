@@ -26,7 +26,4 @@
 'com.google.guava:guava:src/com/google/common/primitives/Shorts.java':[
 280,
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ServiceManager.java':[
-274,
-],
 }
