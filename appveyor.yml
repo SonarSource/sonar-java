@@ -12,6 +12,7 @@ install:
   - set MAVEN_VERSION=3.2.5
   - choco install maven -version %MAVEN_VERSION%
   - set PATH=%PATH%;C:\bin\apache-maven-%MAVEN_VERSION%\bin
+  - echo %JAVA_HOME%
 
 environment:
   matrix:
