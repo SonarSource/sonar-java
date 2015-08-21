@@ -28,10 +28,6 @@ environment:
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0
     SQ_VERSION: LATEST_RELEASE
     PROJECT: guava
-  - RUN: ruling
-    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    SQ_VERSION: LATEST_RELEASE
-    PROJECT: jdk7
   - RUN: its
     JAVA_HOME: C:\Program Files\Java\jdk1.7.0
     SQ_VERSION: DEV

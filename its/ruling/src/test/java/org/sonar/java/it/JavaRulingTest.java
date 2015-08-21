@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
-import com.sonar.orchestrator.build.SonarRunner;
 import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import org.junit.BeforeClass;
@@ -77,29 +76,6 @@ public class JavaRulingTest {
     );
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
     instantiateTemplateRuleS2253();
-  }
-
-  @Test
-  public void jdk7() throws Exception {
-    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File sslr_jdk7_source = FileLocation.of("../sources/sslr/oracle-jdk-1.7.0.3").getFile();
-    SonarRunner build = SonarRunner.create(sslr_jdk7_source)
-        .setProjectKey("project")
-        .setProjectName("project")
-        .setProjectVersion("1")
-        .setSourceEncoding("UTF-8")
-        .setProfile("rules")
-        .setProperty("sonar.cpd.skip", "true")
-        .setProperty("sonar.skipPackageDesign", "true")
-        .setProperty("sonar.analysis.mode", "preview")
-        .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/jdk7").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/jdk7").getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath())
-        .setProperty("sonar.java.libraries", "bin/rt_openJDK_1.7_u55_linux.jar")
-        .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx2500m");
-    orchestrator.executeBuild(build);
-    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
   }
 
   @Test
