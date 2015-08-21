@@ -1,0 +1,14 @@
+{
+'org.apache.hbase:hbase-protocol:src/main/java/com/google/protobuf':[
+0,
+],
+'org.apache.hbase:hbase-protocol:src/main/java/org/apache/hadoop/hbase/protobuf':[
+0,
+],
+'org.apache.hbase:hbase-protocol:src/main/java/org/apache/hadoop/hbase/protobuf/generated':[
+0,
+],
+'org.apache.hbase:hbase-protocol:src/main/java/org/apache/hadoop/hbase/util':[
+0,
+],
+}

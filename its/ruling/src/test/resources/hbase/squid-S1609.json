@@ -1,0 +1,10 @@
+{
+'org.apache.hbase:hbase-protocol:src/main/java/org/apache/hadoop/hbase/protobuf/generated/MultiRowMutationProtos.java':[
+1936,
+2131,
+],
+'org.apache.hbase:hbase-protocol:src/main/java/org/apache/hadoop/hbase/protobuf/generated/RowProcessorProtos.java':[
+1418,
+1613,
+],
+}
