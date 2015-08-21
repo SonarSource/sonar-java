@@ -28,13 +28,13 @@ import com.sonar.orchestrator.locator.FileLocation;
 import com.sonar.orchestrator.locator.MavenLocation;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.wsclient.SonarClient;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -80,69 +80,30 @@ public class JavaRulingTest {
 
   @Test
   public void guava() throws Exception {
-    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File hbasePom = FileLocation.of("../sources/guava/pom.xml").getFile();
-    MavenBuild mavenBuild = MavenBuild.create().setPom(hbasePom).setCleanPackageSonarGoals().addArgument("-DskipTests")
-        .setProfile("rules")
-        .setProperty("sonar.cpd.skip", "true")
-        .setProperty("sonar.skipPackageDesign", "true")
-        .setProperty("sonar.analysis.mode", "preview")
-        .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/guava").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/guava").getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
-    orchestrator.executeBuild(mavenBuild);
-    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+   test_project("guava");
   }
-
 
   @Test
   public void apache_commons_beanutils() throws Exception {
-    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File pomFile = FileLocation.of("../sources/commons-beanutils/pom.xml").getFile();
-    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
-        .setProfile("rules")
-        .setProperty("sonar.cpd.skip", "true")
-        .setProperty("sonar.skipPackageDesign", "true")
-        .setProperty("sonar.analysis.mode", "preview")
-        .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/commons-beanutils").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/commons-beanutils").getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
-    orchestrator.executeBuild(mavenBuild);
-    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
-  }
-
-  @Test
-  @Ignore
-  public void hbase_protocol() throws Exception {
-    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File pomFile = FileLocation.of("../sources/hbase/hbase-protocol/pom.xml").getFile();
-    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
-        .setProfile("rules")
-        .setProperty("sonar.cpd.skip", "true")
-        .setProperty("sonar.skipPackageDesign", "true")
-        .setProperty("sonar.analysis.mode", "preview")
-        .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/hbase").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/hbase").getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
-    orchestrator.executeBuild(mavenBuild);
-    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+    test_project("commons-beanutils");
   }
 
   @Test
   public void fluent_http() throws Exception {
+    test_project("fluent-http");
+  }
+
+  private static void test_project(String projectName) throws IOException {
     File litsDifferencesFile = FileLocation.of("target/differences").getFile();
-    File pomFile = FileLocation.of("../sources/fluent-http/pom.xml").getFile();
+    File pomFile = FileLocation.of("../sources/"+projectName+"/pom.xml").getFile();
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
         .setProfile("rules")
         .setProperty("sonar.cpd.skip", "true")
         .setProperty("sonar.skipPackageDesign", "true")
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/fluent-http").getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/fluent-http").getFile().getAbsolutePath())
+        .setProperty("dump.old", FileLocation.of("src/test/resources/"+projectName).getFile().getAbsolutePath())
+        .setProperty("dump.new", FileLocation.of("target/actual/"+projectName).getFile().getAbsolutePath())
         .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
     orchestrator.executeBuild(mavenBuild);
     assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
