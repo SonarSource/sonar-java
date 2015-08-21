@@ -62,14 +62,14 @@ class FileSystemLoader implements Loader {
     }
     File file = new File(baseDir, name);
     if (!file.exists()) {
-      return null;
+      return new byte[0];
     }
     InputStream is = null;
     try {
       is = new FileInputStream(file);
       return IOUtils.toByteArray(is);
     } catch (IOException e) {
-      return null;
+      return new byte[0];
     } finally {
       IOUtils.closeQuietly(is);
     }

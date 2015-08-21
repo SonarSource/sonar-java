@@ -70,14 +70,14 @@ class JarLoader implements Loader {
     try {
       ZipEntry entry = jarFile.getEntry(name);
       if (entry == null) {
-        return null;
+        return new byte[0];
       }
       is = jarFile.getInputStream(entry);
       return IOUtils.toByteArray(is);
     } catch (IOException e) {
       // TODO Godin: not sure that we should silently ignore exception here,
       // e.g. it can be thrown if file corrupted
-      return null;
+      return new byte[0];
     } finally {
       IOUtils.closeQuietly(is);
     }

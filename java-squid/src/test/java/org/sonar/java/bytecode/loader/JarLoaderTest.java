@@ -74,10 +74,10 @@ public class JarLoaderTest {
     File jar = new File("src/test/files/bytecode/lib/hello.jar");
     JarLoader loader = new JarLoader(jar);
 
-    assertThat(loader.loadBytes("notfound")).isNull();
+    assertThat(loader.loadBytes("notfound")).isEmpty();
 
     byte[] bytes = loader.loadBytes("META-INF/MANIFEST.MF");
-    assertThat(bytes).isNotNull();
+    assertThat(bytes).isNotEmpty();
     ByteArrayInputStream is = new ByteArrayInputStream(bytes);
     assertThat(IOUtils.readLines(is)).contains("Manifest-Version: 1.0");
 

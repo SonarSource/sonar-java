@@ -66,9 +66,9 @@ public class FileSystemLoaderTest {
     File dir = new File("src/test/files/bytecode/bin/");
     FileSystemLoader loader = new FileSystemLoader(dir);
 
-    assertThat(loader.loadBytes("notfound")).isNull();
+    assertThat(loader.loadBytes("notfound")).isEmpty();
 
-    assertThat(loader.loadBytes("tags/TagName.class")).isNotNull();
+    assertThat(loader.loadBytes("tags/TagName.class")).isNotEmpty();
 
     loader.close();
 

@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode.loader;
 
 import com.google.common.collect.Iterators;
+import org.apache.commons.lang.ArrayUtils;
 
 import java.io.Closeable;
 import java.io.File;
@@ -58,7 +59,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
     String resourceName = name.replace('.', '/') + ".class";
     for (Loader loader : loaders) {
       byte[] classBytes = loader.loadBytes(resourceName);
-      if (classBytes != null) {
+      if (ArrayUtils.isNotEmpty(classBytes)) {
         // TODO Godin: definePackage ?
         return defineClass(name, classBytes, 0, classBytes.length);
       }
