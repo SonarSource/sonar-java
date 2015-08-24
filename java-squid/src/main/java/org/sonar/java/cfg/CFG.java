@@ -614,6 +614,13 @@ public class CFG {
         build(tryStatementTree.block());
         break;
       }
+      case THROW_STATEMENT: {
+        //FIXME this won't work if it is intended to be caught by a try statement.
+        ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
+        currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
+        build(throwStatementTree.expression());
+        break;
+      }
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
       case PREFIX_INCREMENT:
