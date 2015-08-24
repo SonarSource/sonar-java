@@ -621,6 +621,13 @@ public class CFG {
         build(throwStatementTree.expression());
         break;
       }
+      case SYNCHRONIZED_STATEMENT: {
+        SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
+        //Naively build synchronized statement.
+        build(sst.block());
+        build(sst.expression());
+        break;
+      }
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
       case PREFIX_INCREMENT:
