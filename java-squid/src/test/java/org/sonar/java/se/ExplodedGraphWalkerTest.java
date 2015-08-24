@@ -114,17 +114,17 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void condition_always_false() throws Exception {
+  public void condition_always_true() throws Exception {
     getGraphWalker("class A  {void func(Object a){ a = null; if(\na == null\n);}}");
     String output = out.toString();
-    assertThat(output).contains("condition at line 2 always evaluate to false");
+    assertThat(output).contains("condition at line 2 always evaluate to true");
   }
 
   @Test
-  public void condition_always_true() throws Exception {
+  public void condition_always_false() throws Exception {
     getGraphWalker("class A  {void func(Object a){ a = null; Object b= null; if(\na != null && b!=null\n);}}");
     String output = out.toString();
-    assertThat(output).contains("condition at line 2 always evaluate to true");
+    assertThat(output).contains("condition at line 2 always evaluate to false");
   }
 
   @Test
@@ -171,6 +171,17 @@ public class ExplodedGraphWalkerTest {
     getGraphWalker("class A  { \nvoid func(Object a) {\n boolean b1 = str == null && str.length() == 0;}\n } ");
     String output = out.toString();
     assertThat(output).contains("Null pointer dereference at line 3");
+  }
+
+  @Test
+  public void instance_of_set_not_null_constraint() throws Exception {
+    getGraphWalker("class A {\n void fun(Object a) { Object b;\n if (b instanceof Object)\n { b.toString(); } \n}}");
+    String output = out.toString();
+    assertThat(output).contains("condition at line 3 always evaluate to false");
+    out = new ByteArrayOutputStream();
+    getGraphWalker("class A {\n void fun(Object a) { \n if (a instanceof Object)\n { a.toString(); } \n}}");
+    output = out.toString();
+    assertThat(output).doesNotContain("condition at line 3 always evaluate to").doesNotContain("Null pointer dereference at line 3");
   }
 
   private ExplodedGraphWalker getGraphWalker(String source) {

@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -116,6 +117,15 @@ public class ConstraintManager {
   public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
     //FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a dedicated checker.
     switch (condition.kind()) {
+      case INSTANCE_OF: {
+        InstanceOfTree instanceOfTree = (InstanceOfTree) condition;
+        SymbolicValue exprValue = eval(programState, instanceOfTree.expression());
+        if(isNull(programState, exprValue)) {
+          return new Pair<>(programState, null);
+        }
+        //if instanceof is true then we know for sure that expression is not null.
+        return new Pair<>(programState, setConstraint(programState, exprValue, NullConstraint.NOT_NULL));
+      }
       case EQUAL_TO: {
         BinaryExpressionTree equalTo = (BinaryExpressionTree) condition;
         SymbolicValue lhs = eval(programState, equalTo.leftOperand());
