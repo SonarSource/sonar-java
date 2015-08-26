@@ -24,6 +24,8 @@ import com.google.common.base.Objects;
 public interface SymbolicValue {
 
   SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0);
+  SymbolicValue TRUE_LITERAL = new ObjectSymbolicValue(1);
+  SymbolicValue FALSE_LITERAL = new ObjectSymbolicValue(2);
 
 
   class ObjectSymbolicValue implements SymbolicValue {

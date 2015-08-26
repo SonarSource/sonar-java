@@ -24,9 +24,11 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
@@ -51,7 +53,7 @@ public class ConstraintManager {
       result = symbolMap.get(((VariableTree) syntaxNode).symbol());
     }
     if (result == null) {
-      result = new SymbolicValue.ObjectSymbolicValue(map.size()+1);
+      result = new SymbolicValue.ObjectSymbolicValue(map.size()+ProgramState.EMPTY_STATE.constraints.size());
       map.put(syntaxNode, result);
       if(syntaxNode.is(Tree.Kind.IDENTIFIER)) {
         symbolMap.put(((IdentifierTree) syntaxNode).symbol(), result);
@@ -68,6 +70,13 @@ public class ConstraintManager {
     switch (syntaxNode.kind()) {
       case NULL_LITERAL: {
         return SymbolicValue.NULL_LITERAL;
+      }
+      case BOOLEAN_LITERAL: {
+        boolean value = Boolean.parseBoolean(((LiteralTree) syntaxNode).value());
+        if(value) {
+          return SymbolicValue.TRUE_LITERAL;
+        }
+        return SymbolicValue.FALSE_LITERAL;
       }
       case VARIABLE: {
         Symbol symbol = ((VariableTree) syntaxNode).symbol();
@@ -156,39 +165,65 @@ public class ConstraintManager {
         }
         break;
       }
+      case LOGICAL_COMPLEMENT:
+        return assumeDual(programState, ((UnaryExpressionTree) condition).expression()).invert();
       case CONDITIONAL_OR:
       case CONDITIONAL_AND:
-        // this is the case for branches such as "if (lhs && lhs)" and "if (lhs || rhs)"
+        // this is the case for branches such as "if (lhs && rhs)" and "if (lhs || rhs)"
         // we already made an assumption on lhs, because CFG contains branch for it, so now let's make an assumption on rhs
         BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) condition;
         return assumeDual(programState, binaryExpressionTree.rightOperand());
+      case BOOLEAN_LITERAL:
+        LiteralTree literalTree = ((LiteralTree) condition);
+        if ("true".equals(literalTree.value())) {
+          return new Pair<>(null, programState);
+        }
+        return new Pair<>(programState, null);
       case IDENTIFIER:
         IdentifierTree id = (IdentifierTree) condition;
         SymbolicValue eval = eval(programState, id);
-        //TODO associate boolean constraint to that identifier.
-//        return new Pair<>(ExplodedGraphWalker.put(programState, id.symbol(), eval));
-        break;
+        return new Pair<>(setConstraint(programState, eval, BooleanConstraint.FALSE), setConstraint(programState, eval, BooleanConstraint.TRUE));
     }
     return new Pair<>(programState, programState);
+  }
+
+  @CheckForNull
+  static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, BooleanConstraint booleanConstraint) {
+    Object data = programState.constraints.get(sv);
+    // update program state only for a different constraint
+    if(data instanceof BooleanConstraint) {
+      BooleanConstraint bc = (BooleanConstraint) data;
+      if((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
+          (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
+        //setting null where value is known to be non null or the contrary
+        return null;
+      }
+    }
+    if (data == null || !data.equals(booleanConstraint)) {
+      Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+      temp.put(sv, booleanConstraint);
+      return new ProgramState(programState.values, temp);
+    }
+    return programState;
   }
 
   @CheckForNull
   static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, NullConstraint nullConstraint) {
     Object data = programState.constraints.get(sv);
     // update program state only for a different constraint
-    //For now, we only store null constraints so casting is ok.
-    NullConstraint nc = (NullConstraint) data;
-    if((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
-        (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
-      //setting null where value is known to be non null or the contrary
-      return null;
+    if(data instanceof NullConstraint) {
+      NullConstraint nc = (NullConstraint) data;
+      if((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
+          (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
+        //setting null where value is known to be non null or the contrary
+        return null;
+      }
     }
     if (data == null || !data.equals(nullConstraint)) {
       Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
       temp.put(sv, nullConstraint);
       return new ProgramState(programState.values, temp);
     }
-
     return programState;
   }
 
@@ -196,5 +231,11 @@ public class ConstraintManager {
     NULL,
     NOT_NULL,
     UNKNOWN
+  }
+
+  public enum BooleanConstraint {
+    TRUE,
+    FALSE,
+    UNKNOWN;
   }
 }
