@@ -55,6 +55,9 @@ public class CheckerDispatcher implements CheckerContext {
       );
       return;
     }
+    if (!transition) {
+      addTransition(explodedGraphWalker.programState);
+    }
   }
 
   public ProgramState getState() {

@@ -117,6 +117,7 @@ public class ExplodedGraphWalkerTest {
   public void condition_always_true() throws Exception {
     getGraphWalker("class A  {void func(Object a){ a = null; if(\na == null\n);}}");
     String output = out.toString();
+    System.out.println(output);
     assertThat(output).contains("condition at line 2 always evaluate to true");
   }
 
@@ -132,6 +133,44 @@ public class ExplodedGraphWalkerTest {
     Pattern pattern = Pattern.compile("Null pointer dereference at line (\\d*)");
 
     List<String> unitTestNPE = Files.readLines(new File("../java-checks/src/test/files/checks/NullPointerCheck.java"), Charsets.UTF_8);
+    List<Integer> expectedLines = Lists.newArrayList();
+    int lineNb = 0;
+    for (String line : unitTestNPE) {
+      lineNb++;
+      if(line.contains("// Noncompliant")) {
+        expectedLines.add(lineNb);
+      }
+    }
+    getGraphWalker(Joiner.on("\n").join(unitTestNPE));
+    String output = out.toString();
+    Matcher matcher = pattern.matcher(output);
+    List<Integer> issueRaised = Lists.newArrayList();
+    while (matcher.find()) {
+      issueRaised.add(Integer.valueOf(matcher.group(1)));
+    }
+    issueRaised = Lists.newArrayList(Sets.newTreeSet(issueRaised));
+
+
+    List falseNegatives = ListUtils.subtract(expectedLines, issueRaised);
+    List falsePositives = ListUtils.subtract(issueRaised, expectedLines);
+    Collections.sort(falseNegatives);
+    String error = "";
+    if(!falseNegatives.isEmpty()) {
+      error += "\nFalse negative at lines : "+Joiner.on(", ").join(falseNegatives)+"\n";
+    }
+    if(!falsePositives.isEmpty()) {
+      error += "False positives at lines : "+Joiner.on(", ").join(falsePositives);
+    }
+    if(!error.isEmpty()) {
+      fail(error);
+    }
+
+  }
+  @Test
+  public void test_useless_condition() throws Exception {
+    Pattern pattern = Pattern.compile("condition at line (\\d*) always evaluate to (true|false)");
+
+    List<String> unitTestNPE = Files.readLines(new File("../java-checks/src/test/files/checks/UselessConditionCheck.java"), Charsets.UTF_8);
     List<Integer> expectedLines = Lists.newArrayList();
     int lineNb = 0;
     for (String line : unitTestNPE) {
