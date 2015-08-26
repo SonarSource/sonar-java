@@ -28,21 +28,23 @@ import java.util.Map;
 public class ProgramState {
 
   public static final ProgramState EMPTY_STATE = new ProgramState(Maps.<Symbol, SymbolicValue>newHashMap(),
-      /*Empty state knows that null literal is null */
-      ImmutableMap.<SymbolicValue, Object>builder().put(SymbolicValue.NULL_LITERAL, ConstraintManager.NullConstraint.NULL).build());
-  Map<Symbol, SymbolicValue> values;
-  Map<SymbolicValue, Object> constraints;
-
+    /* Empty state knows that null literal is null */
+    ImmutableMap.<SymbolicValue, Object>builder()
+        .put(SymbolicValue.NULL_LITERAL, ConstraintManager.NullConstraint.NULL)
+        .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
+        .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE)
+        .build());
+    Map<Symbol, SymbolicValue> values;
+    Map<SymbolicValue, Object> constraints;
 
   public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints) {
     this.values = ImmutableMap.copyOf(values);
     this.constraints = ImmutableMap.copyOf(constraints);
   }
 
-
   @Override
   public String toString() {
-    return "{"+values.toString()+"}  {"+constraints.toString()+"}";
+    return "{" + values.toString() + "}  {" + constraints.toString() + "}";
   }
 
 }

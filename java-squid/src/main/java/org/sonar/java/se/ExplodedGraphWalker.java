@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checkers.NullDereferenceChecker;
@@ -45,13 +46,14 @@ import java.io.PrintStream;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 250;
+  private static final int MAX_STEPS = 6200;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
   private final PrintStream out;
@@ -62,6 +64,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   @VisibleForTesting
   int steps;
   ConstraintManager constraintManager;
+  private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
+  private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
 
   public static class MaximumStepsReachedException extends RuntimeException {
     public MaximumStepsReachedException(String s) {
@@ -90,6 +94,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
     out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
+    System.out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
     programState = ProgramState.EMPTY_STATE;
     for (VariableTree variableTree : tree.parameters()) {
       //create
@@ -134,7 +139,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     out.println();
 
+    //Useless condition :
+    //TODO move this to a dedicated checker ?
+    for (Tree condition : Sets.difference(evaluatedToFalse, evaluatedToTrue)) {
+      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to false");
+    }
+    for (Tree condition : Sets.difference(evaluatedToTrue, evaluatedToFalse)) {
+      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to true");
+    }
     // Cleanup:
+    evaluatedToFalse.clear();
+    evaluatedToTrue.clear();
     explodedGraph = null;
     workList = null;
     node = null;
@@ -164,19 +179,18 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
+
   private void handleBranch(CFG.Block programPosition, Tree condition) {
     Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState, condition);
     if (pair.a != null) {
       // enqueue false-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), pair.a);
-    } else {
-      out.println("condition at line "+ ((JavaTree) condition).getLine() + " always evaluate to true");
+      evaluatedToFalse.add(condition);
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), pair.b);
-    } else {
-      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to false");
+      evaluatedToTrue.add(condition);
     }
   }
 
@@ -190,10 +204,18 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         throw new IllegalStateException("Cannot appear in CFG: " + tree.kind().name());
       case VARIABLE:
         VariableTree variableTree = (VariableTree) tree;
+        ExpressionTree initializer = variableTree.initializer();
         if (variableTree.type().symbolType().isPrimitive()) {
           // TODO handle primitives
+          if(initializer == null) {
+            if(variableTree.type().symbolType().is("boolean")) {
+              programState = put(programState, variableTree.symbol(), SymbolicValue.FALSE_LITERAL);
+            }
+          } else {
+            SymbolicValue val = constraintManager.eval(programState, initializer);
+            programState = put(programState, variableTree.symbol(), val);
+          }
         } else {
-          ExpressionTree initializer = variableTree.initializer();
           if (initializer == null) {
             programState = put(programState, variableTree.symbol(), SymbolicValue.NULL_LITERAL);
           } else {
