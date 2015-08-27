@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CheckMessage;
 
@@ -46,6 +47,7 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   private void execute() {
+    this.transition = false;
     if (currentCheckerIndex < checkers.size()) {
       checkers.get(currentCheckerIndex).checkPreStatement(this, syntaxNode);
     } else {
@@ -101,5 +103,17 @@ public class CheckerDispatcher implements CheckerContext {
   @Override
   public SymbolicValue getVal(Tree expression) {
     return explodedGraphWalker.getVal(expression);
+  }
+
+  public void executeCheckEndOfExecution(MethodTree tree) {
+    for (SEChecker checker : checkers) {
+      checker.checkEndOfExecution(this);
+    }
+  }
+
+  public void init() {
+    for (SEChecker checker : checkers) {
+      checker.init();
+    }
   }
 }

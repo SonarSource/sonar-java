@@ -22,11 +22,10 @@ package org.sonar.java.se;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
+import org.sonar.java.se.checkers.ConditionAlwaysTrueOrFalseChecker;
 import org.sonar.java.se.checkers.NullDereferenceChecker;
-import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -46,14 +45,14 @@ import java.io.PrintStream;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 6200;
+  private static final int MAX_STEPS = 6500;
+  private final ConditionAlwaysTrueOrFalseChecker alwaysTrueOrFalseChecker;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
   private final PrintStream out;
@@ -64,8 +63,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   @VisibleForTesting
   int steps;
   ConstraintManager constraintManager;
-  private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
-  private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
 
   public static class MaximumStepsReachedException extends RuntimeException {
     public MaximumStepsReachedException(String s) {
@@ -75,7 +72,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public ExplodedGraphWalker(PrintStream out, JavaFileScannerContext context) throws MaximumStepsReachedException {
     this.out = out;
-    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SEChecker>newArrayList(new NullDereferenceChecker(out)));
+    alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseChecker(out);
+    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceChecker(out)));
   }
 
   @Override
@@ -88,13 +86,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void execute(MethodTree tree) {
+    checkerDispatcher.init();
     CFG cfg = CFG.build(tree);
     cfg.debugTo(out);
     explodedGraph = new ExplodedGraph();
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
     out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
-    System.out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
     programState = ProgramState.EMPTY_STATE;
     for (VariableTree variableTree : tree.parameters()) {
       //create
@@ -139,17 +137,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     out.println();
 
-    //Useless condition :
-    //TODO move this to a dedicated checker ?
-    for (Tree condition : Sets.difference(evaluatedToFalse, evaluatedToTrue)) {
-      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to false");
-    }
-    for (Tree condition : Sets.difference(evaluatedToTrue, evaluatedToFalse)) {
-      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to true");
-    }
+    checkerDispatcher.executeCheckEndOfExecution(tree);
     // Cleanup:
-    evaluatedToFalse.clear();
-    evaluatedToTrue.clear();
     explodedGraph = null;
     workList = null;
     node = null;
@@ -185,12 +174,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (pair.a != null) {
       // enqueue false-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), pair.a);
-      evaluatedToFalse.add(condition);
+      alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), pair.b);
-      evaluatedToTrue.add(condition);
+      alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
     }
   }
 

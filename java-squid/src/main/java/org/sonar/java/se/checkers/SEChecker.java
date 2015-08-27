@@ -32,6 +32,15 @@ public abstract class SEChecker {
     this.out = out;
   }
 
-  public abstract void checkPreStatement(CheckerContext context, Tree syntaxNode);
+  public void init(){}
+
+  public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    //Default transition
+    context.addTransition(context.getState());
+  }
+
+  public void checkEndOfExecution(CheckerContext context) {
+    //By default do nothing
+  }
 
 }
