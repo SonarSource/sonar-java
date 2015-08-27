@@ -1,0 +1,8 @@
+<p>A source code comply to an architectural model when it fully adheres to a set of
+    architectural constraints. A constraint set with regular expression allows to
+    deny various code conventions, or to force them.</p>
+<p>You can for instance use this rule to :</p>
+<ul>
+    <li>Force using given format of error codes ex.: <code>new ErrCode\((?!"[A-Z]{2}-[0-9]{6}").*\);</code></li>
+    <li>Deny using given code ex.: <code>@ManagedBean</code></li>
+</ul>
