@@ -125,6 +125,7 @@ public class ConstraintManager {
 
   public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
     //FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a dedicated checker.
+    condition = skipTrivial(condition);
     switch (condition.kind()) {
       case INSTANCE_OF: {
         InstanceOfTree instanceOfTree = (InstanceOfTree) condition;
