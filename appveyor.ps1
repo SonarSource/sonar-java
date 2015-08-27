@@ -141,8 +141,6 @@ switch ($env:RUN)
 			if ($env:RUN -eq "ruling")
 			{
 				BuildSnapshot "SonarSource/sonar-lits"
-				$currentDir=$pwd.Path
-				$env:SONAR_IT_SOURCES="${currentDir}/its/sources"
 				pushd its/ruling
 					mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository" "-Dtest=JavaRulingTest#$env:PROJECT"
 			}
