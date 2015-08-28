@@ -207,6 +207,14 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
+  public void for_loop_condition() throws Exception {
+    getGraphWalker("class A  { \nvoid func(Object a) {\n a= null; for(;a != null; ){\na.toString();\n} }\n } ");
+    String output = out.toString();
+    System.out.println(output);
+
+  }
+
+  @Test
   public void test_npe_in_conditional_and() throws Exception {
     getGraphWalker("class A  { \nvoid func(Object a) {\n boolean b1 = str == null && str.length() == 0;}\n } ");
     String output = out.toString();

@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -160,6 +161,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         case CONDITIONAL_EXPRESSION:
           handleBranch(block, ((ConditionalExpressionTree) block.terminator).condition());
           return;
+        case FOR_STATEMENT:
+          ForStatementTree forStatement = (ForStatementTree) block.terminator;
+          if(forStatement.condition() != null) {
+            handleBranch(block, forStatement.condition(), false);
+            return;
+          }
       }
     }
     // unconditional jumps, for-statement, switch-statement:
@@ -170,16 +177,23 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {
+    handleBranch(programPosition, condition, true);
+  }
+  private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
     Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState, condition);
     if (pair.a != null) {
       // enqueue false-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), pair.a);
-      alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
+      if(checkPath) {
+        alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
+      }
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), pair.b);
-      alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
+      if(checkPath) {
+        alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
+      }
     }
   }
 
