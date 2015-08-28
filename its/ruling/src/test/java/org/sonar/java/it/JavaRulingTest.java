@@ -25,7 +25,6 @@ import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.locator.FileLocation;
-import com.sonar.orchestrator.locator.MavenLocation;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -48,8 +47,8 @@ public class JavaRulingTest {
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
       .addPlugin("java")
-      .setMainPluginKey("java")
-      .addPlugin(MavenLocation.create("org.sonarsource.sonar-lits-plugin", "sonar-lits-plugin", "0.5-SNAPSHOT"))
+      .setOrchestratorProperty("litsVersion", "LATEST_RELEASE")
+      .addPlugin("lits")
       .build();
 
   @BeforeClass

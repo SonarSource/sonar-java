@@ -140,14 +140,13 @@ switch ($env:RUN)
 
 			if ($env:RUN -eq "ruling")
 			{
-				BuildSnapshot "SonarSource/sonar-lits"
 				pushd its/ruling
-					mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository" "-Dtest=JavaRulingTest#$env:PROJECT"
+				mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository" "-Dtest=JavaRulingTest#$env:PROJECT"
 			}
 			else
 			{
 				pushd its/plugin
-					mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository"
+				mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository"
 			}
 			CheckLastExitCode
 		}

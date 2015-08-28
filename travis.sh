@@ -30,8 +30,6 @@ RULING)
 
   mvn install -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
-  build_snapshot "SonarSource/sonar-lits"
-
   cd its/ruling
   mvn clean install -Dmaven.test.redirectTestOutputToFile=false -DjavaVersion=DEV -Dsonar.runtimeVersion=5.1.1 -Dtest=JavaRulingTest#$PROJECT
   ;;
