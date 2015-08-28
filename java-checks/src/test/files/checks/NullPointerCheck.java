@@ -430,7 +430,7 @@ class NullPointerTest {
       }
       object11 = null;
     }
-    object1.hashCode(); // Noncompliant
+    object1.hashCode(); // Compliant not executed because loop is always executed at least once and raising NPE
   }
   public void testComplexLoop2(@Nullable Object nullableObject) {
     Object object2 = null, object21 = null, object22 = null;
