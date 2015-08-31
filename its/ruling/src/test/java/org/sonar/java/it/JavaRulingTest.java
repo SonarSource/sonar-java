@@ -47,7 +47,7 @@ public class JavaRulingTest {
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
       .addPlugin("java")
-      .setOrchestratorProperty("litsVersion", "LATEST_RELEASE")
+      .setOrchestratorProperty("litsVersion", "0.5")
       .addPlugin("lits")
       .build();
 
