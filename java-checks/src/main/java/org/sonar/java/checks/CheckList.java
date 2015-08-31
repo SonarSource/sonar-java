@@ -346,6 +346,7 @@ public final class CheckList {
       .add(PublicStaticMutableMembersCheck.class)
       .add(OneClassInterfacePerFileCheck.class)
       .add(CloneOverrideCheck.class)
+      .add(TooManyMethodsCheck.class)
       .build();
   }
 
