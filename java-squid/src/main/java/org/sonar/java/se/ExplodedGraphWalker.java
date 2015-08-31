@@ -52,7 +52,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   /**
    * Arbitrary number to limit symbolic execution.
    */
-  private static final int MAX_STEPS = 6500;
+  private static final int MAX_STEPS = 2000;
   private final ConditionAlwaysTrueOrFalseChecker alwaysTrueOrFalseChecker;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;

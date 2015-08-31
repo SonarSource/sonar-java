@@ -510,7 +510,7 @@ public static class Class extends SuperClass {
     }
   }
 
-  public void test_assign(boolean param1, boolean param2, bool falseParam, bool trueParam) {
+  public void test_assign(boolean param1, boolean param2, boolean falseParam, boolean trueParam) {
     boolean boolAnd1 = true;
     boolAnd1 = param1 && param2;
     if (!boolAnd1) { // Compliant
@@ -525,7 +525,8 @@ public static class Class extends SuperClass {
     boolAnd3 = param1 && falseParam;
     if (!boolAnd3) { // Compliant
     }
-
+  }
+  public void test_assign2(boolean param1, boolean param2, boolean falseParam, boolean trueParam) {
     boolean boolOr1 = true;
     boolOr1 = param1 || param2;
     if (!boolOr1) { // Compliant
@@ -1004,7 +1005,8 @@ public static class Class extends SuperClass {
     result = true ? false : condition;
     if (result) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-
+  }
+  public void ternary2(boolean condition) {
     result = false ? true : condition;
     if (result) { // Compliant
     }
@@ -1016,7 +1018,8 @@ public static class Class extends SuperClass {
     }
     if (condition ? false : false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-
+  }
+  public void ternary3(boolean condition) {
     if (true ? condition : false) { // Compliant
     }
     if (true ? false : condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
