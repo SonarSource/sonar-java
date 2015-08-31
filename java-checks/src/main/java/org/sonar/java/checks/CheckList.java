@@ -347,6 +347,7 @@ public final class CheckList {
       .add(OneClassInterfacePerFileCheck.class)
       .add(CloneOverrideCheck.class)
       .add(TooManyMethodsCheck.class)
+      .add(UppercaseSuffixesCheck.class)
       .build();
   }
 
