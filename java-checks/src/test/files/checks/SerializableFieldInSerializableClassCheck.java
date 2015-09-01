@@ -1,5 +1,7 @@
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
+
 
 class Address {
 }
@@ -44,6 +46,12 @@ class Person6<E, F extends Serializable> implements Serializable {
   List<?> otherUnknown; // Noncompliant {{Make "otherUnknown" transient or serializable.}}
 }
 
+class Person7 implements Serializable {
+  Map<Object, Object> both; // Noncompliant {{Make "both" transient or serializable.}}
+  Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
+  Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
+  Map<String, String> ok; // Compliant
+}
 class MyObject {
 
 }
