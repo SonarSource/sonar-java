@@ -25,6 +25,7 @@ import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.MavenBuild;
 import com.sonar.orchestrator.locator.FileLocation;
+import org.fest.assertions.Fail;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -37,8 +38,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static org.fest.assertions.Assertions.assertThat;
 
 public class JavaRulingTest {
 
@@ -93,7 +92,6 @@ public class JavaRulingTest {
   }
 
   private static void test_project(String projectName) throws IOException {
-    File litsDifferencesFile = FileLocation.of("target/differences").getFile();
     File pomFile = FileLocation.of("../sources/"+projectName+"/pom.xml").getFile();
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
         .setProfile("rules")
@@ -101,13 +99,28 @@ public class JavaRulingTest {
         .setProperty("sonar.skipPackageDesign", "true")
         .setProperty("sonar.analysis.mode", "preview")
         .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("dump.old", FileLocation.of("src/test/resources/"+projectName).getFile().getAbsolutePath())
+        .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
+        .setProperty("dump.old", FileLocation.of("src/test/resources/" + projectName).getFile().getAbsolutePath())
         .setProperty("dump.new", FileLocation.of("target/actual/"+projectName).getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesFile.getAbsolutePath());
+        .setProperty("lits.differences", litsDifferencesPath(projectName));
     orchestrator.executeBuild(mavenBuild);
-    assertThat(Files.toString(litsDifferencesFile, StandardCharsets.UTF_8)).isEmpty();
+    assertNoDifferences(projectName);
   }
 
+  private static String litsDifferencesPath(String projectName) {
+    return FileLocation.of("target/" + projectName + "_differences").getFile().getAbsolutePath();
+  }
+
+  private static String htmlReportPath(String projectName) {
+    return FileLocation.of("target/" + projectName + "_issue-report").getFile().getAbsolutePath();
+  }
+
+  private static void assertNoDifferences(String projectName) throws IOException {
+    String differences = Files.toString(new File(litsDifferencesPath(projectName)), StandardCharsets.UTF_8);
+    if (!differences.isEmpty()) {
+      throw Fail.fail(differences  + " -> file://" + htmlReportPath(projectName) + "/issues-report.html");
+    }
+  }
 
   private static void instantiateTemplateRuleS2253() {
     SonarClient sonarClient = orchestrator.getServer().adminWsClient();
