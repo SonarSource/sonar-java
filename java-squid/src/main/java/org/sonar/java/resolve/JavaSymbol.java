@@ -170,6 +170,11 @@ public class JavaSymbol implements Symbol {
   }
 
   @Override
+  public boolean isPackageSymbol() {
+    return isKind(PCK);
+  }
+
+  @Override
   public boolean isStatic() {
     return isFlag(Flags.STATIC);
   }

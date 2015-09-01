@@ -348,6 +348,7 @@ public final class CheckList {
       .add(CloneOverrideCheck.class)
       .add(TooManyMethodsCheck.class)
       .add(UppercaseSuffixesCheck.class)
+      .add(InnerClassTooManyLinesCheck.class)
       .build();
   }
 

@@ -62,6 +62,8 @@ public interface Symbol {
 
   boolean isMethodSymbol();
 
+  boolean isPackageSymbol();
+
   // flags method
   boolean isStatic();
 

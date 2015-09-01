@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -52,6 +53,7 @@ public class JavaSymbolTest {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("name", owner);
 
     assertThat(packageSymbol.kind).isEqualTo(JavaSymbol.PCK);
+    assertTrue(packageSymbol.isPackageSymbol());
     assertThat(packageSymbol.flags()).isEqualTo(0);
     assertThat(packageSymbol.owner()).isSameAs(owner);
 
@@ -67,6 +69,7 @@ public class JavaSymbolTest {
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(42, "name", outermostClass);
 
     assertThat(typeSymbol.kind).isEqualTo(JavaSymbol.TYP);
+    assertTrue(typeSymbol.isTypeSymbol());
     assertThat(typeSymbol.flags()).isEqualTo(42);
     assertThat(typeSymbol.owner()).isSameAs(outermostClass);
 
@@ -104,6 +107,7 @@ public class JavaSymbolTest {
     JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(42, "name", typeSymbol);
 
     assertThat(methodSymbol.kind).isEqualTo(JavaSymbol.MTH);
+    assertTrue(methodSymbol.isMethodSymbol());
     assertThat(methodSymbol.flags()).isEqualTo(42);
     assertThat(methodSymbol.owner()).isSameAs(typeSymbol);
 
@@ -121,6 +125,7 @@ public class JavaSymbolTest {
     JavaSymbol.VariableJavaSymbol variableSymbol = new JavaSymbol.VariableJavaSymbol(42, "name", methodSymbol);
 
     assertThat(variableSymbol.kind).isEqualTo(JavaSymbol.VAR);
+    assertTrue(variableSymbol.isVariableSymbol());
     assertThat(variableSymbol.flags()).isEqualTo(42);
     assertThat(variableSymbol.owner()).isSameAs(methodSymbol);
 
