@@ -344,6 +344,7 @@ public final class CheckList {
       .add(MembersDifferOnlyByCapitalizationCheck.class)
       .add(LoopsOnSameSetCheck.class)
       .add(PublicStaticMutableMembersCheck.class)
+      .add(OneClassInterfacePerFileCheck.class)
       .build();
   }
 
