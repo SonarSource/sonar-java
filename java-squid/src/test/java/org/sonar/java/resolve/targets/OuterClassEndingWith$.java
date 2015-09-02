@@ -21,8 +21,17 @@ package org.sonar.java.resolve.targets;
 
 public class OuterClassEndingWith$ {
 
-  public class InnerClassEndingWith$ {
+  public static class InnerClassEndingWith$ {
 
   }
+
+}
+
+class SuperClass {
+  class A$B {
+    class C$D {}
+  }
+}
+class UseDollarNames extends SuperClass {
 
 }

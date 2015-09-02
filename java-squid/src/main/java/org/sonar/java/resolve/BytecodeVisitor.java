@@ -60,6 +60,10 @@ public class BytecodeVisitor extends ClassVisitor {
     return bytecodeCompleter.getClassSymbol(Convert.flatName(bytecodeName));
   }
 
+  private JavaSymbol.TypeJavaSymbol getClassSymbol(JavaSymbol.TypeJavaSymbol classSymbol, String bytecodeName, int flags) {
+    return bytecodeCompleter.getClassSymbol(classSymbol, Convert.flatName(bytecodeName), flags);
+  }
+
   private JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName, int flags) {
     return bytecodeCompleter.getClassSymbol(Convert.flatName(bytecodeName), flags);
   }
@@ -158,7 +162,7 @@ public class BytecodeVisitor extends ClassVisitor {
    * Adds inner class as member.
    */
   private void defineInnerClass(String bytecodeName, int flags) {
-    JavaSymbol.TypeJavaSymbol innerClass = getClassSymbol(bytecodeName, flags);
+    JavaSymbol.TypeJavaSymbol innerClass = getClassSymbol(classSymbol, bytecodeName, flags);
     innerClass.flags |= bytecodeCompleter.filterBytecodeFlags(flags);
     Preconditions.checkState(innerClass.owner == classSymbol, "Innerclass: " + innerClass.owner.getName() + " and classSymbol: " + classSymbol.getName() + " are not the same.");
     classSymbol.members.enter(innerClass);

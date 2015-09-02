@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
 
 public class Convert {
@@ -49,8 +50,12 @@ public class Convert {
     return lastDollar < 0 ? "" : normalizedShortName.substring(0, lastDollar);
   }
 
-  public static String innerClassName(String shortName) {
-    return shortName.substring(normalizeShortName(shortName).lastIndexOf('$') +1);
+  public static String innerClassName(String enclosingClassName, String shortName) {
+    Preconditions.checkArgument(!enclosingClassName.isEmpty(), "Enclosing class name should not be empty : " + shortName);
+    int indexEnclosing = shortName.indexOf(enclosingClassName);
+    Preconditions.checkState(indexEnclosing > -1, "Error short name does not include outerclass name : " + shortName + " -- " + enclosingClassName);
+    Preconditions.checkState(shortName.substring(indexEnclosing + enclosingClassName.length()).startsWith("$"));
+    return shortName.substring(indexEnclosing + enclosingClassName.length() + 1);
   }
 
   private static String normalizeShortName(String shortName) {
@@ -59,7 +64,7 @@ public class Convert {
 
   public static String fullName(String packagePart, String className) {
     String pck = StringUtils.defaultIfBlank(packagePart, "");
-    if(StringUtils.isNotEmpty(pck)) {
+    if (StringUtils.isNotEmpty(pck)) {
       pck += ".";
     }
     return pck + className;

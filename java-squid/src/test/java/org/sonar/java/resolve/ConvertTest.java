@@ -69,11 +69,11 @@ public class ConvertTest {
 
   @Test
   public void innerClassName() throws Exception {
-    assertThat(Convert.innerClassName("MyClass")).isEqualTo("MyClass");
-    assertThat(Convert.innerClassName("MyClass$InnerClass")).isEqualTo("InnerClass");
-    assertThat(Convert.innerClassName("MyClass$InnerClass$")).isEqualTo("InnerClass$");
-    assertThat(Convert.innerClassName("MyClass$InnerClass$class")).isEqualTo("InnerClass$class");
-    assertThat(Convert.innerClassName("MyClass$$InnerClass$")).isEqualTo("InnerClass$");
+    String enclosingClassName = "MyClass";
+    assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass")).isEqualTo("InnerClass");
+    assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass$")).isEqualTo("InnerClass$");
+    assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass$class")).isEqualTo("InnerClass$class");
+    assertThat(Convert.innerClassName(enclosingClassName, "MyClass$$InnerClass$")).isEqualTo("$InnerClass$");
 
   }
 

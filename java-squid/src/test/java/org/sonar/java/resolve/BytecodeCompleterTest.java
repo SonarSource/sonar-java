@@ -64,6 +64,23 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void innerClassWithDollarName() throws Exception {
+    JavaSymbol.TypeJavaSymbol classSymbol = bytecodeCompleter.getClassSymbol("org/sonar/java/resolve/targets/UseDollarNames");
+    //Complete superclass which has an inner class named A$Bq
+    JavaType superclass = classSymbol.getSuperclass();
+    JavaType superSuperClass = superclass.getSymbol().getSuperclass();
+    assertThat(superSuperClass.fullyQualifiedName()).isEqualTo("java.lang.Object");
+    Collection<Symbol> symbols = superclass.getSymbol().memberSymbols();
+    for (Symbol symbol : symbols) {
+      if(symbol.isTypeSymbol()) {
+        assertThat(symbol.name()).isEqualTo("A$B");
+        Collection<Symbol> members = ((Symbol.TypeSymbol) symbol).lookupSymbols("C$D");
+        assertThat(members).isNotEmpty();
+      }
+    }
+  }
+
+  @Test
   public void annotations() throws Exception {
     bytecodeCompleter.getClassSymbol(Annotations.class.getName().replace('.', '/')).complete();
   }

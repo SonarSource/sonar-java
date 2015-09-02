@@ -144,15 +144,24 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
 
   // FIXME(Godin): or parameter must be renamed, or should not receive flat name, in a former case - first transformation in this method seems useless
   JavaSymbol.TypeJavaSymbol getClassSymbol(String bytecodeName, int flags) {
+    return getClassSymbol(null, bytecodeName, flags);
+  }
+  public JavaSymbol.TypeJavaSymbol getClassSymbol(@Nullable JavaSymbol.TypeJavaSymbol classSymbolOwner, String bytecodeName, int flags) {
     String flatName = Convert.flatName(bytecodeName);
     JavaSymbol.TypeJavaSymbol symbol = classes.get(flatName);
     if (symbol == null) {
       String shortName = Convert.shortName(flatName);
       String packageName = Convert.packagePart(flatName);
-      String enclosingClassName = Convert.enclosingClassName(shortName);
-      if (StringUtils.isNotEmpty(enclosingClassName)) {
+      JavaSymbol.TypeJavaSymbol owner = classSymbolOwner;
+      if(owner == null) {
+        String enclosingClassName = Convert.enclosingClassName(shortName);
+        if(StringUtils.isNotEmpty(enclosingClassName)) {
+          owner = getClassSymbol(Convert.fullName(packageName, enclosingClassName));
+        }
+      }
+      if ( owner != null) {
         //handle innerClasses
-        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), Convert.innerClassName(shortName), getClassSymbol(Convert.fullName(packageName, enclosingClassName)));
+        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), Convert.innerClassName(owner.name(), shortName), owner);
       } else {
         symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
