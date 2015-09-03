@@ -108,7 +108,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
     boolean isSha1 = SHA1.equalsIgnoreCase(algorithm);
     if (isMd5 || isSha1) {
       String msgAlgo = isSha1 ? "SHA-1" : algorithm;
-      addIssue(mit, "Use a stronger encryption algorithm than " + msgAlgo + ".");
+      addIssue(mit, "Use a stronger hashing algorithm than " + msgAlgo + ".");
     }
   }
 

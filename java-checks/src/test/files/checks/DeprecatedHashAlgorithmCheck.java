@@ -8,8 +8,8 @@ import static org.apache.commons.codec.digest.DigestUtils.md5Hex;
 class A {
   void myMethod(String algorithm, Provider provider, Properties props) {
     MessageDigest md = null;
-    md = MessageDigest.getInstance("MD5"); // Noncompliant {{Use a stronger encryption algorithm than MD5.}}
-    md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger encryption algorithm than SHA-1.}}
+    md = MessageDigest.getInstance("MD5"); // Noncompliant {{Use a stronger hashing algorithm than MD5.}}
+    md = MessageDigest.getInstance("SHA-1"); // Noncompliant {{Use a stronger hashing algorithm than SHA-1.}}
     md = MessageDigest.getInstance("SHA-256");
     md = org.apache.commons.codec.digest.DigestUtils.getDigest("MD5"); // Noncompliant
     md = DigestUtils.getDigest("SHA-1"); // Noncompliant
