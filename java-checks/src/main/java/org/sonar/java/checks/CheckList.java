@@ -349,6 +349,7 @@ public final class CheckList {
       .add(TooManyMethodsCheck.class)
       .add(UppercaseSuffixesCheck.class)
       .add(InnerClassTooManyLinesCheck.class)
+      .add(DefaultInitializedFieldCheck.class)
       .build();
   }
 
