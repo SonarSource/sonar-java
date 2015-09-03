@@ -352,6 +352,7 @@ public final class CheckList {
       .add(DefaultInitializedFieldCheck.class)
       .add(EscapedUnicodeCharactersCheck.class)
       .add(MainInServletCheck.class)
+      .add(AtLeastOneConstructorCheck.class)
       .build();
   }
 

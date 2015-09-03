@@ -1,0 +1,21 @@
+<p>
+  Non-abstract classes and enums with non-static private members should have a constructor.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class A { // Noncompliant
+  private int field;
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class A {
+  private int field;
+
+  A(int field) {
+    this.field = field;
+  }
+}
+</pre>
