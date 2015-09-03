@@ -231,12 +231,10 @@ public class ConstraintManager {
   public enum NullConstraint {
     NULL,
     NOT_NULL,
-    UNKNOWN
   }
 
   public enum BooleanConstraint {
     TRUE,
     FALSE,
-    UNKNOWN;
   }
 }
