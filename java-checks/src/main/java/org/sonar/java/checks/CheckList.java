@@ -350,6 +350,7 @@ public final class CheckList {
       .add(UppercaseSuffixesCheck.class)
       .add(InnerClassTooManyLinesCheck.class)
       .add(DefaultInitializedFieldCheck.class)
+      .add(EscapedUnicodeCharactersCheck.class)
       .build();
   }
 
