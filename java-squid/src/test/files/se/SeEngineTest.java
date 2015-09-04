@@ -39,7 +39,7 @@ class A0 {
     Object b = new Object();
     b = a;
     if (b == null) { // Noncompliant {{Change this condition so that it does not always evaluate to true}}
-      a.toString(); // Noncompliant {{NullPointerException might be thrown as '' is nullable here}}
+      a.toString(); // Noncompliant {{NullPointerException might be thrown as 'a' is nullable here}}
     }
   }
 

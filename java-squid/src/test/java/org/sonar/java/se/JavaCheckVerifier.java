@@ -128,7 +128,6 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
         List<String> list = expected.get(line);
         String expectedMessage = list.remove(list.size() - 1);
         if (expectedMessage != null) {
-          System.out.println("handling "+line);
           assertThat(checkMessage.getText(Locale.US)).isEqualTo(expectedMessage);
         }
       }
