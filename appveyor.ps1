@@ -125,7 +125,7 @@ switch ($env:RUN)
 		CheckLastExitCode
 	}
 
-	{($_ -eq "its") -or ($_ -eq "ruling")}
+	{($_ -eq "plugin") -or ($_ -eq "ruling")}
 	{
 		InstallAppveyorTools
 
@@ -138,14 +138,13 @@ switch ($env:RUN)
 				BuildSnapshot "SonarSource/sonarqube"
 			}
 
+			pushd its/$env:RUN
 			if ($env:RUN -eq "ruling")
 			{
-				pushd its/ruling
 				mvn test "--batch-mode" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository" "-Dtest=JavaRulingTest#$env:PROJECT"
 			}
 			else
 			{
-				pushd its/plugin
 				mvn package "--batch-mode" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository"
 			}
 			CheckLastExitCode

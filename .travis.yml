@@ -7,18 +7,20 @@ jdk:
 install: true
 script: ./travis.sh
 env:
-  - TESTS=CI
-  - TESTS=IT-DEV
-  - TESTS=IT-LTS
+  - TEST=CI
+  - TEST=plugin
+    SQ_VERSION=DEV
+  - TEST=plugin
+    SQ_VERSION=LTS
 matrix:
   fast_finish: true
   include:
     - jdk: oraclejdk8
-      env: TESTS=RULING PROJECT=fluent_http
+      env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
     - jdk: oraclejdk8
-      env: TESTS=RULING PROJECT=apache_commons_beanutils
+      env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
     - jdk: oraclejdk8
-      env: TESTS=RULING PROJECT=guava
+      env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
 
 cache:
   directories:

@@ -8,43 +8,29 @@ function installTravisTools {
   source ~/.local/bin/install
 }
 
-case "$TESTS" in
+case "$TEST" in
 
 CI)
   mvn verify -B -e -V
   ;;
 
-IT-DEV)
+plugin|ruling)
   installTravisTools
 
   mvn package -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
-  build_snapshot "SonarSource/sonarqube"
+  if [ "$SQ_VERSION" = "DEV" ] ; then
+    build_snapshot "SonarSource/sonarqube"
+  fi
 
-  cd its/plugin
-  mvn package -Dsonar.runtimeVersion="DEV" -Dmaven.test.redirectTestOutputToFile=false
-  ;;
-
-RULING)
-  installTravisTools
-
-  mvn package -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
-
-  cd its/ruling
-  mvn test -Dmaven.test.redirectTestOutputToFile=false -Dsonar.runtimeVersion=5.1.1 -Dtest=JavaRulingTest#$PROJECT
-  ;;
-
-IT-LTS)
-  installTravisTools
-
-  mvn package -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
-
-  cd its/plugin
-  mvn package -Dsonar.runtimeVersion="LTS" -Dmaven.test.redirectTestOutputToFile=false
+  cd its/$TEST
+  EXTRA_PARAMS=
+  [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-Dtest=JavaRulingTest#$PROJECT"
+  mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false $EXTRA_PARAMS
   ;;
 
 *)
-  echo "Unexpected TESTS mode: $TESTS"
+  echo "Unexpected TEST mode: $TEST"
   exit 1
   ;;
 
