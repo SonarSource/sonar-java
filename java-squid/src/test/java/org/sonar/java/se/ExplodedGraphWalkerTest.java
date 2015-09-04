@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
 
 public class ExplodedGraphWalkerTest {
@@ -57,79 +56,12 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void test() throws Exception {
-    getGraphWalker("class A  { Object a; void func() { if(a==null)\n a.toString();\n } } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 2");
-  }
-
-  @Test
-  public void test_complex_condition() throws Exception {
-    getGraphWalker("class A  \n{ Object a;\n void func() \n{ if(b == a &&\n a == null) \na.toString();\n } } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 6");
-  }
-
-  @Test
-  public void test_complex_condition_inverted() throws Exception {
-    getGraphWalker("class A  { Object a; void func() { if(null == a && b == a) \na.toString();\n } } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 2");
-  }
-
-  @Test
-  public void test_reassignement() throws Exception {
-    getGraphWalker("class A  { Object a; Object b; void func() { if(b == null) {\na = b; \n a.toString();\n }} } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 3");
-  }
-
-  @Test
-  public void test_null_assignement() throws Exception {
-    getGraphWalker("class A  { void func(Object a) { a = null;\n a.toString();\n } } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 2");
-  }
-
-  @Test
-  public void local_variable() throws Exception {
-    getGraphWalker("class A  { \nvoid func() {\n Object a;\n a.toString();\n }\n } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 4");
-  }
-
-  @Test
-  public void tracking_symbolic_value() throws Exception {
-    getGraphWalker("class A  { \nvoid func() {\n Object a = null; Object b = new Object(); b = a; if( b == null) {\n a.toString();}\n }\n } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 4");
-  }
-
-  @Test
-  public void test_assign_null() throws Exception {
-    ExplodedGraphWalker graphWalker = getGraphWalker("class A  { \nvoid func(Object a) {\n if(a != null){ a = null;\n a.toString();\n }}\n } ");
-    //Only two steps as we sink into the second because of the NPE.
-    assertThat(graphWalker.steps).isEqualTo(11);
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 4");
-  }
-
-  @Test
-  public void condition_always_true() throws Exception {
-    getGraphWalker("class A  {void func(Object a){ a = null; if(\na == null\n);}}");
-    String output = out.toString();
-    System.out.println(output);
-    assertThat(output).contains("condition at line 2 always evaluate to true");
-  }
-
-  @Test
-  public void condition_always_false() throws Exception {
-    getGraphWalker("class A  {void func(Object a){ a = null; Object b= null; if(\na != null && b!=null\n);}}");
-    String output = out.toString();
-    assertThat(output).contains("condition at line 2 always evaluate to false");
+    JavaCheckVerifier.verify("src/test/files/se/SeEngineTest.java", new SymbolicExecutionVisitor());
   }
 
   @Test
   public void test_null_pointer_check_unit_test() throws Exception {
+
     Pattern pattern = Pattern.compile("Null pointer dereference at line (\\d*)");
 
     List<String> unitTestNPE = Files.readLines(new File("../java-checks/src/test/files/checks/NullPointerCheck.java"), Charsets.UTF_8);
@@ -204,32 +136,6 @@ public class ExplodedGraphWalkerTest {
 //      fail(error);
     }
 
-  }
-
-  @Test
-  public void for_loop_condition() throws Exception {
-    getGraphWalker("class A  { \nvoid func(Object a) {\n a= null; for(;a != null; ){\na.toString();\n} }\n } ");
-    String output = out.toString();
-    System.out.println(output);
-
-  }
-
-  @Test
-  public void test_npe_in_conditional_and() throws Exception {
-    getGraphWalker("class A  { \nvoid func(Object a) {\n boolean b1 = str == null && str.length() == 0;}\n } ");
-    String output = out.toString();
-    assertThat(output).contains("Null pointer dereference at line 3");
-  }
-
-  @Test
-  public void instance_of_set_not_null_constraint() throws Exception {
-    getGraphWalker("class A {\n void fun(Object a) { Object b;\n if (b instanceof Object)\n { b.toString(); } \n}}");
-    String output = out.toString();
-    assertThat(output).contains("condition at line 3 always evaluate to false");
-    out = new ByteArrayOutputStream();
-    getGraphWalker("class A {\n void fun(Object a) { \n if (a instanceof Object)\n { a.toString(); } \n}}");
-    output = out.toString();
-    assertThat(output).doesNotContain("condition at line 3 always evaluate to").doesNotContain("Null pointer dereference at line 3");
   }
 
   private ExplodedGraphWalker getGraphWalker(String source) {
