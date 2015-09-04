@@ -17,30 +17,35 @@ CI)
 IT-DEV)
   installTravisTools
 
-  mvn install -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
+  mvn package -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
   build_snapshot "SonarSource/sonarqube"
 
   cd its/plugin
-  mvn -DjavaVersion="DEV" -Dsonar.runtimeVersion="DEV" -Dmaven.test.redirectTestOutputToFile=false install
+  mvn package -Dsonar.runtimeVersion="DEV" -Dmaven.test.redirectTestOutputToFile=false
   ;;
 
 RULING)
   installTravisTools
 
-  mvn install -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
+  mvn package -Dsource.skip=true -T2 -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
   cd its/ruling
-  mvn clean install -Dmaven.test.redirectTestOutputToFile=false -DjavaVersion=DEV -Dsonar.runtimeVersion=5.1.1 -Dtest=JavaRulingTest#$PROJECT
+  mvn test -Dmaven.test.redirectTestOutputToFile=false -Dsonar.runtimeVersion=5.1.1 -Dtest=JavaRulingTest#$PROJECT
   ;;
 
 IT-LTS)
   installTravisTools
 
-  mvn install -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
+  mvn package -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
 
   cd its/plugin
-  mvn -DjavaVersion="DEV" -Dsonar.runtimeVersion="LTS_OR_OLDEST_COMPATIBLE" -Dmaven.test.redirectTestOutputToFile=false install
+  mvn package -Dsonar.runtimeVersion="LTS" -Dmaven.test.redirectTestOutputToFile=false
+  ;;
+
+*)
+  echo "Unexpected TESTS mode: $TESTS"
+  exit 1
   ;;
 
 esac

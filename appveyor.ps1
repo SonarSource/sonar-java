@@ -129,7 +129,7 @@ switch ($env:RUN)
 	{
 		InstallAppveyorTools
 
-		mvn install "--batch-mode" "-Dsource.skip=true" "-Denforcer.skip=true" "-Danimal.sniffer.skip=true" "-Dmaven.test.skip=true"
+		mvn package "--batch-mode" "-Dsource.skip=true" "-Denforcer.skip=true" "-Danimal.sniffer.skip=true" "-Dmaven.test.skip=true"
 		CheckLastExitCode
 		try
 		{
@@ -141,12 +141,12 @@ switch ($env:RUN)
 			if ($env:RUN -eq "ruling")
 			{
 				pushd its/ruling
-				mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository" "-Dtest=JavaRulingTest#$env:PROJECT"
+				mvn test "--batch-mode" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository" "-Dtest=JavaRulingTest#$env:PROJECT"
 			}
 			else
 			{
 				pushd its/plugin
-				mvn install "--batch-mode" "-DjavaVersion=DEV" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository"
+				mvn package "--batch-mode" "-Dsonar.runtimeVersion=$env:SQ_VERSION" "-Dmaven.test.redirectTestOutputToFile=false" "-Dsonar.jdbc.dialect=embedded" "-Dorchestrator.updateCenterUrl=http://update.sonarsource.org/update-center-dev.properties" "-Dmaven.localRepository=$env:USERPROFILE\.m2\repository"
 			}
 			CheckLastExitCode
 		}
@@ -158,6 +158,6 @@ switch ($env:RUN)
 
 	default
 	{
-		throw "RUN should be set to either ""ci"", ""its"" or ""ruling"", not: ""$env:RUN"""
+		throw "Unexpected test mode: ""$env:RUN"""
 	}
 }

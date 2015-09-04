@@ -38,15 +38,12 @@ import org.junit.runners.Suite;
 })
 public class JavaTestSuite {
 
-  private static final String PLUGIN_KEY = "java";
-
   @ClassRule
   public static final Orchestrator ORCHESTRATOR;
 
   static {
     OrchestratorBuilder orchestratorBuilder = Orchestrator.builderEnv()
-      .addPlugin(PLUGIN_KEY)
-      .setMainPluginKey(PLUGIN_KEY)
+      .addPlugin(FileLocation.of("../../../sonar-java-plugin/target/sonar-java-plugin.jar"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-dit.xml"))
