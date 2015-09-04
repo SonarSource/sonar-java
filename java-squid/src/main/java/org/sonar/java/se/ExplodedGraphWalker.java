@@ -20,6 +20,8 @@
 package org.sonar.java.se;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
@@ -42,9 +44,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
 import java.io.PrintStream;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
@@ -95,16 +99,33 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     workList = new LinkedList<>();
     out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
     programState = ProgramState.EMPTY_STATE;
-    for (VariableTree variableTree : tree.parameters()) {
+    Iterable<ProgramState> startingStates = Lists.newArrayList(programState);
+    for (final VariableTree variableTree : tree.parameters()) {
       //create
-      SymbolicValue sv = constraintManager.eval(programState, variableTree);
-      programState = put(programState, variableTree.symbol(), sv);
+      final SymbolicValue sv = constraintManager.eval(programState, variableTree);
+      startingStates = Iterables.transform(startingStates, new Function<ProgramState, ProgramState>() {
+        @Override
+        public ProgramState apply(ProgramState input) {
+          return put(input, variableTree.symbol(), sv);
+        }
+      });
+
       if(variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-        //FIXME? : introduce new state : maybe_null ?
-        programState = ConstraintManager.setConstraint(programState, sv, ConstraintManager.NullConstraint.NULL);
+        startingStates = Iterables.concat(Iterables.transform(startingStates, new Function<ProgramState, List<ProgramState>>() {
+          @Override
+          public List<ProgramState> apply(ProgramState input) {
+            return Lists.newArrayList(
+                ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NULL),
+                ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NOT_NULL));
+          }
+        }));
+
+
       }
     }
-    enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), programState);
+    for (ProgramState startingState : startingStates) {
+      enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), startingState);
+    }
     steps = 0;
     while (!workList.isEmpty()) {
       steps++;

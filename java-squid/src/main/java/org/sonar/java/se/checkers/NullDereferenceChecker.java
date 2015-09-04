@@ -19,11 +19,12 @@
  */
 package org.sonar.java.se.checkers;
 
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
@@ -43,15 +44,24 @@ public class NullDereferenceChecker extends SEChecker {
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
     ProgramState programState = setNullConstraint(context, syntaxNode);
     SymbolicValue val = null;
+    ExpressionTree expressionTree = null;
+    String name = "";
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      val = context.getVal(((MemberSelectExpressionTree) syntaxNode).expression());
+      expressionTree = ((MemberSelectExpressionTree) syntaxNode).expression();
     } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
-      val = context.getVal(((SwitchStatementTree) syntaxNode).expression());
+      expressionTree = ((SwitchStatementTree) syntaxNode).expression();
+    }
+    if(expressionTree != null) {
+      val = context.getVal(expressionTree);
+      if(expressionTree.is(Tree.Kind.IDENTIFIER)) {
+        name = ((IdentifierTree) expressionTree).name();
+      } else if(expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+        name = ((MethodInvocationTree) expressionTree).symbol().name();
+      }
     }
     if (val != null) {
       if (context.isNull(val)) {
-        context.addIssue(syntaxNode, RULE_KEY, "NullPointerException might be thrown as '' is nullable here");
-        out.println("Null pointer dereference at line " + ((JavaTree) syntaxNode).getLine());
+        context.addIssue(syntaxNode, RULE_KEY, "NullPointerException might be thrown as '" + name + "' is nullable here");
         context.createSink();
         return;
       } else {
