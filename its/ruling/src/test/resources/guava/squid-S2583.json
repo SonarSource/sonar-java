@@ -9,11 +9,17 @@
 'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
 339,
 ],
+'com.google.guava:guava:src/com/google/common/collect/Queues.java':[
+329,
+],
 'com.google.guava:guava:src/com/google/common/io/Closer.java':[
 224,
 ],
 'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
 428,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
+199,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java':[
 494,
@@ -22,6 +28,9 @@
 452,
 476,
 595,
+],
+'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
+735,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/RateLimiter.java':[
 197,
