@@ -38,7 +38,7 @@ class A0 {
     Object a = null;
     Object b = new Object();
     b = a;
-    if (b == null) { // Noncompliant {{Change this condition so that it does not always evaluate to true}}
+    if (b == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       a.toString(); // Noncompliant {{NullPointerException might be thrown as 'a' is nullable here}}
     }
   }
@@ -77,7 +77,7 @@ class A0 {
 
   void instance_of_set_not_null_constraint(Object d) {
     Object c;
-    if (c instanceof Object) { // Noncompliant {{Change this condition so that it does not always evaluate to false}}
+    if (c instanceof Object) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       c.toString();
     }
     if (d instanceof Object) {

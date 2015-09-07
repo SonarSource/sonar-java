@@ -208,6 +208,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       if(checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
+    } else {
+      SymbolicValue val = getVal(condition);
+      if(val != null) {
+        ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.TRUE);
+      }
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
@@ -215,7 +220,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       if(checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
+    }else {
+      SymbolicValue val = getVal(condition);
+      if(val != null) {
+        ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.FALSE);
+      }
     }
+
   }
 
   private void visit(Tree tree) {
@@ -230,7 +241,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         VariableTree variableTree = (VariableTree) tree;
         ExpressionTree initializer = variableTree.initializer();
         if (variableTree.type().symbolType().isPrimitive()) {
-          // TODO handle primitives
           if(initializer == null) {
             if(variableTree.type().symbolType().is("boolean")) {
               programState = put(programState, variableTree.symbol(), SymbolicValue.FALSE_LITERAL);
