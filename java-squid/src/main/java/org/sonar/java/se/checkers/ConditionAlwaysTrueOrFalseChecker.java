@@ -23,7 +23,6 @@ import com.google.common.collect.Sets;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.PrintStream;
 import java.util.Set;
 
 public class ConditionAlwaysTrueOrFalseChecker extends SEChecker {
@@ -32,10 +31,6 @@ public class ConditionAlwaysTrueOrFalseChecker extends SEChecker {
 
   private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
   private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
-
-  public ConditionAlwaysTrueOrFalseChecker(PrintStream out) {
-    super(out);
-  }
 
   @Override
   public void init() {

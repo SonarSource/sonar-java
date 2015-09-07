@@ -30,15 +30,9 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.PrintStream;
-
 public class NullDereferenceChecker extends SEChecker {
 
   private static final String RULE_KEY = "S2259";
-
-  public NullDereferenceChecker(PrintStream out) {
-    super(out);
-  }
 
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
