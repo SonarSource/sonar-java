@@ -351,6 +351,7 @@ public final class CheckList {
       .add(InnerClassTooManyLinesCheck.class)
       .add(DefaultInitializedFieldCheck.class)
       .add(EscapedUnicodeCharactersCheck.class)
+      .add(MainInServletCheck.class)
       .build();
   }
 
@@ -370,4 +371,3 @@ public final class CheckList {
         .build();
   }
 }
-
