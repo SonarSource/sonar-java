@@ -643,6 +643,18 @@ public class CFG {
       case PARENTHESIZED_EXPRESSION:
         build(((ParenthesizedTree) tree).expression());
         break;
+      case ARRAY_ACCESS_EXPRESSION: {
+        ArrayAccessExpressionTree aaet = (ArrayAccessExpressionTree) tree;
+        currentBlock.elements.add(aaet);
+        build(aaet.expression());
+        build(aaet.dimension());
+        break;
+      }
+      case ARRAY_DIMENSION: {
+        ArrayDimensionTree arrayDimensionTree = (ArrayDimensionTree) tree;
+        build(arrayDimensionTree.expression());
+        break;
+      }
       case IDENTIFIER:
       case INT_LITERAL:
       case LONG_LITERAL:

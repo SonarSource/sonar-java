@@ -1,0 +1,8 @@
+{
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/bugs/Jira347TestCase.java':[
+112,
+],
+'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/memoryleaktests/MemoryLeakTestCase.java':[
+482,
+],
+}
