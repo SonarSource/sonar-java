@@ -130,7 +130,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
-        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps");
+        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method "+tree.simpleName().name() +"in class "+tree.symbol().owner().name());
       }
       // LIFO:
       node = workList.removeFirst();
@@ -211,7 +211,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     } else {
       SymbolicValue val = getVal(condition);
       if(val != null) {
-        ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.TRUE);
+        programState = ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.TRUE);
       }
     }
     if (pair.b != null) {
@@ -223,7 +223,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }else {
       SymbolicValue val = getVal(condition);
       if(val != null) {
-        ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.FALSE);
+        programState = ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.FALSE);
       }
     }
 

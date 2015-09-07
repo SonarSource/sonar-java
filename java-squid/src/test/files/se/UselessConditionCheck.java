@@ -785,7 +785,7 @@ public static class Class extends SuperClass {
     array[local2 = true];
     if(local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if(local2) { // False negative : evaluation of array access expression Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if(local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -873,12 +873,13 @@ public static class Class extends SuperClass {
     }
   }
 
-  public void test_condition_array(boolean local1, boolean local2) {
-    if ((local1 = false)[local2 = true]) { //This case is totally irrelevant and should be improved to be supported.
-      if (!local1 && local2) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+  public void test_condition_array(boolean local1, boolean local2, boolean[] array) {
+    local1 = false;
+    if (array[local2 = true ? 1:0]) { // Noncompliant
+      if (!local1 && local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     } else {
-      if (!local1 && local2) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (!local1 && local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
   }

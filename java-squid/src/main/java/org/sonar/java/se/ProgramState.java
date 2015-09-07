@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class ProgramState {
 
@@ -40,6 +41,24 @@ public class ProgramState {
   public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints) {
     this.values = ImmutableMap.copyOf(values);
     this.constraints = ImmutableMap.copyOf(constraints);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ProgramState that = (ProgramState) o;
+    return Objects.equals(values, that.values) &&
+        Objects.equals(constraints, that.constraints);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(values, constraints);
   }
 
   @Override
