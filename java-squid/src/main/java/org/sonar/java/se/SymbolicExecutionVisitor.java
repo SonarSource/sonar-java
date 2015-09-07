@@ -20,17 +20,15 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.io.output.NullOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.PrintStream;
 import java.util.List;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
-  public static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
+  private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -40,7 +38,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     try {
-      tree.accept(new ExplodedGraphWalker(new PrintStream(NullOutputStream.NULL_OUTPUT_STREAM), context));
+      tree.accept(new ExplodedGraphWalker(context));
     }catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
       LOG.error("Could not complete symbolic execution: ", exception);
     }

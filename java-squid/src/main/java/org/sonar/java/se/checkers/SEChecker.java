@@ -22,15 +22,7 @@ package org.sonar.java.se.checkers;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.io.PrintStream;
-
 public abstract class SEChecker {
-
-  protected PrintStream out;
-
-  public SEChecker(PrintStream out) {
-    this.out = out;
-  }
 
   public void init(){}
 
