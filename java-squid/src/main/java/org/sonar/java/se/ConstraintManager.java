@@ -96,6 +96,17 @@ public class ConstraintManager {
         }
         break;
       }
+      case LOGICAL_COMPLEMENT : {
+        UnaryExpressionTree unaryExpressionTree = (UnaryExpressionTree) syntaxNode;
+        SymbolicValue val = eval(programState, unaryExpressionTree.expression());
+        if(SymbolicValue.FALSE_LITERAL.equals(val)) {
+          return SymbolicValue.TRUE_LITERAL;
+        } else if(val.equals(SymbolicValue.TRUE_LITERAL)) {
+          return SymbolicValue.FALSE_LITERAL;
+        }
+        //if not tied to a concrete value, create symbolic value with no constraint for now.
+        //TODO : create constraint between expression and created symbolic value
+      }
     }
     return createSymbolicValue(syntaxNode);
   }

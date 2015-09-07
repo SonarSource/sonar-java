@@ -20,7 +20,6 @@
 package org.sonar.java.se.checkers;
 
 import com.google.common.collect.Sets;
-import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -47,12 +46,10 @@ public class ConditionAlwaysTrueOrFalseChecker extends SEChecker {
   @Override
   public void checkEndOfExecution(CheckerContext context) {
     for (Tree condition : Sets.difference(evaluatedToFalse, evaluatedToTrue)) {
-      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to false");
-      context.addIssue(condition, RULE_KEY, "Change this condition so that it does not always evaluate to false");
+      context.addIssue(condition, RULE_KEY, "Change this condition so that it does not always evaluate to \"false\"");
     }
     for (Tree condition : Sets.difference(evaluatedToTrue, evaluatedToFalse)) {
-      out.println("condition at line " + ((JavaTree) condition).getLine() + " always evaluate to true");
-      context.addIssue(condition, RULE_KEY, "Change this condition so that it does not always evaluate to true");
+      context.addIssue(condition, RULE_KEY, "Change this condition so that it does not always evaluate to \"true\"");
     }
   }
 
