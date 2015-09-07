@@ -24,6 +24,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checkers.ConditionAlwaysTrueOrFalseChecker;
@@ -44,8 +46,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
-
-import java.io.PrintStream;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,14 +57,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
    * Arbitrary number to limit symbolic execution.
    */
   private static final int MAX_STEPS = 2000;
+  private static final Logger LOG = LoggerFactory.getLogger(ExplodedGraphWalker.class);
   private final ConditionAlwaysTrueOrFalseChecker alwaysTrueOrFalseChecker;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
-  private final PrintStream out;
   private ExplodedGraph.Node node;
   public ExplodedGraph.ProgramPoint programPosition;
   public ProgramState programState;
   private CheckerDispatcher checkerDispatcher;
+
   @VisibleForTesting
   int steps;
   ConstraintManager constraintManager;
@@ -75,10 +76,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
-  public ExplodedGraphWalker(PrintStream out, JavaFileScannerContext context) throws MaximumStepsReachedException {
-    this.out = out;
-    alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseChecker(out);
-    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceChecker(out)));
+  public ExplodedGraphWalker(JavaFileScannerContext context) throws MaximumStepsReachedException {
+    alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseChecker();
+    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceChecker()));
   }
 
   @Override
@@ -93,11 +93,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private void execute(MethodTree tree) {
     checkerDispatcher.init();
     CFG cfg = CFG.build(tree);
-    cfg.debugTo(out);
     explodedGraph = new ExplodedGraph();
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
-    out.println("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
+    LOG.debug("Exploring Exploded Graph for method "+tree.simpleName().name()+" at line "+ ((JavaTree) tree).getLine());
     programState = ProgramState.EMPTY_STATE;
     Iterable<ProgramState> startingStates = Lists.newArrayList(programState);
     for (final VariableTree variableTree : tree.parameters()) {
@@ -134,7 +133,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
       // LIFO:
       node = workList.removeFirst();
-      out.println(node);
       programPosition = node.programPoint;
       if (/* last */programPosition.block.successors.isEmpty()) {
         // not guaranteed that last block will be reached, e.g. "label: goto label;"
@@ -157,7 +155,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         handleBlockExit(programPosition);
       }
     }
-    out.println();
 
     checkerDispatcher.executeCheckEndOfExecution(tree);
     // Cleanup:
@@ -230,7 +227,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void visit(Tree tree) {
-    out.println("visiting node "+tree.kind().name()+ " at line "+ ((JavaTree) tree).getLine());
+    LOG.debug("visiting node "+tree.kind().name()+ " at line "+ ((JavaTree) tree).getLine());
     switch (tree.kind()) {
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
