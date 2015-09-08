@@ -43,7 +43,6 @@ public class JavaPlugin extends SonarPlugin {
 
   public static final String SQUID_ANALYSE_ACCESSORS_PROPERTY = "sonar.squid.analyse.property.accessors";
   public static final boolean SQUID_ANALYSE_ACCESSORS_DEFAULT_VALUE = true;
-  public static final String JSON_OUTPUT_FOLDER = "sonar.java.jsonoutput.folder";
 
   @Override
   public List getExtensions() {
@@ -81,13 +80,6 @@ public class JavaPlugin extends SonarPlugin {
             .subCategory(GENERAL_SUBCATEGORY)
             .name("Skip design analysis")
             .type(PropertyType.BOOLEAN)
-            .hidden()
-            .build(),
-        PropertyDefinition.builder(JavaPlugin.JSON_OUTPUT_FOLDER)
-            .category(JAVA_CATEGORY)
-            .subCategory(GENERAL_SUBCATEGORY)
-            .name("Output folder of issues as Json files")
-            .type(PropertyType.STRING)
             .hidden()
             .build(),
 

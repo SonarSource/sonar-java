@@ -33,15 +33,12 @@ import org.sonar.api.rules.ActiveRule;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.CheckList;
 import org.sonar.java.checks.PackageInfoCheck;
-import org.sonar.plugins.java.Bridges;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Set;
 
@@ -58,7 +55,7 @@ public class ChecksBridge {
     this.rulesProfile = rulesProfile;
   }
 
-  public void reportIssues(SourceFile squidFile, Resource sonarFile, @Nullable Bridges.ProjectIssue project) {
+  public void reportIssues(SourceFile squidFile, Resource sonarFile) {
     if (squidFile.hasCheckMessages()) {
       Issuable issuable = resourcePerspectives.as(Issuable.class, sonarFile);
       Set<CheckMessage> messages = squidFile.getCheckMessages();
@@ -70,17 +67,13 @@ public class ChecksBridge {
           if (ruleKey == null) {
             throw new IllegalStateException("Cannot find rule key for instance of " + check.getClass());
           }
-          if (project == null) {
-            Issue issue = issuable.newIssueBuilder()
-              .ruleKey(ruleKey)
-              .line(checkMessage.getLine())
-              .message(checkMessage.formatDefaultMessage())
-              .effortToFix(checkMessage.getCost())
-              .build();
-            issuable.addIssue(issue);
-          } else {
-            project.addIssue(ruleKey, sonarFile.getKey(), checkMessage.getLine());
-          }
+          Issue issue = issuable.newIssueBuilder()
+            .ruleKey(ruleKey)
+            .line(checkMessage.getLine())
+            .message(checkMessage.formatDefaultMessage())
+            .effortToFix(checkMessage.getCost())
+            .build();
+          issuable.addIssue(issue);
         }
       }
       // Remove from memory:
@@ -110,21 +103,17 @@ public class ChecksBridge {
     return null;
   }
 
-  public void reportIssueForPackageInfo(Directory directory, Project project, @Nullable Bridges.ProjectIssue projectIssue) {
+  public void reportIssueForPackageInfo(Directory directory, Project project) {
     if (dirsWithoutPackageInfo == null) {
       initSetOfDirs(project);
     }
     if (dirsWithoutPackageInfo.contains(directory)) {
       RuleKey ruleKey = RuleKey.of(CheckList.REPOSITORY_KEY, PackageInfoCheck.RULE_KEY);
-      if (projectIssue != null) {
-        projectIssue.addIssue(ruleKey, directory.getKey(), null);
-      } else {
-        Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
-        if (issuable != null) {
-          Issue issue = issuable.newIssueBuilder().ruleKey(ruleKey)
-            .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
-          issuable.addIssue(issue);
-        }
+      Issuable issuable = resourcePerspectives.as(Issuable.class, directory);
+      if (issuable != null) {
+        Issue issue = issuable.newIssueBuilder().ruleKey(ruleKey)
+          .message("Add a 'package-info.java' file to document the '" + directory.getPath() + "' package").build();
+        issuable.addIssue(issue);
       }
     }
   }
