@@ -354,6 +354,7 @@ public final class CheckList {
       .add(MainInServletCheck.class)
       .add(AtLeastOneConstructorCheck.class)
       .add(CatchExceptionCheck.class)
+      .add(VariableDeclarationScopeCheck.class)
       .build();
   }
 
