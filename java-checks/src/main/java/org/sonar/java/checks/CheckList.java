@@ -353,6 +353,7 @@ public final class CheckList {
       .add(EscapedUnicodeCharactersCheck.class)
       .add(MainInServletCheck.class)
       .add(AtLeastOneConstructorCheck.class)
+      .add(CatchExceptionCheck.class)
       .build();
   }
 
