@@ -55,7 +55,7 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
     @Override
     public boolean apply(SymbolMetadata.AnnotationInstance input) {
       Type type = input.symbol().type();
-      return type.isUnknown() || type.is("org.junit.Test");
+      return type.isUnknown() || type.is("org.junit.Test") || type.is("org.testng.annotations.Test");
     }
   };
 
@@ -92,16 +92,12 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkMethods(ClassTree classTree, boolean forJunit4) {
-    boolean hasNoTest = true;
     for (Tree member : classTree.members()) {
       if (member.is(Kind.METHOD) && isTestMethod(forJunit4, (MethodTree) member)) {
-        hasNoTest = false;
-        break;
+        return;
       }
     }
-    if (hasNoTest) {
-      addIssue(classTree, "Add some tests to this class.");
-    }
+    addIssue(classTree, "Add some tests to this class.");
   }
 
   private static boolean isTestMethod(boolean forJunit4, MethodTree member) {

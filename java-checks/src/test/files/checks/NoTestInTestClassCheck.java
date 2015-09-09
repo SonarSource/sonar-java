@@ -32,3 +32,9 @@ class AnonymousClass extends junit.framework.TestCase{
 public abstract class AbstractIntegrationTest { //designed for extension should not raise issue.
 
 }
+
+class TestNGTest {
+  @org.testng.annotations.Test
+  void foo() {
+  }
+}

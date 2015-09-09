@@ -127,6 +127,12 @@
                   <version>4.0</version>
                   <type>jar</type>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.testng</groupId>
+                  <artifactId>testng</artifactId>
+                  <version>6.9.6</version>
+                  <type>jar</type>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>
