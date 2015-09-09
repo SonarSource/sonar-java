@@ -3,10 +3,11 @@ abstract class A {
 
   abstract void method();
 }
-abstract class B { // Noncompliant {{Convert the abstract class "B" into an interface}}
+abstract class B { // Noncompliant {{Convert the abstract class "B" into an interface.}}
   int method(){
     return 1;
   }
+  class F {}
 }
 class C {
   int method(){
@@ -18,4 +19,7 @@ abstract class D {
   protected void method() {
 
   }
+}
+
+abstract class E extends A {
 }

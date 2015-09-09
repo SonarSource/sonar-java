@@ -51,27 +51,18 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (classIsAbstract(classTree) && classHasNoField(classTree) && !classHasProtectedMethod(classTree)) {
-      addIssue(classTree, "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface");
+    if (classTree.superClass() == null && classIsAbstract(classTree) && classHasNoFieldAndProtectedMethod(classTree)) {
+      addIssue(classTree, "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface.");
     }
-  }
-
-  private static boolean classHasProtectedMethod(ClassTree tree) {
-    for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PROTECTED)) {
-        return true;
-      }
-    }
-    return false;
   }
 
   private static boolean classIsAbstract(ClassTree tree) {
     return ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT);
   }
 
-  private static boolean classHasNoField(ClassTree tree) {
+  private static boolean classHasNoFieldAndProtectedMethod(ClassTree tree) {
     for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
+      if (member.is(Tree.Kind.VARIABLE) || (member.is(Tree.Kind.METHOD) && ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PROTECTED))) {
         return false;
       }
     }
