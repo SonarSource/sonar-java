@@ -1,7 +1,6 @@
 <p><code>Throwable</code> is the superclass of all errors and exceptions in Java.</p>
 <p><code>Error</code> is the superclass of all errors, which are not meant to be caught by applications.</p>
 <p>Catching either <code>Throwable</code> or <code>Error</code> will also catch <code>OutOfMemoryError</code> and <code>InternalError</code>, from which an application should not attempt to recover.</p>
-<p>Only <code>Exception</code> and its subclasses should be caught. </p>
 <h2>Noncompliant Code Example</h2>
 
 <pre>
@@ -11,7 +10,6 @@ try { /* ... */ } catch (Error e) { /* ... */ }
 <h2>Compliant Solution</h2>
 
 <pre>
-try { /* ... */ } catch (Exception e) { /* ... */ }
 try { /* ... */ } catch (RuntimeException e) { /* ... */ }
 try { /* ... */ } catch (MyException e) { /* ... */ }
 </pre>
