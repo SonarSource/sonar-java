@@ -31,7 +31,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <dependencyReducedPomLocation>target/dependency-reduced-pom.xml</dependencyReducedPomLocation>
+              <!--<dependencyReducedPomLocation>target/dependency-reduced-pom.xml</dependencyReducedPomLocation>-->
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
