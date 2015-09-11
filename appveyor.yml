@@ -16,6 +16,12 @@ install:
 
 environment:
   matrix:
+  - RUN: plugin
+    JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+    SQ_VERSION: DEV
+  - RUN: plugin
+    JAVA_HOME: C:\Program Files\Java\jdk1.7.0
+    SQ_VERSION: LTS
   - RUN: ruling
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0
     SQ_VERSION: LATEST_RELEASE
@@ -30,9 +36,6 @@ environment:
     PROJECT: guava
   - RUN: ci
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-  - RUN: plugin
-    JAVA_HOME: C:\Program Files\Java\jdk1.7.0
-    SQ_VERSION: LTS
 
 build_script:
   - ps: ./appveyor.ps1
