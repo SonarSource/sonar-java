@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -48,15 +49,15 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession")
-        .name("setAttribute").addParameter("java.lang.String").addParameter("java.lang.Object"));
+      .name("setAttribute").addParameter("java.lang.String").addParameter(TypeCriteria.anyType()));
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree argument = mit.arguments().get(1);
     Type type = argument.symbolType();
-    if(!type.isSubtypeOf("java.io.Serializable")) {
-      addIssue(argument, "Make \""+type+"\" serializable or don't store it in the session.");
+    if (!type.isPrimitive() && !type.isSubtypeOf("java.io.Serializable")) {
+      addIssue(argument, "Make \"" + type + "\" serializable or don't store it in the session.");
     }
   }
 }

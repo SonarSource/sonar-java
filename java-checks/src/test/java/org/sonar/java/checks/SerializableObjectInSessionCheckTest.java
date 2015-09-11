@@ -19,27 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SerializableObjectInSessionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SerializableObjectInSessionCheck.java"),
-        new VisitorsBridge(new SerializableObjectInSessionCheck(), ImmutableList.of(new File("target/test-classes"))));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Make \"Address\" serializable or don't store it in the session.")
-        .next().atLine(7).withMessage("Make \"Person\" serializable or don't store it in the session.");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/SerializableObjectInSessionCheck.java", new SerializableObjectInSessionCheck());
   }
 }
