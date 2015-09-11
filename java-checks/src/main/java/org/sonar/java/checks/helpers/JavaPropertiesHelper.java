@@ -24,6 +24,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 
@@ -54,9 +55,12 @@ public class JavaPropertiesHelper {
   private static ExpressionTree retrievedPropertyDefaultValue(IdentifierTree identifier) {
     Symbol symbol = identifier.symbol();
     if (symbol.usages().size() == 1) {
-      ExpressionTree initializer = ((Symbol.VariableSymbol) symbol).declaration().initializer();
-      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)) {
-        return retrievedPropertyDefaultValue((MethodInvocationTree) initializer);
+      VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
+      if (declaration != null) {
+        ExpressionTree initializer = declaration.initializer();
+        if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)) {
+          return retrievedPropertyDefaultValue((MethodInvocationTree) initializer);
+        }
       }
     }
     return null;

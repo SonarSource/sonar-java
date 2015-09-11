@@ -35,17 +35,24 @@ class A {
     md = MessageDigest.getInstance("MD5", provider); // Noncompliant
     md = MessageDigest.getInstance("SHA1", "provider"); // Noncompliant
     md = MessageDigest.getInstance("sha-1", "provider"); // Noncompliant
-    
+
     String myAlgo = props.getProperty("myCoolAlgo", "SHA1");
-    
+
     md = MessageDigest.getInstance(myAlgo, provider); // Noncompliant
     md = MessageDigest.getInstance(getAlgo(), provider);
     md = DigestUtils.getDigest(props.getProperty("mySuperOtherAlgo", "SHA-1")); // Noncompliant
     md = DigestUtils.getDigest(props.getProperty("mySuperOtherAlgo"));
   }
-  
+
   private String getAlgo() {
     return null;
   }
-  
+
+}
+
+class B extends java.io.File {
+  void myMethod() {
+    MessageDigest md = null;
+    md = MessageDigest.getInstance(separator);
+  }
 }
