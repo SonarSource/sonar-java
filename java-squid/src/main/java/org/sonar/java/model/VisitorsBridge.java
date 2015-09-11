@@ -26,6 +26,10 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sonar.api.batch.rule.Checks;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.SonarComponents;
@@ -47,6 +51,7 @@ import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -118,7 +123,7 @@ public class VisitorsBridge {
       }
     }
     JavaFileScannerContext javaFileScannerContext =
-      new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors);
+      new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors, sonarComponents);
     for (JavaFileScanner scanner : scanners) {
       scanner.scanFile(javaFileScannerContext);
     }
@@ -169,14 +174,17 @@ public class VisitorsBridge {
     @VisibleForTesting
     public final SourceFile sourceFile;
     private final SemanticModel semanticModel;
+    private final SonarComponents sonarComponents;
     private final ComplexityVisitor complexityVisitor;
     private final File file;
 
-    public DefaultJavaFileScannerContext(CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors) {
+    public DefaultJavaFileScannerContext(
+        CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents) {
       this.tree = tree;
       this.sourceFile = sourceFile;
       this.file = file;
       this.semanticModel = semanticModel;
+      this.sonarComponents = sonarComponents;
       this.complexityVisitor = new ComplexityVisitor(analyseAccessors);
     }
 
@@ -240,6 +248,37 @@ public class VisitorsBridge {
     @Override
     public String getFileKey() {
       return sourceFile.getKey();
+    }
+
+    @CheckForNull
+    private RuleKey getRuleKey(JavaCheck check) {
+      if (sonarComponents != null) {
+        for (Checks<JavaCheck> sonarChecks : sonarComponents.checks()) {
+          RuleKey ruleKey = sonarChecks.ruleKey(check);
+          if (ruleKey != null) {
+            return ruleKey;
+          }
+        }
+      }
+      return null;
+    }
+
+    @Override
+    public void addIssue(File file, JavaCheck check, int line, String message) {
+      RuleKey key = getRuleKey(check);
+      if (key != null) {
+        Issuable issuable = sonarComponents.issuableFor(file);
+        if (issuable != null) {
+          Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
+            .ruleKey(key)
+            .message(message);
+          if (line > -1) {
+            issueBuilder.line(line);
+          }
+          Issue issue = issueBuilder.build();
+          issuable.addIssue(issue);
+        }
+      }
     }
 
     @Override

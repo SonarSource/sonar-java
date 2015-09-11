@@ -56,13 +56,12 @@ public class Bridges {
       designBridge.saveDesign(project);
     }
     // Report Issues
-    ChecksBridge checksBridge = new ChecksBridge(sonarComponents, rulesProfile);
+    ChecksBridge checksBridge = new ChecksBridge(sonarComponents);
     reportIssues(resourceMapping, noSonarFilter, checksBridge, project);
   }
 
   private void reportIssues(ResourceMapping resourceMapping, NoSonarFilter noSonarFilter, ChecksBridge checksBridge, Project project) {
     for (Resource directory : resourceMapping.directories()) {
-      checksBridge.reportIssueForPackageInfo((Directory) directory, project);
       for (Resource sonarFile : resourceMapping.files((Directory) directory)) {
         String key = resourceMapping.getFileKeyByResource((org.sonar.api.resources.File) sonarFile);
         // key would be null for test files as they are not in squid index.

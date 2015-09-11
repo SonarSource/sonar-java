@@ -47,6 +47,8 @@ public interface JavaFileScannerContext {
 
   void addIssue(Tree tree, CheckMessage checkMessage);
 
+  void addIssue(File file, JavaCheck check, int line, String message);
+
   @Nullable
   Object getSemanticModel();
 

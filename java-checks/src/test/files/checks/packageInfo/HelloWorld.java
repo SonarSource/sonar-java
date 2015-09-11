@@ -1,1 +1,3 @@
 package packageInfo;
+class HelloWorld {
+}

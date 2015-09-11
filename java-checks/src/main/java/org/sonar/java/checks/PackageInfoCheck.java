@@ -32,7 +32,7 @@ import java.io.File;
 import java.util.Set;
 
 @Rule(
-  key = PackageInfoCheck.RULE_KEY,
+  key = "S1228",
   name = "Packages should have a javadoc file 'package-info.java'",
   tags = {"convention"},
   priority = Priority.MINOR)
@@ -40,24 +40,15 @@ import java.util.Set;
 @SqaleConstantRemediation("20min")
 public class PackageInfoCheck implements JavaFileScanner {
 
-  public static final String RULE_KEY = "S1228";
-
-  private Set<File> directoriesWithPackageFile = Sets.newHashSet();
-  private Set<File> directoriesWithoutPackageFile = Sets.newHashSet();
+  Set<File> directoriesWithoutPackageFile = Sets.newHashSet();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     File parentFile = context.getFile().getParentFile();
-    if(!directoriesWithPackageFile.contains(parentFile)) {
+    if (!new File(parentFile, "package-info.java").isFile() && !directoriesWithoutPackageFile.contains(parentFile)) {
+      context.addIssue(parentFile, PackageInfoCheck.this, -1, "Add a 'package-info.java' file to document the '" + parentFile.getName() + "' package");
       directoriesWithoutPackageFile.add(parentFile);
-    }
-    if ("package-info.java".equals(context.getFile().getName())) {
-      directoriesWithoutPackageFile.remove(parentFile);
-      directoriesWithPackageFile.add(parentFile);
     }
   }
 
-  public Set<File> getDirectoriesWithoutPackageFile() {
-    return directoriesWithoutPackageFile;
-  }
 }

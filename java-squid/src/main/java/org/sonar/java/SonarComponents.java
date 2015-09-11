@@ -24,9 +24,11 @@ import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
+import org.sonar.api.issue.Issuable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.source.Highlightable;
@@ -86,6 +88,14 @@ public class SonarComponents implements BatchExtension {
     return fs.inputFile(fs.predicates().is(file));
   }
 
+  private InputPath inputPathFromIOFile(File file) {
+    if (file.isDirectory()) {
+      return fs.inputDir(file);
+    } else {
+      return inputFromIOFile(file);
+    }
+  }
+
   public FileLinesContext fileLinesContextFor(File file) {
     return fileLinesContextFactory.createFor(inputFromIOFile(file));
   }
@@ -96,6 +106,10 @@ public class SonarComponents implements BatchExtension {
 
   public Highlightable highlightableFor(File file) {
     return resourcePerspectives.as(Highlightable.class, inputFromIOFile(file));
+  }
+
+  public Issuable issuableFor(File file) {
+    return resourcePerspectives.as(Issuable.class, inputPathFromIOFile(file));
   }
 
   public List<File> getJavaClasspath() {
