@@ -1,6 +1,6 @@
 /*
  * Java :: IT :: Plugin :: Tests
- * Copyright (C) 2013 ${owner}
+ * Copyright (C) 2013 SonarSource
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -22,7 +22,6 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.OrchestratorBuilder;
 import com.sonar.orchestrator.locator.FileLocation;
-import com.sonar.orchestrator.version.Version;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -35,9 +34,7 @@ import org.junit.runners.Suite;
   JavaComplexityTest.class,
   SquidTest.class,
   Struts139Test.class,
-  Struts139WithoutAccessorsTest.class,
   JavaClasspathTest.class,
-  JaCoCoTest.class
 })
 public class JavaTestSuite {
 
@@ -56,15 +53,8 @@ public class JavaTestSuite {
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-ignored-test.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-complexity.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/com/sonar/it/java/SquidTest/squid-backup.xml"));
-
-    if (Version.create(Orchestrator.builderEnv().getPluginVersion("java")).isGreaterThanOrEquals("3.1")) {
       orchestratorBuilder.addPlugin(FileLocation.of(TestUtils.pluginJar("java-extension-plugin")));
-    }
     ORCHESTRATOR = orchestratorBuilder.build();
-  }
-
-  private static boolean is_after_plugin(String version) {
-    return ORCHESTRATOR.getConfiguration().getPluginVersion(PLUGIN_KEY).isGreaterThanOrEquals(version);
   }
 
   public static boolean sonarqube_version_is_prior_to_5_0() {
@@ -78,7 +68,4 @@ public class JavaTestSuite {
     return projectKey + ":src/main/java/" + pkgDir + cls;
   }
 
-  public static boolean isAtLeastPlugin3_4() {
-    return is_after_plugin("3.4");
-  }
 }

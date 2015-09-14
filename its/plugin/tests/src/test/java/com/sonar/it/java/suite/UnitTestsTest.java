@@ -1,6 +1,6 @@
 /*
  * Java :: IT :: Plugin :: Tests
- * Copyright (C) 2013 ${owner}
+ * Copyright (C) 2013 SonarSource
  * dev@sonar.codehaus.org
  *
  * This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@
 package com.sonar.it.java.suite;
 
 import com.sonar.orchestrator.Orchestrator;
-import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -28,10 +27,7 @@ import org.junit.Test;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
 
-import java.io.File;
-
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class UnitTestsTest {
 
@@ -63,7 +59,6 @@ public class UnitTestsTest {
 
   @Test
   public void tests_with_report_name_suffix() {
-    assumeTrue(JavaTestSuite.isAtLeastPlugin3_4());
     MavenBuild build = MavenBuild.create()
         .setPom(TestUtils.projectPom("tests-surefire-suffix"))
         .setGoals("clean test-compile surefire:test -Dsurefire.reportNameSuffix=Run1","test-compile surefire:test -Dsurefire.reportNameSuffix=Run2", "sonar:sonar");
@@ -78,40 +73,6 @@ public class UnitTestsTest {
     assertThat(project.getMeasure("skipped_tests").getIntValue()).isEqualTo(2);
     assertThat(project.getMeasure("test_execution_time").getIntValue()).isGreaterThan(0);
     assertThat(project.getMeasure("test_success_density").getValue()).isEqualTo(100.0);
-  }
-
-  @Test
-  public void test_negative_duration() {
-
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("test_negative_duration"))
-      .setGoals("sonar:sonar")
-      .setProperty("sonar.junit.reportsPath", new File(TestUtils.projectDir("test_negative_duration"), "surefire-reports").getAbsolutePath());
-    orchestrator.executeBuild(build);
-
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("test:test_negative_duration",
-      "tests", "test_errors", "test_failures", "skipped_tests", "test_execution_time", "test_success_density"));
-    assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(2);
-    assertThat(project.getMeasure("test_execution_time").getIntValue()).isEqualTo(1000);
-  }
-
-  @Test
-  public void no_coverage() {
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("no_coverage"))
-      .setGoals("clean test-compile surefire:test", "sonar:sonar")
-      .setProperty("sonar.jacoco.reportMissing.force.zero", "true");
-    BuildResult buildResult = orchestrator.executeBuild(build);
-
-    assertThat(buildResult.getLogs())
-      .contains("JaCoCoSensor: JaCoCo report not found.")
-      .contains("Project coverage is set to 0% as no JaCoCo execution data has been dumped: ");
-
-    Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("test:no_coverage",
-      "tests", "coverage"));
-
-    assertThat(project.getMeasure("tests").getIntValue()).isEqualTo(1);
-    assertThat(project.getMeasure("coverage").getIntValue()).isEqualTo(0);
   }
 
 }

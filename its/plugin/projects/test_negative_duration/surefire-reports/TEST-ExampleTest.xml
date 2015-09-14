@@ -1,4 +1,0 @@
-<testsuite errors="0" skipped="0" tests="1" time="-1" failures="0" name="ExampleTest">
-  <testcase time="-2" name="negative"/>
-  <testcase time="1" name="positive"/>
-</testsuite>

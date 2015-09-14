@@ -1,0 +1,17 @@
+{
+'project:com/sun/org/apache/xerces/internal/impl/xpath/XPath.java':[
+2003,
+],
+'project:com/sun/org/apache/xml/internal/security/keys/storage/implementations/CertsInFilesystemDirectoryResolver.java':[
+203,
+],
+'project:com/sun/org/apache/xml/internal/security/keys/storage/implementations/KeyStoreResolver.java':[
+127,
+],
+'project:com/sun/org/apache/xml/internal/security/utils/RFC2253Parser.java':[
+501,
+],
+'project:com/sun/security/auth/PolicyParser.java':[
+957,
+],
+}
