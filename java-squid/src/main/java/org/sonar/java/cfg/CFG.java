@@ -22,6 +22,8 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.sonar.java.model.JavaTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayDimensionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -34,14 +36,18 @@ import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewArrayTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -50,12 +56,13 @@ import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -66,12 +73,13 @@ import java.util.Map;
 public class CFG {
 
   private final Block exitBlock;
+  private final Symbol.MethodSymbol methodSymbol;
   private Block currentBlock;
 
   /**
    * List of all blocks in order they were created.
    */
-  final List<Block> blocks = new ArrayList<>();
+  private final List<Block> blocks = new ArrayList<>();
 
   private final Deque<Block> breakTargets = new LinkedList<>();
   private final Deque<Block> continueTargets = new LinkedList<>();
@@ -80,15 +88,28 @@ public class CFG {
   private Map<String, Block> labels = Maps.newHashMap();
   private final List<Block> gotos = new LinkedList<>();
 
+  public Symbol.MethodSymbol methodSymbol() {
+    return methodSymbol;
+  }
+
   public Block entry() {
     return currentBlock;
   }
 
+  public List<Block> blocks() {
+    return Lists.reverse(blocks);
+  }
+
+  public List<Block> reversedBlocks() {
+    return blocks;
+  }
+
   public static class Block {
     public final int id;
-    final List<Tree> elements = new ArrayList<>();
-    public List<Block> successors = Lists.newArrayList();
-    public Tree terminator;
+    private final List<Tree> elements = new ArrayList<>();
+    private final List<Block> successors = new ArrayList<>();
+    private final List<Block> predecessors = new ArrayList<>();
+    private Tree terminator;
 
     public Block(int id) {
       this.id = id;
@@ -97,9 +118,23 @@ public class CFG {
     public List<Tree> elements() {
       return Lists.reverse(elements);
     }
+
+    public List<Block> predecessors() {
+      return predecessors;
+    }
+
+    public List<Block> successors() {
+      return successors;
+    }
+
+    @CheckForNull
+    public Tree terminator() {
+      return terminator;
+    }
   }
 
-  private CFG(BlockTree tree) {
+  private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
+    methodSymbol = symbol;
     exitBlock = createBlock();
     currentBlock = createBlock(exitBlock);
     for (StatementTree statementTree : Lists.reverse(tree.body())) {
@@ -111,7 +146,7 @@ public class CFG {
       Tree s = b.terminator;
       assert s != null;
       String label;
-      if(s instanceof BreakStatementTree) {
+      if (s.is(Tree.Kind.BREAK_STATEMENT)) {
         label = ((BreakStatementTree) s).label().name();
       } else {
         label = ((ContinueStatementTree) s).label().name();
@@ -121,6 +156,12 @@ public class CFG {
         throw new IllegalStateException("Undeclared label: " + label);
       }
       b.successors.add(target);
+    }
+
+    for (Block b : blocks) {
+      for (Block successor : b.successors) {
+        successor.predecessors.add(b);
+      }
     }
   }
 
@@ -138,7 +179,7 @@ public class CFG {
 
   public static CFG build(MethodTree tree) {
     Preconditions.checkArgument(tree.block() != null, "Cannot build CFG for method with no body.");
-    return new CFG(tree.block());
+    return new CFG(tree.block(), tree.symbol());
   }
 
   private void build(List<? extends Tree> trees) {
@@ -154,72 +195,23 @@ public class CFG {
           build(statementTree);
         }
         break;
-      case RETURN_STATEMENT: {
-        ReturnStatementTree s = (ReturnStatementTree) tree;
-        currentBlock = createUnconditionalJump(s, exitBlock);
-        ExpressionTree expression = s.expression();
-        if (expression != null) {
-          build(expression);
-        }
+      case RETURN_STATEMENT:
+        buildReturnStatement((ReturnStatementTree) tree);
         break;
-      }
       case EXPRESSION_STATEMENT:
         build(((ExpressionStatementTree) tree).expression());
         break;
       case METHOD_INVOCATION:
-        MethodInvocationTree mit = (MethodInvocationTree) tree;
-        currentBlock.elements.add(mit);
-        build(mit.methodSelect());
-        for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
-          build(arg);
-        }
+        buildMethodInvocation((MethodInvocationTree) tree);
         break;
-      case IF_STATEMENT: {
-        IfStatementTree ifStatementTree = (IfStatementTree) tree;
-        Block next = currentBlock;
-        // process else-branch
-        Block elseBlock = next;
-        StatementTree elseStatement = ifStatementTree.elseStatement();
-        if (elseStatement != null) {
-          // if statement will create the required block.
-          if (!elseStatement.is(Tree.Kind.IF_STATEMENT)) {
-            currentBlock = createBlock(next);
-          }
-          build(elseStatement);
-          elseBlock = currentBlock;
-        }
-        // process then-branch
-        currentBlock = createBlock(next);
-        build(ifStatementTree.thenStatement());
-        Block thenBlock = currentBlock;
-        // process condition
-        currentBlock = createBranch(ifStatementTree, thenBlock, elseBlock);
-        buildCondition(ifStatementTree.condition(), thenBlock, elseBlock);
+      case IF_STATEMENT:
+        buildIfStatement((IfStatementTree) tree);
         break;
-      }
-      case CONDITIONAL_EXPRESSION: {
-        ConditionalExpressionTree cond = (ConditionalExpressionTree) tree;
-        Block next = currentBlock;
-        // process else-branch
-        ExpressionTree elseStatement = cond.falseExpression();
-        currentBlock = createBlock(next);
-        build(elseStatement);
-        Block elseBlock = currentBlock;
-        // process then-branch
-        currentBlock = createBlock(next);
-        build(cond.trueExpression());
-        Block thenBlock = currentBlock;
-        // process condition
-        currentBlock = createBranch(cond, thenBlock, elseBlock);
-        buildCondition(cond.condition(), thenBlock, elseBlock);
+      case CONDITIONAL_EXPRESSION:
+        buildConditionalExpression((ConditionalExpressionTree) tree);
         break;
-      }
       case VARIABLE:
-        currentBlock.elements.add(tree);
-        VariableTree variableTree = (VariableTree) tree;
-        if (variableTree.initializer() != null) {
-          build(variableTree.initializer());
-        }
+        buildVariable((VariableTree) tree);
         break;
       case MULTIPLY:
       case DIVIDE:
@@ -238,205 +230,64 @@ public class CFG {
       case LESS_THAN_OR_EQUAL_TO:
       case EQUAL_TO:
       case NOT_EQUAL_TO:
-        BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
-        currentBlock.elements.add(tree);
-        build(binaryExpressionTree.rightOperand());
-        build(binaryExpressionTree.leftOperand());
+        buildBinaryExpression(tree);
         break;
       case ASSIGNMENT:
-        AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
-        currentBlock.elements.add(tree);
-        build(assignmentExpressionTree.variable());
-        build(assignmentExpressionTree.expression());
+      case LEFT_SHIFT_ASSIGNMENT:
+      case RIGHT_SHIFT_ASSIGNMENT:
+      case AND_ASSIGNMENT:
+      case REMAINDER_ASSIGNMENT:
+      case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+      case OR_ASSIGNMENT:
+      case XOR_ASSIGNMENT:
+      case DIVIDE_ASSIGNMENT:
+      case MULTIPLY_ASSIGNMENT:
+      case PLUS_ASSIGNMENT:
+      case MINUS_ASSIGNMENT:
+        buildAssignment((AssignmentExpressionTree) tree);
         break;
       case MEMBER_SELECT:
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-        currentBlock.elements.add(mse);
-        build(mse.expression());
+        buildMemberSelect((MemberSelectExpressionTree) tree);
         break;
-      case CONDITIONAL_AND: {
-        BinaryExpressionTree e = (BinaryExpressionTree) tree;
-        // process RHS
-        Block falseBlock = currentBlock;
-        currentBlock = createBlock(falseBlock);
-        build(e.rightOperand());
-        Block trueBlock = currentBlock;
-        // process LHS
-        currentBlock = createBranch(e, trueBlock, falseBlock);
-        build(e.leftOperand());
+      case CONDITIONAL_AND:
+        buildConditionalAnd((BinaryExpressionTree) tree);
         break;
-      }
-      case CONDITIONAL_OR: {
-        BinaryExpressionTree e = (BinaryExpressionTree) tree;
-        // process RHS
-        Block trueBlock = currentBlock;
-        currentBlock = createBlock(trueBlock);
-        build(e.rightOperand());
-        Block falseBlock = currentBlock;
-        // process LHS
-        currentBlock = createBranch(e, trueBlock, falseBlock);
-        build(e.leftOperand());
+      case CONDITIONAL_OR:
+        buildConditionalOr((BinaryExpressionTree) tree);
         break;
-      }
-      case LABELED_STATEMENT: {
-        LabeledStatementTree s = (LabeledStatementTree) tree;
-        build(s.statement());
-        currentBlock = createBlock(currentBlock);
-        labels.put(s.label().name(), currentBlock);
+      case LABELED_STATEMENT:
+        buildLabeledStatement((LabeledStatementTree) tree);
         break;
-      }
-      case SWITCH_STATEMENT: {
-        // FIXME useless node created for default cases.
-        SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-        Block switchSuccessor = currentBlock;
-        // process condition
-        currentBlock = createBlock();
-        currentBlock.terminator = switchStatementTree;
-        switches.addLast(currentBlock);
-        build(switchStatementTree.expression());
-        // process body
-        currentBlock = createBlock(switchSuccessor);
-        breakTargets.addLast(switchSuccessor);
-        if (!switchStatementTree.cases().isEmpty()) {
-          CaseGroupTree firstCase = switchStatementTree.cases().get(0);
-          for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
-            build(caseGroupTree.body());
-            switches.getLast().successors.add(currentBlock);
-            if (caseGroupTree != firstCase) {
-              // No block predecessing the first case group.
-              currentBlock = createBlock(currentBlock);
-            }
-          }
-        }
-        breakTargets.removeLast();
-        // process condition
-        currentBlock = switches.removeLast();
+      case SWITCH_STATEMENT:
+        buildSwitchStatement((SwitchStatementTree) tree);
         break;
-      }
-      case BREAK_STATEMENT: {
-        BreakStatementTree breakStatementTree = (BreakStatementTree) tree;
-        if(breakStatementTree.label() == null) {
-          if (breakTargets.isEmpty()) {
-            throw new IllegalStateException("'break' statement not in loop or switch statement");
-          }
-          currentBlock = createUnconditionalJump(tree, breakTargets.getLast());
-        } else {
-          currentBlock = createUnconditionalJump(tree, null);
-          gotos.add(currentBlock);
-        }
+      case BREAK_STATEMENT:
+        buildBreakStatement((BreakStatementTree) tree);
         break;
-      }
-      case CONTINUE_STATEMENT: {
-        ContinueStatementTree continueStatementTree = (ContinueStatementTree) tree;
-        if(continueStatementTree.label() == null) {
-          if (continueTargets.isEmpty()) {
-            throw new IllegalStateException("'break' statement not in loop or switch statement");
-          }
-          currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
-        } else {
-          currentBlock = createUnconditionalJump(tree, null);
-          gotos.add(currentBlock);
-        }
+      case CONTINUE_STATEMENT:
+        buildContinueStatement((ContinueStatementTree) tree);
         break;
-      }
-      case WHILE_STATEMENT: {
-        WhileStatementTree s = (WhileStatementTree) tree;
-        Block falseBranch = currentBlock;
-        Block loopback = createBlock();
-        // process body
-        currentBlock = createBlock(loopback);
-        continueTargets.addLast(loopback);
-        breakTargets.addLast(falseBranch);
-        build(s.statement());
-        breakTargets.removeLast();
-        continueTargets.removeLast();
-        Block bodyBlock = currentBlock;
-        // process condition
-        currentBlock = createBranch(s, bodyBlock, falseBranch);
-        buildCondition(s.condition(), bodyBlock, falseBranch);
-        loopback.successors.add(currentBlock);
-        currentBlock = createBlock(currentBlock);
+      case WHILE_STATEMENT:
+        buildWhileStatement((WhileStatementTree) tree);
         break;
-      }
-      case DO_STATEMENT: {
-        DoWhileStatementTree s = (DoWhileStatementTree) tree;
-        Block falseBranch = currentBlock;
-        Block loopback = createBlock();
-        // process condition
-        currentBlock = createBranch(s, loopback, falseBranch);
-        buildCondition(s.condition(), loopback, falseBranch);
-        // process body
-        currentBlock = createBlock(currentBlock);
-        continueTargets.addLast(loopback);
-        breakTargets.addLast(falseBranch);
-        build(s.statement());
-        breakTargets.removeLast();
-        continueTargets.removeLast();
-        loopback.successors.add(currentBlock);
-        currentBlock = createBlock(currentBlock);
+      case DO_STATEMENT:
+        buildDoWhileStatement((DoWhileStatementTree) tree);
         break;
-      }
-      case FOR_EACH_STATEMENT: {
-        //TODO(npe) One solution is to create a forstatement node depending on type of expression (iterable or array) and build CFG from it.
+      case FOR_EACH_STATEMENT:
+        buildForEachStatement((ForEachStatement) tree);
         break;
-      }
-      case FOR_STATEMENT: {
-        ForStatementTree s = (ForStatementTree) tree;
-        Block falseBranch = currentBlock;
-        // process step
-        currentBlock = createBlock();
-        Block stepBlock = currentBlock;
-        for (StatementTree updateTree : Lists.reverse(s.update())) {
-          build(updateTree);
-        }
-        // process body
-        currentBlock = createBlock(currentBlock);
-        continueTargets.addLast(stepBlock);
-        breakTargets.addLast(falseBranch);
-        build(s.statement());
-        breakTargets.removeLast();
-        continueTargets.removeLast();
-        Block body = currentBlock;
-        // process condition
-        currentBlock = createBranch(s, body, falseBranch);
-        ExpressionTree condition = s.condition();
-        if (condition != null) {
-          buildCondition(condition, body, falseBranch);
-        }
-        stepBlock.successors.add(currentBlock);
-        // process init
-        currentBlock = createBlock(currentBlock);
-        for (StatementTree init : Lists.reverse(s.initializer())) {
-          build(init);
-        }
+      case FOR_STATEMENT:
+        buildForStatement((ForStatementTree) tree);
         break;
-      }
-      case TRY_STATEMENT: {
-        //FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
-        TryStatementTree tryStatementTree = (TryStatementTree) tree;
-        currentBlock = createBlock(currentBlock);
-        BlockTree finallyBlock = tryStatementTree.finallyBlock();
-        if(finallyBlock != null) {
-          build(finallyBlock);
-        }
-        currentBlock = createBlock(currentBlock);
-        build(tryStatementTree.block());
+      case TRY_STATEMENT:
+        buildTryStatement((TryStatementTree) tree);
         break;
-      }
-      case THROW_STATEMENT: {
-        //FIXME this won't work if it is intended to be caught by a try statement.
-        ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
-        currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
-        build(throwStatementTree.expression());
+      case THROW_STATEMENT:
+        buildThrowStatement((ThrowStatementTree) tree);
         break;
-      }
-      case SYNCHRONIZED_STATEMENT: {
-        SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
-        //Naively build synchronized statement.
-        build(sst.block());
-        build(sst.expression());
+      case SYNCHRONIZED_STATEMENT:
+        buildSynchronizedStatement((SynchronizedStatementTree) tree);
         break;
-      }
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
       case PREFIX_INCREMENT:
@@ -445,25 +296,20 @@ public class CFG {
       case UNARY_PLUS:
       case BITWISE_COMPLEMENT:
       case LOGICAL_COMPLEMENT:
-        UnaryExpressionTree e = (UnaryExpressionTree) tree;
-        currentBlock.elements.add(e);
-        build(e.expression());
+        buildUnaryExpression((UnaryExpressionTree) tree);
         break;
       case PARENTHESIZED_EXPRESSION:
         build(((ParenthesizedTree) tree).expression());
         break;
-      case ARRAY_ACCESS_EXPRESSION: {
-        ArrayAccessExpressionTree aaet = (ArrayAccessExpressionTree) tree;
-        currentBlock.elements.add(aaet);
-        build(aaet.expression());
-        build(aaet.dimension());
+      case ARRAY_ACCESS_EXPRESSION:
+        buildArrayAccessExpression((ArrayAccessExpressionTree) tree);
         break;
-      }
-      case ARRAY_DIMENSION: {
-        ArrayDimensionTree arrayDimensionTree = (ArrayDimensionTree) tree;
-        build(arrayDimensionTree.expression());
+      case ARRAY_DIMENSION:
+        buildArrayDimension((ArrayDimensionTree) tree);
         break;
-      }
+      case NEW_CLASS:
+        buildNewClass((NewClassTree) tree);
+        break;
       case IDENTIFIER:
       case INT_LITERAL:
       case LONG_LITERAL:
@@ -473,10 +319,361 @@ public class CFG {
       case STRING_LITERAL:
       case BOOLEAN_LITERAL:
       case NULL_LITERAL:
-      default:
         currentBlock.elements.add(tree);
+        break;
+      case TYPE_CAST:
+        buildTypeCast(tree);
+        break;
+      case INSTANCE_OF:
+        buildInstanceOf((InstanceOfTree) tree);
+        break;
+      case NEW_ARRAY:
+        buildNewArray((NewArrayTree) tree);
+        break;
+      case METHOD_REFERENCE:
+        // Java 8 constructions : ignored for now.
+        break;
+      case EMPTY_STATEMENT:
+      case CLASS:
+      case ENUM:
+      case ANNOTATION_TYPE:
+      case INTERFACE:
+      case LAMBDA_EXPRESSION:
+        // store declarations as complete blocks.
+        currentBlock.elements.add(tree);
+        break;
+      default:
+        throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());
     }
+  }
 
+  private void buildReturnStatement(ReturnStatementTree tree) {
+    ReturnStatementTree s = tree;
+    currentBlock = createUnconditionalJump(s, exitBlock);
+    ExpressionTree expression = s.expression();
+    if (expression != null) {
+      build(expression);
+    }
+  }
+
+  private void buildMethodInvocation(MethodInvocationTree tree) {
+    MethodInvocationTree mit = tree;
+    currentBlock.elements.add(mit);
+    build(mit.methodSelect());
+    for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
+      build(arg);
+    }
+  }
+
+  private void buildIfStatement(IfStatementTree tree) {
+    IfStatementTree ifStatementTree = tree;
+    Block next = currentBlock;
+    // process else-branch
+    Block elseBlock = next;
+    StatementTree elseStatement = ifStatementTree.elseStatement();
+    if (elseStatement != null) {
+      // if statement will create the required block.
+      if (!elseStatement.is(Tree.Kind.IF_STATEMENT)) {
+        currentBlock = createBlock(next);
+      }
+      build(elseStatement);
+      elseBlock = currentBlock;
+    }
+    // process then-branch
+    currentBlock = createBlock(next);
+    build(ifStatementTree.thenStatement());
+    Block thenBlock = currentBlock;
+    // process condition
+    currentBlock = createBranch(ifStatementTree, thenBlock, elseBlock);
+    buildCondition(ifStatementTree.condition(), thenBlock, elseBlock);
+  }
+
+  private void buildConditionalExpression(ConditionalExpressionTree tree) {
+    ConditionalExpressionTree cond = tree;
+    Block next = currentBlock;
+    // process else-branch
+    ExpressionTree elseStatement = cond.falseExpression();
+    currentBlock = createBlock(next);
+    build(elseStatement);
+    Block elseBlock = currentBlock;
+    // process then-branch
+    currentBlock = createBlock(next);
+    build(cond.trueExpression());
+    Block thenBlock = currentBlock;
+    // process condition
+    currentBlock = createBranch(cond, thenBlock, elseBlock);
+    buildCondition(cond.condition(), thenBlock, elseBlock);
+  }
+
+  private void buildVariable(VariableTree tree) {
+    currentBlock.elements.add(tree);
+    ExpressionTree initializer = tree.initializer();
+    if (initializer != null) {
+      build(initializer);
+    }
+  }
+
+  private void buildBinaryExpression(Tree tree) {
+    BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
+    currentBlock.elements.add(tree);
+    build(binaryExpressionTree.rightOperand());
+    build(binaryExpressionTree.leftOperand());
+  }
+
+  private void buildAssignment(AssignmentExpressionTree tree) {
+    currentBlock.elements.add(tree);
+    build(tree.variable());
+    build(tree.expression());
+  }
+
+  private void buildMemberSelect(MemberSelectExpressionTree tree) {
+    MemberSelectExpressionTree mse = tree;
+    currentBlock.elements.add(mse);
+    // int.class or String[].class are memberSelectExpression which expression part is not an expression.
+    if (!"class".equals(mse.identifier().name())) {
+      build(mse.expression());
+    }
+  }
+
+  private void buildConditionalAnd(BinaryExpressionTree tree) {
+    // process RHS
+    Block falseBlock = currentBlock;
+    currentBlock = createBlock(falseBlock);
+    build(tree.rightOperand());
+    Block trueBlock = currentBlock;
+    // process LHS
+    currentBlock = createBranch(tree, trueBlock, falseBlock);
+    build(tree.leftOperand());
+  }
+
+  private void buildConditionalOr(BinaryExpressionTree tree) {
+    // process RHS
+    Block trueBlock = currentBlock;
+    currentBlock = createBlock(trueBlock);
+    build(tree.rightOperand());
+    Block falseBlock = currentBlock;
+    // process LHS
+    currentBlock = createBranch(tree, trueBlock, falseBlock);
+    build(tree.leftOperand());
+  }
+
+  private void buildLabeledStatement(LabeledStatementTree tree) {
+    LabeledStatementTree s = tree;
+    build(s.statement());
+    currentBlock = createBlock(currentBlock);
+    labels.put(s.label().name(), currentBlock);
+    return;
+  }
+
+  private void buildSwitchStatement(SwitchStatementTree tree) {
+    // FIXME useless node created for default cases.
+    SwitchStatementTree switchStatementTree = tree;
+    Block switchSuccessor = currentBlock;
+    // process condition
+    currentBlock = createBlock();
+    currentBlock.terminator = switchStatementTree;
+    switches.addLast(currentBlock);
+    build(switchStatementTree.expression());
+    // process body
+    currentBlock = createBlock(switchSuccessor);
+    breakTargets.addLast(switchSuccessor);
+    if (!switchStatementTree.cases().isEmpty()) {
+      CaseGroupTree firstCase = switchStatementTree.cases().get(0);
+      for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
+        build(caseGroupTree.body());
+        switches.getLast().successors.add(currentBlock);
+        if (caseGroupTree != firstCase) {
+          // No block predecessing the first case group.
+          currentBlock = createBlock(currentBlock);
+        }
+      }
+    }
+    breakTargets.removeLast();
+    // process condition
+    currentBlock = switches.removeLast();
+  }
+
+  private void buildBreakStatement(BreakStatementTree tree) {
+    if (tree.label() == null) {
+      if (breakTargets.isEmpty()) {
+        throw new IllegalStateException("'break' statement not in loop or switch statement");
+      }
+      currentBlock = createUnconditionalJump(tree, breakTargets.getLast());
+    } else {
+      currentBlock = createUnconditionalJump(tree, null);
+      gotos.add(currentBlock);
+    }
+  }
+
+  private void buildContinueStatement(ContinueStatementTree tree) {
+    if (tree.label() == null) {
+      if (continueTargets.isEmpty()) {
+        throw new IllegalStateException("'continue' statement not in loop or switch statement");
+      }
+      currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
+    } else {
+      currentBlock = createUnconditionalJump(tree, null);
+      gotos.add(currentBlock);
+    }
+  }
+
+  private void buildWhileStatement(WhileStatementTree tree) {
+    WhileStatementTree s = tree;
+    Block falseBranch = currentBlock;
+    Block loopback = createBlock();
+    // process body
+    currentBlock = createBlock(loopback);
+    continueTargets.addLast(loopback);
+    breakTargets.addLast(falseBranch);
+    build(s.statement());
+    breakTargets.removeLast();
+    continueTargets.removeLast();
+    Block bodyBlock = currentBlock;
+    // process condition
+    currentBlock = createBranch(s, bodyBlock, falseBranch);
+    buildCondition(s.condition(), bodyBlock, falseBranch);
+    loopback.successors.add(currentBlock);
+    currentBlock = createBlock(currentBlock);
+  }
+
+  private void buildDoWhileStatement(DoWhileStatementTree tree) {
+    DoWhileStatementTree s = tree;
+    Block falseBranch = currentBlock;
+    Block loopback = createBlock();
+    // process condition
+    currentBlock = createBranch(s, loopback, falseBranch);
+    buildCondition(s.condition(), loopback, falseBranch);
+    // process body
+    currentBlock = createBlock(currentBlock);
+    continueTargets.addLast(loopback);
+    breakTargets.addLast(falseBranch);
+    build(s.statement());
+    breakTargets.removeLast();
+    continueTargets.removeLast();
+    loopback.successors.add(currentBlock);
+    currentBlock = createBlock(currentBlock);
+  }
+
+  private void buildForEachStatement(ForEachStatement tree) {
+    // TODO(npe) One solution is to create a forstatement node depending on type of expression (iterable or array) and build CFG from it.
+    Block afterLoop = currentBlock;
+    currentBlock = createBlock();
+    Block loopback = currentBlock;
+    continueTargets.addLast(loopback);
+    breakTargets.addLast(afterLoop);
+    build(tree.statement());
+    breakTargets.removeLast();
+    continueTargets.removeLast();
+    currentBlock = createBranch(tree, currentBlock, afterLoop);
+    loopback.successors.add(currentBlock);
+    build(tree.variable());
+    build(tree.expression());
+    currentBlock = createBlock(currentBlock);
+  }
+
+  private void buildForStatement(ForStatementTree tree) {
+    Block falseBranch = currentBlock;
+    // process step
+    currentBlock = createBlock();
+    Block updateBlock = currentBlock;
+    for (StatementTree updateTree : Lists.reverse(tree.update())) {
+      build(updateTree);
+    }
+    continueTargets.addLast(currentBlock);
+    // process body
+    currentBlock = createBlock(currentBlock);
+    breakTargets.addLast(falseBranch);
+    build(tree.statement());
+    breakTargets.removeLast();
+    continueTargets.removeLast();
+    Block body = currentBlock;
+    // process condition
+    ExpressionTree condition = tree.condition();
+    if (condition != null) {
+      currentBlock = createBranch(tree, body, falseBranch);
+      buildCondition(condition, body, falseBranch);
+    } else {
+      currentBlock = createUnconditionalJump(tree, body);
+    }
+    updateBlock.successors.add(currentBlock);
+    // process init
+    currentBlock = createBlock(currentBlock);
+    for (StatementTree init : Lists.reverse(tree.initializer())) {
+      build(init);
+    }
+  }
+
+  private void buildTryStatement(TryStatementTree tree) {
+    // FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
+    TryStatementTree tryStatementTree = tree;
+    currentBlock = createBlock(currentBlock);
+    BlockTree finallyBlock = tryStatementTree.finallyBlock();
+    if (finallyBlock != null) {
+      build(finallyBlock);
+    }
+    currentBlock = createBlock(currentBlock);
+    build(tryStatementTree.block());
+    currentBlock = createBlock(currentBlock);
+    currentBlock.elements.add(tree);
+  }
+
+  private void buildThrowStatement(ThrowStatementTree tree) {
+    // FIXME this won't work if it is intended to be caught by a try statement.
+    ThrowStatementTree throwStatementTree = tree;
+    currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
+    build(throwStatementTree.expression());
+  }
+
+  private void buildSynchronizedStatement(SynchronizedStatementTree tree) {
+    SynchronizedStatementTree sst = tree;
+    // Naively build synchronized statement.
+    build(sst.block());
+    build(sst.expression());
+  }
+
+  private void buildUnaryExpression(UnaryExpressionTree tree) {
+    currentBlock.elements.add(tree);
+    build(tree.expression());
+  }
+
+  private void buildArrayAccessExpression(ArrayAccessExpressionTree tree) {
+    currentBlock.elements.add(tree);
+    build(tree.expression());
+    build(tree.dimension());
+  }
+
+  private void buildArrayDimension(ArrayDimensionTree tree) {
+    ExpressionTree expression = tree.expression();
+    if (expression != null) {
+      build(expression);
+    }
+  }
+
+  private void buildNewClass(NewClassTree tree) {
+    currentBlock.elements.add(tree);
+    ExpressionTree enclosingExpression = tree.enclosingExpression();
+    if (enclosingExpression != null) {
+      build(enclosingExpression);
+    }
+    build(Lists.reverse(tree.arguments()));
+  }
+
+  private void buildTypeCast(Tree tree) {
+    currentBlock.elements.add(tree);
+    TypeCastTree typeCastTree = (TypeCastTree) tree;
+    build(typeCastTree.expression());
+  }
+
+  private void buildInstanceOf(InstanceOfTree tree) {
+    InstanceOfTree instanceOfTree = tree;
+    currentBlock.elements.add(instanceOfTree);
+    build(instanceOfTree.expression());
+  }
+
+  private void buildNewArray(NewArrayTree tree) {
+    currentBlock.elements.add(tree);
+    build(Lists.reverse(tree.dimensions()));
+    build(Lists.reverse(tree.initializers()));
   }
 
   private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {
@@ -510,7 +707,7 @@ public class CFG {
         buildCondition(e.leftOperand(), trueBlock, falseBlock);
         break;
       }
-      // Skip syntactic sugar:
+        // Skip syntactic sugar:
       case PARENTHESIZED_EXPRESSION:
         buildCondition(((ParenthesizedTree) syntaxNode).expression(), trueBlock, falseBlock);
         break;
@@ -558,6 +755,9 @@ public class CFG {
     StringBuilder sb = new StringBuilder(syntaxNode.kind().name())
       .append(' ').append(Integer.toHexString(syntaxNode.hashCode()));
     switch (syntaxNode.kind()) {
+      case VARIABLE:
+        sb.append(' ').append(((VariableTree) syntaxNode).simpleName().name());
+        break;
       case IDENTIFIER:
         sb.append(' ').append(((IdentifierTree) syntaxNode).identifierToken().text());
         break;
