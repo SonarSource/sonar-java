@@ -19,20 +19,45 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.sonar.api.CoreProperties;
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.checks.NoSonarFilter;
+import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
+import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
+import org.sonar.api.resources.Resource;
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.api.source.Highlightable;
+import org.sonar.api.source.Symbolizable;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.checks.BadMethodName_S00100_Check;
+import org.sonar.java.filters.SuppressWarningsFilter;
+import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.squidbridge.api.CodeVisitor;
+
+import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
@@ -54,6 +79,68 @@ public class JavaSquidSensorTest {
 
     fileSystem.add(new DefaultInputFile("fake.java").setLanguage("java"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
+  }
+
+  @Test
+  public void test_issues_creation() throws Exception {
+    RulesProfile qp = RulesProfile.create("test", Java.KEY);
+    Settings settings = new Settings();
+    DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/java/"));
+    File file = new File("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java");
+    fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage("java"));
+    Project project = mock(Project.class);
+    JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
+
+    SonarComponents sonarComponents = createSonarComponentsMock();
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
+    JavaSquidSensor jss = new JavaSquidSensor(qp, javaClasspath, sonarComponents, fs, javaResourceLocator, settings, mock(NoSonarFilter.class));
+    SensorContext context = mock(SensorContext.class);
+    when(context.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java"));
+
+    ResourcePerspectives resourcePerspectives = mock(ResourcePerspectives.class);
+    when(sonarComponents.getResourcePerspectives()).thenReturn(resourcePerspectives);
+    Issuable issuable = mock(Issuable.class);
+
+    Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
+    when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
+    Issue issue = mock(Issue.class);
+    when(issueBuilder.ruleKey(Mockito.any(RuleKey.class))).thenReturn(issueBuilder);
+    when(issueBuilder.line(Mockito.anyInt())).thenReturn(issueBuilder);
+    when(issueBuilder.message(Mockito.anyString())).thenReturn(issueBuilder);
+    when(issueBuilder.effortToFix(Mockito.anyDouble())).thenReturn(issueBuilder);
+    when(issueBuilder.build()).thenReturn(issue);
+
+    when(resourcePerspectives.as(any(Issuable.class.getClass()), any(Resource.class))).thenReturn(issuable);
+
+    jss.analyse(project, context);
+
+    verify(issueBuilder, times(3)).ruleKey(RuleKey.of("squid", "S00100"));
+    verify(issueBuilder, times(3)).message("Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.");
+    verify(issuable, times(3)).addIssue(issue);
+
+    settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);
+    jss.analyse(project, context);
+  }
+
+  private static SonarComponents createSonarComponentsMock() {
+    SonarComponents sonarComponents = mock(SonarComponents.class);
+    BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
+    when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
+
+    Symbolizable symbolizable = mock(Symbolizable.class);
+    when(sonarComponents.symbolizableFor(any(File.class))).thenReturn(symbolizable);
+    when(symbolizable.newSymbolTableBuilder()).thenReturn(mock(Symbolizable.SymbolTableBuilder.class));
+    when(sonarComponents.fileLinesContextFor(any(File.class))).thenReturn(mock(FileLinesContext.class));
+
+    Highlightable highlightable = mock(Highlightable.class);
+    when(highlightable.newHighlighting()).thenReturn(mock(Highlightable.HighlightingBuilder.class));
+    when(sonarComponents.highlightableFor(any(File.class))).thenReturn(highlightable);
+
+    Checks<JavaCheck> checks = mock(Checks.class);
+    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodName_S00100_Check.class)));
+    when(sonarComponents.checks()).thenReturn(Lists.<Checks<JavaCheck>>newArrayList(checks));
+
+    return sonarComponents;
   }
 
   @Test
