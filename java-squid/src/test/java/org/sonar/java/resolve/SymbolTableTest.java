@@ -552,6 +552,12 @@ public class SymbolTableTest {
 
     assertThat(result.reference(156, 5)).isSameAs(result.symbol("process3", 153));
     assertThat(result.reference(157, 5)).isSameAs(result.symbol("process3", 154));
+
+    assertThat(result.reference(169, 5)).isSameAs(result.symbol("varargs", 162));
+    assertThat(result.reference(170, 5)).isSameAs(result.symbol("varargs", 165));
+
+    assertThat(result.reference(180, 5)).isSameAs(result.symbol("varargs2", 173));
+    assertThat(result.reference(181, 5)).isSameAs(result.symbol("varargs2", 176));
   }
 
   @Test

@@ -21,9 +21,10 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -446,9 +447,9 @@ public class Resolve {
     if (!isAccessible(env, site, symbol)) {
       return new AccessErrorJavaSymbol(symbol, Symbols.unknownType);
     }
-    JavaSymbol mostSpecific = selectMostSpecific(symbol, bestSoFar, argTypes);
+    JavaSymbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
-      //same signature, we keep the first symbol found (overrides the other one).
+      // same signature, we keep the first symbol found (overrides the other one).
       mostSpecific = bestSoFar;
     }
     return mostSpecific;
@@ -463,20 +464,20 @@ public class Resolve {
     int formalsSize = formals.size();
     int nbArgToCheck = argsSize - formalsSize;
     if (isVarArgs) {
-      //Check at least last parameter for varags compatibility
-      nbArgToCheck += 1;
+      // check at least last parameter for varargs compatibility
+      nbArgToCheck++;
       if (nbArgToCheck < 0) {
-        //arity is not correct, it can only differ negatively by one for varargs.
+        // arity is not correct, it can only differ negatively by one for varargs.
         return false;
       }
     } else if (nbArgToCheck != 0) {
-      //Not a vararg, we should have same number of arguments
+      // not a vararg, we should have same number of arguments
       return false;
     }
     for (int i = 1; i <= nbArgToCheck; i++) {
       JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
       JavaType argType = argTypes.get(argsSize - i);
-      //Check type of element of array or if we invoke with an array that it is a compatible array type
+      // check type of element of array or if we invoke with an array that it is a compatible array type
       if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
         return false;
       }
@@ -508,7 +509,7 @@ public class Resolve {
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
    */
-  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes) {
+  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2) {
     // FIXME get rig of null check
     if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
@@ -529,9 +530,30 @@ public class Resolve {
    * @return true, if signature of m1 is more specific than signature of m2
    */
   private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2) {
-    //TODO handle specific signature with varargs
-    // ((MethodSymbol) m2).isVarArgs()
-    return isArgumentsAcceptable(((JavaType.MethodJavaType) m1.type).argTypes, ((JavaType.MethodJavaType) m2.type).argTypes, false, false);
+    List<JavaType> m1ArgTypes = ((JavaType.MethodJavaType) m1.type).argTypes;
+    List<JavaType> m2ArgTypes = ((JavaType.MethodJavaType) m2.type).argTypes;
+    if (((JavaSymbol.MethodJavaSymbol) m1).isVarArgs()) {
+      m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());
+    }
+    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false);
+  }
+
+  private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {
+    List<JavaType> newArgTypes = new ArrayList<>(m1ArgTypes);
+    int m1ArgTypesSize = newArgTypes.size();
+    int m1ArgTypesLast = m1ArgTypesSize - 1;
+    Type lastElementType = ((Type.ArrayType) newArgTypes.get(m1ArgTypesLast)).elementType();
+    // replace last element type from GivenType[] to GivenType
+    newArgTypes.set(m1ArgTypesLast, (JavaType) lastElementType);
+    // if m1ArgTypes smaller than size pad it with lastElementType
+    for (int i = m1ArgTypesSize; i < size - 1; i++) {
+      if (i < newArgTypes.size()) {
+        newArgTypes.set(i, (JavaType) lastElementType);
+      } else {
+        newArgTypes.add((JavaType) lastElementType);
+      }
+    }
+    return newArgTypes;
   }
 
   /**

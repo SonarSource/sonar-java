@@ -157,3 +157,27 @@ class OverloadingAutoboxing {
     process3(integer1);
   }
 }
+
+class VarargsMostSpecific {
+  void varargs(String first, String second, Object... objects) {
+  }
+
+  void varargs(String... strings) {
+  }
+
+  void varargs_usage() {
+    varargs("", "", new Object());
+    varargs("", "", "");
+  }
+
+  void varargs2(Object... objects) {
+  }
+
+  void varargs2(String string, String... strings) {
+  }
+
+  void varargs_usage_2() {
+    varargs2("", "", new Object());
+    varargs2("", "", "");
+  }
+}
