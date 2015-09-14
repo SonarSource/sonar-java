@@ -42,6 +42,7 @@
 
   <modules>
     <module>java-squid</module>
+    <module>java-checks-testkit</module>
     <module>java-checks</module>
     <module>sonar-java-plugin</module>
     <module>java-surefire</module>
