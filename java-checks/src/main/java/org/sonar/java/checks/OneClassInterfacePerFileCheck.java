@@ -33,7 +33,7 @@ import java.util.List;
 
 @Rule(
   key = "S1996",
-  name = "Files should contain only one class or interface each",
+  name = "Files should contain only one top-level class or interface each",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
@@ -49,8 +49,8 @@ public class OneClassInterfacePerFileCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     int types = ((CompilationUnitTree) tree).types().size();
     if (types > 1) {
-      context.addIssue(-1, OneClassInterfacePerFileCheck.this, "There are " + types + " types in this file; move all but one of them to other files.", (double) (types - 1));
-
+      context.addIssue(
+        -1, OneClassInterfacePerFileCheck.this, "There are " + types + " top-level types in this file; move all but one of them to other files.", (double) (types - 1));
     }
   }
 
