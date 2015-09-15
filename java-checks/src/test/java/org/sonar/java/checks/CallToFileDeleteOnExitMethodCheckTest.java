@@ -20,19 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CallToFileDeleteOnExitMethodCheckTest {
 
-  private final CallToFileDeleteOnExitMethodCheck check = new CallToFileDeleteOnExitMethodCheck();
-
   @Test
   public void test() {
-    SourceFile file = BytecodeFixture.scan("CallToFileDeleteOnExitMethod", check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(27).withMessage("Do not use method 'File#deleteOnExit()'.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CallToFileDeleteOnExitMethod.java", new CallToFileDeleteOnExitMethodCheck());
   }
 
 }

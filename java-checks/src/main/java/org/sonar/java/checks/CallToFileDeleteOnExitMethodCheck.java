@@ -19,17 +19,17 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
+
+import java.util.List;
 
 @Rule(
   key = "CallToFileDeleteOnExitMethod",
@@ -38,27 +38,15 @@ import org.sonar.squidbridge.api.SourceFile;
   priority = Priority.MAJOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("30min")
-public class  CallToFileDeleteOnExitMethodCheck extends BytecodeVisitor {
-
-  private AsmClass asmClass;
+public class  CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(MethodMatcher.create().typeDefinition("java.io.File").name("deleteOnExit").withNoParameterConstraint());
   }
 
   @Override
-  public void visitEdge(AsmEdge edge) {
-    if (edge.getTo() instanceof AsmMethod) {
-      AsmMethod targetMethod = (AsmMethod) edge.getTo();
-      AsmClass targetClass = targetMethod.getParent();
-      if ("java/io/File".equals(targetClass.getInternalName()) && "deleteOnExit()V".equals(targetMethod.getKey())) {
-        SourceFile sourceFile = getSourceFile(asmClass);
-        CheckMessage message = new CheckMessage(this, "Do not use method 'File#deleteOnExit()'.");
-        message.setLine(edge.getSourceLineNumber());
-        sourceFile.log(message);
-      }
-    }
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    addIssue(mit, "Remove this call to \"deleteOnExit\".");
   }
-
 }
