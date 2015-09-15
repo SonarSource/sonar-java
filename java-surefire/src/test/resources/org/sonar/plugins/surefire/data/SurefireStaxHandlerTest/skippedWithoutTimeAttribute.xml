@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="TSuite"
+           failures="0"
+           errors="0"
+           skipped="2"
+           tests="4">
+  <testcase classname="TSuite.A"
+            name="t1"
+            time="67.145"/>
+  <testcase classname="TSuite.A"
+            name="t2"
+            time="488.531"/>
+  <testcase classname="TSuite.A" name="t3">
+    <skipped/>
+  </testcase>
+  <testcase classname="TSuite.A" name="t4">
+    <skipped/>
+  </testcase>
+</testsuite>

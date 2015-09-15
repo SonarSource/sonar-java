@@ -87,7 +87,8 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     detail.setName(name);
 
     String status = UnitTestResult.STATUS_OK;
-    long duration = getTimeAttributeInMS(testCaseCursor);
+    String time = testCaseCursor.getAttrValue("time");
+    Long duration = null;
 
     SMInputCursor childNode = testCaseCursor.descendantElementCursor();
     if (childNode.getNext() != null) {
@@ -109,15 +110,18 @@ public class SurefireStaxHandler implements XmlStreamHandler {
     while (childNode.getNext() != null) {
       // make sure we loop till the end of the elements cursor
     }
+    if (duration == null) {
+      duration = getTimeAttributeInMS(time);
+    }
     detail.setDurationMilliseconds(duration);
     detail.setStatus(status);
     return detail;
   }
 
-  private static long getTimeAttributeInMS(SMInputCursor testCaseCursor) throws XMLStreamException {
+  private static long getTimeAttributeInMS(String value) throws XMLStreamException {
     // hardcoded to Locale.ENGLISH see http://jira.codehaus.org/browse/SONAR-602
     try {
-      Double time = ParsingUtils.parseNumber(testCaseCursor.getAttrValue("time"), Locale.ENGLISH);
+      Double time = ParsingUtils.parseNumber(value, Locale.ENGLISH);
       return !Double.isNaN(time) ? (long) ParsingUtils.scaleValue(time * 1000, 3) : 0L;
     } catch (ParseException e) {
       throw new XMLStreamException(e);
