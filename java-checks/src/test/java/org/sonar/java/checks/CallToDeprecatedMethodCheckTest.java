@@ -20,19 +20,12 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CallToDeprecatedMethodCheckTest {
 
-  private final CallToDeprecatedMethodCheck check = new CallToDeprecatedMethodCheck();
-
   @Test
   public void test() {
-    SourceFile file = BytecodeFixture.scan("CallToDeprecatedMethod", check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(26).withMessage("Method 'String.getBytes(...)' is deprecated.")
-      .next().atLine(27).withMessage("Constructor 'CallToDeprecatedMethod$DeprecatedConstructor(...)' is deprecated.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CallToDeprecatedMethod.java", new CallToDeprecatedMethodCheck());
   }
 }

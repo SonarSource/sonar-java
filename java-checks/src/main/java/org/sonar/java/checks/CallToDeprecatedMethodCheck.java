@@ -19,18 +19,18 @@
  */
 package org.sonar.java.checks;
 
-import org.apache.commons.lang.StringUtils;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
+
+import java.util.List;
 
 @Rule(
   key = "CallToDeprecatedMethod",
@@ -39,36 +39,30 @@ import org.sonar.squidbridge.api.SourceFile;
   priority = Priority.MINOR)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
 @SqaleConstantRemediation("15min")
-public class CallToDeprecatedMethodCheck extends BytecodeVisitor {
-
-  private AsmClass asmClass;
+public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
   }
 
   @Override
-  public void visitEdge(AsmEdge edge) {
-    if (edge.getTo().isDeprecated() && edge.getTo() instanceof AsmMethod) {
-      AsmMethod targetMethod = (AsmMethod) edge.getTo();
-      SourceFile sourceFile = getSourceFile(asmClass);
-      CheckMessage message = new CheckMessage(this, formatMessage(targetMethod));
-      message.setLine(edge.getSourceLineNumber());
-      sourceFile.log(message);
-    }
-  }
-
-  public String formatMessage(AsmMethod asmMethod) {
-    if (asmMethod.isConstructor()) {
-      return "Constructor '" + getShortClassName(asmMethod.getParent()) + "(...)' is deprecated.";
+  public void visitNode(Tree tree) {
+    Symbol symbol;
+    if (tree.is(Tree.Kind.NEW_CLASS)) {
+      symbol = ((NewClassTree) tree).constructorSymbol();
     } else {
-      return "Method '" + getShortClassName(asmMethod.getParent()) + "." + asmMethod.getName() + "(...)' is deprecated.";
+      symbol = ((MethodInvocationTree) tree).symbol();
+    }
+    if (symbol.metadata().isAnnotatedWith("java.lang.Deprecated")) {
+      String name = symbol.name();
+      String message;
+      if ("<init>".equals(name)) {
+        message = "Constructor '" + symbol.owner().name() + "(...)' is deprecated.";
+      } else {
+        message = "Method '" + symbol.owner().name() + "." + name + "(...)' is deprecated.";
+      }
+      addIssue(tree, message);
     }
   }
-
-  public String getShortClassName(AsmClass asmClass) {
-    return StringUtils.substringAfterLast(asmClass.getInternalName(), "/");
-  }
-
 }
