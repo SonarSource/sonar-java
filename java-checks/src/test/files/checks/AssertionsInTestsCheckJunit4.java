@@ -7,6 +7,7 @@ import java.lang.IllegalStateException;
 import java.util.List;
 import org.mockito.Mockito;
 import org.junit.rules.ExpectedException;
+import junit.framework.TestCase;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -160,4 +161,15 @@ public class AssertionsInTestsCheckTest {
     compliant1();
   }
 
+}
+
+class OtherTest extends TestCase {
+  @Test
+  public void test() {
+    assertEquals(true, true);
+  }
+  @Test
+  public void testFail() {
+    fail("message");
+  }
 }

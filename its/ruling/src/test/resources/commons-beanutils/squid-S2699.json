@@ -55,11 +55,6 @@
 165,
 229,
 ],
-'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/MethodUtilsTestCase.java':[
-81,
-89,
-101,
-],
 'commons-beanutils:commons-beanutils:src/test/java/org/apache/commons/beanutils/PropertyUtilsBenchCase.java':[
 167,
 200,

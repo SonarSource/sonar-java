@@ -67,8 +67,8 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.junit.rules.ExpectedException").name(NameCriteria.startsWith("expect")).withNoParameterConstraint(),
-    MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
-    MethodMatcher.create().typeDefinition("junit.framework.Assert").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("junit.framework.Assert")).name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("junit.framework.Assert")).name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
     // fest 1.x
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.fest.assertions.GenericAssert")).name(NameCriteria.any()).withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.fest.assertions.Fail").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
