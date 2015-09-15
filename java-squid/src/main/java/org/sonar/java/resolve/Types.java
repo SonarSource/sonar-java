@@ -69,8 +69,7 @@ public class Types {
           for (JavaType.ClassJavaType classType : t.getSymbol().superTypes()) {
             erasedTypes.add(classType.erasure());
           }
-
-          result = erasedTypes.contains(s);
+          result = erasedTypes.contains(s.erasure());
           break;
         case JavaType.BOT:
           result = s.tag == JavaType.BOT || s.tag == JavaType.CLASS || s.tag == JavaType.ARRAY;

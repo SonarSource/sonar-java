@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 class Result {
@@ -84,17 +85,24 @@ class Result {
   }
 
   public JavaSymbol reference(int line, int column) {
-    return (JavaSymbol) referenceTree(line, column, true);
+    return (JavaSymbol) referenceTree(line, column, true, null);
+  }
+
+  public JavaSymbol reference(int line, int column, String name) {
+    return (JavaSymbol) referenceTree(line, column, true, name);
   }
 
   public IdentifierTree referenceTree(int line, int column) {
-    return (IdentifierTree) referenceTree(line, column, false);
+    return (IdentifierTree) referenceTree(line, column, false, null);
   }
 
-  private Object referenceTree(int line, int column, boolean searchSymbol) {
+  private Object referenceTree(int line, int column, boolean searchSymbol, @Nullable String name) {
     // In SSLR column starts at 0, but here we want consistency with IDE, so we start from 1:
     column -= 1;
     for (Symbol symbol : semanticModel.getSymbolUsed()) {
+      if (name != null && !name.equals(symbol.name())) {
+        continue;
+      }
       for (IdentifierTree usage : symbol.usages()) {
         SyntaxToken token = usage.identifierToken();
         if (token.line() == line && token.column() == column) {

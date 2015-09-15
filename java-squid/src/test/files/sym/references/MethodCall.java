@@ -1,4 +1,4 @@
-package references;
+package references; import java.util.List;
 
 @SuppressWarnings("all")
 class MethodCall extends Parent {
@@ -179,5 +179,34 @@ class VarargsMostSpecific {
   void varargs_usage_2() {
     varargs2("", "", new Object());
     varargs2("", "", "");
+  }
+}
+
+class GenericClass {
+
+  class NestedGenericClass<T> {
+    private NestedGenericClass(T argument) {
+    }
+
+    private void genericMethod(T argument) {
+    }
+  }
+
+  class ComplexNestedGenericClass<T extends java.util.Collection<Object>> {
+    private ComplexNestedGenericClass(T argument) {
+    }
+
+    private void complexGenericMethod(T argument) {
+    }
+  }
+  class U extends java.util.ArrayList<Object> { }
+  public void test() {
+    NestedGenericClass<List<Object>> nestedGenericClass = new NestedGenericClass<List<Object>>(new java.util.ArrayList<Object>());
+    nestedGenericClass.genericMethod(new java.util.LinkedList<Object>());
+    ComplexNestedGenericClass<List<Object>> complexNestedGenericClass = new ComplexNestedGenericClass<List<Object>>(new java.util.ArrayList<Object>());
+    complexNestedGenericClass.complexGenericMethod(new java.util.LinkedList<Object>());
+    ComplexNestedGenericClass v1 = new ComplexNestedGenericClass(new java.util.ArrayList<Object>());
+    ComplexNestedGenericClass<U> v2 = new ComplexNestedGenericClass<U>(new U());
+    ComplexNestedGenericClass<? extends List<Object>> v3 = new ComplexNestedGenericClass<List<Object>>(new java.util.ArrayList<Object>());
   }
 }
