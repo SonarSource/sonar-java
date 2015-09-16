@@ -20,21 +20,22 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import java.util.List;
 
 @Rule(
   key = "S3052",
@@ -61,6 +62,10 @@ public class DefaultInitializedFieldCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkVariable(VariableTree member) {
+    // 'final' variable could be initialized by default value
+    if (ModifiersUtils.hasModifier(member.modifiers(), Modifier.FINAL)) {
+      return;
+    }
     ExpressionTree initializer = member.initializer();
     if (initializer != null) {
       initializer = ExpressionsHelper.skipParentheses(initializer);
@@ -75,7 +80,8 @@ public class DefaultInitializedFieldCheck extends SubscriptionBaseVisitor {
       case NULL_LITERAL:
         return true;
       case CHAR_LITERAL:
-        return "'\\u0000'".equals(((LiteralTree) expression).value());
+        String charValue = ((LiteralTree) expression).value();
+        return "'\\u0000'".equals(charValue) || "'\\0'".equals(charValue);
       case BOOLEAN_LITERAL:
         return "false".equals(((LiteralTree) expression).value());
       case INT_LITERAL:
