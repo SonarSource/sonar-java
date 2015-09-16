@@ -3,7 +3,7 @@
 130,
 ],
 'com.google.guava:guava:src/com/google/common/io/Files.java':[
-677,
+678,
 ],
 'com.google.guava:guava:src/com/google/common/io/LittleEndianDataInputStream.java':[
 222,
@@ -13,14 +13,5 @@
 ],
 'com.google.guava:guava:src/com/google/common/reflect/Element.java':[
 68,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractCheckedFuture.java':[
-105,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/CheckedFuture.java':[
-77,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/ForwardingCheckedFuture.java':[
-50,
 ],
 }
