@@ -114,6 +114,15 @@ public class SurefireStaxHandlerTest {
     assertThat(index.get("org.sonar.SecondTest").getTests(), is(4L));
   }
 
+  @Test
+  public void shouldSupportSkippedTestWithoutTimeAttribute() throws XMLStreamException {
+    parse("skippedWithoutTimeAttribute.xml");
+
+    UnitTestClassReport publicClass = index.get("TSuite.A");
+    assertThat(publicClass.getSkipped(), is(2L));
+    assertThat(publicClass.getTests(), is(4L));
+  }
+
   private void parse(String path) throws XMLStreamException {
     File xml = TestUtils.getResource(getClass(), path);
     SurefireStaxHandler staxParser = new SurefireStaxHandler(index);

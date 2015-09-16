@@ -1,17 +1,25 @@
-<p>Many consider <code>clone</code> and <code>Cloneable</code> broken in Java, largely because the rules for overriding <code>clone</code> are tricky and difficult to get right. A copy constructor or copy factory should be used instead.</p>
-<h2>Noncompliant Code Example</h2>
+<p>
+  Many consider <code>clone</code> and <code>Cloneable</code> broken in Java,
+  largely because the rules for overriding <code>clone</code> are tricky and difficult to get right.
+  A copy constructor or copy factory should be used instead.
+</p>
+<p>
+  This rule raises an issue when <code>clone</code> is overridden,
+  whether or not <code>Cloneable</code> is implemented.
+</p>
 
+<h2>Noncompliant Code Example</h2>
 <pre>
 public class MyClass {
   // ...
 
-  public MyClass clone() {  // Noncompliant
+  public Object clone() { // Noncompliant
     //...
   }
 }
 </pre>
-<h2>Compliant Solution</h2>
 
+<h2>Compliant Solution</h2>
 <pre>
 public class MyClass {
   // ...
@@ -21,4 +29,3 @@ public class MyClass {
   }
 }
 </pre>
-

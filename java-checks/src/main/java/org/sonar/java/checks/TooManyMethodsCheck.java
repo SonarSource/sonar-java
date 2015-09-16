@@ -27,7 +27,6 @@ import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -38,7 +37,6 @@ import java.util.List;
   name = "Classes should not have too many methods",
   tags = {"brain-overload"},
   priority = Priority.MAJOR)
-@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("1h")
 public class TooManyMethodsCheck extends SubscriptionBaseVisitor {
