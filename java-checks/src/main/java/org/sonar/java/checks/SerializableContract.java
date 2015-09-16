@@ -19,24 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 import org.sonar.java.bytecode.asm.AsmMethod;
 
 import java.util.Set;
 
 public final class SerializableContract {
 
-  private static final Set<String> SERIALIZABLE_CONTRACT_METHODS = Sets.newHashSet();
+  static final Set<String> SERIALIZABLE_CONTRACT_METHODS = ImmutableSet.of(
+    "writeObject",
+    "readObject",
+    "writeReplace",
+    "readResolve",
+    "readObjectNoData"
+  );
 
   public static final String SERIAL_VERSION_UID_FIELD = "serialVersionUID";
-
-  static {
-    SERIALIZABLE_CONTRACT_METHODS.add("writeObject");
-    SERIALIZABLE_CONTRACT_METHODS.add("readObject");
-    SERIALIZABLE_CONTRACT_METHODS.add("writeReplace");
-    SERIALIZABLE_CONTRACT_METHODS.add("readResolve");
-    SERIALIZABLE_CONTRACT_METHODS.add("readObjectNoData");
-  }
 
   private SerializableContract() {
   }
