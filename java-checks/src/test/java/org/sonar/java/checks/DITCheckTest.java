@@ -20,31 +20,20 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DITCheckTest {
 
-  private final DITCheck check = new DITCheck();
-
   @Test
   public void defaults() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/checks/targets/Dit.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/DitOk.java", new DITCheck());
   }
 
   @Test
   public void test() {
+    DITCheck check = new DITCheck();
     check.setMax(2);
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/checks/targets/Dit.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(22).withMessage("This class has 3 parents which is greater than 2 authorized.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/Dit.java", check);
   }
 
 }
