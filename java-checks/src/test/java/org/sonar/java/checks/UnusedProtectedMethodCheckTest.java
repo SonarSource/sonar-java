@@ -31,7 +31,9 @@ public class UnusedProtectedMethodCheckTest {
   public void test() {
     SourceFile file = BytecodeFixture.scan("UnusedProtectedMethod", check);
     CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().withMessage("Protected method 'unusedProtectedMethod(...)' is never used.") // TODO verify line?
+      .next()
+      .withMessage("Protected method 'unusedProtectedMethod(...)' is never used.")
+      .atLine(31)
       .noMore();
   }
 
