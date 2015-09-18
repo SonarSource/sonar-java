@@ -48,16 +48,16 @@ public class JavaRulingTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-      // workaround until https://jira.sonarsource.com/browse/PM-27 PM-28 are fixed
-      .addPlugin(FileLocation.of(Iterables.getOnlyElement(Arrays.asList(new File("../../sonar-java-plugin/target/").listFiles(new FilenameFilter() {
-        @Override
-        public boolean accept(File dir, String name) {
-          return name.endsWith(".jar") && !name.endsWith("-sources.jar");
-        }
-      }))).getAbsolutePath()))
-      .setOrchestratorProperty("litsVersion", "0.5")
-      .addPlugin("lits")
-      .build();
+    // workaround until https://jira.sonarsource.com/browse/PM-27 PM-28 are fixed
+    .addPlugin(FileLocation.of(Iterables.getOnlyElement(Arrays.asList(new File("../../sonar-java-plugin/target/").listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.endsWith(".jar") && !name.endsWith("-sources.jar");
+      }
+    }))).getAbsolutePath()))
+    .setOrchestratorProperty("litsVersion", "0.5")
+    .addPlugin("lits")
+    .build();
 
   @BeforeClass
   public static void prepare_quality_profiles() {
@@ -66,20 +66,20 @@ public class JavaRulingTest {
         "IndentationCheck",
         ImmutableMap.of("indentationLevel", "4"))
       .put(
-          "S1451",
-          ImmutableMap.of(
-              "headerFormat",
-              "\n/*\n" +
-                  " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
-                  " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
+        "S1451",
+        ImmutableMap.of(
+          "headerFormat",
+          "\n/*\n" +
+            " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
+            " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
       .build();
     ImmutableSet<String> disabledRules = ImmutableSet.of(
-        // disable bytecodeVisitor rules
-        "UnusedPrivateMethod",
-        "CallToDeprecatedMethod",
-        "CycleBetweenPackages",
-        // disable because it generates too many issues, performance reasons
-        "LeftCurlyBraceStartLineCheck"
+      // disable bytecodeVisitor rules
+      "UnusedPrivateMethod",
+      "CallToDeprecatedMethod",
+      "CycleBetweenPackages",
+      // disable because it generates too many issues, performance reasons
+      "LeftCurlyBraceStartLineCheck"
     );
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
     instantiateTemplateRuleS2253();
@@ -87,7 +87,7 @@ public class JavaRulingTest {
 
   @Test
   public void guava() throws Exception {
-   test_project("guava");
+    test_project("guava");
   }
 
   @Test
@@ -101,17 +101,17 @@ public class JavaRulingTest {
   }
 
   private static void test_project(String projectName) throws IOException {
-    File pomFile = FileLocation.of("../sources/"+projectName+"/pom.xml").getFile();
+    File pomFile = FileLocation.of("../sources/" + projectName + "/pom.xml").getFile();
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
-        .setProfile("rules")
-        .setProperty("sonar.cpd.skip", "true")
-        .setProperty("sonar.skipPackageDesign", "true")
-        .setProperty("sonar.analysis.mode", "preview")
-        .setProperty("sonar.issuesReport.html.enable", "true")
-        .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
-        .setProperty("dump.old", FileLocation.of("src/test/resources/" + projectName).getFile().getAbsolutePath())
-        .setProperty("dump.new", FileLocation.of("target/actual/"+projectName).getFile().getAbsolutePath())
-        .setProperty("lits.differences", litsDifferencesPath(projectName));
+      .setProfile("rules")
+      .setProperty("sonar.cpd.skip", "true")
+      .setProperty("sonar.skipPackageDesign", "true")
+      .setProperty("sonar.analysis.mode", "preview")
+      .setProperty("sonar.issuesReport.html.enable", "true")
+      .setProperty("sonar.issuesReport.html.location", htmlReportPath(projectName))
+      .setProperty("dump.old", FileLocation.of("src/test/resources/" + projectName).getFile().getAbsolutePath())
+      .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
+      .setProperty("lits.differences", litsDifferencesPath(projectName));
     orchestrator.executeBuild(mavenBuild);
     assertNoDifferences(projectName);
   }
@@ -127,33 +127,33 @@ public class JavaRulingTest {
   private static void assertNoDifferences(String projectName) throws IOException {
     String differences = Files.toString(new File(litsDifferencesPath(projectName)), StandardCharsets.UTF_8);
     if (!differences.isEmpty()) {
-      throw Fail.fail(differences  + " -> file://" + htmlReportPath(projectName) + "/issues-report.html");
+      throw Fail.fail(differences + " -> file://" + htmlReportPath(projectName) + "/issues-report.html");
     }
   }
 
   private static void instantiateTemplateRuleS2253() {
     SonarClient sonarClient = orchestrator.getServer().adminWsClient();
     sonarClient.post("/api/rules/create", ImmutableMap.<String, Object>builder()
-        .put("name", "stringToCharArray")
-        .put("markdown_description", "stringToCharArray")
-        .put("severity", "INFO")
-        .put("status", "READY")
-        .put("template_key", "squid:S2253")
-        .put("custom_key", "stringToCharArray")
-        .put("prevent_reactivation", "true")
-        .put("params", "name=\"stringToCharArray\";key=\"stringToCharArray\";markdown_description=\"stringToCharArray\";className=\"java.lang.String\";methodName=\"toCharArray\"")
-        .build());
+      .put("name", "stringToCharArray")
+      .put("markdown_description", "stringToCharArray")
+      .put("severity", "INFO")
+      .put("status", "READY")
+      .put("template_key", "squid:S2253")
+      .put("custom_key", "stringToCharArray")
+      .put("prevent_reactivation", "true")
+      .put("params", "name=\"stringToCharArray\";key=\"stringToCharArray\";markdown_description=\"stringToCharArray\";className=\"java.lang.String\";methodName=\"toCharArray\"")
+      .build());
     String post = sonarClient.get("api/rules/app");
     Pattern pattern = Pattern.compile("java-rules-\\d+");
     Matcher matcher = pattern.matcher(post);
     if (matcher.find()) {
       String profilekey = matcher.group();
       sonarClient.post("api/qualityprofiles/activate_rule", ImmutableMap.<String, Object>of(
-          "profile_key", profilekey,
-          "rule_key", "squid:stringToCharArray",
-          "severity", "INFO",
-          "params", ""));
-    }else {
+        "profile_key", profilekey,
+        "rule_key", "squid:stringToCharArray",
+        "severity", "INFO",
+        "params", ""));
+    } else {
       LOG.error("Could not retrieve profile key : Template rule S2253 has not been activated ");
     }
   }
