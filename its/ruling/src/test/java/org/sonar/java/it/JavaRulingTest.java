@@ -82,7 +82,8 @@ public class JavaRulingTest {
       "LeftCurlyBraceStartLineCheck"
     );
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
-    instantiateTemplateRuleS2253();
+    instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"");
+    instantiateTemplateRule("ArchitecturalConstraint", "doNotUseJavaIoFile", "fromClasses=\"**\";toClasses=\"java.io.File\"");
   }
 
   @Test
@@ -131,17 +132,17 @@ public class JavaRulingTest {
     }
   }
 
-  private static void instantiateTemplateRuleS2253() {
+  private static void instantiateTemplateRule(String ruleTemplateKey, String instantiationKey, String params) {
     SonarClient sonarClient = orchestrator.getServer().adminWsClient();
     sonarClient.post("/api/rules/create", ImmutableMap.<String, Object>builder()
-      .put("name", "stringToCharArray")
-      .put("markdown_description", "stringToCharArray")
+      .put("name", instantiationKey)
+      .put("markdown_description", instantiationKey)
       .put("severity", "INFO")
       .put("status", "READY")
-      .put("template_key", "squid:S2253")
-      .put("custom_key", "stringToCharArray")
+      .put("template_key", "squid:" + ruleTemplateKey)
+      .put("custom_key", instantiationKey)
       .put("prevent_reactivation", "true")
-      .put("params", "name=\"stringToCharArray\";key=\"stringToCharArray\";markdown_description=\"stringToCharArray\";className=\"java.lang.String\";methodName=\"toCharArray\"")
+      .put("params", "name=\"" + instantiationKey + "\";key=\"" + instantiationKey + "\";markdown_description=\"" + instantiationKey + "\";" + params)
       .build());
     String post = sonarClient.get("api/rules/app");
     Pattern pattern = Pattern.compile("java-rules-\\d+");
@@ -150,11 +151,11 @@ public class JavaRulingTest {
       String profilekey = matcher.group();
       sonarClient.post("api/qualityprofiles/activate_rule", ImmutableMap.<String, Object>of(
         "profile_key", profilekey,
-        "rule_key", "squid:stringToCharArray",
+        "rule_key", "squid:" + instantiationKey,
         "severity", "INFO",
         "params", ""));
     } else {
-      LOG.error("Could not retrieve profile key : Template rule S2253 has not been activated ");
+      LOG.error("Could not retrieve profile key : Template rule " + ruleTemplateKey + " has not been activated");
     }
   }
 
