@@ -20,74 +20,23 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-import org.sonar.squidbridge.indexer.SquidIndex;
-
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ArchitectureCheckTest {
 
-  private final ArchitectureCheck check = new ArchitectureCheck();
-
   @Test
   public void test() {
-    check.setToClasses("java.**.Pattern");
-    SourceFile file = BytecodeFixture.scan("ArchitectureConstraint", check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(27).withMessage("org/sonar/java/checks/targets/ArchitectureConstraint must not use java/util/regex/Pattern")
-      .noMore();
+    ArchitectureCheck check = new ArchitectureCheck();
+    check.fromClasses = "**.targets.**";
+    check.toClasses = "java.**.Pattern,java.io.File";
+    JavaCheckVerifier.verify("src/test/files/checks/Architecture.java", check);
   }
 
   @Test
-  public void test2() {
-    check.setFromClasses("com.**");
-    check.setToClasses("java.**.Pattern");
-    SourceFile file = BytecodeFixture.scan("ArchitectureConstraint", check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .noMore();
+  public void testOk() {
+    ArchitectureCheck check = new ArchitectureCheck();
+    check.fromClasses = "com.**";
+    check.toClasses = "java.**.Pattern";
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ArchitectureOk.java", check);
   }
-
-  @Test
-  public void test_source_line_is_null_if_not_available () throws Exception {
-    ArchitectureCheck archCheck = new ArchitectureCheck();
-    archCheck.setFromClasses("**");
-    archCheck.setToClasses("**");
-    JavaResourceLocator jrl = mock(JavaResourceLocator.class);
-    when(jrl.findSourceFileKeyByClassName(anyString())).thenReturn("key");
-    archCheck.setJavaResourceLocator(jrl);
-
-    SquidIndex squidIndex = mock(SquidIndex.class);
-    SourceFile sourceFile = mock(SourceFile.class);
-    when(squidIndex.search("key")).thenReturn(sourceFile);
-
-    archCheck.setSquidIndex(squidIndex);
-    AsmEdge asmEdge = Mockito.mock(AsmEdge.class);
-    when(asmEdge.getSourceLineNumber()).thenReturn(0);
-    when(asmEdge.getTargetAsmClass()).thenReturn(new AsmClass("bannedClass"));
-
-    AsmClass myClass = new AsmClass("myClass");
-    archCheck.visitClass(myClass);
-    archCheck.visitEdge(asmEdge);
-    archCheck.leaveClass(myClass);
-
-    ArgumentCaptor<CheckMessage> messageCaptor = ArgumentCaptor.forClass(CheckMessage.class);
-    verify(sourceFile, times(1)).log(messageCaptor.capture());
-
-    CheckMessage value = messageCaptor.getValue();
-    assertThat(value.getLine()).isNull();
-
-  }
-
 }

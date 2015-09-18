@@ -19,22 +19,26 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.NoSqale;
 import org.sonar.squidbridge.annotations.RuleTemplate;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
 
-import java.util.Map;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "ArchitecturalConstraint",
@@ -42,92 +46,71 @@ import java.util.Map;
   priority = Priority.MAJOR)
 @RuleTemplate
 @NoSqale
-public class ArchitectureCheck extends BytecodeVisitor {
+public class ArchitectureCheck extends SubscriptionBaseVisitor {
 
   @RuleProperty(description = "Optional. If this property is not defined, all classes should adhere to this constraint. Ex : **.web.**")
-  private String fromClasses = "";
+  String fromClasses = "";
 
   @RuleProperty(description = "Mandatory. Ex : java.util.Vector, java.util.Hashtable, java.util.Enumeration")
-  private String toClasses = "";
+  String toClasses = "";
 
   private WildcardPattern[] fromPatterns;
   private WildcardPattern[] toPatterns;
-  private AsmClass asmClass;
-  private Map<String, CheckMessage> internalNames;
 
-  public String getFromClasses() {
-    return fromClasses;
-  }
+  private Deque<String> shouldCheck = new LinkedList<>();
+  private Deque<Set<String>> issues = new LinkedList<>();
 
-  public void setFromClasses(String patterns) {
-    this.fromClasses = patterns;
-  }
-
-  public String getToClasses() {
-    return toClasses;
-  }
-
-  public void setToClasses(String patterns) {
-    this.toClasses = patterns;
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.IDENTIFIER);
   }
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    String nameAsmClass = asmClass.getInternalName();
-    if (WildcardPattern.match(getFromPatterns(), nameAsmClass)) {
-      this.asmClass = asmClass;
-      this.internalNames = Maps.newHashMap();
+  public void visitNode(Tree tree) {
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      check((IdentifierTree) tree);
     } else {
-      this.asmClass = null;
+      initClass((ClassTree) tree);
+
     }
   }
 
-  @Override
-  public void leaveClass(AsmClass asmClass) {
-    if (this.asmClass != null) {
-      for (CheckMessage message : internalNames.values()) {
-        SourceFile sourceFile = getSourceFile(asmClass);
-        sourceFile.log(message);
-      }
+  private void check(IdentifierTree tree) {
+    String shouldCheckId = shouldCheck.peekFirst();
+    if (shouldCheckId == null) {
+      return;
     }
-  }
-
-  @Override
-  public void visitEdge(AsmEdge edge) {
-    if (asmClass != null && edge != null) {
-      String internalNameTargetClass = edge.getTargetAsmClass().getInternalName();
-      if (!internalNames.containsKey(internalNameTargetClass)) {
-        if (WildcardPattern.match(getToPatterns(), internalNameTargetClass)) {
-          int sourceLineNumber = getSourceLineNumber(edge);
-          logMessage(asmClass.getInternalName(), internalNameTargetClass, sourceLineNumber);
-        }
-      } else {
-        int sourceLineNumber = getSourceLineNumber(edge);
-        // we log only first occurrence with non-zero line number if exists
-        Integer line = internalNames.get(internalNameTargetClass).getLine();
-        if ((line == null || line == 0) && sourceLineNumber != 0) {
-          logMessage(asmClass.getInternalName(), internalNameTargetClass, sourceLineNumber);
+    Symbol symbol = tree.symbol();
+    if (!symbol.isUnknown()) {
+      Type type = symbol.type();
+      if (type != null) {
+        String fullyQualifiedName = type.fullyQualifiedName();
+        Set<String> currentIssues = issues.peekFirst();
+        if (!currentIssues.contains(fullyQualifiedName) && WildcardPattern.match(getToPatterns(), fullyQualifiedName)) {
+          addIssue(tree, shouldCheckId + " must not use " + fullyQualifiedName);
+          currentIssues.add(fullyQualifiedName);
         }
       }
     }
   }
 
-  private int getSourceLineNumber(AsmEdge edge) {
-    if (edge.getSourceLineNumber() == 0 && edge.getFrom() instanceof AsmMethod) {
-      int line = getMethodLineNumber((AsmMethod) edge.getFrom());
-      if (line > 0) {
-        return line;
-      }
+  private void initClass(ClassTree tree) {
+    String fullyQualifiedName = ((JavaSymbol.TypeJavaSymbol) tree.symbol()).getFullyQualifiedName();
+    if (WildcardPattern.match(getFromPatterns(), fullyQualifiedName)) {
+      shouldCheck.addFirst(fullyQualifiedName);
+      issues.addFirst(new HashSet<String>());
+    } else {
+      shouldCheck.addFirst(null);
+      issues.addFirst(null);
     }
-    return edge.getSourceLineNumber();
   }
 
-  private void logMessage(String fromClass, String toClass, int sourceLineNumber) {
-    CheckMessage message = new CheckMessage(this, fromClass + " must not use " + toClass);
-    if(sourceLineNumber != 0) {
-      message.setLine(sourceLineNumber);
+  @Override
+  public void leaveNode(Tree tree) {
+    if (!tree.is(Tree.Kind.IDENTIFIER)) {
+      shouldCheck.removeFirst();
+      issues.removeFirst();
     }
-    internalNames.put(toClass, message);
   }
 
   private WildcardPattern[] getFromPatterns() {

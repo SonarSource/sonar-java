@@ -207,7 +207,7 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   private WildcardPattern[] getPatterns() {
     if (patterns == null) {
-      patterns = PatternUtils.createPatterns(forClasses);
+      patterns = PatternUtils.createPatterns(forClasses.replace('.', '/'));
     }
     return patterns;
   }

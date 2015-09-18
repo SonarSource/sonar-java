@@ -31,7 +31,7 @@ public final class PatternUtils {
     String[] p = StringUtils.split(patterns, ',');
     WildcardPattern[] result = new WildcardPattern[p.length];
     for (int i = 0; i < result.length; i++) {
-      result[i] = WildcardPattern.create(StringUtils.trim(StringUtils.replace(p[i], ".", "/")));
+      result[i] = WildcardPattern.create(StringUtils.trim(p[i]));
     }
     return result;
   }
