@@ -22,8 +22,15 @@ package org.sonar.java.resolve;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.JavaTree;
+import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -221,6 +228,46 @@ public class JavaTypeTest {
     JavaSymbol.TypeJavaSymbol rootPackageTypeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType2", symbols.defaultPackage);
     assertThat(typeSymbol.type.fullyQualifiedName()).isEqualTo("org.foo.bar.MyType");
     assertThat(rootPackageTypeSymbol.type.fullyQualifiedName()).isEqualTo("MyType2");
+    JavaSymbol.TypeJavaSymbol typeSymbolNested = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "Nested", typeSymbol);
+    assertThat(typeSymbolNested.type.fullyQualifiedName()).isEqualTo("org.foo.bar.MyType$Nested");
+    JavaSymbol.TypeJavaSymbol typeSymbolAnonymous = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", typeSymbol);
+    assertThat(typeSymbolAnonymous.type.fullyQualifiedName()).isEqualTo("org.foo.bar.MyType$1");
+    JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(Flags.PUBLIC, "<init>", typeSymbolNested);
+    JavaSymbol.TypeJavaSymbol typeSymbolAnonymous2 = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", methodSymbol);
+    assertThat(typeSymbolAnonymous2.type.fullyQualifiedName()).isEqualTo("org.foo.bar.MyType$Nested$1");
+  }
+
+  @Test
+  public void test_fully_qualified_name() {
+    File bytecodeDir = new File("target/test-classes");
+    ClassFullQualifiedNameVerifierVisitor visitor = new ClassFullQualifiedNameVerifierVisitor(bytecodeDir);
+    JavaAstScanner.scanSingleFile(
+      new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(visitor, Lists.newArrayList(bytecodeDir)));
+  }
+
+  private static class ClassFullQualifiedNameVerifierVisitor extends SubscriptionVisitor {
+    private final File bytecodeDir;
+
+    public ClassFullQualifiedNameVerifierVisitor(File bytecodeDir) {
+      this.bytecodeDir = bytecodeDir;
+    }
+
+    @Override
+    public List<Tree.Kind> nodesToVisit() {
+      return ImmutableList.of(Tree.Kind.CLASS);
+    }
+
+    @Override
+    public void visitNode(Tree tree) {
+      int line = ((JavaTree) tree).getLine();
+      String expectedFullyQualifiedName = ((ClassTree) tree).openBraceToken().trivias().get(0).comment();
+      expectedFullyQualifiedName = expectedFullyQualifiedName.substring(3, expectedFullyQualifiedName.length() - 3);
+      String classFullyQualifiedName = ((JavaSymbol.TypeJavaSymbol) ((ClassTree) tree).symbol()).getFullyQualifiedName();
+      assertThat(classFullyQualifiedName).as("Symbol mismatch for class at line " + line).isEqualTo(expectedFullyQualifiedName);
+      // check for .class file to make sure we match the compiler naming
+      File expectedDotClassFile = new File(bytecodeDir, classFullyQualifiedName.replace('.', File.separatorChar) + ".class");
+      assertThat(expectedDotClassFile).as("Bytecode file not found for class at line " + line).exists();
+    }
   }
 
   @Test

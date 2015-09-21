@@ -104,14 +104,15 @@ public class ResolveTest {
 
   @Test
   public void test_isSubClass() {
-    JavaSymbol.TypeJavaSymbol base = new JavaSymbol.TypeJavaSymbol(0, "class", null);
+    JavaSymbol.PackageJavaSymbol packageJavaSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
+    JavaSymbol.TypeJavaSymbol base = new JavaSymbol.TypeJavaSymbol(0, "class", packageJavaSymbol);
 
     // same class
     JavaSymbol.TypeJavaSymbol c = base;
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // base not extended by class
-    c = new JavaSymbol.TypeJavaSymbol(0, "class", null);
+    c = new JavaSymbol.TypeJavaSymbol(0, "class", packageJavaSymbol);
 
     // class extends base
     assertThat(resolve.isSubClass(c, base)).isFalse();
@@ -119,7 +120,7 @@ public class ResolveTest {
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class extends superclass
-    ((JavaType.ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", null).type;
+    ((JavaType.ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", packageJavaSymbol).type;
     assertThat(resolve.isSubClass(c, base)).isFalse();
 
     // class extends superclass, which extends base
@@ -127,8 +128,8 @@ public class ResolveTest {
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // base - is an interface
-    base = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", null);
-    c = new JavaSymbol.TypeJavaSymbol(0, "class", null);
+    base = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", packageJavaSymbol);
+    c = new JavaSymbol.TypeJavaSymbol(0, "class", packageJavaSymbol);
 
     // base not implemented by class
     ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of();
@@ -139,7 +140,7 @@ public class ResolveTest {
     assertThat(resolve.isSubClass(c, base)).isTrue();
 
     // class implements interface, but not base interface
-    JavaSymbol.TypeJavaSymbol i = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", null);
+    JavaSymbol.TypeJavaSymbol i = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "class", packageJavaSymbol);
     ((JavaType.ClassJavaType) i.type).interfaces = ImmutableList.of();
     ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of(i.type);
     assertThat(resolve.isSubClass(c, base)).isFalse();
@@ -150,7 +151,7 @@ public class ResolveTest {
 
     // class extends superclass
     ((JavaType.ClassJavaType) c.type).interfaces = ImmutableList.of();
-    ((JavaType.ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", null).type;
+    ((JavaType.ClassJavaType) c.type).supertype = new JavaSymbol.TypeJavaSymbol(0, "superclass", packageJavaSymbol).type;
     ((JavaType.ClassJavaType) ((JavaType.ClassJavaType) c.type).supertype).interfaces = ImmutableList.of();
     assertThat(resolve.isSubClass(c, base)).isFalse();
 

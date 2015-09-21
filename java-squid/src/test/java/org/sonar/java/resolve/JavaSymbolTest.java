@@ -28,6 +28,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 public class JavaSymbolTest {
+  private static final JavaSymbol.PackageJavaSymbol P_PACKAGE_JAVA_SYMBOL = new JavaSymbol.PackageJavaSymbol(null, null);
 
   @Test
   public void kinds() {
@@ -64,8 +65,7 @@ public class JavaSymbolTest {
 
   @Test
   public void test_TypeSymbol() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("p", null);
-    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(42, "name", packageSymbol);
+    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(42, "name", P_PACKAGE_JAVA_SYMBOL);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(42, "name", outermostClass);
 
     assertThat(typeSymbol.kind).isEqualTo(JavaSymbol.TYP);
@@ -73,36 +73,35 @@ public class JavaSymbolTest {
     assertThat(typeSymbol.flags()).isEqualTo(42);
     assertThat(typeSymbol.owner()).isSameAs(outermostClass);
 
-    assertThat(typeSymbol.packge()).isSameAs(packageSymbol);
+    assertThat(typeSymbol.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
     assertThat(typeSymbol.outermostClass()).isSameAs(outermostClass);
     assertThat(typeSymbol.enclosingClass()).isSameAs(typeSymbol);
   }
 
   @Test
   public void access_to_superclass_should_trigger_completion() {
-    JavaSymbol.TypeJavaSymbol typeSymbol = spy(new JavaSymbol.TypeJavaSymbol(42, "name", null));
+    JavaSymbol.TypeJavaSymbol typeSymbol = spy(new JavaSymbol.TypeJavaSymbol(42, "name", P_PACKAGE_JAVA_SYMBOL));
     typeSymbol.getSuperclass();
     verify(typeSymbol).complete();
   }
 
   @Test
   public void access_to_interfaces_should_trigger_completion() {
-    JavaSymbol.TypeJavaSymbol typeSymbol = spy(new JavaSymbol.TypeJavaSymbol(42, "name", null));
+    JavaSymbol.TypeJavaSymbol typeSymbol = spy(new JavaSymbol.TypeJavaSymbol(42, "name", P_PACKAGE_JAVA_SYMBOL));
     typeSymbol.getInterfaces();
     verify(typeSymbol).complete();
   }
 
   @Test
   public void access_to_members_should_trigger_completion() {
-    JavaSymbol.TypeJavaSymbol typeSymbol = spy(new JavaSymbol.TypeJavaSymbol(42, "name", null));
+    JavaSymbol.TypeJavaSymbol typeSymbol = spy(new JavaSymbol.TypeJavaSymbol(42, "name", P_PACKAGE_JAVA_SYMBOL));
     typeSymbol.members();
     verify(typeSymbol).complete();
   }
 
   @Test
   public void test_MethodSymbol() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("p", null);
-    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(42, "name", packageSymbol);
+    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(42, "name", P_PACKAGE_JAVA_SYMBOL);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(42, "t", outermostClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(42, "name", typeSymbol);
 
@@ -111,15 +110,14 @@ public class JavaSymbolTest {
     assertThat(methodSymbol.flags()).isEqualTo(42);
     assertThat(methodSymbol.owner()).isSameAs(typeSymbol);
 
-    assertThat(methodSymbol.packge()).isSameAs(packageSymbol);
+    assertThat(methodSymbol.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
     assertThat(methodSymbol.outermostClass()).isSameAs(outermostClass);
     assertThat(methodSymbol.enclosingClass()).isSameAs(typeSymbol);
   }
 
   @Test
   public void test_VariableSymbol() {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("p", null);
-    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(42, "name", packageSymbol);
+    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(42, "name", P_PACKAGE_JAVA_SYMBOL);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(42, "t", outermostClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(42, "name", typeSymbol);
     JavaSymbol.VariableJavaSymbol variableSymbol = new JavaSymbol.VariableJavaSymbol(42, "name", methodSymbol);
@@ -129,18 +127,17 @@ public class JavaSymbolTest {
     assertThat(variableSymbol.flags()).isEqualTo(42);
     assertThat(variableSymbol.owner()).isSameAs(methodSymbol);
 
-    assertThat(variableSymbol.packge()).isSameAs(packageSymbol);
+    assertThat(variableSymbol.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
     assertThat(variableSymbol.outermostClass()).isSameAs(outermostClass);
     assertThat(variableSymbol.enclosingClass()).isSameAs(typeSymbol);
   }
 
   @Test
   public void test_helper_methods() throws Exception {
-    JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("p", null);
-    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "name", packageSymbol);
+    JavaSymbol.TypeJavaSymbol outermostClass = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "name", P_PACKAGE_JAVA_SYMBOL);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.INTERFACE, "t", outermostClass);
     JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(Flags.STATIC | Flags.ABSTRACT, "name", typeSymbol);
-    JavaSymbol.TypeJavaSymbol enumeration = new JavaSymbol.TypeJavaSymbol(Flags.ENUM, "enumeration", packageSymbol);
+    JavaSymbol.TypeJavaSymbol enumeration = new JavaSymbol.TypeJavaSymbol(Flags.ENUM, "enumeration", P_PACKAGE_JAVA_SYMBOL);
     assertThat(methodSymbol.isEnum()).isFalse();
     assertThat(methodSymbol.isFinal()).isFalse();
     assertThat(methodSymbol.isAbstract()).isTrue();

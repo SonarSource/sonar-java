@@ -34,8 +34,9 @@ public class TypeSubstitutionTest {
 
   @Before
   public void setUp() {
-    k = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("K", null));
-    v = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("V", null));
+    JavaSymbol.PackageJavaSymbol packageJavaSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
+    k = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("K", packageJavaSymbol));
+    v = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("V", packageJavaSymbol));
     c1 = new JavaType(JavaType.CLASS, null);
     c2 = new JavaType(JavaType.CLASS, null);
 

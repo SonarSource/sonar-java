@@ -20,9 +20,11 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,7 +37,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -291,11 +292,31 @@ public class JavaSymbol implements Symbol {
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
     ClassTree declaration;
+    private final String internalName;
+    private final Multiset<String> internalNames = HashMultiset.create();
 
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
       this.type = new JavaType.ClassJavaType(this);
       this.typeVariableTypes = Lists.newArrayList();
+      if (owner.isMethodSymbol()) {
+        // declaration of a class or an anonymous class in a method
+        internalName = ((TypeJavaSymbol) owner.owner).registerClassInternalName(name);
+      } else if (owner.isTypeSymbol() && name.isEmpty()) {
+        // anonymous class in a field
+        internalName = ((TypeJavaSymbol) owner).registerClassInternalName("");
+      } else {
+        internalName = name;
+      }
+    }
+
+    private String registerClassInternalName(String name) {
+      internalNames.add(name);
+      return internalNames.count(name) + name;
+    }
+
+    String getInternalName() {
+      return internalName;
     }
 
     public void addTypeParameter(JavaType.TypeVariableJavaType typeVariableType) {
@@ -324,11 +345,19 @@ public class JavaSymbol implements Symbol {
     }
 
     public String getFullyQualifiedName() {
-      String ownerName = "";
-      if (!owner.name.isEmpty()) {
-        ownerName = owner.name + ".";
+      String newQualification = "";
+      if (owner.isPackageSymbol()) {
+        if (!owner.name.isEmpty()) {
+          newQualification = owner.name + ".";
+        }
+      } else if (owner.isTypeSymbol()) {
+        newQualification = owner.type.fullyQualifiedName() + "$";
+      } else if (owner.isMethodSymbol()) {
+        newQualification = owner.owner.type().fullyQualifiedName() + "$";
+      } else {
+        throw new IllegalStateException("" + owner);
       }
-      return ownerName + name;
+      return newQualification + getInternalName();
     }
 
     /**
@@ -588,6 +617,16 @@ public class JavaSymbol implements Symbol {
       // FIXME: declaration should not be ClassTree: a type Variable is declared by an identifier with bounds
       // This probably implies to refactor this class to not inherit form TypeJavaSymbol and/or to implement its dedicated interface
       return null;
+    }
+
+    @Override
+    public String getFullyQualifiedName() {
+      return name;
+    }
+
+    @Override
+    String getInternalName() {
+      throw new UnsupportedOperationException();
     }
   }
 
