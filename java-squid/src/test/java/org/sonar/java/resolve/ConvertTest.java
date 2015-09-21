@@ -45,6 +45,7 @@ public class ConvertTest {
   public void shortName() {
     assertThat(Convert.shortName("org")).isEqualTo("org");
     assertThat(Convert.shortName("org.example")).isEqualTo("example");
+    assertThat(Convert.shortName("org.example.MyClass$InnerClass")).isEqualTo("MyClass$InnerClass");
   }
 
   @Test
@@ -74,6 +75,7 @@ public class ConvertTest {
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass$")).isEqualTo("InnerClass$");
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass$class")).isEqualTo("InnerClass$class");
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$$InnerClass$")).isEqualTo("$InnerClass$");
+    assertThat(Convert.innerClassName("Rules$ListResponse$Rule", "Rules$ListResponse$Rule$Builder")).isEqualTo("Builder");
 
   }
 

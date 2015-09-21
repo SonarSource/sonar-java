@@ -161,7 +161,7 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
       }
       if ( owner != null) {
         //handle innerClasses
-        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), Convert.innerClassName(owner.name(), shortName), owner);
+        symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), Convert.innerClassName(Convert.shortName(owner.getFullyQualifiedName()), shortName), owner);
       } else {
         symbol = new JavaSymbol.TypeJavaSymbol(filterBytecodeFlags(flags), shortName, enterPackage(packageName));
       }
