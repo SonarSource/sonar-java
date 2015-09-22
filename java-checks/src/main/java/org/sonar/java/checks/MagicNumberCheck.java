@@ -119,7 +119,7 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitVariable(VariableTree tree) {
     ExpressionTree initializer = tree.initializer();
-    boolean arrayNotInitialized = initializer != null && initializer.is(Kind.NEW_ARRAY) && ((NewArrayTree) initializer).initializers().size() == 0;
+    boolean arrayNotInitialized = initializer != null && initializer.is(Kind.NEW_ARRAY) && ((NewArrayTree) initializer).initializers().isEmpty();
     if (arrayNotInitialized || !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
       super.visitVariable(tree);
     }
