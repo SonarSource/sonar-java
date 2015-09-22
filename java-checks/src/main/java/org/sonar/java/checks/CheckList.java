@@ -357,6 +357,7 @@ public final class CheckList {
       .add(VariableDeclarationScopeCheck.class)
       .add(AnnotationArgumentOrderCheck.class)
       .add(DeadStoreCheck.class)
+      .add(DataStoredInSessionCheck.class)
       .build();
   }
 
