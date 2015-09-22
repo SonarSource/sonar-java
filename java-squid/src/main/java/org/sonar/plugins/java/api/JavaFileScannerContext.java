@@ -24,7 +24,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CheckMessage;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -44,8 +43,6 @@ public interface JavaFileScannerContext {
   void addIssue(int line, JavaCheck check, String message);
 
   void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost);
-
-  void addIssue(Tree tree, CheckMessage checkMessage);
 
   void addIssue(File file, JavaCheck check, int line, String message);
 

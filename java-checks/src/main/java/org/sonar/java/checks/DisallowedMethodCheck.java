@@ -29,7 +29,6 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.NoSqale;
 import org.sonar.squidbridge.annotations.RuleTemplate;
-import org.sonar.squidbridge.api.CheckMessage;
 
 import java.util.List;
 
@@ -68,7 +67,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    context.addIssue(mit, new CheckMessage(this, "Remove this forbidden call"));
+    addIssue(mit, "Remove this forbidden call");
   }
 
   public void setClassName(String className) {

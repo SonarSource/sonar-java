@@ -234,12 +234,6 @@ public class VisitorsBridge {
     }
 
     @Override
-    public void addIssue(Tree tree, CheckMessage checkMessage) {
-      checkMessage.setLine(((JavaTree) tree).getLine());
-      sourceFile.log(checkMessage);
-    }
-
-    @Override
     @Nullable
     public Object getSemanticModel() {
       return semanticModel;
