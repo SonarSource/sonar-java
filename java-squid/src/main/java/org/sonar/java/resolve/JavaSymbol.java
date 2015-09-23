@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.java.resolve.Scope.OrderedScope;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -446,7 +445,7 @@ public class JavaSymbol implements Symbol {
   public static class MethodJavaSymbol extends JavaSymbol implements MethodSymbol {
 
     TypeJavaSymbol returnType;
-    OrderedScope parameters;
+    Scope parameters;
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
     MethodTree declaration;
@@ -467,7 +466,7 @@ public class JavaSymbol implements Symbol {
       return returnType;
     }
 
-    public OrderedScope getParameters() {
+    public Scope getParameters() {
       return parameters;
     }
 

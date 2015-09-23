@@ -355,6 +355,7 @@ public final class CheckList {
       .add(AtLeastOneConstructorCheck.class)
       .add(CatchExceptionCheck.class)
       .add(VariableDeclarationScopeCheck.class)
+      .add(AnnotationArgumentOrderCheck.class)
       .build();
   }
 

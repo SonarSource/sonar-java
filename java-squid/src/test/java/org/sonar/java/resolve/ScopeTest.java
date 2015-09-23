@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import org.junit.Test;
-import org.sonar.java.resolve.Scope.OrderedScope;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -63,7 +62,7 @@ public class ScopeTest {
 
   @Test
   public void ordered() {
-    OrderedScope scope = new OrderedScope(owner);
+    Scope scope = new Scope(owner);
 
     JavaSymbol first = new JavaSymbol(0, 0, "first", null);
     scope.enter(first);

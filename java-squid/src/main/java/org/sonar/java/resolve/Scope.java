@@ -23,7 +23,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,6 +35,7 @@ public class Scope {
   final Scope next;
 
   protected ArrayListMultimap<String, JavaSymbol> symbols = ArrayListMultimap.create();
+  private final List<JavaSymbol> scopeSymbols = new ArrayList<>();
 
   public Scope(JavaSymbol owner) {
     this.owner = owner;
@@ -48,6 +49,7 @@ public class Scope {
 
   public void enter(JavaSymbol symbol) {
     symbols.put(symbol.name, symbol);
+    scopeSymbols.add(symbol);
   }
 
   public List<JavaSymbol> lookup(String name) {
@@ -58,33 +60,8 @@ public class Scope {
     return scope == null ? ImmutableList.<JavaSymbol>of() : scope.symbols.get(name);
   }
 
-  public Collection<JavaSymbol> scopeSymbols() {
-    return ImmutableList.copyOf(symbols.values());
-  }
-
-  public static class OrderedScope extends Scope {
-    private List<JavaSymbol> orderedSymbols;
-
-    public OrderedScope(JavaSymbol owner) {
-      super(owner);
-      this.orderedSymbols = Lists.newArrayList();
-    }
-
-    @Override
-    public void enter(JavaSymbol symbol) {
-      this.orderedSymbols.add(symbol);
-      super.enter(symbol);
-    }
-
-    /**
-     * returns the symbols contained in this scope, in declaration order.
-     *
-     * @return list of symbols, in declaration order
-     */
-    @Override
-    public List<JavaSymbol> scopeSymbols() {
-      return ImmutableList.copyOf(orderedSymbols);
-    }
+  public List<JavaSymbol> scopeSymbols() {
+    return scopeSymbols;
   }
 
   public static class StarImportScope extends Scope {
@@ -109,7 +86,6 @@ public class Scope {
     }
   }
 
-
   public static class StaticStarImportScope extends Scope {
 
     private final BytecodeCompleter bytecodeCompleter;
@@ -123,7 +99,7 @@ public class Scope {
     public List<JavaSymbol> lookup(String name) {
       List<JavaSymbol> symbolsList = Lists.newArrayList();
       for (JavaSymbol site : symbols.values()) {
-        //site is a package, try to load referenced type.
+        // site is a package, try to load referenced type.
         if ((site.kind & JavaSymbol.PCK) != 0) {
           JavaSymbol symbol = bytecodeCompleter.loadClass(bytecodeCompleter.formFullName(name, site));
           if (symbol.kind < JavaSymbol.ERRONEOUS) {
@@ -131,12 +107,12 @@ public class Scope {
           }
         }
 
-        //site is a type, try to find a matching type or field
+        // site is a type, try to find a matching type or field
         if ((site.kind & JavaSymbol.TYP) != 0) {
           List<JavaSymbol> resolved = ((JavaSymbol.TypeJavaSymbol) site).members().lookup(name);
           for (JavaSymbol symbol : resolved) {
-            //TODO check accessibility
-            //TODO factorize with static named import ?
+            // TODO check accessibility
+            // TODO factorize with static named import ?
             if (symbol.kind < JavaSymbol.ERRONEOUS && (symbol.flags & Flags.STATIC) != 0) {
               symbolsList.add(symbol);
             }

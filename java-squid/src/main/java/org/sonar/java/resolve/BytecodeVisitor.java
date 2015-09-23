@@ -31,7 +31,6 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
 import org.objectweb.asm.signature.SignatureReader;
 import org.objectweb.asm.signature.SignatureVisitor;
-import org.sonar.java.resolve.Scope.OrderedScope;
 
 import javax.annotation.Nullable;
 
@@ -221,7 +220,7 @@ public class BytecodeVisitor extends ClassVisitor {
         signatureReader.accept(new TypeParameterDeclaration(methodSymbol));
         signatureReader.accept(new ReadMethodSignature(methodSymbol));
       }
-      methodSymbol.parameters = new OrderedScope(methodSymbol);
+      methodSymbol.parameters = new Scope(methodSymbol);
       for (int i = 0; i < type.argTypes.size(); i += 1) {
         methodSymbol.parameters.enter(new JavaSymbol.VariableJavaSymbol(0, "arg" + i, methodSymbol));
       }
