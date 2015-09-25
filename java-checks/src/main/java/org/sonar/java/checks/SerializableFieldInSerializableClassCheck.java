@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
@@ -75,12 +76,22 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
 
   private static boolean isCollectionOfSerializable(TypeTree typeTree) {
     Type type = typeTree.symbolType();
-    if (type.isSubtypeOf("java.util.Collection") && typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      return isSerializable(((ParameterizedTypeTree) typeTree).typeArguments().get(0));
+    if (isSubtypeOfCollectionApi(type) && typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      TypeArguments typeArgs = ((ParameterizedTypeTree) typeTree).typeArguments();
+      for (Tree t : typeArgs) {
+        if (!isSerializable(t)) {
+          return false;
+        }
+      }
+      return true;
     }
     return false;
   }
 
+  private static boolean isSubtypeOfCollectionApi(Type type) {
+    return type.isSubtypeOf("java.util.Collection") || type.isSubtypeOf("java.util.Map");
+  }
+  
   private static boolean isStatic(VariableTree member) {
     return ModifiersUtils.hasModifier(member.modifiers(), Modifier.STATIC);
   }
