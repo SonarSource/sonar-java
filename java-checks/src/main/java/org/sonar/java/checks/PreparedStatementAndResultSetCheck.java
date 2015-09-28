@@ -105,7 +105,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         Symbol referenceSymbol = ((IdentifierTree) expression).symbol();
-        return ReassignmentFinder.getReassignmentOrDeclaration(mit, referenceSymbol);
+        return ReassignmentFinder.getClosestReassignmentOrDeclaration(mit, referenceSymbol);
       }
     }
     return null;
@@ -131,21 +131,27 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   private static Integer getNumberQuery(ExpressionTree expression) {
     ExpressionTree expr = ExpressionsHelper.skipParentheses(expression);
     if (expr.is(Tree.Kind.IDENTIFIER)) {
-      // variable used as query
-      Symbol variableSymbol = ((IdentifierTree) expression).symbol();
-      Tree lastAssignment = ReassignmentFinder.getReassignmentOrDeclaration(expression, variableSymbol);
-      ExpressionTree initializer = lastAssignment.is(Tree.Kind.VARIABLE) ?
-        ((VariableTree) lastAssignment).initializer() :
-        ((AssignmentExpressionTree) lastAssignment).expression();
-      return initializer != null ? getNumberQuery(initializer) : null;
+      return handleVariableUsedAsQuery((IdentifierTree) expr);
     } else if (expr.is(Tree.Kind.PLUS)) {
-      // string concatenation
-      BinaryExpressionTree stringConcatenation = (BinaryExpressionTree) expr;
-      Integer left = getNumberQuery(stringConcatenation.leftOperand());
-      Integer right = getNumberQuery(stringConcatenation.rightOperand());
-      return (left == null && right == null) ? null : (zeroIfNull(left) + zeroIfNull(right));
+      return handleStringConcatenation((BinaryExpressionTree) expr);
     }
     return countQuery(expr);
+  }
+
+  private static Integer handleVariableUsedAsQuery(IdentifierTree identifier) {
+    Tree lastAssignment = ReassignmentFinder.getClosestReassignmentOrDeclaration(identifier, identifier.symbol());
+    if (lastAssignment != null) {
+      ExpressionTree initializer = lastAssignment.is(Tree.Kind.VARIABLE) ? ((VariableTree) lastAssignment).initializer()
+        : ((AssignmentExpressionTree) lastAssignment).expression();
+      return initializer != null ? getNumberQuery(initializer) : null;
+    }
+    return null;
+  }
+
+  private static Integer handleStringConcatenation(BinaryExpressionTree expr) {
+    Integer left = getNumberQuery(expr.leftOperand());
+    Integer right = getNumberQuery(expr.rightOperand());
+    return (left == null && right == null) ? null : (zeroIfNull(left) + zeroIfNull(right));
   }
 
   private static int zeroIfNull(@Nullable Integer intValue) {

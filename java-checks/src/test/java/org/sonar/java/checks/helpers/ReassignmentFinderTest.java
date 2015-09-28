@@ -186,7 +186,7 @@ public class ReassignmentFinderTest {
   }
 
   private static void assertThatLastReassignmentsOfVariableIsEqualTo(Symbol searchedVariable, Tree startingPoint, Tree expectedVariableDeclaration) {
-    assertThat(ReassignmentFinder.getReassignmentOrDeclaration(startingPoint, searchedVariable)).isEqualTo(expectedVariableDeclaration);
+    assertThat(ReassignmentFinder.getClosestReassignmentOrDeclaration(startingPoint, searchedVariable)).isEqualTo(expectedVariableDeclaration);
   }
 
   @Test
@@ -213,7 +213,7 @@ public class ReassignmentFinderTest {
   }
 
   private static Tree getLastReassignment(List<StatementTree> statements) {
-    return ReassignmentFinder.getReassignmentOrDeclaration(statements.get(statements.size() - 1), variableFromLastReturnStatement(statements).symbol());
+    return ReassignmentFinder.getClosestReassignmentOrDeclaration(statements.get(statements.size() - 1), variableFromLastReturnStatement(statements).symbol());
   }
 
   private static IdentifierTree variableFromLastReturnStatement(List<StatementTree> statements) {

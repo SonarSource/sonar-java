@@ -45,7 +45,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
   }
 
   @CheckForNull
-  public static Tree getReassignmentOrDeclaration(Tree startingPoint, Symbol referenceSymbol) {
+  public static Tree getClosestReassignmentOrDeclaration(Tree startingPoint, Symbol referenceSymbol) {
     Tree result = referenceSymbol.declaration();
     List<IdentifierTree> usages = referenceSymbol.usages();
     if (usages.size() == 1) {
@@ -55,7 +55,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
     List<Tree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
 
     int line = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint).line();
-    Tree lastReassignment = getLastReassignment(line, reassignments);
+    Tree lastReassignment = getClosestReassignment(line, reassignments);
     if (lastReassignment != null) {
       return lastReassignment;
     }
@@ -72,7 +72,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
   }
 
   @CheckForNull
-  private static Tree getLastReassignment(int line, List<Tree> reassignments) {
+  private static Tree getClosestReassignment(int line, List<Tree> reassignments) {
     Tree result = null;
     for (Tree reassignment : reassignments) {
       int reassignmentLine = FirstSyntaxTokenFinder.firstSyntaxToken(reassignment).line();

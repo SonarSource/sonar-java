@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.Map;
 import java.util.Map.Entry;
 
-class A {
+class A extends UnknownClassFromSamePackage {
   void foo(Connection connection) throws SQLException {
     PreparedStatement ps = connection.prepareStatement("SELECT fname, lname FROM employees where hireDate > ? and salary < ?");
 
@@ -76,6 +76,11 @@ class A {
     
     int[] b = new int[1];
     b[0] = 3;
+  }
+  
+  void unknownQuery() throws SQLException {
+    PreparedStatement ps = getPreparedStatement(UNKNOWN_QUERY_FROM_UNKNOWN_PARENT); // Compliant
+    ps.setDouble(2, 0.0);
   }
   
   void false_negative(boolean test) throws SQLException {
