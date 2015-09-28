@@ -20,24 +20,20 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -53,8 +49,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -69,8 +63,6 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   private static final String INT = "int";
   private static final String JAVA_SQL_RESULTSET = "java.sql.ResultSet";
-
-  private Multimap<Symbol, Tree> reassignmentBySymbol;
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -107,58 +99,20 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   @CheckForNull
-  private Tree getPreparedStatementReference(MethodInvocationTree mit) {
+  private static Tree getPreparedStatementReference(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         Symbol referenceSymbol = ((IdentifierTree) expression).symbol();
-        return getReassignmentOrDeclaration(mit, referenceSymbol);
+        return ReassignmentFinder.getReassignmentOrDeclaration(mit, referenceSymbol);
       }
     }
     return null;
   }
 
-  private Tree getReassignmentOrDeclaration(Tree startingPoint, Symbol referenceSymbol) {
-    Tree result = referenceSymbol.declaration();
-    List<IdentifierTree> usages = referenceSymbol.usages();
-    if (usages.size() == 1) {
-      return result;
-    }
-    if (!reassignmentBySymbol.containsKey(referenceSymbol)) {
-      reassignmentBySymbol.putAll(referenceSymbol, getReassignments(referenceSymbol.owner().declaration(), usages));
-    }
-    int line = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint).line();
-    Tree lastReassignment = getLastReassignment(line, referenceSymbol);
-    if (lastReassignment != null) {
-      return lastReassignment;
-    }
-    return result;
-  }
-
   @CheckForNull
-  private Tree getLastReassignment(int line, Symbol referenceSymbol) {
-    Tree result = null;
-    for (Tree reassignment : reassignmentBySymbol.get(referenceSymbol)) {
-      int reassignmentLine = FirstSyntaxTokenFinder.firstSyntaxToken(reassignment).line();
-      if (line > reassignmentLine) {
-        result = reassignment;
-      }
-    }
-    return result;
-  }
-
-  private List<Tree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
-    if (ownerDeclaration != null) {
-      ReassignmentFinder reassignmentFinder = new ReassignmentFinder(usages);
-      ownerDeclaration.accept(reassignmentFinder);
-      return reassignmentFinder.reassignments;
-    }
-    return new ArrayList<>();
-  }
-
-  @CheckForNull
-  private Integer getPreparedStatementNumberOfParameters(@Nullable Tree tree) {
+  private static Integer getPreparedStatementNumberOfParameters(@Nullable Tree tree) {
     if (tree != null) {
       ExpressionTree initializer = tree.is(Tree.Kind.VARIABLE) ?
         ((VariableTree) tree).initializer() :
@@ -174,12 +128,12 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   @CheckForNull
-  private Integer getNumberQuery(ExpressionTree expression) {
+  private static Integer getNumberQuery(ExpressionTree expression) {
     ExpressionTree expr = ExpressionsHelper.skipParentheses(expression);
     if (expr.is(Tree.Kind.IDENTIFIER)) {
       // variable used as query
       Symbol variableSymbol = ((IdentifierTree) expression).symbol();
-      Tree lastAssignment = getReassignmentOrDeclaration(expression, variableSymbol);
+      Tree lastAssignment = ReassignmentFinder.getReassignmentOrDeclaration(expression, variableSymbol);
       ExpressionTree initializer = lastAssignment.is(Tree.Kind.VARIABLE) ?
         ((VariableTree) lastAssignment).initializer() :
         ((AssignmentExpressionTree) lastAssignment).expression();
@@ -201,36 +155,5 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   @CheckForNull
   private static Integer countQuery(ExpressionTree expression) {
     return expression.is(Tree.Kind.STRING_LITERAL) ? StringUtils.countMatches(((LiteralTree) expression).value(), "?") : null;
-  }
-
-  private static class ReassignmentFinder extends BaseTreeVisitor {
-
-    private final List<IdentifierTree> usages;
-    private List<Tree> reassignments;
-
-    public ReassignmentFinder(List<IdentifierTree> usages) {
-      this.usages = usages;
-      this.reassignments = new LinkedList<>();
-    }
-
-    @Override
-    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      if (isSearchedVariable(tree.variable())) {
-        reassignments.add(tree);
-      }
-      super.visitAssignmentExpression(tree);
-    }
-
-    private boolean isSearchedVariable(ExpressionTree variable) {
-      return variable.is(Tree.Kind.IDENTIFIER) && usages.contains(variable);
-    }
-
-  }
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    reassignmentBySymbol = LinkedListMultimap.create();
-    super.scanFile(context);
-    reassignmentBySymbol.clear();
   }
 }
