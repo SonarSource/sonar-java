@@ -44,6 +44,7 @@ public class ReassignmentFinder extends BaseTreeVisitor {
     this.reassignments = new LinkedList<>();
   }
 
+  @CheckForNull
   public static Tree getReassignmentOrDeclaration(Tree startingPoint, Symbol referenceSymbol) {
     Tree result = referenceSymbol.declaration();
     List<IdentifierTree> usages = referenceSymbol.usages();
