@@ -91,7 +91,7 @@ public class JavaSquidSensorTest {
     Project project = mock(Project.class);
     JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
 
-    SonarComponents sonarComponents = createSonarComponentsMock();
+    SonarComponents sonarComponents = createSonarComponentsMock(fs);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
     JavaSquidSensor jss = new JavaSquidSensor(qp, javaClasspath, sonarComponents, fs, javaResourceLocator, settings, mock(NoSonarFilter.class));
     SensorContext context = mock(SensorContext.class);
@@ -122,7 +122,7 @@ public class JavaSquidSensorTest {
     jss.analyse(project, context);
   }
 
-  private static SonarComponents createSonarComponentsMock() {
+  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
@@ -135,6 +135,8 @@ public class JavaSquidSensorTest {
     Highlightable highlightable = mock(Highlightable.class);
     when(highlightable.newHighlighting()).thenReturn(mock(Highlightable.HighlightingBuilder.class));
     when(sonarComponents.highlightableFor(any(File.class))).thenReturn(highlightable);
+
+    when(sonarComponents.getFileSystem()).thenReturn(fs);
 
     Checks<JavaCheck> checks = mock(Checks.class);
     when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodName_S00100_Check.class)));

@@ -19,13 +19,17 @@
  */
 package org.sonar.plugins.java.bridges;
 
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
+import org.sonar.plugins.java.CompIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
@@ -37,10 +41,12 @@ public class ChecksBridge {
 
   private final Iterable<Checks<JavaCheck>> checks;
   private final ResourcePerspectives resourcePerspectives;
+  private final FileSystem fs;
 
   public ChecksBridge(SonarComponents sonarComponents) {
     this.checks = sonarComponents.checks();
     this.resourcePerspectives = sonarComponents.getResourcePerspectives();
+    fs = sonarComponents.getFileSystem();
   }
 
   public void reportIssues(SourceFile squidFile, Resource sonarFile) {
@@ -55,6 +61,13 @@ public class ChecksBridge {
           if (ruleKey == null) {
             throw new IllegalStateException("Cannot find rule key for instance of " + check.getClass());
           }
+          if (checkMessage instanceof org.sonar.java.CheckMessage) {
+            AnalyzerMessage issue = ((org.sonar.java.CheckMessage) checkMessage).analyzerMessage;
+            if (issue != null) {
+              reportIssueNew(sonarFile, issuable, issue, ruleKey);
+              continue;
+            }
+          }
           Issue issue = issuable.newIssueBuilder()
             .ruleKey(ruleKey)
             .line(checkMessage.getLine())
@@ -67,6 +80,22 @@ public class ChecksBridge {
       // Remove from memory:
       messages.clear();
     }
+  }
+
+  private void reportIssueNew(Resource sonarFile, Issuable issuable, AnalyzerMessage issue, RuleKey ruleKey) {
+    InputFile inputFile = fs.inputFile(fs.predicates().hasPath(sonarFile.getPath()));
+    CompIssue compIssue = CompIssue.create(inputFile, issuable, ruleKey, issue.getCost());
+    AnalyzerMessage.TextSpan textSpan = issue.primaryLocation();
+    if (textSpan == null) {
+      compIssue.setPrimaryLocation(issue.getMessage(), null);
+    } else {
+      compIssue.setPrimaryLocation(issue.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+    }
+    for (AnalyzerMessage secondaryLocation : issue.secondaryLocations) {
+      AnalyzerMessage.TextSpan secondarySpan = secondaryLocation.primaryLocation();
+      compIssue.addSecondaryLocation(secondarySpan.startLine, secondarySpan.startCharacter, secondarySpan.endLine, secondarySpan.endCharacter, secondaryLocation.getMessage());
+    }
+    compIssue.save();
   }
 
   @CheckForNull

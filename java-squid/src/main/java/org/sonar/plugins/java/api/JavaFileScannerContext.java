@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.io.File;
+import java.util.List;
 import java.util.Set;
 
 @Beta
@@ -59,4 +60,17 @@ public interface JavaFileScannerContext {
 
   void addNoSonarLines(Set<Integer> lines);
 
+  void reportIssue(JavaCheck javaCheck, Tree tree, String message);
+
+  void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> flow, @Nullable Integer cost);
+
+  class Location {
+    public final String msg;
+    public final Tree syntaxNode;
+
+    public Location(String msg, Tree syntaxNode) {
+      this.msg = msg;
+      this.syntaxNode = syntaxNode;
+    }
+  }
 }

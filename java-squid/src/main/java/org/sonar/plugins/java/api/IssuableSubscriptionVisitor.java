@@ -22,6 +22,9 @@ package org.sonar.plugins.java.api;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
   public void addIssue(Tree tree, String message) {
@@ -40,4 +43,11 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
     context.addIssueOnFile(this, message);
   }
 
+  public void reportIssue(Tree tree, String message) {
+    context.reportIssue(this, tree, message);
+  }
+
+  public void reportIssue(Tree tree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
+    context.reportIssue(this, tree, message, flow, cost);
+  }
 }

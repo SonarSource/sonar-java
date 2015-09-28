@@ -31,12 +31,16 @@ import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.CheckMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -44,11 +48,11 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
-import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.CheckForNull;
@@ -179,7 +183,7 @@ public class VisitorsBridge {
     private final File file;
 
     public DefaultJavaFileScannerContext(
-        CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents) {
+      CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents) {
       this.tree = tree;
       this.sourceFile = sourceFile;
       this.file = file;
@@ -275,6 +279,50 @@ public class VisitorsBridge {
       }
     }
 
+    /**
+     *
+     * FIXME(mpaladin) DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
+     *
+     * **/
+    private static final boolean ENABLE_NEW_APIS = true;
+
+    @Override
+    public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
+      reportIssue(javaCheck, tree, message, ImmutableList.<Location>of(), null);
+    }
+
+    @Override
+    public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
+      if (ENABLE_NEW_APIS) {
+        CheckMessage checkMessage = new CheckMessage(javaCheck, message);
+        AnalyzerMessage.TextSpan textSpan = textSpanFor(syntaxNode);
+        if (cost != null) {
+          checkMessage.setCost(cost);
+        }
+        checkMessage.setLine(textSpan.startLine);
+        AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpan, message, cost != null ? cost : 0);
+        for (Location location : secondary) {
+          AnalyzerMessage flowElement = new AnalyzerMessage(javaCheck, file, textSpanFor(location.syntaxNode), location.msg, 0);
+          analyzerMessage.secondaryLocations.add(flowElement);
+        }
+        checkMessage.analyzerMessage = analyzerMessage;
+        sourceFile.log(checkMessage);
+      } else {
+        addIssue(syntaxNode, javaCheck, message, (double) cost);
+      }
+    }
+
+    private static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
+      SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(syntaxNode);
+      SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(syntaxNode);
+      return new AnalyzerMessage.TextSpan(
+        firstSyntaxToken.line(),
+        firstSyntaxToken.column(),
+        lastSyntaxToken.line(),
+        lastSyntaxToken.column() + lastSyntaxToken.text().length()
+      );
+    }
+
     @Override
     public File getFile() {
       return file;
@@ -296,5 +344,4 @@ public class VisitorsBridge {
     }
 
   }
-
 }

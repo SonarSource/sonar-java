@@ -161,4 +161,7 @@ public class SonarComponents implements BatchExtension {
     return visitors;
   }
 
+  public FileSystem getFileSystem() {
+    return fs;
+  }
 }
