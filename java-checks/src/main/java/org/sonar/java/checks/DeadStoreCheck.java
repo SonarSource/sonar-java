@@ -100,7 +100,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           if (lhs.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) lhs).symbol();
             if (isLocalVariable(symbol) && !out.contains(symbol)) {
-              createIssue(element, symbol);
+              createIssue(lhs, symbol);
             }
             assignmentLHS.add(lhs);
             out.remove(symbol);
@@ -138,7 +138,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           if (isParentExpressionStatement(element) && prefixExpression.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) prefixExpression).symbol();
             if (isLocalVariable(symbol) && !out.contains(symbol)) {
-              createIssue(element, symbol);
+              createIssue(prefixExpression, symbol);
             }
           }
           break;
@@ -148,7 +148,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           if (expression.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) expression).symbol();
             if (isLocalVariable(symbol) && !out.contains(symbol)) {
-              createIssue(element, symbol);
+              createIssue(expression, symbol);
             }
           }
           break;
@@ -172,7 +172,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
   }
 
   private void createIssue(Tree element, Symbol symbol) {
-    addIssue(element, "Remove this useless assignment to local variable \"" + symbol.name() + "\".");
+    reportIssue(element, "Remove this useless assignment to local variable \"" + symbol.name() + "\".");
   }
 
   private Set<Symbol> handleVariable(Set<Symbol> out, Tree element) {
@@ -180,7 +180,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
     VariableTree localVar = (VariableTree) element;
     symbol = localVar.symbol();
     if (localVar.initializer() != null && !out.contains(symbol)) {
-      createIssue(element, symbol);
+      createIssue(localVar.simpleName(), symbol);
     }
     out.remove(symbol);
     return out;
