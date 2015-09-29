@@ -138,7 +138,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           if (isParentExpressionStatement(element) && prefixExpression.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) prefixExpression).symbol();
             if (isLocalVariable(symbol) && !out.contains(symbol)) {
-              createIssue(prefixExpression, symbol);
+              createIssue(element, symbol);
             }
           }
           break;
@@ -148,7 +148,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           if (expression.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) expression).symbol();
             if (isLocalVariable(symbol) && !out.contains(symbol)) {
-              createIssue(expression, symbol);
+              createIssue(element, symbol);
             }
           }
           break;
