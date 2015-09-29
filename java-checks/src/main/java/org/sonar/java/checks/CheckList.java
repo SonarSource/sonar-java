@@ -356,6 +356,7 @@ public final class CheckList {
       .add(CatchExceptionCheck.class)
       .add(VariableDeclarationScopeCheck.class)
       .add(AnnotationArgumentOrderCheck.class)
+      .add(DeadStoreCheck.class)
       .build();
   }
 

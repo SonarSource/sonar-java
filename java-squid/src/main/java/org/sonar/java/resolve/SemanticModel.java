@@ -146,6 +146,10 @@ public class SemanticModel {
     return result;
   }
 
+  public Tree getParent(Tree tree) {
+    return parentLink.get(tree);
+  }
+
   public Symbol getEnclosingClass(Tree tree) {
     return getEnv(tree).enclosingClass;
   }
