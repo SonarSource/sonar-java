@@ -24,14 +24,19 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Rule(
   key = "S1479",
@@ -47,9 +52,9 @@ public class SwitchWithTooManyCasesCheck extends SubscriptionBaseVisitor {
   private static final int DEFAULT_MAXIMUM_CASES = 30;
 
   @RuleProperty(
-      key = "maximum",
-      description = "Maximum number of case",
-      defaultValue = "" + DEFAULT_MAXIMUM_CASES)
+    key = "maximum",
+    description = "Maximum number of case",
+    defaultValue = "" + DEFAULT_MAXIMUM_CASES)
   public int maximumCases = DEFAULT_MAXIMUM_CASES;
 
   @Override
@@ -60,12 +65,17 @@ public class SwitchWithTooManyCasesCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
-    int cases = 0;
+    Set<CaseLabelTree> cases = new HashSet<>();
     for (CaseGroupTree caseGroupTree : switchStatementTree.cases()) {
-      cases+=caseGroupTree.labels().size();
+      cases.addAll(caseGroupTree.labels());
     }
-    if(cases > maximumCases) {
-      addIssue(switchStatementTree, "Reduce the number of switch cases from "+cases+" to at most "+maximumCases+".");
+    int size = cases.size();
+    if (size > maximumCases) {
+      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
+      for (Tree element : cases) {
+        secondary.add(new JavaFileScannerContext.Location("Case + 1", element));
+      }
+      reportIssue(switchStatementTree, "Reduce the number of switch cases from " + size + " to at most " + maximumCases + ".", secondary, null);
     }
   }
 }
