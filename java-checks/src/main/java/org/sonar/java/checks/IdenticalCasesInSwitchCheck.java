@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -77,7 +78,7 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
           CaseLabelTree labelToReport = getLastLabel(cases.get(i));
           if (!reportedLabels.contains(labelToReport)) {
             reportedLabels.add(labelToReport);
-            addIssue(labelToReport, issueMessage("case", caseGroupTree));
+            createIssue(labelToReport, "case", caseGroupTree);
           }
         }
       }
@@ -90,14 +91,18 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
     while (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) elseStatement;
       if (areIfBlocksSyntacticalEquivalent(thenStatement, ifStatement.thenStatement())) {
-        addIssue(ifStatement.thenStatement(), issueMessage("branch", thenStatement));
+        createIssue(ifStatement.thenStatement(), "branch", thenStatement);
         break;
       }
       elseStatement = ifStatement.elseStatement();
     }
     if (elseStatement != null && areIfBlocksSyntacticalEquivalent(thenStatement, elseStatement)) {
-      addIssue(elseStatement, issueMessage("branch", thenStatement));
+      createIssue(elseStatement, "branch", thenStatement);
     }
+  }
+
+  private void createIssue(Tree node, String type, Tree secondary) {
+    reportIssue(node, issueMessage(type, secondary), ImmutableList.of(new JavaFileScannerContext.Location("Duplicated block", secondary)), null);
   }
 
   private static boolean areIfBlocksSyntacticalEquivalent(StatementTree first, StatementTree second) {
@@ -114,7 +119,7 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
 
   private void checkConditionalExpression(ConditionalExpressionTree node) {
     if (SyntacticEquivalence.areEquivalent(ExpressionsHelper.skipParentheses(node.trueExpression()), ExpressionsHelper.skipParentheses(node.falseExpression()))) {
-      addIssue(node, "This conditional operation returns the same value whether the condition is \"true\" or \"false\".");
+      reportIssue(node.questionToken(), "This conditional operation returns the same value whether the condition is \"true\" or \"false\".");
     }
   }
 
