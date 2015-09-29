@@ -33,7 +33,6 @@ import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -41,7 +40,6 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -89,7 +87,7 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
       if (methodFirstArgumentValue == 0) {
         addIssue(mit, "PreparedStatement indices start at 1.");
       } else {
-        Tree preparedStatementReference = getPreparedStatementReference(mit);
+        ExpressionTree preparedStatementReference = getPreparedStatementReference(mit);
         Integer numberParameters = getPreparedStatementNumberOfParameters(preparedStatementReference);
         if (numberParameters != null && methodFirstArgumentValue > numberParameters) {
           addIssue(mit, "This \"PreparedStatement\" " + (numberParameters == 0 ? "has no" : ("only has " + numberParameters)) + " parameters.");
@@ -99,29 +97,24 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   @CheckForNull
-  private static Tree getPreparedStatementReference(MethodInvocationTree mit) {
+  private static ExpressionTree getPreparedStatementReference(MethodInvocationTree mit) {
     ExpressionTree methodSelect = mit.methodSelect();
     if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
       ExpressionTree expression = ((MemberSelectExpressionTree) methodSelect).expression();
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         Symbol referenceSymbol = ((IdentifierTree) expression).symbol();
-        return ReassignmentFinder.getClosestReassignmentOrDeclaration(mit, referenceSymbol);
+        return ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(mit, referenceSymbol);
       }
     }
     return null;
   }
 
   @CheckForNull
-  private static Integer getPreparedStatementNumberOfParameters(@Nullable Tree tree) {
-    if (tree != null) {
-      ExpressionTree initializer = tree.is(Tree.Kind.VARIABLE) ?
-        ((VariableTree) tree).initializer() :
-        ((AssignmentExpressionTree) tree).expression();
-      if (initializer != null && initializer.is(Tree.Kind.METHOD_INVOCATION)) {
-        Arguments arguments = ((MethodInvocationTree) initializer).arguments();
-        if (!arguments.isEmpty()) {
-          return getNumberQuery(arguments.get(0));
-        }
+  private static Integer getPreparedStatementNumberOfParameters(@Nullable ExpressionTree tree) {
+    if (tree != null && tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      Arguments arguments = ((MethodInvocationTree) tree).arguments();
+      if (!arguments.isEmpty()) {
+        return getNumberQuery(arguments.get(0));
       }
     }
     return null;
@@ -139,11 +132,9 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
   }
 
   private static Integer handleVariableUsedAsQuery(IdentifierTree identifier) {
-    Tree lastAssignment = ReassignmentFinder.getClosestReassignmentOrDeclaration(identifier, identifier.symbol());
+    ExpressionTree lastAssignment = ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(identifier, identifier.symbol());
     if (lastAssignment != null) {
-      ExpressionTree initializer = lastAssignment.is(Tree.Kind.VARIABLE) ? ((VariableTree) lastAssignment).initializer()
-        : ((AssignmentExpressionTree) lastAssignment).expression();
-      return initializer != null ? getNumberQuery(initializer) : null;
+      return getNumberQuery(lastAssignment);
     }
     return null;
   }

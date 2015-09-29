@@ -26,10 +26,12 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -57,8 +59,7 @@ public class ReassignmentFinderTest {
 
     MethodTree method = methodTree(code);
     List<StatementTree> statements = method.block().body();
-    VariableTree methodParameter = method.parameters().get(0);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, methodParameter);
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, null);
   }
 
   @Test
@@ -71,8 +72,7 @@ public class ReassignmentFinderTest {
 
     MethodTree method = methodTree(code);
     List<StatementTree> statements = method.block().body();
-    VariableTree methodParameter = method.parameters().get(0);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, methodParameter);
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, null);
   }
 
   @Test
@@ -84,7 +84,8 @@ public class ReassignmentFinderTest {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, statements.get(0));
+    ExpressionTree aDeclarationInitializer = initializerFromVariableDeclarationStatement(statements.get(0));
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aDeclarationInitializer);
   }
 
   @Test
@@ -108,7 +109,8 @@ public class ReassignmentFinderTest {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, statements.get(0));
+    ExpressionTree arrayAssignmentExpression = initializerFromVariableDeclarationStatement(statements.get(0));
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, arrayAssignmentExpression);
   }
 
   @Test
@@ -121,7 +123,8 @@ public class ReassignmentFinderTest {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, statements.get(1));
+    ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(1));
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
   }
 
   @Test
@@ -136,8 +139,8 @@ public class ReassignmentFinderTest {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    StatementTree aAssignment = statements.get(2);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignment);
+    ExpressionTree aAssignmentExpression = assignementExpressionFromStatement(statements.get(2));
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, aAssignmentExpression);
   }
 
   @Test
@@ -151,7 +154,7 @@ public class ReassignmentFinderTest {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    StatementTree secondAssignment = statements.get(2);
+    ExpressionTree secondAssignment = assignementExpressionFromStatement(statements.get(2));
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, secondAssignment);
   }
 
@@ -165,7 +168,7 @@ public class ReassignmentFinderTest {
 
     ClassTree classTree = classTree(code);
     List<StatementTree> statements = ((MethodTree) classTree.members().get(1)).block().body();
-    Tree variableDeclaration = classTree.members().get(0);
+    ExpressionTree variableDeclaration = ((VariableTree) (classTree.members().get(0))).initializer();
     assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, variableDeclaration);
   }
 
@@ -179,14 +182,14 @@ public class ReassignmentFinderTest {
       "}");
 
     List<StatementTree> statements = methodBody(code);
-    Tree expectedVariableDeclaration = statements.get(0);
+    Tree expectedVariableDeclaration = initializerFromVariableDeclarationStatement(statements.get(0));
     MethodInvocationTree startingPoint = (MethodInvocationTree) ((ExpressionStatementTree) statements.get(1)).expression();
     Symbol searchedVariable = ((IdentifierTree) startingPoint.arguments().get(0)).symbol();
     assertThatLastReassignmentsOfVariableIsEqualTo(searchedVariable, startingPoint, expectedVariableDeclaration);
   }
 
   private static void assertThatLastReassignmentsOfVariableIsEqualTo(Symbol searchedVariable, Tree startingPoint, Tree expectedVariableDeclaration) {
-    assertThat(ReassignmentFinder.getClosestReassignmentOrDeclaration(startingPoint, searchedVariable)).isEqualTo(expectedVariableDeclaration);
+    assertThat(ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(startingPoint, searchedVariable)).isEqualTo(expectedVariableDeclaration);
   }
 
   @Test
@@ -204,20 +207,28 @@ public class ReassignmentFinderTest {
 
     List<StatementTree> statements = methodBody(code);
     StatementTree elseAssignment = ((BlockTree) ((IfStatementTree) statements.get(1)).elseStatement()).body().get(0);
-    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, elseAssignment);
+    ExpressionTree expression = assignementExpressionFromStatement(elseAssignment);
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, expression);
   }
 
-  private static void assertThatLastReassignmentsOfReturnedVariableIsEqualTo(List<StatementTree> statements, Tree target) {
-    Tree expected = target != null && target.is(Tree.Kind.EXPRESSION_STATEMENT) ? ((ExpressionStatementTree) target).expression() : target;
-    assertThat(getLastReassignment(statements)).isEqualTo(expected);
+  private static void assertThatLastReassignmentsOfReturnedVariableIsEqualTo(List<StatementTree> statements, ExpressionTree target) {
+    assertThat(getLastReassignment(statements)).isEqualTo(target);
   }
 
   private static Tree getLastReassignment(List<StatementTree> statements) {
-    return ReassignmentFinder.getClosestReassignmentOrDeclaration(statements.get(statements.size() - 1), variableFromLastReturnStatement(statements).symbol());
+    return ReassignmentFinder.getClosestReassignmentOrDeclarationExpression(statements.get(statements.size() - 1), variableFromLastReturnStatement(statements).symbol());
   }
 
   private static IdentifierTree variableFromLastReturnStatement(List<StatementTree> statements) {
     return (IdentifierTree) ((ReturnStatementTree) statements.get(statements.size() - 1)).expression();
+  }
+
+  private static ExpressionTree assignementExpressionFromStatement(StatementTree statement) {
+    return ((AssignmentExpressionTree) ((ExpressionStatementTree) statement).expression()).expression();
+  }
+
+  private static ExpressionTree initializerFromVariableDeclarationStatement(Tree statement) {
+    return ((VariableTree) statement).initializer();
   }
 
   private ClassTree classTree(String classBody) {

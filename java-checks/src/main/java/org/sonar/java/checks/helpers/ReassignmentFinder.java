@@ -26,6 +26,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -34,6 +35,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Helper Visitor to be used to find the latest {@link ExpressionTree} used as initializer (for a {@link VariableTree}) 
+ * or expression used in assignment (for a {@link AssignmentExpressionTree}) for a given variable.
+ */
 public class ReassignmentFinder extends BaseTreeVisitor {
 
   private final List<IdentifierTree> usages;
@@ -45,21 +50,31 @@ public class ReassignmentFinder extends BaseTreeVisitor {
   }
 
   @CheckForNull
-  public static Tree getClosestReassignmentOrDeclaration(Tree startingPoint, Symbol referenceSymbol) {
+  public static ExpressionTree getClosestReassignmentOrDeclarationExpression(Tree startingPoint, Symbol referenceSymbol) {
     Tree result = referenceSymbol.declaration();
     List<IdentifierTree> usages = referenceSymbol.usages();
-    if (usages.size() == 1) {
-      return result;
-    }
-    
-    List<Tree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
+    if (usages.size() != 1) {
+      List<Tree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
 
-    int line = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint).line();
-    Tree lastReassignment = getClosestReassignment(line, reassignments);
-    if (lastReassignment != null) {
-      return lastReassignment;
+      int line = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint).line();
+      Tree lastReassignment = getClosestReassignment(line, reassignments);
+      if (lastReassignment != null) {
+        result = lastReassignment;
+      }
     }
-    return result;
+
+    return getInitializerOrExpression(result);
+  }
+
+  @CheckForNull
+  private static ExpressionTree getInitializerOrExpression(@Nullable Tree tree) {
+    if (tree == null) {
+      return null;
+    }
+    if (tree.is(Tree.Kind.VARIABLE)) {
+      return ((VariableTree) tree).initializer();
+    }
+    return ((AssignmentExpressionTree) tree).expression();
   }
 
   private static List<Tree> getReassignments(@Nullable Tree ownerDeclaration, List<IdentifierTree> usages) {
