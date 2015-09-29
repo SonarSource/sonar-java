@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class ConditionAlwaysTrueOrFalseChecker extends SEChecker {
 
-  private static final String RULE_KEY = "S2583";
+  private static final String RULE_KEY = "squid:S2583";
 
   private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
   private final Set<Tree> evaluatedToTrue = Sets.newHashSet();

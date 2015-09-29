@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 public class NullDereferenceChecker extends SEChecker {
 
-  private static final String RULE_KEY = "S2259";
+  private static final String RULE_KEY = "squid:S2259";
 
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {

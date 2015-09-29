@@ -39,6 +39,7 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -244,6 +245,12 @@ public class VisitorsBridge {
       } else {
         checkMessage.setCost(cost);
       }
+      sourceFile.log(checkMessage);
+    }
+
+    @Override
+    public void addIssue(Tree tree, JavaCheckMessage checkMessage) {
+      checkMessage.setLine(((JavaTree) tree).getLine());
       sourceFile.log(checkMessage);
     }
 

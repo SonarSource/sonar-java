@@ -454,11 +454,10 @@ public static class Class extends SuperClass {
       if (local2) { // Compliant
       }
       local2 = false;
-      if (local2) { // False negative (missing case of foreach):Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
-    //false positive
-    if (local2) { // Noncompliant
+    if (local2) { // compliant
     }
   }
 
@@ -639,7 +638,7 @@ public static class Class extends SuperClass {
         case 0:
           if (var1 == var2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
           }
-          if (var5) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          if (var5) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
           }
           var1 = 1;
           var5 = unknown;
@@ -654,7 +653,7 @@ public static class Class extends SuperClass {
         case 2:
           if (var1 == var2) { // Compliant
           }
-          if (var5) { // Noncompliant
+          if (var5) { // compliant (fallthrough)
           }
           var1 = 1;
           var6 = false;
