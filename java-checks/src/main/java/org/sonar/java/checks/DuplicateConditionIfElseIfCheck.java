@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -61,10 +62,12 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
     while (statement != null && statement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) statement;
       if (SyntacticEquivalence.areEquivalent(condition, ifStatement.condition())) {
-        context.addIssue(
-          ifStatement.condition(),
+        context.reportIssue(
           this,
-          "This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements"
+          ifStatement.condition(),
+          "This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements",
+          ImmutableList.of(new JavaFileScannerContext.Location("Duplicated condition", condition)),
+          null
         );
       }
       statement = ifStatement.elseStatement();
