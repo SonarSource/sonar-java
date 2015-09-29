@@ -92,13 +92,6 @@ public class CFG {
     return methodSymbol;
   }
 
-  private final Deque<Block> breakTargets = new LinkedList<>();
-  private final Deque<Block> continueTargets = new LinkedList<>();
-
-  private final Deque<Block> switches = new LinkedList<>();
-  private Map<String, Block> labels = Maps.newHashMap();
-  private final List<Block> gotos = new LinkedList<>();
-
   public Block entry() {
     return currentBlock;
   }
@@ -195,12 +188,6 @@ public class CFG {
     }
   }
 
-  private void build(List<? extends Tree> trees) {
-    for (Tree tree : Lists.reverse(trees)) {
-      build(tree);
-    }
-  }
-
   private void build(Tree tree) {
     switch (tree.kind()) {
       case BLOCK:
@@ -221,24 +208,6 @@ public class CFG {
       case CONDITIONAL_EXPRESSION:
         buildConditionalExpression((ConditionalExpressionTree) tree);
         break;
-      }
-      case CONDITIONAL_EXPRESSION: {
-        ConditionalExpressionTree cond = (ConditionalExpressionTree) tree;
-        Block next = currentBlock;
-        // process else-branch
-        ExpressionTree elseStatement = cond.falseExpression();
-        currentBlock = createBlock(next);
-        build(elseStatement);
-        Block elseBlock = currentBlock;
-        // process then-branch
-        currentBlock = createBlock(next);
-        build(cond.trueExpression());
-        Block thenBlock = currentBlock;
-        // process condition
-        currentBlock = createBranch(cond, thenBlock, elseBlock);
-        buildCondition(cond.condition(), thenBlock, elseBlock);
-        break;
-      }
       case VARIABLE:
         buildVariable((VariableTree) tree);
         break;
@@ -352,6 +321,7 @@ public class CFG {
       case METHOD_REFERENCE:
       // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
+        //Ignore assert statement as they are disabled by default in JVM
         break;
       // store declarations as complete blocks.
       case EMPTY_STATEMENT:
@@ -517,155 +487,6 @@ public class CFG {
           currentBlock = createBlock(currentBlock);
         }
       }
-      case CONTINUE_STATEMENT: {
-        ContinueStatementTree continueStatementTree = (ContinueStatementTree) tree;
-        if(continueStatementTree.label() == null) {
-          if (continueTargets.isEmpty()) {
-            throw new IllegalStateException("'break' statement not in loop or switch statement");
-          }
-          currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
-        } else {
-          currentBlock = createUnconditionalJump(tree, null);
-          gotos.add(currentBlock);
-        }
-        break;
-      }
-      case WHILE_STATEMENT: {
-        WhileStatementTree s = (WhileStatementTree) tree;
-        Block falseBranch = currentBlock;
-        Block loopback = createBlock();
-        // process body
-        currentBlock = createBlock(loopback);
-        continueTargets.addLast(loopback);
-        breakTargets.addLast(falseBranch);
-        build(s.statement());
-        breakTargets.removeLast();
-        continueTargets.removeLast();
-        Block bodyBlock = currentBlock;
-        // process condition
-        currentBlock = createBranch(s, bodyBlock, falseBranch);
-        buildCondition(s.condition(), bodyBlock, falseBranch);
-        loopback.successors.add(currentBlock);
-        currentBlock = createBlock(currentBlock);
-        break;
-      }
-      case DO_STATEMENT: {
-        DoWhileStatementTree s = (DoWhileStatementTree) tree;
-        Block falseBranch = currentBlock;
-        Block loopback = createBlock();
-        // process condition
-        currentBlock = createBranch(s, loopback, falseBranch);
-        buildCondition(s.condition(), loopback, falseBranch);
-        // process body
-        currentBlock = createBlock(currentBlock);
-        continueTargets.addLast(loopback);
-        breakTargets.addLast(falseBranch);
-        build(s.statement());
-        breakTargets.removeLast();
-        continueTargets.removeLast();
-        loopback.successors.add(currentBlock);
-        currentBlock = createBlock(currentBlock);
-        break;
-      }
-      case FOR_EACH_STATEMENT: {
-        //TODO(npe) One solution is to create a forstatement node depending on type of expression (iterable or array) and build CFG from it.
-        break;
-      }
-      case FOR_STATEMENT: {
-        ForStatementTree s = (ForStatementTree) tree;
-        Block falseBranch = currentBlock;
-        // process step
-        currentBlock = createBlock();
-        Block stepBlock = currentBlock;
-        for (StatementTree updateTree : Lists.reverse(s.update())) {
-          build(updateTree);
-        }
-        // process body
-        currentBlock = createBlock(currentBlock);
-        continueTargets.addLast(stepBlock);
-        breakTargets.addLast(falseBranch);
-        build(s.statement());
-        breakTargets.removeLast();
-        continueTargets.removeLast();
-        Block body = currentBlock;
-        // process condition
-        currentBlock = createBranch(s, body, falseBranch);
-        ExpressionTree condition = s.condition();
-        if (condition != null) {
-          buildCondition(condition, body, falseBranch);
-        }
-        stepBlock.successors.add(currentBlock);
-        // process init
-        currentBlock = createBlock(currentBlock);
-        for (StatementTree init : Lists.reverse(s.initializer())) {
-          build(init);
-        }
-        break;
-      }
-      case TRY_STATEMENT: {
-        //FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
-        TryStatementTree tryStatementTree = (TryStatementTree) tree;
-        currentBlock = createBlock(currentBlock);
-        BlockTree finallyBlock = tryStatementTree.finallyBlock();
-        if(finallyBlock != null) {
-          build(finallyBlock);
-        }
-        currentBlock = createBlock(currentBlock);
-        build(tryStatementTree.block());
-        break;
-      }
-      case THROW_STATEMENT: {
-        //FIXME this won't work if it is intended to be caught by a try statement.
-        ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
-        currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
-        build(throwStatementTree.expression());
-        break;
-      }
-      case SYNCHRONIZED_STATEMENT: {
-        SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
-        //Naively build synchronized statement.
-        build(sst.block());
-        build(sst.expression());
-        break;
-      }
-      case POSTFIX_INCREMENT:
-      case POSTFIX_DECREMENT:
-      case PREFIX_INCREMENT:
-      case PREFIX_DECREMENT:
-      case UNARY_MINUS:
-      case UNARY_PLUS:
-      case BITWISE_COMPLEMENT:
-      case LOGICAL_COMPLEMENT:
-        UnaryExpressionTree e = (UnaryExpressionTree) tree;
-        currentBlock.elements.add(e);
-        build(e.expression());
-        break;
-      case PARENTHESIZED_EXPRESSION:
-        build(((ParenthesizedTree) tree).expression());
-        break;
-      case ARRAY_ACCESS_EXPRESSION: {
-        ArrayAccessExpressionTree aaet = (ArrayAccessExpressionTree) tree;
-        currentBlock.elements.add(aaet);
-        build(aaet.expression());
-        build(aaet.dimension());
-        break;
-      }
-      case ARRAY_DIMENSION: {
-        ArrayDimensionTree arrayDimensionTree = (ArrayDimensionTree) tree;
-        build(arrayDimensionTree.expression());
-        break;
-      }
-      case IDENTIFIER:
-      case INT_LITERAL:
-      case LONG_LITERAL:
-      case DOUBLE_LITERAL:
-      case CHAR_LITERAL:
-      case FLOAT_LITERAL:
-      case STRING_LITERAL:
-      case BOOLEAN_LITERAL:
-      case NULL_LITERAL:
-      default:
-        currentBlock.elements.add(tree);
     }
     breakTargets.removeLast();
     // process condition
@@ -853,15 +674,6 @@ public class CFG {
     currentBlock.elements.add(tree);
     build(Lists.reverse(tree.dimensions()));
     build(Lists.reverse(tree.initializers()));
-  }
-
-  private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {
-    Block result = createBlock();
-    result.terminator = terminator;
-    if (target != null) {
-      result.successors.add(target);
-    }
-    return result;
   }
 
   private Block createUnconditionalJump(Tree terminator, @Nullable Block target) {

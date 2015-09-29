@@ -59,11 +59,7 @@ public class ChecksBridge {
           Object check = checkMessage.getCheck();
           RuleKey ruleKey;
           if(check instanceof String) {
-            ActiveRule activeRule = rulesProfile.getActiveRule(CheckList.REPOSITORY_KEY, (String) check);
-            if(activeRule == null) {
-              continue;
-            }
-            ruleKey = activeRule.getRule().ruleKey();
+            ruleKey = RuleKey.parse(((String) check));
           } else {
             ruleKey = getRuleKey((JavaCheck) check);
           }

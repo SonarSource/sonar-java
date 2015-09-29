@@ -29,6 +29,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CompIssue;
+import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
@@ -75,6 +76,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public CompilationUnitTree getTree() {
     return tree;
+  }
+
+  @Override
+  public void addIssue(Tree tree, JavaCheckMessage checkMessage) {
+    checkMessage.setLine(((JavaTree) tree).getLine());
+    sourceFile.log(checkMessage);
   }
 
   @Override

@@ -20,12 +20,14 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
+import org.sonar.java.JavaCheckMessage;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -44,6 +46,8 @@ public interface JavaFileScannerContext {
   void addIssue(int line, JavaCheck check, String message);
 
   void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost);
+
+  void addIssue(Tree tree, JavaCheckMessage checkMessage);
 
   void addIssue(File file, JavaCheck check, int line, String message);
 
