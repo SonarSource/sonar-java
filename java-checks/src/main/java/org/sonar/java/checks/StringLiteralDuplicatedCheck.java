@@ -19,9 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Multimap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -36,7 +36,9 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @Rule(
   key = "S1192",
@@ -45,45 +47,48 @@ import java.util.Map;
   priority = Priority.MINOR)
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "per duplicate instance" )
+@SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "per duplicate instance")
 public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_THRESHOLD = 3;
 
   private static final Integer MINIMAL_LITERAL_LENGTH = 7;
   @RuleProperty(
-      key = "threshold",
-      description = "Number of times a literal must be duplicated to trigger an issue",
-      defaultValue = "" + DEFAULT_THRESHOLD)
+    key = "threshold",
+    description = "Number of times a literal must be duplicated to trigger an issue",
+    defaultValue = "" + DEFAULT_THRESHOLD)
   public int threshold = DEFAULT_THRESHOLD;
 
-  private final Map<String, LiteralTree> firstOccurrence = Maps.newHashMap();
-  private final Multiset<String> occurences = HashMultiset.create();
+  private final Multimap<String, LiteralTree> occurrences = ArrayListMultimap.create();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    firstOccurrence.clear();
-    occurences.clear();
+    occurrences.clear();
     scan(context.getTree());
-    for (String literal : occurences.elementSet()) {
-      int literalOccurence = occurences.count(literal);
+    for (String entry : occurrences.keySet()) {
+      Collection<LiteralTree> literalTrees = occurrences.get(entry);
+      int literalOccurence = literalTrees.size();
       if (literalOccurence >= threshold) {
-        context.addIssue(firstOccurrence.get(literal), this,
-            "Define a constant instead of duplicating this literal " + literal + " " + literalOccurence + " times.",
-            (double) literalOccurence);
+        List<JavaFileScannerContext.Location> flow = new ArrayList<>();
+        for (Tree element : literalTrees) {
+          flow.add(new JavaFileScannerContext.Location("Duplication", element));
+        }
+        context.reportIssue(
+          this,
+          Iterables.getFirst(literalTrees, null),
+          "Define a constant instead of duplicating this literal " + entry + " " + literalOccurence + " times.",
+          flow,
+          literalOccurence);
       }
     }
   }
 
   @Override
   public void visitLiteral(LiteralTree tree) {
-    if(tree.is(Tree.Kind.STRING_LITERAL))  {
-      String literal =tree.value();
+    if (tree.is(Tree.Kind.STRING_LITERAL)) {
+      String literal = tree.value();
       if (literal.length() >= MINIMAL_LITERAL_LENGTH) {
-        if (!firstOccurrence.containsKey(literal)) {
-          firstOccurrence.put(literal, tree);
-        }
-        occurences.add(literal);
+        occurrences.put(literal, tree);
       }
     }
   }
