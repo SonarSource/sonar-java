@@ -159,6 +159,20 @@ public class ReassignmentFinderTest {
   }
 
   @Test
+  public void last_assignement_on_same_line() throws Exception {
+    String code = newCode(
+      "int foo() {",
+      "  int a;",
+      "  a = 0;",
+      "  a = 1; return a;",
+      "}");
+
+    List<StatementTree> statements = methodBody(code);
+    ExpressionTree secondAssignment = assignementExpressionFromStatement(statements.get(2));
+    assertThatLastReassignmentsOfReturnedVariableIsEqualTo(statements, secondAssignment);
+  }
+
+  @Test
   public void outside_method() throws Exception {
     String code = newCode(
       "int b;",
@@ -179,6 +193,21 @@ public class ReassignmentFinderTest {
       "  int b = 0;",
       "  doSomething(b);",
       "  b = 1;",
+      "}");
+
+    List<StatementTree> statements = methodBody(code);
+    Tree expectedVariableDeclaration = initializerFromVariableDeclarationStatement(statements.get(0));
+    MethodInvocationTree startingPoint = (MethodInvocationTree) ((ExpressionStatementTree) statements.get(1)).expression();
+    Symbol searchedVariable = ((IdentifierTree) startingPoint.arguments().get(0)).symbol();
+    assertThatLastReassignmentsOfVariableIsEqualTo(searchedVariable, startingPoint, expectedVariableDeclaration);
+  }
+
+  @Test
+  public void ignore_assignation_after_starting_point_same_line() throws Exception {
+    String code = newCode(
+      "int foo() {",
+      "  int b = 0;",
+      "  doSomething(b); b = 1;",
       "}");
 
     List<StatementTree> statements = methodBody(code);

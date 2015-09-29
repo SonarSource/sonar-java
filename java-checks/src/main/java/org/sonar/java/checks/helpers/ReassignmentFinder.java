@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -56,8 +57,8 @@ public class ReassignmentFinder extends BaseTreeVisitor {
     if (usages.size() != 1) {
       List<Tree> reassignments = getReassignments(referenceSymbol.owner().declaration(), usages);
 
-      int line = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint).line();
-      Tree lastReassignment = getClosestReassignment(line, reassignments);
+      SyntaxToken startPointToken = FirstSyntaxTokenFinder.firstSyntaxToken(startingPoint);
+      Tree lastReassignment = getClosestReassignment(startPointToken, reassignments);
       if (lastReassignment != null) {
         result = lastReassignment;
       }
@@ -87,11 +88,13 @@ public class ReassignmentFinder extends BaseTreeVisitor {
   }
 
   @CheckForNull
-  private static Tree getClosestReassignment(int line, List<Tree> reassignments) {
+  private static Tree getClosestReassignment(SyntaxToken startToken, List<Tree> reassignments) {
     Tree result = null;
     for (Tree reassignment : reassignments) {
-      int reassignmentLine = FirstSyntaxTokenFinder.firstSyntaxToken(reassignment).line();
-      if (line > reassignmentLine) {
+      SyntaxToken reassignmentFirstToken = FirstSyntaxTokenFinder.firstSyntaxToken(reassignment);
+      int reassignmentLine = reassignmentFirstToken.line();
+      int startLine = startToken.line();
+      if (startLine > reassignmentLine || (startLine == reassignmentLine && startToken.column() > reassignmentFirstToken.column())) {
         result = reassignment;
       }
     }
