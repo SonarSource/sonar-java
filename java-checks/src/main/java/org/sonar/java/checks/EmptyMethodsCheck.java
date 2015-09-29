@@ -73,7 +73,7 @@ public class EmptyMethodsCheck extends SubscriptionBaseVisitor {
   private void checkMethod(MethodTree methodTree) {
     BlockTree block = methodTree.block();
     if (block != null && isEmpty(block) && !containsComment(block)) {
-      addIssue(methodTree, "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
+      reportIssue(methodTree.simpleName(), "Add a nested comment explaining why this method is empty, throw an UnsupportedOperationException or complete the implementation.");
     }
   }
 

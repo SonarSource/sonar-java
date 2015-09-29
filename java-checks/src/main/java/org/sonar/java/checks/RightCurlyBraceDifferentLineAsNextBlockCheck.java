@@ -39,7 +39,7 @@ public class RightCurlyBraceDifferentLineAsNextBlockCheck extends RightCurlyBrac
   @Override
   protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
     if (syntaxToken.line() == previousBlock.closeBraceToken().line()) {
-      addIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" keyword to a new dedicated line.");
+      reportIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" keyword to a new dedicated line.");
     }
   }
 }

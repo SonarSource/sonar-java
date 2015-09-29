@@ -52,7 +52,7 @@ public class SystemOutOrErrUsageCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree;
     if (isOutOrErr(mset) && isSystem(mset.expression())) {
-      addIssue(tree, "Replace this usage of System.out or System.err by a logger.");
+      reportIssue(tree, "Replace this usage of System.out or System.err by a logger.");
     }
   }
 

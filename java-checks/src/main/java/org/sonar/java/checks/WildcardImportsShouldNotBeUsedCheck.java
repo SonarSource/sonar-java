@@ -54,7 +54,7 @@ public class WildcardImportsShouldNotBeUsedCheck extends IssuableSubscriptionVis
 
     // See RSPEC-2208 : exception with static imports.
     if (fullQualifiedName(importTree.qualifiedIdentifier()).endsWith(".*") && !importTree.isStatic()) {
-      addIssue(importTree, "Explicitly import the specific classes needed.");
+      reportIssue(importTree.qualifiedIdentifier(), "Explicitly import the specific classes needed.");
     }
   }
 

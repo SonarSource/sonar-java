@@ -96,7 +96,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     Boolean oneReference = atLeastOneReference.pop();
     currentMethod.pop();
     if (symbol.isPrivate() && !symbol.isStatic() && !oneReference) {
-      context.addIssue(tree, this, "Make \"" + symbol.name() + "\" a \"static\" method.");
+      context.reportIssue(this, tree.simpleName(), "Make \"" + symbol.name() + "\" a \"static\" method.");
     }
   }
 

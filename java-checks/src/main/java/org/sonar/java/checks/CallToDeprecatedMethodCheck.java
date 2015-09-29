@@ -62,7 +62,13 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
       } else {
         message = "Method '" + symbol.owner().name() + "." + name + "(...)' is deprecated.";
       }
-      addIssue(tree, message);
+      Tree reported;
+      if (tree.is(Tree.Kind.NEW_CLASS)) {
+        reported = ((NewClassTree) tree).identifier();
+      } else {
+        reported = ((MethodInvocationTree) tree).methodSelect();
+      }
+      reportIssue(reported, message);
     }
   }
 }

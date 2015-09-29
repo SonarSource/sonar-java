@@ -39,7 +39,7 @@ public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNe
   @Override
   protected void checkTokenPosition(SyntaxToken syntaxToken, BlockTree previousBlock) {
     if (syntaxToken.line() != previousBlock.closeBraceToken().line()) {
-      addIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" on the same line that the previous closing curly brace.");
+      reportIssue(syntaxToken, "Move this \"" + syntaxToken.text() + "\" on the same line that the previous closing curly brace.");
     }
   }
 }

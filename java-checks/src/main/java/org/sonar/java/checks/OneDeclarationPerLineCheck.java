@@ -83,7 +83,7 @@ public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {
   private void checkVariable(VariableTree varTree) {
     int line = varTree.simpleName().identifierToken().line();
     if (varSameDeclaration || lastVarLine == line) {
-      addIssue(varTree, String.format("Declare \"%s\" on a separate line.", varTree.simpleName().name()));
+      reportIssue(varTree.simpleName(), String.format("Declare \"%s\" on a separate line.", varTree.simpleName().name()));
     }
     varSameDeclaration = ",".equals(varTree.endToken().text());
     lastVarLine = line;

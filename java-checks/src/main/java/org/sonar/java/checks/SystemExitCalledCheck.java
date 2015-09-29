@@ -67,7 +67,7 @@ public class SystemExitCalledCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (isCallToExitMethod(tree)) {
-        addIssue(tree, "Remove this call to \"" + idName + "\" or ensure it is really required.");
+        reportIssue(tree.methodSelect(), "Remove this call to \"" + idName + "\" or ensure it is really required.");
       }
     }
 

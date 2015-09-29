@@ -73,7 +73,7 @@ public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements Jav
     List<AnnotationTree> annotations = modifiers.annotations();
 
     if (isClass() && isPublic(modifiers) && !(isFinal(modifiers) || !annotations.isEmpty())) {
-      context.addIssue(tree, this, "Make " + tree.simpleName() + " a static final constant or non-public and provide accessors if needed.");
+      context.reportIssue(this, tree.simpleName(), "Make " + tree.simpleName() + " a static final constant or non-public and provide accessors if needed.");
     }
     super.visitVariable(tree);
   }

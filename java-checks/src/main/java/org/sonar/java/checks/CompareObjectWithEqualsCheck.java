@@ -71,7 +71,7 @@ public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements Jav
       Type leftOpType = tree.leftOperand().symbolType();
       Type rightOpType = tree.rightOperand().symbolType();
       if (!isExcluded(leftOpType, rightOpType) && hasObjectOperand(leftOpType, rightOpType)) {
-        context.addIssue(tree, this, "Change this comparison to use the equals method.");
+        context.reportIssue(this, tree.operatorToken(), "Change this comparison to use the equals method.");
       }
     }
   }

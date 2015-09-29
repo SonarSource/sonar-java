@@ -59,7 +59,7 @@ public abstract class AbstractBadFieldNameChecker extends SubscriptionBaseVisito
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree field = (VariableTree) member;
         if (isFieldModifierConcernedByRule(field.modifiers()) && !pattern.matcher(field.simpleName().name()).matches()) {
-          addIssue(field, String.format("Rename this field \"%s\" to match the regular expression '%s'.", field.simpleName().name(), getFormat()));
+          reportIssue(field.simpleName(), String.format("Rename this field \"%s\" to match the regular expression '%s'.", field.simpleName().name(), getFormat()));
         }
       }
     }

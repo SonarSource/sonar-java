@@ -131,8 +131,7 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
-
-    context.addIssue(tree, this, "Extract the assignment out of this expression.");
+    context.reportIssue(this, tree.operatorToken(), "Extract the assignment out of this expression.");
   }
 
 }
