@@ -2,7 +2,7 @@ class BadMethodName {
   public BadMethodName() {
   }
 
-  void Bad() { // Noncompliant {{Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.}}
+  void Bad() {
   }
 
   void good() {
@@ -13,7 +13,7 @@ class BadMethodName {
   }
 
   @Deprecated
-  void Bad2() { // Noncompliant
+  void Bad2() {
   }
 
   public String toString() { //Overrides from object

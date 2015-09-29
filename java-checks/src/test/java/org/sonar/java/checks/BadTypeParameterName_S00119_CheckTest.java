@@ -19,33 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BadTypeParameterName_S00119_CheckTest {
 
-  private BadTypeParameterName_S00119_Check check = new BadTypeParameterName_S00119_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Rename this generic name to match the regular expression '^[A-Z][0-9]?$'.")
-        .next().atLine(2)
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/BadGenericNameNoncompliant.java", new BadTypeParameterName_S00119_Check());
   }
 
   @Test
   public void test2() {
+    BadTypeParameterName_S00119_Check check = new BadTypeParameterName_S00119_Check();
     check.format = "^[a-zA-Z0-9_]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadGenericName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadGenericName.java", check);
   }
 
 }

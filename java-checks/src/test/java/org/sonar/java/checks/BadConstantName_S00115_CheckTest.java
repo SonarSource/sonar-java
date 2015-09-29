@@ -19,37 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BadConstantName_S00115_CheckTest {
 
-  private final BadConstantName_S00115_Check check = new BadConstantName_S00115_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadConstantName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Rename this constant name to match the regular expression '^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$'.")
-        .next().atLine(12)
-        .next().atLine(19)
-        .next().atLine(24)
-        .next().atLine(29)
-        .next().atLine(31)
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/BadConstantNameNoncompliant.java", new BadConstantName_S00115_Check());
   }
 
   @Test
   public void test2() {
+    BadConstantName_S00115_Check check = new BadConstantName_S00115_Check();
     check.format = "^[a-zA-Z0-9_]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadConstantName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadConstantName.java", check);
   }
 
 }

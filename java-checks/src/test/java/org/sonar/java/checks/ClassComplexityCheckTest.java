@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
@@ -29,19 +30,16 @@ import java.io.File;
 
 public class ClassComplexityCheckTest {
 
-  private ClassComplexityCheck check = new ClassComplexityCheck();
-
   @Test
   public void defaults() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ClassComplexity.java", new ClassComplexityCheck());
   }
 
   @Test
   public void test() {
+    ClassComplexityCheck check = new ClassComplexityCheck();
     check.setMax(1);
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexity.java"), new VisitorsBridge(check));
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassComplexityNoncompliant.java"), new VisitorsBridge(check));
     CheckMessagesVerifier.verify(file.getCheckMessages())
         .next().atLine(1).withMessage("The Cyclomatic Complexity of this class is 4 which is greater than 1 authorized.").withCost(3.0)
         .next().atLine(7).withMessage("The Cyclomatic Complexity of this class is 2 which is greater than 1 authorized.").withCost(1.0)

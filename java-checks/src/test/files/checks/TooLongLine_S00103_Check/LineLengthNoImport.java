@@ -1,6 +1,6 @@
 class LineLength {
   void method() {
-    // this line is too long
-    // and also this line
+    // Noncompliant {{Split this 97 characters long line (which is greater than 20 authorized).}}
+    // Noncompliant {{Split this 97 characters long line (which is greater than 20 authorized).}}
   }
 }

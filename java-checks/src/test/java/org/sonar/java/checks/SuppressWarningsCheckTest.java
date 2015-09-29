@@ -19,71 +19,39 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SuppressWarningsCheckTest {
 
   @Test
   public void empty_list_of_warnings_then_any_suppressWarnings_is_an_issue() throws Exception {
-    CheckMessagesVerifier.verify(getSourceFile("").getCheckMessages())
-      .next().atLine(1).withMessage("Suppressing warnings is not allowed")
-      .next().atLine(6)
-      .next().atLine(10)
-      .next().atLine(14)
-      .next().atLine(18)
-      .next().atLine(22)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/test1.java", getCheck(""));
   }
 
   @Test
   public void list_of_warnings_with_syntax_error_then_any_suppressWarnings_is_an_issue() throws Exception {
-    CheckMessagesVerifier.verify(getSourceFile("   ,   , ,,").getCheckMessages())
-      .next().atLine(1).withMessage("Suppressing warnings is not allowed")
-      .next().atLine(6)
-      .next().atLine(10)
-      .next().atLine(14)
-      .next().atLine(18)
-      .next().atLine(22)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/test1.java", getCheck("   ,   , ,,"));
   }
 
   @Test
   public void only_one_warning_is_not_allowed() throws Exception {
-    CheckMessagesVerifier.verify(getSourceFile("all").getCheckMessages())
-      .next().atLine(1).withMessage("Suppressing the 'unused' warning is not allowed")
-      .next().atLine(10).withMessage("Suppressing the 'unchecked, cast' warnings is not allowed")
-      .next().atLine(22).withMessage("Suppressing the 'boxing' warning is not allowed")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/only_one_warning_is_not_allowed.java", getCheck("all"));
   }
 
   @Test
   public void warning_based_on_constants_are_ignored() throws Exception {
-    CheckMessagesVerifier.verify(getSourceFile("boxing").getCheckMessages())
-      .next().atLine(1).withMessage("Suppressing the 'unused' warning is not allowed")
-      .next().atLine(6).withMessage("Suppressing the 'all' warning is not allowed")
-      .next().atLine(10).withMessage("Suppressing the 'unchecked, cast' warnings is not allowed")
-      .next().atLine(18).withMessage("Suppressing the 'all' warning is not allowed")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/warning_based_on_constants_are_ignored.java", getCheck("boxing"));
   }
 
   @Test
   public void two_warnings_from_different_lines_are_not_allowed() throws Exception {
-    CheckMessagesVerifier.verify(getSourceFile("unused, cast").getCheckMessages())
-      .next().atLine(6).withMessage("Suppressing the 'all' warning is not allowed")
-      .next().atLine(10).withMessage("Suppressing the 'unchecked' warning is not allowed")
-      .next().atLine(18).withMessage("Suppressing the 'all' warning is not allowed")
-      .next().atLine(22).withMessage("Suppressing the 'boxing' warning is not allowed")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SuppressWarningsCheck/two_warnings_from_different_lines_are_not_allowed.java", getCheck("unused, cast"));
   }
 
-  private SourceFile getSourceFile(String listOfWarnings) {
-    SuppressWarningsCheck checker = new SuppressWarningsCheck();
-    checker.warningsCommaSeparated = listOfWarnings;
-    return JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SuppressWarningsCheck.java"), new VisitorsBridge(checker));
+  private static SuppressWarningsCheck getCheck(String parameter) {
+    SuppressWarningsCheck check = new SuppressWarningsCheck();
+    check.warningsCommaSeparated = parameter;
+    return check;
   }
 }

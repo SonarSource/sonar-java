@@ -1,31 +1,31 @@
 class BadLocalVariableName {
   void method(
-    int BAD_FORMAL_PARAMETER // Noncompliant
+    int BAD_FORMAL_PARAMETER
   ) {
-    int BAD; // Noncompliant
-    int good; // Compliant
+    int BAD;
+    int good;
 
-    for (int I = 0; I < 10; I++) { // Compliant, exception
-      int D; // Noncompliant
+    for (int I = 0; I < 10; I++) {
+      int D;
     }
 
     for (good = 0; good < 10; good++) {
     }
 
-    try (Closeable BAD_RESOURCE = open()) { // Noncompliant
-    } catch (Exception BAD_EXCEPTION) { // Noncompliant
+    try (Closeable BAD_RESOURCE = open()) {
+    } catch (Exception BAD_EXCEPTION) {
     }
   }
 
-  Object FIELD_SHOULD_NOT_BE_CHECKED = new Object(){ // Compliant
+  Object FIELD_SHOULD_NOT_BE_CHECKED = new Object(){
     {
-      int BAD; // Noncompliant
+      int BAD;
     }
   };
 
   void forEachMethod() {
-    for (byte C : "".getBytes()) { // Compliant, exception
-      int D; // Noncompliant
+    for (byte C : "".getBytes()) {
+      int D;
     }
   }
 

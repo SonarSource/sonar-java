@@ -20,44 +20,27 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TooLongLine_S00103_CheckTest {
 
-  private TooLongLine_S00103_Check check = new TooLongLine_S00103_Check();
+  TooLongLine_S00103_Check check = new TooLongLine_S00103_Check();
 
   @Test
   public void test() {
     check.maximumLineLength = 20;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooLongLine_S00103_Check/LineLength.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
-      .next().atLine(7)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLength.java", check);
   }
 
   @Test
   public void test_with_empty_import_on_first_line() {
     check.maximumLineLength = 20;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooLongLine_S00103_Check/LineLengthEmptyStatementInImport.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(7).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
-      .next().atLine(8)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthEmptyStatementInImport.java", check);
   }
 
   @Test
   public void test_with_no_import() {
     check.maximumLineLength = 20;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TooLongLine_S00103_Check/LineLengthNoImport.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Split this 28 characters long line (which is greater than 20 authorized).")
-      .next().atLine(4)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/TooLongLine_S00103_Check/LineLengthNoImport.java", check);
   }
 }

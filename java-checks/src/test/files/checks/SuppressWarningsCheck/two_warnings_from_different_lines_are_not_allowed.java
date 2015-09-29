@@ -3,11 +3,11 @@ class A {
   
   private final String BOXING = "boxing";
   
-  @SuppressWarnings("all")
+  @SuppressWarnings("all") // Noncompliant
   private void f() {
   }
   
-  @SuppressWarnings({"unchecked", "cast"})
+  @SuppressWarnings({"unchecked", "cast"}) // Noncompliant
   private void g() {
   }
   
@@ -15,11 +15,11 @@ class A {
   private void h() {
   }
   
-  @SuppressWarnings({BOXING, "all"}) // "boxing" will not be detected (corner case), but "all" will be detected
+  @SuppressWarnings({BOXING, "all"}) // Noncompliant
   private void i() {
   }
   
-  @SuppressWarnings("boxing")
+  @SuppressWarnings("boxing") // Noncompliant
   private void j() {
   }
   

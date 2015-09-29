@@ -19,32 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class BadClassName_S00101_CheckTest {
 
-  private final BadClassName_S00101_Check check = new BadClassName_S00101_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadClassName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Rename this class name to match the regular expression '^[A-Z][a-zA-Z0-9]*$'.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/BadClassNameNoncompliant.java", new BadClassName_S00101_Check());
   }
 
   @Test
   public void test2() {
+    BadClassName_S00101_Check check = new BadClassName_S00101_Check();
     check.format = "^[a-zA-Z0-9]*$";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/BadClassName.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadClassName.java", check);
   }
 
 }
