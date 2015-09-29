@@ -1,43 +1,43 @@
 class MissingCurlyBraces {
 
   void method() {
-    if (condition) doSomething(); // NOK
+    if (condition) doSomething(); // Noncompliant {{Missing curly brace.}}
 
-    if (condition) doSomething(); // NOK
-    else doSomethingElse(); // NOK
+    if (condition) doSomething(); // Noncompliant
+    else doSomethingElse(); // Noncompliant
 
-    if (condition) { // OK
-    } else doSomething(); // NOK
+    if (condition) {
+    } else doSomething(); // Noncompliant
 
-    if (condition) { // OK
-    } else { // OK
+    if (condition) {
+    } else {
     }
 
-    if (condition) { // OK
+    if (condition) {
     }
 
-    if (condition) { // OK
-    } else if (condition) { // OK
+    if (condition) {
+    } else if (condition) {
     }
 
-    for (int i = 0; i < 10; i++) doSomething(); // NOK
+    for (int i = 0; i < 10; i++) doSomething(); // Noncompliant
 
-    for (int i = 0; i < 10; i++) { // OK
+    for (int i = 0; i < 10; i++) {
     }
 
-    while (condition) doSomething(); // NOK
+    while (condition) doSomething(); // Noncompliant
 
-    while (condition) { // OK
+    while (condition) {
     }
 
-    do something(); while (condition); // NOK
+    do something(); while (condition); // Noncompliant
 
-    do { // OK
+    do {
       something();
     } while (condition);
-    if (condition) { doSomething(); } // OK
-    else
-      doSomethingElse(); // NOK
+    if (condition) { doSomething(); }
+    else // Noncompliant
+      doSomethingElse();
   }
 
 }

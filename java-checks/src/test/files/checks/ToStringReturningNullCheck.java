@@ -12,6 +12,6 @@ class A {
 
 class B {
   public String toString() {
-    return null;
+    return null; // Noncompliant {{Return empty string instead.}}
   }  
 }

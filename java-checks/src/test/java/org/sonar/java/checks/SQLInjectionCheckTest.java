@@ -19,34 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SQLInjectionCheckTest {
 
-  private final SQLInjectionCheck check = new SQLInjectionCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SQLInjection.java"), new VisitorsBridge(check, ImmutableList.of(new File("target/test-classes"))));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(14).withMessage("\"param\" is provided externally to the method and not sanitized before use.")
-        .next().atLine(16)
-        .next().atLine(30)
-        .next().atLine(31)
-        .next().atLine(32)
-        .next().atLine(37)
-        .next().atLine(38).withMessage("\"param2\" is provided externally to the method and not sanitized before use.")
-        .next().atLine(39)
-        .next().atLine(66).withMessage("Use Hibernate's parameter binding instead of concatenation.")
-        .next().atLine(67).withMessage("Use Hibernate's parameter binding instead of concatenation.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SQLInjection.java", new SQLInjectionCheck());
   }
 
 }

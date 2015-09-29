@@ -20,37 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class FinalizeFieldsSetCheckTest {
 
-  private final FinalizeFieldsSetCheck check = new FinalizeFieldsSetCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/FinalizeFieldsSetCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Remove this nullification of \"myString\".")
-      .next().atLine(9).withMessage("Remove this nullification of \"myInteger\".")
-      .next().atLine(10).withMessage("Remove this nullification of \"myObject\".")
-      .next().atLine(18).withMessage("Remove this nullification of \"myString\".")
-      .next().atLine(19).withMessage("Remove this nullification of \"myInteger\".")
-      .next().atLine(20).withMessage("Remove this nullification of \"myObject\".")
-      .next().atLine(32).withMessage("Remove this nullification of \"myString\".")
-      .next().atLine(42).withMessage("Remove this nullification of \"myString\".")
-      .next().atLine(43).withMessage("Remove this nullification of \"myInteger\".")
-      .next().atLine(46).withMessage("Remove this nullification of \"myArrayOfStrings\".")
-      .next().atLine(51).withMessage("Remove this nullification of \"myString\".")
-      .next().atLine(52).withMessage("Remove this nullification of \"myObject\".")
-      .next().atLine(53).withMessage("Remove this nullification of \"myInteger\".")
-      .next().atLine(54).withMessage("Remove this nullification of \"myArrayOfStrings\".")
-      .next().atLine(67).withMessage("Remove this nullification of \"myInteger\".")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/FinalizeFieldsSetCheck.java", new FinalizeFieldsSetCheck());
   }
 
 }

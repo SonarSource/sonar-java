@@ -5,9 +5,9 @@ import java.util.concurrent.locks.Lock;
 class A {
   void foo() {
     Lock lock = new MyLockImpl();
-    synchronized (lock) { // Noncompliant
+    synchronized (lock) { // Noncompliant {{Synchronize on this "Lock" object using "acquire/release".}}
     }
-    synchronized (new MyLockImpl()) { // Noncompliant
+    synchronized (new MyLockImpl()) { // Noncompliant {{Synchronize on this "Lock" object using "acquire/release".}}
     }
     synchronized (new A()) { // Compliant
     }

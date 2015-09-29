@@ -20,32 +20,12 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class IdenticalOperandOnBinaryExpressionCheckTest {
 
-  private IdenticalOperandOnBinaryExpressionCheck check = new IdenticalOperandOnBinaryExpressionCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IdenticalOperandOnBinaryExpression.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Identical sub-expressions on both sides of operator \"==\"")
-        .next().atLine(6).withMessage("Identical sub-expressions on both sides of operator \"!=\"")
-        .next().atLine(7).withMessage("Identical sub-expressions on both sides of operator \"||\"")
-        .next().atLine(8).withMessage("Identical sub-expressions on both sides of operator \"&&\"")
-        .next().atLine(9).withMessage("Identical sub-expressions on both sides of operator \"||\"")
-        .next().atLine(10).withMessage("Identical sub-expressions on both sides of operator \"||\"")
-        .next().atLine(11).withMessage("Identical sub-expressions on both sides of operator \"||\"")
-        .next().atLine(13).withMessage("Identical sub-expressions on both sides of operator \"&&\"")
-        .next().atLine(16).withMessage("Identical sub-expressions on both sides of operator \"||\"")
-        .next().atLine(25).withMessage("Identical sub-expressions on both sides of operator \"-\"")
-        .next().atLine(26).withMessage("Identical sub-expressions on both sides of operator \"-\"")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/IdenticalOperandOnBinaryExpression.java", new IdenticalOperandOnBinaryExpressionCheck());
   }
 }

@@ -19,26 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SynchronizedLockCheckTest {
 
-  private final SynchronizedLockCheck check = new SynchronizedLockCheck();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SynchronizedLockCheck.java"),
-      new VisitorsBridge(check, Lists.newArrayList(new File("target/test-classes"))));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Synchronize on this \"Lock\" object using \"acquire/release\".")
-      .next().atLine(10)
-      .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedLockCheck.java", new SynchronizedLockCheck());
   }
 }

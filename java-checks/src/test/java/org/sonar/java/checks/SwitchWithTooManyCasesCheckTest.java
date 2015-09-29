@@ -20,34 +20,20 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SwitchWithTooManyCasesCheckTest {
 
-
   @Test
   public void defaultValue() {
-    SwitchWithTooManyCasesCheck check = new SwitchWithTooManyCasesCheck();
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchWithTooManyCasesCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Reduce the number of switch cases from 35 to at most 30.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchWithTooManyCasesCheck.java", new SwitchWithTooManyCasesCheck());
   }
 
   @Test
   public void test() {
     SwitchWithTooManyCasesCheck check = new SwitchWithTooManyCasesCheck();
     check.maximumCases = 5;
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchWithTooManyCasesCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Reduce the number of switch cases from 35 to at most 5.")
-        .next().atLine(44).withMessage("Reduce the number of switch cases from 6 to at most 5.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchWithTooManyCasesCheckCustom.java", check);
   }
 
 

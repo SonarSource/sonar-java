@@ -19,31 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EmptyFileCheckTest {
 
-  private final EmptyFileCheck check = new EmptyFileCheck();
-
   @Test
   public void test_empty_file() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyFile.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("This Java file is empty.")
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/EmptyFile.java", new EmptyFileCheck());
   }
 
   @Test
   public void test_non_empty_file() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonEmptyFile.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NonEmptyFile.java", new EmptyFileCheck());
   }
 
 }

@@ -29,10 +29,14 @@ public class CommentedCode {
   public CommentedCode(int field) {
     this.field = field;
     // This is a comment, but next line is a commented-out code
+    // Noncompliant@+1
+    // Noncompliant@+2 {{This block of commented-out lines of code should be removed.}}
+
     // for (Visitor visitor : visitors) {
     //   continue;
     // }
 
+    // Noncompliant@+3
     /*
     This is a comment, but next line is a commented-out code
     for (Visitor visitor : visitors) {
@@ -40,11 +44,13 @@ public class CommentedCode {
     }
     */
 
+    // Noncompliant@+2
     /* This is a comment, but next line is a commented-out code */
     /* for (Visitor visitor : visitors) { */
     /*   continue; */
     /* } */
 
+    // TODO
     /**
      * This is not Javadoc, even if it looks like Javadoc and before declaration of variable
      * for (Visitor visitor : visitors) {
@@ -54,6 +60,7 @@ public class CommentedCode {
     int a;
   }
 
+  // TODo
   /**
    * From GWT documentation:
    * JSNI methods are declared native and contain JavaScript code in a specially formatted comment block
@@ -70,6 +77,7 @@ public class CommentedCode {
   }
   }-*/
 
+  // Noncompliant@+3
   /*
    * This is not a documentation comment
    * for (Visitor visitor : visitors) {

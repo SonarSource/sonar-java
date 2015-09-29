@@ -1,31 +1,35 @@
 class EmptyBlock {
-  static /* NOK */ {
+  // Noncompliant@+1 {{Either remove or fill this block of code.}}
+  static {
   }
 
-  static /* OK */ {
+  static {
     doSomething();
   }
 
-  static /* OK */ {
+  static {
     // comment
   }
 
-  /* NOK */ {
+  // Noncompliant@+1
+  {
   }
 
-  /* OK */ {
+  {
     doSomething();
   }
 
-  /* OK */ {
+  {
     // comment
   }
 
   void method() {
-    for (int i = 0; i < 10; i++) /* NOK */ {
+    for (int i = 0; i < 10; i++)
+    // Noncompliant@+1
+    {
     }
-    for (int i = 0; i < 10; i++); // OK
-    for (int i = 0; i < 10; i++) /* OK */ {
+    for (int i = 0; i < 10; i++);
+    for (int i = 0; i < 10; i++) {
       // comment
     }
 
@@ -35,43 +39,51 @@ class EmptyBlock {
         break;
     }
 
-    switch (1) /* NOK */ {
+    // Noncompliant@+1
+    switch (1) {
     }
 
-    try /* NOK */ {
-    } catch (Exception e) /* NOK */ {
-    } finally /* NOK */ {
+    // Noncompliant@+1
+    try {
+    } catch (Exception e)
+    // Noncompliant@+1
+    {
+    } finally
+    // Noncompliant@+1
+    {
     }
 
-    try /* OK */ {
+    try {
       doSomething();
-    } catch (Exception e) /* OK */ {
+    } catch (Exception e) {
       doSomething();
-    } finally /* OK */ {
+    } finally {
       doSomething();
     }
 
-    try /* OK */ {
+    try {
       // comment
-    } catch (Exception e) /* OK */ {
+    } catch (Exception e) {
       // comment
-    } finally /* OK */ {
+    } finally {
       // comment
     }
 
-    synchronized (this) /* NOK */ {
+    synchronized (this)
+    // Noncompliant@+1
+    {
     }
 
-    synchronized (this) /* OK */ {
+    synchronized (this) {
       doSomething();
     }
 
-    synchronized (this) /* OK */ {
+    synchronized (this) {
       // comment
     }
   }
 
-  void anotherMethod() /* OK */ {
+  void anotherMethod() {
   }
 
   static {
@@ -79,8 +91,9 @@ class EmptyBlock {
       stream = new ObjectOutputStream(new OutputStream() {
         public void write(int b) {}
       });
-    } catch (IOException cannotHappen) /*NOK*/
-    {
+    }
+    // Noncompliant@+1
+    catch (IOException cannotHappen) {
     }
   }
 }

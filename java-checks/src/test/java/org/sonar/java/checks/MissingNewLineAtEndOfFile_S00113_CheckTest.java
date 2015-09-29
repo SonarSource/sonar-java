@@ -19,39 +19,24 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MissingNewLineAtEndOfFile_S00113_CheckTest {
 
-  private VisitorsBridge check = new VisitorsBridge(new MissingNewLineAtEndOfFile_S00113_Check());
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MissingNewLineAtEndOfFile.java"), check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("Add a new line at the end of this file.")
-        .noMore();
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/MissingNewLineAtEndOfFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFile_S00113_Check());
   }
 
   @Test
   public void test2() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyFile.java"), check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("Add a new line at the end of this file.")
-        .noMore();
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/EmptyFile.java", "Add a new line at the end of this file.", new MissingNewLineAtEndOfFile_S00113_Check());
   }
 
   @Test
   public void test3() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonEmptyFile.java"), check);
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NonEmptyFile.java", new MissingNewLineAtEndOfFile_S00113_Check());
   }
 
 }

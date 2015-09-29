@@ -20,23 +20,13 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ToStringReturningNullCheckTest {
 
-  private final ToStringReturningNullCheck check = new ToStringReturningNullCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ToStringReturningNullCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(15).withMessage("Return empty string instead.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ToStringReturningNullCheck.java", new ToStringReturningNullCheck());
   }
 
 }

@@ -11,40 +11,39 @@ import java.util.Scanner;
 
 class A {
   void myMethod(byte[] bytes, java.io.File file, OutputStream outputStream) {
-    // Noncompliant
-    new String(bytes);
-    new String(bytes, 0, 1);
-    "".getBytes();
-    "".getBytes(0, 0, bytes, 0);
-    new java.io.ByteArrayOutputStream().toString();
-    new FileReader("fileName");
-    new FileReader(file);
-    new FileReader(new java.io.FileDescriptor());
-    new FileWriter(file);
-    new FileWriter(file, true);
-    new FileWriter(new java.io.FileDescriptor());
-    new FileWriter("fileName");
-    new FileWriter("fileName", true);
-    new InputStreamReader(new java.io.FileInputStream(""));
-    new OutputStreamWriter(outputStream);
-    new PrintStream(file);
-    new PrintStream(outputStream);
-    new PrintStream(outputStream, true);
-    new PrintStream("fileName");
-    new PrintWriter(file);
-    new PrintWriter(outputStream);
-    new PrintWriter(outputStream, true);
-    new PrintWriter("fileName");
-    new Formatter("");
-    new Formatter(file);
-    new Formatter(outputStream);
-    new Scanner(file);
-    new java.util.Scanner(new java.io.FileInputStream(""));
-    FileReader reader = null;
-    FileReader reader = new FileReader(""); // we should not raise 2 issues
-    java.io.Reader reader2 = fileReader();
-    FileWriter writer = null;
-    java.io.Writer writer2 = fileWriter();
+    new String(bytes); // Noncompliant {{Remove this use of constructor "String(byte[])"}}
+    new String(bytes, 0, 1); // Noncompliant {{Remove this use of constructor "String(byte[],int,int)"}}
+    "".getBytes(); // Noncompliant {{Remove this use of "getBytes"}}
+    "".getBytes(0, 0, bytes, 0); // Noncompliant {{Remove this use of "getBytes"}}
+    new java.io.ByteArrayOutputStream().toString(); // Noncompliant
+    new FileReader("fileName"); // Noncompliant
+    new FileReader(file); // Noncompliant
+    new FileReader(new java.io.FileDescriptor()); // Noncompliant
+    new FileWriter(file); // Noncompliant
+    new FileWriter(file, true); // Noncompliant
+    new FileWriter(new java.io.FileDescriptor()); // Noncompliant
+    new FileWriter("fileName"); // Noncompliant
+    new FileWriter("fileName", true); // Noncompliant
+    new InputStreamReader(new java.io.FileInputStream("")); // Noncompliant
+    new OutputStreamWriter(outputStream); // Noncompliant
+    new PrintStream(file); // Noncompliant
+    new PrintStream(outputStream); // Noncompliant
+    new PrintStream(outputStream, true); // Noncompliant
+    new PrintStream("fileName"); // Noncompliant
+    new PrintWriter(file); // Noncompliant
+    new PrintWriter(outputStream); // Noncompliant
+    new PrintWriter(outputStream, true); // Noncompliant
+    new PrintWriter("fileName"); // Noncompliant
+    new Formatter(""); // Noncompliant
+    new Formatter(file); // Noncompliant
+    new Formatter(outputStream); // Noncompliant
+    new Scanner(file); // Noncompliant
+    new java.util.Scanner(new java.io.FileInputStream("")); // Noncompliant
+    FileReader reader = null; // Noncompliant
+    FileReader reader = new FileReader(""); // Noncompliant
+    java.io.Reader reader2 = fileReader(); // Noncompliant
+    FileWriter writer = null; // Noncompliant
+    java.io.Writer writer2 = fileWriter(); // Noncompliant
 
     // Compliant
     new String("");

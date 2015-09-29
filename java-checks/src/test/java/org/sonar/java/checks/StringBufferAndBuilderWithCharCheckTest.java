@@ -19,27 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.check.BelongsToProfile;
-import org.sonar.check.Priority;
-import org.sonar.check.Rule;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class StringBufferAndBuilderWithCharCheckTest {
 
-  private final StringBufferAndBuilderWithCharCheck check = new StringBufferAndBuilderWithCharCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringBufferAndBuilderWithCharCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Replace the constructor character parameter 'x' with string parameter \"x\".")
-      .next().atLine(5)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/StringBufferAndBuilderWithCharCheck.java", new StringBufferAndBuilderWithCharCheck());
   }
 }

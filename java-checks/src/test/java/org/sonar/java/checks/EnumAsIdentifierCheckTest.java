@@ -19,25 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EnumAsIdentifierCheckTest {
 
-  private final EnumAsIdentifierCheck check = new EnumAsIdentifierCheck();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EnumAsIdentifierCheck.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Use a different name than \"enum\".")
-        .next().atLine(9)
-        .next().atLine(15);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/EnumAsIdentifierCheck.java", new EnumAsIdentifierCheck());
   }
 
 }

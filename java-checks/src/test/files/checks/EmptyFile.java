@@ -1,0 +1,1 @@
+// Noncompliant {{This Java file is empty.}}

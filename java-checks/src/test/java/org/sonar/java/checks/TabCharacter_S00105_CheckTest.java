@@ -19,31 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TabCharacter_S00105_CheckTest {
 
-  private TabCharacter_S00105_Check check = new TabCharacter_S00105_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TabCharacter.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().withMessage("Replace all tab characters in this file by sequences of white-spaces.")
-        .noMore();
+    JavaCheckVerifier.verifyIssueOnFile("src/test/files/checks/TabCharacter.java", "Replace all tab characters in this file by sequences of white-spaces.", new TabCharacter_S00105_Check());
   }
 
   @Test
   public void test2() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonEmptyFile.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NonEmptyFile.java", new TabCharacter_S00105_Check());
   }
 
 }

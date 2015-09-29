@@ -19,32 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EmptyBlock_S00108_CheckTest {
 
-  private EmptyBlock_S00108_Check check = new EmptyBlock_S00108_Check();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EmptyBlock.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Either remove or fill this block of code.")
-        .next().atLine(13)
-        .next().atLine(25)
-        .next().atLine(38)
-        .next().atLine(41)
-        .next().atLine(42)
-        .next().atLine(43)
-        .next().atLine(62)
-        .next().atLine(83)
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/EmptyBlock.java", new EmptyBlock_S00108_Check());
   }
 
 }

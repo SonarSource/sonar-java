@@ -19,29 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class CommentedOutCodeLineCheckTest {
 
-  private CommentedOutCodeLineCheck check = new CommentedOutCodeLineCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/CommentedCode.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(32).withMessage("This block of commented-out lines of code should be removed.")
-        .next().atLine(38)
-        .next().atLine(44)
-        // TODO .next().atLine(50)
-        // TODO .next().atLine(66)
-        .next().atLine(75)
-        .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/CommentedCode.java", new CommentedOutCodeLineCheck());
   }
 
 }
