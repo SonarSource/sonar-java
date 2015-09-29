@@ -39,8 +39,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1697",
   name = "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implements JavaFileScanner {

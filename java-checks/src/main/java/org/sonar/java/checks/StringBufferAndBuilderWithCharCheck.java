@@ -41,8 +41,8 @@ import java.util.Set;
 @Rule(
   key = "S1317",
   name = "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5 min")

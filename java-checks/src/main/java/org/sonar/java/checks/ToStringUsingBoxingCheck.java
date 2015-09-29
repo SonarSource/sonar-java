@@ -41,8 +41,8 @@ import java.util.Set;
 @Rule(
   key = "S1158",
   name = "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
-  tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

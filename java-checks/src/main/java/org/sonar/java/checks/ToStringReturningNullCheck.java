@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2225",
   name = "\"toString()\" and \"clone()\" methods should not return null",
-  tags = {"bug", "cwe"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "cwe"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

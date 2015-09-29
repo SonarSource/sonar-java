@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S00121",
   name = "Control structures should use curly braces",
-  tags = {"cert", "cwe", "misra", "pitfall"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"cert", "cwe", "misra", "pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {

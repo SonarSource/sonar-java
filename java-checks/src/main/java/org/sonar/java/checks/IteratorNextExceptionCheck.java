@@ -44,8 +44,8 @@ import java.util.List;
 @Rule(
   key = "S2272",
   name = "\"Iterator.next()\" methods should throw \"NoSuchElementException\"",
-  tags = {"bug"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")

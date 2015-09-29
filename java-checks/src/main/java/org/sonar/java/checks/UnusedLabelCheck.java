@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S1065",
   name = "Unused labels should be removed",
-  tags = {"misra", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"misra", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")

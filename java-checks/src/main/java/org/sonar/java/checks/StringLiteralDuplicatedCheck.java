@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S1192",
   name = "String literals should not be duplicated",
-  tags = {"design"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"design"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleLinearWithOffsetRemediation(coeff = "2min", offset = "2min", effortToFixDescription = "per duplicate instance")

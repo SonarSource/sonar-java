@@ -41,8 +41,8 @@ import java.util.Set;
 @Rule(
   key = "S2653",
   name = "Web applications should not have a \"main\" method",
-  tags = {"cwe", "jee", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "jee", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")

@@ -35,9 +35,9 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1318",
   name = "\"object == null\" should be used instead of \"object.equals(null)\"",
+  priority = Priority.CRITICAL,
   status = "DEPRECATED",
-  tags = {},
-  priority = Priority.CRITICAL)
+  tags = {})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class ObjectEqualsNullCheck extends BaseTreeVisitor implements JavaFileScanner {

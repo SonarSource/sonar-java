@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "S2245",
   name = "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
-  tags = {"cert", "cwe", "owasp-a6", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cert", "cwe", "owasp-a6", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("10min")
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {

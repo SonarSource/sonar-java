@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2273",
   name = "\"wait(...)\", \"notify()\" and \"notifyAll()\" methods should only be called when a lock is obviously held on an object",
-  tags = {"bug", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

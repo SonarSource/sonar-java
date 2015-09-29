@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S1699",
   name = "Constructors should only call non-overridable methods",
-  tags = {"bug"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor {

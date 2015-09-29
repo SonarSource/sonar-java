@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S2974",
   name = "Classes without \"public\" constructors should be \"final\"",
-  tags = {"design"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"design"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class FinalClassCheck extends IssuableSubscriptionVisitor {

@@ -30,8 +30,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "RightCurlyBraceDifferentLineAsNextBlockCheck",
   name = "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be on two different lines",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class RightCurlyBraceDifferentLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {

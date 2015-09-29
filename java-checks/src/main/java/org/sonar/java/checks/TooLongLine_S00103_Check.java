@@ -47,8 +47,8 @@ import java.util.Set;
 @Rule(
   key = "S00103",
   name = "Lines should not be too long",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {

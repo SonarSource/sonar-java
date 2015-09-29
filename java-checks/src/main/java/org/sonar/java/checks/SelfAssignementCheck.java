@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S1656",
   name = "Variables should not be self-assigned",
-  tags = {"bug", "cert"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug", "cert"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("3min")
 public class SelfAssignementCheck extends SubscriptionBaseVisitor {

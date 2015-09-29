@@ -47,8 +47,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S2131",
   name = "Primitives should not be boxed just for \"String\" conversion",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")

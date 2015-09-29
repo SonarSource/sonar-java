@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2154",
   name = "Dissimilar primitive wrappers should not be used with the ternary operator without explicit casting",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

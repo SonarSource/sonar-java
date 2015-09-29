@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S1258",
   name = "Classes and enums with private members should have a constructor",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.RESOURCE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {

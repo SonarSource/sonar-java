@@ -30,8 +30,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "RightCurlyBraceSameLineAsNextBlockCheck",
   name = "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be located on the same line",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class RightCurlyBraceSameLineAsNextBlockCheck extends RightCurlyBraceToNextBlockAbstractVisitor {

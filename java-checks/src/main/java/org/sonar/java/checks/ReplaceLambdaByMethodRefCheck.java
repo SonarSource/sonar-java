@@ -44,8 +44,8 @@ import java.util.List;
 @Rule(
   key = "S1612",
   name = "Lambdas should be replaced with method references",
-  tags = {"java8"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"java8"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner {

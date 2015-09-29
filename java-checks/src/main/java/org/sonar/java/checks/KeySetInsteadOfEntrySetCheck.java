@@ -46,8 +46,8 @@ import java.util.List;
 @Rule(
   key = "S2864",
   name = "\"entrySet()\" should be iterated when both the key and value are needed",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

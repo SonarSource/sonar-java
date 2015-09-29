@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S2201",
   name = "Return values should not be ignored when function calls don't have any side effects",
-  tags = {"bug", "cert", "misra"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "cert", "misra"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {

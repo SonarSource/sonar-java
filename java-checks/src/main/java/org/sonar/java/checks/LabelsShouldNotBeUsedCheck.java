@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "LabelsShouldNotBeUsedCheck",
   name = "Labels should not be used",
-  tags = {"confusing"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"confusing"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("30min")

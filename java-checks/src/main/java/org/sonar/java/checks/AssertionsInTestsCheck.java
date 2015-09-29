@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S2699",
   name = "Tests should include assertions",
-  tags = {"junit"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"junit"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("10min")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {

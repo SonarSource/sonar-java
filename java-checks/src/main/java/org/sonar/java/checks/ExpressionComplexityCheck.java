@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1067",
   name = "Expressions should not be too complex",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "5min", effortToFixDescription = "per complexity point above the threshold" )
@@ -47,7 +47,9 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 3;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX, description = "Maximum number of allowed conditional operators in an expression")
+  @RuleProperty(
+    description = "Maximum number of allowed conditional operators in an expression",
+    defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
   private final Deque<Integer> count = new LinkedList<Integer>();

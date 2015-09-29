@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2274",
   name = "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
-  tags = {"bug", "cert", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "cert", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

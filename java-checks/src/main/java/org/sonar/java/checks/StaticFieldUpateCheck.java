@@ -47,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "S2696",
   name = "Instance methods should not write to \"static\" fields",
-  tags = {"bug", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

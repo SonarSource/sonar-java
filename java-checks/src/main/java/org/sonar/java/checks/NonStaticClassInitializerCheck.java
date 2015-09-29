@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "S1171",
   name = "Only static class initializers should be used",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("30min")

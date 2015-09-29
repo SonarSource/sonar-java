@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S1182",
   name = "Classes that override \"clone\" should be \"Cloneable\" and call \"super.clone()\"",
-  tags = {"cwe"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cwe"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

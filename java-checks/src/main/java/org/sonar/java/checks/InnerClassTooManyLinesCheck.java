@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2972",
   name = "Inner classes should not have too many lines",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class InnerClassTooManyLinesCheck extends SubscriptionBaseVisitor {
@@ -48,8 +48,8 @@ public class InnerClassTooManyLinesCheck extends SubscriptionBaseVisitor {
   private static final int DEFAULT_MAX = 25;
 
   @RuleProperty(key = "Max",
-    defaultValue = "" + DEFAULT_MAX,
-    description = "The maximum number of lines allowed")
+    description = "The maximum number of lines allowed",
+    defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
   @Override

@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S1172",
   name = "Unused method parameters should be removed",
-  tags = {"misra", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"misra", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

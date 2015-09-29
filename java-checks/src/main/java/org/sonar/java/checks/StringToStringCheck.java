@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S1858",
   name = "\"toString()\" should never be called on a String object",
-  tags = {"clumsy", "pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1125",
   name = "Literal boolean values should not be used in condition expressions",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

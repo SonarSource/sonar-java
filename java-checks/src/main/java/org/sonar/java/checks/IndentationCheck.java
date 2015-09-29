@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "IndentationCheck",
   name = "Source code should be indented consistently",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class IndentationCheck extends SubscriptionBaseVisitor {

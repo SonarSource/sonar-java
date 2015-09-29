@@ -37,8 +37,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S881",
   name = "Increment (++) and decrement (--) operators should not be mixed with other operators in an expression",
-  tags = {"cert", "misra"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cert", "misra"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class IncrementDecrementInSubExpressionCheck extends BaseTreeVisitor implements JavaFileScanner {

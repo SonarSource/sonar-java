@@ -47,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "HiddenFieldCheck",
   name = "Local variables should not shadow class fields",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S1604",
   name = "Anonymous inner classes containing only one method should become lambdas",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner {

@@ -38,8 +38,8 @@ import java.util.Map;
 @Rule(
   key = "S1940",
   name = "Boolean checks should not be inverted",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
 public class BooleanInversionCheck extends SubscriptionBaseVisitor {

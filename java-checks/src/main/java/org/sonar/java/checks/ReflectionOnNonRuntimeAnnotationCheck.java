@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S2109",
   name = "Reflection should not be used to check non-runtime annotations",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("15min")

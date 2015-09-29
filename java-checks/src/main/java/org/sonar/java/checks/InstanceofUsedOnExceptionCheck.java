@@ -39,8 +39,8 @@ import java.util.Set;
 @Rule(
   key = "S1193",
   name = "Exception types should not be tested using \"instanceof\" in catch blocks",
-  tags = {"error-handling", "security"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"error-handling", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")

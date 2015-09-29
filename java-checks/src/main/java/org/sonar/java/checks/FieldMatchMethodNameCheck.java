@@ -41,8 +41,8 @@ import java.util.Set;
 @Rule(
   key = "S1701",
   name = "Fields and methods should not have conflicting names",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class FieldMatchMethodNameCheck extends SubscriptionBaseVisitor {

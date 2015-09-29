@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S1170",
   name = "Public constants and fields initialized at declaration should be \"static final\" rather than merely \"final\"",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("2min")

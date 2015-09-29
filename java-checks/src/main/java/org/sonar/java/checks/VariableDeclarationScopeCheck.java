@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S1941",
   name = "Variables should not be declared before they are relevant",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class VariableDeclarationScopeCheck extends SubscriptionBaseVisitor {

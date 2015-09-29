@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S2057",
   name = "\"Serializable\" classes should have a version id",
-  tags = {"pitfall", "serialization"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall", "serialization"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("5min")
 public class SerialVersionUidCheck extends SubscriptionBaseVisitor {

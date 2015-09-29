@@ -49,8 +49,8 @@ import java.util.List;
 @Rule(
   key = "S1481",
   name = "Unused local variables should be removed",
-  tags = {"unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

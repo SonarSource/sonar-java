@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S1264",
   name = "A \"while\" loop should be used instead of a \"for\" loop",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

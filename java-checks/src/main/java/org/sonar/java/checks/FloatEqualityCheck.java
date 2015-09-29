@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1244",
   name = "Floating point numbers should not be tested for equality",
-  tags = {"bug", "misra"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "misra"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

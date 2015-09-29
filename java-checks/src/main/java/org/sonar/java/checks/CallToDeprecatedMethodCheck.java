@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "CallToDeprecatedMethod",
   name = "Deprecated methods should not be used",
-  tags = {"cwe", "obsolete", "owasp-a9", "security"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"cwe", "obsolete", "owasp-a9", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
 @SqaleConstantRemediation("15min")
 public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {

@@ -43,8 +43,8 @@ import java.util.Locale;
 @Rule(
   key = "S2681",
   name = "Multiline blocks should be enclosed in curly braces",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

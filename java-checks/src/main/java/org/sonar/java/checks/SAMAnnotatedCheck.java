@@ -46,8 +46,8 @@ import java.util.List;
 @Rule(
   key = "S1609",
   name = "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
 public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {

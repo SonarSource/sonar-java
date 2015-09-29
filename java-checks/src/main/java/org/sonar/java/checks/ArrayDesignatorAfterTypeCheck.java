@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1195",
   name = "Array designators \"[]\" should be located after the type in method signatures",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

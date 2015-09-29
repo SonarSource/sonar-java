@@ -46,8 +46,8 @@ import java.util.List;
 @Rule(
   key = "S2133",
   name = "Objects should not be created only to \"getClass\"",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")

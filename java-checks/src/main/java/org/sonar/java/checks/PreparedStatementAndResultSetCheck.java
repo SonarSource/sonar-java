@@ -52,8 +52,8 @@ import java.util.List;
 @Rule(
   key = "S2695",
   name = "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
-  tags = {"bug", "sql"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "sql"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")

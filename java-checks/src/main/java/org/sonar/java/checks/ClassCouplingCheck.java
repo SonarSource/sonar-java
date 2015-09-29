@@ -57,8 +57,8 @@ import java.util.Set;
 @Rule(
   key = "S1200",
   name = "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("2h")
 public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScanner {

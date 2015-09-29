@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2176",
   name = "Class names should not shadow interfaces or superclasses",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

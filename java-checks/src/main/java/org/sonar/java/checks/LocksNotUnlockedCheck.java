@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2222",
   name = "Locks should be released",
-  tags = {"bug", "cwe", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "cwe", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

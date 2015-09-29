@@ -43,8 +43,8 @@ import java.util.Set;
 @Rule(
   key = "S1939",
   name = "Extensions and implementations should not be redundant",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1min")
 public class UselessExtendsCheck extends SubscriptionBaseVisitor implements JavaFileScanner {

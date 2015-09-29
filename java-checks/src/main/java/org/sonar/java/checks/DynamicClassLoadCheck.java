@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "S2658",
   name = "Classes should not be loaded dynamically",
-  tags = {"cwe", "owasp-a1", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "owasp-a1", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("45min")
 public class DynamicClassLoadCheck extends AbstractMethodDetection {

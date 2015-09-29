@@ -59,8 +59,8 @@ import java.util.List;
 @Rule(
   key = "S00122",
   name = "Statements should be on separate lines",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")

@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2693",
   name = "Threads should not be started in constructors",
-  tags = {"multi-threading", "pitfall"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"multi-threading", "pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")
 public class ThreadStartedInConstructorCheck extends SubscriptionBaseVisitor {

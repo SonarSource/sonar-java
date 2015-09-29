@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "MethodCyclomaticComplexity",
   name = "Methods should not be too complex",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point above the threshold" )
@@ -47,10 +47,9 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
   private static final int DEFAULT_MAX = 10;
 
   @RuleProperty(
-      key = "Threshold",
-      defaultValue = "" + DEFAULT_MAX,
-      description = "The maximum authorized complexity."
-  )
+    key = "Threshold",
+    description = "The maximum authorized complexity.",
+    defaultValue = "" + DEFAULT_MAX)
   private int max = DEFAULT_MAX;
 
   @Override

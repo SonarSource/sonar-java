@@ -41,8 +41,8 @@ import java.util.Set;
 @Rule(
   key = "ModifiersOrderCheck",
   name = "Modifiers should be declared in the correct order",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

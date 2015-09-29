@@ -45,8 +45,8 @@ import java.util.Set;
 @Rule(
   key = "S1943",
   name = "Classes and methods that rely on the default system encoding should not be used",
-  tags = {"bug"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {

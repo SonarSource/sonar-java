@@ -44,8 +44,8 @@ import java.util.LinkedList;
 @Rule(
   key = "S2325",
   name = "\"private\" methods that don't access instance data should be \"static\"",
-  tags = {"pitfall"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

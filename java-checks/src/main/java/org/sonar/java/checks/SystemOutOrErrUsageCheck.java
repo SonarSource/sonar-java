@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S106",
   name = "Standard outputs should not be used directly to log anything",
-  tags = {"bad-practice"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bad-practice"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)
 @SqaleConstantRemediation("10min")

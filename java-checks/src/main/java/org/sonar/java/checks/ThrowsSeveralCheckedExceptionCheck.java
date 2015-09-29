@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S1160",
   name = "Public methods should throw at most one checked exception",
-  tags = {"error-handling", "security"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"error-handling", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")

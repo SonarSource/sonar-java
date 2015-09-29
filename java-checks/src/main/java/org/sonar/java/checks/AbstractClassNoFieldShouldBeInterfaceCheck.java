@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1610",
   name = "Abstract classes without fields should be converted to interfaces",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor {

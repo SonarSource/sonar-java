@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "CommentedOutCodeLine",
   name = "Sections of code should not be \"commented out\"",
-  tags = {"misra", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"misra", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

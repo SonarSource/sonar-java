@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "ObjectFinalizeCheck",
   name = "The Object.finalize() method should not be called",
-  tags = {"cert", "cwe", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cert", "cwe", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

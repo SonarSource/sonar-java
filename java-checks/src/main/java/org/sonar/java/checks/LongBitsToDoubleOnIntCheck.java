@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2127",
   name = "\"Double.longBitsToDouble\" should not be used for \"int\"",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("15min")

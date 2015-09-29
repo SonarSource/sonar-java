@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S1162",
   name = "Checked Exception should not be thrown",
-  tags = {"error-handling", "security"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"error-handling", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1h")
 public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {

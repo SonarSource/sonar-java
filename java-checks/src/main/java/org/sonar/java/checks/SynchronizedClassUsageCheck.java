@@ -44,8 +44,8 @@ import java.util.Map;
 @Rule(
   key = "S1149",
   name = "Synchronized classes Vector, Hashtable, Stack and StringBuffer should not be used",
-  tags = {"multi-threading", "performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"multi-threading", "performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("20min")

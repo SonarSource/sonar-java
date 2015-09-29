@@ -40,8 +40,8 @@ import java.util.List;
 @Rule(
   key = "S00105",
   name = "Tabulation characters should not be used",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

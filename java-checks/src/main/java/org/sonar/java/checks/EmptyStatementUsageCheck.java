@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "EmptyStatementUsageCheck",
   name = "Empty statements should be removed",
-  tags = {"cert", "misra", "unused"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"cert", "misra", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")

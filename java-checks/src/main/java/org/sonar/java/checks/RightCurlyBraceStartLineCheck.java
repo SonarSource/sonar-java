@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "RightCurlyBraceStartLineCheck",
   name = "A close curly brace should be located at the beginning of a line",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")

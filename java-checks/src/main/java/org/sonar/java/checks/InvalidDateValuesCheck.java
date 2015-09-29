@@ -49,8 +49,8 @@ import java.util.Map;
 @Rule(
   key = "S2110",
   name = "Invalid \"Date\" values should not be used",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault

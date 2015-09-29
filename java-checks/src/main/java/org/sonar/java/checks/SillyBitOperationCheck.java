@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S2437",
   name = "Silly bit operations should not be performed",
-  tags = {"bug"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

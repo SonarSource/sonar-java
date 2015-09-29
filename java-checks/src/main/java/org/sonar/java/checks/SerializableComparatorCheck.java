@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2063",
   name = "Comparators should be \"Serializable\"",
-  tags = {"pitfall", "serialization"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall", "serialization"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class SerializableComparatorCheck extends SubscriptionBaseVisitor {

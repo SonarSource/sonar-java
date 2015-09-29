@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S2912",
   name = "\"indexOf\" checks should use a start position",
-  tags = {"confusing"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"confusing"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

@@ -41,8 +41,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1188",
   name = "Lambdas and anonymous classes should not have too many lines",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("20min")
@@ -51,8 +51,8 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(key = "Max",
-    defaultValue = "" + DEFAULT_MAX,
-    description = "Maximum allowed lines in an anonymous class/lambda")
+    description = "Maximum allowed lines in an anonymous class/lambda",
+    defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;

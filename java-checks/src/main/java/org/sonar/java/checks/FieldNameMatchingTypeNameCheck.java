@@ -41,8 +41,8 @@ import java.util.Collection;
 @Rule(
   key = "S1700",
   name = "A field should not duplicate the name of its containing class",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")

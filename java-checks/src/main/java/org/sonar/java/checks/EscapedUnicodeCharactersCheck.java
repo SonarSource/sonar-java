@@ -40,8 +40,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S2973",
   name = "Escaped Unicode characters should not be used",
-  tags = {"confusing"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"confusing"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class EscapedUnicodeCharactersCheck extends SubscriptionBaseVisitor {

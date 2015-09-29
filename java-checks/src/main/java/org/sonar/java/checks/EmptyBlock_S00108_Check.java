@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "S00108",
   name = "Nested blocks of code should not be left empty",
-  tags = {"bug"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

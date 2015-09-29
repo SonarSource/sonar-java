@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "S1145",
   name = "Useless \"if(true) {...}\" and \"if(false){...}\" blocks should be removed",
-  tags = {"cwe", "misra"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cwe", "misra"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {

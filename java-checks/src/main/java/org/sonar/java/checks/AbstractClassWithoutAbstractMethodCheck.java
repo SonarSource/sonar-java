@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1694",
   name = "An abstract class should have both abstract and concrete methods",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptionVisitor {

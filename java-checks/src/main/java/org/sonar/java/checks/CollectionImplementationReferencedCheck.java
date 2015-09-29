@@ -45,8 +45,8 @@ import java.util.Map;
 @Rule(
   key = "S1319",
   name = "Declarations should use Java collection interfaces such as \"List\" rather than specific implementation classes such as \"LinkedList\"",
-  tags = {"bad-practice"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bad-practice"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")

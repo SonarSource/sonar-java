@@ -43,8 +43,8 @@ import java.util.Set;
 @Rule(
   key = "S00112",
   name = "Generic exceptions should never be thrown",
-  tags = {"cwe", "error-handling", "security"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cwe", "error-handling", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")

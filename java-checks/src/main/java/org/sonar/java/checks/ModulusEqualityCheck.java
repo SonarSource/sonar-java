@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S2197",
   name = "Modulus results should not be checked for direct equality",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class ModulusEqualityCheck extends SubscriptionBaseVisitor {

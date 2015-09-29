@@ -38,8 +38,8 @@ import java.util.Map;
 @Rule(
   key = "S2583",
   name = "Conditions should not unconditionally evaluate to \"TRUE\" or to \"FALSE\"",
-  tags = {"bug", "cwe", "misra"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cwe", "misra"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")

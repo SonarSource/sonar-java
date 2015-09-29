@@ -55,8 +55,8 @@ import java.util.Set;
 @Rule(
   key = "S1854",
   name = "Dead stores should be removed",
-  tags = {"cert", "cwe", "suspicious", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cert", "cwe", "suspicious", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")

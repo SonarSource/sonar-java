@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2208",
   name = "Wildcard imports should not be used",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class WildcardImportsShouldNotBeUsedCheck extends IssuableSubscriptionVisitor {

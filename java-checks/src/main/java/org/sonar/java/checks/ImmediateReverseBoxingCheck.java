@@ -49,8 +49,8 @@ import java.util.Map.Entry;
 @Rule(
   key = "S2153",
   name = "Boxing and unboxing should not be immediately reversed",
-  tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")

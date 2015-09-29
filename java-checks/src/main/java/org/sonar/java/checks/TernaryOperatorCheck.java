@@ -32,8 +32,8 @@ import java.util.List;
 @Rule(
   key = "S1774",
   name = "The ternary operator should not be used",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class TernaryOperatorCheck extends SubscriptionBaseVisitor {

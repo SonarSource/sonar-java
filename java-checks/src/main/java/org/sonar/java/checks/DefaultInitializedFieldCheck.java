@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S3052",
   name = "Fields should not be initialized to default values",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class DefaultInitializedFieldCheck extends SubscriptionBaseVisitor {

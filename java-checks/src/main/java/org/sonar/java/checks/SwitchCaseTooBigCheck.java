@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S1151",
   name = "\"switch case\" clauses should not have too many lines",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
@@ -50,8 +50,9 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 5;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
-    description = "Maximum number of lines")
+  @RuleProperty(
+    description = "Maximum number of lines",
+    defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
   @Override

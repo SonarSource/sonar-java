@@ -48,8 +48,8 @@ import java.util.List;
 @Rule(
   key = "S2097",
   name = "\"equals(Object obj)\" should test argument type",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S2258",
   name = "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
-  tags = {"cwe", "owasp-a6", "security"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"cwe", "owasp-a6", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("15min")
 public class NullCipherCheck extends SubscriptionBaseVisitor {

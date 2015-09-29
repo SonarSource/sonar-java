@@ -38,8 +38,8 @@ import java.util.Set;
 @Rule(
   key = "S2924",
   name = "JUnit rules should be used",
-  tags = {"unused", "junit"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"unused", "junit"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

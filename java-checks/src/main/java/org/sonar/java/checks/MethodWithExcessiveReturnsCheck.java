@@ -38,15 +38,15 @@ import java.util.List;
 @Rule(
   key = "S1142",
   name = "Methods should not have too many return statements",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 3;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX, description = "Maximum allowed return statements per method")
+  @RuleProperty(description = "Maximum allowed return statements per method", defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
   private final Multiset<Tree> returnStatementCounter = HashMultiset.create();

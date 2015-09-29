@@ -49,8 +49,8 @@ import java.util.LinkedList;
 @Rule(
   key = "S1643",
   name = "Strings should not be concatenated using '+' in a loop",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("10min")
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {

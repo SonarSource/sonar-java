@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2278",
   name = "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
-  tags = {"cwe", "owasp-a6", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "owasp-a6", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")
 public class AvoidDESCheck extends AbstractMethodDetection {

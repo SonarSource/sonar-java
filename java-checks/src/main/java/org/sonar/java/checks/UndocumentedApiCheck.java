@@ -53,8 +53,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "UndocumentedApi",
   name = "Public types, methods and fields (API) should be documented with Javadoc",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {

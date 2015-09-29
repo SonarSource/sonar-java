@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S2130",
   name = "Parsing should be used to convert \"Strings\" to primitives",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")

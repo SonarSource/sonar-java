@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S3340",
   name = "Annotation arguments should appear in the order in which they were declared",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class AnnotationArgumentOrderCheck extends SubscriptionBaseVisitor {

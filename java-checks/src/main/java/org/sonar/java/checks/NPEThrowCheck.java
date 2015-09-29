@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S1695",
   name = "\"NullPointerException\" should not be explicitly thrown",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class NPEThrowCheck extends SubscriptionBaseVisitor {

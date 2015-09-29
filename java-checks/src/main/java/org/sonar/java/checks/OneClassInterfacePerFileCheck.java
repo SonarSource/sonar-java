@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S1996",
   name = "Files should contain only one top-level class or interface each",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleLinearRemediation(coeff = "10min", effortToFixDescription = "per extra \"class\" or \"interface\"")
 public class OneClassInterfacePerFileCheck extends SubscriptionBaseVisitor {

@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S1640",
   name = "Maps with keys that are enum values should be replaced with EnumMap",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

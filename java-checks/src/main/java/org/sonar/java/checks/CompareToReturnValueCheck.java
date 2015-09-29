@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S2167",
   name = "\"compareTo\" should not return \"Integer.MIN_VALUE\"",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

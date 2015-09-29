@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S2112",
   name = "\"URL.hashCode\" and \"URL.equals\" should be avoided",
-  tags = {"performance"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"performance"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

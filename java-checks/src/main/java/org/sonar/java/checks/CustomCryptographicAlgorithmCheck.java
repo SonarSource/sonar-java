@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "S2257",
   name = "Only standard cryptographic algorithms should be used",
-  tags = {"cwe", "owasp-a6", "sans-top25-porous", "security"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"cwe", "owasp-a6", "sans-top25-porous", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("1d")
 public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {

@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S1611",
   name = "Parentheses should be removed from a single lambda input parameter when its type is inferred",
-  tags = {"java8"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"java8"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S1710",
   name = "Annotation repetitions should not be wrapped",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileScanner {

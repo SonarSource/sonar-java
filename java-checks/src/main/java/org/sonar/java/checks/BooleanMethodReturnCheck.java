@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2447",
   name = "Null should not be returned from a \"Boolean\" method",
-  tags = {"pitfall"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("20min")

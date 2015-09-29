@@ -41,8 +41,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1155",
   name = "Collection.isEmpty() should be used to test for emptiness",
-  tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

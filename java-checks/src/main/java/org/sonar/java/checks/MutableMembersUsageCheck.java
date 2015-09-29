@@ -47,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "S2384",
   name = "Mutable members should not be stored or returned directly",
-  tags = {"cert", "cwe", "security", "unpredictable"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cert", "cwe", "security", "unpredictable"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFileScanner {

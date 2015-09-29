@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2157",
   name = "\"Cloneables\" should implement \"clone\"",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("30min")

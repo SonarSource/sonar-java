@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S1451",
   name = "Copyright and license headers should be defined",
-  tags = {},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")
 public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetAwareVisitor {
@@ -55,8 +55,8 @@ public class FileHeaderCheck extends SubscriptionBaseVisitor implements CharsetA
   @RuleProperty(
     key = "headerFormat",
     description = "Expected copyright and license header",
-    type = "TEXT",
-    defaultValue = DEFAULT_HEADER_FORMAT)
+    defaultValue = DEFAULT_HEADER_FORMAT,
+    type = "TEXT")
   public String headerFormat = DEFAULT_HEADER_FORMAT;
 
   @RuleProperty(

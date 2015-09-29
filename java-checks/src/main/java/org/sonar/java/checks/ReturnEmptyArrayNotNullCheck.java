@@ -47,8 +47,8 @@ import java.util.Set;
 @Rule(
   key = "S1168",
   name = "Empty arrays and collections should be returned instead of null",
-  tags = {"cert"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cert"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("30min")

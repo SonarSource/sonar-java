@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2236",
   name = "Methods \"wait(...)\", \"notify()\" and \"notifyAll()\" should never be called on Thread instances",
-  tags = {"bug", "multi-threading"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")

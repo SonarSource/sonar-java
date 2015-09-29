@@ -35,8 +35,8 @@ import java.util.Set;
 @Rule(
   key = "S818",
   name = "Literal suffixes should be upper case",
-  tags = {"cert", "convention", "misra", "pitfall"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"cert", "convention", "misra", "pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
 public class UppercaseSuffixesCheck extends SubscriptionBaseVisitor {

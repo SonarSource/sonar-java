@@ -41,8 +41,8 @@ import java.util.Set;
 @Rule(
   key = "S1153",
   name = "String.valueOf() should not be appended to a String",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

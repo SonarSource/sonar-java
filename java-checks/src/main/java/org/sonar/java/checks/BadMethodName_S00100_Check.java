@@ -39,8 +39,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S00100",
   name = "Method names should comply with a naming convention",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

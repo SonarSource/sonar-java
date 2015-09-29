@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2039",
   name = "Member variable visibility should be specified",
-  tags = {"security"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class FieldModifierCheck extends SubscriptionBaseVisitor {

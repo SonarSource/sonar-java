@@ -40,8 +40,8 @@ import java.util.List;
 @Rule(
   key = "S1849",
   name = "\"Iterator.hasNext()\" should not call \"Iterator.next()\"",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

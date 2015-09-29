@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2230",
   name = "Non-public methods should not be \"@Transactional\"",
-  tags = {"bug", "spring"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "spring"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("20min")

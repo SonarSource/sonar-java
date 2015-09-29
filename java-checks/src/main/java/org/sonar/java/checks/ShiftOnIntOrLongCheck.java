@@ -44,8 +44,8 @@ import java.util.List;
 @Rule(
   key = "S2183",
   name = "Ints and longs should not be shifted by more than their number of bits-1",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

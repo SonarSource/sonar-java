@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "S1607",
   name = "Skipped unit tests should be either removed or fixed",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("10min")
 public class IgnoredTestsCheck extends SubscriptionBaseVisitor {

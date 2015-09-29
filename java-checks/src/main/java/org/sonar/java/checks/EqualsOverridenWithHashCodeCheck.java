@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1206",
   name = "\"equals(Object obj)\" and \"hashCode()\" should be overridden in pairs",
-  tags = {"bug", "cert", "cwe"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cert", "cwe"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")

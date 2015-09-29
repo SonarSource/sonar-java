@@ -45,8 +45,8 @@ import java.util.Map;
 @Rule(
   key = "S3047",
   name = "Multiple loops over the same set should be combined",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("20min")
 public class LoopsOnSameSetCheck extends SubscriptionBaseVisitor {

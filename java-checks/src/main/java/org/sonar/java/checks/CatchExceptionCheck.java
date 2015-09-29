@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2221",
   name = "\"Exception\" should not be caught when not required by called methods",
-  tags = {"cwe", "error-handling", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "error-handling", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("15min")
 public class CatchExceptionCheck extends SubscriptionBaseVisitor {

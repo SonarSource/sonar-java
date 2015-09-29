@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S2159",
   name = "Silly equality checks should not be made",
-  tags = {"bug", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")

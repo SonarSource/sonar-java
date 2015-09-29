@@ -48,8 +48,8 @@ import java.util.List;
 @Rule(
   key = "S1185",
   name = "Overriding methods should do more than simply call the same method in the super class ",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

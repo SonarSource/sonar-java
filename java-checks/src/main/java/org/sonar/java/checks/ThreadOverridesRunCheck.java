@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2134",
   name = "Classes extending java.lang.Thread should override the \"run\" method",
-  tags = {"multi-threading", "pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"multi-threading", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

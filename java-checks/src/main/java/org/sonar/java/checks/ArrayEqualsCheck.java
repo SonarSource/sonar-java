@@ -34,9 +34,9 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1294",
   name = "The Array.equals(Object obj) method should not be used",
+  priority = Priority.CRITICAL,
   status = "DEPRECATED",
-  tags = {},
-  priority = Priority.CRITICAL)
+  tags = {})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class ArrayEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {

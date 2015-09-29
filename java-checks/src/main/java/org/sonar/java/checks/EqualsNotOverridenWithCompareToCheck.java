@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S1210",
   name = "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")

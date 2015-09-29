@@ -31,8 +31,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "EmptyFile",
   name = "Files should not be empty",
-  tags = {"unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"unused"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public final class EmptyFileCheck implements JavaFileScanner {

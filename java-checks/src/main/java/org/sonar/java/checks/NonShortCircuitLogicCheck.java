@@ -38,8 +38,8 @@ import java.util.Map;
 @Rule(
   key = "S2178",
   name = "Short-circuit logic should be used in boolean contexts",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "ClassCyclomaticComplexity",
   name = "Classes should not be too complex",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point over the threshold" )
@@ -46,8 +46,9 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 200;
 
-  @RuleProperty(defaultValue = "" + DEFAULT_MAX,
-    description = "Maximum complexity allowed.")
+  @RuleProperty(
+    description = "Maximum complexity allowed.",
+    defaultValue = "" + DEFAULT_MAX)
   private int max = DEFAULT_MAX;
 
   @Override

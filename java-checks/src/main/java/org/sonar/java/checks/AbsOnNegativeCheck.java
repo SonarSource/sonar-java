@@ -47,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "S2676",
   name = "Neither \"Math.abs\" nor negation should be used on numbers that could be \"MIN_VALUE\"",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

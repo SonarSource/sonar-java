@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2786",
   name = "Nested \"enum\"s should not be declared static",
-  tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

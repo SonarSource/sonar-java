@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "ClassVariableVisibilityCheck",
   name = "Class variable fields should not have public accessibility",
-  tags = {"cwe"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cwe"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")

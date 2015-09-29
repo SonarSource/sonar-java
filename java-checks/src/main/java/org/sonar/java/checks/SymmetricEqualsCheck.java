@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S2162",
   name = "\"equals\" methods should be symmetric and work for subclasses",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {

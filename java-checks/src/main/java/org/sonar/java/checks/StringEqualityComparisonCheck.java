@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "StringEqualityComparisonCheck",
   name = "Strings should be compared using \"equals()\"",
-  tags = {"cwe"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class StringEqualityComparisonCheck extends SubscriptionBaseVisitor {

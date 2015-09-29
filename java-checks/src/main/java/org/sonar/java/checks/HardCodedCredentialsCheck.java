@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S2068",
   name = "Credentials should not be hard-coded",
-  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("30min")

@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S1217",
   name = "Thread.run() and Runnable.run() should not be called directly",
-  tags = {"cert", "cwe", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cert", "cwe", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("20min")

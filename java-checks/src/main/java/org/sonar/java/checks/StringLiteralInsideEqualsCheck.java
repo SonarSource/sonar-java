@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S1132",
   name = "Strings literals should be placed on the left side when checking for equality",
-  tags = {"bad-practice"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bad-practice"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")

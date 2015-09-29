@@ -49,8 +49,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S109",
   name = "Magic numbers should not be used",
-  tags = {"brain-overload"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("5min")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {

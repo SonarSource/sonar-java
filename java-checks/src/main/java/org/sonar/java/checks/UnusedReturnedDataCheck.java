@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2677",
   name = "\"read\" and \"readLine\" return values should be used",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

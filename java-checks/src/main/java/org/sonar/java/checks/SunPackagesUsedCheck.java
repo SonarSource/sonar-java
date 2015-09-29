@@ -43,8 +43,8 @@ import java.util.Set;
 @Rule(
   key = "S1191",
   name = "Classes from \"sun.*\" packages should not be used",
-  tags = {"lock-in", "pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"lock-in", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
 @SqaleConstantRemediation("1h")

@@ -39,8 +39,8 @@ import java.util.Deque;
 @Rule(
   key = "S1066",
   name = "Collapsible \"if\" statements should be merged",
-  tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

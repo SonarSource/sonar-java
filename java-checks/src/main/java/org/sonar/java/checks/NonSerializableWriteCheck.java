@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2118",
   name = "Non-serializable classes should not be written",
-  tags = {"pitfall", "serialization"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"pitfall", "serialization"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")

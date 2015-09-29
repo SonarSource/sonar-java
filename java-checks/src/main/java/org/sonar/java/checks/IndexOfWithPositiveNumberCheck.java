@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2692",
   name = "\"indexOf\" checks should not be for positive numbers",
-  tags = {"pitfall"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")

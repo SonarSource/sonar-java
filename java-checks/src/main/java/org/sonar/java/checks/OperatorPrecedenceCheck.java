@@ -56,8 +56,8 @@ import java.util.Set;
 @Rule(
   key = "S864",
   name = "Limited dependence should be placed on operator precedence rules in expressions",
-  tags = {"cert", "cwe", "misra"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"cert", "cwe", "misra"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {

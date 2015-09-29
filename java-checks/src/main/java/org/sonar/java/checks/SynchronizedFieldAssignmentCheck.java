@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S2445",
   name = "Blocks synchronized on fields should not contain assignments of new objects to those fields",
-  tags = {"bug", "multi-threading"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "multi-threading"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {

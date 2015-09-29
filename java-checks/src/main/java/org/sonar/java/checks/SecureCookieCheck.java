@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S2092",
   name = "Cookies should be \"secure\"",
-  tags = {"cwe", "owasp-a2", "owasp-a6", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "owasp-a2", "owasp-a6", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")

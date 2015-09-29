@@ -47,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "S2440",
   name = "Classes with only \"static\" methods should not be instantiated",
-  tags = {"clumsy"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")

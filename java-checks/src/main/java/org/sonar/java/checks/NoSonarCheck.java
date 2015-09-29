@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "NoSonar",
   name = "\"NOSONAR\" should not be used to switch off issues",
-  tags = {"bad-practice"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bad-practice"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("1min")
 public class NoSonarCheck extends SubscriptionBaseVisitor {

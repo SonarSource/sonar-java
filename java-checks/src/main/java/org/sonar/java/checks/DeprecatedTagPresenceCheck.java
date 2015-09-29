@@ -30,8 +30,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1133",
   name = "Deprecated code should be removed eventually",
-  tags = {"obsolete"},
-  priority = Priority.INFO)
+  priority = Priority.INFO,
+  tags = {"obsolete"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")

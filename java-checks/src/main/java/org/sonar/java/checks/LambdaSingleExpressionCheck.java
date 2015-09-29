@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S1602",
   name = "Lamdbas containing only one statement should not nest this statement in a block",
-  tags = {"java8"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"java8"})
 @ActivatedByDefault
 @Beta
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

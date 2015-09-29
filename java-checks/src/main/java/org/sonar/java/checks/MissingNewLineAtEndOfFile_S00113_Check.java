@@ -40,8 +40,8 @@ import java.util.List;
 @Rule(
   key = "S00113",
   name = "Files should contain an empty new line at the end",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {

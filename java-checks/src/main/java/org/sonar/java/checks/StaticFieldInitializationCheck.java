@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2444",
   name = "Lazy initialization of \"static\" fields should be \"synchronized\"",
-  tags = {"bug", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "multi-threading"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")
 public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker {

@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S1994",
   name = "\"for\" loop incrementers should modify the variable being tested in the loop's stop condition",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("20min")

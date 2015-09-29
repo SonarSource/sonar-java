@@ -35,8 +35,8 @@ import java.util.LinkedList;
 @Rule(
   key = "MissingDeprecatedCheck",
   name = "Deprecated elements should have both the annotation and the Javadoc tag",
-  tags = {"bad-practice"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bad-practice"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

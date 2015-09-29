@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "S1448",
   name = "Classes should not have too many methods",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("1h")
 public class TooManyMethodsCheck extends SubscriptionBaseVisitor {

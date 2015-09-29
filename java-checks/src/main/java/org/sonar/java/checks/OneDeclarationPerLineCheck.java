@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S1659",
   name = "Multiple variables should not be declared on the same line",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {

@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2204",
   name = "\".equals()\" should not be used to test the values of \"Atomic\" classes",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -33,8 +33,8 @@ import java.util.List;
 @Rule(
   key = "S1315",
   name = "\"CHECKSTYLE:OFF\" suppression comments should not be used",
-  tags = {"bad-practice"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"bad-practice"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class NoCheckstyleTagPresenceCheck extends SubscriptionBaseVisitor {

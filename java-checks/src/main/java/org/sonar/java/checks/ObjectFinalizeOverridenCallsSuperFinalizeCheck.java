@@ -47,8 +47,8 @@ import java.util.List;
 @Rule(
   key = "ObjectFinalizeOverridenCallsSuperFinalizeCheck",
   name = "super.finalize() should be called at the end of Object.finalize() implementations",
-  tags = {"bug", "cert", "cwe"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cert", "cwe"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S2076",
   name = "Values passed to OS commands should be sanitized",
-  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {

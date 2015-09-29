@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S1452",
   name = "Generic wildcard types should not be used in return parameters",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

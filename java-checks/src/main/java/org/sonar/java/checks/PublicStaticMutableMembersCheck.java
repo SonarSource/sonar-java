@@ -57,8 +57,8 @@ import java.util.Set;
 @Rule(
   key = "S2386",
   name = "Mutable fields should not be \"public static\"",
-  tags = {"cwe", "unpredictable", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "unpredictable", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("15min")

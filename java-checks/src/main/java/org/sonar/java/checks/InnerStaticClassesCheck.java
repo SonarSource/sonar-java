@@ -41,8 +41,8 @@ import java.util.LinkedList;
 @Rule(
   key = "S2694",
   name = "Inner classes which do not reference their owning classes should be \"static\"",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("15min")
 public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFileScanner {

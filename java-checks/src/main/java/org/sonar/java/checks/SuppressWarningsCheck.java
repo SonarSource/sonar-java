@@ -42,8 +42,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1309",
   name = "The @SuppressWarnings annotation should not be used",
-  tags = {},
-  priority = Priority.INFO)
+  priority = Priority.INFO,
+  tags = {})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class SuppressWarningsCheck extends SubscriptionBaseVisitor {

@@ -29,8 +29,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "LeftCurlyBraceEndLineCheck",
   name = "An open curly brace should be located at the end of a line",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class LeftCurlyBraceEndLineCheck extends LeftCurlyBraceBaseTreeVisitor {

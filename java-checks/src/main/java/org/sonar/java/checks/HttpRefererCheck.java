@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2089",
   name = "HTTP referers should not be relied on",
-  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("20min")
 public class HttpRefererCheck extends AbstractMethodDetection {

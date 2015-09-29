@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2675",
   name = "\"readObject\" should not be \"synchronized\"",
-  tags = {"confusing"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"confusing"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")

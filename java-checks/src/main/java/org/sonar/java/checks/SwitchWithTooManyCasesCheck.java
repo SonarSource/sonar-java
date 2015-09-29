@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S1479",
   name = "\"switch\" statements should not have too many \"case\" clauses",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("30min")

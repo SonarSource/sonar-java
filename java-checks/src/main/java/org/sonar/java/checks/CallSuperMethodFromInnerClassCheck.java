@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2388",
   name = "Inner class calls to super class methods should be unambiguous",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

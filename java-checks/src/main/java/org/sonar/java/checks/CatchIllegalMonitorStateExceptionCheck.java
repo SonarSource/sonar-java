@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2235",
   name = "IllegalMonitorStateException should not be caught",
-  tags = {"bug", "multi-threading"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

@@ -42,8 +42,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S1312",
   name = "Loggers should be \"private static final\" and should share a naming convention",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

@@ -40,8 +40,8 @@ import java.util.List;
 @Rule(
   key = "S2122",
   name = "\"ScheduledThreadPoolExecutor\" should not have 0 core threads",
-  tags = {"bug"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("20min")

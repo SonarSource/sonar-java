@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S00104",
   name = "Files should not have too many lines",
-  tags = {"brain-overload"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"brain-overload"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1h")
 public class TooManyLinesOfCodeInFile_S00104_Check extends SubscriptionBaseVisitor {

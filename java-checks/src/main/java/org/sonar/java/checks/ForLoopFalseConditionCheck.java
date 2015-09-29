@@ -39,8 +39,8 @@ import javax.annotation.CheckForNull;
 @Rule(
   key = "S2252",
   name = "Loop conditions should be true at least once",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")

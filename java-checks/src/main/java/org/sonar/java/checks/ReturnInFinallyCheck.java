@@ -38,8 +38,8 @@ import java.util.LinkedList;
 @Rule(
   key = "S1143",
   name = "\"return\" statements should not occur in \"finally\" blocks",
-  tags = {"bug", "cwe", "error-handling"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cwe", "error-handling"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("30min")

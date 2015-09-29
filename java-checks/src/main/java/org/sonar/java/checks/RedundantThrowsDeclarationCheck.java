@@ -39,8 +39,8 @@ import java.util.Set;
 @Rule(
   key = "RedundantThrowsDeclarationCheck",
   name = "Throws declarations should not be superfluous",
-  tags = {"error-handling", "security"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"error-handling", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

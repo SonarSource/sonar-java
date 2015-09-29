@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "UnusedPrivateMethod",
   name = "Unused private method should be removed",
-  tags = {"unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

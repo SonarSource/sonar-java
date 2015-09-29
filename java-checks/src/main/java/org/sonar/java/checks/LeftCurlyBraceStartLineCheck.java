@@ -29,8 +29,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "LeftCurlyBraceStartLineCheck",
   name = "An open curly brace should be located at the beginning of a line",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class LeftCurlyBraceStartLineCheck extends LeftCurlyBraceBaseTreeVisitor {

@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S1860",
   name = "Synchronization should not be based on Strings or boxed primitives",
-  tags = {"bug", "cert", "multi-threading"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cert", "multi-threading"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("15min")

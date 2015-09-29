@@ -53,8 +53,8 @@ import java.util.Set;
 @Rule(
   key = "UselessImportCheck",
   name = "Useless imports should be removed",
-  tags = {"unused"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

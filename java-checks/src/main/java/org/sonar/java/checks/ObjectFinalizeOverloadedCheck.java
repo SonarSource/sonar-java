@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S1175",
   name = "The signature of \"finalize()\" should match that of \"Object.finalize()\"",
-  tags = {"pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")

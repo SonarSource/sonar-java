@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "ObjectFinalizeOverridenCheck",
   name = "The Object.finalize() method should not be overriden",
-  tags = {"cert", "unpredictable"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"cert", "unpredictable"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

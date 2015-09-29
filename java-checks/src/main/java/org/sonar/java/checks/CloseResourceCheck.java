@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S2095",
   name = "Resources should be closed",
-  tags = {"bug", "cert", "cwe", "denial-of-service", "leak", "security"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cert", "cwe", "denial-of-service", "leak", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S2175",
   name = "Inappropriate \"Collection\" calls should not be made",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")

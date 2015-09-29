@@ -38,8 +38,8 @@ import java.util.List;
 @Rule(
   key = "S1764",
   name = "Identical expressions should not be used on both sides of a binary operator",
-  tags = {"bug", "cert"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "cert"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")

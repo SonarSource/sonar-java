@@ -45,8 +45,8 @@ import java.util.Set;
 @Rule(
   key = "S1226",
   name = "Method parameters, caught exceptions and foreach variables should not be reassigned",
-  tags = {"misra", "pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"misra", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")

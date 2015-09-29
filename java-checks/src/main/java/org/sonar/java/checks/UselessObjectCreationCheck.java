@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1848",
   name = "Objects should not be created to be dropped immediately without being used",
-  tags = {"bug", "unused"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

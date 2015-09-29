@@ -49,8 +49,8 @@ import java.util.List;
 @Rule(
   key = "S2301",
   name = "Public methods should not contain selector arguments",
-  tags = {"design"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"design"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MODULARITY)
 @SqaleConstantRemediation("15min")
 public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {

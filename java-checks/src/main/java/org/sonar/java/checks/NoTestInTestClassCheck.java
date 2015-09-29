@@ -44,8 +44,8 @@ import java.util.List;
 @Rule(
   key = "S2187",
   name = "TestCases should contain tests",
-  tags = {"junit", "unused"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"junit", "unused"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")

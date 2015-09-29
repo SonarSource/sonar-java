@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2061",
   name = "Custom serialization method signatures should meet requirements",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

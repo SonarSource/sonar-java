@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2116",
   name = "\"hashCode\" and \"toString\" should not be called on array instances",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

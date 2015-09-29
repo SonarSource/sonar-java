@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S1872",
   name = "Classes should not be compared by name",
-  tags = {"bug", "cwe", "security"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "cwe", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

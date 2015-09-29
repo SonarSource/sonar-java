@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "LowerCaseLongSuffixCheck",
   name = "Long suffix \"L\" should be upper case",
-  tags = {},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

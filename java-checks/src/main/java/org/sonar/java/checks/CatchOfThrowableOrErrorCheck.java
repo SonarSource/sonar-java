@@ -45,8 +45,8 @@ import java.util.List;
 @Rule(
   key = "S1181",
   name = "Throwable and Error should not be caught",
-  tags = {"cert", "cwe", "error-handling", "security"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"cert", "cwe", "error-handling", "security"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")

@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S2166",
   name = "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
-  tags = {"convention", "pitfall"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"convention", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

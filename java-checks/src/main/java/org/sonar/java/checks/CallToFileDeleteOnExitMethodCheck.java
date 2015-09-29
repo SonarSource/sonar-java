@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "CallToFileDeleteOnExitMethod",
   name = "\"deleteOnExit\" should not be used",
-  tags = {"performance"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"performance"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("30min")
 public class  CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {

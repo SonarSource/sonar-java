@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S1186",
   name = "Methods should not be empty",
-  tags = {"suspicious"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"suspicious"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")

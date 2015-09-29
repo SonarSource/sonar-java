@@ -36,8 +36,8 @@ import java.util.List;
 @Rule(
   key = "S1844",
   name = "\"Object.wait(...)\" should never be called on objects that implement \"java.util.concurrent.locks.Condition\"",
-  tags = {"bug", "pitfall"},
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

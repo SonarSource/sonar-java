@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1197",
   name = "Array designators \"[]\" should be on the type, not the variable",
-  tags = {"convention"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"convention"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

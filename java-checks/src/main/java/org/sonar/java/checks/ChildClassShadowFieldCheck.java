@@ -42,8 +42,8 @@ import java.util.Set;
 @Rule(
   key = "S2387",
   name = "Child class members should not shadow parent class members",
-  tags = {"confusing"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"confusing"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

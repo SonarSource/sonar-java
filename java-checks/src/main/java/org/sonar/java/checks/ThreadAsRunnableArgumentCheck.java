@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S2438",
   name = "\"Threads\" should not be used where \"Runnables\" are expected",
-  tags = {"multi-threading", "pitfall"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"multi-threading", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("15min")

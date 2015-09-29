@@ -35,8 +35,8 @@ import java.util.List;
 @Rule(
   key = "S1850",
   name = "\"instanceof\" operators that always return \"true\" or \"false\" should be removed",
-  tags = {"bug", "cwe"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug", "cwe"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")

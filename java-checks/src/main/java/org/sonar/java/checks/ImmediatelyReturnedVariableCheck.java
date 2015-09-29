@@ -45,8 +45,8 @@ import java.util.Map;
 @Rule(
   key = "S1488",
   name = "Local Variables should not be declared and then immediately returned or thrown",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

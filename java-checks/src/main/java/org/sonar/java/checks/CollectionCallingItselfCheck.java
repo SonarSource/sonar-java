@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2114",
   name = "Collections should not be passed as arguments to their own methods",
-  tags = {"bug"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("15min")

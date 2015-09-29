@@ -43,8 +43,8 @@ import javax.annotation.Nullable;
 @Rule(
   key = "AssignmentInSubExpressionCheck",
   name = "Assignments should not be made from within sub-expressions",
-  tags = {"bug", "cwe", "misra"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"bug", "cwe", "misra"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

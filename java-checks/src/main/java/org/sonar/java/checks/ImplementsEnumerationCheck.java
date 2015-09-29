@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1150",
   name = "Enumeration should not be implemented",
-  tags = {"obsolete"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"obsolete"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("30min")

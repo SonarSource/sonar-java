@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S2718",
   name = "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
-  tags = {"java8", "performance"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"java8", "performance"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("10min")
 public class DateUtilsTruncateCheck extends AbstractMethodDetection {

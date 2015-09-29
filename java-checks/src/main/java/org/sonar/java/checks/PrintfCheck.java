@@ -50,8 +50,8 @@ import java.util.regex.Pattern;
 @Rule(
   key = "S2275",
   name = "Printf-style format strings should not lead to unexpected behavior at runtime",
-  tags = {"bug", "pitfall"},
-  priority = Priority.CRITICAL)
+  priority = Priority.CRITICAL,
+  tags = {"bug", "pitfall"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")

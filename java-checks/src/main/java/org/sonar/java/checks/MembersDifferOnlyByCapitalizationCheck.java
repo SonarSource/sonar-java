@@ -43,8 +43,8 @@ import java.util.List;
 @Rule(
   key = "S1845",
   name = "Methods and field names should not be the same or differ only by capitalization",
-  tags = {"confusing"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"confusing"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")

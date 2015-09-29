@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S2701",
   name = "Literal boolean values should not be used in assertions",
-  tags = {"junit"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"junit"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
 public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {

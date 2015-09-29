@@ -39,8 +39,8 @@ import java.util.List;
 @Rule(
   key = "S2333",
   name = "Redundant modifiers should not be used",
-  tags = {"clumsy"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"clumsy"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class RedundantModifierCheck extends SubscriptionBaseVisitor {

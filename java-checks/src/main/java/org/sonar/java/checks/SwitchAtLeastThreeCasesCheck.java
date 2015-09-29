@@ -34,8 +34,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1301",
   name = "\"switch\" statements should have at least 3 \"case\" clauses",
-  tags = {"misra"},
-  priority = Priority.MINOR)
+  priority = Priority.MINOR,
+  tags = {"misra"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

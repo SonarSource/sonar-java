@@ -34,8 +34,8 @@ import java.util.List;
 @Rule(
   key = "S2975",
   name = "\"clone\" should not be overridden",
-  tags = {"suspicious"},
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {"suspicious"})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("30min")
