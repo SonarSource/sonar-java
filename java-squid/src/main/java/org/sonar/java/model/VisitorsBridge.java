@@ -329,12 +329,12 @@ public class VisitorsBridge {
     }
 
     @Override
-    public int getComplexity(Tree tree) {
+    public List<Tree> getComplexity(Tree tree) {
       return complexityVisitor.scan(tree);
     }
 
     @Override
-    public int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
+    public List<Tree> getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
       return complexityVisitor.scan(enclosingClass, methodTree);
     }
 

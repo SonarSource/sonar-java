@@ -21,19 +21,24 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
 public class ComplexityVisitor extends SubscriptionVisitor {
 
-  private int complexity;
+  private List<Tree> blame = new ArrayList<>();
   private Deque<ClassTree> classTrees = new LinkedList<>();
   private boolean analyseAccessors;
 
@@ -64,57 +69,65 @@ public class ComplexityVisitor extends SubscriptionVisitor {
         .build();
   }
 
-  public int scan(ClassTree classTree, MethodTree tree) {
-    complexity = 0;
+  public List<Tree> scan(ClassTree classTree, MethodTree tree) {
+    blame.clear();
     classTrees.clear();
     classTrees.push(classTree);
     super.scanTree(tree);
-    return complexity;
+    return blame;
   }
 
-  public int scan(Tree tree) {
-    complexity = 0;
+  public List<Tree> scan(Tree tree) {
+    blame.clear();
     classTrees.clear();
     super.scanTree(tree);
-    return complexity;
+    return blame;
   }
 
   @Override
   public void visitNode(Tree tree) {
-    if (isClass(tree)) {
-      classTrees.push((ClassTree) tree);
-    } else if (isMethod(tree)) {
-      computeMethodComplexity((MethodTree) tree);
-    } else if (tree.is(Tree.Kind.CASE_LABEL)) {
-      CaseLabelTree caseLabelTree = (CaseLabelTree) tree;
-      if (!"default".equals(caseLabelTree.caseOrDefaultKeyword().text())) {
-        complexity++;
-      }
-    } else {
-      complexity++;
+    switch (tree.kind()) {
+      case CLASS:
+      case ENUM:
+      case ANNOTATION_TYPE:
+        classTrees.push((ClassTree) tree);
+        break;
+      case METHOD:
+      case CONSTRUCTOR:
+        computeMethodComplexity((MethodTree) tree);
+        break;
+      case CASE_LABEL:
+        CaseLabelTree caseLabelTree = (CaseLabelTree) tree;
+        if (!"default".equals(caseLabelTree.caseOrDefaultKeyword().text())) {
+          blame.add(caseLabelTree.caseOrDefaultKeyword());
+        }
+        break;
+      case IF_STATEMENT:
+      case FOR_STATEMENT:
+      case FOR_EACH_STATEMENT:
+      case DO_STATEMENT:
+      case WHILE_STATEMENT:
+      case RETURN_STATEMENT:
+      case THROW_STATEMENT:
+      case CATCH:
+        blame.add(FirstSyntaxTokenFinder.firstSyntaxToken(tree));
+        break;
+      case CONDITIONAL_EXPRESSION:
+        blame.add(((ConditionalExpressionTree) tree).questionToken());
+        break;
+      case CONDITIONAL_AND:
+      case CONDITIONAL_OR:
+        blame.add(((BinaryExpressionTree) tree).operatorToken());
+        break;
+      default:
+        throw new UnsupportedOperationException();
     }
-  }
-
-  private static boolean isMethod(Tree tree) {
-    return tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR);
-  }
-
-  private static boolean isClass(Tree tree) {
-    return tree.is(Tree.Kind.CLASS) ||
-        tree.is(Tree.Kind.ENUM) ||
-        tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 
   private void computeMethodComplexity(MethodTree methodTree) {
     BlockTree block = methodTree.block();
-    if (block != null) {
-      if (classTrees.isEmpty() || !isAccessor(methodTree)) {
-        complexity++;
-      }
-      if (!block.body().isEmpty() && Iterables.getLast(block.body()).is(Tree.Kind.RETURN_STATEMENT)) {
-        //minus one because we are going to count the return with +1
-        complexity--;
-      }
+    if (block != null && (classTrees.isEmpty() || !isAccessor(methodTree))) {
+      blame.add(methodTree.simpleName().identifierToken());
     }
   }
 
@@ -125,8 +138,22 @@ public class ComplexityVisitor extends SubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (isClass(tree)) {
-      classTrees.pop();
+    switch (tree.kind()) {
+      case CLASS:
+      case ENUM:
+      case ANNOTATION_TYPE:
+        classTrees.pop();
+        break;
+      case METHOD:
+      case CONSTRUCTOR:
+        BlockTree block = ((MethodTree) tree).block();
+        if (block != null && !block.body().isEmpty()) {
+          StatementTree last = Iterables.getLast(block.body());
+          if (last.is(Tree.Kind.RETURN_STATEMENT)) {
+            // minus one because we are going to count the return with +1
+            blame.remove(blame.size() - 1);
+          }
+        }
     }
   }
 }

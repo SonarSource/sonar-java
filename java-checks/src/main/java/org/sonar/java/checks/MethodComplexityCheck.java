@@ -24,13 +24,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(
@@ -60,11 +61,18 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    int complexity = context.getComplexity(methodTree);
-    if (complexity > max) {
-      addIssue(tree, MessageFormat.format(
-          "The Cyclomatic Complexity of this method \"{0}\" is {1,number,integer} which is greater than {2,number,integer} authorized.",
-          methodTree.simpleName().name(), complexity, max), (double) complexity - max);
+    List<Tree> complexity = context.getComplexity(methodTree);
+    int size = complexity.size();
+    if (size > max) {
+      List<JavaFileScannerContext.Location> flow = new ArrayList<>();
+      for (Tree element : complexity) {
+        flow.add(new JavaFileScannerContext.Location("Complexity + 1", element));
+      }
+      reportIssue(
+        methodTree.simpleName(),
+        "The Cyclomatic Complexity of this method \"" + methodTree.simpleName().name() + "\" is " + size + " which is greater than " + max + " authorized.",
+        flow,
+        size - max);
     }
   }
 
