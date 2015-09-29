@@ -302,8 +302,8 @@ public class VisitorsBridge {
         checkMessage.setLine(textSpan.startLine);
         AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpan, message, cost != null ? cost : 0);
         for (Location location : secondary) {
-          AnalyzerMessage flowElement = new AnalyzerMessage(javaCheck, file, textSpanFor(location.syntaxNode), location.msg, 0);
-          analyzerMessage.secondaryLocations.add(flowElement);
+          AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, textSpanFor(location.syntaxNode), location.msg, 0);
+          analyzerMessage.secondaryLocations.add(secondaryLocation);
         }
         checkMessage.analyzerMessage = analyzerMessage;
         sourceFile.log(checkMessage);

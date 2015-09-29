@@ -62,7 +62,7 @@ public interface JavaFileScannerContext {
 
   void reportIssue(JavaCheck javaCheck, Tree tree, String message);
 
-  void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> flow, @Nullable Integer cost);
+  void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
   class Location {
     public final String msg;

@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.issue.Issuable;
@@ -171,7 +172,9 @@ public final class CompIssue {
   public void save() {
     if (secondaryLocations != null) {
       try {
-        SQ_5_2.issueBuilder_addFlow.invoke(issueBuilder, secondaryLocations);
+        for (Object secondaryLocation : secondaryLocations) {
+          SQ_5_2.issueBuilder_addFlow.invoke(issueBuilder, ImmutableList.of(secondaryLocation));
+        }
       } catch (IllegalAccessException | InvocationTargetException e) {
         throw Throwables.propagate(e);
       }
