@@ -333,6 +333,9 @@ public class CFG {
       case METHOD_REFERENCE:
         // Java 8 constructions : ignored for now.
         break;
+      case ASSERT_STATEMENT:
+        // assert can be ignored by VM so skip them for now.
+        break;
       case EMPTY_STATEMENT:
       case CLASS:
       case ENUM:

@@ -229,6 +229,7 @@ public class CFGTest {
     cfg = buildCFG("Object fun(Object a) {return new Foo<String>() {} ;} ");
     cfg = buildCFG("Object fun(Object a) {a = String[].class; return int.class;} ");
     cfg = buildCFG("Object fun(Object a) {class A {} String[]::new;} ");
+    cfg = buildCFG("Object fun(Object a) {assert true;} ");
   }
 
 
