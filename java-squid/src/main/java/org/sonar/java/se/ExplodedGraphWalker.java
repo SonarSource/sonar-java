@@ -134,7 +134,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       // LIFO:
       node = workList.removeFirst();
       programPosition = node.programPoint;
-      if (/* last */programPosition.block.successors.isEmpty()) {
+      if (/* last */programPosition.block.successors().isEmpty()) {
         // not guaranteed that last block will be reached, e.g. "label: goto label;"
         // TODO(Godin): notify clients before continuing with another position
         continue;
@@ -144,12 +144,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       if (programPosition.i < programPosition.block.elements().size()) {
         // process block element
         visit(programPosition.block.elements().get(programPosition.i));
-      } else if (programPosition.block.terminator == null) {
+      } else if (programPosition.block.terminator() == null) {
         // process block exit, which is unconditional jump such as goto-statement or return-statement
         handleBlockExit(programPosition);
       } else if (programPosition.i == programPosition.block.elements().size()) {
         // process block exist, which is conditional jump such as if-statement
-        checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator);
+        checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator());
       } else {
         // process branch
         handleBlockExit(programPosition);
@@ -167,20 +167,20 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
     CFG.Block block = programPosition.block;
-    if (block.terminator != null) {
-      switch (block.terminator.kind()) {
+    if (block.terminator() != null) {
+      switch (block.terminator().kind()) {
         case IF_STATEMENT:
-          handleBranch(block, ((IfStatementTree) block.terminator).condition());
+          handleBranch(block, ((IfStatementTree) block.terminator()).condition());
           return;
         case CONDITIONAL_OR:
         case CONDITIONAL_AND:
-          handleBranch(block, ((BinaryExpressionTree) block.terminator).leftOperand());
+          handleBranch(block, ((BinaryExpressionTree) block.terminator()).leftOperand());
           return;
         case CONDITIONAL_EXPRESSION:
-          handleBranch(block, ((ConditionalExpressionTree) block.terminator).condition());
+          handleBranch(block, ((ConditionalExpressionTree) block.terminator()).condition());
           return;
         case FOR_STATEMENT:
-          ForStatementTree forStatement = (ForStatementTree) block.terminator;
+          ForStatementTree forStatement = (ForStatementTree) block.terminator();
           if(forStatement.condition() != null) {
             handleBranch(block, forStatement.condition(), false);
             return;
@@ -188,7 +188,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
     // unconditional jumps, for-statement, switch-statement:
-    for (CFG.Block successor : Lists.reverse(block.successors)) {
+    for (CFG.Block successor : Lists.reverse(block.successors())) {
       enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState);
     }
   }
@@ -201,7 +201,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState, condition);
     if (pair.a != null) {
       // enqueue false-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(1), 0), pair.a);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors().get(1), 0), pair.a);
       if(checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
@@ -213,7 +213,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors.get(0), 0), pair.b);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors().get(0), 0), pair.b);
       if(checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }

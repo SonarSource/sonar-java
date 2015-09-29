@@ -19,11 +19,11 @@
  */
 package org.sonar.java.se;
 
+import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CheckMessage;
 
 import java.util.List;
 
@@ -78,7 +78,7 @@ public class CheckerDispatcher implements CheckerContext {
 
   @Override
   public void addIssue(Tree tree, String ruleKey, String message) {
-    context.addIssue(tree, new CheckMessage(ruleKey, message));
+    context.addIssue(tree, new JavaCheckMessage(ruleKey, message));
   }
 
 

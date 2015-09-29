@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
+
 public class CFGTest {
 
   private static CFGChecker checker(BlockChecker... checkers) {

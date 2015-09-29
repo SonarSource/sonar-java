@@ -317,13 +317,14 @@ class NullPointerTest {
     Object value;
     Set<Object> set = null;
     Entry head = null;
-    for(Object entry : set.values()) { // enhanced for loop not handled
-      head.hashCode(); // enhanced for loop not handled
+    for(Object entry : set.values()) { // Noncompliant {{NullPointerException might be thrown as 'set' is nullable here}}
+      //all potential npe after this one are not raised as symbolic execution is cut.
+      head.hashCode();
       value = null;
-      value.hashCode(); // enhanced for loop not handled
+      value.hashCode();
     }
-    head.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'head' is nullable here}}
-    value.hashCode(); // False negative
+    head.hashCode();
+    value.hashCode();
   }
 
   public void testWhileLoop() {
@@ -460,7 +461,7 @@ class NullPointerTest {
       object1 = new Object();
       break;
     case "TWO":
-      object1.hashCode(); // Noncompliant 2
+      object1.hashCode(); // Noncompliant
       break;
     case "THREE":
       object2 = new Object();
@@ -468,7 +469,7 @@ class NullPointerTest {
       object2.hashCode(); // Noncompliant
       break;
     case "FIVE":
-      object3.hashCode(); // Noncompliant 2 {{NullPointerException might be thrown as 'object3' is nullable here}}
+      object3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object3' is nullable here}}
       object4 = null;
     case "SIX":
       object4.hashCode(); // False negative
