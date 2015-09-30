@@ -147,6 +147,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
       case METHOD:
       case CONSTRUCTOR:
         leaveMethod((MethodTree) tree);
+        break;
       default:
         // nothing to do
     }
