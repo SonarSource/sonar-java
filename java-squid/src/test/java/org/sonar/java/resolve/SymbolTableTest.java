@@ -423,6 +423,14 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void type_accessibility() throws Exception {
+    Result result = Result.createForJavaFile("src/test/java/org/sonar/java/test/AccessibilityTestCase");
+    JavaSymbol reference = result.reference(26, 7);
+    JavaType.MethodJavaType type = (JavaType.MethodJavaType) reference.type;
+    assertThat(type.resultType.symbol.name).isEqualTo("int");
+  }
+
+  @Test
   public void Accessibility() {
     Result result = Result.createFor("Accessibility");
 
