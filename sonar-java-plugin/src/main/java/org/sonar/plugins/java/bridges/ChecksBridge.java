@@ -28,6 +28,7 @@ import org.sonar.api.issue.Issue;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.CompIssue;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -61,8 +62,8 @@ public class ChecksBridge {
           if (ruleKey == null) {
             throw new IllegalStateException("Cannot find rule key for instance of " + check.getClass());
           }
-          if (checkMessage instanceof org.sonar.java.CheckMessage) {
-            AnalyzerMessage issue = ((org.sonar.java.CheckMessage) checkMessage).analyzerMessage;
+          if (checkMessage instanceof JavaCheckMessage) {
+            AnalyzerMessage issue = ((JavaCheckMessage) checkMessage).getAnalyzerMessage();
             if (issue != null) {
               reportIssueNew(sonarFile, issuable, issue, ruleKey);
               continue;

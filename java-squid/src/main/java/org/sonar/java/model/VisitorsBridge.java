@@ -33,7 +33,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CharsetAwareVisitor;
-import org.sonar.java.CheckMessage;
+import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
@@ -221,7 +221,7 @@ public class VisitorsBridge {
     public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
       Preconditions.checkNotNull(javaCheck);
       Preconditions.checkNotNull(message);
-      CheckMessage checkMessage = new CheckMessage(javaCheck, message);
+      JavaCheckMessage checkMessage = new JavaCheckMessage(javaCheck, message);
       if (line > 0) {
         checkMessage.setLine(line);
       }
@@ -294,7 +294,7 @@ public class VisitorsBridge {
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
       if (ENABLE_NEW_APIS) {
-        CheckMessage checkMessage = new CheckMessage(javaCheck, message);
+        JavaCheckMessage checkMessage = new JavaCheckMessage(javaCheck, message);
         AnalyzerMessage.TextSpan textSpan = textSpanFor(syntaxNode);
         if (cost != null) {
           checkMessage.setCost(cost);
@@ -305,7 +305,7 @@ public class VisitorsBridge {
           AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, textSpanFor(location.syntaxNode), location.msg, 0);
           analyzerMessage.secondaryLocations.add(secondaryLocation);
         }
-        checkMessage.analyzerMessage = analyzerMessage;
+        checkMessage.setAnalyzerMessage(analyzerMessage);
         sourceFile.log(checkMessage);
       } else {
         addIssue(syntaxNode, javaCheck, message, (double) cost);

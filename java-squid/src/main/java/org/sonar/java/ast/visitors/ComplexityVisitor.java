@@ -146,14 +146,20 @@ public class ComplexityVisitor extends SubscriptionVisitor {
         break;
       case METHOD:
       case CONSTRUCTOR:
-        BlockTree block = ((MethodTree) tree).block();
-        if (block != null && !block.body().isEmpty()) {
-          StatementTree last = Iterables.getLast(block.body());
-          if (last.is(Tree.Kind.RETURN_STATEMENT)) {
-            // minus one because we are going to count the return with +1
-            blame.remove(blame.size() - 1);
-          }
-        }
+        leaveMethod((MethodTree) tree);
+      default:
+        // nothing to do
+    }
+  }
+
+  private void leaveMethod(MethodTree tree) {
+    BlockTree block = tree.block();
+    if (block != null && !block.body().isEmpty()) {
+      StatementTree last = Iterables.getLast(block.body());
+      if (last.is(Tree.Kind.RETURN_STATEMENT)) {
+        // minus one because we are going to count the return with +1
+        blame.remove(blame.size() - 1);
+      }
     }
   }
 }

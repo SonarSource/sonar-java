@@ -19,12 +19,19 @@
  */
 package org.sonar.java;
 
-public class CheckMessage extends org.sonar.squidbridge.api.CheckMessage {
+public class JavaCheckMessage extends org.sonar.squidbridge.api.CheckMessage {
 
-  public AnalyzerMessage analyzerMessage;
+  private AnalyzerMessage analyzerMessage;
 
-  public CheckMessage(Object check, String message, Object... messageArguments) {
+  public JavaCheckMessage(Object check, String message, Object... messageArguments) {
     super(check, message, messageArguments);
   }
 
+  public AnalyzerMessage getAnalyzerMessage() {
+    return analyzerMessage;
+  }
+
+  public void setAnalyzerMessage(AnalyzerMessage analyzerMessage) {
+    this.analyzerMessage = analyzerMessage;
+  }
 }
