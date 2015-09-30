@@ -56,13 +56,13 @@ public class SymbolTableTest {
     assertThat(result.reference(12, 5)).isSameAs(result.symbol("foo", 8));
     assertThat(result.reference(13, 5)).isSameAs(result.symbol("foo", 9));
 
-    //Check erasure
+    // Check erasure
     JavaType.TypeVariableJavaType STypeVariableType = (JavaType.TypeVariableJavaType) typeSymbol.typeParameters.lookup("S").get(0).type;
     assertThat(STypeVariableType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
     JavaType arrayErasure = typeSymbol.members().lookup("arrayErasure").get(0).type;
     assertThat(arrayErasure.isTagged(JavaType.ARRAY)).isTrue();
     assertThat(arrayErasure.erasure().isTagged(JavaType.ARRAY)).isTrue();
-    assertThat(((JavaType.ArrayJavaType)arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
+    assertThat(((JavaType.ArrayJavaType) arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
 
     IdentifierTree tree = result.referenceTree(20, 7);
     JavaType symbolType = (JavaType) tree.symbolType();
@@ -73,19 +73,19 @@ public class SymbolTableTest {
     assertThat(ptt.typeSubstitution.substitutedType(ptt.typeSubstitution.typeVariables().iterator().next()).symbol.getName()).isEqualTo("String");
 
     JavaSymbol.MethodJavaSymbol method1 = (JavaSymbol.MethodJavaSymbol) typeSymbol.members().lookup("method1").get(0);
-    assertThat(((JavaType.MethodJavaType)method1.type).resultType).isSameAs(STypeVariableType);
+    assertThat(((JavaType.MethodJavaType) method1.type).resultType).isSameAs(STypeVariableType);
 
     JavaSymbol.MethodJavaSymbol method2 = (JavaSymbol.MethodJavaSymbol) typeSymbol.members().lookup("method2").get(0);
     JavaType.TypeVariableJavaType PTypeVariableType = (JavaType.TypeVariableJavaType) method2.typeParameters().lookup("P").get(0).type;
     assertThat(method2.getReturnType().type).isSameAs(PTypeVariableType);
     assertThat(method2.parameterTypes().get(0)).isSameAs(PTypeVariableType);
 
-    //Type parameter defined in outer class
+    // Type parameter defined in outer class
     JavaSymbol.TypeJavaSymbol classCSymbol = (JavaSymbol.TypeJavaSymbol) typeSymbol.members().lookup("C").get(0);
     JavaSymbol innerClassField = classCSymbol.members().lookup("innerClassField").get(0);
     assertThat(innerClassField.type).isSameAs(STypeVariableType);
 
-    //Unknown parametrized type should be tagged as unknown
+    // Unknown parametrized type should be tagged as unknown
     MethodTree methodTree = (MethodTree) result.getTree(result.symbol("unknownSymbol"));
     VariableTree variableTree = (VariableTree) methodTree.block().body().get(0);
     assertThat(variableTree.type().symbolType().isUnknown()).isTrue();
@@ -132,8 +132,8 @@ public class SymbolTableTest {
     assertThat(typeSymbol.flags()).isEqualTo(Flags.PRIVATE);
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).containsExactly(
-        result.symbol("FirstInterface").type,
-        result.symbol("SecondInterface").type);
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
     assertThat(typeSymbol.members.lookup("super")).hasSize(1);
     JavaSymbol superSymbol = typeSymbol.members.lookup("super").get(0);
@@ -156,7 +156,7 @@ public class SymbolTableTest {
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Foo");
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Baz").type);
 
-    assertThat(result.reference(25,21)).isSameAs(result.symbol("method"));
+    assertThat(result.reference(25, 21)).isSameAs(result.symbol("method"));
 
     SymbolMetadataResolve metadata = classDeclaration.metadata();
     assertThat(metadata.annotations()).hasSize(1);
@@ -191,7 +191,6 @@ public class SymbolTableTest {
     assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Superclass").type);
     assertThat(typeSymbol.getInterfaces()).isEmpty();
     assertThat(typeSymbol.members.lookup("this")).isNotEmpty();
-
 
     typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("methodInAnonymousClassInterface").owner();
     assertThat(typeSymbol.owner()).isSameAs(result.symbol("method"));
@@ -229,8 +228,8 @@ public class SymbolTableTest {
     assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
     assertThat(interfaceSymbol.getSuperclass().getSymbol().getName()).isEqualTo("Object");
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
-        result.symbol("FirstInterface").type,
-        result.symbol("SecondInterface").type);
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
     assertThat(interfaceSymbol.members.lookup("this")).isEmpty();
     assertThat(interfaceSymbol.members.lookup("super")).isEmpty();
 
@@ -275,7 +274,7 @@ public class SymbolTableTest {
     assertThat(enumSymbol.owner()).isSameAs(result.symbol("EnumDeclaration"));
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM | Flags.STATIC);
 
-    JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType)enumSymbol.getSuperclass();
+    JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType) enumSymbol.getSuperclass();
     JavaSymbol.TypeJavaSymbol superclass = superType.symbol;
     assertThat(superclass.getName()).isEqualTo("Enum");
     assertThat(superclass.owner).isInstanceOf(JavaSymbol.PackageJavaSymbol.class);
@@ -291,8 +290,8 @@ public class SymbolTableTest {
     assertThat(superSymbol.type).isSameAs(superType);
 
     assertThat(enumSymbol.getInterfaces()).containsExactly(
-        result.symbol("FirstInterface").type,
-        result.symbol("SecondInterface").type);
+      result.symbol("FirstInterface").type,
+      result.symbol("SecondInterface").type);
     assertThat(enumSymbol.members.lookup("this")).isNotEmpty();
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
@@ -325,8 +324,8 @@ public class SymbolTableTest {
     methodSymbol = (JavaSymbol.MethodJavaSymbol) enumConstructorSymbol.members().lookup("<init>").get(0);
     assertThat(methodSymbol.isPrivate()).isTrue();
 
-    assertThat(result.reference(36,5)).isSameAs(result.symbol("<init>", 38));
-    assertThat(result.reference(37,5)).isSameAs(result.symbol("<init>", 39));
+    assertThat(result.reference(36, 5)).isSameAs(result.symbol("<init>", 38));
+    assertThat(result.reference(37, 5)).isSameAs(result.symbol("<init>", 39));
   }
 
   @Test
@@ -394,8 +393,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PROTECTED);
     assertThat(methodSymbol.getReturnType()).isSameAs(result.symbol("ReturnType"));
     assertThat(methodSymbol.thrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType").type(),
-        result.symbol("SecondExceptionType").type());
+      result.symbol("FirstExceptionType").type(),
+      result.symbol("SecondExceptionType").type());
   }
 
   @Test
@@ -408,8 +407,8 @@ public class SymbolTableTest {
     assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
     assertThat(methodSymbol.parameterTypes()).hasSize(1);
     assertThat(methodSymbol.thrownTypes()).containsExactly(
-        result.symbol("FirstExceptionType").type(),
-        result.symbol("SecondExceptionType").type());
+      result.symbol("FirstExceptionType").type(),
+      result.symbol("SecondExceptionType").type());
 
     assertThat(result.reference(21, 35)).isEqualTo(methodSymbol);
   }
@@ -529,8 +528,12 @@ public class SymbolTableTest {
   @Test
   public void generic_method_call() throws Exception {
     Result result = Result.createFor("references/GenericMethodCall");
-    assertThat(result.reference(23, 5)).isSameAs(result.symbol("fun"));
-    assertThat(result.reference(24, 5)).isSameAs(result.symbol("fun"));
+    JavaSymbol funMethod = result.symbol("fun");
+    int startLine = 25;
+    assertThat(result.reference(startLine, 5)).isSameAs(funMethod);
+    assertThat(result.reference(startLine + 1, 5)).isSameAs(funMethod);
+    assertThat(result.reference(startLine + 2, 5)).isSameAs(funMethod);
+    assertThat(result.reference(startLine + 3, 5)).isSameAs(funMethod);
   }
 
   @Test
@@ -666,16 +669,14 @@ public class SymbolTableTest {
 
     JavaSymbol.TypeSymbol app = (JavaSymbol.TypeSymbol) result.symbol("App");
     for (Symbol sym : app.memberSymbols()) {
-      if(!sym.isMethodSymbol() && !(sym.name().equals("super") || sym.name().equals("this"))) {
+      if (!sym.isMethodSymbol() && !(sym.name().equals("super") || sym.name().equals("this"))) {
         assertThat(sym.metadata().isAnnotatedWith("java.lang.Deprecated")).isTrue();
       }
     }
 
-
-
   }
 
-  public void assertThatReferenceNotFound(Result result, int line, int column){
+  public void assertThatReferenceNotFound(Result result, int line, int column) {
     try {
       JavaSymbol reference = result.reference(line, column);
       failure("reference was found whereas it is not expected");

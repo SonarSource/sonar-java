@@ -406,7 +406,7 @@ public class Resolve {
     JavaType superclass = site.getSymbol().getSuperclass();
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
-      method.type = resolveTypeSubstitution(method.type, superclass);
+      method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, superclass), site);
       JavaSymbol best = selectBest(env, callSite.symbol, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
@@ -414,7 +414,7 @@ public class Resolve {
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
-      method.type = resolveTypeSubstitution(method.type, interfaceType);
+      method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, interfaceType), site);
       JavaSymbol best = selectBest(env, callSite.symbol, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
