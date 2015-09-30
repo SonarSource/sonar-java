@@ -1,7 +1,6 @@
 {
 'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
 2331,
-2407,
 2844,
 2997,
 3050,
@@ -31,9 +30,6 @@
 'com.google.guava:guava:src/com/google/common/net/HostAndPort.java':[
 214,
 215,
-],
-'com.google.guava:guava:src/com/google/common/net/HostSpecifier.java':[
-86,
 ],
 'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
 890,

@@ -110,8 +110,7 @@ class A {
 
   int read_var_in_catch() {
     int a = -1;
-    //false positive : read in catch is not considered and exceptional path with no assignment not considered
-    int b = 2;// Noncompliant
+    int b = 2;
     try {
       a = 2;
       b = raisingExceptionMethod();
@@ -167,4 +166,12 @@ class A {
     return;
   }
 
+  Object variable_initialized() {
+    Object foo = null; // compliant variable should be initialized
+    try {
+      foo = raisingExceptionMethod();
+    } catch (Exception e){
+    }
+    return foo;
+  }
 }

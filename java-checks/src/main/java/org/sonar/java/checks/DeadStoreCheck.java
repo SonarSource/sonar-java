@@ -48,6 +48,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -127,6 +128,9 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           break;
         case TRY_STATEMENT:
           TryStatementTree tryStatement = (TryStatementTree) element;
+          AssignedLocalVarVisitor visitor = new AssignedLocalVarVisitor();
+          tryStatement.block().accept(visitor);
+          out.addAll(visitor.assignedLocalVars);
           for (CatchTree catchTree : tryStatement.catches()) {
             out.addAll(getUsedLocalVarInSubTree(catchTree, methodSymbol));
           }
@@ -219,6 +223,22 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitClass(ClassTree tree) {
       // ignore inner classes
+    }
+  }
+
+  private static class AssignedLocalVarVisitor extends BaseTreeVisitor {
+    List<Symbol> assignedLocalVars = new ArrayList<>();
+
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      ExpressionTree lhs = ExpressionsHelper.skipParentheses(tree.variable());
+      if (lhs.is(Tree.Kind.IDENTIFIER)) {
+        Symbol symbol = ((IdentifierTree) lhs).symbol();
+        if (isLocalVariable(symbol)) {
+          assignedLocalVars.add(symbol);
+        }
+        super.visitAssignmentExpression(tree);
+      }
     }
   }
 
