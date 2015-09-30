@@ -397,8 +397,10 @@ public class Resolve {
       }
     }
     //look in supertypes for more specialized method (overloading).
-    if (site.getSymbol().getSuperclass() != null) {
-      Resolution method = findMethod(env, site.getSymbol().getSuperclass(), name, argTypes, typeParams);
+    JavaType superclass = site.getSymbol().getSuperclass();
+    if (superclass != null) {
+      Resolution method = findMethod(env, superclass, name, argTypes, typeParams);
+      method.type = resolveTypeSubstitution(method.type, superclass);
       JavaSymbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
@@ -406,6 +408,7 @@ public class Resolve {
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, interfaceType, name, argTypes, typeParams);
+      method.type = resolveTypeSubstitution(method.type, interfaceType);
       JavaSymbol best = selectBest(env, site.getSymbol(), argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;

@@ -519,6 +519,13 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void generic_method_call() throws Exception {
+    Result result = Result.createFor("references/GenericMethodCall");
+    assertThat(result.reference(23, 5)).isSameAs(result.symbol("fun"));
+    assertThat(result.reference(24, 5)).isSameAs(result.symbol("fun"));
+  }
+
+  @Test
   public void MethodCall() {
     Result result = Result.createFor("references/MethodCall");
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("target"));
