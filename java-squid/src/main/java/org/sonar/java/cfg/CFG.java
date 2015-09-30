@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -53,6 +54,7 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
@@ -63,6 +65,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -80,6 +83,8 @@ public class CFG {
    * List of all blocks in order they were created.
    */
   private final List<Block> blocks = new ArrayList<>();
+  private final Deque<CatchPoint> catchPoints = new LinkedList<>();
+  private final Deque<Block> finallyBlocks = new LinkedList<>();
 
   private final Deque<Block> breakTargets = new LinkedList<>();
   private final Deque<Block> continueTargets = new LinkedList<>();
@@ -133,7 +138,27 @@ public class CFG {
     }
   }
 
+  public static class CatchPoint {
+
+    private final Block block;
+    private final SyntaxToken exception;
+
+    CatchPoint(final Block block, final SyntaxToken exception) {
+      this.block = block;
+      this.exception = exception;
+    }
+
+    public Block block() {
+      return block;
+    }
+
+    SyntaxToken exception() {
+      return exception;
+    }
+  }
+
   private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
+    finallyBlocks.push(null);
     methodSymbol = symbol;
     exitBlock = createBlock();
     currentBlock = createBlock(exitBlock);
@@ -191,7 +216,7 @@ public class CFG {
   private void build(Tree tree) {
     switch (tree.kind()) {
       case BLOCK:
-        build(((BlockTree) tree).body());
+        buildBlockStatement((BlockTree) tree);
         break;
       case RETURN_STATEMENT:
         buildReturnStatement((ReturnStatementTree) tree);
@@ -319,7 +344,7 @@ public class CFG {
         break;
       // Java 8 constructions : ignored for now.
       case METHOD_REFERENCE:
-      // assert can be ignored by VM so skip them for now.
+        // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
         break;
       // store declarations as complete blocks.
@@ -329,7 +354,7 @@ public class CFG {
       case ANNOTATION_TYPE:
       case INTERFACE:
       case LAMBDA_EXPRESSION:
-      // simple instructions
+        // simple instructions
       case IDENTIFIER:
       case INT_LITERAL:
       case LONG_LITERAL:
@@ -344,6 +369,39 @@ public class CFG {
       default:
         throw new UnsupportedOperationException(tree.kind().name() + " " + ((JavaTree) tree).getLine());
     }
+  }
+
+  private void buildBlockStatement(BlockTree tree) {
+    Block finallyBlock = finallyBlocks.peek();
+    if (catchPoints.isEmpty() && finallyBlock == null) {
+      for (StatementTree statementTree : Lists.reverse((tree).body())) {
+        build(statementTree);
+      }
+    } else {
+      buildBlockStatementWithinTryBlock(tree, finallyBlock);
+    }
+  }
+
+  private void buildBlockStatementWithinTryBlock(BlockTree tree, Block finallyBlock) {
+    for (StatementTree statementTree : Lists.reverse((tree).body())) {
+      currentBlock = createBlock(currentBlock);
+      build(statementTree);
+      for (CatchPoint catchBlock : catchPoints) {
+        if (canRaise(currentBlock, catchBlock.exception())) {
+          currentBlock.successors().add(catchBlock.block());
+        }
+      }
+      if (finallyBlock != null) {
+        currentBlock.successors().add(finallyBlock);
+      }
+    }
+  }
+
+  private boolean canRaise(Block block, SyntaxToken exception) {
+    // FIXME this method should return true if the block can raise the supplied exception
+    // return should be true when the supplied exception is a RunTimeException
+    // Otherwise, the statement must call a method that throws the supplied exception of a subclass of it
+    return true;
   }
 
   private void buildReturnStatement(ReturnStatementTree tree) {
@@ -603,18 +661,37 @@ public class CFG {
   }
 
   private void buildTryStatement(TryStatementTree tree) {
-    // FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
     TryStatementTree tryStatementTree = tree;
     currentBlock = createBlock(currentBlock);
     BlockTree finallyBlock = tryStatementTree.finallyBlock();
     if (finallyBlock != null) {
       build(finallyBlock);
+      finallyBlocks.push(currentBlock);
+    } else {
+      finallyBlocks.push(null);
+    }
+    Block endOfStatementBlock = currentBlock;
+    List<CatchPoint> localBlocks = new ArrayList<>();
+    for (CatchTree catchTree : tree.catches()) {
+      currentBlock = createBlock(currentBlock);
+      build(catchTree.block());
+      CatchPoint catchBlock = new CatchPoint(currentBlock, catchTree.catchKeyword());
+      localBlocks.add(catchBlock);
+      currentBlock = endOfStatementBlock;
+    }
+    for (CatchPoint catchBlock : localBlocks) {
+      catchPoints.push(catchBlock);
     }
     currentBlock = createBlock(currentBlock);
     build(tryStatementTree.block());
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tree);
+    while (!localBlocks.isEmpty()) {
+      localBlocks.remove(0);
+      catchPoints.pop();
+    }
+    finallyBlocks.pop();
   }
 
   private void buildThrowStatement(ThrowStatementTree tree) {
@@ -767,8 +844,13 @@ public class CFG {
       case INT_LITERAL:
         sb.append(' ').append(((LiteralTree) syntaxNode).token().text());
         break;
-      default:
-        //no need to debug other syntaxNodes
+      case METHOD_INVOCATION:
+        MethodInvocationTree method = (MethodInvocationTree) syntaxNode;
+        ExpressionTree methodSelect = method.methodSelect();
+        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+          MemberSelectExpressionTree select = (MemberSelectExpressionTree) methodSelect;
+          sb.append(' ').append(select.identifier());
+        }
     }
     return sb.toString();
   }
