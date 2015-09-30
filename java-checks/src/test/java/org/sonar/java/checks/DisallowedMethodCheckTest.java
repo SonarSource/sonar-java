@@ -19,19 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DisallowedMethodCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
@@ -39,9 +30,7 @@ public class DisallowedMethodCheckTest {
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("foo");
     disallowedMethodCheck.setArgumentTypes("int, long, java.lang.String[]");
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DisallowedMethodCheck.java"), new VisitorsBridge(disallowedMethodCheck));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(7).withMessage("Remove this forbidden call");
+    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/detected.java", disallowedMethodCheck);
   }
 
   @Test
@@ -49,25 +38,20 @@ public class DisallowedMethodCheckTest {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
     disallowedMethodCheck.setMethodName("bar");
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DisallowedMethodCheck.java"), new VisitorsBridge(disallowedMethodCheck));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Remove this forbidden call");
+    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/empty_parameters.java", disallowedMethodCheck);
   }
 
   @Test
   public void empty_type_definition() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setMethodName("bar");
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DisallowedMethodCheck.java"), new VisitorsBridge(disallowedMethodCheck));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Remove this forbidden call");
+    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/empty_type_definition.java", disallowedMethodCheck);
   }
 
   @Test
   public void empty_method_name() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DisallowedMethodCheck.java"), new VisitorsBridge(disallowedMethodCheck));
-    checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/DisallowedMethodCheck/empty_method_name.java", disallowedMethodCheck);
   }
 }

@@ -19,26 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SwitchWithLabelsCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchWithLabelsCheck.java"), new VisitorsBridge(new SwitchWithLabelsCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Remove this misleading \"foo\" label.")
-      .next().atLine(10).withMessage("Remove this misleading \"bar\" label.");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchWithLabelsCheck.java", new SwitchWithLabelsCheck());
   }
 
 }

@@ -18,64 +18,64 @@ class A {
   }
 
   public A() {
-    return null;        // Compliant
+    return null;        
   }
 
-  public void f1() {     // Compliant
+  public void f1() {     
     return;
   }
 
   public int[] f2() {
-    return null;        // Non-Compliant
-    return a;           // Compliant
+    return null;        // Noncompliant {{Return an empty array instead of null.}}
+    return a;           
   }
 
   public Object f3() {
-    return null;        // Compliant
+    return null;        
   }
 
   public Object f4()[] {
-    return null;        // Non-Compliant
+    return null;        // Noncompliant
   }
 
   public int[] f5() {
     new B() {
       public Object g1() {
-        return null;    // Compliant
+        return null;    
       }
 
       public int[] g2() {
-        return null;    // Non-Compliant
+        return null;    // Noncompliant
       }
     };
 
-    return new int[0];  // Compliant
-    return null;        // Non-Compliant
+    return new int[0];  
+    return null;        // Noncompliant
   }
 
   public List f6() {
-    return null;        // Non-Compliant
+    return null;        // Noncompliant
   }
 
   public ArrayList f7() {
-    return null;        // Non-Compliant
+    return null;        // Noncompliant
   }
 
   public Set<Integer> f8() {
     return Collections.EMPTY_SET;
-    return null;        // Non-Compliant
+    return null;        // Noncompliant {{Return an empty collection instead of null.}}
   }
 
   public <T> List<Integer>[] f9() {
-    return null;        // Non-Compliant
+    return null;        // Noncompliant {{Return an empty array instead of null.}}
   }
 
   public java.util.Collection f10() {
-    return null;        // Non-Compliant
+    return null;        // Noncompliant
   }
 
   public int f11() {
-    return null;        // Compliant
+    return null;        
   }
 }
 
@@ -113,22 +113,22 @@ class C {
 
   @Nullable
   public Object foo() {
-    return null; // Compliant
+    return null; 
   }
   
   @javax.annotation.CheckForNull
   public Object bar() {
-    return null; // Compliant
+    return null; 
   }
   
   @javax.annotation.Nullable
   public int[] fool() {
-    return null; // Compliant
+    return null; 
   }
   
   @CheckForNull
   public int[] bark() {
-    return null; // Compliant
+    return null; 
   }
 
   int[] qix(){

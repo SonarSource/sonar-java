@@ -19,25 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class LowerCaseLongSuffixCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/LowerCaseLongSuffixCheck.java"), new VisitorsBridge(new LowerCaseLongSuffixCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Replace this lower case \"l\" long suffix by an upper case \"L\".");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/LowerCaseLongSuffixCheck.java", new LowerCaseLongSuffixCheck());
   }
 
 }

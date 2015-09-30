@@ -19,21 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class MethodTooBigCheckTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {
@@ -44,21 +35,14 @@ public class MethodTooBigCheckTest {
   public void custom_at_4() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 4;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodTooBigCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("This method has 6 lines, which is greater than the 4 lines authorized. Split it into smaller methods.")
-        .next().atLine(9).withMessage("This method has 5 lines, which is greater than the 4 lines authorized. Split it into smaller methods.");
+    JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom4.java", check);
   }
 
   @Test
   public void custom_at_5() {
     MethodTooBigCheck check = new MethodTooBigCheck();
     check.max = 5;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodTooBigCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("This method has 6 lines, which is greater than the 5 lines authorized. Split it into smaller methods.");
+    JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom5.java", check);
   }
 
 }

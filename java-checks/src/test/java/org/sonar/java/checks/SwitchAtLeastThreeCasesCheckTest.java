@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SwitchAtLeastThreeCasesCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
-  private final SwitchAtLeastThreeCasesCheck check = new SwitchAtLeastThreeCasesCheck();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Replace this \"switch\" statement by \"if\" statements to increase readability.")
-      .next().atLine(22);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchAtLeastThreeCasesCheck.java", new SwitchAtLeastThreeCasesCheck());
   }
 
 }

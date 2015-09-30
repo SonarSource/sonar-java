@@ -17,18 +17,18 @@ class A {
     notifyAll();
   }
   void bar() {
-    obj.wait();    //NonCompliant
-    wait(1, 2); //NonCompliant
-    wait(1);   //NonCompliant
-    notify();  //NonCompliant
-    notifyAll(); //NonCompliant
+    obj.wait();    // Noncompliant {{Make this call to "wait()" only inside a synchronized block to be sure to hold the monitor on "String" object.}}
+    wait(1, 2); // Noncompliant {{Make this call to "wait()" only inside a synchronized block to be sure to hold the monitor on "this" object.}}
+    wait(1);   // Noncompliant
+    notify();  // Noncompliant
+    notifyAll(); // Noncompliant
   }
 
   synchronized void foo2() {
     wait();
     class A {
       void foo() {
-        wait(); //NonCompliant
+        wait(); // Noncompliant
       }
     }
     wait();

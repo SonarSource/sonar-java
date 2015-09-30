@@ -19,37 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UselessExtendsCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/UselessExtendsCheck.java"),
-      new VisitorsBridge(new UselessExtendsCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(7).withMessage("\"Object\" should not be explicitly extended.")
-      .next().atLine(12).withMessage("\"I1\" is listed multiple times.")
-      .next().atLine(16).withMessage("\"I3\" is a \"I1\" so \"I1\" can be removed from the extension list.")
-      .next().atLine(17).withMessage("\"I3\" is a \"I2\" so \"I2\" can be removed from the extension list.")
-      .next().atLine(24).withMessage("\"Object\" should not be explicitly extended.")
-      .next().atLine(31).withMessage("\"UnknownInterface\" is listed multiple times.")
-      .next().atLine(32).withMessage("\"UnknownInterface\" is listed multiple times.")
-      .next().atLine(33).withMessage("\"UnknownInterface\" is listed multiple times.")
-      .next().atLine(34).withMessage("\"UnknownInterface\" is listed multiple times.")
-      .next().atLine(35).withMessage("\"UnknownParametrized\" is listed multiple times.")
-      .next().atLine(36).withMessage("\"UnknownParametrized\" is listed multiple times.");
+    JavaCheckVerifier.verify("src/test/files/checks/UselessExtendsCheck.java", new UselessExtendsCheck());
   }
 
 }

@@ -19,28 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UselessObjectCreationCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UselessObjectCreationCheck.java"),
-      new VisitorsBridge(new UselessObjectCreationCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Either remove this useless object instantiation of class \"StringBuffer\" or use it")
-      .next().atLine(7).withMessage("Either remove this useless object instantiation of class \"ArrayList\" or use it")
-      .next().atLine(8).withMessage("Either remove this useless object instantiation of class \"LinkedList\" or use it")
-      .next().atLine(9).withMessage("Either remove this useless object instantiation of class \"File\" or use it");
+    JavaCheckVerifier.verify("src/test/files/checks/UselessObjectCreationCheck.java", new UselessObjectCreationCheck());
   }
 }

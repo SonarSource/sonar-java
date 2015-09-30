@@ -1,56 +1,56 @@
 class Foo {
 
-  @Deprecated          // Non-Compliant
-  public int foo;
+  @Deprecated
+  public int foo; // Noncompliant {{Do not forget to remove this deprecated code someday.}}
 
   public void foo1() { // Compliant
   }
 
   @Deprecated
-  public void foo2() { // Non-Compliant
+  public void foo2() { // Noncompliant
   }
 
   /**
    * @deprecated
    */
-  public void foo3() { // Non-Compliant
+  public void foo3() { // Noncompliant
 
   }
 
   /**
    * @deprecated
    */
-  @Ignore              // Non-Compliant
+  @Ignore
   @Deprecated
-  public void foo4() {
+  public void foo4() { // Noncompliant
   }
 
-  @Deprecated          // Non-Compliant
+  @Deprecated
   /**
    * @deprecated
    */
-  public void foo5() {
+  public void foo5() { // Noncompliant
   }
 
   /*
    * @deprecated
    */
-  @Deprecated          // Non-Compliant
-  public int foo7() {
+  @Deprecated
+  public int foo7() { // Noncompliant
   }
 
   /**
    *
    */
-  @Deprecated          // Non-Compliant
-  public void foo8() {
+  @Deprecated
+  public void foo8() { // Noncompliant
   }
 
   @java.lang.Deprecated // Compliant - no one does this
   public void foo9() {
 
-    @Deprecated        // Non-Compliant
-    int local1 = 0;
+    @Deprecated
+    int local1 = 0; // Noncompliant
 
   }
 
@@ -58,7 +58,7 @@ class Foo {
 
 interface Bar {
 
-  @Deprecated          // Non-Compliant
-  int foo();
+  @Deprecated
+  int foo(); // Noncompliant
 
 }

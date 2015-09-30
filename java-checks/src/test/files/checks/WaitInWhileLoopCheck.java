@@ -7,25 +7,25 @@ class A {
     Condition condition;
     synchronized (obj) {
       if (!suitableCondition()){
-        obj.wait(12);//NonCompliant
-        condition.await();//NonCompliant
+        obj.wait(12); // Noncompliant {{Remove this call to "wait" or move it into a "while" loop.}}
+        condition.await(); // Noncompliant
       }
       for(;;){
-        obj.wait(12);//Compliant
+        obj.wait(12);
       }
       do{
-        obj.wait(12);//Compliant
+        obj.wait(12);
       }while (!suitableCondition);
 
 
       while(!suitableCondition()){
-        obj.wait(12);//Compliant
-        condition.await();//Compliant
+        obj.wait(12);
+        condition.await();
         while(!suitableCondition()) {
-          obj.wait(12);//Compliant
-          condition.await();//Compliant
+          obj.wait(12);
+          condition.await();
         }
-        obj.wait(12);//Compliant
+        obj.wait(12);
       }
 
     }

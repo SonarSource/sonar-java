@@ -1,37 +1,37 @@
 class A {
-  private void f() { // Compliant
-    if (false) { // Compliant
-      { // Non-Compliant
+  private void f() {
+    if (false) {
+      { // Noncompliant {{Extract this nested code block into a method.}}
       }
     }
 
-    { // Non-Compliant
+    { // Noncompliant
       System.out.println();
     }
 
-    while (false) { // Compliant
+    while (false) {
     }
 
-    do { // Compliant
+    do {
     } while (false);
 
-    for (int i = 0; i < 42; i++) { // Compliant
+    for (int i = 0; i < 42; i++) {
     }
 
     switch (false) {
       case false:
-      { // Non-Compliant
+      { // Noncompliant
       }
     }
   }
 
-  { // Compliant
-    { // Non-Compliant
+  {
+    { // Noncompliant
     }
   }
 
-  static { // Compliant
-    { // Non-Compliant
+  static {
+    { // Noncompliant
     }
   }
 }

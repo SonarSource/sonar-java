@@ -19,43 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ExpressionComplexityCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExpressionComplexityCheck.java"), new VisitorsBridge(new ExpressionComplexityCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(3).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).").withCost(1.0)
-        .next().atLine(5).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).").withCost(1.0)
-        .next().atLine(6).withMessage("Reduce the number of conditional operators (5) used in the expression (maximum allowed 3).").withCost(2.0)
-        .next().atLine(11).withMessage("Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).").withCost(3.0)
-        .next().atLine(26).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).").withCost(1.0)
-        .next().atLine(28).withMessage("Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).").withCost(1.0)
-        .next().atLine(36)
-        .next().atLine(45);
+    JavaCheckVerifier.verify("src/test/files/checks/ExpressionComplexityCheck.java", new ExpressionComplexityCheck());
   }
 
   @Test
   public void custom() {
     ExpressionComplexityCheck check = new ExpressionComplexityCheck();
     check.max = 4;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExpressionComplexityCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Reduce the number of conditional operators (5) used in the expression (maximum allowed 4).").withCost(1.0)
-        .next().atLine(11).withMessage("Reduce the number of conditional operators (6) used in the expression (maximum allowed 4).").withCost(2.0);
+    JavaCheckVerifier.verify("src/test/files/checks/ExpressionComplexityCheckCustom.java", check);
   }
 
 }

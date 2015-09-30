@@ -1,17 +1,17 @@
-class Foo1 { // Compliant
+class Foo1 {
 }
 
-class Foo2 { // Compliant
+class Foo2 {
   public int foo() {
   }
 }
 
-class Foo3 { // Non-Compliant
+class Foo3 { // Noncompliant {{Add a private constructor to hide the implicit public one.}}
   public static void foo() {
   }
 }
 
-class Foo4 { // Compliant
+class Foo4 {
   public static int foo() {
   }
 
@@ -20,14 +20,14 @@ class Foo4 { // Compliant
 }
 
 class Foo5 {
-  public Foo5() { // Non-Compliant
+  public Foo5() { // Noncompliant {{Hide this public constructor.}}
   }
 
   public static int foo() {
   }
 }
 
-class Foo6 { // Compliant
+class Foo6 {
   private Foo6() {
   }
 
@@ -41,7 +41,7 @@ class Foo6 { // Compliant
 
 class Foo7 {
 
-  public <T> Foo7(T foo) { // Non-Compliant
+  public <T> Foo7(T foo) { // Noncompliant
   }
 
   public static <T> void foo(T foo) {
@@ -49,14 +49,14 @@ class Foo7 {
 
 }
 
-class Foo8 extends Bar { // Compliant
+class Foo8 extends Bar {
 
   public static void f() {
   }
 
 }
 
-class Foo9 { // Compliant
+class Foo9 {
 
   public int foo;
 
@@ -65,7 +65,7 @@ class Foo9 { // Compliant
 
 }
 
-class Foo10 { // Non-Compliant
+class Foo10 { // Noncompliant
 
   public static int foo;
 
@@ -75,20 +75,20 @@ class Foo10 { // Non-Compliant
 
 class Foo11 {
 
-  protected Foo11() { // Compliant
+  protected Foo11() {
   }
 
   public static int a;
 
 }
 
-class Foo12 { //Non-compliant
+class Foo12 { // Noncompliant
   static class plop {
     int a;
   }
 }
 
-class Foo13 { // Compliant
+class Foo13 {
   
   private Foo13() {
   }

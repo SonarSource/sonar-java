@@ -1,23 +1,23 @@
 class Foo {
 
   public void f() {
-    i++; // Compliant
-    ++i; // Compliant
-    i--; // Compliant
-    --i; // Compliant
+    i++;
+    ++i;
+    i--;
+    --i;
 
-    foo[i]++; // Compliant
+    foo[i]++;
 
-    foo[i++] = 0; // Noncompliant
+    foo[i++] = 0; // Noncompliant {{Extract this increment or decrement operator into a dedicated statement.}}
     foo[i--] = 0; // Noncompliant
     foo[++i] = 0; // Noncompliant
     foo[--i] = 0; // Noncompliant
 
-    foo[~i] = 0; // Compliant
+    foo[~i] = 0;
 
-    return i++; // Compliant
-    return ++i; // Compliant
-    return foo[++i]; // NonCompliant
+    return i++;
+    return ++i;
+    return foo[++i]; // Noncompliant
     return;
   }
 

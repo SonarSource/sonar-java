@@ -19,26 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NonStaticClassInitializerCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonStaticClassInitializerCheck.java"), new VisitorsBridge(new NonStaticClassInitializerCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(5).withMessage("Move the contents of this initializer to a standard constructor or to field initializers.")
-        .next().atLine(14);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/NonStaticClassInitializerCheck.java", new NonStaticClassInitializerCheck());
   }
 
 }

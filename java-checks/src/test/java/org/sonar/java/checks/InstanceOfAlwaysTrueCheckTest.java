@@ -19,30 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class InstanceOfAlwaysTrueCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InstanceOfAlwaysTrueCheck.java"), new VisitorsBridge(new InstanceOfAlwaysTrueCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(9).withMessage("Remove this useless \"instanceof\" operator; it will always return \"true\". ")
-        .next().atLine(11)
-        .next().atLine(12)
-        .next().atLine(13)
-        .next().atLine(14)
-    ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/InstanceOfAlwaysTrueCheck.java", new InstanceOfAlwaysTrueCheck());
   }
 
 }

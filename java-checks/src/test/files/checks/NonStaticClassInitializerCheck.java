@@ -1,17 +1,17 @@
 class A {
-  static { // Compliant
+  static {
   }
 
-  { // Non-Compliant
+  { // Noncompliant {{Move the contents of this initializer to a standard constructor or to field initializers.}}
     System.out.println();
   }
 
-  public A() { // Compliant
+  public A() {
     System.out.println();
 
     new Runnable() {
 
-      { // Non-Compliant
+      { // Noncompliant
         System.out.println();
       }
 

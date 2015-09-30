@@ -1,11 +1,10 @@
 interface A {
 }
 
-interface B { // Noncompliant
-  int a = 0;
+interface B {
 }
 
-interface C { // Noncompliant
+interface C { // Noncompliant {{Move constants to a class or enum.}}
   int a = 0;
   int b = 0;
 }
@@ -39,7 +38,7 @@ interface I {
   void g();
 }
 
-interface J { // Compliant
+interface J {
   int f();
 
   interface K { // Noncompliant

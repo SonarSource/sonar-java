@@ -19,27 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class IgnoredTestsCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IgnoredTestsCheck.java"), new VisitorsBridge(new IgnoredTestsCheck(), Lists.newArrayList(new File("target/test-classes"))));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("Fix or remove this skipped unit test")
-        .next().atLine(9).withMessage("Fix or remove this skipped unit test")
-    ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/IgnoredTestsCheck.java", new IgnoredTestsCheck());
   }
 }

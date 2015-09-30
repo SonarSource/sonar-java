@@ -1,19 +1,19 @@
 class A {
-  int a = false ? (true ? (false ? 1 : 0) : 0) : 1;                   // Compliant
-  int b = false ? (true ? (false ? (true ? 1 : 0) : 0) : 0) : 1;      // Non-Compliant
+  int a = false ? (true ? (false ? 1 : 0) : 0) : 1;                   
+  int b = false ? (true ? (false ? (true ? 1 : 0) : 0) : 0) : 1;      // Noncompliant [[effortToFix=1]] {{Reduce the number of conditional operators (4) used in the expression (maximum allowed 3).}}
 
-  int c = true || false || true || false || false;                    // Non-Compliant
-  int d = true && false && true && false && true && true;             // Non-Compliant
+  int c = true || false || true || false || false;                    // Noncompliant [[effortToFix=1]]
+  int d = true && false && true && false && true && true;             // Noncompliant [[effortToFix=2]] {{Reduce the number of conditional operators (5) used in the expression (maximum allowed 3).}}
 
-  int e = true | false | true | false;                                // Compliant
+  int e = true | false | true | false;                                
 
   void f() {
-    if ((true ? 0 : 1) || false || true && false && true || false) {  // Non-Compliant
+    if ((true ? 0 : 1) || false || true && false && true || false) {  // Noncompliant [[effortToFix=3]] {{Reduce the number of conditional operators (6) used in the expression (maximum allowed 3).}}
     }
   }
 
   void g() {
-    new Foo() {                                                       // Compliant
+    new Foo() {                                                       
       int a = true && true;
       int b = true && true;
       int c = true && true;
@@ -23,17 +23,17 @@ class A {
   }
 
   void g() {
-    boolean foo = true && true && true &&                             // Non-Compliant
-      new Foo() {                                                     // Compliant
-        int a = true && true && true && false && false;               // Non-Compliant
-        int a = true && true && true;                                 // Compliant
+    boolean foo = true && true && true &&                             // Noncompliant [[effortToFix=1]]
+      new Foo() {                                                     
+        int a = true && true && true && false && false;               // Noncompliant [[effortToFix=1]]
+        int a = true && true && true;                                 
       }.someThing() &&
       true;
   }
 
-  int[] foo = new int[] {                                             // Compliant
-    true && true && true && true,                                     // Compliant
-    true && true && true && true && true                              // Non-Compliant
+  int[] foo = new int[] {                                             
+    true && true && true && true,                                     
+    true && true && true && true && true                              // Noncompliant
   };
   String s = "ServerDef[applicationName=" + sd.applicationName +
       " serverName=" + sd.serverName +
@@ -42,6 +42,6 @@ class A {
       " serverVmArgs=" + sd.serverVmArgs +
       "]" ;
   ObjectInstance meth(){
-    return new ObjectInstance(true && false, true ? "":"plop", true ? "":"plop", true ? "":"plop");
+    return new ObjectInstance(true && false, true ? "":"plop", true ? "":"plop", true ? "":"plop"); // Noncompliant
   }
 }

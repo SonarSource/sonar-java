@@ -1,6 +1,6 @@
 class A {
   public void f() {
-    switch (variable) { // Noncompliant
+    switch (variable) { // Noncompliant {{Replace this "switch" statement by "if" statements to increase readability.}}
       case 0:
         doSomething();
         break;
@@ -9,7 +9,7 @@ class A {
         break;
     }
 
-    switch (variable) { // Compliant
+    switch (variable) {
       case 0:
       case 1:
         doSomething();
@@ -22,7 +22,7 @@ class A {
     switch (variable) { // Noncompliant
     }
 
-    if (variable == 0) { // Compliant
+    if (variable == 0) {
       doSomething();
     } else {
       doSomethingElse();

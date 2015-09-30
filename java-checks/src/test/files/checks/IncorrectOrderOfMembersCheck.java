@@ -1,13 +1,13 @@
 class FieldAfterConstructor {
   FieldAfterConstructor() {
   }
-  int field;
+  int field; // Noncompliant {{Move this variable to comply with Java Code Conventions.}}
 }
 
 class ConstructorAfterMethod {
   void method() {
   }
-  FieldAfterConstructor() {
+  FieldAfterConstructor() { // Noncompliant
   }
 }
 

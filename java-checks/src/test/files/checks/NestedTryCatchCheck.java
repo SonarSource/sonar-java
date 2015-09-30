@@ -37,13 +37,13 @@ class A {
     }
 
     try {
-      try {             // Non-Compliant
+      try {             // Noncompliant {{Extract this nested try block into a separate method.}}
       } catch (Exception e) {
       }
 
-      try {             // Non-Compliant
+      try {             // Noncompliant
       } catch (Exception e) {
-        try {           // Non-Compliant
+        try {           // Noncompliant
 
         } catch (Exception e) {
         }
@@ -67,7 +67,7 @@ class A {
     }
 
     try {
-      try{
+      try{ // Noncompliant
         try (Resource r = new Resource()){
         }
       }catch (Exception e){}

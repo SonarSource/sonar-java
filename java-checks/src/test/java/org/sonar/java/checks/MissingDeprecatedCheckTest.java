@@ -19,34 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MissingDeprecatedCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MissingDeprecatedCheck.java"), new VisitorsBridge(new MissingDeprecatedCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(4).withMessage("Add the missing @deprecated Javadoc tag.")
-        .next().atLine(10)
-        .next().atLine(16).withMessage("Add the missing @Deprecated annotation.")
-        .next().atLine(32).withMessage("Add the missing @deprecated Javadoc tag.")
-        .next().atLine(39)
-        .next().atLine(46)
-        .next().atLine(62)
-        .next().atLine(69)
-        .next().atLine(83)
-        ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/MissingDeprecatedCheck.java", new MissingDeprecatedCheck());
   }
 
 }

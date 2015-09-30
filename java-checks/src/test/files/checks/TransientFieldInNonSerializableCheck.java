@@ -6,7 +6,7 @@ class A implements Serializable {
 }
 
 class B {
-  transient String x; // Noncompliant
+  transient String x; // Noncompliant {{Remove the "transient" modifier from this field.}}
   String y;
   void myMethod() {}
 }

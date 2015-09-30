@@ -19,29 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NonShortCircuitLogicCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NonShortCircuitLogicCheck.java"),
-      new VisitorsBridge(new NonShortCircuitLogicCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Correct this \"|\" to \"||\".")
-      .next().atLine(7).withMessage("Correct this \"&\" to \"&&\".")
-      .next().atLine(8).withMessage("Correct this \"|\" to \"||\".")
-      .next().atLine(9).withMessage("Correct this \"&\" to \"&&\".");
+    JavaCheckVerifier.verify("src/test/files/checks/NonShortCircuitLogicCheck.java", new NonShortCircuitLogicCheck());
   }
 
 }

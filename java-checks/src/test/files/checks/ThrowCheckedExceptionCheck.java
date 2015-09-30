@@ -4,8 +4,8 @@ class A {
   void method() {
     throw new MyRuntimeException(); //Compliant runtime exception
     throw new IllegalStateException(); //Compliant runtime exception
-    throw new MyCheckedException(); //Non-Compliant
-    throw new IOException(); //Non-Compliant
+    throw new MyCheckedException(); // Noncompliant {{Remove the usage of the checked exception 'MyCheckedException'.}}
+    throw new IOException(); // Noncompliant {{Remove the usage of the checked exception 'IOException'.}}
   }
 }
 

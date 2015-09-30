@@ -19,35 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
 
 public class UselessImportCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected_with_package() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/UselessImportCheck/WithPackage.java"),
-      new VisitorsBridge(new UselessImportCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Remove this unused import 'a.b.c.NonCompliant'.")
-      .next().atLine(9)
-      .next().atLine(15).withMessage("Remove this unnecessary import: java.lang classes are always implicitly imported.")
-      .next().atLine(16)
-      .next().atLine(17).withMessage("Remove this duplicated import.")
-      .next().atLine(21).withMessage("Remove this unnecessary import: same package classes are always implicitly imported.")
-      .next().atLine(26)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/UselessImportCheck/WithPackage.java", new UselessImportCheck());
   }
 
   @Test

@@ -28,7 +28,7 @@ class B extends NonSerializableWithAccessibleNoArgConstructor implements Seriali
 
 }
 
-class C extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Noncompliant
+class C extends NonSerializableWithoutAccessibleNoArgConstructor implements Serializable { // Noncompliant {{Add a no-arg constructor to "NonSerializableWithoutAccessibleNoArgConstructor".}}
   
 }
 

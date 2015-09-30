@@ -19,50 +19,25 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class NestedIfStatementsCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     assertThat(check.max).isEqualTo(3);
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(19).withMessage("Refactor this code to not nest more than 3 if/for/while/switch/try statements.")
-      .next().atLine(41)
-      .next().atLine(47)
-      .next().atLine(57)
-      .next().atLine(60)
-      .next().atLine(63)
-      .next().atLine(66)
-      .next().atLine(69)
-      .next().atLine(72)
-      .next().atLine(75);
+    JavaCheckVerifier.verify("src/test/files/checks/NestedIfStatementsCheck.java", check);
   }
 
   @Test
   public void custom() {
     NestedIfStatementsCheck check = new NestedIfStatementsCheck();
     check.max = 4;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedIfStatementsCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(20).withMessage("Refactor this code to not nest more than 4 if/for/while/switch/try statements.")
-      .next().atLine(24);
+    JavaCheckVerifier.verify("src/test/files/checks/NestedIfStatementsCheckCustom.java", check);
   }
 
 }

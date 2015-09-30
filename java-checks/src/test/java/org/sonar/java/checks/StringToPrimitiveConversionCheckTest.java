@@ -19,37 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class StringToPrimitiveConversionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/StringToPrimitiveConversionCheck.java"),
-      new VisitorsBridge(new StringToPrimitiveConversionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("Use \"Integer.parseInt\" for this string-to-int conversion.")
-      .next().atLine(6)
-      .next().atLine(7)
-      .next().atLine(8)
-      .next().atLine(9)
-      .next().atLine(11)
-      .next().atLine(30).withMessage("Use \"Boolean.parseBoolean\" for this string-to-boolean conversion.")
-      .next().atLine(31)
-      .next().atLine(32)
-      .next().atLine(33)
-      .next().atLine(34)
-      .next().atLine(35);
+    JavaCheckVerifier.verify("src/test/files/checks/StringToPrimitiveConversionCheck.java", new StringToPrimitiveConversionCheck());
   }
 
 }

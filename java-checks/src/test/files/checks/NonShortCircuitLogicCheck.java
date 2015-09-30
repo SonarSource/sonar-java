@@ -3,8 +3,8 @@ class A {
   void method1() {
     getTrue() || getFalse();
     getTrue() && getFalse();
-    getTrue() | getFalse(); // Noncompliant
-    getTrue() & getFalse(); // Noncompliant
+    getTrue() | getFalse(); // Noncompliant {{Correct this "|" to "||".}}
+    getTrue() & getFalse(); // Noncompliant {{Correct this "&" to "&&".}}
     Boolean.TRUE | Boolean.FALSE; // Noncompliant
     Boolean.TRUE & Boolean.FALSE; // Noncompliant
     getInt1() | getInt0();

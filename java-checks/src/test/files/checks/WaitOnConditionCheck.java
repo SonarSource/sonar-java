@@ -2,12 +2,12 @@ import java.util.concurrent.locks.Condition;
 
 class A {
   void foo() {
-    new C().wait(); //Compliant
-    new C().wait(1);//Compliant
-    new C().wait(1, 3);//Compliant
-    new B().wait();  //NonCompliant
-    new B().wait(1);  //NonCompliant
-    new B().wait(1, 3);  //NonCompliant
+    new C().wait();
+    new C().wait(1);
+    new C().wait(1, 3);
+    new B().wait();  // Noncompliant {{The "Condition.await(...)" method should be used instead of "Object.wait(...)"}}
+    new B().wait(1);  // Noncompliant
+    new B().wait(1, 3);  // Noncompliant
   }
 
   class B implements Condition {

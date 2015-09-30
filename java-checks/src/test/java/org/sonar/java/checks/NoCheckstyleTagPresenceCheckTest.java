@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NoCheckstyleTagPresenceCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NoCheckstyleTagPresenceCheck.java"), new VisitorsBridge(new NoCheckstyleTagPresenceCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Remove usage of this \"CHECKSTYLE:OFF\" suppression comment filter.")
-      .next().atLine(9)
-      .next().atLine(12)
-      .next().atLine(14);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/NoCheckstyleTagPresenceCheck.java", new NoCheckstyleTagPresenceCheck());
   }
 
 }

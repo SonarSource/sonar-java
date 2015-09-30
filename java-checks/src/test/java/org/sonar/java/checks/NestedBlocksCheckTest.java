@@ -19,32 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NestedBlocksCheckTest {
 
-  @Rule
-  public final CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
-  private final NestedBlocksCheck check = new NestedBlocksCheck();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NestedBlocksCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Extract this nested code block into a method.")
-      .next().atLine(8)
-      .next().atLine(23)
-      .next().atLine(29)
-      .next().atLine(34)
-      .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/NestedBlocksCheck.java", new NestedBlocksCheck());
   }
 
 }

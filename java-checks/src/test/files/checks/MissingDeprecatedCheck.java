@@ -1,19 +1,19 @@
 class Foo {
 
-  @Deprecated          // Non-Compliant
-  public int foo;
+  @Deprecated
+  public int foo; // Noncompliant {{Add the missing @deprecated Javadoc tag.}}
 
-  public void foo1() { // Compliant
+  public void foo1() {
   }
 
-  @Deprecated          // Non-Compliant
-  public void foo2() {
+  @Deprecated
+  public void foo2() { // Noncompliant
   }
 
   /**
    * @deprecated
    */
-  public void foo3() { // Non-Compliant
+  public void foo3() { // Noncompliant {{Add the missing @Deprecated annotation.}}
 
   }
 
@@ -22,34 +22,34 @@ class Foo {
    */
   @Ignore
   @Deprecated
-  public void foo4() { // Compliant
+  public void foo4() {
   }
 
-  @Deprecated          // Non-Compliant
+  @Deprecated
   /**
    * @deprecated
    */
-  public void foo5() {
+  public void foo5() { // Noncompliant
   }
 
   /*
    * @deprecated
    */
-  @Deprecated          // Non-Compliant
-  public int foo7() {
+  @Deprecated
+  public int foo7() { // Noncompliant
   }
 
   /**
    *
    */
-  @Deprecated          // Non-Compliant
-  public void foo8() {
+  @Deprecated
+  public void foo8() { // Noncompliant
   }
 
-  @java.lang.Deprecated // Compliant - no one does this
+  @java.lang.Deprecated
   public void foo9() {
 
-    @Deprecated        // Compliant - cannot have javadoc
+    @Deprecated
     int local1 = 0;
 
   }
@@ -58,33 +58,33 @@ class Foo {
 
 interface Bar {
 
-  @Deprecated          // Non-Compliant
-  int foo();
+  @Deprecated
+  int foo(); // Noncompliant
 
 }
 
 /**
 * @deprecated
 */
-class Qix  {
+class Qix  { // Noncompliant
 
   /**
    * @deprecated
    */
-  public void foo() {} // Compliant class is deprecated
+  public void foo() {}
 
-  public void foo1() {} // Compliant
+  public void foo1() {}
 
   @Deprecated
-  public void foo1() {} // Compliant class is deprecated
+  public void foo1() {}
 }
 
 @Deprecated
-interface Plop {
+interface Plop { // Noncompliant
   /**
    * @deprecated
    */
-  public void foo(); // Compliant interface is deprecated
+  public void foo();
 
 }
 interface mockito {

@@ -19,26 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UnusedTypeParameterCheckTest {
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedTypeParameterCheck.java"), new VisitorsBridge(new UnusedTypeParameterCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("S is not used in the class.")
-        .next().atLine(3).withMessage("W is not used in the method.")
-        .next().atLine(5).withMessage("V is not used in the interface.")
-    ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/UnusedTypeParameterCheck.java", new UnusedTypeParameterCheck());
   }
 }

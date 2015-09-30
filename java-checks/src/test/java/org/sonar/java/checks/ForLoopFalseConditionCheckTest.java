@@ -19,32 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ForLoopFalseConditionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ForLoopFalseConditionCheck.java"),
-      new VisitorsBridge(new ForLoopFalseConditionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(5).withMessage("This loop will never execute.")
-      .next().atLine(7)
-      .next().atLine(10)
-      .next().atLine(12)
-      .next().atLine(14)
-      .next().atLine(16)
-      .next().atLine(21);
+    JavaCheckVerifier.verify("src/test/files/checks/ForLoopFalseConditionCheck.java", new ForLoopFalseConditionCheck());
   }
 
 }

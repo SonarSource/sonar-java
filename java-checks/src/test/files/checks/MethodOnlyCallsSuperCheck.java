@@ -1,117 +1,117 @@
 class A {
   private abstract void f();
 
-  private void f() { // Compliant
+  private void f() {
   }
 
-  private void f() { // Compliant
+  private void f() {
     return 0;
   }
 
-  private void f() { // Non-Compliant
+  private void f() { // Noncompliant {{Remove this method to simply inherit it.}}
     super.f();
   }
 
-  private void f() { // Non-Compliant
+  private void f() { // Noncompliant
     return super.f();
   }
 
-  private void f() { // Compliant
+  private void f() {
     super.f(0);
   }
 
-  private void f(int a) { // Compliant
+  private void f(int a) {
     super.f();
   }
 
-  private void f(int a) { // Non-Compliant
+  private void f(int a) { // Noncompliant
     super.f(a);
   }
 
-  private int f(int a) { // Non-Compliant
+  private int f(int a) { // Noncompliant
     return super.f(a);
   }
 
-  private int f(int a) { // Compliant
+  private int f(int a) {
     super.f(a);
     return a;
   }
 
-  private void f(int a, int b) { // Compliant
+  private void f(int a, int b) {
     super.f(b, a);
   }
 
-  private void f(int... a) { // Non-Compliant
+  private void f(int... a) { // Noncompliant
     super.f(a);
   }
 
-  private void f() { // Compliant
+  private void f() {
     foo();
   }
 
-  private void f() { // Compliant
+  private void f() {
     return;
   }
 
-  private <T> void f() { // Non-Compliant
+  private <T> void f() { // Noncompliant
     super.f();
   }
 
-  public A() { // Compliant
+  public A() {
     super();
   }
 
-  @SomeCrazyAnnotation // Compliant
+  @SomeCrazyAnnotation
   private void f() {
     super.f();
   }
 
   @Override
-  public void f() { // Non-Compliant
+  public void f() { // Noncompliant
     super.f();
   }
 
   @Override
   @SomeCrazyAnnotation
-  private void f() { // Compliant
+  private void f() {
     super.f();
   }
 
   @SomeCrazyAnnotation
   @Override
-  private void f() { // Compliant
+  private void f() {
     super.f();
   }
 
   @SomeCrazyAnnotation
-  private <T> void f() { // Compliant
+  private <T> void f() {
     super.f();
   }
 
   @foo.Deprecated
-  private <T> void f() { // Compliant
+  private <T> void f() {
     super.f();
   }
 
   @Override
   @Override
-  private <T> void f() { // Non-Compliant
+  private <T> void f() { // Noncompliant
     super.f();
   }
 
 
   @Override
-  public boolean equals(Object obj) { //non compliant, equals is not final
+  public boolean equals(Object obj) { // Noncompliant
     return super.equals(obj);
   }
 
   @Override
-  public int hashCode() {//non compliant, hashCode is not final
+  public int hashCode() { // Noncompliant
     return super.hashCode();
   }
 
   @Override
-  public String toString() {//non compliant, string is not final
+  public String toString() { // Noncompliant
     return super.toString();
   }
 

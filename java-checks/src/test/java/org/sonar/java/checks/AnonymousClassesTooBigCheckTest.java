@@ -19,38 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class AnonymousClassesTooBigCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassesTooBigCheck.java"), new VisitorsBridge(new AnonymousClassesTooBigCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(20).withMessage("Reduce this anonymous class number of lines from 21 to at most 20, or make it a named class.");
+    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassesTooBigCheck.java", new AnonymousClassesTooBigCheck());
   }
 
   @Test
   public void custom() {
     AnonymousClassesTooBigCheck check = new AnonymousClassesTooBigCheck();
     check.max = 6;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AnonymousClassesTooBigCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(12).withMessage("Reduce this anonymous class number of lines from 7 to at most 6, or make it a named class.")
-      .next().atLine(20).withMessage("Reduce this anonymous class number of lines from 21 to at most 6, or make it a named class.")
-      .next().atLine(45).withMessage("Reduce this lambda expression number of lines from 8 to at most 6.")
-      .next().atLine(55).withMessage("Reduce this lambda expression number of lines from 7 to at most 6.");
+    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassesTooBigCheckCustom.java", check);
   }
 
 }

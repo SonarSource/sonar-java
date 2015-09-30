@@ -17,7 +17,7 @@ class A {
       } // 6
     }; // 7
 
-    new Comparable<T>() { // 21
+    new Comparable<T>() { // Noncompliant {{Reduce this anonymous class number of lines from 21 to at most 20, or make it a named class.}}
 
       @Override
       private void f(int a, int b) {

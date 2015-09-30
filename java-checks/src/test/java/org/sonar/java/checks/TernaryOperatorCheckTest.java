@@ -19,26 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class TernaryOperatorCheckTest {
 
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TernaryOperator.java"), new VisitorsBridge(new TernaryOperatorCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(2).withMessage("Convert this usage of the ternary operator to an \"if\"/\"else\" structure.");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/TernaryOperator.java", new TernaryOperatorCheck());
   }
 
 }

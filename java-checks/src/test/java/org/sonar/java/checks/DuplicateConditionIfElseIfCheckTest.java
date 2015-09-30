@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DuplicateConditionIfElseIfCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/DuplicateConditionIfElseIfCheck.java"), new VisitorsBridge(new DuplicateConditionIfElseIfCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements")
-      .next().atLine(9)
-      .next().atLine(14);
+    JavaCheckVerifier.verify("src/test/files/checks/DuplicateConditionIfElseIfCheck.java", new DuplicateConditionIfElseIfCheck());
   }
 
 }

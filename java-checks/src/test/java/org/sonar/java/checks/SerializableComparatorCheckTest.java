@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SerializableComparatorCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SerializableComparatorCheck.java"),
-      new VisitorsBridge(new SerializableComparatorCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Make this class \"Serializable\".")
-      .next().atLine(7).withMessage("Make this class \"Serializable\".");
+    JavaCheckVerifier.verify("src/test/files/checks/SerializableComparatorCheck.java", new SerializableComparatorCheck());
   }
 
 }

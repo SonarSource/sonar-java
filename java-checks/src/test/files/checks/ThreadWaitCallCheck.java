@@ -4,17 +4,17 @@ import java.lang.Thread;
 class Outer {
 
   void foo() {
-    new A().wait(); //Compliant
-    new A().wait(1l); //Compliant
-    new A().wait(1,1); //Compliant
-    new A().notify(); //Compliant
-    new A().notifyAll(); //Compliant
+    new A().wait();
+    new A().wait(1l);
+    new A().wait(1,1);
+    new A().notify();
+    new A().notifyAll();
 
-    new B().wait(); //NonCompliant
-    new B().wait(1000); //NonCompliant
-    new B().wait(12,12); //NonCompliant
-    new B().notify(); //NonCompliant
-    new B().notifyAll(); //NonCompliant
+    new B().wait(); // Noncompliant {{Refactor the synchronisation mechanism to not use a Thread instance as a monitor}}
+    new B().wait(1000); // Noncompliant
+    new B().wait(12,12); // Noncompliant
+    new B().notify(); // Noncompliant
+    new B().notifyAll(); // Noncompliant
   }
 
   class A {

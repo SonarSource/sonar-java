@@ -4,35 +4,35 @@ public class UselessExtendsCheck { // Compliant
   }
 
   public class Class2
-  extends Object { // Noncompliant
+  extends Object { // Noncompliant {{"Object" should not be explicitly extended.}}
   }
 
   public class Class3
   implements I1,
-  I1 { // Noncompliant
+  I1 { // Noncompliant {{"I1" is listed multiple times.}}
   }
 
   public class Class4
-  implements I1, // Noncompliant
-  I2, // Noncompliant
+  implements I1, // Noncompliant {{"I3" is a "I1" so "I1" can be removed from the extension list.}}
+  I2, // Noncompliant {{"I3" is a "I2" so "I2" can be removed from the extension list.}}
   I3 {
   }
 
 }
 
 class Class3
-extends java.lang.Object // Noncompliant
+extends java.lang.Object // Noncompliant {{"Object" should not be explicitly extended.}}
 implements I2 {
 }
 
 class Class4 extends UnknownClass1 implements UnknownInterface1, UnknownInterface2 { // Compliant
 }
 
-class Class5 extends UnknownClass1 implements UnknownInterface,
+class Class5 extends UnknownClass1 implements UnknownInterface, // Noncompliant
 UnknownInterface, // Noncompliant
-java.io.UnknownInterface,
 java.io.UnknownInterface, // Noncompliant
-UnknownParametrized<Unknown>,
+java.io.UnknownInterface, // Noncompliant {{"UnknownInterface" is listed multiple times.}}
+UnknownParametrized<Unknown>, // Noncompliant
 UnknownParametrized<Unknown> { // Noncompliant
 }
 

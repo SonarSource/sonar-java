@@ -19,26 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class WaitOnConditionCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/WaitOnConditionCheck.java"), new VisitorsBridge(new WaitOnConditionCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"")
-        .next().atLine(9).withMessage("The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"")
-        .next().atLine(10).withMessage("The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/WaitOnConditionCheck.java", new WaitOnConditionCheck());
   }
 }

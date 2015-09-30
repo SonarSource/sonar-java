@@ -20,13 +20,7 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -43,8 +37,7 @@ public class UndocumentedApiCheckTest {
   public void custom() {
     UndocumentedApiCheck check = new UndocumentedApiCheck();
     check.forClasses = "";
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UndocumentedApi.java"), new VisitorsBridge(check));
-    new CheckMessagesVerifierRule().verify(file.getCheckMessages());
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/UndocumentedApiCustom.java", check);
   }
 
 }

@@ -19,32 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class NullDereferenceInConditionalCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/NullDereferenceInConditionalCheck.java"), new VisitorsBridge(new NullDereferenceInConditionalCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
-      .next().atLine(4).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
-      .next().atLine(10).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
-      .next().atLine(11).withMessage("Either reverse the equality operator in the \"b\" null test, or reverse the logical operator that follows it.")
-      .next().atLine(12).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
-      .next().atLine(13).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
-      .next().atLine(22).withMessage("Either reverse the equality operator in the \"str\" null test, or reverse the logical operator that follows it.")
-    ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/NullDereferenceInConditionalCheck.java", new NullDereferenceInConditionalCheck());
   }
 
 }

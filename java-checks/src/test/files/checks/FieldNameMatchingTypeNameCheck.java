@@ -1,5 +1,5 @@
 class A {
-  String A;
+  String A; // Noncompliant {{Rename field "A"}}
   public String B;
   void A() {
   }
@@ -7,8 +7,8 @@ class A {
 class B extends A {
 }
 class aClass {
-  String AcLass;
-  aClass AClass;
+  String AcLass; // Noncompliant
+  aClass AClass; // Noncompliant
   void method() {
     String AcLaSS;
   }

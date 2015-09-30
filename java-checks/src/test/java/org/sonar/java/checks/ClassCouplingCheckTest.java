@@ -19,45 +19,21 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ClassCouplingCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassCouplingCheck.java"), new VisitorsBridge(new ClassCouplingCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(1)
-      .withMessage("Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.")
-      .next().atLine(33)
-      .next().atLine(60)
-      .next().atLine(85)
-      .next().atLine(144)
-      .withMessage("Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 21 to the maximum authorized 20 or less.")
-      .next().atLine(167)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/ClassCouplingCheck.java", new ClassCouplingCheck());
   }
 
   @Test
   public void custom() {
     ClassCouplingCheck check = new ClassCouplingCheck();
     check.max = 22;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ClassCouplingCheck.java"), new VisitorsBridge(check));
-
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(33)
-      .withMessage("Split this class into smaller and more specialized ones to reduce its dependencies on other classes from 23 to the maximum authorized 22 or less.");
+    JavaCheckVerifier.verify("src/test/files/checks/ClassCouplingCheckCustom.java", check);
   }
 
 }

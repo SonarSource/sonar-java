@@ -3,10 +3,10 @@ import org.junit.Ignore;
 class MyTest {
 
   @org.junit.Ignore
-  void foo() {} //NonCompliant
+  void foo() {} // Noncompliant {{Fix or remove this skipped unit test}}
 
   @Ignore
-  void bar() {} //NonCompliant
+  void bar() {} // Noncompliant
 
   void qix() {}
 }

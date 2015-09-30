@@ -19,13 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import java.io.File;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 public class MagicNumberCheckTest {
 
@@ -36,15 +31,8 @@ public class MagicNumberCheckTest {
 
   @Test
   public void detectedWithTwoAuthorized() {
-    // Use CheckMessagesVerifierRule to have only one test file
-    CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
     MagicNumberCheck check = new MagicNumberCheck();
     check.authorizedNumbers = "-1,0,1,2";
-
-    SourceFile file = JavaAstScanner
-      .scanSingleFile(new File("src/test/files/checks/MagicNumberCheck.java"), new VisitorsBridge(check));
-
-    // Check first error at line 16 (=> 2 is authorized)
-    checkMessagesVerifier.verify(file.getCheckMessages()).next().atLine(16);
+    JavaCheckVerifier.verify("src/test/files/checks/MagicNumberCheckCustom.java", check);
   }
 }

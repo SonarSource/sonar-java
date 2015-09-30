@@ -8,7 +8,7 @@ final class A {
   void method1() {}
   private void method2() {}
   protected void
-      method3() {} // Noncompliant
+      method3() {} // Noncompliant {{Remove this "protected" modifier.}}
   public void method4() {}
 }
 

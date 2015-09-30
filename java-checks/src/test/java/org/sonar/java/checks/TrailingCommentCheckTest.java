@@ -19,48 +19,25 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class TrailingCommentCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     assertThat(check.legalCommentPattern).isEqualTo("^\\s*+[^\\s]++$");
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TrailingCommentCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3).withMessage("Move this trailing comment on the previous empty line.")
-      .next().atLine(9).withMessage("Move this trailing comment on the previous empty line.")
-      .next().atLine(10)
-      .next().atLine(21);
+    JavaCheckVerifier.verify("src/test/files/checks/TrailingCommentCheck.java", check);
   }
 
   @Test
   public void custom() {
     TrailingCommentCheck check = new TrailingCommentCheck();
     check.legalCommentPattern = "";
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/TrailingCommentCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(3)
-      .next().atLine(7)
-      .next().atLine(8)
-      .next().atLine(9)
-      .next().atLine(10)
-      .next().atLine(21);
+    JavaCheckVerifier.verify("src/test/files/checks/TrailingCommentCheckCustom.java", check);
   }
 
 }

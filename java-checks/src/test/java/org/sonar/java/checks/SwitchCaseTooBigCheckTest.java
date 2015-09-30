@@ -19,68 +19,28 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SwitchCaseTooBigCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new VisitorsBridge(new SwitchCaseTooBigCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(10).withMessage("Reduce this switch case number of lines from 7 to at most 5, for example by extracting code into methods.")
-      .next().atLine(18).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(24).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(32).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(38).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(44).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .next().atLine(51).withMessage("Reduce this switch case number of lines from 6 to at most 5, for example by extracting code into methods.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseTooBigCheck.java", new SwitchCaseTooBigCheck());
   }
 
   @Test
   public void custom() {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 6;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(10).withMessage("Reduce this switch case number of lines from 7 to at most 6, for example by extracting code into methods.")
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseTooBigCheckCustom.java", check);
   }
 
   @Test
   public void limit() {
     SwitchCaseTooBigCheck check = new SwitchCaseTooBigCheck();
     check.max = 0;
-
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/SwitchCaseTooBigCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4)
-      .next().atLine(10)
-      .next().atLine(18)
-      .next().atLine(24)
-      .next().atLine(31)
-      .next().atLine(32)
-      .next().atLine(38)
-      .next().atLine(44)
-      .next().atLine(51)
-      .next().atLine(61)
-      .next().atLine(66)
-      .next().atLine(74)
-      .next().atLine(74)
-      .next().atLine(77)
-      .next().atLine(83)
-      .noMore();
+    JavaCheckVerifier.verify("src/test/files/checks/SwitchCaseTooBigCheck.java", new SwitchCaseTooBigCheck());
   }
 
 }

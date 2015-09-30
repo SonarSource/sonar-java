@@ -19,28 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ThreadSleepCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadSleepCheck.java"), new VisitorsBridge(new ThreadSleepCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(8).withMessage("Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".")
-        .next().atLine(9).withMessage("Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".")
-        .next().atLine(16).withMessage("Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".")
-        .next().atLine(17).withMessage("Replace the call to \"Thread.sleep(...)\" with a call to \"wait(...)\".")
-        .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ThreadSleepCheck.java", new ThreadSleepCheck());
   }
 }

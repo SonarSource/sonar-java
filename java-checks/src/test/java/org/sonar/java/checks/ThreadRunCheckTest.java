@@ -19,34 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ThreadRunCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
-  private final ThreadRunCheck check = new ThreadRunCheck();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ThreadRunCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier
-      .verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("Call the method Thread.start() to execute the content of the run() method in a dedicated thread.")
-      .next().atLine(18)
-      .next().atLine(21)
-      .next().atLine(24)
-      .next().atLine(32)
-      .next().atLine(53)
-      .next().atLine(54)
-      .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ThreadRunCheck.java", new ThreadRunCheck());
   }
 }

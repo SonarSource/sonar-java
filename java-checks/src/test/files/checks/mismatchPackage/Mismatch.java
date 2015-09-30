@@ -1,3 +1,3 @@
-package org.foo.mismatchPackage;
+package org.foo.mismatchPackage; // Noncompliant
 
 class Mismatch {}

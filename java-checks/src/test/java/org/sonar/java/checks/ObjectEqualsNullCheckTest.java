@@ -19,25 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ObjectEqualsNullCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ObjectEqualsNullCheck.java"), new VisitorsBridge(new ObjectEqualsNullCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Use \"object == null\" instead of \"object.equals(null)\" to test for nullity to prevent null pointer exceptions.");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ObjectEqualsNullCheck.java", new ObjectEqualsNullCheck());
   }
 
 }

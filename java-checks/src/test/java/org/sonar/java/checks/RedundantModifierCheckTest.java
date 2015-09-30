@@ -19,32 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class RedundantModifierCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/RedundantModifierCheck.java"),
-      new VisitorsBridge(new RedundantModifierCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(8).withMessage("\"public\" is redundant in this context.")
-      .next().atLine(9).withMessage("\"abstract\" is redundant in this context.")
-      .next().atLine(11).withMessage("\"public\" is redundant in this context.")
-      .next().atLine(12).withMessage("\"static\" is redundant in this context.")
-      .next().atLine(13).withMessage("\"final\" is redundant in this context.")
-      .next().atLine(18).withMessage("\"public\" is redundant in this context.")
-      .next().atLine(23).withMessage("\"final\" is redundant in this context.");
+    JavaCheckVerifier.verify("src/test/files/checks/RedundantModifierCheck.java", new RedundantModifierCheck());
   }
 
 }

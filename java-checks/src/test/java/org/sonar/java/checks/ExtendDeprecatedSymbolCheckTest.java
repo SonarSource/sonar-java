@@ -19,29 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
-import java.io.Serializable;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ExtendDeprecatedSymbolCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ExtendDeprecatedSymbolCheck.java"), new VisitorsBridge(new ExtendDeprecatedSymbolCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(6).withMessage("\"DeprecatedClass\" is deprecated, extend the suggested replacement instead.")
-        .next().atLine(7).withMessage("\"DeprecatedInterface\" is deprecated, implement the suggested replacement instead.")
-        .next().atLine(8).withMessage("\"DeprecatedInterface\" is deprecated, implement the suggested replacement instead.")
-        .next().atLine(9).withMessage("\"DeprecatedInterface\" is deprecated, implement the suggested replacement instead.")
-    .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ExtendDeprecatedSymbolCheck.java", new ExtendDeprecatedSymbolCheck());
   }
 }

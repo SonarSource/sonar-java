@@ -19,20 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ConstantsShouldBeStaticFinalCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ConstantsShouldBeStaticFinalCheck.java", new ConstantsShouldBeStaticFinalCheck());
   }
 }

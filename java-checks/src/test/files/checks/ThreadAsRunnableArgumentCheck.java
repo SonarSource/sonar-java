@@ -6,7 +6,7 @@ class A {
   public void foo() {
     Thread t = new Thread() {
     };
-    new Thread(t).start(); // Noncompliant
+    new Thread(t).start(); // Noncompliant {{}"t" is a "Thread".}
 
     new Thread(bar()).start(); // Noncompliant
 
@@ -25,8 +25,9 @@ class A {
     MyClass m = new MyClass(myThread); // Noncompliant
     m.foo(myThread); // Noncompliant
     m = new MyClass(0, new MyThread()); // Noncompliant
+    // Noncompliant@+1
     m = new MyClass(0, myThread, r, new MyThread()); // Noncompliant because of arg1 and arg3
-    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant
+    m = new MyClass(0, new Thread[] {myThread, new MyThread()}); // Noncompliant {{"Argument 2" is a "Thread[]".}}
     m = new MyClass(0); // Compliant
     m = new MyClass(0, new Runnable[] {}); // Compliant
     m = new MyClass(0, null, r, null); // Compliant

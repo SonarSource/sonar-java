@@ -19,35 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UnusedMethodParameterCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/UnusedMethodParameterCheck.java"), new VisitorsBridge(new UnusedMethodParameterCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2).withMessage("Remove the unused method parameter(s) \"b\".")
-      .next().atLine(37).withMessage("Remove the unused method parameter(s) \"b,a\".")
-      .next().atLine(42).withMessage("Remove the unused method parameter(s) \"a\".")
-      .next().atLine(50).withMessage("Remove the unused method parameter(s) \"a\".")
-      .next().atLine(55).withMessage("Remove the unused method parameter(s) \"args\".")
-      .next().atLine(56).withMessage("Remove the unused method parameter(s) \"args\".")
-      .next().atLine(57).withMessage("Remove the unused method parameter(s) \"args\".")
-      .next().atLine(58).withMessage("Remove the unused method parameter(s) \"args\".")
-      .next().atLine(59).withMessage("Remove the unused method parameter(s) \"args\".")
-      .next().atLine(88).withMessage("Remove the unused method parameter(s) \"arg\".")
-    .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/UnusedMethodParameterCheck.java", new UnusedMethodParameterCheck());
   }
 
 }

@@ -19,35 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ThreadAsRunnableArgumentCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(
-      new File("src/test/files/checks/ThreadAsRunnableArgumentCheck.java"),
-      new VisitorsBridge(new ThreadAsRunnableArgumentCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(9).withMessage("\"t\" is a \"Thread\".")
-      .next().atLine(11).withMessage("\"Argument 1\" is a \"Thread\".")
-      .next().atLine(14).withMessage("\"myThread\" is a \"Thread\".")
-      .next().atLine(25).withMessage("\"myThread\" is a \"Thread\".")
-      .next().atLine(26).withMessage("\"myThread\" is a \"Thread\".")
-      .next().atLine(27).withMessage("\"Argument 2\" is a \"Thread\".")
-      .next().atLine(28).withMessage("\"Argument 4\" is a \"Thread\".")
-      .next().atLine(28).withMessage("\"myThread\" is a \"Thread\".")
-      .next().atLine(29).withMessage("\"Argument 2\" is a \"Thread[]\".")
-      .noMore();
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ThreadAsRunnableArgumentCheck.java", new ThreadAsRunnableArgumentCheck());
   }
 }

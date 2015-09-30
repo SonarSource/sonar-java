@@ -19,31 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class InterfaceAsConstantContainerCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/InterfaceAsConstantContainerCheck.java"), new VisitorsBridge(new InterfaceAsConstantContainerCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Move constants to a class or enum.")
-      .next().atLine(8)
-      .next().atLine(17)
-      .next().atLine(22)
-      .next().atLine(27)
-      .next().atLine(32)
-      .next().atLine(45);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/InterfaceAsConstantContainerCheck.java", new InterfaceAsConstantContainerCheck());
   }
 
 }

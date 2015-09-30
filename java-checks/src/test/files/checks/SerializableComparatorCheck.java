@@ -1,7 +1,7 @@
 import java.io.Serializable;
 import java.util.Comparator;
 
-class A implements Comparator<String> {} // Noncompliant
+class A implements Comparator<String> {} // Noncompliant {{Make this class "Serializable".}}
 class B implements Comparator<String>, Serializable {}
 abstract class C implements Comparator<String> {}
 class D extends C {} // Noncompliant

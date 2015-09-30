@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class IncorrectOrderOfMembersCheckTest {
 
-  @Rule
-  public final CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
-  private final IncorrectOrderOfMembersCheck check = new IncorrectOrderOfMembersCheck();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/IncorrectOrderOfMembersCheck.java"), new VisitorsBridge(check));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(4).withMessage("Move this variable to comply with Java Code Conventions.")
-      .next().atLine(10).withMessage("Move this constructor to comply with Java Code Conventions.");
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/IncorrectOrderOfMembersCheck.java", new IncorrectOrderOfMembersCheck());
   }
 
 }

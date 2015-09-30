@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.junit.Rule;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -29,7 +28,6 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
 
 import java.io.File;
 import java.util.List;
@@ -37,9 +35,6 @@ import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class AbstractMethodDetectionTest {
-
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
 
   @Test
   public void detected() {

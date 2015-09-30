@@ -1,6 +1,6 @@
 class A {
-  private String foo;
-  private String bAr;
+  private String foo; // Noncompliant {{Rename the "foo" member.}}
+  private String bAr; // Noncompliant
   private String qix;
   public String foo() {
     //doSomething

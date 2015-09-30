@@ -4,6 +4,6 @@ import javax.servlet.http.HttpServletResponse;
 
 public class MyServlet extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    String sessionId = request.getRequestedSessionId();
+    String sessionId = request.getRequestedSessionId(); // Noncompliant {{Remove use of this unsecured "getRequestedSessionId()" method}}
   }
 }

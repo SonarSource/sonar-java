@@ -8,10 +8,10 @@ class A {
         System.out.println("bar"); //Compliant
         break;
       case 3:
-      case 4: // Noncompliant {{This case's code block is the same as the block for the case on line 4.}}
+      case 4: // Noncompliant [[secondary=4]] {{This case's code block is the same as the block for the case on line 4.}}
         System.out.println("plop");
         break;
-      case 5: // Noncompliant {{This case's code block is the same as the block for the case on line 4.}}
+      case 5: // Noncompliant [[sc=7;ec=14;secondary=4]] {{This case's code block is the same as the block for the case on line 4.}}
         System.out.println("plop");
         break;
     }

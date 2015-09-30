@@ -19,36 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MethodNamedHashcodeOrEqualCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/MethodNamedHashcodeOrEqualCheck.java"), new VisitorsBridge(
-      new MethodNamedHashcodeOrEqualCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(2).withMessage("Either override Object.hashCode(), or totally rename the method to prevent any confusion.")
-      .next().atLine(6).withMessage("Either override Object.hashCode(), or totally rename the method to prevent any confusion.")
-      .next().atLine(9).withMessage("Either override Object.hashCode(), or totally rename the method to prevent any confusion.")
-      .next().atLine(12).withMessage("Either override Object.hashCode(), or totally rename the method to prevent any confusion.")
-      .next().atLine(20).withMessage("Either override Object.equals(Object obj), or totally rename the method to prevent any confusion.")
-      .next().atLine(23).withMessage("Either override Object.equals(Object obj), or totally rename the method to prevent any confusion.")
-      .next().atLine(33).withMessage("Either override Object.hashCode(), or totally rename the method to prevent any confusion.")
-      .next().atLine(37).withMessage("Either override Object.hashCode(), or totally rename the method to prevent any confusion.")
-      .next().atLine(40).withMessage("Either override Object.equals(Object obj), or totally rename the method to prevent any confusion.")
-      .noMore();
-    ;
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/MethodNamedHashcodeOrEqualCheck.java", new MethodNamedHashcodeOrEqualCheck());
   }
 
 }

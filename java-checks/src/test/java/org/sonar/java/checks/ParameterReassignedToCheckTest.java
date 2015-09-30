@@ -19,34 +19,13 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ParameterReassignedToCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
-  public void detected() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParameterReassignedToCheck.java"), new VisitorsBridge(new ParameterReassignedToCheck(),
-        Lists.newArrayList(new File("target/test-classes"))));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(6).withMessage("Introduce a new variable instead of reusing the parameter \"a\".")
-      .next().atLine(7).withMessage("Introduce a new variable instead of reusing the parameter \"a\".")
-      .next().atLine(12).withMessage("Introduce a new variable instead of reusing the parameter \"e\".")
-      .next().atLine(28).withMessage("Introduce a new variable instead of reusing the parameter \"field\".")
-      .next().atLine(32)
-      .next().atLine(33)
-      .next().atLine(34)
-      .next().atLine(35);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/ParameterReassignedToCheck.java", new ParameterReassignedToCheck());
   }
-
 }

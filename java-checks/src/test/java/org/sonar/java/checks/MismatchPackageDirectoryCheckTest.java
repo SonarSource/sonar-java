@@ -19,36 +19,24 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class MismatchPackageDirectoryCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void correctMatch() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/mismatchPackage/Matching.java"), new VisitorsBridge(new MismatchPackageDirectoryCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/mismatchPackage/Matching.java", new MismatchPackageDirectoryCheck());
   }
+
   @Test
   public void defaultPackage() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/mismatchPackage/DefaultPackage.java"), new VisitorsBridge(new MismatchPackageDirectoryCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages()).noMore();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/mismatchPackage/DefaultPackage.java", new MismatchPackageDirectoryCheck());
   }
+
   @Test
   public void mismatch() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/mismatchPackage/Mismatch.java"), new VisitorsBridge(new MismatchPackageDirectoryCheck()));
-    String expectedLocation = "org"+File.separator+"foo"+File.separator+"mismatchPackage";
-    String actualLocation = "src"+File.separator+"test"+File.separator+"files"+File.separator+"checks"+File.separator+"mismatchPackage";
-    checkMessagesVerifier.verify(file.getCheckMessages()).next().atLine(1).withMessage("This file \"Mismatch.java\" should be located in \""+expectedLocation+"\" directory, not in \""+actualLocation+"\".");
+    JavaCheckVerifier.verify("src/test/files/checks/mismatchPackage/Mismatch.java", new MismatchPackageDirectoryCheck());
   }
 
 }

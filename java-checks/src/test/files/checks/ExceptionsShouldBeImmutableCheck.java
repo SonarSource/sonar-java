@@ -1,16 +1,17 @@
 class FooException extends RuntimeException {
-  int foo; // Non-Compliant
-  public final int bar; // Compliant
+  int foo; // Noncompliant {{Make this "foo" field final.}}
+  public final int bar;
 
-  int a = 42, b; // Non-Compliant - twice
+  int a = 42, // Noncompliant
+    b; // Noncompliant
 }
 
 class Foo extends RuntimeException {
-  int foo; // Compliant - limitation
+  int foo;
 }
 
 class BarException {
-  int foo; // Non-Compliant - limitation
+  int foo; // Noncompliant
 }
 
 class FooError extends Error {
@@ -18,5 +19,5 @@ class FooError extends Error {
 }
 
 class FooBisError {
-  int foo; // Noncompliant - limitation
+  int foo; // Noncompliant
 }

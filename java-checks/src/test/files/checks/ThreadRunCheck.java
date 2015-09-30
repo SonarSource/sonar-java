@@ -5,14 +5,14 @@ class A {
     Runnable runnable = null;
 
     Thread myThread = new Thread(runnable);
-    myThread.run(); // Noncompliant
+    myThread.run(); // Noncompliant {{Call the method Thread.start() to execute the content of the run() method in a dedicated thread.}}
 
     Thread myThread2 = new Thread(runnable);
-    myThread2.start(); // Compliant
+    myThread2.start();
 
-    run(); // Compliant
+    run();
     A a = new A();
-    a.run(); // Compliant
+    a.run();
 
     B b = new B();
     b.run(); // Noncompliant
@@ -24,10 +24,10 @@ class A {
     d.run(); // Noncompliant
 
     E e = new E();
-    e.run(); // Compliant
+    e.run();
 
     F f = new F();
-    f.run(); // Compliant
+    f.run();
 
     runnable.run(); // Noncompliant
   }

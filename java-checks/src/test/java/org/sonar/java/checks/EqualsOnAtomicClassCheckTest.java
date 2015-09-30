@@ -19,28 +19,14 @@
  */
 package org.sonar.java.checks;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifierRule;
-
-import java.io.File;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class EqualsOnAtomicClassCheckTest {
 
-  @Rule
-  public CheckMessagesVerifierRule checkMessagesVerifier = new CheckMessagesVerifierRule();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/EqualsOnAtomicClassCheck.java"),
-      new VisitorsBridge(new EqualsOnAtomicClassCheck()));
-    checkMessagesVerifier.verify(file.getCheckMessages())
-      .next().atLine(12).withMessage("Use \".get()\" to retrieve the value and compare it instead.")
-      .next().atLine(16)
-      .next().atLine(20);
+    JavaCheckVerifier.verify("src/test/files/checks/EqualsOnAtomicClassCheck.java", new EqualsOnAtomicClassCheck());
   }
 
 }

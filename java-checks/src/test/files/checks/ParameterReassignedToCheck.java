@@ -3,25 +3,25 @@ class A {
   }
 
   public void f(int a) {
-    a = 0; // Noncompliant
-    a += 1; // Noncompliant
-    int b = a; // Compliant
+    a = 0; // Noncompliant {{Introduce a new variable instead of reusing the parameter "a".}}
+    a += 1; // Noncompliant {{Introduce a new variable instead of reusing the parameter "a".}}
+    int b = a;
 
     try {
     } catch (Exception e) {
       e = new RuntimeException(); // Noncompliant
 
       int b = 0;
-      b = 0; // Compliant
+      b = 0;
     }
 
     int e;
-    e = 0; // Compliant
-    this.a = 0; // Compliant
+    e = 0;
+    this.a = 0;
   }
 
   public void f(int[] a) {
-    a[0] = 0; // Compliant
+    a[0] = 0;
   }
 
   public A(int field) {
@@ -33,11 +33,11 @@ class A {
     ++a; // Noncompliant
     a--; // Noncompliant
     --a; // Noncompliant
-    !a; // Compliant
-    ~a; // Compliant
+    !a;
+    ~a;
     int b = 0;
-    b++; // Compliant
-    this.a++; // Compliant
+    b++;
+    this.a++;
   }
   @Annotation(param="value") //raise issue because this param is considered as a reassignement of method parameter.
   void foo(String param) {}

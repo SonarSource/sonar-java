@@ -2,17 +2,17 @@ class A {
   private static final boolean FALSE = false;
 
   void f() {
-    if (true) { // Non-Compliant
-    } else if (false) { // Non-Compliant
+    if (true) { // Noncompliant {{Remove this if statement.}}
+    } else if (false) { // Noncompliant
     }
 
-    if (false) { // Non-Compliant
+    if (false) { // Noncompliant
     }
 
-    if (FALSE) { // Compliant
+    if (FALSE) {
     }
 
-    if (0 + 0 == 1) { // Compliant
+    if (0 + 0 == 1) {
     }
   }
 }

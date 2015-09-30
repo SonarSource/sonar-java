@@ -2,7 +2,7 @@ class A {
   void foo(){} // Compliant
 }
 interface I {
-  public void finalize(); // Noncompliant
+  public void finalize(); // Noncompliant {{Add the "@Override" annotation above this method signature}}
   void bar(); // Compliant
 }
 interface J extends I {
@@ -13,8 +13,8 @@ interface K extends J {
   public boolean equals(Object obj); // Noncompliant
 }
 class B extends A implements I {
-  void foo() {} //NonCompliant
-  void bar() {} //Noncompliant
+  void foo() {} // Noncompliant
+  void bar() {} // Noncompliant
   @Override
   protected void finalize() { // Compliant
     super.finalize();

@@ -4,7 +4,7 @@ class A {
   
   private void a() {
     String variable1 = "blabla";
-    String variable2 = "login=a&password=xxx"; // Noncompliant
+    String variable2 = "login=a&password=xxx"; // Noncompliant {{Remove this hard-coded password.}}
     String variable3 = "login=a&password=";
 
     String variableNameWithPasswordInIt = "xxx"; // Noncompliant

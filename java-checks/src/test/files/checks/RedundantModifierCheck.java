@@ -5,12 +5,12 @@ import java.lang.annotation.Target;
 
 interface MyInterface {
   void method1();
-  public void method2(); // Noncompliant
-  abstract void method3(); // Noncompliant
+  public void method2(); // Noncompliant {{"public" is redundant in this context.}}
+  abstract void method3(); // Noncompliant {{"abstract" is redundant in this context.}}
   int field1 = 1;
   public int field2 = 1; // Noncompliant
   static int field3 = 1; // Noncompliant
-  final int field4 = 1; // Noncompliant
+  final int field4 = 1; // Noncompliant {{"final" is redundant in this context.}}
 }
 
 public @interface MyAnnotation {

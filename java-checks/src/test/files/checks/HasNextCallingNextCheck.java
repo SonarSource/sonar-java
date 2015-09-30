@@ -6,7 +6,7 @@ class A implements Iterator<String> {
   
   public boolean hasNext() {
     boolean b = false;
-    b = next() != null; // Noncompliant
+    b = next() != null; // Noncompliant {{Refactor the implementation of this "Iterator.hasNext()" method to not call "Iterator.next()".}}
     b = this.next() != null; // Noncompliant
     b = other.next() != null;
     b = next("a") != null;

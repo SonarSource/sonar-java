@@ -4,8 +4,8 @@ abstract class A {
   public void processInteger(String s, Integer... a) {}
   
   void intBoxingAndUnboxing(int int1, Integer integer1, String string) {
-    new Integer(int1).intValue(); // Noncompliant
-    new Integer(1 + 2).intValue(); // Noncompliant
+    new Integer(int1).intValue(); // Noncompliant {{Remove the boxing of "int1".}}
+    new Integer(1 + 2).intValue(); // Noncompliant {{Remove the boxing to "Integer".}}
     Integer.valueOf(int1).intValue(); // Noncompliant
     Integer.valueOf(1 + 2).intValue(); // Noncompliant
     processInt(string, new Integer(int1)); // Noncompliant
@@ -41,7 +41,7 @@ abstract class A {
   abstract Integer createInteger();
   
   void otherThanInts(byte b, double d, float f, long l, short s) {
-    new Byte(b).byteValue(); // Noncompliant
+    new Byte(b).byteValue(); // Noncompliant {{Remove the boxing of "b".}}
     Byte.valueOf(b).byteValue(); // Noncompliant
     new Double(1.).doubleValue(); // Noncompliant
     Double.valueOf(1.).doubleValue(); // Noncompliant

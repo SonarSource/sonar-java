@@ -3,16 +3,16 @@ class Foo {
   int unusedField;
 
   public void f(int unusedParameter) {
-    int unusedLocalVariable;
+    int unusedLocalVariable; // Noncompliant {{Remove this unused "unusedLocalVariable" local variable.}}
 
     int usedLocalVariable = 42;
     System.out.println(usedLocalVariable);
 
     try {
-    } catch (Exception e) { // Compliant
+    } catch (Exception e) {
     }
 
-    try (Stream foo = new Stream()) { // Noncompliant
+    try (Stream foo = new Stream()) { // Noncompliant {{Remove this unused "foo" local variable.}}
     }
 
     for (int a: new int[]{ 0, 1, 2 }) { // Noncompliant
@@ -28,7 +28,7 @@ class Foo {
       foo2.bar();
     }
     
-    int notReadLocalVariable = 0;
+    int notReadLocalVariable = 0; // Noncompliant
     notReadLocalVariable = 1;
     notReadLocalVariable += 1;
     notReadLocalVariable++;

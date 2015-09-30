@@ -7,7 +7,7 @@ class A {
 
 class B extends HttpServlet {
   
-  private String userName;
+  private String userName; // Noncompliant {{Remove this misleading mutable servlet instance fields or make it "static" and/or "final"}}
   private static String staticVar;
   private final String finalVar;
   
@@ -19,7 +19,7 @@ class B extends HttpServlet {
 
 class C extends Action {
   
-  private String userName;
+  private String userName; // Noncompliant
   private static String staticVar; 
   private final String finalVar;
   

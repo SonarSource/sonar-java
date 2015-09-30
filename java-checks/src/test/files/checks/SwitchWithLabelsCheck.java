@@ -5,7 +5,7 @@ class A {
         break;
       case 1:
         break;
-      foo: // Noncompliant
+      foo: // Noncompliant {{Remove this misleading "foo" label.}}
         break;
       bar: // Noncompliant
         break;

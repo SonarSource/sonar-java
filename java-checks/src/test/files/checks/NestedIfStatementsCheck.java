@@ -16,7 +16,7 @@ class A {
       if (true) { // Compliant - 2
       } else {
         if (false) { // Compliant - 3
-          if (true) { // Non-Compliant - 4
+          if (true) { // Noncompliant {{Refactor this code to not nest more than 3 if/for/while/switch/try statements.}}
             if (false) { // Compliant - 5
             }
           } else if (true) { // Compliant - 4
@@ -38,13 +38,13 @@ class A {
     if (false) // Compliant - 1
       if (false) // Compliant - 2
         if (false) // Compliant - 3
-          if (true) // Non-Compliant - 4
+          if (true) // Noncompliant
             System.out.println();
 
     if (false) // Compliant - 1
       if (false) // Compliant - 2
         if (false) // Compliant - 3
-          if (false) System.out.println(); // Non-Compliant - 4
+          if (false) System.out.println(); // Noncompliant
           else System.out.println();
         else System.out.println();
       else System.out.println();
@@ -54,16 +54,16 @@ class A {
       for (Object o: getObjects()) { // Compliant - 2
         while (false) { // Compliant - 3
 
-          for (int i = 0; i < 0; i++) { // Noncompliant - 4
+          for (int i = 0; i < 0; i++) { // Noncompliant
           }
 
-          for (Object o: getObjects()) { // Noncompliant - 4
+          for (Object o: getObjects()) { // Noncompliant
           }
 
-          while (false) { // Noncompliant - 4
+          while (false) { // Noncompliant
           }
 
-          do { // Noncompliant - 4
+          do { // Noncompliant
           } while (false);
 
           if (false) { // Noncompliant

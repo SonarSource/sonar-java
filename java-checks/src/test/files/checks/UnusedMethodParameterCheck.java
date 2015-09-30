@@ -1,5 +1,5 @@
 class A extends B{
-  void doSomething(int a, int b) {     // "b" is unused
+  void doSomething(int a, int b) { // Noncompliant {{Remove the unused method parameter(s) "b".}}
     compute(a);
   }
 
@@ -34,12 +34,12 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) {
+  void foo(int b, int a) { // Noncompliant
     System.out.println("");
   }
 }
 class E extends C {
-  void bar(int a){
+  void bar(int a){ // Noncompliant
     System.out.println("");
   }
 }
@@ -47,16 +47,16 @@ interface inter {
   default void foo(int a) {
     compute(a);
   }
-  default void bar(int a) { System.out.println("");}
+  default void bar(int a) { System.out.println("");} // Noncompliant
   void qix(int a);
 }
 class F {
   public static void main(String[] args) { }
-  public static int main(String[] args) { System.out.println("");}
-  public static void main(int[] args) { System.out.println("");}
-  public static Object main(String[] args) { System.out.println("");}
-  public static void main(String args) { System.out.println("");}
-  public static void main(Double[] args) { System.out.println("");}
+  public static int main(String[] args) { System.out.println("");} // Noncompliant
+  public static void main(int[] args) { System.out.println("");} // Noncompliant
+  public static Object main(String[] args) { System.out.println("");} // Noncompliant
+  public static void main(String args) { System.out.println("");} // Noncompliant
+  public static void main(Double[] args) { System.out.println("");} // Noncompliant
 }
 
 class G implements inter {
@@ -85,7 +85,7 @@ class OpenForExtension {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  private baz(int arg) { //Noncompliant
+  private baz(int arg) { // Noncompliant
     //no-op
   }
 
