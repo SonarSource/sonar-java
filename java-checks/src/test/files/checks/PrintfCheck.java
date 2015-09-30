@@ -42,7 +42,8 @@ class A {
     String.format("%08d%n", 1);
     GregorianCalendar gc;
     String.format("Duke's Birthday year is %tH", gc);
-    String.format("Duke's Birthday year is %t", loc);  // Noncompliant 2
+    // Noncompliant@+1
+    String.format("Duke's Birthday year is %t", loc);  // Noncompliant
 
     pr.format("string without arguments"); // Noncompliant  {{String contains no format specifiers.}}
     pr.format(loc, "string without arguments"); // Noncompliant  {{String contains no format specifiers.}}

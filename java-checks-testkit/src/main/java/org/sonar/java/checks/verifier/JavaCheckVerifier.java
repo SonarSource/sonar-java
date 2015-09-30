@@ -181,10 +181,8 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
         final int endIndex = cleanedComment.indexOf(' ');
         if (endIndex == -1) {
           lineAdjustment = Integer.parseInt(cleanedComment.substring(2));
-          cleanedComment = "";
         } else {
           lineAdjustment = Integer.parseInt(cleanedComment.substring(2, endIndex));
-          cleanedComment = cleanedComment.substring(endIndex + 1).trim();
         }
         if (firstChar == '+') {
           expectedLine += lineAdjustment;
@@ -194,11 +192,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
           throw Fail.fail("Use only '@+N' or '@-N' to shifts messages.");
         }
       }
-      cleanedComment = StringUtils.trim(cleanedComment);
-      int times = StringUtils.isEmpty(cleanedComment) ? 1 : Integer.parseInt(cleanedComment);
-      for (int i = 0; i < times; i++) {
-        expected.put(expectedLine, expectedMessage);
-      }
+      expected.put(expectedLine, expectedMessage);
     }
   }
 

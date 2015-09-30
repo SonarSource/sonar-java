@@ -183,8 +183,6 @@ public class JavaCheckVerifierTest {
         .withIssue(3, "message1")
         .withIssue(7, "message2")
         .withIssue(8, "message3")
-        .withIssue(8, "message3")
-        .withIssue(10, "message4")
         .withIssue(10, "message4")
         .withIssue(11, "no message");
     }

@@ -34,7 +34,8 @@ class A {
 }
 
 abstract class B {
-  public int foo(int a, boolean b, boolean c) { // Noncompliant 2
+  // Noncompliant@+1
+  public int foo(int a, boolean b, boolean c) { // Noncompliant
     if (b) {
     } else {
     }

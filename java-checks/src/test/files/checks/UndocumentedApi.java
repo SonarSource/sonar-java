@@ -157,9 +157,10 @@ class FooPackage { // Compliant - non public
 /** Documented.
  */
 public class Foo { // Compliant
+  // Noncompliant@+3
   /** foo.
    */
-  public int foo(int a, int b, int c) { // Noncompliant 2
+  public int foo(int a, int b, int c) { // Noncompliant
     return 0;
   }
 

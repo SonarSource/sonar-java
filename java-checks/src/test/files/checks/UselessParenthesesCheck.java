@@ -22,7 +22,8 @@ class Foo {
     tab[(1+2)]; // Noncompliant
     tab[(1+2)/2];
     A a = new A((1/3)); // Noncompliant
-    return (((x & 0x0000FFFF)) | y); // Noncompliant 2
+    return (( // Noncompliant
+      (x & 0x0000FFFF)) | y); // Noncompliant
     getContentSpec(((int[])contentSpec.value)[0], contentSpec);
 
     this.a = b; // Compliant
