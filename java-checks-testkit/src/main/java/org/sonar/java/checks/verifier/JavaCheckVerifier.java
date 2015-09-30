@@ -20,13 +20,18 @@
 package org.sonar.java.checks.verifier;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multiset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Fail;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridge;
@@ -38,10 +43,13 @@ import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceCode;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -55,6 +63,18 @@ import static org.fest.assertions.Assertions.assertThat;
  *   // Noncompliant@+1 {{do not import "java.util.List"}}
  *   import java.util.List;
  * </pre>
+ * Full syntax:
+ * <pre>
+ *   // Noncompliant@+1 [[startColumn=1;endLine=+1;endColumn=2;effortToFix=4;secondary=3,4]] {{issue message}}
+ * </pre>
+ * Attributes between [[]] are optional:
+ * <ul>
+ *   <li>startColumn: column where the highlight starts</li>
+ *   <li>endLine: relative endLine where the highlight ends (i.e. +1), same line if omitted</li>
+ *   <li>endColumn: column where the highlight ends</li>
+ *   <li>effortToFix: the cost to fix as integer</li>
+ *   <li>secondary: a comma separated list of integers identifying the lines of secondary locations if any</li>
+ * </ul>
  */
 public class JavaCheckVerifier extends SubscriptionVisitor {
 
@@ -63,11 +83,32 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
    */
   private static final String DEFAULT_TEST_JARS_DIRECTORY = "target/test-jars";
   private static final String TRIGGER = "// Noncompliant";
-  private ArrayListMultimap<Integer, String> expected = ArrayListMultimap.create();
+  private final ArrayListMultimap<Integer, Map<IssueAttribute, String>> expected = ArrayListMultimap.create();
   private String testJarsDirectory;
   private boolean expectNoIssues = false;
   private String expectFileIssue;
   private Integer expectFileIssueOnline;
+
+  private static final Map<String, IssueAttribute> ATTRIBUTE_MAP = ImmutableMap.<String, IssueAttribute>builder()
+    .put("message", IssueAttribute.MESSAGE)
+    .put("effortToFix", IssueAttribute.EFFORT_TO_FIX)
+    .put("sc", IssueAttribute.START_COLUMN)
+    .put("startColumn", IssueAttribute.START_COLUMN)
+    .put("el", IssueAttribute.END_LINE)
+    .put("endLine", IssueAttribute.END_LINE)
+    .put("ec", IssueAttribute.END_COLUMN)
+    .put("endColumn", IssueAttribute.END_COLUMN)
+    .put("secondary", IssueAttribute.SECONDARY_LOCATIONS)
+    .build();
+
+  enum IssueAttribute {
+    MESSAGE,
+    START_COLUMN,
+    END_COLUMN,
+    END_LINE,
+    EFFORT_TO_FIX,
+    SECONDARY_LOCATIONS
+  }
 
   private JavaCheckVerifier() {
     this.testJarsDirectory = DEFAULT_TEST_JARS_DIRECTORY;
@@ -147,7 +188,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     if (testJars.exists()) {
       classpath = FileUtils.listFiles(testJars, new String[]{"jar", "zip"}, true);
     } else if (!DEFAULT_TEST_JARS_DIRECTORY.equals(javaCheckVerifier.testJarsDirectory)) {
-      throw Fail.fail("The directory to be used to extend class path does not exists (" + testJars.getAbsolutePath() + ").");
+      Fail.fail("The directory to be used to extend class path does not exists (" + testJars.getAbsolutePath() + ").");
     }
     classpath.add(new File("target/test-classes"));
     JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null));
@@ -171,10 +212,15 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     if (comment.startsWith(TRIGGER)) {
       String cleanedComment = StringUtils.remove(comment, TRIGGER);
 
+      EnumMap<IssueAttribute, String> attr = new EnumMap<>(IssueAttribute.class);
       String expectedMessage = StringUtils.substringBetween(cleanedComment, "{{", "}}");
+      if (StringUtils.isNotEmpty(expectedMessage)) {
+        attr.put(IssueAttribute.MESSAGE, expectedMessage);
+      }
       int expectedLine = line;
+      String attributesSubstr = extractAttributes(comment, attr);
 
-      cleanedComment = StringUtils.stripEnd(StringUtils.remove(cleanedComment, "{{" + expectedMessage + "}}"), " \t");
+      cleanedComment = StringUtils.stripEnd(StringUtils.remove(StringUtils.remove(cleanedComment, "[[" + attributesSubstr + "]]"), "{{" + expectedMessage + "}}"), " \t");
       if (StringUtils.startsWith(cleanedComment, "@")) {
         final int lineAdjustment;
         final char firstChar = cleanedComment.charAt(1);
@@ -189,11 +235,40 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
         } else if (firstChar == '-') {
           expectedLine -= lineAdjustment;
         } else {
-          throw Fail.fail("Use only '@+N' or '@-N' to shifts messages.");
+          Fail.fail("Use only '@+N' or '@-N' to shifts messages.");
         }
       }
-      expected.put(expectedLine, expectedMessage);
+      updateEndLine(expectedLine, attr);
+      expected.put(expectedLine, attr);
     }
+  }
+
+  private static void updateEndLine(int expectedLine, EnumMap<IssueAttribute, String> attr) {
+    if (attr.containsKey(IssueAttribute.END_LINE)) {
+      String endLineStr = attr.get(IssueAttribute.END_LINE);
+      if (endLineStr.startsWith("+")) {
+        int endLine = Integer.parseInt(endLineStr);
+        attr.put(IssueAttribute.END_LINE, Integer.toString(expectedLine + endLine));
+      } else {
+        Fail.fail("endLine attribute should be relative to the line and must be +N with N integer");
+      }
+    }
+  }
+
+  private static String extractAttributes(String comment, Map<IssueAttribute, String> attr) {
+    String attributesSubstr = StringUtils.substringBetween(comment, "[[", "]]");
+    if (!StringUtils.isEmpty(attributesSubstr)) {
+      Iterable<String> attributes = Splitter.on(";").split(attributesSubstr);
+      for (String attribute : attributes) {
+        String[] split = StringUtils.split(attribute, '=');
+        if (split.length == 2 && ATTRIBUTE_MAP.containsKey(split[0])) {
+          attr.put(ATTRIBUTE_MAP.get(split[0]), split[1]);
+        } else {
+          Fail.fail("// Noncompliant attributes not valid: " + attributesSubstr);
+        }
+      }
+    }
+    return attributesSubstr;
   }
 
   @Override
@@ -220,22 +295,74 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     Preconditions.checkState(sourceCode.hasCheckMessages(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
     for (CheckMessage checkMessage : sourceCode.getCheckMessages()) {
-      int line = checkMessage.getLine();
-      if (!expected.containsKey(line)) {
-        unexpectedLines.add(line);
-      } else {
-        List<String> list = expected.get(line);
-        String expectedMessage = list.remove(list.size() - 1);
-        if (expectedMessage != null) {
-          assertThat(checkMessage.getText(Locale.US)).isEqualTo(expectedMessage);
-        }
-      }
+      validateIssue(unexpectedLines, checkMessage);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
       String expectedMsg = !expected.isEmpty() ? ("Expected " + expected) : "";
       String unexpectedMsg = !unexpectedLines.isEmpty() ? ((expectedMsg.isEmpty() ? "" : ", ") + "Unexpected at " + unexpectedLines) : "";
-      throw Fail.fail(expectedMsg + unexpectedMsg);
+      Fail.fail(expectedMsg + unexpectedMsg);
+    }
+  }
+
+  private void validateIssue(List<Integer> unexpectedLines, CheckMessage checkMessage) {
+    int line = checkMessage.getLine();
+    if (expected.containsKey(line)) {
+      Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
+      assertEquals(checkMessage.getText(Locale.US), attrs, IssueAttribute.MESSAGE);
+      Double cost = checkMessage.getCost();
+      if (cost != null) {
+        assertEquals(Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
+      }
+      if (checkMessage instanceof org.sonar.java.JavaCheckMessage) {
+        AnalyzerMessage analyzerMessage = ((org.sonar.java.JavaCheckMessage) checkMessage).getAnalyzerMessage();
+        if (analyzerMessage != null) {
+          validateAnalyzerMessage(attrs, analyzerMessage);
+        }
+      }
+      expected.remove(line, attrs);
+    } else {
+      unexpectedLines.add(line);
+    }
+  }
+
+  private static void validateAnalyzerMessage(Map<IssueAttribute, String> attrs, AnalyzerMessage analyzerMessage) {
+    Double effortToFix = analyzerMessage.getCost();
+    if (effortToFix != null) {
+      assertEquals(Integer.toString(effortToFix.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
+    }
+    AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+    assertEquals(normalizeColumn(textSpan.startCharacter), attrs, IssueAttribute.START_COLUMN);
+    assertEquals(Integer.toString(textSpan.endLine), attrs, IssueAttribute.END_LINE);
+    assertEquals(normalizeColumn(textSpan.endCharacter), attrs, IssueAttribute.END_COLUMN);
+    if (attrs.containsKey(IssueAttribute.SECONDARY_LOCATIONS)) {
+      List<AnalyzerMessage> secondaryLocations = analyzerMessage.secondaryLocations;
+      Multiset<String> actualLines = HashMultiset.create();
+      for (AnalyzerMessage secondaryLocation : secondaryLocations) {
+        actualLines.add(Integer.toString(secondaryLocation.getLine()));
+      }
+      List<String> expected = Lists.newArrayList(Splitter.on(",").omitEmptyStrings().trimResults().split(attrs.get(IssueAttribute.SECONDARY_LOCATIONS)));
+      List<String> unexpected = new ArrayList<>();
+      for (String actualLine : actualLines) {
+        if (expected.contains(actualLine)) {
+          expected.remove(actualLine);
+        } else {
+          unexpected.add(actualLine);
+        }
+      }
+      if (!expected.isEmpty() || !unexpected.isEmpty()) {
+        Fail.fail("Secondary locations: expected: " + expected + " unexpected:" + unexpected);
+      }
+    }
+  }
+
+  private static String normalizeColumn(int startCharacter) {
+    return Integer.toString(startCharacter + 1);
+  }
+
+  private static void assertEquals(String value, Map<IssueAttribute, String> attributes, IssueAttribute attribute) {
+    if (attributes.containsKey(attribute)) {
+      assertThat(value).as("attribute mismatch for " + attribute + ": " + attributes).isEqualTo(attributes.get(attribute));
     }
   }
 
