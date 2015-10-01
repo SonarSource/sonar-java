@@ -174,4 +174,12 @@ class A {
     }
     return foo;
   }
+
+  Object try_with_resource() {
+    String path = ""; // compliant
+    try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+      br.readLine();
+    }
+
+  }
 }

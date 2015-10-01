@@ -22,14 +22,6 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -68,6 +60,15 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class CFG {
 
@@ -615,6 +616,7 @@ public class CFG {
     }
     currentBlock = createBlock(currentBlock);
     build(tryStatementTree.block());
+    build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tree);
   }
