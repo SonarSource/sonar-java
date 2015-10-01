@@ -1,0 +1,45 @@
+<p>Applications that perform file operations should neutralize any externally-provided values used in those commands. Failure to do so could allow an attacker to include input that changes the path so that unexpected files or directories are accessed.</p>
+<p>This rule checks that method parameters are not used directly in paths.</p>
+<h2>Noncompliant Code Example</h2>
+
+<pre>
+public String accessFile(String fileName) {
+  File file = new File(fileName);  // Noncompliant; parameter used directly
+  // ...
+</pre>
+<h2>Compliant Solution</h2>
+
+<pre>
+public String accessFile(String fileName) {
+  if ( fileName.indexOf("..") &gt; -1 || fileName.indexOf('/') &gt; -1 || fileName.indexOf('\')) {
+    return null;
+  }
+
+  File file = new File(fileName);  // Compliant; parameter used conditionally
+  // ...
+</pre>
+<p>or</p>
+<pre>
+public String accessFile(String fileName) {
+  File file = new File(fileName.replaceAll("[./\]",""));  // Compliant; parameter not used directly
+  // ...
+</pre>
+<p>or</p>
+<pre>
+public String accessFile(String fileName) {
+  File file = new File(scrubName(fileName));  // Compliant; method presumably sanitizes parameter
+  // ...
+</pre>
+<h2>See</h2>
+
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/22">MITRE, CWE-22</a> - Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')
+</li><li> <a href="http://cwe.mitre.org/data/definitions/23">MITRE, CWE-23</a> - Relative Path Traversal
+</li><li> <a href="http://cwe.mitre.org/data/definitions/36">MITRE, CWE-36</a> - Absolute Path Traversal
+</li><li> <a href="http://cwe.mitre.org/data/definitions/99">MITRE, CWE-99</a> - Improper Control of Resource Identifiers ('Resource Injection')
+</li><li> <a href="http://cwe.mitre.org/data/definitions/641.html">MITRE, CWE-641</a> - Improper Restriction of Names for Files and Other Resources
+</li><li> <a href="http://cwe.mitre.org/data/definitions/22">MITRE, CWE-22</a> - Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')
+</li><li> <a href="http://www.sans.org/top25-software-errors/">SANS Top 25</a> - Risky Resource Management
+</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A4-Insecure_Direct_Object_References">OWASP Top Ten 2013 Category A4</a> - Insecure Direct Object References
+</li></ul>
+
