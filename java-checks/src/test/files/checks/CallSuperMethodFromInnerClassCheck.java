@@ -74,3 +74,17 @@ class OuterClass4 {
     }
   }
 }
+
+public abstract class BaseEncoding {
+  BaseEncoding() {}
+  
+  public static final class DecodingException extends java.io.IOException {
+    DecodingException(String message) {
+      super(message);
+    }
+
+    DecodingException(Throwable cause) {
+      super(cause);
+    }
+  }
+}
