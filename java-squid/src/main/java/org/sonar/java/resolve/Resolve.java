@@ -391,21 +391,29 @@ public class Resolve {
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
     Resolution bestSoFar = unresolved();
-    for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
-      if (symbol.kind == JavaSymbol.MTH) {
-        JavaSymbol best = selectBest(env, callSite.symbol, argTypes, symbol, bestSoFar.symbol, autoboxing);
-        if(best == symbol) {
-          bestSoFar = Resolution.resolution(best);
-          bestSoFar.type = resolveTypeSubstitution(((JavaType.MethodJavaType) best.type).resultType, site);
-          JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) best;
-          bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
+    String searchedName = name;
+    boolean superConstructor = "super".equals(name);
+    if ("this".equals(name) || superConstructor) {
+      searchedName = "<init>";
+    }
+    if (!superConstructor) {
+      List<JavaSymbol> lookup = site.getSymbol().members().lookup(searchedName);
+      for (JavaSymbol symbol : lookup) {
+        if (symbol.kind == JavaSymbol.MTH) {
+          JavaSymbol best = selectBest(env, callSite.symbol, argTypes, symbol, bestSoFar.symbol, autoboxing);
+          if (best == symbol) {
+            bestSoFar = Resolution.resolution(best);
+            bestSoFar.type = resolveTypeSubstitution(((JavaType.MethodJavaType) best.type).resultType, site);
+            JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) best;
+            bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
+          }
         }
       }
     }
     //look in supertypes for more specialized method (overloading).
     JavaType superclass = site.getSymbol().getSuperclass();
     if (superclass != null) {
-      Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
+      Resolution method = findMethod(env, callSite, superclass, searchedName, argTypes, typeParams);
       method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, superclass), site);
       JavaSymbol best = selectBest(env, callSite.symbol, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
@@ -413,7 +421,7 @@ public class Resolve {
       }
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
-      Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
+      Resolution method = findMethod(env, callSite, interfaceType, searchedName, argTypes, typeParams);
       method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, interfaceType), site);
       JavaSymbol best = selectBest(env, callSite.symbol, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
@@ -421,7 +429,7 @@ public class Resolve {
       }
     }
     if(bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS && !autoboxing) {
-      bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true);
+      bestSoFar = findMethod(env, callSite, site, searchedName, argTypes, typeParams, true);
     }
     return bestSoFar;
   }
@@ -672,7 +680,19 @@ public class Resolve {
       case Flags.PUBLIC:
         return true;
       case Flags.PRIVATE:
-        return symbol.owner() == clazz;
+        // FIXME take only constructors into account when all the members should be JLS-6.6.1
+        if ("<init>".equals(symbol.name)) {
+          JavaSymbol topLevel1 = symbol;
+          JavaSymbol topLevel2 = clazz;
+          while (!topLevel1.owner.isPackageSymbol()) {
+            topLevel1 = topLevel1.owner;
+          }
+          while (!topLevel2.owner.isPackageSymbol()) {
+            topLevel2 = topLevel2.owner;
+          }
+          return topLevel1 == topLevel2;
+        }
+        return symbol.owner == clazz;
       case Flags.PROTECTED:
         // TODO see Javac
         return true;

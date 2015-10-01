@@ -414,6 +414,33 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void ThisConstructorUsage() throws Exception {
+    Result result = Result.createForJavaFile("src/test/java/org/sonar/java/test/PrivateConstructorTestCase");
+    JavaSymbol.MethodJavaSymbol thisReference = (JavaSymbol.MethodJavaSymbol) result.reference(29, 7);
+    JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("PrivateConstructorClass");
+
+    assertThat(thisReference.owner()).isSameAs(classSymbol);
+    assertThat(thisReference.parameterTypes()).hasSize(1);
+
+    JavaSymbol firstConstructor = classSymbol.members.lookup("<init>").get(0);
+    assertThat(thisReference).isEqualTo(firstConstructor);
+    assertThat(firstConstructor.usages()).hasSize(2);
+  }
+
+  @Test
+  public void SuperConstructorUsage() throws Exception {
+    Result result = Result.createForJavaFile("src/test/java/org/sonar/java/test/PrivateConstructorTestCase");
+    JavaSymbol.MethodJavaSymbol superReference = (JavaSymbol.MethodJavaSymbol) result.reference(35, 7);
+    JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("PrivateConstructorClass");
+
+    assertThat(superReference.owner()).isSameAs(classSymbol);
+    assertThat(superReference.parameterTypes()).hasSize(1);
+
+    JavaSymbol firstConstructor = classSymbol.members.lookup("<init>").get(0);
+    assertThat(firstConstructor.usages()).hasSize(2);
+  }
+
+  @Test
   public void CompleteHierarchyOfTypes() {
     Result result = Result.createFor("CompleteHierarchyOfTypes");
 
