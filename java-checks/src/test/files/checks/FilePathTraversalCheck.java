@@ -30,6 +30,9 @@ class A {
     new File(foo(arg8)); // Compliant
     
     new File(myField); // Compliant
+    
+    String myString = "";
+    new File(myString); // Compliant
   }
   
   String foo(String s) {

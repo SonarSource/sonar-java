@@ -30,9 +30,11 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -75,12 +77,25 @@ public class FilePathTraversalCheck extends IssuableSubscriptionVisitor {
       if (argument.symbolType().is("java.lang.String") && argument.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) argument;
         Symbol symbol = identifier.symbol();
-        if (symbol.owner().isMethodSymbol() && (singleUse(symbol) || !usedBefore(symbol, constructor))) {
+        if (isMethodParameter(symbol) && (singleUse(symbol) || !usedBefore(symbol, constructor))) {
           identifiersUsedInFileConstructors.add(identifier);
           reportIssue(identifier, "\"" + identifier.name() + "\" is provided externally to the method and not sanitized before use.");
         }
       }
     }
+  }
+
+  private static boolean isMethodParameter(Symbol symbol) {
+    Symbol owner = symbol.owner();
+    if (owner.isMethodSymbol() && owner.declaration() != null) {
+      MethodTree methodTree = (MethodTree) owner.declaration();
+      for (VariableTree variable : methodTree.parameters()) {
+        if (symbol.equals(variable.symbol())) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private static boolean singleUse(Symbol symbol) {

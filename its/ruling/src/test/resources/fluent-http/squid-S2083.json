@@ -2,12 +2,7 @@
 'net.code-story:http:src/main/java/net/codestory/http/compilers/DiskCache.java':[
 36,
 ],
-'net.code-story:http:src/main/java/net/codestory/http/io/ClassPaths.java':[
-94,
-95,
-],
 'net.code-story:http:src/main/java/net/codestory/http/io/Resources.java':[
-175,
 187,
 ],
 }
