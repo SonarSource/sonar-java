@@ -80,7 +80,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
       ExpressionTree methodSelect = tree.methodSelect();
       if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
         methodIdentifier = (IdentifierTree) methodSelect;
-        isInvocationOnSelf = true;
+        isInvocationOnSelf = !isThisOrSuper(methodIdentifier);
       } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
         methodIdentifier = memberSelect.identifier();
