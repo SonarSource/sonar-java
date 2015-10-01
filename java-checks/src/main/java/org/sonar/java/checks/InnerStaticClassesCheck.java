@@ -123,18 +123,18 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
       if (symbol.isUnknown()) {
         result = atLeastOneReference.size() - 1;
       } else if (!symbol.isStatic()) {
-        result = fromInstance(owner);
+        result = fromInstance(symbol, owner);
       }
     }
     return result;
   }
 
-  private int fromInstance(Symbol owner) {
+  private int fromInstance(Symbol symbol, Symbol owner) {
     int i = -1;
     Type ownerType = owner.type();
     for (Symbol outerClass : outerClasses) {
       i++;
-      if (owner.equals(outerClass) || (ownerType != null && owner.isTypeSymbol() && outerClass.type().isSubtypeOf(ownerType))) {
+      if (symbol.equals(outerClass) || owner.equals(outerClass) || (ownerType != null && owner.isTypeSymbol() && outerClass.type().isSubtypeOf(ownerType))) {
         return i;
       }
     }
