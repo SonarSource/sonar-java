@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
@@ -164,16 +163,6 @@ public class
     LocalVariableReadExtractor extractorFromClass = new LocalVariableReadExtractor(owner);
     syntaxNode.accept(extractorFromClass);
     return extractorFromClass.usedVariables();
-  }
-
-  public void debugTo(PrintStream outStream) {
-    for (CFG.Block block : cfg.reversedBlocks()) {
-      outStream.println("B" + block.id + " Live:");
-      for (Symbol live : out.get(block)) {
-        outStream.print(" " + live.name() + "@" + Integer.toHexString(live.hashCode()));
-      }
-      outStream.println();
-    }
   }
 
 }

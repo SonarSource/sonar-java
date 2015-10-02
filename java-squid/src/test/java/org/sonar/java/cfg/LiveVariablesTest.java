@@ -54,14 +54,14 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_simple_death() throws Exception {
+  public void test_simple_death()  {
     CFG cfg = buildCFG("void foo(int a) {  int i; /* should not be live here */ if (false) ; i = 0; }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
   }
 
   @Test
-  public void test_field_not_tracked() throws Exception {
+  public void test_field_not_tracked()  {
     CFG cfg = buildCFG("void foo(int a) { field = 0; /* fields should not be tracked */ if (false) ; foo(field); }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
@@ -72,7 +72,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void test_while_loop() throws Exception {
+  public void test_while_loop()  {
     CFG cfg = buildCFG("void foo(boolean condition) { while (condition) { int x = 0; use(x); x = 1; /* x should not be live here*/}}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
@@ -80,7 +80,7 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void in_of_first_block_should_be_empty() throws Exception {
+  public void in_of_first_block_should_be_empty()  {
     CFG cfg = buildCFG("boolean foo(int a) { foo(a);}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
@@ -103,23 +103,21 @@ public class LiveVariablesTest {
   }
 
   @Test
-  public void anonymous_class_liveness() throws Exception {
+  public void anonymous_class_liveness()  {
     CFG cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(''); } new Object() { String toString(){return a;} }; }");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
 
-    cfg = buildCFG("boolean foo(int a) { if(true) { System.out.println(''); } new Object() { String toString(){return a = 2;} }; }");
+    cfg = buildCFG("boolean foo(int a) { if(true) { new A().field = 2;System.out.println(''); } new Object() { String toString(){return a = 2;} }; }");
     liveVariables = LiveVariables.analyze(cfg);
+    cfg.debugTo(System.out);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
   }
+  
+  
 
-  @Test
-  public void assignement_with_parenthesis() throws Exception {
-
-
-  }
 }

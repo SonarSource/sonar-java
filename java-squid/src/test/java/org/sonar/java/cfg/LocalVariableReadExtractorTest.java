@@ -57,7 +57,7 @@ public class LocalVariableReadExtractorTest {
 
   @Test
   public void should_not_extract_local_vars_written() throws Exception {
-    MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { a = false;} };  }");
+    MethodTree methodTree = buildMethodTree("void foo(boolean a) { new Object() { void foo() { new A().field = 0; a = false;} };  }");
     StatementTree statementTree = methodTree.block().body().get(0);
     LocalVariableReadExtractor extractor = new LocalVariableReadExtractor(methodTree.symbol());
     statementTree.accept(extractor);
