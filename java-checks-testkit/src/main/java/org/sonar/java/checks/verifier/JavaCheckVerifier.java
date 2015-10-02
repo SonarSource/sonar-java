@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.verifier;
 
+import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -76,6 +77,7 @@ import static org.fest.assertions.Assertions.assertThat;
  *   <li>secondary: a comma separated list of integers identifying the lines of secondary locations if any</li>
  * </ul>
  */
+@Beta
 public class JavaCheckVerifier extends SubscriptionVisitor {
 
   /**
