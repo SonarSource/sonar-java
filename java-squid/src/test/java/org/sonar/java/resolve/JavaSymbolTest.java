@@ -149,5 +149,7 @@ public class JavaSymbolTest {
     assertThat(enumeration.isEnum()).isTrue();
     assertThat(enumeration.isAbstract()).isFalse();
     assertThat(enumeration.isStatic()).isFalse();
+    assertThat(P_PACKAGE_JAVA_SYMBOL.isPackageSymbol()).isTrue();
+    assertThat(outermostClass.isPackageSymbol()).isFalse();
   }
 }
