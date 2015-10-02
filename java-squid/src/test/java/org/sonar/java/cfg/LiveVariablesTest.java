@@ -112,7 +112,6 @@ public class LiveVariablesTest {
 
     cfg = buildCFG("boolean foo(int a) { if(true) { new A().field = 2;System.out.println(''); } new Object() { String toString(){return a = 2;} }; }");
     liveVariables = LiveVariables.analyze(cfg);
-    cfg.debugTo(System.out);
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
