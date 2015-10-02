@@ -212,28 +212,6 @@ public class JavaCheckVerifierTest {
     }
   }
 
-  @Test
-  public void verify_should_fail_when_using_incorrect_secondaryLocation() throws IOException {
-    IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
-    try {
-      JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation.java", visitor);
-      Fail.fail();
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [] unexpected:[3]");
-    }
-  }
-
-  @Test
-  public void verify_should_fail_when_using_incorrect_secondaryLocation2() throws IOException {
-    IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
-    try {
-      JavaCheckVerifier.verify("src/test/files/JavaCheckVerifierIncorrectSecondaryLocation2.java", visitor);
-      Fail.fail();
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Secondary locations: expected: [5] unexpected:[]");
-    }
-  }
-
   private static class FakeVisitor extends IssuableSubscriptionVisitor {
 
     Multimap<Integer, String> issues = LinkedListMultimap.create();
