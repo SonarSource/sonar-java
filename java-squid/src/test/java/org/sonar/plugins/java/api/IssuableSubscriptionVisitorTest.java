@@ -48,7 +48,7 @@ public class IssuableSubscriptionVisitorTest {
     Collection<SourceCode> sourceCodes = javaSquid.search(new QueryByType(SourceFile.class));
     assertThat(sourceCodes).hasSize(1);
     SourceCode sourceCode = sourceCodes.iterator().next();
-    assertThat(sourceCode.getCheckMessages()).hasSize(3);
+    assertThat(sourceCode.getCheckMessages()).hasSize(6);
   }
 
   private static class CustomRule extends IssuableSubscriptionVisitor {
@@ -62,7 +62,10 @@ public class IssuableSubscriptionVisitorTest {
     public void visitNode(Tree tree) {
       addIssue(tree, "issue on tree");
       addIssue(1, "issue on 1st line");
+      addIssue(tree, "message", 0d);
       addIssueOnFile("issue on file");
+      reportIssue(tree, "issue on tree");
+      reportIssue(tree, "issue on tree", ImmutableList.<JavaFileScannerContext.Location>of(), null);
     }
   }
 }

@@ -19,15 +19,15 @@
  */
 package org.sonar.java;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
@@ -36,9 +36,14 @@ import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -77,6 +82,40 @@ public class SonarComponentsTest {
   }
 
   @Test
+  public void test_sonar_components() {
+    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
+    JavaTestClasspath javaTestClasspath = mock(JavaTestClasspath.class);
+    ImmutableList<File> javaTestClasspathList = ImmutableList.of();
+    when(javaTestClasspath.getElements()).thenReturn(javaTestClasspathList);
+
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = new CheckRegistrar() {
+      @Override
+      public void register(RegistrarContext registrarContext) {
+        registrarContext.registerClassesForRepository(
+          REPOSITORY_NAME,
+          Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class),
+          null);
+      }
+    };
+
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fs, null, javaTestClasspath, checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    CodeVisitor[] visitors = sonarComponents.checkClasses();
+    assertThat(visitors).hasSize(1);
+    assertThat(visitors[0]).isEqualTo(expectedCheck);
+    Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
+    assertThat(testChecks).hasSize(0);
+    assertThat(sonarComponents.getFileSystem()).isEqualTo(fs);
+    assertThat(sonarComponents.getResourcePerspectives()).isEqualTo(resourcePerspectives);
+    assertThat(sonarComponents.getJavaClasspath()).isEmpty();
+    assertThat(sonarComponents.getJavaTestClasspath()).isEqualTo(javaTestClasspathList);
+  }
+
+  @Test
   public void creation_of_custom_checks() {
     JavaCheck expectedCheck = new CustomCheck();
     CheckRegistrar expectedRegistrar = new CheckRegistrar() {
@@ -89,7 +128,7 @@ public class SonarComponentsTest {
       }
     };
 
-    when(this.checks.all()).thenReturn(Lists.<JavaCheck>newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
@@ -114,7 +153,7 @@ public class SonarComponentsTest {
       }
     };
 
-    when(this.checks.all()).thenReturn(new ArrayList<JavaCheck>()).thenReturn(Lists.<JavaCheck>newArrayList(expectedCheck));
+    when(this.checks.all()).thenReturn(new ArrayList<JavaCheck>()).thenReturn(Lists.newArrayList(expectedCheck));
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
@@ -140,7 +179,7 @@ public class SonarComponentsTest {
       }
     };
 
-    when(this.checks.all()).thenReturn(Lists.<JavaCheck>newArrayList(expectedCheck)).thenReturn(Lists.<JavaCheck>newArrayList(expectedTestCheck));
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(Lists.newArrayList(expectedTestCheck));
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
       expectedRegistrar
     });
@@ -151,6 +190,7 @@ public class SonarComponentsTest {
     Collection<JavaCheck> testChecks = sonarComponents.testCheckClasses();
     assertThat(testChecks).hasSize(1);
     assertThat(testChecks.iterator().next()).isEqualTo(expectedTestCheck);
+    assertThat(sonarComponents.checks()).hasSize(2);
   }
 
   private static class CustomCheck implements JavaCheck {
