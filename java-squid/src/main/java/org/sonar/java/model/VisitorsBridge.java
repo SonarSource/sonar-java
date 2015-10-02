@@ -308,7 +308,7 @@ public class VisitorsBridge {
         checkMessage.setAnalyzerMessage(analyzerMessage);
         sourceFile.log(checkMessage);
       } else {
-        addIssue(syntaxNode, javaCheck, message, (double) cost);
+        addIssue(syntaxNode, javaCheck, message, cost != null ? (double) cost : null);
       }
     }
 
