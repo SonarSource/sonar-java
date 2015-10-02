@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -32,11 +31,14 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.Nullable;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -120,7 +122,6 @@ public class
       switch (element.kind()) {
         case ASSIGNMENT:
           ExpressionTree lhs = ((AssignmentExpressionTree) element).variable();
-
           if (lhs.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) lhs).symbol();
             if (isLocalVariable(symbol)) {
@@ -141,17 +142,10 @@ public class
           blockGen.remove(((VariableTree) element).symbol());
           break;
         case LAMBDA_EXPRESSION:
-          LocalVariableReadExtractor extractor = new LocalVariableReadExtractor(cfg.methodSymbol());
-          ((LambdaExpressionTree) element).body().accept(extractor);
-          blockGen.addAll(extractor.usedVariables());
+          blockGen.addAll(getUsedVariables(((LambdaExpressionTree) element).body(), cfg.methodSymbol()));
           break;
         case NEW_CLASS:
-          ClassTree body = ((NewClassTree) element).classBody();
-          if (body != null) {
-            LocalVariableReadExtractor extractorFromClass = new LocalVariableReadExtractor(cfg.methodSymbol());
-            body.accept(extractorFromClass);
-            blockGen.addAll(extractorFromClass.usedVariables());
-          }
+          blockGen.addAll(getUsedVariables(((NewClassTree) element).classBody(), cfg.methodSymbol()));
           break;
         default:
           // Ignore other kind of elements, no change of gen/kill
@@ -161,6 +155,15 @@ public class
 
   private static boolean isLocalVariable(Symbol symbol) {
     return symbol.owner().isMethodSymbol();
+  }
+
+  private static List<Symbol> getUsedVariables(@Nullable Tree syntaxNode, Symbol.MethodSymbol owner) {
+    if(syntaxNode == null) {
+      return Collections.emptyList();
+    }
+    LocalVariableReadExtractor extractorFromClass = new LocalVariableReadExtractor(owner);
+    syntaxNode.accept(extractorFromClass);
+    return extractorFromClass.usedVariables();
   }
 
   public void debugTo(PrintStream outStream) {

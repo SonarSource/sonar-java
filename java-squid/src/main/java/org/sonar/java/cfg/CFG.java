@@ -191,9 +191,7 @@ public class CFG {
   private void build(Tree tree) {
     switch (tree.kind()) {
       case BLOCK:
-        for (StatementTree statementTree : Lists.reverse(((BlockTree) tree).body())) {
-          build(statementTree);
-        }
+        build(((BlockTree) tree).body());
         break;
       case RETURN_STATEMENT:
         buildReturnStatement((ReturnStatementTree) tree);
@@ -310,17 +308,6 @@ public class CFG {
       case NEW_CLASS:
         buildNewClass((NewClassTree) tree);
         break;
-      case IDENTIFIER:
-      case INT_LITERAL:
-      case LONG_LITERAL:
-      case DOUBLE_LITERAL:
-      case CHAR_LITERAL:
-      case FLOAT_LITERAL:
-      case STRING_LITERAL:
-      case BOOLEAN_LITERAL:
-      case NULL_LITERAL:
-        currentBlock.elements.add(tree);
-        break;
       case TYPE_CAST:
         buildTypeCast(tree);
         break;
@@ -330,19 +317,28 @@ public class CFG {
       case NEW_ARRAY:
         buildNewArray((NewArrayTree) tree);
         break;
+      // Java 8 constructions : ignored for now.
       case METHOD_REFERENCE:
-        // Java 8 constructions : ignored for now.
-        break;
+      // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
-        // assert can be ignored by VM so skip them for now.
         break;
+      // store declarations as complete blocks.
       case EMPTY_STATEMENT:
       case CLASS:
       case ENUM:
       case ANNOTATION_TYPE:
       case INTERFACE:
       case LAMBDA_EXPRESSION:
-        // store declarations as complete blocks.
+      // simple instructions
+      case IDENTIFIER:
+      case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
+      case CHAR_LITERAL:
+      case FLOAT_LITERAL:
+      case STRING_LITERAL:
+      case BOOLEAN_LITERAL:
+      case NULL_LITERAL:
         currentBlock.elements.add(tree);
         break;
       default:
@@ -485,7 +481,7 @@ public class CFG {
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
         switches.getLast().successors.add(currentBlock);
-        if (caseGroupTree != firstCase) {
+        if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.
           currentBlock = createBlock(currentBlock);
         }
@@ -668,8 +664,7 @@ public class CFG {
     build(typeCastTree.expression());
   }
 
-  private void buildInstanceOf(InstanceOfTree tree) {
-    InstanceOfTree instanceOfTree = tree;
+  private void buildInstanceOf(InstanceOfTree instanceOfTree) {
     currentBlock.elements.add(instanceOfTree);
     build(instanceOfTree.expression());
   }
@@ -691,26 +686,13 @@ public class CFG {
 
   private void buildCondition(Tree syntaxNode, Block trueBlock, Block falseBlock) {
     switch (syntaxNode.kind()) {
-      case CONDITIONAL_OR: {
-        BinaryExpressionTree e = (BinaryExpressionTree) syntaxNode;
-        // process RHS
-        buildCondition(e.rightOperand(), trueBlock, falseBlock);
-        falseBlock = currentBlock;
-        // process LHS
-        currentBlock = createBranch(e, trueBlock, falseBlock);
-        buildCondition(e.leftOperand(), trueBlock, falseBlock);
+      case CONDITIONAL_OR:
+        buildConditionalOr((BinaryExpressionTree) syntaxNode, trueBlock, falseBlock);
         break;
-      }
-      case CONDITIONAL_AND: {
+      case CONDITIONAL_AND:
         // process RHS
-        BinaryExpressionTree e = (BinaryExpressionTree) syntaxNode;
-        buildCondition(e.rightOperand(), trueBlock, falseBlock);
-        trueBlock = currentBlock;
-        // process LHS
-        currentBlock = createBranch(e, trueBlock, falseBlock);
-        buildCondition(e.leftOperand(), trueBlock, falseBlock);
+        buildConditionalAnd((BinaryExpressionTree) syntaxNode, trueBlock, falseBlock);
         break;
-      }
       // Skip syntactic sugar:
       case PARENTHESIZED_EXPRESSION:
         buildCondition(((ParenthesizedTree) syntaxNode).expression(), trueBlock, falseBlock);
@@ -719,6 +701,23 @@ public class CFG {
         build(syntaxNode);
         break;
     }
+  }
+
+  private void buildConditionalOr(BinaryExpressionTree conditionalOr, Block trueBlock, Block falseBlock) {
+    // process RHS
+    buildCondition(conditionalOr.rightOperand(), trueBlock, falseBlock);
+    Block newFalseBlock = currentBlock;
+    // process LHS
+    currentBlock = createBranch(conditionalOr, trueBlock, newFalseBlock);
+    buildCondition(conditionalOr.leftOperand(), trueBlock, newFalseBlock);
+  }
+
+  private void buildConditionalAnd(BinaryExpressionTree conditionalAnd, Block trueBlock, Block falseBlock) {
+    buildCondition(conditionalAnd.rightOperand(), trueBlock, falseBlock);
+    Block newTrueBlock = currentBlock;
+    // process LHS
+    currentBlock = createBranch(conditionalAnd, newTrueBlock, falseBlock);
+    buildCondition(conditionalAnd.leftOperand(), newTrueBlock, falseBlock);
   }
 
   private Block createBranch(Tree terminator, Block trueBranch, Block falseBranch) {
@@ -768,6 +767,8 @@ public class CFG {
       case INT_LITERAL:
         sb.append(' ').append(((LiteralTree) syntaxNode).token().text());
         break;
+      default:
+        //no need to debug other syntaxNodes
     }
     return sb.toString();
   }
