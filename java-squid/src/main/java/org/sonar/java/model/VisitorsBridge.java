@@ -284,7 +284,7 @@ public class VisitorsBridge {
      * FIXME(mpaladin) DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
      *
      * **/
-    private static final boolean ENABLE_NEW_APIS = true;
+    private static final boolean ENABLE_NEW_APIS = false;
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
