@@ -37,7 +37,7 @@ public class UnusedPrivateMethod {
   }
 
   @SuppressWarnings("unused")
-  private int unusedPrivateMethod() {
+  private int unusedPrivateMethod() { // Noncompliant {{Remove this unused private "unusedPrivateMethod" method.}}
     return 1;
   }
   private int unusedPrivateMethod(int a, String s) { // Noncompliant {{Remove this unused private "unusedPrivateMethod" method.}}
