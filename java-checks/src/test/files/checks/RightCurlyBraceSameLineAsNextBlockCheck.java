@@ -5,7 +5,7 @@ class Foo {
     } else if (somethingElse) {          // Compliant
       doSomethingElse();
     }
-    else {                               // Noncompliant {{Move this "else" on the same line that the previous closing curly brace.}}
+    else {                               // Noncompliant [[sc=5;ec=9]] {{Move this "else" on the same line that the previous closing curly brace.}}
        generateError();
     }
     

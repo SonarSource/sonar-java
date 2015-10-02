@@ -1,5 +1,5 @@
 interface MyInterface {
-  int a = 1, b = 1; // Noncompliant {{Declare "b" on a separate line.}}
+  int a = 1, b = 1; // Noncompliant [[sc=14;ec=15]] {{Declare "b" on a separate line.}}
 }
 
 enum MyEnum {

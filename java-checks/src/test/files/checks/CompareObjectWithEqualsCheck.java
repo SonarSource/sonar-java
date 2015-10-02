@@ -4,7 +4,7 @@ class A {
   String[] strArray1 = {"blue"};
   String[] strArray2 = {"blue"};
   private void method() {
-    if (str1 == str2) {} // Noncompliant {{Change this comparison to use the equals method.}}
+    if (str1 == str2) {} // Noncompliant [[sc=14;ec=16]] {{Change this comparison to use the equals method.}}
     if(str1 == "green") {} // Noncompliant {{Change this comparison to use the equals method.}}
     if (str1.equals(str2)) {}
     if(strArray1 == strArray2) {}

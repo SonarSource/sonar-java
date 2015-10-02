@@ -2,7 +2,7 @@ class Foo {
   public void myMethod() {
     if(something) {
       executeTask();
-    } else if (somethingElse) {          // Noncompliant {{Move this "else" keyword to a new dedicated line.}}
+    } else if (somethingElse) {          // Noncompliant [[sc=7;ec=11]] {{Move this "else" keyword to a new dedicated line.}}
       doSomethingElse();
     }
     else {                               // Compliant

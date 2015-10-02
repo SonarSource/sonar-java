@@ -12,7 +12,7 @@ class Utilities {
   public Utilities() {
   }
 
-  private String getMagicWord() { // Noncompliant {{Make "getMagicWord" a "static" method.}}
+  private String getMagicWord() { // Noncompliant [[sc=18;ec=30]] {{Make "getMagicWord" a "static" method.}}
     return magicWord;
   }
   private static String getMagicWordOK() {

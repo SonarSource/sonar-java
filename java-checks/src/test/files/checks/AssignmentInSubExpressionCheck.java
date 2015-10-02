@@ -3,7 +3,7 @@ class Foo {
     int a = 0;                   // Compliant
     a = 0;                       // Compliant
     System.out.println(a);       // Compliant
-    System.out.println(a = 0);   // Noncompliant {{Extract the assignment out of this expression.}}
+    System.out.println(a = 0);   // Noncompliant [[sc=26;ec=27]] {{Extract the assignment out of this expression.}}
     System.out.println(a += 0);  // Noncompliant {{Extract the assignment out of this expression.}}
     System.out.println(a == 0);  // Compliant
 
