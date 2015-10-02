@@ -19,16 +19,22 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.java.bytecode.asm.AsmClass;
+import org.sonar.java.bytecode.asm.AsmMethod;
+import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.signature.MethodSignatureScanner;
+import org.sonar.java.signature.Parameter;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.api.SourceFile;
 
 import java.util.List;
 
@@ -40,26 +46,47 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class UnusedPrivateMethodCheck extends SubscriptionBaseVisitor {
+public class UnusedPrivateMethodCheck extends BytecodeVisitor {
+
+  private AsmClass asmClass;
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
+  public void visitClass(AsmClass asmClass) {
+    this.asmClass = asmClass;
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    MethodTree node = (MethodTree) tree;
-    Symbol symbol = node.symbol();
-    if (symbol.isPrivate() && symbol.usages().isEmpty()) {
-      if (node.is(Tree.Kind.CONSTRUCTOR)) {
-        if (!node.parameters().isEmpty()) {
-          addIssue(node, "Remove this unused private \"" + node.simpleName().name() + "\" constructor.");
+  public void visitMethod(AsmMethod asmMethod) {
+    if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
+      String messageStr = "Private method '" + asmMethod.getName() + "' is never used.";
+      if ("<init>".equals(asmMethod.getName())) {
+        messageStr = "Private constructor '" + asmClass.getDisplayName() + "(";
+        List<String> params = Lists.newArrayList();
+        for (Parameter param : MethodSignatureScanner.scan(asmMethod.getGenericKey()).getArgumentTypes()) {
+          String paramName = param.getClassName();
+          if (StringUtils.isEmpty(paramName)) {
+            paramName = MethodSignatureScanner.getReadableType(param.getJvmJavaType());
+          }
+          params.add(paramName + (param.isArray() ? "[]" : ""));
         }
-      } else if (!SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name())) {
-        addIssue(node, "Remove this unused private \"" + symbol.name() + "\" method.");
+        messageStr += Joiner.on(",").join(params) + ")' is never used.";
       }
+      CheckMessage message = new CheckMessage(this, messageStr);
+      int line = getMethodLineNumber(asmMethod);
+      if (line > 0) {
+        message.setLine(line);
+      }
+      SourceFile file = getSourceFile(asmClass);
+      file.log(message);
     }
+  }
+
+  private static boolean isPrivateUnused(AsmMethod asmMethod) {
+    return !asmMethod.isUsed() && asmMethod.isPrivate();
+  }
+
+  private static boolean isExcludedFromCheck(AsmMethod asmMethod) {
+    return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
   }
 
 }
