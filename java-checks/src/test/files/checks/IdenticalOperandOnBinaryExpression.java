@@ -2,18 +2,18 @@ class A {
   void foo() {
     boolean a,b;
     if(a == b) { }
-    if(a == a) { } // Noncompliant {{Identical sub-expressions on both sides of operator "=="}}
-    if(a != a) { } // Noncompliant {{Identical sub-expressions on both sides of operator "!="}}
+    if(a == a) { } // Noncompliant [[sc=13;ec=14;secondary=5]] {{Identical sub-expressions on both sides of operator "=="}}
+    if(a != a) { } // Noncompliant [[sc=13;ec=14]] {{Identical sub-expressions on both sides of operator "!="}}
     if(a || a) { } // Noncompliant
     if(a && a) { } // Noncompliant
-    if(a == b || a == b) {} // Noncompliant
+    if(a == b || a == b) {} // Noncompliant [[sc=18;ec=24]]
     if(a || b || a) {} // Noncompliant
     if(a || a || b) {} // Noncompliant
     if(a || b || c || e && a) {}
-    if(a && b && c && e && a) {} // Noncompliant
+    if(a && b && c && e && a) {} // Noncompliant [[sc=28;ec=29]]
     if(b
         || a
-        || a) {} // Noncompliant
+        || a) {} // Noncompliant [[sc=12;ec=13;secondary=15]]
 
     double d = 0.0d;
     float f = 0.0f;

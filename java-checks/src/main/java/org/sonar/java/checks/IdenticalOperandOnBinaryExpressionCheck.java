@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -33,6 +34,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 
 @Rule(
@@ -48,7 +50,7 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
   /**
    * symetric operators : a OP b is equivalent to b OP a
    */
-  private static final List<Tree.Kind> SYMETRIC_OPERATORS = ImmutableList.<Tree.Kind>builder()
+  private static final List<Tree.Kind> SYMMETRIC_OPERATORS = ImmutableList.<Tree.Kind>builder()
     .add(Tree.Kind.EQUAL_TO)
     .add(Tree.Kind.NOT_EQUAL_TO)
     .add(Tree.Kind.AND)
@@ -84,29 +86,38 @@ public class IdenticalOperandOnBinaryExpressionCheck extends SubscriptionBaseVis
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
-    if (hasEquivalentOperand(binaryExpressionTree)) {
-      addIssue(binaryExpressionTree.rightOperand(), "Identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"");
+    ExpressionTree rightOperand = binaryExpressionTree.rightOperand();
+    ExpressionTree equivalentOperand = equivalentOperand(binaryExpressionTree, rightOperand);
+    if (equivalentOperand != null) {
+      reportIssue(
+        rightOperand,
+        "Identical sub-expressions on both sides of operator \"" + binaryExpressionTree.operatorToken().text() + "\"",
+        ImmutableList.of(new JavaFileScannerContext.Location("", equivalentOperand)),
+        null);
     }
   }
 
-  public static boolean hasEquivalentOperand(BinaryExpressionTree tree) {
+  @CheckForNull
+  public static ExpressionTree equivalentOperand(BinaryExpressionTree tree, ExpressionTree rightOperand) {
     if (isNanTest(tree) || isLeftShiftOnOne(tree)) {
-      return false;
+      return null;
     }
-    Tree.Kind binaryKind = tree.kind();
-    return areOperandEquivalent(tree.leftOperand(), tree.rightOperand(), binaryKind);
+    return equivalentOperand(tree.leftOperand(), rightOperand, tree.kind());
   }
 
-  public static boolean areOperandEquivalent(ExpressionTree left, ExpressionTree right, Tree.Kind binaryKind) {
+  public static ExpressionTree equivalentOperand(ExpressionTree left, ExpressionTree right, Tree.Kind binaryKind) {
     if (SyntacticEquivalence.areEquivalent(left, right)) {
-      return true;
+      return left;
     }
-    // Check other operands if operator is symetric.
-    if (SYMETRIC_OPERATORS.contains(binaryKind) && left.is(binaryKind)) {
-      return areOperandEquivalent(((BinaryExpressionTree) left).leftOperand(), right, binaryKind)
-        || areOperandEquivalent(((BinaryExpressionTree) left).rightOperand(), right, binaryKind);
+    // Check other operands if operator is symmetric.
+    if (SYMMETRIC_OPERATORS.contains(binaryKind) && left.is(binaryKind)) {
+      ExpressionTree equivalent = equivalentOperand(((BinaryExpressionTree) left).leftOperand(), right, binaryKind);
+      if (equivalent != null) {
+        return equivalent;
+      }
+      return equivalentOperand(((BinaryExpressionTree) left).rightOperand(), right, binaryKind);
     }
-    return false;
+    return null;
   }
 
   private static boolean isNanTest(BinaryExpressionTree tree) {
