@@ -159,7 +159,7 @@ public class ComplexityVisitor extends SubscriptionVisitor {
       StatementTree last = Iterables.getLast(block.body());
       if (last.is(Tree.Kind.RETURN_STATEMENT)) {
         // minus one because we are going to count the return with +1
-        blame.remove(blame.size() - 1);
+        blame.remove(FirstSyntaxTokenFinder.firstSyntaxToken(last));
       }
     }
   }

@@ -65,7 +65,7 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
     if (size > max) {
       List<JavaFileScannerContext.Location> flow = new ArrayList<>();
       for (Tree element : complexity) {
-        flow.add(new JavaFileScannerContext.Location("Complexity + 1", element));
+        flow.add(new JavaFileScannerContext.Location("+1", element));
       }
       reportIssue(
         methodTree.simpleName(),
