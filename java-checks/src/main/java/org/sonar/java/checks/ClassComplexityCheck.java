@@ -31,7 +31,6 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Rule(
@@ -58,16 +57,15 @@ public class ClassComplexityCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    List<Tree> complexity = context.getComplexityNodes(tree);
-    int size = complexity.size();
+    int size = context.getComplexityNodes(tree).size();
     if (size > max) {
-      List<JavaFileScannerContext.Location> flow = new ArrayList<>();
-      for (Tree element : complexity) {
-        flow.add(new JavaFileScannerContext.Location("Complexity + 1", element));
-      }
       ClassTree classTree = (ClassTree) tree;
       Tree report = classTree.simpleName() == null ? classTree.openBraceToken() : classTree.simpleName();
-      reportIssue(report, "The Cyclomatic Complexity of this class is " + size + " which is greater than " + max + " authorized.", flow, size - max);
+      reportIssue(
+        report,
+        "The Cyclomatic Complexity of this class is " + size + " which is greater than " + max + " authorized.",
+        ImmutableList.<JavaFileScannerContext.Location>of(),
+        size - max);
     }
   }
 
