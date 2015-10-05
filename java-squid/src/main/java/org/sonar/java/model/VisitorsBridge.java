@@ -329,12 +329,22 @@ public class VisitorsBridge {
     }
 
     @Override
-    public List<Tree> getComplexity(Tree tree) {
+    public int getComplexity(Tree tree) {
+      return getComplexityNodes(tree).size();
+    }
+
+    @Override
+    public int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
+      return getMethodComplexityNodes(enclosingClass, methodTree).size();
+    }
+
+    @Override
+    public List<Tree> getComplexityNodes(Tree tree) {
       return complexityVisitor.scan(tree);
     }
 
     @Override
-    public List<Tree> getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree) {
+    public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
       return complexityVisitor.scan(enclosingClass, methodTree);
     }
 

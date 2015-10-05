@@ -99,7 +99,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     context.addNoSonarLines(commentLinesVisitor.noSonarLines());
     super.scanFile(context);
     //leave file.
-    int fileComplexity = context.getComplexity(context.getTree()).size();
+    int fileComplexity = context.getComplexityNodes(context.getTree()).size();
     saveMetricOnFile(CoreMetrics.CLASSES, classes);
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
     saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
@@ -145,7 +145,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
         accessors++;
       } else {
         methods++;
-        int methodComplexity = context.getMethodComplexity(classTrees.peek(), methodTree).size();
+        int methodComplexity = context.getMethodComplexityNodes(classTrees.peek(), methodTree).size();
         methodComplexityDistribution.add(methodComplexity);
         complexityInMethods += methodComplexity;
       }

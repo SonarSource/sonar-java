@@ -54,10 +54,26 @@ public interface JavaFileScannerContext {
 
   File getFile();
 
-  List<Tree> getComplexity(Tree tree);
+  /**
+   * @deprecated As of release 3.6, replaced by {@link #getComplexityNodes(Tree)}
+   */
+  @Deprecated
+  int getComplexity(Tree tree);
 
-  List<Tree> getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree);
+  /**
+   * @deprecated As of release 3.6, replaced by {@link #getMethodComplexityNodes(ClassTree, MethodTree)}
+   */
+  @Deprecated
+  int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree);
 
+  List<Tree> getComplexityNodes(Tree tree);
+
+  List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree);
+
+  /**
+   * @deprecated As of release 3.6, this method was not intended on a public interface
+   */
+  @Deprecated
   void addNoSonarLines(Set<Integer> lines);
 
   void reportIssue(JavaCheck javaCheck, Tree tree, String message);

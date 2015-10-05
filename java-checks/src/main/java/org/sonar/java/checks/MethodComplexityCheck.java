@@ -60,7 +60,7 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    List<Tree> complexity = context.getComplexity(methodTree);
+    List<Tree> complexity = context.getComplexityNodes(methodTree);
     int size = complexity.size();
     if (size > max) {
       List<JavaFileScannerContext.Location> flow = new ArrayList<>();
