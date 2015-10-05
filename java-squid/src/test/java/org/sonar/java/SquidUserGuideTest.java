@@ -27,8 +27,10 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
@@ -44,9 +46,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SquidUserGuideTest {
 
@@ -61,12 +65,13 @@ public class SquidUserGuideTest {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     context = mock(SensorContext.class);
+    when(context.getResource(any(InputPath.class))).thenReturn(mock(Resource.class));
     DefaultFileSystem fs = new DefaultFileSystem(srcDir);
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
       fs.add(new DefaultInputFile(file.getPath()));
     }
-    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods);
+    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = new JavaResourceLocator() {
       public Map<String, String> sourceFileCache = Maps.newHashMap();
 

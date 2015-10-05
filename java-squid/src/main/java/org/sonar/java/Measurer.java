@@ -25,6 +25,7 @@ import com.google.common.io.Files;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
@@ -56,6 +57,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private final FileSystem fs;
   private final SensorContext sensorContext;
   private final boolean separateAccessorsFromMethods;
+  private final NoSonarFilter noSonarFilter;
   private InputFile sonarFile;
   private int methods;
   private int accessors;
@@ -66,10 +68,11 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private Charset charset;
   private double classes;
 
-  public Measurer(FileSystem fs, SensorContext context, boolean separateAccessorsFromMethods) {
+  public Measurer(FileSystem fs, SensorContext context, boolean separateAccessorsFromMethods, NoSonarFilter noSonarFilter) {
     this.fs = fs;
     this.sensorContext = context;
     this.separateAccessorsFromMethods = separateAccessorsFromMethods;
+    this.noSonarFilter = noSonarFilter;
   }
 
   @Override
@@ -96,7 +99,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     commentLinesVisitor.analyzeCommentLines(context.getTree());
-    context.addNoSonarLines(commentLinesVisitor.noSonarLines());
+    noSonarFilter.addComponent(sensorContext.getResource(sonarFile).getEffectiveKey(), commentLinesVisitor.noSonarLines());
     super.scanFile(context);
     //leave file.
     int fileComplexity = context.getComplexityNodes(context.getTree()).size();

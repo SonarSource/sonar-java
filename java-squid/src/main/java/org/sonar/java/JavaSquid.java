@@ -48,6 +48,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class JavaSquid implements SourceCodeSearchEngine {
@@ -72,10 +73,10 @@ public class JavaSquid implements SourceCodeSearchEngine {
                    JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
 
 
-    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Arrays.asList(javaResourceLocator), Arrays.asList(visitors));
+    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Collections.singletonList(javaResourceLocator), Arrays.asList(visitors));
     if (measurer != null) {
-      Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor) measurer);
-      codeVisitors = Iterables.concat(codeVisitors, measurers);
+      Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
+      codeVisitors = Iterables.concat(measurers, codeVisitors);
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();

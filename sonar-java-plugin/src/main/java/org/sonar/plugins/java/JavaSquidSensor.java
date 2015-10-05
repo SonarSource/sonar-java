@@ -28,9 +28,8 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
-import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
@@ -56,12 +55,10 @@ public class JavaSquidSensor implements Sensor {
   private final FileSystem fs;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
-  private final RulesProfile profile;
   private final NoSonarFilter noSonarFilter;
 
-  public JavaSquidSensor(RulesProfile profile, JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
-    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
-    this.profile = profile;
+  public JavaSquidSensor(JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
+                         DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
     this.noSonarFilter = noSonarFilter;
     this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
@@ -81,10 +78,10 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     JavaConfiguration configuration = createConfiguration();
-    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods());
+    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, sonarComponents, javaResourceLocator.getResourceMapping(), noSonarFilter, profile);
+    new Bridges(squid, settings).save(context, project, sonarComponents, javaResourceLocator.getResourceMapping());
   }
 
   private Iterable<File> getSourceFiles() {

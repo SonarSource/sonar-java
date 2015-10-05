@@ -29,11 +29,11 @@ import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.Checks;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
+import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
@@ -66,7 +66,7 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(mock(RulesProfile.class), new JavaClasspath(mock(Project.class),
+    sensor = new JavaSquidSensor(new JavaClasspath(mock(Project.class),
       new Settings(), new DefaultFileSystem(null)), mock(SonarComponents.class), fileSystem,
       mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
   }
@@ -93,7 +93,7 @@ public class JavaSquidSensorTest {
 
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
-    JavaSquidSensor jss = new JavaSquidSensor(qp, javaClasspath, sonarComponents, fs, javaResourceLocator, settings, mock(NoSonarFilter.class));
+    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, mock(NoSonarFilter.class));
     SensorContext context = mock(SensorContext.class);
     when(context.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java"));
 

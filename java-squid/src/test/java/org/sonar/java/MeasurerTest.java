@@ -26,18 +26,23 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.Measure;
+import org.sonar.api.resources.Resource;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
@@ -136,8 +141,10 @@ public class MeasurerTest {
    */
   private void checkMetric(boolean separateAccessorsFromMethods, File baseDir, String filename, String metric, double expectedValue) {
     context = mock(SensorContext.class);
-    fs.add(new DefaultInputFile(filename));
-    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods);
+    DefaultInputFile inputFile = new DefaultInputFile(filename);
+    fs.add(inputFile);
+    when(context.getResource(any(InputPath.class))).thenReturn(mock(Resource.class));
+    Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
     squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
