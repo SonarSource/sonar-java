@@ -74,11 +74,12 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
     for (CaseGroupTree caseGroupTree : cases) {
       index++;
       for (int i = index; i < cases.size(); i++) {
-        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), cases.get(i).body())) {
-          CaseLabelTree labelToReport = getLastLabel(cases.get(i));
+        CaseGroupTree current = cases.get(i);
+        if (SyntacticEquivalence.areEquivalent(caseGroupTree.body(), current.body())) {
+          CaseLabelTree labelToReport = getLastLabel(current);
           if (!reportedLabels.contains(labelToReport)) {
             reportedLabels.add(labelToReport);
-            createIssue(labelToReport, "case", caseGroupTree);
+            createIssue(current, issueMessage("case", caseGroupTree), caseGroupTree);
           }
         }
       }
@@ -91,18 +92,18 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
     while (elseStatement != null && elseStatement.is(Tree.Kind.IF_STATEMENT)) {
       IfStatementTree ifStatement = (IfStatementTree) elseStatement;
       if (areIfBlocksSyntacticalEquivalent(thenStatement, ifStatement.thenStatement())) {
-        createIssue(ifStatement.thenStatement(), "branch", thenStatement);
+        createIssue(ifStatement.thenStatement(), issueMessage("branch", thenStatement), thenStatement);
         break;
       }
       elseStatement = ifStatement.elseStatement();
     }
     if (elseStatement != null && areIfBlocksSyntacticalEquivalent(thenStatement, elseStatement)) {
-      createIssue(elseStatement, "branch", thenStatement);
+      createIssue(elseStatement, issueMessage("branch", thenStatement), thenStatement);
     }
   }
 
-  private void createIssue(Tree node, String type, Tree secondary) {
-    reportIssue(node, issueMessage(type, secondary), ImmutableList.of(new JavaFileScannerContext.Location("Duplicated block", secondary)), null);
+  private void createIssue(Tree node, String message, Tree secondary) {
+    reportIssue(node, message, ImmutableList.of(new JavaFileScannerContext.Location("Original", secondary)), null);
   }
 
   private static boolean areIfBlocksSyntacticalEquivalent(StatementTree first, StatementTree second) {
@@ -119,7 +120,7 @@ public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {
 
   private void checkConditionalExpression(ConditionalExpressionTree node) {
     if (SyntacticEquivalence.areEquivalent(ExpressionsHelper.skipParentheses(node.trueExpression()), ExpressionsHelper.skipParentheses(node.falseExpression()))) {
-      reportIssue(node.questionToken(), "This conditional operation returns the same value whether the condition is \"true\" or \"false\".");
+      createIssue(node.falseExpression(), "This conditional operation returns the same value whether the condition is \"true\" or \"false\".", node.trueExpression());
     }
   }
 
