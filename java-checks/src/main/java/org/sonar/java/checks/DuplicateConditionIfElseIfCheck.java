@@ -66,7 +66,7 @@ public class DuplicateConditionIfElseIfCheck extends BaseTreeVisitor implements 
           this,
           ifStatement.condition(),
           "This branch can not be reached because the condition duplicates a previous condition in the same sequence of \"if/else if\" statements",
-          ImmutableList.of(new JavaFileScannerContext.Location("Duplicated condition", condition)),
+          ImmutableList.of(new JavaFileScannerContext.Location("Original", condition)),
           null
         );
       }
