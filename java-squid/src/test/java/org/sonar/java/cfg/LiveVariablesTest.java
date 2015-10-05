@@ -21,6 +21,8 @@ package org.sonar.java.cfg;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
+import java.io.File;
+import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
@@ -28,9 +30,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import java.io.File;
-import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -75,8 +74,8 @@ public class LiveVariablesTest {
   public void test_while_loop()  {
     CFG cfg = buildCFG("void foo(boolean condition) { while (condition) { int x = 0; use(x); x = 1; /* x should not be live here*/}}");
     LiveVariables liveVariables = LiveVariables.analyze(cfg);
-    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
-    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(4))).hasSize(1);
+    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(1))).hasSize(1);
+    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
   }
 
   @Test
@@ -116,7 +115,7 @@ public class LiveVariablesTest {
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
   }
-  
-  
+
+
 
 }
