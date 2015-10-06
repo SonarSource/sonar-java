@@ -57,11 +57,16 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareStatement").withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareCall").withNoParameterConstraint());
 
+  private static final MethodMatcher ENTITY_MANAGER_CREATE_NATIVE_QUERY_MATCHER = MethodMatcher.create()
+    .typeDefinition("javax.persistence.EntityManager")
+    .name("createNativeQuery")
+    .withNoParameterConstraint();
+
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodTree = (MethodInvocationTree) tree;
     boolean isHibernateCall = isHibernateCall(methodTree);
-    if (isHibernateCall || isExecuteQueryOrPrepareStatement(methodTree)) {
+    if (isHibernateCall || isExecuteQueryOrPrepareStatement(methodTree) || isEntityManagerCreateNativeQuery(methodTree)) {
       //We want to check the argument for the three methods.
       ExpressionTree arg = methodTree.arguments().get(0);
       parameterName = "";
@@ -81,5 +86,9 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
 
   private static boolean isHibernateCall(MethodInvocationTree methodTree) {
     return HIBERNATE_SESSION_CREATE_QUERY_MATCHER.matches(methodTree);
+  }
+
+  private static boolean isEntityManagerCreateNativeQuery(MethodInvocationTree methodTree) {
+    return ENTITY_MANAGER_CREATE_NATIVE_QUERY_MATCHER.matches(methodTree);
   }
 }

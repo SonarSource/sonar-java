@@ -4,9 +4,12 @@ import java.sql.DriverManager;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 import org.hibernate.Session;
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+
 class A {
   private static final String CONSTANT = "SELECT * FROM TABLE";
-  public void method(String param, String param2) {
+  public void method(String param, String param2, EntityManager entityManager) {
     try {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
@@ -67,6 +70,9 @@ class A {
       session.createQuery(query); // Noncompliant {{Use Hibernate's parameter binding instead of concatenation.}}
       conn.prepareStatement(param);
       conn.prepareStatement(sqlQuery + "plop");
+
+      String sql = "SELECT lastname, firstname FROM employee where uid = '" + param + "'";
+      entityManager.createNativeQuery(sql); // Noncompliant {{"param" is provided externally to the method and not sanitized before use.}}
     } catch (Exception e) {
     }
   }
