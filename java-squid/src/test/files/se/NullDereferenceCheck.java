@@ -1,5 +1,7 @@
 @SomeAnnotation(name = value) package javax.annotation;
 
+import java.lang.Object;
+import java.util.ArrayList;
 import java.util.List;
 
 @interface CheckForNull {
@@ -358,6 +360,32 @@ class NullPointerTest {
     head.hashCode();
     value.hashCode();
   }
+  
+  public void testForEachLoopGood() {
+	  List<String> foos = collectFoos();
+	  for (String foo : foos) {
+		foo.toString();
+	}
+  }
+  
+  public void testPrimitiveForEachLoopGood() {
+	  boolean[] foos = collectFoos();
+	  for (boolean foo : foos) {
+		if (foo) {
+			println("true");
+		}
+	}
+  }
+
+  public static int testPrimitiveForEachLoopGuava(boolean... values) {
+	    int count = 0;
+	    for (boolean value : values) {
+	      if (value) {
+	        count++;
+	      }
+	    }
+	    return count;
+	  }
 
   public void testForEachLoopGood() {
     List<String> foos = collectFoos();
