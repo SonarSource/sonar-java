@@ -23,11 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -88,16 +87,6 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
   }
 
   private static String methodName(MethodInvocationTree mit) {
-    return getIdentifier(mit).name();
-  }
-
-  private static IdentifierTree getIdentifier(MethodInvocationTree mit) {
-    IdentifierTree id;
-    if (mit.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-      id = (IdentifierTree) mit.methodSelect();
-    } else {
-      id = ((MemberSelectExpressionTree) mit.methodSelect()).identifier();
-    }
-    return id;
+    return MethodsHelper.methodName(mit).name();
   }
 }

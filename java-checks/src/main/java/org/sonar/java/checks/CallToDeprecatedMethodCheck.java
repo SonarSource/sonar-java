@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -66,7 +67,7 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
       if (tree.is(Tree.Kind.NEW_CLASS)) {
         reported = ((NewClassTree) tree).identifier();
       } else {
-        reported = ((MethodInvocationTree) tree).methodSelect();
+        reported = MethodsHelper.methodName((MethodInvocationTree) tree);
       }
       reportIssue(reported, message);
     }

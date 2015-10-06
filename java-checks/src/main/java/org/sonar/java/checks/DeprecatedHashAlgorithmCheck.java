@@ -26,14 +26,13 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -99,7 +98,7 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    String methodName = methodName(mit);
+    String methodName = MethodsHelper.methodName(mit).name();
     String algorithm = ALGORITHM_BY_METHOD_NAME.get(methodName);
     if (algorithm == null) {
       algorithm = algorithm(mit.arguments().get(0));
@@ -110,17 +109,6 @@ public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
       String msgAlgo = isSha1 ? "SHA-1" : algorithm;
       addIssue(mit, "Use a stronger hashing algorithm than " + msgAlgo + ".");
     }
-  }
-
-  private static String methodName(MethodInvocationTree mit) {
-    String name = null;
-    ExpressionTree methodSelect = mit.methodSelect();
-    if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-      name = ((MemberSelectExpressionTree) methodSelect).identifier().name();
-    } else if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
-      name = ((IdentifierTree) methodSelect).name();
-    }
-    return name;
   }
 
   private static String algorithm(ExpressionTree invocationArgument) {
