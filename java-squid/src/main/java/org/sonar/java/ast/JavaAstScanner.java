@@ -29,6 +29,7 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.VisitorsBridge;
 import com.sonar.sslr.api.typed.ActionParser;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -129,8 +130,11 @@ public class JavaAstScanner {
 
   /**
    * Helper method for testing checks without having to deploy them on a Sonar instance.
+   *
+   * @deprecated  As of release 3.6, should use {@link org.sonar.java.checks.verifier.JavaCheckVerifier#verify(String filename, JavaFileScanner check)} for rules unit tests.
    */
   @VisibleForTesting
+  @Deprecated
   public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
