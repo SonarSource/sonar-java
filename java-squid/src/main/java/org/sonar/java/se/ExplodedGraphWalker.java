@@ -143,7 +143,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
       if (programPosition.i < programPosition.block.elements().size()) {
         // process block element
-        visit(programPosition.block.elements().get(programPosition.i));
+        visit(programPosition.block.elements().get(programPosition.i), programPosition.block.terminator());
       } else if (programPosition.block.terminator() == null) {
         // process block exit, which is unconditional jump such as goto-statement or return-statement
         handleBlockExit(programPosition);
@@ -165,7 +165,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     constraintManager = null;
   }
 
-  private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
+private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
     CFG.Block block = programPosition.block;
     if (block.terminator() != null) {
       switch (block.terminator().kind()) {
@@ -226,7 +226,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   }
 
-  private void visit(Tree tree) {
+  private void visit(Tree tree, Tree terminator) {
     LOG.debug("visiting node "+tree.kind().name()+ " at line "+ ((JavaTree) tree).getLine());
     switch (tree.kind()) {
       case LABELED_STATEMENT:
@@ -237,23 +237,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case VARIABLE:
         VariableTree variableTree = (VariableTree) tree;
         ExpressionTree initializer = variableTree.initializer();
-        if (variableTree.type().symbolType().isPrimitive()) {
-          if(initializer == null) {
-            if(variableTree.type().symbolType().is("boolean")) {
-              programState = put(programState, variableTree.symbol(), SymbolicValue.FALSE_LITERAL);
-            }
-          } else {
-            SymbolicValue val = constraintManager.eval(programState, initializer);
-            programState = put(programState, variableTree.symbol(), val);
-          }
-        } else {
-          if (initializer == null) {
-            programState = put(programState, variableTree.symbol(), SymbolicValue.NULL_LITERAL);
-          } else {
-            SymbolicValue val = constraintManager.eval(programState, initializer);
-            programState = put(programState, variableTree.symbol(), val);
-          }
-        }
+        if (initializer == null) {
+        	if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
+                assignForEachValue(variableTree);
+			} else if(variableTree.type().symbolType().is("boolean")) {
+                assignFalseValue(variableTree);
+              } else if (!variableTree.type().symbolType().isPrimitive()) {
+  				assignNullValue(variableTree);
+              }
+		} else {
+            assignValueFromInitializer(variableTree, initializer);
+		}
         break;
       case ASSIGNMENT:
         AssignmentExpressionTree assignmentExpressionTree = ((AssignmentExpressionTree) tree);
@@ -267,6 +261,24 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     checkerDispatcher.executeCheckPreStatement(tree);
   }
+
+private void assignNullValue(VariableTree variableTree) {
+	programState = put(programState, variableTree.symbol(), SymbolicValue.NULL_LITERAL);
+}
+
+private void assignForEachValue(VariableTree variableTree) {
+	SymbolicValue val = constraintManager.createSymbolicValue(variableTree);
+	  programState = put(programState, variableTree.symbol(), val);
+}
+
+private void assignFalseValue(VariableTree variableTree) {
+	programState = put(programState, variableTree.symbol(), SymbolicValue.FALSE_LITERAL);
+}
+
+private void assignValueFromInitializer(VariableTree variableTree, ExpressionTree initializer) {
+	SymbolicValue val = constraintManager.eval(programState, initializer);
+	programState = put(programState, variableTree.symbol(), val);
+}
 
   static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
     SymbolicValue symbolicValue = programState.values.get(symbol);
