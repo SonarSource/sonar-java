@@ -87,6 +87,7 @@ public class JavaSquidSensorTest {
     fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage("java"));
     Project project = mock(Project.class);
     JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
+    RuleKey ruleKey = RuleKey.of("squid", "S00100");
 
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
@@ -101,16 +102,17 @@ public class JavaSquidSensorTest {
     Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
     when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
     Issue issue = mock(Issue.class);
-    when(issueBuilder.ruleKey(Mockito.any(RuleKey.class))).thenReturn(issueBuilder);
+    when(issueBuilder.ruleKey(ruleKey)).thenReturn(issueBuilder);
     when(issueBuilder.line(Mockito.anyInt())).thenReturn(issueBuilder);
     when(issueBuilder.message(Mockito.anyString())).thenReturn(issueBuilder);
     when(issueBuilder.effortToFix(Mockito.anyDouble())).thenReturn(issueBuilder);
     when(issueBuilder.build()).thenReturn(issue);
     when(sonarComponents.issuableFor(any(File.class))).thenReturn(issuable);
+    when(sonarComponents.getRuleKey(any(JavaCheck.class))).thenReturn(ruleKey);
 
     jss.analyse(project, context);
 
-    verify(issueBuilder, times(3)).ruleKey(RuleKey.of("squid", "S00100"));
+    verify(issueBuilder, times(3)).ruleKey(ruleKey);
     verify(issueBuilder, times(3)).message("Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.");
     verify(issuable, times(3)).addIssue(issue);
 

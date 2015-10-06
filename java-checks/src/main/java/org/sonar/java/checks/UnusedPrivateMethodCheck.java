@@ -34,8 +34,6 @@ import org.sonar.java.tag.Tag;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
 
 import java.util.List;
 
@@ -72,13 +70,8 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
         }
         messageStr += Joiner.on(",").join(params) + ")' is never used.";
       }
-      CheckMessage message = new CheckMessage(this, messageStr);
       int line = getMethodLineNumber(asmMethod);
-      if (line > 0) {
-        message.setLine(line);
-      }
-      SourceFile file = getSourceFile(asmClass);
-      file.log(message);
+      getContext().reportIssue(this, getSourceFile(asmClass), messageStr, line > 0 ? line : 0);
     }
   }
 

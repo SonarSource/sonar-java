@@ -28,8 +28,6 @@ import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.tag.Tag;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceFile;
 
 @Rule(
   key = "UnusedProtectedMethod",
@@ -50,13 +48,8 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
   @Override
   public void visitMethod(AsmMethod asmMethod) {
     if (isUnusedNonOverridenProtectedMethod(asmMethod) && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)) {
-      CheckMessage message = new CheckMessage(this, "Protected method '" + asmMethod.getName() + "(...)' is never used.");
-      int line = getMethodLineNumber(asmMethod);
-      if (line > 0) {
-        message.setLine(line);
-      }
-      SourceFile file = getSourceFile(asmClass);
-      file.log(message);
+      int methodLineNumber = getMethodLineNumber(asmMethod);
+      getContext().reportIssue(this, getSourceFile(asmClass), "Protected method '" + asmMethod.getName() + "(...)' is never used.", methodLineNumber > 0 ? methodLineNumber : 0);
     }
   }
 

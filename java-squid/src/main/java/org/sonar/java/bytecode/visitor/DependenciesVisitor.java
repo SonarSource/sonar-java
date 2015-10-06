@@ -24,7 +24,6 @@ import org.sonar.api.resources.Resource;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
-import org.sonar.plugins.java.api.JavaResourceLocator;
 
 import javax.annotation.Nullable;
 
@@ -33,16 +32,10 @@ public class DependenciesVisitor extends BytecodeVisitor {
   @Nullable
   private Resource fromResource;
   private final DirectedGraph<Resource, Dependency> graph;
-  private ResourceMapping resourceMapping;
 
-  public DependenciesVisitor(DirectedGraph<Resource, Dependency> graph) {
+  public DependenciesVisitor(BytecodeContext bytecodeContext, DirectedGraph<Resource, Dependency> graph) {
+    setContext(bytecodeContext);
     this.graph = graph;
-  }
-
-  @Override
-  public void setJavaResourceLocator(JavaResourceLocator javaResourceLocator) {
-    resourceMapping = javaResourceLocator.getResourceMapping();
-    super.setJavaResourceLocator(javaResourceLocator);
   }
 
   @Override
@@ -70,6 +63,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
         dependency.setWeight(1);
         graph.addEdge(dependency);
       }
+      ResourceMapping resourceMapping = getContext().getJavaResourceLocator().getResourceMapping();
       if (subDependency != null && !resourceMapping.getSubDependencies(dependency).contains(subDependency)) {
         resourceMapping.addSubDependency(dependency, subDependency);
         dependency.setWeight(dependency.getWeight() + 1);
@@ -84,7 +78,7 @@ public class DependenciesVisitor extends BytecodeVisitor {
   }
 
   private Resource getResource(AsmClass asmClass) {
-    return javaResourceLocator.findResourceByClassName(asmClass.getInternalName());
+    return getContext().getJavaResourceLocator().findResourceByClassName(asmClass.getInternalName());
   }
 
 }

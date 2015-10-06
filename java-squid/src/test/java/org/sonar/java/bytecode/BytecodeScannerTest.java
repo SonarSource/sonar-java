@@ -26,8 +26,8 @@ import org.junit.rules.ExpectedException;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmClassProvider;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.indexer.SquidIndex;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -44,11 +44,10 @@ public class BytecodeScannerTest {
   public void rethrow_exception_when_error_during_analysis() throws Exception {
     String className = "com.pack.MyClass";
     JavaResourceLocator javaResourceLocator = null;
-    SquidIndex squidIndex = null;
     AsmClassProvider asmProvider = mock(AsmClassProvider.class);
     AsmClass asmClass = mock(AsmClass.class);
     when(asmProvider.getClass(anyString(), any(AsmClassProvider.DETAIL_LEVEL.class))).thenReturn(asmClass);
-    BytecodeScanner bytecodeScanner = new BytecodeScanner(squidIndex, javaResourceLocator);
+    BytecodeScanner bytecodeScanner = new BytecodeScanner(new DefaultBytecodeContext(null));
     bytecodeScanner.accept(new Visitor());
     thrown.expectMessage("Unable to analyze .class file com.pack.MyClass");
     bytecodeScanner.scanClasses(Lists.newArrayList(className), asmProvider);

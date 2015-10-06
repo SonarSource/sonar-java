@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode.visitor;
 
+import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmEdge;
 import org.sonar.java.bytecode.asm.AsmField;
@@ -27,16 +28,11 @@ import org.sonar.java.signature.MethodSignature;
 import org.sonar.java.signature.MethodSignaturePrinter;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
 
 public abstract class BytecodeVisitor implements JavaCheck {
-
-  SquidIndex index;
-  JavaResourceLocator javaResourceLocator;
+  BytecodeContext context;
 
   public void visitClass(AsmClass asmClass) {
   }
@@ -54,30 +50,31 @@ public abstract class BytecodeVisitor implements JavaCheck {
   public void leaveClass(AsmClass asmClass) {
   }
 
+  public void setContext(BytecodeContext context) {
+    this.context = context;
+  }
+
+  protected BytecodeContext getContext() {
+    return context;
+  }
+
   @Nullable
-  protected final SourceFile getSourceFile(AsmClass asmClass) {
-    String sourceFileKey = javaResourceLocator.findSourceFileKeyByClassName(asmClass.getInternalName());
-    if (sourceFileKey == null) {
+  protected final Resource getSourceFile(AsmClass asmClass) {
+    Resource resource = context.getJavaResourceLocator().findResourceByClassName(asmClass.getInternalName());
+    if (resource == null) {
       return null;
     }
-    return (SourceFile) index.search(sourceFileKey);
+    return resource;
   }
 
   protected final int getMethodLineNumber(AsmMethod asmMethod) {
     MethodSignature methodSignature = MethodSignatureScanner.scan(asmMethod.getGenericKey());
     AsmClass asmClass = asmMethod.getParent();
-    Integer result = javaResourceLocator.getMethodStartLine(asmClass.getInternalName() + "#" + MethodSignaturePrinter.print(methodSignature));
+    Integer result = context.getJavaResourceLocator().getMethodStartLine(asmClass.getInternalName() + "#" + MethodSignaturePrinter.print(methodSignature));
     if (result != null) {
       return result;
     }
     return -1;
   }
 
-  public final void setSquidIndex(SquidIndex index) {
-    this.index = index;
-  }
-
-  public void setJavaResourceLocator(JavaResourceLocator javaResourceLocator) {
-    this.javaResourceLocator = javaResourceLocator;
-  }
 }
