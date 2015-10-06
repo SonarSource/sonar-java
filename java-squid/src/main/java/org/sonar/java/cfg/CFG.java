@@ -107,18 +107,53 @@ public class CFG {
   }
 
   public static class Block {
-    int id;
+
+    private int id;
     private final List<Tree> elements = new ArrayList<>();
     private final Set<Block> successors = new HashSet<>();
     private final Set<Block> predecessors = new HashSet<>();
+    private Block trueBlock;
+    private Block falseBlock;
     private Tree terminator;
 
     public Block(int id) {
       this.id = id;
     }
 
+    public int id() {
+      return id;
+    }
+
     public List<Tree> elements() {
       return Lists.reverse(elements);
+    }
+
+    public Block trueBlock() {
+      return trueBlock;
+    }
+
+    public Block falseBlock() {
+      return falseBlock;
+    }
+
+    void addSuccessor(Block successor) {
+      successors.add(successor);
+    }
+
+    public void addTrueSuccessor(Block successor) {
+      if (trueBlock != null) {
+        throw new IllegalStateException("Attempt to re-assign a true successor");
+      }
+      successors.add(successor);
+      trueBlock = successor;
+    }
+
+    public void addFalseSuccessor(Block successor) {
+      if (falseBlock != null) {
+        throw new IllegalStateException("Attempt to re-assign a false successor");
+      }
+      successors.add(successor);
+      falseBlock = successor;
     }
 
     public Set<Block> predecessors() {
@@ -136,6 +171,24 @@ public class CFG {
 
     public boolean notActive() {
       return terminator == null && elements.isEmpty();
+    }
+
+    private void prune(Block inactiveBlock) {
+      if (inactiveBlock == trueBlock) {
+        if (inactiveBlock.successors.size() != 1) {
+          throw new IllegalStateException("True successor must be replaced by a uniuqe successor!");
+        }
+        trueBlock = inactiveBlock.successors.iterator().next();
+      }
+      if (inactiveBlock == falseBlock) {
+        if (inactiveBlock.successors.size() != 1) {
+          throw new IllegalStateException("True successor must be replaced by a uniuqe successor!");
+        }
+        falseBlock = inactiveBlock.successors.iterator().next();
+      }
+      if (successors.remove(inactiveBlock)) {
+        successors.addAll(inactiveBlock.successors);
+      }
     }
 
     @Override
@@ -233,9 +286,7 @@ public class CFG {
   private void removeInactiveBlocks(List<Block> inactiveBlocks) {
     for (Block inactiveBlock : inactiveBlocks) {
       for (Block block : blocks) {
-        if (block.successors().remove(inactiveBlock)) {
-          block.successors().addAll(inactiveBlock.successors);
-        }
+        block.prune(inactiveBlock);
       }
     }
     blocks.removeAll(inactiveBlocks);
@@ -243,7 +294,7 @@ public class CFG {
 
   private Block createBlock(Block successor) {
     Block result = createBlock();
-    result.successors.add(successor);
+    result.addSuccessor(successor);
     return result;
   }
 
@@ -556,7 +607,7 @@ public class CFG {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
-        switches.getLast().successors.add(currentBlock);
+        switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.
           currentBlock = createBlock(currentBlock);
@@ -607,7 +658,7 @@ public class CFG {
     // process condition
     currentBlock = createBranch(s, bodyBlock, falseBranch);
     buildCondition(s.condition(), bodyBlock, falseBranch);
-    loopback.successors.add(currentBlock);
+    loopback.addSuccessor(currentBlock);
     currentBlock = createBlock(currentBlock);
   }
 
@@ -625,7 +676,7 @@ public class CFG {
     build(s.statement());
     breakTargets.removeLast();
     continueTargets.removeLast();
-    loopback.successors.add(currentBlock);
+    loopback.addSuccessor(currentBlock);
     currentBlock = createBlock(currentBlock);
   }
 
@@ -640,7 +691,7 @@ public class CFG {
     breakTargets.removeLast();
     continueTargets.removeLast();
     currentBlock = createBranch(tree, currentBlock, afterLoop);
-    loopback.successors.add(currentBlock);
+    loopback.addSuccessor(currentBlock);
     build(tree.variable());
     build(tree.expression());
     currentBlock = createBlock(currentBlock);
@@ -670,7 +721,7 @@ public class CFG {
     } else {
       currentBlock = createUnconditionalJump(tree, body);
     }
-    updateBlock.successors.add(currentBlock);
+    updateBlock.addSuccessor(currentBlock);
     // process init
     currentBlock = createBlock(currentBlock);
     for (StatementTree init : Lists.reverse(tree.initializer())) {
@@ -755,7 +806,7 @@ public class CFG {
     Block result = createBlock();
     result.terminator = terminator;
     if (target != null) {
-      result.successors.add(target);
+      result.addSuccessor(target);
     }
     return result;
   }
@@ -799,8 +850,8 @@ public class CFG {
   private Block createBranch(Tree terminator, Block trueBranch, Block falseBranch) {
     Block result = createBlock();
     result.terminator = terminator;
-    result.successors.add(trueBranch);
-    result.successors.add(falseBranch);
+    result.addTrueSuccessor(trueBranch);
+    result.addFalseSuccessor(falseBranch);
     return result;
   }
 
