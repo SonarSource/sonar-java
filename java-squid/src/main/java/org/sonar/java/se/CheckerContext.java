@@ -17,15 +17,24 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se;
 
-import org.junit.Test;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class UselessConditionCheckTest {
+public interface CheckerContext {
 
-  @Test
-  public void test() {
-//    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
-  }
 
+  Object createSink();
+
+  SymbolicValue getVal(Tree expression);
+
+  void addIssue(Tree tree, String ruleKey, String message);
+
+  void addTransition(ProgramState state);
+
+  ProgramState getState();
+
+  ProgramState setConstraint(SymbolicValue val, ConstraintManager.NullConstraint nl);
+
+  boolean isNull(SymbolicValue val);
 }

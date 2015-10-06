@@ -17,15 +17,8 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se;
 
-import org.junit.Test;
-
-public class UselessConditionCheckTest {
-
-  @Test
-  public void test() {
-//    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
-  }
+public class SEGraphTest {
 
 }

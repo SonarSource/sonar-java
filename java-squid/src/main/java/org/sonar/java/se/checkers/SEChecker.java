@@ -17,15 +17,22 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se.checkers;
 
-import org.junit.Test;
+import org.sonar.java.se.CheckerContext;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class UselessConditionCheckTest {
+public abstract class SEChecker {
 
-  @Test
-  public void test() {
-//    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
+  public void init(){}
+
+  public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    //Default transition
+    context.addTransition(context.getState());
+  }
+
+  public void checkEndOfExecution(CheckerContext context) {
+    //By default do nothing
   }
 
 }

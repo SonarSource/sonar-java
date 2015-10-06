@@ -57,8 +57,12 @@ public class ChecksBridge {
       if (issuable != null) {
         for (CheckMessage checkMessage : messages) {
           Object check = checkMessage.getCheck();
-
-          RuleKey ruleKey = getRuleKey((JavaCheck) check);
+          RuleKey ruleKey;
+          if(check instanceof String) {
+            ruleKey = RuleKey.parse(((String) check));
+          } else {
+            ruleKey = getRuleKey((JavaCheck) check);
+          }
           if (ruleKey == null) {
             throw new IllegalStateException("Cannot find rule key for instance of " + check.getClass());
           }

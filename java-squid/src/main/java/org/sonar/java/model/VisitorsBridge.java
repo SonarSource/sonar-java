@@ -39,6 +39,7 @@ import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -70,6 +71,7 @@ public class VisitorsBridge {
 
   private final List<JavaFileScanner> scanners;
   private final SonarComponents sonarComponents;
+  private final boolean symbolicExecutionEnabled;
   private SemanticModel semanticModel;
   private List<File> projectClasspath;
   private boolean analyseAccessors;
@@ -86,6 +88,10 @@ public class VisitorsBridge {
   }
 
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
+    this(visitors, projectClasspath, sonarComponents, false);
+  }
+
+  public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
     for (Object visitor : visitors) {
       if (visitor instanceof JavaFileScanner) {
@@ -95,6 +101,7 @@ public class VisitorsBridge {
     this.scanners = scannersBuilder.build();
     this.sonarComponents = sonarComponents;
     this.projectClasspath = projectClasspath;
+    this.symbolicExecutionEnabled = symbolicExecutionEnabled;
   }
 
   public void setAnalyseAccessors(boolean analyseAccessors) {
@@ -130,6 +137,10 @@ public class VisitorsBridge {
       new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors, sonarComponents);
     for (JavaFileScanner scanner : scanners) {
       scanner.scanFile(javaFileScannerContext);
+    }
+    //Symbolic execution checks
+    if(symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
+      new SymbolicExecutionVisitor().scanFile(javaFileScannerContext);
     }
     if (semanticModel != null) {
       // Close class loader after all the checks.
@@ -234,6 +245,12 @@ public class VisitorsBridge {
       } else {
         checkMessage.setCost(cost);
       }
+      sourceFile.log(checkMessage);
+    }
+
+    @Override
+    public void addIssue(Tree tree, JavaCheckMessage checkMessage) {
+      checkMessage.setLine(((JavaTree) tree).getLine());
       sourceFile.log(checkMessage);
     }
 
