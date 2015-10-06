@@ -194,7 +194,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
     // unconditional jumps, for-statement, switch-statement:
-    for (CFG.Block successor : Lists.reverse(block.successors())) {
+    for (CFG.Block successor : block.successors()) {
       enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState);
     }
   }
@@ -208,7 +208,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState, condition);
     if (pair.a != null) {
       // enqueue false-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors().get(1), 0), pair.a);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), pair.a);
       if (checkPath) {
         alwaysTrueOrFalseCheck.evaluatedToFalse(condition);
       }
@@ -220,7 +220,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors().get(0), 0), pair.b);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), pair.b);
       if (checkPath) {
         alwaysTrueOrFalseCheck.evaluatedToTrue(condition);
       }

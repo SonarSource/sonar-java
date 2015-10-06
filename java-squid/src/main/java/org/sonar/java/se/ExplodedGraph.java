@@ -20,12 +20,10 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
-import org.sonar.java.cfg.CFG;
-
-import javax.annotation.Nullable;
-
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nullable;
+import org.sonar.java.cfg.CFG;
 
 public class ExplodedGraph {
 
@@ -56,15 +54,15 @@ public class ExplodedGraph {
 
     @Override
     public int hashCode() {
-      return block.id * 31 + i;
+      return block.id() * 31 + i;
     }
 
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof ProgramPoint) {
         ProgramPoint other = (ProgramPoint) obj;
-        return this.block.id == other.block.id
-            && this.i == other.i;
+        return this.block.id() == other.block.id()
+          && this.i == other.i;
       }
       return false;
     }
@@ -96,14 +94,14 @@ public class ExplodedGraph {
       if (obj instanceof Node) {
         Node other = (Node) obj;
         return this.programPoint.equals(other.programPoint)
-            && Objects.equals(this.programState, other.programState);
+          && Objects.equals(this.programState, other.programState);
       }
       return false;
     }
 
     @Override
     public String toString() {
-      return "B" + programPoint.block.id + "." + programPoint.i + ": " + programState;
+      return "B" + programPoint.block.id() + "." + programPoint.i + ": " + programState;
     }
   }
 }
