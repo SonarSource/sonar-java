@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.symexec.ExecutionState;
 import org.sonar.java.symexec.SymbolicBooleanConstraint;
 import org.sonar.java.symexec.SymbolicEvaluator;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -44,6 +45,11 @@ import java.util.Map;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class UselessConditionCheck extends SubscriptionBaseVisitor {
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

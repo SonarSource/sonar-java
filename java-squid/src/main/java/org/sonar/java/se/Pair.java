@@ -17,15 +17,24 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se;
 
-import org.junit.Test;
+import javax.annotation.Nullable;
 
-public class UselessConditionCheckTest {
+public class Pair<A, B> {
 
-  @Test
-  public void test() {
-//    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
+  @Nullable
+  final A a;
+  @Nullable
+  final B b;
+
+  public Pair(@Nullable A a, @Nullable B b) {
+    this.a = a;
+    this.b = b;
+  }
+
+  public Pair<B, A> invert() {
+    return new Pair<>(b, a);
   }
 
 }

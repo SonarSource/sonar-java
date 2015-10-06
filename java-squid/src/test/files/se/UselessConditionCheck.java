@@ -30,8 +30,9 @@ public static class Class extends SuperClass {
     }
     if (false && parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (true && false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (true && false) { // Noncompliant 2
     }
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
     if (true && true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (true && parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
@@ -66,9 +67,9 @@ public static class Class extends SuperClass {
   }
 
   public void conditional_or(boolean parameter1, boolean parameter2) {
-    if (false || false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false || false) { // Noncompliant 2 {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (false || true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (false || true) { // Noncompliant 2
     }
     if (false || parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
@@ -207,17 +208,17 @@ public static class Class extends SuperClass {
 
   public void relational_equal(boolean parameter1, boolean parameter2, boolean condition) {
     if (parameter1 == parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 == parameter2) { // False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 >= parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 > parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 <= parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 < parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 != parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
     if (parameter1 == parameter2) { // Compliant
@@ -226,9 +227,9 @@ public static class Class extends SuperClass {
 
   public void relational_ge(boolean parameter1, boolean parameter2) {
     if (parameter1 >= parameter2) {
-      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 >= parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 < parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
     if (parameter1 >= parameter2) {
@@ -251,17 +252,17 @@ public static class Class extends SuperClass {
 
   public void relational_g(boolean parameter1, boolean parameter2) {
     if (parameter1 > parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 >= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 > parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 <= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 < parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 != parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 > parameter2) { // Compliant
@@ -275,9 +276,9 @@ public static class Class extends SuperClass {
       }
       if (j > i) { // Compliant
       }
-      if (j < k) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (j < k) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (k > j) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (k > j) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (i < j) {
@@ -341,13 +342,13 @@ public static class Class extends SuperClass {
     }
     do {
     } while (parameter1 == parameter2); // Compliant
-    if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (parameter1 == parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
 
   public void statement_for(boolean parameter1, boolean parameter2) {
     for (; parameter1 == parameter2;) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 == parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 == parameter2) { // False negative
@@ -356,7 +357,7 @@ public static class Class extends SuperClass {
 
   public void statement_if(boolean parameter1, boolean parameter2) {
     if (parameter1 == parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 == parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 == parameter2) { // Compliant
@@ -371,7 +372,7 @@ public static class Class extends SuperClass {
         ;
     }
     condition = true;
-    if (condition) { // Compliant, unreachable
+    if (condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -384,7 +385,7 @@ public static class Class extends SuperClass {
 
   public void statement_while(boolean parameter1, boolean parameter2) {
     while (parameter1 == parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 == parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 == parameter2) { // False negative
@@ -398,23 +399,23 @@ public static class Class extends SuperClass {
     }
     if (parameter1 == parameter2 || parameter1 == parameter2) { // Compliant
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 != parameter2) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 > parameter2) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 < parameter2) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
+    // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
     if (parameter1 == parameter2 || parameter1 != parameter2) {
     }
     if (condition && !condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (condition || !condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    //False negative: Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if ((parameter1 == parameter2 || condition) && !(parameter1 == parameter2 || condition)) {
     }
     // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
@@ -442,7 +443,8 @@ public static class Class extends SuperClass {
       if (local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     } while (condition);
-    if (local1) { // Compliant
+    //false positive
+    if (local1) { // Noncompliant
     }
   }
 
@@ -455,7 +457,7 @@ public static class Class extends SuperClass {
       if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
-    if (local2) { // Compliant
+    if (local2) { // compliant
     }
   }
 
@@ -468,7 +470,8 @@ public static class Class extends SuperClass {
       if (local3) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
-    if (local3) { // Compliant
+    //false positive
+    if (local3) { // Noncompliant
     }
   }
 
@@ -547,22 +550,22 @@ public static class Class extends SuperClass {
     if (a < b) {
       return;
     }
-    if (a >= b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (a >= b) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
 
     if (c < d || c <= d) {
     } else {
       return;
     }
-    if (c <= d) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (c <= d) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
   public void relationa_le(boolean parameter1, boolean parameter2) {
     if (parameter1 <= parameter2) {
-      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 > parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 <= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 <= parameter2) {
@@ -585,17 +588,17 @@ public static class Class extends SuperClass {
 
   public void relational_l(boolean parameter1, boolean parameter2) {
     if (parameter1 < parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 >= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 > parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 <= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 < parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 != parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 < parameter2) { // Compliant
@@ -604,9 +607,9 @@ public static class Class extends SuperClass {
 
   public void relational_ne(boolean parameter1, boolean parameter2) {
     if (parameter1 != parameter2) {
-      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 != parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 != parameter2) {
@@ -627,13 +630,13 @@ public static class Class extends SuperClass {
     }
   }
 
-  public test_switch(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
+  public void test_switch(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
     if (var1 == var2 && var3 == var4) {
       var5 = false;
       var7 = false;
       switch (condition) {
         case 0:
-          if (var1 == var2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          if (var1 == var2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
           }
           if (var5) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
           }
@@ -641,7 +644,7 @@ public static class Class extends SuperClass {
           var5 = unknown;
           break;
         case 1:
-          if (var1 == var2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          if (var1 == var2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
           }
           if (var5) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
           }
@@ -650,14 +653,14 @@ public static class Class extends SuperClass {
         case 2:
           if (var1 == var2) { // Compliant
           }
-          if (var5) { // Compliant
+          if (var5) { // compliant (fallthrough)
           }
           var1 = 1;
           var6 = false;
       }
       if (var1 == var2) { // Compliant
       }
-      if (var3 == var4) { // Noncompliant
+      if (var3 == var4) { // False negative:Noncompliant
       }
       if (var5) { // Compliant
       }
@@ -667,7 +670,7 @@ public static class Class extends SuperClass {
       }
     }
   }
-  public test_switch2(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
+  public void test_switch2(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
     var5 = false;
     switch (condition) {
       case 0:
@@ -678,7 +681,7 @@ public static class Class extends SuperClass {
     if (var5) { // Noncompliant
     }
   }
-  public test_switch3(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
+  public void test_switch3(int condition, boolean unknown, int var1, int var2, int var3, int var4, boolean var5, boolean var6, boolean var7) {
     switch (condition) {
       default:
         var5 = true;
@@ -699,56 +702,56 @@ public static class Class extends SuperClass {
 
   public test_instance_fields(boolean local, boolean local1, boolean local2) {
     if (field && this.field1 == field2) {
-      if (this.field) { // Noncompliant
+      if (this.field) { // False negative Noncompliant
       }
-      if (field1 == this.field2) { // Noncompliant
+      if (field1 == this.field2) { //False negative Noncompliant
       }
     }
   }
-  public test_instance_fields2(boolean local, boolean local1, boolean local2) {
+  public void test_instance_fields2(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
       otherMethod();
-      if (field) { // Compliant
+      if (field) { // Noncompliant
       }
       if (field1 == field2) { // Compliant
       }
       if (local) { // Noncompliant
       }
-      if (local1 == local2) { // Noncompliant
+      if (local1 == local2) { //False negative Noncompliant
       }
     }
   }
-  public test_instance_fields3(boolean local, boolean local1, boolean local2) {
+  public void test_instance_fields3(boolean local, boolean local1, boolean local2) {
 
     if (field && field1 == field2 && local && local1 == local2) {
       if (otherMethod()) {
-        if (field) { // Compliant
+        if (field) { // Noncompliant
         }
         if (field1 == field2) { // Compliant
         }
         if (local) { // Noncompliant
         }
-        if (local1 == local2) { // Noncompliant
+        if (local1 == local2) { //False negative Noncompliant
         }
       }
     }
   }
-  public test_instance_fields4(boolean local, boolean local1, boolean local2) {
+  public void test_instance_fields4(boolean local, boolean local1, boolean local2) {
 
     this.field1 = false;
     this.field2 = this.field1;
-    if (field1 || field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (field1 || field2) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
 
-    if (super.field && !super.field) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (super.field && !super.field) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (super.field && !this.field) { // Compliant
     }
 
     if (super.field && super.field1 == super.field2) {
-      if (super.field) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (super.field) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (super.field1 == super.field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (super.field1 == super.field2) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
       otherMethod();
       if (super.field) { // Compliant
@@ -757,16 +760,17 @@ public static class Class extends SuperClass {
       }
     }
   }
-  public test_instance_fields5(boolean local, boolean local1, boolean local2) {
+  public void test_instance_fields5(boolean local, boolean local1, boolean local2) {
 
     super.field1 = false;
     super.field2 = super.field1;
-    if (super.field1 || super.field2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (super.field1 || super.field2) { // false negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
 
     SuperClass instance1, instance2;
-    if (instance1.field && instance1.field1 == instance2.field2) {
-      if (instance1.field && instance1.field1 == instance2.field2) { // Compliant
+    //false positive
+    if (instance1.field && instance1.field1 == instance2.field2) { // Noncompliant
+      if (instance1.field && instance1.field1 == instance2.field2) { // false negative Noncompliant
       }
     }
     if (instance1.field && field1 == instance2.field2) {
@@ -775,15 +779,16 @@ public static class Class extends SuperClass {
     }
   }
 
-  public test_array(boolean local1, boolean local2) {
-    (local1 = false)[local2 = true];
+  public void test_array(boolean local1, boolean local2, int[] array) {
+    local1 = false;
+    array[local2 = true];
     if(local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if(local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
-  public test_instanceof(Object object, boolean local) {
+  public void test_instanceof(Object object, boolean local) {
     local = object instanceof Object; // unknown for now
     if (local) { // Compliant
     }
@@ -800,7 +805,7 @@ public static class Class extends SuperClass {
   public void statement_for(boolean parameter1, boolean parameter2) {
     for (;;) {
       if (parameter1 == parameter2) {
-        if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+        if (parameter1 == parameter2) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
         }
       }
     }
@@ -816,17 +821,17 @@ public static class Class extends SuperClass {
 
   public void conditional_operators(boolean unknown) {
     boolean condition;
-    condition = false && unknown;
-    if (condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    condition = false && unknown; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (condition) { // False negative (evaluate expression) Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     condition = unknown && false;
-    if (condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (condition) { // False negative (evaluate expression) Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    condition = true || unknown;
-    if (condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    condition = true || unknown; // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (condition) { // False negative (evaluate expression) Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     condition = unknown || true;
-    if (condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (condition) { // False negative (evaluate expression) Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -855,7 +860,7 @@ public static class Class extends SuperClass {
       case 0:
         return;
     }
-    if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false) { // False negative (better support of switch)  Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     switch (condition) {
       case 0:
@@ -867,8 +872,9 @@ public static class Class extends SuperClass {
     }
   }
 
-  public void test_condition_array(boolean local1, boolean local2) {
-    if ((local1 = false)[local2 = true]) {
+  public void test_condition_array(boolean local1, boolean local2, boolean[] array) {
+    local1 = false;
+    if (array[local2 = true ? 1:0]) { // Noncompliant
       if (!local1 && local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     } else {
@@ -878,18 +884,20 @@ public static class Class extends SuperClass {
   }
 
   public void test_condition_assignment(boolean local1, boolean local2) {
-    if (local1 = false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
-      if (false) { // Compliant, unreachable
+    if (local1 = false) { // False negative : evaluate assignement expression : Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      //false positive: it should not be reached
+      if (false) { // Noncompliant
       }
     } else {
       if (local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
-    if (local2 = true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (local2 = true) { // False negative : evaluate assignement expression : Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     } else {
-      if (false) { // Compliant, unreachable
+      //false positive: it should not be reached
+      if (false) { // Noncompliant
       }
     }
   }
@@ -898,32 +906,32 @@ public static class Class extends SuperClass {
 
   int intField;
 
-  public test_integer_literals(boolean condition, int value) {
-    if (3 > value && value > 3) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+  public void test_integer_literals(boolean condition, int value) {
+    if (3 > value && value > 3) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     // invalidation due to merge
     if (3 > value || value > 3) { // Compliant
     }
     // two level nesting
     if (value > 0x3) {
-      if (condition || value > 0x3L) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (condition || value > 0x3L) { //False negative :  Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     // invalidation due to method call
     if (intField == 3 && 3 == value) {
-      if (intField == 3) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (intField == 3) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (value == 3) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (value == 3) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
       otherMethod();
       if (intField == 3) { // Compliant
       }
-      if (value == 3) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (value == 3) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     // out of scope, must evaluate to unknown
     if (3 > 3) {
-      // false positive
+
       if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     } else {
@@ -932,20 +940,20 @@ public static class Class extends SuperClass {
     }
   }
 
-  public try_catch() {
+  public void  try_catch() {
     boolean a = false, b = false, c = false, d = false;
     try {
       b = true;
       c = true;
     } catch (Exception e) {
-      if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (a) { //false negative : evaluate catch blocks Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (b) { // Compliant
       }
       c = true;
       d = true;
     } catch (Exception e) {
-      if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (a) { //false negative : evaluate catch blocks Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (c) { // Compliant
       }
@@ -953,25 +961,26 @@ public static class Class extends SuperClass {
     }
     if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (b) { // Compliant
+    if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (c) { // Compliant
+    if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (d) { // Compliant
+    //false positive !
+    if (d) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
 
-  public try_finally() {
-    boolean a = false, b = false, c = false;
+  public void try_finally() {
+    boolean a = false; boolean b = false; boolean c = false;
     try {
       b = true;
       c = true;
     } finally {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (b) { // Compliant
+      if (b) { // Noncompliant
       }
-      if (c) { // Compliant
+      if (c) { // Noncompliant
       }
       b = true;
     }
@@ -979,13 +988,14 @@ public static class Class extends SuperClass {
     }
     if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (c) { // Compliant
+    if (c) { // Noncompliant
     }
   }
 
-  public finally_with_return() {
+  public void finally_with_return() {
     try {
     } finally {
+
       return;
     }
     if (false) { // Compliant, unreachable
@@ -999,35 +1009,35 @@ public static class Class extends SuperClass {
     if (result) { // Compliant
     }
 
-    result = true ? condition : false;
+    result = true ? condition : false; // Noncompliant
     if (result) { // Compliant
     }
-    result = true ? false : condition;
-    if (result) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    result = true ? false : condition; // Noncompliant
+    if (result) { // false negative : evaluate conditional Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
   public void ternary2(boolean condition) {
-    result = false ? true : condition;
+    result = false ? true : condition; // Noncompliant
     if (result) { // Compliant
     }
-    result = false ? condition : true;
-    if (result) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    result = false ? condition : true; // Noncompliant
+    if (result) { //false negative : evaluate conditional Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
 
     if (condition ? true : false) { // Compliant
     }
-    if (condition ? false : false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (condition ? false : false) { //false negative : evaluate conditional  Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
   public void ternary3(boolean condition) {
-    if (true ? condition : false) { // Compliant
+    if (true ? condition : false) { // Noncompliant
     }
-    if (true ? false : condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (true ? false : condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
 
-    if (false ? true : condition) { // Compliant
+    if (false ? true : condition) { // Noncompliant
     }
-    if (false ? condition : true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (false ? condition : true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
   }
   
@@ -1038,15 +1048,6 @@ public static class Class extends SuperClass {
     int value;
     value = (b1 ^ b2) ? 1 : 2; // False Negative - Not handled
     value = (b1 ^ !b2) ? 1 : 2; // False Negative - Not handled
-  }
-
-  public overrun(boolean[] a) { // analysis aborted due to too many execution states
-    if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
-    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
-    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
-    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0]) {
-    } else if (a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && a[0] && false) { // Compliant
-    }
   }
 
 }

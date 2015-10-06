@@ -17,15 +17,31 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se;
 
-import org.junit.Test;
+import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class UselessConditionCheckTest {
+import java.util.List;
 
-  @Test
-  public void test() {
-//    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
+public class SymbolicExecutionVisitor extends SubscriptionVisitor {
+  private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
+
+  @Override
+  public List<Tree.Kind> nodesToVisit() {
+    return Lists.newArrayList(Tree.Kind.METHOD);
   }
 
+  @Override
+  public void visitNode(Tree tree) {
+    try {
+      tree.accept(new ExplodedGraphWalker(context));
+    }catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+      LOG.error("Could not complete symbolic execution: ", exception);
+    }
+
+  }
 }

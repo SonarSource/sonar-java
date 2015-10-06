@@ -32,8 +32,6 @@ public interface Tree {
 
   boolean is(Kind... kind);
 
-  Kind kind();
-
   void accept(TreeVisitor visitor);
 
   enum Kind implements GrammarRuleKey {
@@ -660,4 +658,5 @@ public interface Tree {
     }
   }
 
+  Kind kind();
 }
