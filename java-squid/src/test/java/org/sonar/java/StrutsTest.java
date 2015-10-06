@@ -31,6 +31,7 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
+import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -66,7 +67,8 @@ public class StrutsTest {
       fs.add(new DefaultInputFile(file.getPath()));
     }
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
-    JavaSquid squid = new JavaSquid(conf, null, measurer, mock(JavaResourceLocator.class), new CodeVisitor[0]);
+    JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
+    JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new DefaultBytecodeContext(javaResourceLocator), new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 

@@ -25,8 +25,6 @@ import org.sonar.java.bytecode.asm.AsmField;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.asm.AsmResource;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.indexer.SquidIndex;
 
 public class BytecodeVisitorNotifier {
 
@@ -39,11 +37,7 @@ public class BytecodeVisitorNotifier {
     System.arraycopy(bytecodeVisitors, 0, this.bytecodeVisitors, 0, bytecodeVisitors.length);
   }
 
-  public void notifyVisitors(SquidIndex indexer, JavaResourceLocator javaResourceLocator) {
-    for (BytecodeVisitor visitor : bytecodeVisitors) {
-      visitor.setSquidIndex(indexer);
-      visitor.setJavaResourceLocator(javaResourceLocator);
-    }
+  public void notifyVisitors() {
     callVisitClass();
     callVisitMethodAndFieldAndEdge();
     callLeaveClass();

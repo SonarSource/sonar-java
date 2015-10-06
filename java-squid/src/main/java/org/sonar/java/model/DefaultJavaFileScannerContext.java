@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
@@ -140,31 +139,15 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @CheckForNull
   private RuleKey getRuleKey(JavaCheck check) {
     if (sonarComponents != null) {
-      for (Checks<JavaCheck> sonarChecks : sonarComponents.checks()) {
-        RuleKey ruleKey = sonarChecks.ruleKey(check);
-        if (ruleKey != null) {
-          return ruleKey;
-        }
-      }
+      return sonarComponents.getRuleKey(check);
     }
     return null;
   }
 
   @Override
   public void addIssue(File file, JavaCheck check, int line, String message) {
-    RuleKey key = getRuleKey(check);
-    if (key != null) {
-      Issuable issuable = sonarComponents.issuableFor(file);
-      if (issuable != null) {
-        Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
-          .ruleKey(key)
-          .message(message);
-        if (line > -1) {
-          issueBuilder.line(line);
-        }
-        Issue issue = issueBuilder.build();
-        issuable.addIssue(issue);
-      }
+    if (sonarComponents != null) {
+      sonarComponents.addIssue(file, check, line, message);
     }
   }
 

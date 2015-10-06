@@ -38,6 +38,7 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
+import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.bridges.DesignBridge;
 
@@ -80,7 +81,8 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
-    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());
+    DefaultBytecodeContext bytecodeContext = new DefaultBytecodeContext(sonarComponents, javaResourceLocator);
+    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, bytecodeContext, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
     // Design
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);

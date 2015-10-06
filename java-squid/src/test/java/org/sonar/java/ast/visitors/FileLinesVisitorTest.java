@@ -69,13 +69,13 @@ public class FileLinesVisitorTest {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     when(sonarComponents.fileLinesContextFor(Mockito.any(File.class))).thenReturn(context);
 
-    JavaSquid squid = new JavaSquid(conf, null, null, null, new CodeVisitor[] {new FileLinesVisitor(sonarComponents, conf.getCharset())});
+    JavaSquid squid = new JavaSquid(conf, null, null, null, null, new CodeVisitor[] {new FileLinesVisitor(sonarComponents, conf.getCharset())});
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
   }
 
   private int countTrivia(String filename) {
     TriviaVisitor triviaVisitor = new TriviaVisitor();
-    JavaSquid squid = new JavaSquid(conf, null, null, null, new CodeVisitor[] {triviaVisitor});
+    JavaSquid squid = new JavaSquid(conf, null, null, null, null, new CodeVisitor[] {triviaVisitor});
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
     return triviaVisitor.numberTrivia;
   }
