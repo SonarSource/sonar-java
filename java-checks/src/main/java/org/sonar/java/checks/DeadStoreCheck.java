@@ -28,7 +28,6 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.LocalVariableReadExtractor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -169,10 +168,8 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isParentExpressionStatement(Tree element) {
-    // FIXME we should not rely on SemanticModel object but have a nicer way to retrieve parent link of a tree node.
-    Object semanticModel = context.getSemanticModel();
-    return semanticModel != null && ((SemanticModel) semanticModel).getParent(element).is(Tree.Kind.EXPRESSION_STATEMENT);
+  private static boolean isParentExpressionStatement(Tree element) {
+    return element.parent().is(Tree.Kind.EXPRESSION_STATEMENT);
   }
 
   private void createIssue(Tree element, Symbol symbol) {

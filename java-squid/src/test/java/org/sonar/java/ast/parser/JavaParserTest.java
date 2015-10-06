@@ -17,38 +17,25 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.resolve;
+package org.sonar.java.ast.parser;
 
 import com.google.common.base.Charsets;
-import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
-import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
-
-import java.io.File;
-import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class SemanticModelTest {
-
-  private static final ActionParser<Tree> PARSER = JavaParser.createParser(Charsets.UTF_8);
+public class JavaParserTest {
 
   @Test
   public void parent_link_should_be_computed() {
-    CompilationUnitTree cut = (CompilationUnitTree) PARSER.parse("class A { int field; void foo() {} }");
-    SemanticModel semanticModel = SemanticModel.createFor(cut, Collections.<File>emptyList());
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse("class A { void foo() {} }");
     ClassTree classTree = (ClassTree) cut.types().get(0);
-    VariableTree field = (VariableTree) classTree.members().get(0);
-    MethodTree method = (MethodTree) classTree.members().get(1);
-
-    assertThat(semanticModel.getParent(method)).isSameAs(classTree);
-    assertThat(semanticModel.getParent(field)).isSameAs(classTree);
-    assertThat(semanticModel.getParent(classTree)).isSameAs(cut);
-
+    MethodTree method = (MethodTree) classTree.members().get(0);
+    assertThat(method.parent()).isSameAs(classTree);
+    assertThat(classTree.parent()).isSameAs(cut);
+    assertThat(cut.parent()).isNull();
   }
 }

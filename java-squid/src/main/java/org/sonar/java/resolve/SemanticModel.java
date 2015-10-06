@@ -27,7 +27,6 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import org.sonar.java.model.AbstractTypedTree;
-import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -36,11 +35,9 @@ import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +48,6 @@ public class SemanticModel {
 
   private final Map<Symbol, Resolve.Env> symbolEnvs = Maps.newHashMap();
   private final BiMap<Tree, Resolve.Env> envs = HashBiMap.create();
-  private final Map<Tree, Tree> parentLink = Maps.newHashMap();
   private BytecodeCompleter bytecodeCompleter;
 
   public static SemanticModel createFor(CompilationUnitTree tree, List<File> projectClasspath) {
@@ -60,7 +56,6 @@ public class SemanticModel {
     Symbols symbols = new Symbols(bytecodeCompleter);
     SemanticModel semanticModel = new SemanticModel();
     semanticModel.bytecodeCompleter = bytecodeCompleter;
-    semanticModel.createParentLink((JavaTree) tree);
     try {
       Resolve resolve = new Resolve(symbols, bytecodeCompleter, parametrizedTypeCache);
       TypeAndReferenceSolver typeAndReferenceSolver = new TypeAndReferenceSolver(semanticModel, symbols, resolve, parametrizedTypeCache);
@@ -108,18 +103,6 @@ public class SemanticModel {
   SemanticModel() {
   }
 
-  private void createParentLink(JavaTree tree) {
-    if (!tree.isLeaf()) {
-      for (Iterator<Tree> iter = tree.childrenIterator(); iter.hasNext(); ) {
-        Tree next = iter.next();
-        if (next != null) {
-          parentLink.put(next, tree);
-          createParentLink((JavaTree) next);
-        }
-      }
-    }
-  }
-
   public void saveEnv(Symbol symbol, Resolve.Env env) {
     symbolEnvs.put(symbol, env);
   }
@@ -137,17 +120,13 @@ public class SemanticModel {
   }
 
   public Resolve.Env getEnv(Tree tree) {
-    JavaTree javaTree = (JavaTree) tree;
     Resolve.Env result = null;
-    while (result == null && javaTree != null) {
-      result = envs.get(javaTree);
-      javaTree = (JavaTree) parentLink.get(javaTree);
+    Tree node = tree;
+    while (result == null && node != null) {
+      result = envs.get(node);
+      node = node.parent();
     }
     return result;
-  }
-
-  public Tree getParent(Tree tree) {
-    return parentLink.get(tree);
   }
 
   public Symbol getEnclosingClass(Tree tree) {

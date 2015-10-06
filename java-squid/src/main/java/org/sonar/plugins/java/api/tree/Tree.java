@@ -22,6 +22,8 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.annotations.Beta;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
+import javax.annotation.Nullable;
+
 /**
  * Common interface for all nodes in a syntax tree.
  *
@@ -35,6 +37,9 @@ public interface Tree {
   Kind kind();
 
   void accept(TreeVisitor visitor);
+
+  @Nullable
+  Tree parent();
 
   enum Kind implements GrammarRuleKey {
     /**

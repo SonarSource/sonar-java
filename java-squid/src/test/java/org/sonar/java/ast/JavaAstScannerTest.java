@@ -193,6 +193,11 @@ public class JavaAstScannerTest {
         public void accept(TreeVisitor visitor) {
 
         }
+
+        @Override
+        public Tree parent() {
+          return null;
+        }
       };
     }
   }

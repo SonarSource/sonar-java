@@ -57,6 +57,8 @@ import java.util.List;
 
 public abstract class JavaTree implements Tree {
 
+  @Nullable
+  private Tree parent;
 
   protected GrammarRuleKey grammarRuleKey;
 
@@ -81,6 +83,15 @@ public abstract class JavaTree implements Tree {
       }
     }
     return false;
+  }
+
+  @Override
+  public Tree parent() {
+    return parent;
+  }
+
+  public void setParent(Tree parent) {
+    this.parent = parent;
   }
 
   /**

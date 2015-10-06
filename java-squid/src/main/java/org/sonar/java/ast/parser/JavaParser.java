@@ -20,17 +20,23 @@
 package org.sonar.java.ast.parser;
 
 import com.sonar.sslr.api.typed.ActionParser;
+import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
+import java.io.File;
 import java.nio.charset.Charset;
+import java.util.Iterator;
 
-public class JavaParser {
+public class JavaParser extends ActionParser<Tree> {
 
-  private JavaParser() {
+  private JavaParser(Charset charset, LexerlessGrammarBuilder grammarBuilder, Class<JavaGrammar> javaGrammarClass,
+    TreeFactory treeFactory, JavaNodeBuilder javaNodeBuilder, JavaLexer compilationUnit) {
+    super(charset, grammarBuilder, javaGrammarClass, treeFactory, javaNodeBuilder, compilationUnit);
   }
 
   public static ActionParser<Tree> createParser(Charset charset) {
-    return new ActionParser<Tree>(
+    return new JavaParser(
       charset,
       JavaLexer.createGrammarBuilder(),
       JavaGrammar.class,
@@ -39,4 +45,26 @@ public class JavaParser {
       JavaLexer.COMPILATION_UNIT);
   }
 
+  @Override
+  public Tree parse(File file) {
+    return createParentLink((JavaTree) super.parse(file));
+  }
+
+  @Override
+  public Tree parse(String source) {
+    return createParentLink((JavaTree) super.parse(source));
+  }
+
+  private static Tree createParentLink(JavaTree parent) {
+    if (!parent.isLeaf()) {
+      for (Iterator<Tree> iter = parent.childrenIterator(); iter.hasNext();) {
+        JavaTree next = (JavaTree) iter.next();
+        if (next != null) {
+          next.setParent(parent);
+          createParentLink(next);
+        }
+      }
+    }
+    return parent;
+  }
 }
