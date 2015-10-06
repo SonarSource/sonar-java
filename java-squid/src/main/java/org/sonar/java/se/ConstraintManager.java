@@ -45,7 +45,7 @@ public class ConstraintManager {
 
 
 
-  private SymbolicValue createSymbolicValue(Tree syntaxNode) {
+  public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result = map.get(syntaxNode);
     if (result == null && syntaxNode.is(Tree.Kind.IDENTIFIER)) {
       result = symbolMap.get(((IdentifierTree) syntaxNode).symbol());
