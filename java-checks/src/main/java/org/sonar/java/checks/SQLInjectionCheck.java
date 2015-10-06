@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -42,11 +42,26 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("20min")
 public class SQLInjectionCheck extends AbstractInjectionChecker {
 
+  private static final MethodMatcher HIBERNATE_SESSION_CREATE_QUERY_MATCHER = MethodMatcher.create()
+    // method from the interface org.hibernate.SharedSessionContract, implemented by org.hibernate.Session
+    .callSite(TypeCriteria.subtypeOf("org.hibernate.Session"))
+    .name("createQuery")
+    .withNoParameterConstraint();
+
+  private static final MethodMatcher STATEMENT_EXECUTE_QUERY_MATCHER = MethodMatcher.create()
+    .typeDefinition(TypeCriteria.subtypeOf("java.sql.Statement"))
+    .name("executeQuery")
+    .withNoParameterConstraint();
+
+  private static final MethodInvocationMatcherCollection CONNECTION_MATCHERS = MethodInvocationMatcherCollection.create(
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareStatement").withNoParameterConstraint(),
+    MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareCall").withNoParameterConstraint());
+
   @Override
   public void visitNode(Tree tree) {
     MethodInvocationTree methodTree = (MethodInvocationTree) tree;
     boolean isHibernateCall = isHibernateCall(methodTree);
-    if (isHibernateCall(methodTree) || isExecuteQueryOrPrepareStatement(methodTree)) {
+    if (isHibernateCall || isExecuteQueryOrPrepareStatement(methodTree)) {
       //We want to check the argument for the three methods.
       ExpressionTree arg = methodTree.arguments().get(0);
       parameterName = "";
@@ -61,43 +76,10 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
   }
 
   private static boolean isExecuteQueryOrPrepareStatement(MethodInvocationTree methodTree) {
-    if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
-      return !methodTree.arguments().isEmpty() && (isMethodCall("java.sql.Statement", "executeQuery", memberSelectExpressionTree)
-          || isMethodCall("java.sql.Connection", "prepareStatement", memberSelectExpressionTree)
-          || isMethodCall("java.sql.Connection", "prepareCall", memberSelectExpressionTree)
-      );
-    }
-    return false;
+    return !methodTree.arguments().isEmpty() && (STATEMENT_EXECUTE_QUERY_MATCHER.matches(methodTree) || CONNECTION_MATCHERS.anyMatch(methodTree));
   }
 
   private static boolean isHibernateCall(MethodInvocationTree methodTree) {
-    if (methodTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree memberSelectExpressionTree = (MemberSelectExpressionTree) methodTree.methodSelect();
-      return !methodTree.arguments().isEmpty() && isMethodCall("org.hibernate.Session", "createQuery", memberSelectExpressionTree);
-    }
-    return false;
+    return HIBERNATE_SESSION_CREATE_QUERY_MATCHER.matches(methodTree);
   }
-
-  private static boolean isMethodCall(String typeName, String methodName, MemberSelectExpressionTree memberSelectExpressionTree) {
-    return methodName.equals(memberSelectExpressionTree.identifier().name()) && isInvokedOnType(typeName, memberSelectExpressionTree.expression());
-  }
-
-  private static boolean isInvokedOnType(String type, ExpressionTree expressionTree) {
-    Type selectorType = expressionTree.symbolType();
-    if (selectorType.isClass()) {
-      return type.equals(selectorType.fullyQualifiedName()) || checkInterfaces(type, selectorType.symbol());
-    }
-    return false;
-  }
-
-  private static boolean checkInterfaces(String type, Symbol.TypeSymbol symbol) {
-    for (Type interfaceType : symbol.interfaces()) {
-      if (type.equals(interfaceType.fullyQualifiedName()) || checkInterfaces(type, interfaceType.symbol())) {
-        return true;
-      }
-    }
-    return false;
-  }
-
 }
