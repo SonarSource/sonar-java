@@ -24,6 +24,11 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -44,12 +49,6 @@ import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-
-import javax.annotation.CheckForNull;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
@@ -114,8 +113,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           @Override
           public List<ProgramState> apply(ProgramState input) {
             return Lists.newArrayList(
-                ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NULL),
-                ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NOT_NULL));
+              ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NULL),
+              ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NOT_NULL));
           }
         }));
 
@@ -188,7 +187,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
     // unconditional jumps, for-statement, switch-statement:
-    for (CFG.Block successor : Lists.reverse(block.successors())) {
+    for (CFG.Block successor : block.successors()) {
       enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState);
     }
   }
@@ -201,7 +200,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState, condition);
     if (pair.a != null) {
       // enqueue false-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors().get(1), 0), pair.a);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), pair.a);
       if(checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
@@ -213,7 +212,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     if (pair.b != null) {
       // enqueue true-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.successors().get(0), 0), pair.b);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), pair.b);
       if(checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
