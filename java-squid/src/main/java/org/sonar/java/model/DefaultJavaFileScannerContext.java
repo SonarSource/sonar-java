@@ -22,13 +22,14 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.JavaCheckMessage;
+import org.sonar.java.CompIssue;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
@@ -100,20 +101,29 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
     Preconditions.checkNotNull(javaCheck);
     Preconditions.checkNotNull(message);
-    JavaCheckMessage checkMessage = new JavaCheckMessage(javaCheck, message);
-    if (line > 0) {
-      checkMessage.setLine(line);
-    }
-    if (cost == null) {
-      Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
-      Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
-      if (linear != null || linearWithOffset != null) {
-        throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
+    RuleKey key = getRuleKey(javaCheck);
+    if (key != null) {
+      Issuable issuable = sonarComponents.issuableFor(file);
+      if (issuable != null) {
+        Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
+          .ruleKey(key)
+          .message(message);
+        if (line > 0) {
+          issueBuilder.line(line);
+        }
+        if (cost == null) {
+          Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
+          Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
+          if (linear != null || linearWithOffset != null) {
+            throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
+          }
+        } else {
+          issueBuilder.effortToFix(cost);
+        }
+        Issue issue = issueBuilder.build();
+        issuable.addIssue(issue);
       }
-    } else {
-      checkMessage.setCost(cost);
     }
-    sourceFile.log(checkMessage);
   }
 
   @Override
@@ -158,11 +168,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     }
   }
 
-  /**
-   * FIXME(mpaladin) DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
-   **/
-  private static final boolean ENABLE_NEW_APIS = true;
-
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
     reportIssue(javaCheck, tree, message, ImmutableList.<Location>of(), null);
@@ -170,26 +175,25 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    if (ENABLE_NEW_APIS) {
-      JavaCheckMessage checkMessage = new JavaCheckMessage(javaCheck, message);
+    InputFile inputFile = sonarComponents.inputFromIOFile(file);
+    RuleKey ruleKey = getRuleKey(javaCheck);
+    if (ruleKey != null) {
+      CompIssue compIssue = CompIssue.create(inputFile, sonarComponents.issuableFor(file), ruleKey, cost != null ? (double) cost : null);
       AnalyzerMessage.TextSpan textSpan = textSpanFor(syntaxNode);
-      if (cost != null) {
-        checkMessage.setCost(cost);
+      if (textSpan == null) {
+        compIssue.setPrimaryLocation(message, null);
+      } else {
+        compIssue.setPrimaryLocation(message, textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
       }
-      checkMessage.setLine(textSpan.startLine);
-      AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpan, message, cost != null ? cost : 0);
       for (Location location : secondary) {
-        AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, textSpanFor(location.syntaxNode), location.msg, 0);
-        analyzerMessage.secondaryLocations.add(secondaryLocation);
+        AnalyzerMessage.TextSpan secondarySpan = textSpanFor(location.syntaxNode);
+        compIssue.addSecondaryLocation(secondarySpan.startLine, secondarySpan.startCharacter, secondarySpan.endLine, secondarySpan.endCharacter, location.msg);
       }
-      checkMessage.setAnalyzerMessage(analyzerMessage);
-      sourceFile.log(checkMessage);
-    } else {
-      addIssue(syntaxNode, javaCheck, message, cost != null ? (double) cost : null);
+      compIssue.save();
     }
   }
 
-  private static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
+  protected static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(syntaxNode);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(syntaxNode);
     return new AnalyzerMessage.TextSpan(

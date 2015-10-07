@@ -84,7 +84,7 @@ public class SonarComponents implements BatchExtension {
     }
   }
 
-  private InputFile inputFromIOFile(File file) {
+  public InputFile inputFromIOFile(File file) {
     return fs.inputFile(fs.predicates().is(file));
   }
 

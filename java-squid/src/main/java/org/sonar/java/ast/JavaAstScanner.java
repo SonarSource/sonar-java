@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.InternalVisitorsBridge;
 import com.sonar.sslr.api.typed.ActionParser;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,7 +53,7 @@ public class JavaAstScanner {
 
   private final SquidIndex index;
   private final ActionParser<Tree> parser;
-  private VisitorsBridge visitor;
+  private InternalVisitorsBridge visitor;
 
   public JavaAstScanner(ActionParser<Tree> parser) {
     this.parser = parser;
@@ -120,7 +120,7 @@ public class JavaAstScanner {
     return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
   }
 
-  public void setVisitorBridge(VisitorsBridge visitor) {
+  public void setVisitorBridge(InternalVisitorsBridge visitor) {
     this.visitor = visitor;
   }
 
@@ -130,12 +130,13 @@ public class JavaAstScanner {
 
   /**
    * Helper method for testing checks without having to deploy them on a Sonar instance.
+   * Can be dropped when support for CheckMessageVerifier will be dropped.
    *
    * @deprecated  As of release 3.6, should use {@link org.sonar.java.checks.verifier.JavaCheckVerifier#verify(String filename, JavaFileScanner check)} for rules unit tests.
    */
   @VisibleForTesting
   @Deprecated
-  public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
+  public static SourceFile scanSingleFile(File file, InternalVisitorsBridge visitorsBridge) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
@@ -149,7 +150,7 @@ public class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  private static JavaAstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
+  private static JavaAstScanner create(JavaConfiguration conf, @Nullable InternalVisitorsBridge visitorsBridge) {
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
     if(visitorsBridge != null) {
       visitorsBridge.setCharset(conf.getCharset());

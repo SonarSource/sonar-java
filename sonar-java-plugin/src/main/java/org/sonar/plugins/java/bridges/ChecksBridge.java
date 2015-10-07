@@ -30,7 +30,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.SonarComponents;
-import org.sonar.plugins.java.CompIssue;
+import org.sonar.java.CompIssue;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
