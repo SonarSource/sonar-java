@@ -36,7 +36,7 @@ public class ParsingErrorCheckTest {
   @Test
   public void test() {
     VisitorsBridge visitorsBridge = new VisitorsBridge(ImmutableList.of(new ParsingErrorCheck()), Lists.<File>newArrayList(), null);
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/ParsingError.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);
     assertThat(issues.iterator().next().getLine()).isEqualTo(1);

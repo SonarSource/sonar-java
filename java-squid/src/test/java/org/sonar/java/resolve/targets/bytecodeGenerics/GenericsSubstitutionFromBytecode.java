@@ -40,8 +40,8 @@ public class GenericsSubstitutionFromBytecode {
 
   @Test
   public void verify_generic_substitution() {
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/MyImpl.java"), new VisitorsBridge(Lists.newArrayList(new MyVisitor()),
-        Lists.newArrayList(new File("target/test-classes")), null));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/java/org/sonar/java/resolve/targets/bytecodeGenerics/MyImpl.java"), new VisitorsBridge(Lists.newArrayList(new MyVisitor()),
+      Lists.newArrayList(new File("target/test-classes")), null));
   }
 
   private static class MyVisitor extends IssuableSubscriptionVisitor {

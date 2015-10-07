@@ -43,7 +43,7 @@ public class MethodJavaSymbolTest {
   @Test
   public void test() {
     File bytecodeDir = new File("target/test-classes");
-    JavaAstScanner.scanSingleFile(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"), new VisitorsBridge(new MethodVisitor(), Lists.newArrayList(bytecodeDir)));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"), new VisitorsBridge(new MethodVisitor(), Lists.newArrayList(bytecodeDir)));
 
   }
 

@@ -195,7 +195,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null);
-    JavaAstScanner.scanSingleFile(new File(filename), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
     VisitorsBridge.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues(), javaCheckVerifier);
   }

@@ -80,7 +80,7 @@ public class JavaAstScannerTest {
     when(resource.getEffectiveKey()).thenReturn(file.getAbsolutePath());
     when(context.getResource(any(InputPath.class))).thenReturn(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
     verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(15));
   }
 
@@ -91,7 +91,7 @@ public class JavaAstScannerTest {
     when(resource.getEffectiveKey()).thenReturn(file.getAbsolutePath());
     when(context.getResource(any(InputPath.class))).thenReturn(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaAstScanner.scanSingleFile(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
     verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(8));
   }
 
@@ -100,7 +100,7 @@ public class JavaAstScannerTest {
     thrown.expect(IllegalArgumentException.class);
     String filename = "!!dummy";
     thrown.expectMessage(filename);
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(null));
+    JavaAstScanner.scanSingleFileForTests(new File(filename), new VisitorsBridge(null));
   }
 
   @Test
