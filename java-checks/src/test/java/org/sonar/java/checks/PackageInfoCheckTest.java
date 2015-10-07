@@ -33,15 +33,15 @@ public class PackageInfoCheckTest {
   @Test
   public void test() throws Exception {
     PackageInfoCheck check = new PackageInfoCheck();
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/packageInfo/HelloWorld.java"), new VisitorsBridge(check));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/packageInfo/HelloWorld.java"), new VisitorsBridge(check));
     assertThat(check.directoriesWithoutPackageFile).isEmpty();
   }
 
   @Test
   public void testNoPackageInfo() throws Exception {
     PackageInfoCheck check = new PackageInfoCheck();
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/packageInfo/nopackageinfo/nopackageinfo.java"), new VisitorsBridge(check));
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/packageInfo/nopackageinfo/HelloWorld.java"), new VisitorsBridge(check));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/packageInfo/nopackageinfo/nopackageinfo.java"), new VisitorsBridge(check));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/packageInfo/nopackageinfo/HelloWorld.java"), new VisitorsBridge(check));
     Set<File> set = check.directoriesWithoutPackageFile;
     assertThat(set).hasSize(1);
     assertThat(set.iterator().next().getName()).isEqualTo("nopackageinfo");

@@ -241,7 +241,7 @@ public class JavaTypeTest {
   public void test_fully_qualified_name() {
     File bytecodeDir = new File("target/test-classes");
     ClassFullQualifiedNameVerifierVisitor visitor = new ClassFullQualifiedNameVerifierVisitor(bytecodeDir);
-    JavaAstScanner.scanSingleFile(
+    JavaAstScanner.scanSingleFileForTests(
       new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(visitor, Lists.newArrayList(bytecodeDir)));
   }
 

@@ -108,7 +108,7 @@ public class CheckListTest {
     for (Class check : CheckList.getChecks()) {
       CodeVisitor visitor = (CodeVisitor) check.newInstance();
       if (visitor instanceof JavaFileScanner) {
-        JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridge((JavaFileScanner) visitor));
+        JavaAstScanner.scanSingleFileForTests(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridge((JavaFileScanner) visitor));
       }
     }
   }

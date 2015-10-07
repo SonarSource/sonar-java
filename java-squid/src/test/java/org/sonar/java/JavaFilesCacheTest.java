@@ -33,7 +33,7 @@ public class JavaFilesCacheTest {
   @Test
   public void resource_file_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
-    JavaAstScanner.scanSingleFile(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
 
     assertThat(javaFilesCache.resourcesCache.keySet()).hasSize(8);
     assertThat(javaFilesCache.resourcesCache.keySet()).contains("org/sonar/java/JavaFilesCacheTest");
@@ -49,7 +49,7 @@ public class JavaFilesCacheTest {
   @Test
   public void method_start_lines_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
-    JavaAstScanner.scanSingleFile(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
     assertThat(javaFilesCache.methodStartLines.keySet()).hasSize(8);
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$I#foo()V");
     assertThat(javaFilesCache.methodStartLines.keySet()).contains("org/sonar/java/JavaFilesCacheTest$A$1B$1#foo()V");
@@ -64,7 +64,7 @@ public class JavaFilesCacheTest {
   @Test
   public void suppressWarning_lines_mapping() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
-    JavaAstScanner.scanSingleFile(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/JavaFilesCacheTest.java"), new VisitorsBridge(javaFilesCache));
     assertThat(javaFilesCache.suppressWarningLines.keySet()).hasSize(28);
     for (Integer line : Lists.newArrayList(14, 15, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29)) {
       assertThat(javaFilesCache.suppressWarningLines.get(line)).contains("all");

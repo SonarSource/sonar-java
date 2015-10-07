@@ -69,7 +69,7 @@ public class MethodMatcherTest {
     matches.put(objectToString, new ArrayList<Integer>());
     matches.put(integerToString, new ArrayList<Integer>());
 
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/methodMatcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/methodMatcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
 
     assertThat(matches.get(objectToString)).containsExactly(6, 14);
     assertThat(matches.get(integerToString)).containsExactly(14);

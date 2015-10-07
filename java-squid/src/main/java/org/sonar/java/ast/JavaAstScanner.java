@@ -22,13 +22,14 @@ package org.sonar.java.ast;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
+import com.sonar.sslr.api.typed.ActionParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.model.InternalVisitorsBridge;
-import com.sonar.sslr.api.typed.ActionParser;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
@@ -79,6 +80,7 @@ public class JavaAstScanner {
 
   /**
    * Used to do scan of test files.
+   *
    * @param files
    */
   public void simpleScan(Iterable<File> files) {
@@ -132,11 +134,11 @@ public class JavaAstScanner {
    * Helper method for testing checks without having to deploy them on a Sonar instance.
    * Can be dropped when support for CheckMessageVerifier will be dropped.
    *
-   * @deprecated  As of release 3.6, should use {@link org.sonar.java.checks.verifier.JavaCheckVerifier#verify(String filename, JavaFileScanner check)} for rules unit tests.
+   * @deprecated As of release 3.6, should use {@link org.sonar.java.checks.verifier.JavaCheckVerifier#verify(String filename, JavaFileScanner check)} for rules unit tests.
    */
   @VisibleForTesting
   @Deprecated
-  public static SourceFile scanSingleFile(File file, InternalVisitorsBridge visitorsBridge) {
+  public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
@@ -150,9 +152,23 @@ public class JavaAstScanner {
     return (SourceFile) sources.iterator().next();
   }
 
-  private static JavaAstScanner create(JavaConfiguration conf, @Nullable InternalVisitorsBridge visitorsBridge) {
+  @VisibleForTesting
+  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge) {
+    if (!file.isFile()) {
+      throw new IllegalArgumentException("File '" + file + "' not found.");
+    }
+    JavaAstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitorsBridge);
+
+    scanner.scan(Collections.singleton(file));
+    Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
+    if (sources.size() != 1) {
+      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
+    }
+  }
+
+  private static JavaAstScanner create(JavaConfiguration conf, @Nullable VisitorsBridge visitorsBridge) {
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
-    if(visitorsBridge != null) {
+    if (visitorsBridge != null) {
       visitorsBridge.setCharset(conf.getCharset());
       astScanner.setVisitorBridge(visitorsBridge);
     }

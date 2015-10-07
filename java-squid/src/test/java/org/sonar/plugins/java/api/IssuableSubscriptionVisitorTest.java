@@ -39,7 +39,7 @@ public class IssuableSubscriptionVisitorTest {
   @Test
   public void test_custom_rules_report_issues() throws Exception {
     VisitorsBridge visitorsBridge = new VisitorsBridge(Lists.newArrayList(new CustomRule()), Lists.<File>newArrayList(), null);
-    JavaAstScanner.scanSingleFile(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(6);
   }
