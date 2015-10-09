@@ -28,6 +28,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -57,7 +58,7 @@ import java.util.Set;
   key = "S864",
   name = "Limited dependence should be placed on operator precedence rules in expressions",
   priority = Priority.MAJOR,
-  tags = {"cert", "cwe", "misra"})
+  tags = {Tag.CERT, Tag.CWE, Tag.MISRA})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {

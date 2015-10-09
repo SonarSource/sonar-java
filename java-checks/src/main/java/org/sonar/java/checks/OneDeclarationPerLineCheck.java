@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S1659",
   name = "Multiple variables should not be declared on the same line",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class OneDeclarationPerLineCheck extends SubscriptionBaseVisitor {

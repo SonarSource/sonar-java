@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -53,7 +54,7 @@ import java.util.List;
   key = "S1166",
   name = "Exception handlers should preserve the original exception",
   priority = Priority.CRITICAL,
-  tags = {"error-handling", "security"})
+  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.tag.Tag;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -36,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = CycleBetweenPackagesCheck.KEY,
   name = "Cycles between packages should be removed",
   priority = Priority.MAJOR,
-  tags = {"design"})
+  tags = {Tag.DESIGN})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("1d")
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {

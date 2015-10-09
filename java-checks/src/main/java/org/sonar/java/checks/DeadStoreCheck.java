@@ -28,6 +28,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.LocalVariableReadExtractor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -56,7 +57,7 @@ import java.util.Set;
   key = "S1854",
   name = "Dead stores should be removed",
   priority = Priority.MAJOR,
-  tags = {"cert", "cwe", "suspicious", "unused"})
+  tags = {Tag.CERT, Tag.CWE, Tag.SUSPICIOUS, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")

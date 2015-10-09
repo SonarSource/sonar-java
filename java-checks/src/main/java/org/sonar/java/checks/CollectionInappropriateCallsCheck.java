@@ -29,6 +29,7 @@ import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -46,7 +47,7 @@ import java.util.List;
   key = "S2175",
   name = "Inappropriate \"Collection\" calls should not be made",
   priority = Priority.CRITICAL,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")

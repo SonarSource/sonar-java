@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S1174",
   name = "\"Object.finalize()\" should remain protected (versus public) when overriding",
   priority = Priority.MAJOR,
-  tags = {"cert", "cwe", "security"})
+  tags = {Tag.CERT, Tag.CWE, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S1210",
   name = "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
   priority = Priority.CRITICAL,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")

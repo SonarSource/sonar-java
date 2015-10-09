@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -34,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1190",
   name = "Future keywords should not be used as names",
   priority = Priority.MAJOR,
-  tags = {"obsolete", "pitfall"})
+  tags = {Tag.OBSOLETE, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
 @SqaleConstantRemediation("5min")

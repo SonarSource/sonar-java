@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1163",
   name = "Exceptions should not be thrown in finally blocks",
   priority = Priority.MAJOR,
-  tags = {"error-handling", "security"})
+  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("30min")

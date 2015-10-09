@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -37,7 +38,7 @@ import java.util.List;
   key = "CallToDeprecatedMethod",
   name = "Deprecated methods should not be used",
   priority = Priority.MINOR,
-  tags = {"cwe", "obsolete", "owasp-a9", "security"})
+  tags = {Tag.CWE, Tag.OBSOLETE, Tag.OWASP_A9, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
 @SqaleConstantRemediation("15min")
 public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {

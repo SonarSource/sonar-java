@@ -27,6 +27,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -40,13 +41,14 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 
 @Rule(
   key = "S2185",
   name = "Silly math should not be performed",
   priority = Priority.MAJOR,
-  tags = {"clumsy"})
+  tags = {Tag.CLUMSY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")

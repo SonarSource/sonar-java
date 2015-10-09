@@ -31,6 +31,7 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -53,7 +54,7 @@ import java.util.List;
   key = "S2695",
   name = "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
   priority = Priority.BLOCKER,
-  tags = {"bug", "sql"})
+  tags = {Tag.BUG, Tag.SQL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")

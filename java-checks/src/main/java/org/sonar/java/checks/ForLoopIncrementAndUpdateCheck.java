@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -46,7 +47,7 @@ import java.util.List;
   key = "S1994",
   name = "\"for\" loop incrementers should modify the variable being tested in the loop's stop condition",
   priority = Priority.CRITICAL,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("20min")

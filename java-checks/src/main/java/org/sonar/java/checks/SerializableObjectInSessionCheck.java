@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S2441",
   name = "Non-serializable objects should not be stored in \"HttpSessions\"",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cwe"})
+  tags = {Tag.BUG, Tag.CWE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("20min")

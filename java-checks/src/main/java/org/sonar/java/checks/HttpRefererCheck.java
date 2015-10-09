@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S2089",
   name = "HTTP referers should not be relied on",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A2, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("20min")
 public class HttpRefererCheck extends AbstractMethodDetection {

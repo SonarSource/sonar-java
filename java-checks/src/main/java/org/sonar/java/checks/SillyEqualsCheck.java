@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -42,7 +43,7 @@ import java.util.List;
   key = "S2159",
   name = "Silly equality checks should not be made",
   priority = Priority.MAJOR,
-  tags = {"bug", "unused"})
+  tags = {Tag.BUG, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")

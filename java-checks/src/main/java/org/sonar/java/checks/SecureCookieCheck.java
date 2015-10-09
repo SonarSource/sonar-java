@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,7 +45,7 @@ import java.util.List;
   key = "S2092",
   name = "Cookies should be \"secure\"",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a2", "owasp-a6", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A2, Tag.OWASP_A6, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")

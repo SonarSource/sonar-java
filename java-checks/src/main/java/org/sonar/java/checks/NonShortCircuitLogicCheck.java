@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,7 +40,7 @@ import java.util.Map;
   key = "S2178",
   name = "Short-circuit logic should be used in boolean contexts",
   priority = Priority.CRITICAL,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

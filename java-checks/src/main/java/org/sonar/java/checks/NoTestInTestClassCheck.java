@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -45,7 +46,7 @@ import java.util.List;
   key = "S2187",
   name = "TestCases should contain tests",
   priority = Priority.MAJOR,
-  tags = {"junit", "unused"})
+  tags = {Tag.JUNIT, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")

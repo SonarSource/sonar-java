@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -54,7 +55,7 @@ import java.util.Set;
   key = "UselessImportCheck",
   name = "Useless imports should be removed",
   priority = Priority.MINOR,
-  tags = {"unused"})
+  tags = {Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

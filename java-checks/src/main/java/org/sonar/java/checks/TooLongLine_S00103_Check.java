@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
@@ -48,7 +49,7 @@ import java.util.Set;
   key = "S00103",
   name = "Lines should not be too long",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class TooLongLine_S00103_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {

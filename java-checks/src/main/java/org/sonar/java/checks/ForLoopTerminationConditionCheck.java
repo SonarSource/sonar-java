@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -40,7 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S888",
   name = "Relational operators should be used in \"for\" loop termination conditions",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "cwe", "misra"})
+  tags = {Tag.BUG, Tag.CERT, Tag.CWE, Tag.MISRA})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")

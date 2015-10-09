@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -35,7 +36,7 @@ import java.util.List;
   key = "S2258",
   name = "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
   priority = Priority.BLOCKER,
-  tags = {"cwe", "owasp-a6", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("15min")
 public class NullCipherCheck extends SubscriptionBaseVisitor {

@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -44,7 +45,7 @@ import java.util.List;
   key = "ClassVariableVisibilityCheck",
   name = "Class variable fields should not have public accessibility",
   priority = Priority.MAJOR,
-  tags = {"cwe"})
+  tags = {Tag.CWE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")

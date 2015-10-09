@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -39,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1862",
   name = "Related \"if/else if\" statements should not have the same condition",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "pitfall", "unused"})
+  tags = {Tag.BUG, Tag.CERT, Tag.PITFALL, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")

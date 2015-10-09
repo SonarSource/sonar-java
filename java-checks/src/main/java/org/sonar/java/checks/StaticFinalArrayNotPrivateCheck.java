@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S1873",
   name = "\"static final\" arrays should be \"private\"",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "security"})
+  tags = {Tag.CWE, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("15min")

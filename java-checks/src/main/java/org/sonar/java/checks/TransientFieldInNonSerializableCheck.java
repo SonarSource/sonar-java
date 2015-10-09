@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -42,7 +43,7 @@ import java.util.List;
   key = "S2065",
   name = "Fields in non-serializable classes should not be \"transient\"",
   priority = Priority.MINOR,
-  tags = {"serialization", "unused"})
+  tags = {Tag.SERIALIZATION, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

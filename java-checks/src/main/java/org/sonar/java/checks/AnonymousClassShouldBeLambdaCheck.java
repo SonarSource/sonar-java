@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -42,7 +43,7 @@ import java.util.List;
   key = "S1604",
   name = "Anonymous inner classes containing only one method should become lambdas",
   priority = Priority.MAJOR,
-  tags = {"java8"})
+  tags = {Tag.JAVA_8})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner {

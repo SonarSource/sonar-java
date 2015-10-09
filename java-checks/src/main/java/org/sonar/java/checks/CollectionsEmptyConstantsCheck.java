@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -39,7 +40,7 @@ import java.util.Map;
   key = "S1596",
   name = "Collections.emptyList(), emptyMap() and emptySet() should be used instead of Collections.EMPTY_LIST, EMPTY_MAP and EMPTY_SET",
   priority = Priority.MAJOR,
-  tags = {"obsolete", "pitfall"})
+  tags = {Tag.OBSOLETE, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

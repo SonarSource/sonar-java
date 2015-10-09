@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -46,7 +47,7 @@ import java.util.Set;
   key = "S1943",
   name = "Classes and methods that rely on the default system encoding should not be used",
   priority = Priority.MAJOR,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class DefaultEncodingUsageCheck extends AbstractMethodDetection {

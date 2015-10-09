@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,7 +45,7 @@ import java.util.Set;
   key = "S00112",
   name = "Generic exceptions should never be thrown",
   priority = Priority.MAJOR,
-  tags = {"cwe", "error-handling", "security"})
+  tags = {Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")

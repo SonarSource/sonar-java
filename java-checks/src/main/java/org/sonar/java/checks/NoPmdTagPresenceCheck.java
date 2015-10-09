@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -34,7 +35,7 @@ import java.util.List;
   key = "S1310",
   name = "\"NOPMD\" suppression comments should not be used",
   priority = Priority.MINOR,
-  tags = {"bad-practice"})
+  tags = {Tag.BAD_PRACTICE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class NoPmdTagPresenceCheck extends SubscriptionBaseVisitor {

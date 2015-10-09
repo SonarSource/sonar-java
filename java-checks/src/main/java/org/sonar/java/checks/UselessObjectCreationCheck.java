@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S1848",
   name = "Objects should not be created to be dropped immediately without being used",
   priority = Priority.CRITICAL,
-  tags = {"bug", "unused"})
+  tags = {Tag.BUG, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

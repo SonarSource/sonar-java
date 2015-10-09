@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -40,7 +41,7 @@ import java.util.Set;
   key = "S1193",
   name = "Exception types should not be tested using \"instanceof\" in catch blocks",
   priority = Priority.MAJOR,
-  tags = {"error-handling", "security"})
+  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")

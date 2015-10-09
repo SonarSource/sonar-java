@@ -29,6 +29,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -51,7 +52,7 @@ import java.util.regex.Pattern;
   key = "S2275",
   name = "Printf-style format strings should not lead to unexpected behavior at runtime",
   priority = Priority.CRITICAL,
-  tags = {"bug", "pitfall"})
+  tags = {Tag.BUG, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")

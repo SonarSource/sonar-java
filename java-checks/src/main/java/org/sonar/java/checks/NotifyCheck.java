@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -35,7 +36,7 @@ import java.util.List;
   key = "S2446",
   name = "\"notifyAll\" should be used",
   priority = Priority.CRITICAL,
-  tags = {"bug", "multi-threading"})
+  tags = {Tag.BUG, Tag.MULTI_THREADING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class NotifyCheck extends AbstractMethodDetection {

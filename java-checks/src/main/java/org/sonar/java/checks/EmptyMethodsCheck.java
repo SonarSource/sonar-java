@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -43,7 +44,7 @@ import java.util.List;
   key = "S1186",
   name = "Methods should not be empty",
   priority = Priority.MAJOR,
-  tags = {"suspicious"})
+  tags = {Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")

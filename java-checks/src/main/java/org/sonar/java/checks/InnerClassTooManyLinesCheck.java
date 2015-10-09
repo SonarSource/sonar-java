@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S2972",
   name = "Inner classes should not have too many lines",
   priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+  tags = {Tag.BRAIN_OVERLOAD})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class InnerClassTooManyLinesCheck extends SubscriptionBaseVisitor {

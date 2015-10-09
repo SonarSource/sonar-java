@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -46,7 +47,7 @@ import java.util.List;
   key = "S2130",
   name = "Parsing should be used to convert \"Strings\" to primitives",
   priority = Priority.MAJOR,
-  tags = {"performance"})
+  tags = {Tag.PERFORMANCE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")

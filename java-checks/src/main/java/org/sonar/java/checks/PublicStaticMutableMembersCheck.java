@@ -33,6 +33,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -58,7 +59,7 @@ import java.util.Set;
   key = "S2386",
   name = "Mutable fields should not be \"public static\"",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "unpredictable", "security"})
+  tags = {Tag.CWE, Tag.UNPREDICTABLE, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("15min")

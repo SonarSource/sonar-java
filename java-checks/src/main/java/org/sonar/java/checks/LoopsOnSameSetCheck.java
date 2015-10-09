@@ -27,6 +27,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -38,6 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +48,7 @@ import java.util.Map;
   key = "S3047",
   name = "Multiple loops over the same set should be combined",
   priority = Priority.MAJOR,
-  tags = {"performance"})
+  tags = {Tag.PERFORMANCE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("20min")
 public class LoopsOnSameSetCheck extends SubscriptionBaseVisitor {

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -48,7 +49,7 @@ import java.util.List;
   key = "S2384",
   name = "Mutable members should not be stored or returned directly",
   priority = Priority.CRITICAL,
-  tags = {"cert", "cwe", "security", "unpredictable"})
+  tags = {Tag.CERT, Tag.CWE, Tag.SECURITY, Tag.UNPREDICTABLE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFileScanner {

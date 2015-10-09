@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S2273",
   name = "\"wait(...)\", \"notify()\" and \"notifyAll()\" methods should only be called when a lock is obviously held on an object",
   priority = Priority.CRITICAL,
-  tags = {"bug", "multi-threading"})
+  tags = {Tag.BUG, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

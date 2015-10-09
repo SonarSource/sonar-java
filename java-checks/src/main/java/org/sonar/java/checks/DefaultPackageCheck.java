@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -32,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1220",
   name = "The default unnamed package should not be used",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")

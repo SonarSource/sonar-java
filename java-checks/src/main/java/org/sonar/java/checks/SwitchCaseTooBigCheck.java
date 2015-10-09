@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -42,7 +43,7 @@ import java.util.List;
   key = "S1151",
   name = "\"switch case\" clauses should not have too many lines",
   priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+  tags = {Tag.BRAIN_OVERLOAD})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

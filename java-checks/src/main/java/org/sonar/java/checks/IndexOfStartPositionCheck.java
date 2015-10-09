@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -42,7 +43,7 @@ import java.util.List;
   key = "S2912",
   name = "\"indexOf\" checks should use a start position",
   priority = Priority.MAJOR,
-  tags = {"confusing"})
+  tags = {Tag.CONFUSING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

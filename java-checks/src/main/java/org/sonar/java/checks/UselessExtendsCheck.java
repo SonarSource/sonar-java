@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -44,7 +45,7 @@ import java.util.Set;
   key = "S1939",
   name = "Extensions and implementations should not be redundant",
   priority = Priority.MINOR,
-  tags = {"clumsy"})
+  tags = {Tag.CLUMSY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1min")
 public class UselessExtendsCheck extends SubscriptionBaseVisitor implements JavaFileScanner {

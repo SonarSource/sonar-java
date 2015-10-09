@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -30,7 +31,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S2059",
   name = "\"Serializable\" inner classes of \"Serializable\" classes should be static",
   priority = Priority.MAJOR,
-  tags = {"pitfall", "serialization"})
+  tags = {Tag.PITFALL, Tag.SERIALIZATION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("15min")
 public class InnerClassOfSerializableCheck extends AbstractSerializableInnerClassRule {

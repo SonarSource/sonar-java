@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -41,7 +42,7 @@ import java.util.List;
   key = "UselessParenthesesCheck",
   name = "Useless parentheses around expressions should be removed to prevent any misunderstanding",
   priority = Priority.MAJOR,
-  tags = {"confusing"})
+  tags = {Tag.CONFUSING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")

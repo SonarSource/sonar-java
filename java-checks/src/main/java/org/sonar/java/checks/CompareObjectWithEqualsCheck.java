@@ -24,6 +24,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -38,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1698",
   name = "Objects should be compared with \"equals()\"",
   priority = Priority.MAJOR,
-  tags = {"cert", "cwe"})
+  tags = {Tag.CERT, Tag.CWE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class CompareObjectWithEqualsCheck extends BaseTreeVisitor implements JavaFileScanner {

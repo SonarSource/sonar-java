@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -47,7 +48,7 @@ import java.util.List;
   key = "S1989",
   name = "Exceptions should not be thrown from servlet methods",
   priority = Priority.CRITICAL,
-  tags = {"cert", "cwe", "owasp-a6", "security", "error-handling"})
+  tags = {Tag.CERT, Tag.CWE, Tag.OWASP_A6, Tag.SECURITY, Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)
 @SqaleConstantRemediation("20min")

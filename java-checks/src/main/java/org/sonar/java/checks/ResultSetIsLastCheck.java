@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -36,7 +37,7 @@ import java.util.List;
   key = "S2232",
   name = "\"ResultSet.isLast()\" should not be used",
   priority = Priority.CRITICAL,
-  tags = {"performance", "pitfall", "sql"})
+  tags = {Tag.PERFORMANCE, Tag.PITFALL, Tag.SQL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("10min")

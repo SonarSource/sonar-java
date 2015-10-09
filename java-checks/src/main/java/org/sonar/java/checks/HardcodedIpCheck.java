@@ -23,6 +23,7 @@ import com.google.common.base.Splitter;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -39,7 +40,7 @@ import java.util.regex.Pattern;
   key = "S1313",
   name = "IP addresses should not be hardcoded",
   priority = Priority.MAJOR,
-  tags = {"cert", "security"})
+  tags = {Tag.CERT, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("30min")

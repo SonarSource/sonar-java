@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -37,7 +38,7 @@ import java.util.List;
   key = "S2230",
   name = "Non-public methods should not be \"@Transactional\"",
   priority = Priority.CRITICAL,
-  tags = {"bug", "spring"})
+  tags = {Tag.BUG, Tag.SPRING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("20min")

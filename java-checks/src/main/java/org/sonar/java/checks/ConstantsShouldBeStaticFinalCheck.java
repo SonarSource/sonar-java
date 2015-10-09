@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -44,7 +45,7 @@ import java.util.List;
   key = "S1170",
   name = "Public constants and fields initialized at declaration should be \"static final\" rather than merely \"final\"",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("2min")

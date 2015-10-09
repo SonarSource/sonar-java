@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -50,7 +51,7 @@ import java.util.LinkedList;
   key = "S1643",
   name = "Strings should not be concatenated using '+' in a loop",
   priority = Priority.MAJOR,
-  tags = {"performance"})
+  tags = {Tag.PERFORMANCE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("10min")
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +37,7 @@ import java.util.List;
   key = "ObjectFinalizeOverridenCheck",
   name = "The Object.finalize() method should not be overriden",
   priority = Priority.CRITICAL,
-  tags = {"cert", "unpredictable"})
+  tags = {Tag.CERT, Tag.UNPREDICTABLE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

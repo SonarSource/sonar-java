@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -46,7 +47,7 @@ import java.util.List;
   key = "S2188",
   name = "JUnit test cases should call super methods",
   priority = Priority.CRITICAL,
-  tags = {"bug", "junit"})
+  tags = {Tag.BUG, Tag.JUNIT})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault

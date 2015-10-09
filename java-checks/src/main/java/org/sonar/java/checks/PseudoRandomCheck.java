@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +37,7 @@ import java.util.List;
   key = "S2245",
   name = "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
   priority = Priority.CRITICAL,
-  tags = {"cert", "cwe", "owasp-a6", "security"})
+  tags = {Tag.CERT, Tag.CWE, Tag.OWASP_A6, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("10min")
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {

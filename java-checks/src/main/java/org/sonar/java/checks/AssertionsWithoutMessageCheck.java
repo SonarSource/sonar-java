@@ -28,6 +28,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -41,7 +42,7 @@ import java.util.Set;
   key = "S2698",
   name = "JUnit assertions should include messages",
   priority = Priority.MAJOR,
-  tags = {"junit"})
+  tags = {Tag.JUNIT})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {

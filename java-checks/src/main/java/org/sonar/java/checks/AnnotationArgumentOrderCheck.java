@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S3340",
   name = "Annotation arguments should appear in the order in which they were declared",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class AnnotationArgumentOrderCheck extends SubscriptionBaseVisitor {

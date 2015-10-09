@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -32,7 +33,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "EmptyFile",
   name = "Files should not be empty",
   priority = Priority.MAJOR,
-  tags = {"unused"})
+  tags = {Tag.UNUSED})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public final class EmptyFileCheck implements JavaFileScanner {

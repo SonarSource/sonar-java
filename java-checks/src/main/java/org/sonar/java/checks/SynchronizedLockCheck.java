@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -37,7 +38,7 @@ import java.util.List;
   key = "S2442",
   name = "\"Lock\" objects should not be \"synchronized\"",
   priority = Priority.BLOCKER,
-  tags = {"clumsy", "multi-threading"})
+  tags = {Tag.CLUMSY, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("15min")

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S2444",
   name = "Lazy initialization of \"static\" fields should be \"synchronized\"",
   priority = Priority.CRITICAL,
-  tags = {"bug", "multi-threading"})
+  tags = {Tag.BUG, Tag.MULTI_THREADING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")
 public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker {

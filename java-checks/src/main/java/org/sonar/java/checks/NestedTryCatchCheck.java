@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -34,7 +35,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1141",
   name = "Try-catch blocks should not be nested",
   priority = Priority.MAJOR,
-  tags = {"confusing"})
+  tags = {Tag.CONFUSING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("20min")

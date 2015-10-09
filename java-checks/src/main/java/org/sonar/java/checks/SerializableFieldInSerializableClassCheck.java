@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -48,7 +49,7 @@ import java.util.List;
   key = "S1948",
   name = "Fields in a \"Serializable\" class should either be transient or serializable",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cwe", "serialization"})
+  tags = {Tag.BUG, Tag.CWE, Tag.SERIALIZATION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("30min")

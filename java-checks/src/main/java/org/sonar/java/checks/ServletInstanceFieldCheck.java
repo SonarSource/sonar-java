@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S2226",
   name = "Servlets should never have mutable instance fields",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "multi-threading"})
+  tags = {Tag.BUG, Tag.CERT, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")

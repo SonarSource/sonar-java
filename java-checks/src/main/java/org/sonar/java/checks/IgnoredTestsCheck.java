@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -34,7 +35,7 @@ import java.util.List;
   key = "S1607",
   name = "Skipped unit tests should be either removed or fixed",
   priority = Priority.MAJOR,
-  tags = {"pitfall"})
+  tags = {Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("10min")
 public class IgnoredTestsCheck extends SubscriptionBaseVisitor {

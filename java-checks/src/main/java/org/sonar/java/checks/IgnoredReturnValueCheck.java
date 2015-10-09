@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S2201",
   name = "Return values should not be ignored when function calls don't have any side effects",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "misra"})
+  tags = {Tag.BUG, Tag.CERT, Tag.MISRA})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {

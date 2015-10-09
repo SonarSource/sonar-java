@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S1610",
   name = "Abstract classes without fields should be converted to interfaces",
   priority = Priority.MAJOR,
-  tags = {"java8"})
+  tags = {Tag.JAVA_8})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
 @SqaleConstantRemediation("10min")
 public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscriptionVisitor {

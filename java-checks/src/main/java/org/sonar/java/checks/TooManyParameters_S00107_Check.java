@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S00107",
   name = "Methods should not have too many parameters",
   priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+  tags = {Tag.BRAIN_OVERLOAD})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("20min")

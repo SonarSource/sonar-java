@@ -27,6 +27,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -42,7 +43,7 @@ import java.util.regex.Pattern;
   key = "TrailingCommentCheck",
   name = "Comments should not be located at the end of lines of code",
   priority = Priority.INFO,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class TrailingCommentCheck extends SubscriptionBaseVisitor {

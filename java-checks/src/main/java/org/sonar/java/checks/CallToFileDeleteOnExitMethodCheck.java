@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -35,7 +36,7 @@ import java.util.List;
   key = "CallToFileDeleteOnExitMethod",
   name = "\"deleteOnExit\" should not be used",
   priority = Priority.MAJOR,
-  tags = {"performance"})
+  tags = {Tag.PERFORMANCE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("30min")
 public class  CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {

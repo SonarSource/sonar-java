@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +37,7 @@ import java.util.List;
   key = "S138",
   name = "Methods should not have too many lines",
   priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+  tags = {Tag.BRAIN_OVERLOAD})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class MethodTooBigCheck extends SubscriptionBaseVisitor {

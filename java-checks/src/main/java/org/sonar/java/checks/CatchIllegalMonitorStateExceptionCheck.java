@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S2235",
   name = "IllegalMonitorStateException should not be caught",
   priority = Priority.CRITICAL,
-  tags = {"bug", "multi-threading"})
+  tags = {Tag.BUG, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

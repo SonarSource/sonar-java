@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,6 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
@@ -48,7 +50,7 @@ import java.util.List;
   key = "HiddenFieldCheck",
   name = "Local variables should not shadow class fields",
   priority = Priority.MAJOR,
-  tags = {"pitfall"})
+  tags = {Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

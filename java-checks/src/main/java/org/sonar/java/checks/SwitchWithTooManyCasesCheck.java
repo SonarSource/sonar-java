@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -42,7 +43,7 @@ import java.util.Set;
   key = "S1479",
   name = "\"switch\" statements should not have too many \"case\" clauses",
   priority = Priority.MAJOR,
-  tags = {"brain-overload"})
+  tags = {Tag.BRAIN_OVERLOAD})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("30min")

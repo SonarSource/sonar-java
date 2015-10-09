@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -43,7 +44,7 @@ import java.util.Set;
   key = "ForLoopCounterChangedCheck",
   name = "\"for\" loop stop conditions should be invariant",
   priority = Priority.MAJOR,
-  tags = {"misra", "pitfall"})
+  tags = {Tag.MISRA, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")

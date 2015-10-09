@@ -30,6 +30,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.model.PackageUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -54,7 +55,7 @@ import java.util.regex.Pattern;
   key = "UndocumentedApi",
   name = "Public types, methods and fields (API) should be documented with Javadoc",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {

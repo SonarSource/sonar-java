@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -43,7 +44,7 @@ import java.util.List;
   key = "S2438",
   name = "\"Threads\" should not be used where \"Runnables\" are expected",
   priority = Priority.CRITICAL,
-  tags = {"multi-threading", "pitfall"})
+  tags = {Tag.MULTI_THREADING, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("15min")

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S1724",
   name = "Deprecated classes and interfaces should not be extended/implemented",
   priority = Priority.MAJOR,
-  tags = {"cwe", "obsolete"})
+  tags = {Tag.CWE, Tag.OBSOLETE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("30min")
 public class ExtendDeprecatedSymbolCheck extends AbstractDeprecatedChecker {

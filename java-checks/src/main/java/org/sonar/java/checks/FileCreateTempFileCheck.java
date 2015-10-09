@@ -24,6 +24,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -41,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -50,7 +52,7 @@ import java.util.Map;
   key = "S2976",
   name = "\"File.createTempFile\" should not be used to create a directory",
   priority = Priority.CRITICAL,
-  tags = {"owasp-a9", "security"})
+  tags = {Tag.OWASP_A9, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("5min")

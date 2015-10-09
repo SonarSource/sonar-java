@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -36,7 +37,7 @@ import java.util.List;
   key = "S2254",
   name = "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a2", "sans-top25-porous", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A2, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("10min")

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -44,7 +45,7 @@ import javax.annotation.Nullable;
   key = "AssignmentInSubExpressionCheck",
   name = "Assignments should not be made from within sub-expressions",
   priority = Priority.MAJOR,
-  tags = {"bug", "cwe", "misra"})
+  tags = {Tag.BUG, Tag.CWE, Tag.MISRA})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

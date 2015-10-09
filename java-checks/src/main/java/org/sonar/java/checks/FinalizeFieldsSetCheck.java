@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,7 +44,7 @@ import java.util.List;
   key = "S2165",
   name = "\"finalize\" should not set fields to \"null\"",
   priority = Priority.MAJOR,
-  tags = {"clumsy", "performance"})
+  tags = {Tag.CLUMSY, Tag.PERFORMANCE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

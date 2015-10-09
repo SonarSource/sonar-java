@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,7 +40,7 @@ import java.util.Map;
   key = "S1940",
   name = "Boolean checks should not be inverted",
   priority = Priority.MAJOR,
-  tags = {"pitfall"})
+  tags = {Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
 public class BooleanInversionCheck extends SubscriptionBaseVisitor {

@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -36,7 +37,7 @@ import java.util.Set;
   key = "S818",
   name = "Literal suffixes should be upper case",
   priority = Priority.MINOR,
-  tags = {"cert", "convention", "misra", "pitfall"})
+  tags = {Tag.CERT, Tag.CONVENTION, Tag.MISRA, Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
 public class UppercaseSuffixesCheck extends SubscriptionBaseVisitor {

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S2974",
   name = "Classes without \"public\" constructors should be \"final\"",
   priority = Priority.MAJOR,
-  tags = {"design"})
+  tags = {Tag.DESIGN})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class FinalClassCheck extends IssuableSubscriptionVisitor {

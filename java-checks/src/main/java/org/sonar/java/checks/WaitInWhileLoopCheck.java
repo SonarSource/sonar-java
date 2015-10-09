@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,7 +44,7 @@ import java.util.List;
   key = "S2274",
   name = "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert", "multi-threading"})
+  tags = {Tag.BUG, Tag.CERT, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

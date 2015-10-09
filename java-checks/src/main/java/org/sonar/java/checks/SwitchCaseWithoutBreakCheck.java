@@ -23,6 +23,7 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -42,7 +43,7 @@ import java.util.Deque;
   key = "S128",
   name = "Switch cases should end with an unconditional \"break\" statement",
   priority = Priority.CRITICAL,
-  tags = {"cert", "cwe", "misra", "pitfall"})
+  tags = {Tag.CERT, Tag.CWE, Tag.MISRA, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")

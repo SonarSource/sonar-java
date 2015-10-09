@@ -24,6 +24,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
@@ -35,7 +36,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S2078",
   name = "Values passed to LDAP queries should be sanitized",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a1", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A1, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")
 public class LDAPInjectionCheck extends AbstractInjectionChecker {

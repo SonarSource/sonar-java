@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S2693",
   name = "Threads should not be started in constructors",
   priority = Priority.CRITICAL,
-  tags = {"multi-threading", "pitfall"})
+  tags = {Tag.MULTI_THREADING, Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")
 public class ThreadStartedInConstructorCheck extends SubscriptionBaseVisitor {

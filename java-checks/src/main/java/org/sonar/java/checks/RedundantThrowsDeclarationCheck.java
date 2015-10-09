@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -40,7 +41,7 @@ import java.util.Set;
   key = "RedundantThrowsDeclarationCheck",
   name = "Throws declarations should not be superfluous",
   priority = Priority.MINOR,
-  tags = {"error-handling", "security"})
+  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

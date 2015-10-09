@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -43,7 +44,7 @@ import java.util.List;
   key = "S2221",
   name = "\"Exception\" should not be caught when not required by called methods",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "error-handling", "security"})
+  tags = {Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("15min")
 public class CatchExceptionCheck extends SubscriptionBaseVisitor {

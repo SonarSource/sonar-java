@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S2186",
   name = "JUnit assertions should not be used in \"run\" methods",
   priority = Priority.CRITICAL,
-  tags = {"junit", "pitfall"})
+  tags = {Tag.JUNIT, Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("30min")
 @ActivatedByDefault

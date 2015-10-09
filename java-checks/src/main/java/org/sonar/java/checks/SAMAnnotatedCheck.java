@@ -27,6 +27,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -47,7 +48,7 @@ import java.util.List;
   key = "S1609",
   name = "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
   priority = Priority.MAJOR,
-  tags = {"java8"})
+  tags = {Tag.JAVA_8})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
 public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {

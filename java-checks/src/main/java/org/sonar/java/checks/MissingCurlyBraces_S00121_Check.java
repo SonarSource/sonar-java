@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S00121",
   name = "Control structures should use curly braces",
   priority = Priority.MINOR,
-  tags = {"cert", "cwe", "misra", "pitfall"})
+  tags = {Tag.CERT, Tag.CWE, Tag.MISRA, Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {

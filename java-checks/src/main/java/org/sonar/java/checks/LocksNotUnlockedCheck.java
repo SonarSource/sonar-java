@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.locks.LockedVisitor;
 import org.sonar.java.symexecengine.DataFlowVisitor;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -37,7 +38,7 @@ import java.util.List;
   key = "S2222",
   name = "Locks should be released",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cwe", "multi-threading"})
+  tags = {Tag.BUG, Tag.CWE, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")

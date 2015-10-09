@@ -25,6 +25,7 @@ import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -41,7 +42,7 @@ import java.util.List;
   key = "S00105",
   name = "Tabulation characters should not be used",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -41,7 +42,7 @@ import java.util.List;
   key = "S1764",
   name = "Identical expressions should not be used on both sides of a binary operator",
   priority = Priority.CRITICAL,
-  tags = {"bug", "cert"})
+  tags = {Tag.BUG, Tag.CERT})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("2min")

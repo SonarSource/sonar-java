@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -41,7 +42,7 @@ import java.util.List;
   key = "S2156",
   name = "\"final\" classes should not have \"protected\" members",
   priority = Priority.MAJOR,
-  tags = {"confusing"})
+  tags = {Tag.CONFUSING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class ProtectedMemberInFinalClassCheck extends SubscriptionBaseVisitor {

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -40,7 +41,7 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.LABELED_STATEMENT;
   key = "S1219",
   name = "\"switch\" statements should not contain non-case labels",
   priority = Priority.CRITICAL,
-  tags = {"misra", "pitfall"})
+  tags = {Tag.MISRA, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

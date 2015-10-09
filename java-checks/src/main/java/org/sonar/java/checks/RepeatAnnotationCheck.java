@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S1710",
   name = "Annotation repetitions should not be wrapped",
   priority = Priority.MAJOR,
-  tags = {"java8"})
+  tags = {Tag.JAVA_8})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileScanner {

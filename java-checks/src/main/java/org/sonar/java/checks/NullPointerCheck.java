@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -58,6 +59,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +70,7 @@ import java.util.Set;
   key = "S2259",
   name = "Null pointers should not be dereferenced",
   priority = Priority.BLOCKER,
-  tags = {"bug", "cert", "cwe", "owasp-a1", "owasp-a2", "owasp-a6", "security"})
+  tags = {Tag.BUG, Tag.CERT, Tag.CWE, Tag.OWASP_A1, Tag.OWASP_A2, Tag.OWASP_A6, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")

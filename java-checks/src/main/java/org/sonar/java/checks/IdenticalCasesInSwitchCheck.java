@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -46,7 +47,7 @@ import java.util.Set;
   key = "S1871",
   name = "Two branches in the same conditional structure should not have exactly the same implementation",
   priority = Priority.MAJOR,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {

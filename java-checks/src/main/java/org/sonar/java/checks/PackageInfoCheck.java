@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -35,7 +36,7 @@ import java.util.Set;
   key = "S1228",
   name = "Packages should have a javadoc file 'package-info.java'",
   priority = Priority.MINOR,
-  tags = {"convention"})
+  tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class PackageInfoCheck implements JavaFileScanner {

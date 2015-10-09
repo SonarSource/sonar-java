@@ -24,6 +24,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -44,7 +45,7 @@ import java.util.Set;
   key = "S1191",
   name = "Classes from \"sun.*\" packages should not be used",
   priority = Priority.MAJOR,
-  tags = {"lock-in", "pitfall"})
+  tags = {Tag.LOCK_IN, Tag.PITFALL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
 @SqaleConstantRemediation("1h")

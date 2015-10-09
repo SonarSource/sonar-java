@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -41,7 +42,7 @@ import java.util.regex.Pattern;
   key = "S2973",
   name = "Escaped Unicode characters should not be used",
   priority = Priority.MAJOR,
-  tags = {"confusing"})
+  tags = {Tag.CONFUSING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class EscapedUnicodeCharactersCheck extends SubscriptionBaseVisitor {

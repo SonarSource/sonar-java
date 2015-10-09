@@ -26,6 +26,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -46,7 +47,7 @@ import java.util.List;
   key = "S2699",
   name = "Tests should include assertions",
   priority = Priority.CRITICAL,
-  tags = {"junit"})
+  tags = {Tag.JUNIT})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("10min")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {

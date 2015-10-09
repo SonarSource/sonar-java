@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -36,7 +37,7 @@ import java.util.List;
   key = "S2658",
   name = "Classes should not be loaded dynamically",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a1", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A1, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("45min")
 public class DynamicClassLoadCheck extends AbstractMethodDetection {

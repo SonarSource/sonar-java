@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -37,7 +38,7 @@ import java.util.List;
   key = "S1860",
   name = "Synchronization should not be based on Strings or boxed primitives",
   priority = Priority.BLOCKER,
-  tags = {"bug", "cert", "multi-threading"})
+  tags = {Tag.BUG, Tag.CERT, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("15min")

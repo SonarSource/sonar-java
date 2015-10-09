@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -39,7 +40,7 @@ import java.util.Set;
   key = "S2924",
   name = "JUnit rules should be used",
   priority = Priority.MAJOR,
-  tags = {"unused", "junit"})
+  tags = {Tag.UNUSED, Tag.JUNIT})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")

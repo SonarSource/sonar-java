@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -36,7 +37,7 @@ import java.util.LinkedList;
   key = "MissingDeprecatedCheck",
   name = "Deprecated elements should have both the annotation and the Javadoc tag",
   priority = Priority.MAJOR,
-  tags = {"bad-practice"})
+  tags = {Tag.BAD_PRACTICE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

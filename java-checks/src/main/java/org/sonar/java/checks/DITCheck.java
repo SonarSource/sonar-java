@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -36,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "MaximumInheritanceDepth",
   name = "Inheritance tree of classes should not be too deep",
   priority = Priority.MAJOR,
-  tags = {"design"})
+  tags = {Tag.DESIGN})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("4h")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {

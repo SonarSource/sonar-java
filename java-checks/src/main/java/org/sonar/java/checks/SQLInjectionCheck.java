@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,7 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S2077",
   name = "Values passed to SQL commands should be sanitized",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security", "sql", "hibernate"})
+  tags = {Tag.CWE, Tag.OWASP_A1, Tag.SANS_TOP_25_INSECURE, Tag.SECURITY, Tag.SQL, Tag.HIBERNATE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("20min")

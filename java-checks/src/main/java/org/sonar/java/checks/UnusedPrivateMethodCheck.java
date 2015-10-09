@@ -30,6 +30,7 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.java.signature.Parameter;
+import org.sonar.java.tag.Tag;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -42,7 +43,7 @@ import java.util.List;
   key = "UnusedPrivateMethod",
   name = "Unused private method should be removed",
   priority = Priority.MAJOR,
-  tags = {"unused"})
+  tags = {Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

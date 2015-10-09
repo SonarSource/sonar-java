@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -45,7 +46,7 @@ import java.util.Map;
   key = "S1149",
   name = "Synchronized classes Vector, Hashtable, Stack and StringBuffer should not be used",
   priority = Priority.MAJOR,
-  tags = {"multi-threading", "performance"})
+  tags = {Tag.MULTI_THREADING, Tag.PERFORMANCE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("20min")

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -31,7 +32,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S2066",
   name = "\"Serializable\" inner classes of non-serializable classes should be \"static\"",
   priority = Priority.CRITICAL,
-  tags = {"bug", "serialization"})
+  tags = {Tag.BUG, Tag.SERIALIZATION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")

@@ -32,6 +32,7 @@ import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -49,7 +50,7 @@ import java.util.Set;
   key = "S3318",
   name = "Untrusted data should not be stored in sessions",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "security"})
+  tags = {Tag.CWE, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("20min")
 public class DataStoredInSessionCheck extends AbstractMethodDetection {

@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.tag.Tag;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.CheckMessage;
@@ -34,7 +35,7 @@ import org.sonar.squidbridge.api.SourceFile;
   key = "UnusedProtectedMethod",
   name = "Unused protected methods should be removed",
   priority = Priority.MAJOR,
-  tags = {"unused"})
+  tags = {Tag.UNUSED})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {

@@ -27,6 +27,7 @@ import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -40,7 +41,7 @@ import java.util.List;
   key = "S2278",
   name = "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a6", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")
 public class AvoidDESCheck extends AbstractMethodDetection {

@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -44,7 +45,7 @@ import java.util.List;
   key = "S1640",
   name = "Maps with keys that are enum values should be replaced with EnumMap",
   priority = Priority.MAJOR,
-  tags = {"performance"})
+  tags = {Tag.PERFORMANCE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")

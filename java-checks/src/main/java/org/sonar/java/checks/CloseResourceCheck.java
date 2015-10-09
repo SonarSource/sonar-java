@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.closeresource.CloseableVisitor;
 import org.sonar.java.symexecengine.DataFlowVisitor;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S2095",
   name = "Resources should be closed",
   priority = Priority.BLOCKER,
-  tags = {"bug", "cert", "cwe", "denial-of-service", "leak", "security"})
+  tags = {Tag.BUG, Tag.CERT, Tag.CWE, Tag.DENIAL_OF_SERVICE, Tag.LEAK, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

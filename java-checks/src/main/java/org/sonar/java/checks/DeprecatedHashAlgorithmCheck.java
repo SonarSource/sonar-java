@@ -31,6 +31,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -45,7 +46,7 @@ import java.util.Map;
   key = "S2070",
   name = "SHA-1 and Message-Digest hash algorithms should not be used",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a6", "sans-top25-porous", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("30min")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {

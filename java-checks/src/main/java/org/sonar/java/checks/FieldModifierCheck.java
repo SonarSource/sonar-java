@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -38,7 +39,7 @@ import java.util.List;
   key = "S2039",
   name = "Member variable visibility should be specified",
   priority = Priority.MAJOR,
-  tags = {"security"})
+  tags = {Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class FieldModifierCheck extends SubscriptionBaseVisitor {

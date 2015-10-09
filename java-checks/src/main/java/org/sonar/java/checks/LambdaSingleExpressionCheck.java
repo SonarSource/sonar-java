@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S1602",
   name = "Lamdbas containing only one statement should not nest this statement in a block",
   priority = Priority.MAJOR,
-  tags = {"java8"})
+  tags = {Tag.JAVA_8})
 @ActivatedByDefault
 @Beta
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)

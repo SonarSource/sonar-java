@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.JavaType.ClassJavaType;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -43,7 +44,7 @@ import java.util.List;
   key = "S1699",
   name = "Constructors should only call non-overridable methods",
   priority = Priority.MAJOR,
-  tags = {"bug"})
+  tags = {Tag.BUG})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor {

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -39,7 +40,7 @@ import java.util.LinkedList;
   key = "S1143",
   name = "\"return\" statements should not occur in \"finally\" blocks",
   priority = Priority.BLOCKER,
-  tags = {"bug", "cwe", "error-handling"})
+  tags = {Tag.BUG, Tag.CWE, Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("30min")

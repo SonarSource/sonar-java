@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -39,7 +40,7 @@ import java.util.List;
   key = "S2076",
   name = "Values passed to OS commands should be sanitized",
   priority = Priority.CRITICAL,
-  tags = {"cwe", "owasp-a1", "sans-top25-insecure", "security"})
+  tags = {Tag.CWE, Tag.OWASP_A1, Tag.SANS_TOP_25_INSECURE, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
 @SqaleConstantRemediation("30min")
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
