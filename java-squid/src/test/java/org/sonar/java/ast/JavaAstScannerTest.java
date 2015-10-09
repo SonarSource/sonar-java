@@ -21,6 +21,7 @@ package org.sonar.java.ast;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
 import com.sonar.sslr.api.typed.GrammarBuilder;
@@ -32,7 +33,10 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.issue.NoSonarFilter;
+import org.sonar.api.resources.Resource;
 import org.sonar.java.Measurer;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -44,16 +48,16 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.api.AnalysisException;
-import org.sonar.squidbridge.api.SourceFile;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JavaAstScannerTest {
 
@@ -71,15 +75,24 @@ public class JavaAstScannerTest {
 
   @Test
   public void comments() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/Comments.java"), new VisitorsBridge(new Measurer(fs, context, false)));
-    assertThat(file.getNoSonarTagLines()).contains(15).hasSize(1);
+    File file = new File("src/test/files/metrics/Comments.java");
+    Resource resource = mock(Resource.class);
+    when(resource.getEffectiveKey()).thenReturn(file.getAbsolutePath());
+    when(context.getResource(any(InputPath.class))).thenReturn(resource);
+    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
+    verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(15));
   }
 
   @Test
   public void noSonarLines() throws Exception {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/metrics/NoSonar.java"), new VisitorsBridge(new Measurer(fs, context, false)));
-    assertThat(file.getNoSonarTagLines()).hasSize(1);
-    assertThat(file.getNoSonarTagLines()).contains(8);
+    File file = new File("src/test/files/metrics/NoSonar.java");
+    Resource resource = mock(Resource.class);
+    when(resource.getEffectiveKey()).thenReturn(file.getAbsolutePath());
+    when(context.getResource(any(InputPath.class))).thenReturn(resource);
+    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
+    verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(8));
   }
 
   @Test
@@ -87,7 +100,7 @@ public class JavaAstScannerTest {
     thrown.expect(IllegalArgumentException.class);
     String filename = "!!dummy";
     thrown.expectMessage(filename);
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(null));
+    JavaAstScanner.scanSingleFileForTests(new File(filename), new VisitorsBridge(null));
   }
 
   @Test

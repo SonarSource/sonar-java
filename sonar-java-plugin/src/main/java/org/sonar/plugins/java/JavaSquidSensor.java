@@ -28,9 +28,8 @@ import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.checks.NoSonarFilter;
 import org.sonar.api.config.Settings;
-import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.resources.Project;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
@@ -39,7 +38,9 @@ import org.sonar.java.JavaSquid;
 import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
+import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.checks.CheckList;
+import org.sonar.plugins.java.bridges.DesignBridge;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -56,12 +57,10 @@ public class JavaSquidSensor implements Sensor {
   private final FileSystem fs;
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
-  private final RulesProfile profile;
   private final NoSonarFilter noSonarFilter;
 
-  public JavaSquidSensor(RulesProfile profile, JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
-    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
-    this.profile = profile;
+  public JavaSquidSensor(JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
+                         DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
     this.noSonarFilter = noSonarFilter;
     this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
@@ -81,10 +80,16 @@ public class JavaSquidSensor implements Sensor {
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
     JavaConfiguration configuration = createConfiguration();
-    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods());
-    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());
+    Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
+    DefaultBytecodeContext bytecodeContext = new DefaultBytecodeContext(sonarComponents, javaResourceLocator);
+    JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, bytecodeContext, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, sonarComponents, javaResourceLocator.getResourceMapping(), noSonarFilter, profile);
+    // Design
+    boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
+    if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
+      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
+      designBridge.saveDesign(project);
+    }
   }
 
   private Iterable<File> getSourceFiles() {

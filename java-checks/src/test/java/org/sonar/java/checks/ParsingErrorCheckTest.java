@@ -19,24 +19,27 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Test;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
+import java.util.Set;
+
+import static org.fest.assertions.Assertions.assertThat;
 
 public class ParsingErrorCheckTest {
 
-  private ParsingErrorCheck check = new ParsingErrorCheck();
-
   @Test
   public void test() {
-    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/checks/ParsingError.java"), new VisitorsBridge(check));
-    CheckMessagesVerifier.verify(file.getCheckMessages())
-        .next().atLine(1).withMessage("Parse error")
-        .noMore();
+    VisitorsBridge visitorsBridge = new VisitorsBridge(ImmutableList.of(new ParsingErrorCheck()), Lists.<File>newArrayList(), null);
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/ParsingError.java"), visitorsBridge);
+    Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
+    assertThat(issues).hasSize(1);
+    assertThat(issues.iterator().next().getLine()).isEqualTo(1);
   }
 
 }

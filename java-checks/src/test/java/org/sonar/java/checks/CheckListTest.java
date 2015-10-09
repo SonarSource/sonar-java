@@ -28,7 +28,6 @@ import org.sonar.api.rules.RuleParam;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.squidbridge.SquidAstVisitor;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
@@ -104,11 +103,10 @@ public class CheckListTest {
    */
   @Test
   public void should_not_fail_on_invalid_file() throws Exception {
-
     for (Class check : CheckList.getChecks()) {
       CodeVisitor visitor = (CodeVisitor) check.newInstance();
       if (visitor instanceof JavaFileScanner) {
-        JavaAstScanner.scanSingleFile(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridge((JavaFileScanner) visitor));
+        JavaAstScanner.scanSingleFileForTests(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridge((JavaFileScanner) visitor));
       }
     }
   }

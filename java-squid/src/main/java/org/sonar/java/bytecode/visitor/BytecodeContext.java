@@ -17,25 +17,18 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.bytecode.visitor;
 
-import org.junit.Test;
-import org.sonar.java.AnalyzerMessage;
+import org.sonar.api.resources.Resource;
+import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.JavaResourceLocator;
 
-import java.util.List;
+public interface BytecodeContext {
 
-import static org.fest.assertions.Assertions.assertThat;
+  void setJavaResourceLocator(JavaResourceLocator javaResourceLocator);
 
-public class UnusedProtectedMethodCheckTest {
+  JavaResourceLocator getJavaResourceLocator();
 
-  @Test
-  public void test() {
-    UnusedProtectedMethodCheck check = new UnusedProtectedMethodCheck();
-    List<AnalyzerMessage> unusedProtectedMethod = BytecodeFixture.scan("UnusedProtectedMethod", check);
-    assertThat(unusedProtectedMethod).hasSize(1);
-    AnalyzerMessage analyzerMessage = unusedProtectedMethod.iterator().next();
-    assertThat(analyzerMessage.getLine()).isEqualTo(31);
-    assertThat(analyzerMessage.getMessage()).isEqualTo("Protected method 'unusedProtectedMethod(...)' is never used.");
-  }
+  void reportIssue(JavaCheck check, Resource resource, String message, int line);
 
 }

@@ -43,7 +43,7 @@ public class AbstractMethodDetectionTest {
       MethodMatcher.create().typeDefinition("A").name("method").addParameter("int"),
       MethodMatcher.create().typeDefinition("A").name("method").addParameter("java.lang.String[]")
       ));
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).hasSize(2);
     assertThat(visitor.lines).containsExactly(13, 15);
@@ -54,7 +54,7 @@ public class AbstractMethodDetectionTest {
     Visitor visitor = new Visitor(ImmutableList.of(
       MethodMatcher.create().typeDefinition("A").name("method").withNoParameterConstraint()
       ));
-    JavaAstScanner.scanSingleFile(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/AbstractMethodDetection.java"), new VisitorsBridge(visitor));
 
     assertThat(visitor.lines).containsExactly(13, 14, 15);
 

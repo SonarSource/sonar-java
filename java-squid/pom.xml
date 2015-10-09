@@ -12,6 +12,10 @@
 
   <name>SonarQube Java :: Squid</name>
 
+  <properties>
+    <sonar.exclusions>src/main/java/org/sonar/java/CompIssue.java</sonar.exclusions>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.sslr</groupId>

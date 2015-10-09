@@ -29,8 +29,10 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -84,7 +86,7 @@ public class SonarComponents implements BatchExtension {
     }
   }
 
-  private InputFile inputFromIOFile(File file) {
+  public InputFile inputFromIOFile(File file) {
     return fs.inputFile(fs.predicates().is(file));
   }
 
@@ -163,5 +165,32 @@ public class SonarComponents implements BatchExtension {
 
   public FileSystem getFileSystem() {
     return fs;
+  }
+
+  public RuleKey getRuleKey(JavaCheck check) {
+    for (Checks<JavaCheck> sonarChecks : checks()) {
+      RuleKey ruleKey = sonarChecks.ruleKey(check);
+      if (ruleKey != null) {
+        return ruleKey;
+      }
+    }
+    return null;
+  }
+
+  public void addIssue(File file, JavaCheck check, int line, String message) {
+    RuleKey key = getRuleKey(check);
+    if (key != null) {
+      Issuable issuable = issuableFor(file);
+      if (issuable != null) {
+        Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
+          .ruleKey(key)
+          .message(message);
+        if (line > -1) {
+          issueBuilder.line(line);
+        }
+        Issue issue = issueBuilder.build();
+        issuable.addIssue(issue);
+      }
+    }
   }
 }

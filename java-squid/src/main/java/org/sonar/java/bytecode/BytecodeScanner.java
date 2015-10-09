@@ -25,12 +25,11 @@ import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
 import org.sonar.java.bytecode.asm.AsmClassProviderImpl;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
+import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.squidbridge.api.CodeScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.indexer.SquidIndex;
 
 import java.io.File;
 import java.util.Collection;
@@ -38,17 +37,15 @@ import java.util.Collections;
 
 public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
-  private final SquidIndex indexer;
-  private JavaResourceLocator javaResourceLocator;
+  private final BytecodeContext context;
 
-  public BytecodeScanner(SquidIndex indexer, JavaResourceLocator javaResourceLocator) {
-    this.indexer = indexer;
-    this.javaResourceLocator = javaResourceLocator;
+  public BytecodeScanner(BytecodeContext context) {
+    this.context = context;
   }
 
   public BytecodeScanner scan(Collection<File> bytecodeFilesOrDirectories) {
     ClassLoader classLoader = ClassLoaderBuilder.create(bytecodeFilesOrDirectories);
-    scanClasses(javaResourceLocator.classKeys(), new AsmClassProviderImpl(classLoader));
+    scanClasses(context.getJavaResourceLocator().classKeys(), new AsmClassProviderImpl(classLoader));
     // TODO unchecked cast
     ((SquidClassLoader) classLoader).close();
     return this;
@@ -73,11 +70,14 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
 
   private void notifyBytecodeVisitors(Collection<String> keys, AsmClassProvider classProvider) {
     BytecodeVisitor[] visitorArray = getVisitors().toArray(new BytecodeVisitor[getVisitors().size()]);
+    for (BytecodeVisitor bytecodeVisitor : visitorArray) {
+      bytecodeVisitor.setContext(context);
+    }
     for (String key : keys) {
       try {
         AsmClass asmClass = classProvider.getClass(key, DETAIL_LEVEL.STRUCTURE_AND_CALLS);
         BytecodeVisitorNotifier visitorNotifier = new BytecodeVisitorNotifier(asmClass, visitorArray);
-        visitorNotifier.notifyVisitors(indexer, javaResourceLocator);
+        visitorNotifier.notifyVisitors();
       } catch (Exception exception) {
         throw new AnalysisException("Unable to analyze .class file " + key, exception);
       }

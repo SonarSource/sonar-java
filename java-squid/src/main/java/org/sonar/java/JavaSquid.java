@@ -19,7 +19,6 @@
  */
 package org.sonar.java;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -35,8 +34,9 @@ import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
+import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.InternalVisitorsBridge;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.Query;
@@ -48,6 +48,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class JavaSquid implements SourceCodeSearchEngine {
@@ -62,20 +63,13 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
   private boolean bytecodeScanned = false;
 
-  @VisibleForTesting
-  public JavaSquid(JavaConfiguration conf, JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
-    this(conf, null, null, javaResourceLocator, visitors);
-  }
-
   public JavaSquid(JavaConfiguration conf,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
-
-
-    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Arrays.asList(javaResourceLocator), Arrays.asList(visitors));
+                   JavaResourceLocator javaResourceLocator, BytecodeContext bytecodeContext, CodeVisitor... visitors) {
+    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Collections.singletonList(javaResourceLocator), Arrays.asList(visitors));
     if (measurer != null) {
-      Iterable<CodeVisitor> measurers = Arrays.asList((CodeVisitor) measurer);
-      codeVisitors = Iterables.concat(codeVisitors, measurers);
+      Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
+      codeVisitors = Iterables.concat(measurers, codeVisitors);
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();
@@ -104,16 +98,18 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
     //Bytecode scanner
     squidIndex = (SquidIndex) astScanner.getIndex();
-    bytecodeScanner = new BytecodeScanner(squidIndex, javaResourceLocator);
-    bytecodeScanner.accept(new DependenciesVisitor(graph));
+    bytecodeScanner = new BytecodeScanner(bytecodeContext);
+    DependenciesVisitor dependenciesVisitor = new DependenciesVisitor(bytecodeContext, graph);
+    bytecodeScanner.accept(dependenciesVisitor);
     for (CodeVisitor visitor : visitors) {
       bytecodeScanner.accept(visitor);
     }
 
   }
 
-  private static VisitorsBridge createVisitorBridge(Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
+  private static InternalVisitorsBridge createVisitorBridge(
+      Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
+    InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     return visitorsBridge;

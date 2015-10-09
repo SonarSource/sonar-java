@@ -32,7 +32,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
 import java.io.IOException;
@@ -101,7 +100,7 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, expectedMessage, visitor);
   }
 
-  @Test(expected = AnalysisException.class)
+  @Test(expected = IllegalStateException.class)
   public void verify_issue_on_file_incorrect() {
     JavaCheckVerifier.verifyIssueOnFile(FILENAME_ISSUES, "messageOnFile", new FakeVisitor().withDefaultIssues());
   }

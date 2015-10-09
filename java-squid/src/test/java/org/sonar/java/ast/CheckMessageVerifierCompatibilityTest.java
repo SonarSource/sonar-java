@@ -17,48 +17,49 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.plugins.java.api;
+package org.sonar.java.ast;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.junit.Test;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.api.SourceFile;
+import org.sonar.squidbridge.checks.CheckMessagesVerifier;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-public class IssuableSubscriptionVisitorTest {
-
+public class CheckMessageVerifierCompatibilityTest {
 
   @Test
-  public void test_custom_rules_report_issues() throws Exception {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(Lists.newArrayList(new CustomRule()), Lists.<File>newArrayList(), null);
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
-    Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
-    assertThat(issues).hasSize(6);
+  public void test() {
+    SourceFile file = JavaAstScanner.scanSingleFile(new File("src/test/files/ast/CheckMessageVerifierCompatibility.java"), new VisitorsBridge(new CustomRuleCheck()));
+    CheckMessagesVerifier.verify(file.getCheckMessages())
+      .next().atLine(3).withMessage("method message")
+      .next().atLine(4).withMessage("variable message")
+      .noMore();
   }
 
-  private static class CustomRule extends IssuableSubscriptionVisitor {
+  private class CustomRuleCheck extends SubscriptionVisitor {
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      super.scanFile(context);
+    }
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
-      return ImmutableList.of(Tree.Kind.COMPILATION_UNIT);
+      return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.VARIABLE);
     }
 
     @Override
     public void visitNode(Tree tree) {
-      addIssue(tree, "issue on tree");
-      addIssue(1, "issue on 1st line");
-      addIssue(tree, "message", 0d);
-      addIssueOnFile("issue on file");
-      reportIssue(tree, "issue on tree");
-      reportIssue(tree, "issue on tree", ImmutableList.<JavaFileScannerContext.Location>of(), null);
+      if (tree.is(Tree.Kind.METHOD)) {
+        context.addIssue(tree, this, "method message");
+      } else {
+        context.reportIssue(this, tree, "variable message");
+      }
     }
   }
 }
