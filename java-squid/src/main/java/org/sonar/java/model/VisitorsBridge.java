@@ -284,7 +284,7 @@ public class VisitorsBridge {
      * DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
      *
      * **/
-    private static final boolean ENABLE_NEW_APIS = false;
+    private static final boolean ENABLE_NEW_APIS = true;
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
