@@ -281,7 +281,7 @@ public class VisitorsBridge {
 
     /**
      *
-     * DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
+     * FIXME(mpaladin) DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
      *
      * **/
     private static final boolean ENABLE_NEW_APIS = true;

@@ -74,6 +74,7 @@ import static org.fest.assertions.Assertions.assertThat;
  *   <li>endLine: relative endLine where the highlight ends (i.e. +1), same line if omitted</li>
  *   <li>endColumn: column where the highlight ends</li>
  *   <li>effortToFix: the cost to fix as integer</li>
+ *   <li>secondary: a comma separated list of integers identifying the lines of secondary locations if any</li>
  * </ul>
  */
 @Beta
