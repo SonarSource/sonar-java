@@ -36,7 +36,7 @@ import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.InternalVisitorsBridge;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.Query;
@@ -113,8 +113,9 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
   }
 
-  private static VisitorsBridge createVisitorBridge(Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents);
+  private static InternalVisitorsBridge createVisitorBridge(
+      Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
+    InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     return visitorsBridge;

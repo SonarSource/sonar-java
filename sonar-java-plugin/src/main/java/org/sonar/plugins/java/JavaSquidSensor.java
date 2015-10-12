@@ -39,6 +39,7 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
+import org.sonar.plugins.java.bridges.DesignBridge;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -81,7 +82,12 @@ public class JavaSquidSensor implements Sensor {
     Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());
     squid.scan(getSourceFiles(), getTestFiles(), getBytecodeFiles());
-    new Bridges(squid, settings).save(context, project, sonarComponents, javaResourceLocator.getResourceMapping());
+    // Design
+    boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
+    if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
+      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
+      designBridge.saveDesign(project);
+    }
   }
 
   private Iterable<File> getSourceFiles() {

@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,14 +36,10 @@ import org.fest.assertions.Fail;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.CheckMessage;
-import org.sonar.squidbridge.api.SourceCode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -50,7 +47,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -194,11 +190,14 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
       Fail.fail("The directory to be used to extend class path does not exists (" + testJars.getAbsolutePath() + ").");
     }
     classpath.add(new File("target/test-classes"));
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null));
+    scanFile(filename, check, javaCheckVerifier, classpath);
   }
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
-    JavaAstScanner.scanSingleFile(new File(filename), new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null));
+    VisitorsBridge visitorsBridge = new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null);
+    JavaAstScanner.scanSingleFile(new File(filename), visitorsBridge);
+    VisitorsBridge.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    checkIssues(testJavaFileScannerContext.getIssues(), javaCheckVerifier);
   }
 
   @Override
@@ -274,31 +273,21 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     return attributesSubstr;
   }
 
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    expected.clear();
-    super.scanFile(context);
-    DefaultJavaFileScannerContext djfsc = (DefaultJavaFileScannerContext) context;
-    // leave file.
-    checkIssues(djfsc.sourceFile);
-    expected.clear();
-  }
-
-  private void checkIssues(SourceCode sourceCode) {
-    if (expectNoIssues) {
-      assertNoIssues(sourceCode);
-    } else if (StringUtils.isNotEmpty(expectFileIssue)) {
-      assertSingleIssue(sourceCode);
+  private static void checkIssues(Set<AnalyzerMessage> issues, JavaCheckVerifier javaCheckVerifier) {
+    if (javaCheckVerifier.expectNoIssues) {
+      assertNoIssues(javaCheckVerifier.expected, issues);
+    } else if (StringUtils.isNotEmpty(javaCheckVerifier.expectFileIssue)) {
+      assertSingleIssue(javaCheckVerifier.expectFileIssueOnline, javaCheckVerifier.expectFileIssue, issues);
     } else {
-      assertMultipleIssue(sourceCode);
+      assertMultipleIssue(javaCheckVerifier.expected, issues);
     }
   }
 
-  private void assertMultipleIssue(SourceCode sourceCode) throws AssertionError {
-    Preconditions.checkState(sourceCode.hasCheckMessages(), "At least one issue expected");
+  private static void assertMultipleIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, Set<AnalyzerMessage> issues) throws AssertionError {
+    Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
-    for (CheckMessage checkMessage : sourceCode.getCheckMessages()) {
-      validateIssue(unexpectedLines, checkMessage);
+    for (AnalyzerMessage issue : issues) {
+      validateIssue(expected, unexpectedLines, issue);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
@@ -308,21 +297,16 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     }
   }
 
-  private void validateIssue(List<Integer> unexpectedLines, CheckMessage checkMessage) {
-    int line = checkMessage.getLine();
+  private static void validateIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, List<Integer> unexpectedLines, AnalyzerMessage issue) {
+    int line = issue.getLine();
     if (expected.containsKey(line)) {
       Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
-      assertEquals(checkMessage.getText(Locale.US), attrs, IssueAttribute.MESSAGE);
-      Double cost = checkMessage.getCost();
+      assertEquals(issue.getMessage(), attrs, IssueAttribute.MESSAGE);
+      Double cost = issue.getCost();
       if (cost != null) {
         assertEquals(Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
       }
-      if (checkMessage instanceof org.sonar.java.JavaCheckMessage) {
-        AnalyzerMessage analyzerMessage = ((org.sonar.java.JavaCheckMessage) checkMessage).getAnalyzerMessage();
-        if (analyzerMessage != null) {
-          validateAnalyzerMessage(attrs, analyzerMessage);
-        }
-      }
+      validateAnalyzerMessage(attrs, issue);
       expected.remove(line, attrs);
     } else {
       unexpectedLines.add(line);
@@ -369,16 +353,15 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     }
   }
 
-  private void assertSingleIssue(SourceCode sourceCode) {
-    Set<CheckMessage> checkMessages = sourceCode.getCheckMessages();
-    Preconditions.checkState(checkMessages.size() == 1, "A single issue is expected with line " + expectFileIssueOnline);
-    CheckMessage checkMessage = Iterables.getFirst(checkMessages, null);
-    assertThat(checkMessage.getLine()).isEqualTo(expectFileIssueOnline);
-    assertThat(checkMessage.getText(Locale.US)).isEqualTo(expectFileIssue);
+  private static void assertSingleIssue(Integer expectFileIssueOnline, String expectFileIssue, Set<AnalyzerMessage> issues) {
+    Preconditions.checkState(issues.size() == 1, "A single issue is expected with line " + expectFileIssueOnline);
+    AnalyzerMessage issue = Iterables.getFirst(issues, null);
+    assertThat(issue.getLine()).isEqualTo(expectFileIssueOnline);
+    assertThat(issue.getMessage()).isEqualTo(expectFileIssue);
   }
 
-  private void assertNoIssues(SourceCode sourceCode) {
-    assertThat(sourceCode.getCheckMessages()).overridingErrorMessage("No issues expected but got: " + sourceCode.getCheckMessages()).isEmpty();
+  private static void assertNoIssues(Multimap<Integer, Map<IssueAttribute, String>> expected, Set<AnalyzerMessage> issues) {
+    assertThat(issues).overridingErrorMessage("No issues expected but got: " + issues).isEmpty();
     // make sure we do not copy&paste verifyNoIssue call when we intend to call verify
     assertThat(expected.isEmpty()).overridingErrorMessage("The file should not declare noncompliants when no issues are expected").isTrue();
   }

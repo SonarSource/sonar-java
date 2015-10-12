@@ -35,9 +35,7 @@ import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.FileLinesContext;
-import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.Resource;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.api.source.Highlightable;
@@ -83,7 +81,6 @@ public class JavaSquidSensorTest {
 
   @Test
   public void test_issues_creation() throws Exception {
-    RulesProfile qp = RulesProfile.create("test", Java.KEY);
     Settings settings = new Settings();
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/java/"));
     File file = new File("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java");
@@ -109,8 +106,7 @@ public class JavaSquidSensorTest {
     when(issueBuilder.message(Mockito.anyString())).thenReturn(issueBuilder);
     when(issueBuilder.effortToFix(Mockito.anyDouble())).thenReturn(issueBuilder);
     when(issueBuilder.build()).thenReturn(issue);
-
-    when(resourcePerspectives.as(any(Issuable.class.getClass()), any(Resource.class))).thenReturn(issuable);
+    when(sonarComponents.issuableFor(any(File.class))).thenReturn(issuable);
 
     jss.analyse(project, context);
 

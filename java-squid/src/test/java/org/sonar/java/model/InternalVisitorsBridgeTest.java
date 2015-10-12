@@ -38,13 +38,13 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class VisitorsBridgeTest {
+public class InternalVisitorsBridgeTest {
 
   private final VisitorContext context = new VisitorContext(new SourceProject("Java project"));
 
   @Test
   public void test_semantic_exclusions() {
-    VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(new JavaFileScanner() {
+    InternalVisitorsBridge visitorsBridgeWithoutSemantic = new InternalVisitorsBridge(new JavaFileScanner() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(context.getSemanticModel() == null).isTrue();
@@ -56,7 +56,7 @@ public class VisitorsBridgeTest {
     checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
-    VisitorsBridge visitorsBridgeWithSemantic = new VisitorsBridge(new IssuableSubscriptionVisitor() {
+    InternalVisitorsBridge visitorsBridgeWithSemantic = new InternalVisitorsBridge(new IssuableSubscriptionVisitor() {
       public ClassTree enclosingClass;
 
       @Override
@@ -86,7 +86,7 @@ public class VisitorsBridgeTest {
     checkFile(contstructFileName("src", "foo", "bar", "java", "lang", "someFile.java"), "package foo.bar.java.lang; class A { void method() { ; } }", visitorsBridgeWithSemantic);
   }
 
-  private void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
+  private void checkFile(String filename, String code, InternalVisitorsBridge visitorsBridge) {
     context.setFile(new File(filename));
     visitorsBridge.visitFile(parse(code));
   }
