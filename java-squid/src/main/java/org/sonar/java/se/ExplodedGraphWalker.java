@@ -43,6 +43,8 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -52,6 +54,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
@@ -69,6 +72,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private ExplodedGraph.Node node;
   public ExplodedGraph.ProgramPoint programPosition;
   public ProgramState programState;
+
   private CheckerDispatcher checkerDispatcher;
 
   @VisibleForTesting
@@ -105,7 +109,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = ProgramState.EMPTY_STATE;
     Iterable<ProgramState> startingStates = Lists.newArrayList(programState);
     for (final VariableTree variableTree : tree.parameters()) {
-      //create
+      // create
       final SymbolicValue sv = constraintManager.eval(programState, variableTree);
       startingStates = Iterables.transform(startingStates, new Function<ProgramState, ProgramState>() {
         @Override
@@ -123,7 +127,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
               ConstraintManager.setConstraint(input, sv, ConstraintManager.NullConstraint.NOT_NULL));
           }
         }));
-
 
       }
     }
@@ -199,7 +202,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
-
   private void handleBranch(CFG.Block programPosition, Tree condition) {
     handleBranch(programPosition, condition, true);
   }
@@ -264,9 +266,58 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           programState = put(programState, ((IdentifierTree) assignmentExpressionTree.variable()).symbol(), value);
         }
         break;
+      case METHOD_INVOCATION:
+        setSymbolicValueOnFields((MethodInvocationTree) tree);
+        break;
       default:
     }
     checkerDispatcher.executeCheckPreStatement(tree);
+  }
+
+  private void setSymbolicValueOnFields(MethodInvocationTree tree) {
+    if (isLocalMethodInvocation(tree)) {
+      resetNullValuesOnFields(tree);
+    }
+  }
+
+  private static boolean isLocalMethodInvocation(MethodInvocationTree tree) {
+    ExpressionTree methodSelect = tree.methodSelect();
+    if (methodSelect.is(Tree.Kind.IDENTIFIER)) {
+      return true;
+    } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelectExpression = (MemberSelectExpressionTree) methodSelect;
+      ExpressionTree target = memberSelectExpression.expression();
+      if (target.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree identifier = (IdentifierTree) target;
+        return THIS_SUPER.contains(identifier.name());
+      }
+    }
+    return false;
+  }
+
+  private void resetNullValuesOnFields(MethodInvocationTree tree) {
+    boolean changed = false;
+    Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
+    for (Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
+      if (constraintManager.isNull(programState, entry.getValue())) {
+        Symbol symbol = entry.getKey();
+        if (isField(symbol)) {
+          VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+          if (variable != null) {
+            changed = true;
+            SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
+            values.put(symbol, nonNullValue);
+          }
+        }
+      }
+    }
+    if (changed) {
+      programState = new ProgramState(values, programState.constraints);
+    }
+  }
+
+  private static boolean isField(Symbol symbol) {
+    return !symbol.owner().isMethodSymbol();
   }
 
   private void setSymbolicValueNullValue(VariableTree variableTree) {
@@ -309,6 +360,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   @CheckForNull
   public SymbolicValue getVal(Tree expression) {
-    return constraintManager.eval(programState, expression);
+    SymbolicValue value = constraintManager.eval(programState, expression);
+    if (expression.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifierTree = (IdentifierTree) expression;
+      Symbol symbol = identifierTree.symbol();
+      if (symbol.isVariableSymbol()) {
+        programState = put(programState, symbol, value);
+      }
+    }
+    return value;
   }
 }
