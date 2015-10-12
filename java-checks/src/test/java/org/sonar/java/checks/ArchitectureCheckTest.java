@@ -33,6 +33,14 @@ public class ArchitectureCheckTest {
   }
 
   @Test
+  public void test_self_reference() {
+    ArchitectureCheck check = new ArchitectureCheck();
+    check.fromClasses = "**.targets.**";
+    check.toClasses = "**.targets.**";
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ArchitectureSelf.java", check);
+  }
+
+  @Test
   public void testOk() {
     ArchitectureCheck check = new ArchitectureCheck();
     check.fromClasses = "com.**";

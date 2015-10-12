@@ -59,6 +59,7 @@ public class ArchitectureCheck extends SubscriptionBaseVisitor {
 
   private Deque<String> shouldCheck = new LinkedList<>();
   private Deque<Set<String>> issues = new LinkedList<>();
+  private Deque<Symbol> currentType = new LinkedList<>();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -71,7 +72,6 @@ public class ArchitectureCheck extends SubscriptionBaseVisitor {
       check((IdentifierTree) tree);
     } else {
       initClass((ClassTree) tree);
-
     }
   }
 
@@ -81,7 +81,7 @@ public class ArchitectureCheck extends SubscriptionBaseVisitor {
       return;
     }
     Symbol symbol = tree.symbol();
-    if (!symbol.isUnknown()) {
+    if (!symbol.isUnknown() && !currentType.contains(symbol.owner())) {
       Type type = symbol.type();
       if (type != null) {
         String fullyQualifiedName = type.fullyQualifiedName();
@@ -103,6 +103,7 @@ public class ArchitectureCheck extends SubscriptionBaseVisitor {
       shouldCheck.addFirst(null);
       issues.addFirst(null);
     }
+    currentType.push(tree.symbol());
   }
 
   @Override
@@ -110,6 +111,7 @@ public class ArchitectureCheck extends SubscriptionBaseVisitor {
     if (!tree.is(Tree.Kind.IDENTIFIER)) {
       shouldCheck.removeFirst();
       issues.removeFirst();
+      currentType.pop();
     }
   }
 
