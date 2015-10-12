@@ -20,6 +20,9 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.CheckForNull;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -31,10 +34,6 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-import java.util.HashMap;
-import java.util.Map;
-
 public class ConstraintManager {
 
   private final Map<Tree, SymbolicValue> map = new HashMap<>();
@@ -42,8 +41,6 @@ public class ConstraintManager {
    * Map to handle lookup of fields.
    * */
   private final Map<Symbol, SymbolicValue> symbolMap = new HashMap<>();
-
-
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result = map.get(syntaxNode);
@@ -53,17 +50,23 @@ public class ConstraintManager {
       result = symbolMap.get(((VariableTree) syntaxNode).symbol());
     }
     if (result == null) {
-      result = new SymbolicValue.ObjectSymbolicValue(map.size()+ProgramState.EMPTY_STATE.constraints.size());
+      result = new SymbolicValue.ObjectSymbolicValue(map.size() + ProgramState.EMPTY_STATE.constraints.size());
       map.put(syntaxNode, result);
-      if(syntaxNode.is(Tree.Kind.IDENTIFIER)) {
+      if (syntaxNode.is(Tree.Kind.IDENTIFIER)) {
         symbolMap.put(((IdentifierTree) syntaxNode).symbol(), result);
-      } else if(syntaxNode.is(Tree.Kind.VARIABLE)) {
+      } else if (syntaxNode.is(Tree.Kind.VARIABLE)) {
         symbolMap.put(((VariableTree) syntaxNode).symbol(), result);
       }
     }
     return result;
   }
 
+  public SymbolicValue supersedeSymbolicValue(VariableTree variable) {
+    SymbolicValue result = new SymbolicValue.ObjectSymbolicValue(map.size() + ProgramState.EMPTY_STATE.constraints.size());
+    map.put(variable, result);
+    symbolMap.put(variable.symbol(), result);
+    return result;
+  }
 
   public SymbolicValue eval(ProgramState programState, Tree syntaxNode) {
     syntaxNode = skipTrivial(syntaxNode);
@@ -73,7 +76,7 @@ public class ConstraintManager {
       }
       case BOOLEAN_LITERAL: {
         boolean value = Boolean.parseBoolean(((LiteralTree) syntaxNode).value());
-        if(value) {
+        if (value) {
           return SymbolicValue.TRUE_LITERAL;
         }
         return SymbolicValue.FALSE_LITERAL;
@@ -96,16 +99,16 @@ public class ConstraintManager {
         }
         break;
       }
-      case LOGICAL_COMPLEMENT : {
+      case LOGICAL_COMPLEMENT: {
         UnaryExpressionTree unaryExpressionTree = (UnaryExpressionTree) syntaxNode;
         SymbolicValue val = eval(programState, unaryExpressionTree.expression());
-        if(SymbolicValue.FALSE_LITERAL.equals(val)) {
+        if (SymbolicValue.FALSE_LITERAL.equals(val)) {
           return SymbolicValue.TRUE_LITERAL;
-        } else if(val.equals(SymbolicValue.TRUE_LITERAL)) {
+        } else if (val.equals(SymbolicValue.TRUE_LITERAL)) {
           return SymbolicValue.FALSE_LITERAL;
         }
-        //if not tied to a concrete value, create symbolic value with no constraint for now.
-        //TODO : create constraint between expression and created symbolic value
+        // if not tied to a concrete value, create symbolic value with no constraint for now.
+        // TODO : create constraint between expression and created symbolic value
       }
     }
     return createSymbolicValue(syntaxNode);
@@ -130,21 +133,22 @@ public class ConstraintManager {
 
   }
 
-  public boolean isNull(ProgramState ps, SymbolicValue val){
+  public boolean isNull(ProgramState ps, SymbolicValue val) {
     return NullConstraint.NULL.equals(ps.constraints.get(val));
   }
 
   public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
-    //FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a dedicated checker.
+    // FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a
+    // dedicated checker.
     condition = skipTrivial(condition);
     switch (condition.kind()) {
       case INSTANCE_OF: {
         InstanceOfTree instanceOfTree = (InstanceOfTree) condition;
         SymbolicValue exprValue = eval(programState, instanceOfTree.expression());
-        if(isNull(programState, exprValue)) {
+        if (isNull(programState, exprValue)) {
           return new Pair<>(programState, null);
         }
-        //if instanceof is true then we know for sure that expression is not null.
+        // if instanceof is true then we know for sure that expression is not null.
         return new Pair<>(programState, setConstraint(programState, exprValue, NullConstraint.NOT_NULL));
       }
       case EQUAL_TO: {
@@ -203,11 +207,11 @@ public class ConstraintManager {
   static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, BooleanConstraint booleanConstraint) {
     Object data = programState.constraints.get(sv);
     // update program state only for a different constraint
-    if(data instanceof BooleanConstraint) {
+    if (data instanceof BooleanConstraint) {
       BooleanConstraint bc = (BooleanConstraint) data;
-      if((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
-          (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
-        //setting null where value is known to be non null or the contrary
+      if ((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
+        (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
+        // setting null where value is known to be non null or the contrary
         return null;
       }
     }
@@ -223,11 +227,11 @@ public class ConstraintManager {
   static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, NullConstraint nullConstraint) {
     Object data = programState.constraints.get(sv);
     // update program state only for a different constraint
-    if(data instanceof NullConstraint) {
+    if (data instanceof NullConstraint) {
       NullConstraint nc = (NullConstraint) data;
-      if((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
-          (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
-        //setting null where value is known to be non null or the contrary
+      if ((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
+        (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
+        // setting null where value is known to be non null or the contrary
         return null;
       }
     }
