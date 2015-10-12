@@ -354,6 +354,21 @@ class NullPointerTest {
 	    }
 	    return count;
 	  }
+  
+  private  Object a = null;
+  public void newInstance() {
+      if (a == null) {
+        testPrimitiveForEachLoopGood();
+        }
+        a.toString();
+  }
+  protected Constructor constructor = null;
+  public void newInstanceBis() throws IllegalAccessException, InstantiationException {
+    if (constructor == null) {
+      this.setDynaBeanClass();
+  }
+  return ((DynaBean) constructor.newInstance(constructorValues));
+}
 
   public void testWhileLoop() {
     Object object1 = null, object2 = new Object();
