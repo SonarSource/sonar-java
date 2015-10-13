@@ -32,13 +32,33 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Map;
 
+import static org.fest.assertions.Fail.fail;
+
 public class ExplodedGraphWalkerTest {
 
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/se/SeEngineTest.java", new IssueVisitor());
   }
+  @Test
+  public void reproducer() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/Reproducer.java", new SymbolicExecutionVisitor());
+  }
 
+  @Test
+  public void test2() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor() {
+      @Override
+      public void visitNode(Tree tree) {
+        try {
+          tree.accept(new ExplodedGraphWalker(context));
+        }catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+          fail("loop execution should be limited");
+        }
+
+      }
+    });
+  }
   class IssueVisitor implements JavaFileScanner {
 
     @Override

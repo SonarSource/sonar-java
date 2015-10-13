@@ -20,10 +20,12 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
+import org.sonar.java.cfg.CFG;
+
+import javax.annotation.Nullable;
+
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nullable;
-import org.sonar.java.cfg.CFG;
 
 public class ExplodedGraph {
 
@@ -43,6 +45,7 @@ public class ExplodedGraph {
     nodes.put(result, result);
     return result;
   }
+
   public static class ProgramPoint {
     final CFG.Block block;
     final int i;
@@ -67,7 +70,6 @@ public class ExplodedGraph {
       return false;
     }
   }
-
 
   public static class Node {
     boolean isNew;
