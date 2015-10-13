@@ -19,12 +19,16 @@
  */
 package org.sonar.java.se;
 
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -50,11 +54,11 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
@@ -66,11 +70,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private static final Logger LOG = LoggerFactory.getLogger(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
-  private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseCheck;
+  private static final boolean DEBUG_MODE_ACTIVATED = true;
+  private static final int MAX_EXEC_PROGRAM_POINT = 2;
+  private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
-  protected ExplodedGraph.ProgramPoint programPosition;
-  protected ProgramState programState;
+  private ExplodedGraph.Node node;
+  public ExplodedGraph.ProgramPoint programPosition;
+  public ProgramState programState;
 
   private CheckerDispatcher checkerDispatcher;
 
@@ -84,9 +91,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
-  public ExplodedGraphWalker(JavaFileScannerContext context) {
-    alwaysTrueOrFalseCheck = new ConditionAlwaysTrueOrFalseCheck();
-    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SECheck>newArrayList(alwaysTrueOrFalseCheck, new NullDereferenceCheck()));
+  public ExplodedGraphWalker(JavaFileScannerContext context) throws MaximumStepsReachedException {
+    alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
+    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck()));
   }
 
   @Override
@@ -133,7 +140,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), startingState);
     }
     steps = 0;
-    ExplodedGraph.Node node;
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
@@ -168,32 +174,31 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     // Cleanup:
     explodedGraph = null;
     workList = null;
+    node = null;
     programState = null;
     constraintManager = null;
   }
 
   private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
     CFG.Block block = programPosition.block;
-    Tree terminator = block.terminator();
-    if (terminator != null) {
-      switch (terminator.kind()) {
+    if (block.terminator() != null) {
+      switch (block.terminator().kind()) {
         case IF_STATEMENT:
-          handleBranch(block, ((IfStatementTree) terminator).condition());
+          handleBranch(block, ((IfStatementTree) block.terminator()).condition());
           return;
         case CONDITIONAL_OR:
         case CONDITIONAL_AND:
-          handleBranch(block, ((BinaryExpressionTree) terminator).leftOperand());
+          handleBranch(block, ((BinaryExpressionTree) block.terminator()).leftOperand());
           return;
         case CONDITIONAL_EXPRESSION:
-          handleBranch(block, ((ConditionalExpressionTree) terminator).condition());
+          handleBranch(block, ((ConditionalExpressionTree) block.terminator()).condition());
           return;
         case FOR_STATEMENT:
-          ForStatementTree forStatement = (ForStatementTree) terminator;
+          ForStatementTree forStatement = (ForStatementTree) block.terminator();
           if (forStatement.condition() != null) {
             handleBranch(block, forStatement.condition(), false);
             return;
           }
-        default:
       }
     }
     // unconditional jumps, for-statement, switch-statement:
@@ -212,7 +217,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       // enqueue false-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), pair.a);
       if (checkPath) {
-        alwaysTrueOrFalseCheck.evaluatedToFalse(condition);
+        alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
     } else {
       SymbolicValue val = getVal(condition);
@@ -224,7 +229,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), pair.b);
       if (checkPath) {
-        alwaysTrueOrFalseCheck.evaluatedToTrue(condition);
+        alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
     } else {
       SymbolicValue val = getVal(condition);
@@ -238,6 +243,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private void visit(Tree tree, Tree terminator) {
     LOG.debug("visiting node " + tree.kind().name() + " at line " + ((JavaTree) tree).getLine());
     switch (tree.kind()) {
+      case METHOD_INVOCATION:
+        setSymbolicValueOnFields((MethodInvocationTree) tree);
+        ExpressionTree methodName = ((MethodInvocationTree) tree).methodSelect();
+        if (methodName.is(Tree.Kind.IDENTIFIER) && "printState".equals(((IdentifierTree) methodName).name())) {
+          debugPrint(((JavaTree) tree).getLine(), node);
+        }
+        break;
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
       case EXPRESSION_STATEMENT:
@@ -259,19 +271,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         }
         break;
       case ASSIGNMENT:
-        AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
+        AssignmentExpressionTree assignmentExpressionTree = ((AssignmentExpressionTree) tree);
         // FIXME restricted to identifiers for now.
         if (assignmentExpressionTree.variable().is(Tree.Kind.IDENTIFIER)) {
           SymbolicValue value = getVal(assignmentExpressionTree.expression());
           programState = put(programState, ((IdentifierTree) assignmentExpressionTree.variable()).symbol(), value);
-        }
-        break;
-      case METHOD_INVOCATION:
-        setSymbolicValueOnFields((MethodInvocationTree) tree);
-        break;
-      case IDENTIFIER:
-        if (terminator != null && terminator.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
-          resetConstraintsOnFields();
         }
         break;
       default:
@@ -279,9 +283,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     checkerDispatcher.executeCheckPreStatement(tree);
   }
 
+  private void debugPrint(Object... toPrint) {
+    if(DEBUG_MODE_ACTIVATED) {
+      LOG.error(Joiner.on(" - ").join(toPrint));
+    }
+  }
+
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
     if (isLocalMethodInvocation(tree)) {
-      resetConstraintsOnFields();
+      resetNullValuesOnFields(tree);
     }
   }
 
@@ -300,30 +310,29 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     return false;
   }
 
-  private void resetConstraintsOnFields() {
+  private void resetNullValuesOnFields(MethodInvocationTree tree) {
     boolean changed = false;
     Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
-    for (Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      if (!constraintManager.isConstrained(programState, entry.getValue())) {
-        continue;
-      }
-      Symbol symbol = entry.getKey();
-      if (isField(symbol)) {
-        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-        if (variable != null) {
-          changed = true;
-          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
-          values.put(symbol, nonNullValue);
+    for (Map.Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
+      if (constraintManager.isNull(programState, entry.getValue())) {
+        Symbol symbol = entry.getKey();
+        if (isField(symbol)) {
+          VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+          if (variable != null) {
+            changed = true;
+            SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
+            values.put(symbol, nonNullValue);
+          }
         }
       }
     }
     if (changed) {
-      programState = new ProgramState(values, programState.constraints);
+      programState = new ProgramState(values, programState.constraints, programState.visitedPoints);
     }
   }
 
   private static boolean isField(Symbol symbol) {
-    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
+    return !symbol.owner().isMethodSymbol();
   }
 
   private void setSymbolicValueNullValue(VariableTree variableTree) {
@@ -344,24 +353,31 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = put(programState, variableTree.symbol(), val);
   }
 
-  private static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
+  static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
     SymbolicValue symbolicValue = programState.values.get(symbol);
     // update program state only for a different symbolic value
     if (symbolicValue == null || !symbolicValue.equals(value)) {
       Map<Symbol, SymbolicValue> temp = Maps.newHashMap(programState.values);
       temp.put(symbol, value);
-      return new ProgramState(temp, programState.constraints);
+      return new ProgramState(temp, programState.constraints, programState.visitedPoints);
     }
     return programState;
   }
 
   public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState) {
-    ExplodedGraph.Node currentNode = explodedGraph.getNode(programPoint, programState);
-    if (!currentNode.isNew) {
+    int nbOfExecution = programState.numberOfTimeVisited(programPoint);
+    if(nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
+      debugPrint(programState);
+      return;
+    }
+    Multiset<ExplodedGraph.ProgramPoint> visitedPoints = HashMultiset.create(programState.visitedPoints);
+    visitedPoints.add(programPoint);
+    ExplodedGraph.Node node = explodedGraph.getNode(programPoint, new ProgramState(programState.values, programState.constraints, visitedPoints));
+    if (!node.isNew) {
       // has been enqueued earlier
       return;
     }
-    workList.addFirst(currentNode);
+    workList.addFirst(node);
   }
 
   @CheckForNull
