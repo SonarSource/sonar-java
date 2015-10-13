@@ -35,6 +35,7 @@ import org.sonar.java.ast.visitors.FileLinesVisitor;
 import org.sonar.java.ast.visitors.SyntaxHighlighterVisitor;
 import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.BytecodeContext;
+import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.model.InternalVisitorsBridge;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -65,7 +66,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
   public JavaSquid(JavaConfiguration conf,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, BytecodeContext bytecodeContext, CodeVisitor... visitors) {
+                   JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
     Iterable<CodeVisitor> codeVisitors = Iterables.concat(Collections.singletonList(javaResourceLocator), Arrays.asList(visitors));
     if (measurer != null) {
       Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
@@ -97,7 +98,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
     astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents));
 
     //Bytecode scanner
-    squidIndex = (SquidIndex) astScanner.getIndex();
+    BytecodeContext bytecodeContext = new DefaultBytecodeContext(sonarComponents, javaResourceLocator);
     bytecodeScanner = new BytecodeScanner(bytecodeContext);
     DependenciesVisitor dependenciesVisitor = new DependenciesVisitor(bytecodeContext, graph);
     bytecodeScanner.accept(dependenciesVisitor);
@@ -105,6 +106,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
       bytecodeScanner.accept(visitor);
     }
 
+    squidIndex = (SquidIndex) astScanner.getIndex();
   }
 
   private static InternalVisitorsBridge createVisitorBridge(

@@ -31,7 +31,7 @@ public class UnusedProtectedMethodCheckTest {
   @Test
   public void test() {
     UnusedProtectedMethodCheck check = new UnusedProtectedMethodCheck();
-    List<AnalyzerMessage> unusedProtectedMethod = BytecodeFixture.scan("UnusedProtectedMethod", check);
+    List<AnalyzerMessage> unusedProtectedMethod = BytecodeFixture.scan("src/test/java/org/sonar/java/checks/targets/UnusedProtectedMethod.java", check);
     assertThat(unusedProtectedMethod).hasSize(1);
     AnalyzerMessage analyzerMessage = unusedProtectedMethod.iterator().next();
     assertThat(analyzerMessage.getLine()).isEqualTo(31);

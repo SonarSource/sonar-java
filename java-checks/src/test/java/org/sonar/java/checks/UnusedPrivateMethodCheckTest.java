@@ -20,58 +20,19 @@
 package org.sonar.java.checks;
 
 import org.junit.Test;
-import org.sonar.api.resources.Resource;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.JavaConfiguration;
-import org.sonar.java.JavaSquid;
-import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
-import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.plugins.java.api.JavaResourceLocator;
-import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceFile;
-import org.sonar.squidbridge.indexer.QueryByType;
 
-import java.io.File;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 public class UnusedPrivateMethodCheckTest {
 
   private final UnusedPrivateMethodCheck check = new UnusedPrivateMethodCheck();
 
-  public static List<AnalyzerMessage> scan(CodeVisitor visitor) {
-    File baseDir = new File("src/test/resources/");
-    File bytecodeFile = new File("target/test-classes/");
-
-    final File file = new File(baseDir, "Lambdas.java");
-    final JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    final List<AnalyzerMessage> analyzerMessages = new ArrayList<>();
-    JavaSquid javaSquid = new JavaSquid(
-      new JavaConfiguration(Charset.forName("UTF-8")), null, null, javaResourceLocator, new DefaultBytecodeContext(javaResourceLocator) {
-      @Override
-      public void reportIssue(JavaCheck check, Resource resource, String message, int line) {
-        analyzerMessages.add(new AnalyzerMessage(check, file, line, message, 0));
-      }
-    }, visitor);
-    javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));
-
-    Collection<SourceCode> sources = javaSquid.getIndex().search(new QueryByType(SourceFile.class));
-    if (sources.size() != 1) {
-      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
-    }
-    return analyzerMessages;
-  }
-
   @Test
   public void test() {
-    List<AnalyzerMessage> messages = BytecodeFixture.scan("UnusedPrivateMethod", check);
+    List<AnalyzerMessage> messages = BytecodeFixture.scan("src/test/java/org/sonar/java/checks/targets/UnusedPrivateMethod.java", check);
     assertThat(messages).hasSize(4);
     for (AnalyzerMessage message : messages) {
       Integer line = message.getLine();
@@ -101,7 +62,7 @@ public class UnusedPrivateMethodCheckTest {
 
   @Test
   public void lambdas_should_not_raise_issue() throws Exception {
-    List<AnalyzerMessage> issues = scan(check);
+    List<AnalyzerMessage> issues = BytecodeFixture.scan("src/test/resources/Lambdas.java", check);
     assertThat(issues).isEmpty();
   }
 

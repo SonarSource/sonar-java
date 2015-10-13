@@ -33,7 +33,6 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Resource;
-import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -121,7 +120,7 @@ public class SquidUserGuideTest {
         }
       }
     };
-    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new DefaultBytecodeContext(javaResourceLocator), new CodeVisitor[0]);
+    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 

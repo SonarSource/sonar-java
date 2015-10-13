@@ -36,7 +36,6 @@ import org.sonar.graph.DirectedGraph;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
-import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.java.filters.SuppressWarningsFilter;
 
@@ -90,7 +89,7 @@ public class BytecodeVisitorsTest {
     }
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
     javaResourceLocator.setSensorContext(sensorContext);
-    JavaSquid squid = new JavaSquid(conf, null, null, javaResourceLocator, new DefaultBytecodeContext(javaResourceLocator));
+    JavaSquid squid = new JavaSquid(conf, null, null, javaResourceLocator);
     File binDir = new File("src/test/files/bytecode/bin");
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
     graph = squid.getGraph();
