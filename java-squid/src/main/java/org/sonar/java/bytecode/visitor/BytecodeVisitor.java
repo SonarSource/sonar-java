@@ -60,11 +60,7 @@ public abstract class BytecodeVisitor implements JavaCheck {
 
   @Nullable
   protected final Resource getSourceFile(AsmClass asmClass) {
-    Resource resource = context.getJavaResourceLocator().findResourceByClassName(asmClass.getInternalName());
-    if (resource == null) {
-      return null;
-    }
-    return resource;
+    return context.getJavaResourceLocator().findResourceByClassName(asmClass.getInternalName());
   }
 
   protected final int getMethodLineNumber(AsmMethod asmMethod) {
