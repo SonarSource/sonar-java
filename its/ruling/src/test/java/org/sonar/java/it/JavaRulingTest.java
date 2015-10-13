@@ -48,16 +48,16 @@ public class JavaRulingTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-    // workaround until https://jira.sonarsource.com/browse/PM-27 PM-28 are fixed
-    .addPlugin(FileLocation.of(Iterables.getOnlyElement(Arrays.asList(new File("../../sonar-java-plugin/target/").listFiles(new FilenameFilter() {
-      @Override
-      public boolean accept(File dir, String name) {
-        return name.endsWith(".jar") && !name.endsWith("-sources.jar");
-      }
-    }))).getAbsolutePath()))
-    .setOrchestratorProperty("litsVersion", "0.5")
-    .addPlugin("lits")
-    .build();
+  // workaround until https://jira.sonarsource.com/browse/PM-27 PM-28 are fixed
+  .addPlugin(FileLocation.of(Iterables.getOnlyElement(Arrays.asList(new File("../../sonar-java-plugin/target/").listFiles(new FilenameFilter() {
+    @Override
+    public boolean accept(File dir, String name) {
+      return name.endsWith(".jar") && !name.endsWith("-sources.jar");
+    }
+  }))).getAbsolutePath()))
+  .setOrchestratorProperty("litsVersion", "0.5")
+  .addPlugin("lits")
+  .build();
 
   @BeforeClass
   public static void prepare_quality_profiles() {
@@ -71,7 +71,7 @@ public class JavaRulingTest {
           "headerFormat",
           "\n/*\n" +
             " * Copyright (c) 1998, 2006, Oracle and/or its affiliates. All rights reserved.\n" +
-            " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
+          " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
       .build();
     ImmutableSet<String> disabledRules = ImmutableSet.of(
       // disable bytecodeVisitor rules
@@ -80,7 +80,7 @@ public class JavaRulingTest {
       "CycleBetweenPackages",
       // disable because it generates too many issues, performance reasons
       "LeftCurlyBraceStartLineCheck"
-    );
+      );
     ProfileGenerator.generate(orchestrator, "java", "squid", rulesParameters, disabledRules);
     instantiateTemplateRule("S2253", "stringToCharArray", "className=\"java.lang.String\";methodName=\"toCharArray\"");
     instantiateTemplateRule("ArchitecturalConstraint", "doNotUseJavaIoFile", "fromClasses=\"**\";toClasses=\"java.io.File\"");
@@ -88,23 +88,24 @@ public class JavaRulingTest {
 
   @Test
   public void guava() throws Exception {
-    test_project("guava");
+    test_project("com.google.guava:guava", "guava");
   }
 
   @Test
   public void apache_commons_beanutils() throws Exception {
-    test_project("commons-beanutils");
+    test_project("commons-beanutils:commons-beanutils", "commons-beanutils");
   }
 
   @Test
   public void fluent_http() throws Exception {
-    test_project("fluent-http");
+    test_project("net.code-story:http", "fluent-http");
   }
 
-  private static void test_project(String projectName) throws IOException {
+  private static void test_project(String projectKey, String projectName) throws IOException {
     File pomFile = FileLocation.of("../sources/" + projectName + "/pom.xml").getFile();
+    orchestrator.getServer().provisionProject(projectKey, projectName);
+    orchestrator.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
-      .setProfile("rules")
       .setProperty("sonar.cpd.skip", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.analysis.mode", "preview")
