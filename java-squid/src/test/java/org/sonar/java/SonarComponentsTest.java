@@ -28,12 +28,15 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
+import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
+import org.sonar.api.rule.RuleKey;
 import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
@@ -50,6 +53,7 @@ import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -121,15 +125,7 @@ public class SonarComponentsTest {
   @Test
   public void creation_of_custom_checks() {
     JavaCheck expectedCheck = new CustomCheck();
-    CheckRegistrar expectedRegistrar = new CheckRegistrar() {
-      @Override
-      public void register(RegistrarContext registrarContext) {
-        registrarContext.registerClassesForRepository(
-          REPOSITORY_NAME,
-          Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class),
-          null);
-      }
-    };
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
@@ -148,15 +144,7 @@ public class SonarComponentsTest {
   @Test
   public void creation_of_custom_test_checks() {
     JavaCheck expectedCheck = new CustomTestCheck();
-    CheckRegistrar expectedRegistrar = new CheckRegistrar() {
-      @Override
-      public void register(RegistrarContext registrarContext) {
-        registrarContext.registerClassesForRepository(
-          REPOSITORY_NAME,
-          null,
-          Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class));
-      }
-    };
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
     when(this.checks.all()).thenReturn(new ArrayList<JavaCheck>()).thenReturn(Lists.newArrayList(expectedCheck));
     SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
@@ -202,7 +190,86 @@ public class SonarComponentsTest {
     postTestExecutionChecks();
   }
 
+  @Test
+  public void no_issue_when_check_not_found() throws Exception {
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+
+    Issuable issuable = mock(Issuable.class);
+
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
+    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, null, null, null, this.checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    sonarComponents.addIssue(new File(""), expectedCheck, 0, "message");
+    verify(issuable, never()).addIssue(any(Issue.class));
+  }
+
+  @Test
+  public void no_issue_if_file_not_found() throws Exception {
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+
+    DefaultFileSystem fileSystem = new DefaultFileSystem(new File(""));
+    fileSystem.add(new DefaultInputFile("file.java"));
+    File file = new File("file.java");
+
+    Issuable issuable = mock(Issuable.class);
+    when(resourcePerspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(null);
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
+
+    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, fileSystem, null, null, this.checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    sonarComponents.addIssue(file, expectedCheck, 0, "message");
+    verify(issuable, never()).addIssue(any(Issue.class));
+  }
+
+  @Test
+  public void add_issue() throws Exception {
+    JavaCheck expectedCheck = new CustomCheck();
+    CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
+
+    DefaultFileSystem fileSystem = new DefaultFileSystem(new File(""));
+    File file = new File("file.java");
+    fileSystem.add(new DefaultInputFile("file.java"));
+
+    Issuable issuable = mock(Issuable.class);
+    Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
+    when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
+    when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
+    when(issueBuilder.message(any(String.class))).thenReturn(issueBuilder);
+    when(resourcePerspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(issuable);
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
+
+    SonarComponents sonarComponents = new SonarComponents(this.fileLinesContextFactory, this.resourcePerspectives, fileSystem, null, null, this.checkFactory, new CheckRegistrar[] {
+      expectedRegistrar
+    });
+
+    sonarComponents.addIssue(file, expectedCheck, -5, "message on wrong line");
+    sonarComponents.addIssue(file, expectedCheck, 42, "message on line");
+    verify(issuable, times(2)).addIssue(any(Issue.class));
+  }
+
+  private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {
+    return new CheckRegistrar() {
+      @Override
+      public void register(RegistrarContext registrarContext) {
+        registrarContext.registerClassesForRepository(
+          REPOSITORY_NAME,
+          Lists.<Class<? extends JavaCheck>>newArrayList(expectedCheck.getClass()),
+          null);
+      }
+    };
+  }
+
   private static class CustomCheck implements JavaCheck {
+
   }
 
   private static class CustomTestCheck implements JavaCheck {
