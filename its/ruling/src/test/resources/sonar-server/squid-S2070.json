@@ -1,0 +1,12 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FileSourceDto.java':[
+112,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/ServerIdGenerator.java':[
+87,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java':[
+282,
+284,
+],
+}

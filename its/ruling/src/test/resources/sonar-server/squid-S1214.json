@@ -1,0 +1,11 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/batch/Messages.java':[
+22,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DatabaseMigrations.java':[
+37,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/Select.java':[
+31,
+],
+}

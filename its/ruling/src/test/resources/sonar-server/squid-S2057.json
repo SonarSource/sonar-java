@@ -1,0 +1,17 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/CustomBarRenderer.java':[
+26,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/index/IssueDoc.java':[
+37,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/notification/IssueChangeNotification.java':[
+34,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/notification/NewIssuesNotification.java':[
+33,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/index/UserDoc.java':[
+31,
+],
+}

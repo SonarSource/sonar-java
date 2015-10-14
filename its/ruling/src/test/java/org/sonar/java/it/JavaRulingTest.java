@@ -101,6 +101,18 @@ public class JavaRulingTest {
     test_project("net.code-story:http", "fluent-http");
   }
 
+  @Test
+  public void java_squid() throws Exception {
+    // sonar-java/java-squid (v3.6)
+    test_project("org.sonarsource.java:java-squid", "java-squid");
+  }
+
+  @Test
+  public void sonarqube_server() throws Exception {
+    // sonarqube/server/sonar-server (v.5.1.2)
+    test_project("org.codehaus.sonar:sonar-server", "sonar-server");
+  }
+
   private static void test_project(String projectKey, String projectName) throws IOException {
     File pomFile = FileLocation.of("../sources/" + projectName + "/pom.xml").getFile();
     orchestrator.getServer().provisionProject(projectKey, projectName);

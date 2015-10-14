@@ -1,0 +1,8 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/app/WebServer.java':[
+31,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/util/CloseableIterator.java':[
+96,
+],
+}

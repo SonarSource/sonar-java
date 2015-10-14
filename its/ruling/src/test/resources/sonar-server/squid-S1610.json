@@ -1,0 +1,17 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/component/ComponentsFinderSort.java':[
+58,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/component/DefaultComponentFinder.java':[
+70,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/IssuesFinderSort.java':[
+75,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/measure/MeasureFilterSql.java':[
+270,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/monitoring/BaseMonitorMBean.java':[
+37,
+],
+}

@@ -1,0 +1,17 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/EmbeddedDatabase.java':[
+95,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/UserUpdater.java':[
+57,
+58,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/ws/CreateAction.java':[
+37,
+38,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/ws/UpdateAction.java':[
+35,
+36,
+],
+}

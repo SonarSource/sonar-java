@@ -1,0 +1,11 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ComputationService.java':[
+94,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ComputationThread.java':[
+59,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/PlatformServletContextListener.java':[
+45,
+],
+}
