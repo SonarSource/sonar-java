@@ -70,7 +70,7 @@ class A0 {
     }
   }
 
-  void test_npe_in_conditional_and() {
+  void test_npe_in_conditional_and(String str) {
     boolean b1 = str == null
         && str.length() == 0; // Noncompliant
   }

@@ -8,6 +8,18 @@ import javax.annotation.CheckForNull;
 @interface Nullable {}
 
 class A {
+  public void assign(boolean parameter) {
+    parameter = false;
+    if (parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter) { // Compliant, always false
+      }
+    }
+    if (!parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (!parameter) {
+      }
+    }
+  }
+  /*
   public void testCheckNotNull2(@CheckForNull Object parameter) {
     String x = a == b ? foo(a) : foo(b);
   }
@@ -28,5 +40,5 @@ class A {
   public Object[] checkForNullMethod() {
     return null;
   }
-
+*/
 }

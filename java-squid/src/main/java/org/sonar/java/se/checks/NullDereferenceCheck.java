@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -45,12 +44,11 @@ import java.util.Map;
 @Rule(
   key = "S2259",
   name = "Null pointers should not be dereferenced",
-  priority = Priority.BLOCKER,
-  tags = {"bug", "cert", "cwe", "owasp-a1", "owasp-a2", "owasp-a6", "security"})
-@ActivatedByDefault
+  priority = Priority.BLOCKER)
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
+
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -61,51 +59,64 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
   }
 
   @Override
-  public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    ProgramState programState = setNullConstraint(context, syntaxNode);
-    SymbolicValue val = null;
-    ExpressionTree expressionTree = null;
-    String name = "";
+  public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    SymbolicValue currentVal = context.getState().peekValue();
+    if (currentVal == null) {
+      // stack is empty, nothing to do.
+      return context.getState();
+    }
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      expressionTree = ((MemberSelectExpressionTree) syntaxNode).expression();
-    } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
-      expressionTree = ((SwitchStatementTree) syntaxNode).expression();
-    }
-    if (expressionTree != null) {
-      val = context.getVal(expressionTree);
-      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        name = ((IdentifierTree) expressionTree).name();
-      } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-        name = ((MethodInvocationTree) expressionTree).symbol().name();
+      if (context.isNull(currentVal)) {
+        context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
+        return null;
       }
+      // we dereferenced the symbolic value so we can assume it is not null
+      return currentVal.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL);
     }
-    if (val != null) {
-      if (context.isNull(val)) {
-        context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + name + "' is nullable here");
-        context.createSink();
-        return;
-      } else {
-        // we dereferenced the symbolic value so we can assume it is not null
-        programState = context.setConstraint(val, ConstraintManager.NullConstraint.NOT_NULL);
-      }
-    }
-    context.addTransition(programState);
+    return context.getState();
   }
 
-  private static ProgramState setNullConstraint(CheckerContext context, Tree syntaxNode) {
-    SymbolicValue val = context.getVal(syntaxNode);
+  @Override
+  public void checkPostStatement(CheckerContext context, Tree syntaxNode) {
+    if (context.isNull(context.getState().peekValue()) && syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
+      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
+      context.createSink();
+      return;
+    }
+    context.addTransition(setNullConstraint(context, syntaxNode));
+  }
+
+  private ProgramState setNullConstraint(CheckerContext context, Tree syntaxNode) {
+    SymbolicValue val = context.getState().peekValue();
     switch (syntaxNode.kind()) {
       case NULL_LITERAL:
-        return context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
+        assert val.equals(SymbolicValue.NULL_LITERAL);
+        return context.getState();
       case METHOD_INVOCATION:
         ProgramState ps = context.getState();
         if (((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
           ps = context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
         }
         return ps;
-      default:
-        // ignore
     }
     return context.getState();
+  }
+
+  private static String getName(Tree syntaxNode) {
+    String name = "";
+    ExpressionTree expressionTree = null;
+    if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
+      expressionTree = ((MemberSelectExpressionTree) syntaxNode).expression();
+    } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
+      expressionTree = ((SwitchStatementTree) syntaxNode).expression();
+    }
+    if(expressionTree != null) {
+      if(expressionTree.is(Tree.Kind.IDENTIFIER)) {
+        name = ((IdentifierTree) expressionTree).name();
+      } else if(expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+        name = ((MethodInvocationTree) expressionTree).symbol().name();
+      }
+    }
+    return name;
   }
 }

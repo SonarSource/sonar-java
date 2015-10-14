@@ -1,17 +1,15 @@
-@SomeAnnotation(name = value) package javax.annotation;
+@SomeAnnotation(name = value)
+package javax.annotation;
 
 import java.lang.Object;
 import java.util.ArrayList;
 import java.util.List;
 
-@interface CheckForNull {
-}
+@interface CheckForNull {}
 
-@interface Nonnull {
-}
+@interface Nonnull {}
 
-@interface Nullable {
-}
+@interface Nullable {}
 
 class NullPointerTest {
 
@@ -80,14 +78,11 @@ class NullPointerTest {
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
-    // Noncompliant@+1
-    i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
+    i = array2.length; // Noncompliant 2 {{NullPointerException might be thrown as 'array2' is nullable here}}
   }
-
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;
-    // Noncompliant@+1
-    i = checkForNullMethod().length; // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
+    i = checkForNullMethod().length; // Noncompliant 2 {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
 
   public void testNullable(@Nullable Object parameter) {
@@ -95,8 +90,7 @@ class NullPointerTest {
     Object o;
 
     Object[] array1 = nullableField;
-    if (array1.length != 0) {
-    } // False negative
+    if (array1.length != 0) { } // False negative
 
     i = nullableField.length; // False negative, instance and static fields are not checked
 
@@ -133,8 +127,8 @@ class NullPointerTest {
 
   public void testMethodInvocation() {
     method1(notnullableField, // No issue
-      notnullableField, // No issue
-      notnullableField); // No issue
+        notnullableField, // No issue
+        notnullableField); // No issue
     method2(notnullableField, // No issue
       notnullableField, // No issue
       notnullableField); // No issue
@@ -165,11 +159,9 @@ class NullPointerTest {
 //      null, // false negative Noncompliant {{method 'method2' does not accept nullable argument}}
 //      null); // false negative Noncompliant {{method 'method2' does not accept nullable argument}}
   }
-
   public void testIf(Object argument1) {
     argument1.hashCode(); // Compliant
   }
-
   public void testIf(Object argument1, Object argument2, Object argument3) {
     if (argument1 == null) {
       argument1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument1' is nullable here}}
@@ -183,7 +175,6 @@ class NullPointerTest {
     argument1.hashCode(); // Compliant
     argument2.hashCode(); // Compliant
   }
-
   public void testIf2(Object argument1, Object argument2, Object argument3) {
     if (null != argument2) {
       argument2.hashCode(); // Compliant
@@ -215,14 +206,7 @@ class NullPointerTest {
     } else {
       argument4 = null;
     }
-    // Noncompliant@+7
-    // Noncompliant@+6
-    // Noncompliant@+5
-    // Noncompliant@+4
-    // Noncompliant@+3
-    // Noncompliant@+2
-    // Noncompliant@+1
-    argument4.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument4' is nullable here}}
+    argument4.hashCode(); // Noncompliant 8 {{NullPointerException might be thrown as 'argument4' is nullable here}}
   }
 
   public void testIfMerge2(Object argument1, Object argument2, Object argument3, Object argument4, boolean condition) {
@@ -252,8 +236,7 @@ class NullPointerTest {
     String var1 = null;
     if (var1.equals("")) { } // Noncompliant {{NullPointerException might be thrown as 'var1' is nullable here}}
     String var2 = nullableMethod();
-    if (var2.equals("")) {
-    } // Compliant
+    if (var2.equals("")) { } // Compliant
   }
 
   public void testTry() {
@@ -267,40 +250,28 @@ class NullPointerTest {
     }
   }
 
-  public void testLogicalAnd(String str) {
-    if (object != null && object.hashCode() == 0) {
-      ; // Compliant
-    }
-    if (object != null && object.hashCode() != 0 && object.hashCode() != 0) {
-      ; // Compliant
-    }
+  public void testLogicalAnd(String str, Object object) {
+    if (object != null && object.hashCode() == 0) ; // Compliant
+    if (object != null && object.hashCode() != 0 && object.hashCode() != 0) ; // Compliant
     if (object == null && object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
   }
-
-  public void testLogicalAnd2(String str) {
-    if (object == null && object.hashCode() == 0 && object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+  public void testLogicalAnd2(String str, Object object) {
+    if (object == null && object.hashCode() == 0 && object.hashCode() == 0); // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
   }
-
   public void testLogicalAnd3(String str) {
     boolean b2 = str != null && str.length() == 0; // Compliant
     boolean b1 = str == null && str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
 
-  public void testLogicalOr(String str) {
-    if (object == null || object.hashCode() == 0) {
-      ; // Compliant
-    }
-    if (object == null || object.hashCode() != 0 || object.hashCode() != 0) {
-      ; // Compliant
-    }
+  public void testLogicalOr(String str, Object object) {
+    if (object == null || object.hashCode() == 0) ; // Compliant
+    if (object == null || object.hashCode() != 0 || object.hashCode() != 0) ; // Compliant
     if (object != null || object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
   }
-
-  public void testLogicalOr2(String str) {
+  public void testLogicalOr2(String str, Object object) {
     if (object != null || object.hashCode() == 0 || object.hashCode() == 0) ; // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
     boolean b1 = str == null || str.length() == 0; // Compliant
   }
-
   public void testLogicalOr3(String str) {
     boolean b2 = str != null || str.length() == 0; // Noncompliant {{NullPointerException might be thrown as 'str' is nullable here}}
   }
@@ -316,7 +287,6 @@ class NullPointerTest {
       object3 = new Object();
     } while (object1.hashCode()); //issue already raised
   }
-
   public void testDoWhileLoop2(boolean condition) {
     Object object1 = new Object(), object2 = null, object3 = null;
     do {
@@ -326,8 +296,7 @@ class NullPointerTest {
       }
       object1 = null;
       object3 = new Object();
-      // Noncompliant@+1
-    } while (object1.hashCode() < 0); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
+    } while (object1.hashCode() < 0); // Noncompliant 2 {{NullPointerException might be thrown as 'object1' is nullable here}}
     object1.hashCode(); // issue already raised
     object2.hashCode(); // Compliant
     object3.hashCode(); // Compliant
@@ -339,10 +308,9 @@ class NullPointerTest {
       object.hashCode();
       object = null;
     }
-  }
-
+   }
   public void testForLoop2() {
-    for (Object object1 = null, object2 = null; true; object2.hashCode()) {
+    for(Object object1 = null, object2 = null; true; object2.hashCode()) {
       object1.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
     }
   }
@@ -351,7 +319,7 @@ class NullPointerTest {
     Object value;
     Set<Object> set = null;
     Entry head = null;
-    for (Object entry : set.values()) { // Noncompliant {{NullPointerException might be thrown as 'set' is nullable here}}
+    for(Object entry : set.values()) { // Noncompliant {{NullPointerException might be thrown as 'set' is nullable here}}
       //all potential npe after this one are not raised as symbolic execution is cut.
       head.hashCode();
       value = null;
@@ -402,62 +370,17 @@ class NullPointerTest {
   return ((DynaBean) constructor.newInstance(constructorValues));
 }
 
-  public void testForEachLoopGood() {
-    List<String> foos = collectFoos();
-    for (String foo : foos) {
-      foo.toString();
-    }
-  }
-
-  public void testPrimitiveForEachLoopGood() {
-    boolean[] foos = collectFoos();
-    for (boolean foo : foos) {
-      if (foo) {
-        println("true");
-      }
-    }
-  }
-
-  public static int testPrimitiveForEachLoopGuava(boolean... values) {
-    int count = 0;
-    for (boolean value : values) {
-      if (value) {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  private Object a = null;
-
-  public void newInstance() {
-    if (a == null) {
-      testPrimitiveForEachLoopGood();
-    }
-    a.toString();
-  }
-
-  protected Constructor constructor = null;
-
-  public void newInstanceBis() throws IllegalAccessException, InstantiationException {
-    if (constructor == null) {
-      this.setDynaBeanClass();
-    }
-    return ((DynaBean) constructor.newInstance(constructorValues));
-  }
-
   public void testWhileLoop() {
     Object object1 = null, object2 = new Object();
-    while (object1.hashCode() > 0) { // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
+    while(object1.hashCode() > 0) { // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
       object2.hashCode(); // Compliant, issue already raised
-    }
+     }
     object1.hashCode(); // Compliant, issue already raised
     object2.hashCode(); // Compliant
   }
-
   public void testWhileLoop() {
     Object object1 = new Object(), object2 = null, object3 = null;
-    while (object1.hashCode() > 0) { // compliant
+    while(object1.hashCode() > 0) { // compliant
       object2.hashCode(); // Noncompliant
     }
     object1.hashCode(); // Compliant, issue already raised
@@ -466,9 +389,10 @@ class NullPointerTest {
   }
 
 
+
   public void testHoistedLoop(boolean condition) {
     Object a = null;
-    while (condition) {
+    while(condition) {
       a.hashCode(); // Noncompliant
       a = null;
     }
@@ -482,25 +406,23 @@ class NullPointerTest {
 
   public void testSwitch() {
     String str1 = null, str2 = "", str3 = "";
-    switch (str1) { // Noncompliant {{NullPointerException might be thrown as 'str1' is nullable here}}
-      case "ONE":
-        str2.length();
+    switch(str1) { // Noncompliant {{NullPointerException might be thrown as 'str1' is nullable here}}
+    case "ONE":
+      str2.length();
     }
     str3.length();
   }
-
   public void testSwitch2() {
     String str1 = "", str2 = null, str3 = "";
-    switch (str1) {
-      case "ONE":
-        str2.length(); // Noncompliant {{NullPointerException might be thrown as 'str2' is nullable here}}
+    switch(str1) {
+    case "ONE":
+      str2.length(); // Noncompliant {{NullPointerException might be thrown as 'str2' is nullable here}}
     }
     str3.length();
   }
-
   public void testSwitch3() {
     String str1 = "", str2 = "", str3 = null;
-    switch (str1) {
+    switch(str1) {
       case "ONE":
         str2.length();
     }
@@ -508,14 +430,14 @@ class NullPointerTest {
   }
 
   public void testMergeOnParameter(@CheckForNull Object o) {
-    if (o != null) {
+    if(o != null) {
       return;
     }
     o.toString(); // Noncompliant
   }
 
   public void testMergeOnParameter(@Nullable Object o) {
-    if (o == null) {
+    if(o == null) {
       return;
     }
     o.hashCode(); // Compliant, constraint is lost
@@ -526,10 +448,9 @@ class NullPointerTest {
   public void testAssignNullableMethod() {
     Object object;
     object = nullableMethod();
-    if (object.hashCode()) {
-    } // Compliant
+    if(object.hashCode()) { } // Compliant
     object = null;
-    if (object.hashCode()) { } // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
+    if(object.hashCode()) { } // Noncompliant {{NullPointerException might be thrown as 'object' is nullable here}}
   }
 
   public void testComplexLoop(@Nullable Object nullableObject) {
@@ -547,17 +468,16 @@ class NullPointerTest {
     }
     object1.hashCode(); // Compliant not executed because loop is always executed at least once and raising NPE
   }
-
   public void testComplexLoop2(@Nullable Object nullableObject) {
     Object object2 = null, object21 = null, object22 = null;
     int i = 0;
-    while (object21 == null) {
+    while(object21 == null) {
       object21.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object21' is nullable here}}
       object22.hashCode(); // no issue, as npe is thrown on previous line
       nullableObject.hashCode();
-      if (i == 1) {
+      if(i == 1) {
         object2.hashCode(); // Compliant
-      } else if (i == 0) {
+      } else if(i == 0) {
         object2 = new Object();
       }
       object21 = null;
@@ -568,9 +488,9 @@ class NullPointerTest {
     Object object3 = null;
     int i = 0;
     do {
-      if (i == 1) {
+      if(i == 1) {
         object3.hashCode(); // False negative
-      } else if (i == 0) {
+      } else if(i == 0) {
         object3 = new Object();
       }
     } while (condition);
@@ -579,23 +499,23 @@ class NullPointerTest {
 
   void testComplexSwitch(String str) {
     Object object1 = null, object2 = null, object3 = null, object4 = new Object();
-    switch (str) {
-      case "ONE":
-        object1 = new Object();
-        break;
-      case "TWO":
-        object1.hashCode(); // Noncompliant
-        break;
-      case "THREE":
-        object2 = new Object();
-      case "FOUR":
-        object2.hashCode(); // Noncompliant
-        break;
-      case "FIVE":
-        object3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object3' is nullable here}}
-        object4 = null;
-      case "SIX":
-        object4.hashCode(); // False negative
+    switch(str) {
+    case "ONE":
+      object1 = new Object();
+      break;
+    case "TWO":
+      object1.hashCode(); // Noncompliant
+      break;
+    case "THREE":
+      object2 = new Object();
+    case "FOUR":
+      object2.hashCode(); // Noncompliant
+      break;
+    case "FIVE":
+      object3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object3' is nullable here}}
+      object4 = null;
+    case "SIX":
+      object4.hashCode(); // False negative
     }
   }
 
@@ -622,29 +542,17 @@ class NullPointerTest {
   public void testCoverage(Object[] a) {
     coverageMethod().hashCode(); // Coverage
     invalidMethod(); // Coverage
-    if (0) {
-    } // Coverage
-    if (0 == 0) {
-    } // Coverage
+    if (0) { } // Coverage
+    if (0 == 0) { } // Coverage
     a[0] = null; // Coverage
-    if (null == coverageMethod()) {
-    } // Coverage
-    if (a == a) {
-    } // Coverage
-    if (a == null) {
-    } // Coverage
-    if (a != null) {
-    } // Coverage
+    if (null == coverageMethod()) { } // Coverage
+    if (a == null) { } // Coverage
+    if (a != null) { } // Coverage
     undefined.field; // Coverage
     a = 1 + 2; // Coverage
   }
-  
-  public boolean testCascadedAndReturn(@Nullable Resource from, @Nullable Resource to) {
-    return from != null && to != null && from.equals(to.child());
-  }
 
   static int a;
-
   static {
     a = 0;
   }

@@ -19,11 +19,9 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.Maps;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -33,69 +31,71 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 public class ConstraintManager {
 
-  private final Map<Tree, SymbolicValue> map = new HashMap<>();
-  /**
-   * Map to handle lookup of fields.
-   * */
-  private final Map<Symbol, SymbolicValue> symbolMap = new HashMap<>();
+//  private final Map<Symbol, SymbolicValue> symbolMap = new HashMap<>();
+  private int counter = ProgramState.EMPTY_STATE.constraints.size();
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
-    SymbolicValue result = map.get(syntaxNode);
-    if (result == null && syntaxNode.is(Tree.Kind.IDENTIFIER)) {
-      result = symbolMap.get(((IdentifierTree) syntaxNode).symbol());
-    } else if (result == null && syntaxNode.is(Tree.Kind.VARIABLE)) {
-      result = symbolMap.get(((VariableTree) syntaxNode).symbol());
+//    SymbolicValue result = null;
+//    if (syntaxNode.is(Tree.Kind.IDENTIFIER)) {
+//      result = symbolMap.get(((IdentifierTree) syntaxNode).symbol());
+//    }
+//    if (result == null) {
+//      result = new SymbolicValue.ObjectSymbolicValue(counter++);
+//      if(syntaxNode.is(Tree.Kind.IDENTIFIER)) {
+//        symbolMap.put(((IdentifierTree) syntaxNode).symbol(), result);
+//      }
+//    }
+    if(syntaxNode.is(Tree.Kind.EQUAL_TO)) {
+      return new SymbolicValue.EqualToSymbolicValue(counter++);
+    } else if(syntaxNode.is(Tree.Kind.NOT_EQUAL_TO)) {
+      return new SymbolicValue.NotEqualToSymbolicValue(counter++);
     }
-    if (result == null) {
-      result = new SymbolicValue.ObjectSymbolicValue(map.size() + ProgramState.EMPTY_STATE.constraints.size());
-      map.put(syntaxNode, result);
-      if (syntaxNode.is(Tree.Kind.IDENTIFIER)) {
-        symbolMap.put(((IdentifierTree) syntaxNode).symbol(), result);
-      } else if (syntaxNode.is(Tree.Kind.VARIABLE)) {
-        symbolMap.put(((VariableTree) syntaxNode).symbol(), result);
-      }
-    }
-    return result;
+    return new SymbolicValue.ObjectSymbolicValue(counter++);
   }
 
   public SymbolicValue supersedeSymbolicValue(VariableTree variable) {
-    SymbolicValue result = new SymbolicValue.ObjectSymbolicValue(map.size() + ProgramState.EMPTY_STATE.constraints.size());
-    map.put(variable, result);
-    symbolMap.put(variable.symbol(), result);
-    return result;
+    return createSymbolicValue(variable);
   }
 
-  public SymbolicValue eval(ProgramState programState, Tree node) {
-    Tree syntaxNode = skipTrivial(node);
+  public SymbolicValue eval(ProgramState programState, Tree syntaxNode) {
+    syntaxNode = skipTrivial(syntaxNode);
     switch (syntaxNode.kind()) {
-      case NULL_LITERAL:
+      case ASSIGNMENT: {
+        return eval(programState, ((AssignmentExpressionTree) syntaxNode).variable());
+      }
+      case NULL_LITERAL: {
         return SymbolicValue.NULL_LITERAL;
-      case BOOLEAN_LITERAL:
+      }
+      case BOOLEAN_LITERAL: {
         boolean value = Boolean.parseBoolean(((LiteralTree) syntaxNode).value());
         if (value) {
           return SymbolicValue.TRUE_LITERAL;
         }
         return SymbolicValue.FALSE_LITERAL;
-      case VARIABLE:
-        SymbolicValue variableResult = programState.values.get(((VariableTree) syntaxNode).symbol());
-        if (variableResult != null) {
+      }
+      case VARIABLE: {
+        Symbol symbol = ((VariableTree) syntaxNode).symbol();
+        SymbolicValue result = programState.values.get(symbol);
+        if (result != null) {
           // symbolic value associated with local variable
-          return variableResult;
+          return result;
         }
         break;
-      case IDENTIFIER:
-        SymbolicValue identifierResult = programState.values.get(((IdentifierTree) syntaxNode).symbol());
-        if (identifierResult != null) {
+      }
+      case IDENTIFIER: {
+        Symbol symbol = ((IdentifierTree) syntaxNode).symbol();
+        SymbolicValue result = programState.values.get(symbol);
+        if (result != null) {
           // symbolic value associated with local variable
-          return identifierResult;
+          return result;
         }
         break;
-      case LOGICAL_COMPLEMENT:
+      }
+      case LOGICAL_COMPLEMENT: {
         UnaryExpressionTree unaryExpressionTree = (UnaryExpressionTree) syntaxNode;
         SymbolicValue val = eval(programState, unaryExpressionTree.expression());
         if (SymbolicValue.FALSE_LITERAL.equals(val)) {
@@ -105,7 +105,7 @@ public class ConstraintManager {
         }
         // if not tied to a concrete value, create symbolic value with no constraint for now.
         // TODO : create constraint between expression and created symbolic value
-      default:
+      }
     }
     return createSymbolicValue(syntaxNode);
   }
@@ -113,8 +113,7 @@ public class ConstraintManager {
   /**
    * Remove parenthesis and type cast.
    */
-  private static Tree skipTrivial(Tree givenExpression) {
-    Tree expression = givenExpression;
+  private static Tree skipTrivial(Tree expression) {
     do {
       switch (expression.kind()) {
         case PARENTHESIZED_EXPRESSION:
@@ -127,22 +126,24 @@ public class ConstraintManager {
           return expression;
       }
     } while (true);
+
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
     return NullConstraint.NULL.equals(ps.constraints.get(val));
   }
 
-  public boolean isConstrained(ProgramState ps, SymbolicValue val) {
-    return ps.constraints.containsKey(val);
-  }
+  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
+    Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
+    SymbolicValue sv = unstack.b.get(0);
+    return new Pair<>(setConstraint(unstack.a, sv, BooleanConstraint.FALSE), setConstraint(unstack.a, sv, BooleanConstraint.TRUE));
+/*
 
-  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree givenCondition) {
-    // FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a
-    // dedicated checker.
-    Tree condition = skipTrivial(givenCondition);
+    //FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a dedicated checker.
+>>>>>>> SONARJAVA-1311 Better handling of checker dispatch
+    condition = skipTrivial(condition);
     switch (condition.kind()) {
-      case INSTANCE_OF:
+      case INSTANCE_OF: {
         InstanceOfTree instanceOfTree = (InstanceOfTree) condition;
         SymbolicValue exprValue = eval(programState, instanceOfTree.expression());
         if (isNull(programState, exprValue)) {
@@ -150,21 +151,23 @@ public class ConstraintManager {
         }
         // if instanceof is true then we know for sure that expression is not null.
         return new Pair<>(programState, setConstraint(programState, exprValue, NullConstraint.NOT_NULL));
-      case EQUAL_TO:
+      }
+      case EQUAL_TO: {
         BinaryExpressionTree equalTo = (BinaryExpressionTree) condition;
-        SymbolicValue equalToLhs = eval(programState, equalTo.leftOperand());
-        SymbolicValue equalToRhs = eval(programState, equalTo.rightOperand());
-        if (isNull(programState, equalToLhs)) {
-          ProgramState stateNull = setConstraint(programState, equalToRhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, equalToRhs, NullConstraint.NOT_NULL);
+        SymbolicValue lhs = eval(programState, equalTo.leftOperand());
+        SymbolicValue rhs = eval(programState, equalTo.rightOperand());
+        if (isNull(programState, lhs)) {
+          ProgramState stateNull = setConstraint(programState, rhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, rhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
-        } else if (isNull(programState, equalToRhs)) {
-          ProgramState stateNull = setConstraint(programState, equalToLhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, equalToLhs, NullConstraint.NOT_NULL);
+        } else if (isNull(programState, rhs)) {
+          ProgramState stateNull = setConstraint(programState, lhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, lhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
         }
         break;
-      case NOT_EQUAL_TO:
+      }
+      case NOT_EQUAL_TO: {
         BinaryExpressionTree notEqualTo = (BinaryExpressionTree) condition;
         SymbolicValue lhs = eval(programState, notEqualTo.leftOperand());
         SymbolicValue rhs = eval(programState, notEqualTo.rightOperand());
@@ -178,6 +181,7 @@ public class ConstraintManager {
           return new Pair<>(stateNull, stateNotNull);
         }
         break;
+      }
       case LOGICAL_COMPLEMENT:
         return assumeDual(programState, ((UnaryExpressionTree) condition).expression()).invert();
       case CONDITIONAL_OR:
@@ -187,7 +191,8 @@ public class ConstraintManager {
         BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) condition;
         return assumeDual(programState, binaryExpressionTree.rightOperand());
       case BOOLEAN_LITERAL:
-        if ("true".equals(((LiteralTree) condition).value())) {
+        LiteralTree literalTree = ((LiteralTree) condition);
+        if ("true".equals(literalTree.value())) {
           return new Pair<>(null, programState);
         }
         return new Pair<>(programState, null);
@@ -195,9 +200,9 @@ public class ConstraintManager {
         IdentifierTree id = (IdentifierTree) condition;
         SymbolicValue eval = eval(programState, id);
         return new Pair<>(setConstraint(programState, eval, BooleanConstraint.FALSE), setConstraint(programState, eval, BooleanConstraint.TRUE));
-      default:
     }
     return new Pair<>(programState, programState);
+    */
   }
 
   @CheckForNull
@@ -213,12 +218,41 @@ public class ConstraintManager {
       }
     }
     if (data == null || !data.equals(booleanConstraint)) {
-      Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-      temp.put(sv, booleanConstraint);
-      return new ProgramState(programState.values, temp, programState.visitedPoints);
+      return sv.setConstraint(programState, booleanConstraint);
+//      if(sv instanceof SymbolicValue.EqualToSymbolicValue) {
+//        SymbolicValue.EqualToSymbolicValue equalToSymbolicValue = (SymbolicValue.EqualToSymbolicValue) sv;
+//        if(equalToSymbolicValue.leftOp.equals(equalToSymbolicValue.rightOp)) {
+//          return BooleanConstraint.TRUE.equals(booleanConstraint) ? programState : null;
+//        }
+//        programState = copyConstraint(equalToSymbolicValue.leftOp, equalToSymbolicValue.rightOp, programState, booleanConstraint);
+//        if(programState == null) {
+//          return null;
+//        }
+//        programState = copyConstraint(equalToSymbolicValue.rightOp, equalToSymbolicValue.leftOp, programState, booleanConstraint);
+//      } else {
+//        // store constraint only if symbolic value can be reached by a symbol.
+//        if(programState.values.containsValue(sv)) {
+//          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+//          temp.put(sv, booleanConstraint);
+//          return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+//        }
+//      }
     }
     return programState;
   }
+
+//  private static ProgramState copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
+//    ProgramState result = programState;
+//    Object constraintLeft = programState.constraints.get(from);
+//    if(constraintLeft instanceof BooleanConstraint) {
+//      BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
+//      result = setConstraint(programState, to, BooleanConstraint.TRUE.equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
+//    } else if(constraintLeft instanceof NullConstraint) {
+//      NullConstraint nullConstraint = (NullConstraint) constraintLeft;
+//      result = setConstraint(programState, to, BooleanConstraint.TRUE.equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
+//    }
+//    return result;
+//  }
 
   @CheckForNull
   static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, NullConstraint nullConstraint) {
@@ -233,21 +267,31 @@ public class ConstraintManager {
       }
     }
     if (data == null || !data.equals(nullConstraint)) {
-      Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-      temp.put(sv, nullConstraint);
-      return new ProgramState(programState.values, temp, programState.visitedPoints);
+     return sv.setConstraint(programState, nullConstraint);
     }
     return programState;
   }
 
   public enum NullConstraint {
     NULL,
-    NOT_NULL,
+    NOT_NULL;
+    NullConstraint inverse() {
+      if(NULL == this) {
+        return NOT_NULL;
+      }
+      return NULL;
+    }
+
   }
 
   public enum BooleanConstraint {
     TRUE,
-    FALSE,
+    FALSE;
+    BooleanConstraint inverse() {
+      if(TRUE == this) {
+        return FALSE;
+      }
+      return TRUE;
+    }
   }
 }
-
