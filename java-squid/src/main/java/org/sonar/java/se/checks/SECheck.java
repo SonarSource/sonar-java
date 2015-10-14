@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -28,8 +29,14 @@ public abstract class SECheck implements JavaCheck {
   public void init(){
   }
 
-  public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    // Default transition
+  /**
+   * @return true if cfg instruction should be executed
+   */
+  public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+    return context.getState();
+  }
+  public void checkPostStatement(CheckerContext context, Tree syntaxNode) {
+    //Default transition
     context.addTransition(context.getState());
   }
 

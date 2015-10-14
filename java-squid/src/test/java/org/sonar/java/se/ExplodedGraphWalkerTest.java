@@ -34,7 +34,7 @@ import java.util.Map;
 
 import static org.fest.assertions.Fail.fail;
 
-public class ExplodedGraphWalkerTest {
+  public class ExplodedGraphWalkerTest {
 
   @Test
   public void test() {
