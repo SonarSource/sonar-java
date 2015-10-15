@@ -55,8 +55,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -243,6 +241,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     switch (tree.kind()) {
       case METHOD_INVOCATION:
         MethodInvocationTree mit = (MethodInvocationTree) tree;
+        setSymbolicValueOnFields(mit);
         programState = ProgramState.unstack(programState, mit.arguments().size()).a;
         logState(mit);
         programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(mit));
@@ -443,16 +442,4 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     workList.addFirst(node);
   }
 
-  @CheckForNull
-  public SymbolicValue getVal(Tree expression) {
-    SymbolicValue value = constraintManager.eval(programState, expression);
-    if (expression.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree identifierTree = (IdentifierTree) expression;
-      Symbol symbol = identifierTree.symbol();
-      if (symbol.isVariableSymbol()) {
-//        programState = put(programState, symbol, value);
-      }
-    }
-    return value;
-  }
 }
