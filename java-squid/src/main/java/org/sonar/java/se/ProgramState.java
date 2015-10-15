@@ -29,6 +29,7 @@ import com.google.common.collect.Multisets;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
+
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class ProgramState {
   }
 
   static Pair<ProgramState, List<SymbolicValue>> unstack(ProgramState programState, int nbElements) {
-    Preconditions.checkArgument(programState.stack.size() >= nbElements);
+    Preconditions.checkArgument(programState.stack.size() >= nbElements, nbElements);
     Deque<SymbolicValue> newStack = new LinkedList<>(programState.stack);
     List<SymbolicValue> result = Lists.newArrayList();
     for (int i = 0; i < nbElements; i++) {
@@ -77,7 +78,7 @@ public class ProgramState {
   }
 
   static ProgramState put(ProgramState programState, Symbol symbol, SymbolicValue value) {
-    if(symbol.isUnknown()) {
+    if (symbol.isUnknown()) {
       return programState;
     }
     SymbolicValue symbolicValue = programState.values.get(symbol);

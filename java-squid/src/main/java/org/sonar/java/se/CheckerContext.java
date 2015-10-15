@@ -26,15 +26,11 @@ public interface CheckerContext {
 
   Object createSink();
 
-  SymbolicValue getVal(Tree expression);
-
   void reportIssue(Tree tree, SECheck check, String message);
 
   void addTransition(ProgramState state);
 
   ProgramState getState();
-
-  ProgramState setConstraint(SymbolicValue val, ConstraintManager.NullConstraint nl);
 
   boolean isNull(SymbolicValue val);
 }

@@ -29,8 +29,6 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 public class ConstraintManager {
@@ -44,13 +42,16 @@ public class ConstraintManager {
         result = new SymbolicValue.EqualToSymbolicValue(counter++);
         break;
       case NOT_EQUAL_TO:
-        result =  new SymbolicValue.NotEqualToSymbolicValue(counter++);
+        result = new SymbolicValue.NotEqualToSymbolicValue(counter++);
         break;
       case LOGICAL_COMPLEMENT:
         result = new SymbolicValue.NotSymbolicValue(counter++);
         break;
+      case INSTANCE_OF:
+        result = new SymbolicValue.InstanceOfSymbolicValue(counter++);
+        break;
       default:
-      result = new SymbolicValue.ObjectSymbolicValue(counter++);
+        result = new SymbolicValue.ObjectSymbolicValue(counter++);
     }
     return result;
   }
@@ -131,162 +132,28 @@ public class ConstraintManager {
     return NullConstraint.NULL.equals(ps.constraints.get(val));
   }
 
-  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
+  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState) {
     Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
     SymbolicValue sv = unstack.b.get(0);
-    return new Pair<>(setConstraint(unstack.a, sv, BooleanConstraint.FALSE), setConstraint(unstack.a, sv, BooleanConstraint.TRUE));
-/*
-
-    //FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a dedicated checker.
->>>>>>> SONARJAVA-1311 Better handling of checker dispatch
-    condition = skipTrivial(condition);
-    switch (condition.kind()) {
-      case INSTANCE_OF: {
-        InstanceOfTree instanceOfTree = (InstanceOfTree) condition;
-        SymbolicValue exprValue = eval(programState, instanceOfTree.expression());
-        if (isNull(programState, exprValue)) {
-          return new Pair<>(programState, null);
-        }
-        // if instanceof is true then we know for sure that expression is not null.
-        return new Pair<>(programState, setConstraint(programState, exprValue, NullConstraint.NOT_NULL));
-      }
-      case EQUAL_TO: {
-        BinaryExpressionTree equalTo = (BinaryExpressionTree) condition;
-        SymbolicValue lhs = eval(programState, equalTo.leftOperand());
-        SymbolicValue rhs = eval(programState, equalTo.rightOperand());
-        if (isNull(programState, lhs)) {
-          ProgramState stateNull = setConstraint(programState, rhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, rhs, NullConstraint.NOT_NULL);
-          return new Pair<>(stateNotNull, stateNull);
-        } else if (isNull(programState, rhs)) {
-          ProgramState stateNull = setConstraint(programState, lhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, lhs, NullConstraint.NOT_NULL);
-          return new Pair<>(stateNotNull, stateNull);
-        }
-        break;
-      }
-      case NOT_EQUAL_TO: {
-        BinaryExpressionTree notEqualTo = (BinaryExpressionTree) condition;
-        SymbolicValue lhs = eval(programState, notEqualTo.leftOperand());
-        SymbolicValue rhs = eval(programState, notEqualTo.rightOperand());
-        if (isNull(programState, lhs)) {
-          ProgramState stateNull = setConstraint(programState, rhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, rhs, NullConstraint.NOT_NULL);
-          return new Pair<>(stateNull, stateNotNull);
-        } else if (isNull(programState, rhs)) {
-          ProgramState stateNull = setConstraint(programState, lhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, lhs, NullConstraint.NOT_NULL);
-          return new Pair<>(stateNull, stateNotNull);
-        }
-        break;
-      }
-      case LOGICAL_COMPLEMENT:
-        return assumeDual(programState, ((UnaryExpressionTree) condition).expression()).invert();
-      case CONDITIONAL_OR:
-      case CONDITIONAL_AND:
-        // this is the case for branches such as "if (lhs && rhs)" and "if (lhs || rhs)"
-        // we already made an assumption on lhs, because CFG contains branch for it, so now let's make an assumption on rhs
-        BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) condition;
-        return assumeDual(programState, binaryExpressionTree.rightOperand());
-      case BOOLEAN_LITERAL:
-        LiteralTree literalTree = ((LiteralTree) condition);
-        if ("true".equals(literalTree.value())) {
-          return new Pair<>(null, programState);
-        }
-        return new Pair<>(programState, null);
-      case IDENTIFIER:
-        IdentifierTree id = (IdentifierTree) condition;
-        SymbolicValue eval = eval(programState, id);
-        return new Pair<>(setConstraint(programState, eval, BooleanConstraint.FALSE), setConstraint(programState, eval, BooleanConstraint.TRUE));
-    }
-    return new Pair<>(programState, programState);
-    */
-  }
-
-  @CheckForNull
-  static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, BooleanConstraint booleanConstraint) {
-    Object data = programState.constraints.get(sv);
-    // update program state only for a different constraint
-    if (data instanceof BooleanConstraint) {
-      BooleanConstraint bc = (BooleanConstraint) data;
-      if ((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
-        (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
-        // setting null where value is known to be non null or the contrary
-        return null;
-      }
-    }
-    if (data == null || !data.equals(booleanConstraint)) {
-      return sv.setConstraint(programState, booleanConstraint);
-//      if(sv instanceof SymbolicValue.EqualToSymbolicValue) {
-//        SymbolicValue.EqualToSymbolicValue equalToSymbolicValue = (SymbolicValue.EqualToSymbolicValue) sv;
-//        if(equalToSymbolicValue.leftOp.equals(equalToSymbolicValue.rightOp)) {
-//          return BooleanConstraint.TRUE.equals(booleanConstraint) ? programState : null;
-//        }
-//        programState = copyConstraint(equalToSymbolicValue.leftOp, equalToSymbolicValue.rightOp, programState, booleanConstraint);
-//        if(programState == null) {
-//          return null;
-//        }
-//        programState = copyConstraint(equalToSymbolicValue.rightOp, equalToSymbolicValue.leftOp, programState, booleanConstraint);
-//      } else {
-//        // store constraint only if symbolic value can be reached by a symbol.
-//        if(programState.values.containsValue(sv)) {
-//          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-//          temp.put(sv, booleanConstraint);
-//          return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
-//        }
-//      }
-    }
-    return programState;
-  }
-
-//  private static ProgramState copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-//    ProgramState result = programState;
-//    Object constraintLeft = programState.constraints.get(from);
-//    if(constraintLeft instanceof BooleanConstraint) {
-//      BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
-//      result = setConstraint(programState, to, BooleanConstraint.TRUE.equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
-//    } else if(constraintLeft instanceof NullConstraint) {
-//      NullConstraint nullConstraint = (NullConstraint) constraintLeft;
-//      result = setConstraint(programState, to, BooleanConstraint.TRUE.equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
-//    }
-//    return result;
-//  }
-
-  @CheckForNull
-  static ProgramState setConstraint(ProgramState programState, SymbolicValue sv, NullConstraint nullConstraint) {
-    Object data = programState.constraints.get(sv);
-    // update program state only for a different constraint
-    if (data instanceof NullConstraint) {
-      NullConstraint nc = (NullConstraint) data;
-      if ((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
-        (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
-        // setting null where value is known to be non null or the contrary
-        return null;
-      }
-    }
-    if (data == null || !data.equals(nullConstraint)) {
-     return sv.setConstraint(programState, nullConstraint);
-    }
-    return programState;
+    return new Pair<>(sv.setConstraint(unstack.a, BooleanConstraint.FALSE), sv.setConstraint(unstack.a, BooleanConstraint.TRUE));
   }
 
   public enum NullConstraint {
     NULL,
     NOT_NULL;
     NullConstraint inverse() {
-      if(NULL == this) {
+      if (NULL == this) {
         return NOT_NULL;
       }
       return NULL;
     }
-
   }
 
   public enum BooleanConstraint {
     TRUE,
     FALSE;
     BooleanConstraint inverse() {
-      if(TRUE == this) {
+      if (TRUE == this) {
         return FALSE;
       }
       return TRUE;
