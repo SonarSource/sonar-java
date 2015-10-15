@@ -35,26 +35,24 @@ import java.util.List;
 
 public class ConstraintManager {
 
-//  private final Map<Symbol, SymbolicValue> symbolMap = new HashMap<>();
   private int counter = ProgramState.EMPTY_STATE.constraints.size();
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
-//    SymbolicValue result = null;
-//    if (syntaxNode.is(Tree.Kind.IDENTIFIER)) {
-//      result = symbolMap.get(((IdentifierTree) syntaxNode).symbol());
-//    }
-//    if (result == null) {
-//      result = new SymbolicValue.ObjectSymbolicValue(counter++);
-//      if(syntaxNode.is(Tree.Kind.IDENTIFIER)) {
-//        symbolMap.put(((IdentifierTree) syntaxNode).symbol(), result);
-//      }
-//    }
-    if(syntaxNode.is(Tree.Kind.EQUAL_TO)) {
-      return new SymbolicValue.EqualToSymbolicValue(counter++);
-    } else if(syntaxNode.is(Tree.Kind.NOT_EQUAL_TO)) {
-      return new SymbolicValue.NotEqualToSymbolicValue(counter++);
+    SymbolicValue result;
+    switch (syntaxNode.kind()) {
+      case EQUAL_TO:
+        result = new SymbolicValue.EqualToSymbolicValue(counter++);
+        break;
+      case NOT_EQUAL_TO:
+        result =  new SymbolicValue.NotEqualToSymbolicValue(counter++);
+        break;
+      case LOGICAL_COMPLEMENT:
+        result = new SymbolicValue.NotSymbolicValue(counter++);
+        break;
+      default:
+      result = new SymbolicValue.ObjectSymbolicValue(counter++);
     }
-    return new SymbolicValue.ObjectSymbolicValue(counter++);
+    return result;
   }
 
   public SymbolicValue supersedeSymbolicValue(VariableTree variable) {

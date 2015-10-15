@@ -77,11 +77,24 @@ public interface SymbolicValue {
 
     @Override
     public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      // store constraint only if symbolic value can be reached by a symbol.
-      if (programState.values.containsValue(this)) {
-        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-        temp.put(this, booleanConstraint);
-        return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+      Object data = programState.constraints.get(this);
+      // update program state only for a different constraint
+      if(data instanceof BooleanConstraint) {
+        BooleanConstraint bc = (BooleanConstraint) data;
+        if((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
+            (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
+          //setting null where value is known to be non null or the contrary
+          return null;
+        }
+      }
+      if (data == null || !data.equals(booleanConstraint)) {
+
+        // store constraint only if symbolic value can be reached by a symbol.
+        if (programState.values.containsValue(this)) {
+          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+          temp.put(this, booleanConstraint);
+          return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+        }
       }
       return programState;
     }
@@ -124,6 +137,7 @@ public interface SymbolicValue {
       leftOp = symbolicValues.get(1);
     }
 
+    @Override
     public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (leftOp.equals(rightOp)) {
         return shouldNotInverse().equals(booleanConstraint) ? programState : null;
@@ -186,4 +200,22 @@ public interface SymbolicValue {
 
   }
 
+  class NotSymbolicValue extends ObjectSymbolicValue {
+    private SymbolicValue operand;
+
+    public NotSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    public void computedFrom(List<SymbolicValue> symbolicValues) {
+      Preconditions.checkArgument(symbolicValues.size() == 1);
+      this.operand = symbolicValues.get(0);
+    }
+
+    @Override
+    public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      return operand.setConstraint(programState, booleanConstraint.inverse());
+    }
+  }
 }
