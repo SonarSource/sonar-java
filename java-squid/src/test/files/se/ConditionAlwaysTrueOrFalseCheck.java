@@ -790,7 +790,7 @@ public static class Class extends SuperClass {
   public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
       otherMethod();
-      if (field) {
+      if (field) { // Noncompliant
       }
       if (field1 == field2) {
       }
@@ -804,7 +804,7 @@ public static class Class extends SuperClass {
 
     if (field && field1 == field2 && local && local1 == local2) {
       if (otherMethod()) {
-        if (field) {
+        if (field) { // Noncompliant
         }
         if (field1 == field2) {
         }
@@ -819,7 +819,7 @@ public static class Class extends SuperClass {
   public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
       otherMethod();
-      if (field) {
+      if (field) { // Noncompliant
       }
       if (field1 == field2) {
       }
@@ -834,7 +834,7 @@ public static class Class extends SuperClass {
 
     if (field && field1 == field2 && local && local1 == local2) {
       if (otherMethod()) {
-        if (field) {
+        if (field) { // Noncompliant
         }
         if (field1 == field2) {
         }
@@ -1101,12 +1101,14 @@ public static class Class extends SuperClass {
   public void ternary3(boolean condition) {
     if (true ? condition : false) { // Noncompliant
     }
-    if (true ? false : condition) { // Noncompliant 2
+    // Noncompliant@+1
+    if (true ? false : condition) { // Noncompliant
     }
 
     if (false ? true : condition) { // Noncompliant
     }
-    if (false ? condition : true) { // Noncompliant 2
+    // Noncompliant@+1
+    if (false ? condition : true) { // Noncompliant
     }
   }
 
@@ -1122,4 +1124,30 @@ public static class Class extends SuperClass {
 
 class SuperClass {
   boolean field, field1, field2;
+  private static final String ACCEPT_ENCODING = "";
+  private static final String GZIP = "";
+
+  Env env;
+  Request request;
+
+  class Request {
+    String header(String name, String foo) {
+      return null;
+    }
+  }
+  class Env {
+    boolean gzip() {
+      return true;
+    }
+
+    boolean prodMode() {
+      return true;
+    }
+  }
+
+  protected boolean shouldGzip() {
+    return env.gzip()
+        && env.prodMode()
+        && request.header(ACCEPT_ENCODING, "").contains(GZIP);
+  }
 }

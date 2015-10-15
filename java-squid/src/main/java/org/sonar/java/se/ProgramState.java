@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,18 +63,23 @@ public class ProgramState {
   }
 
   static ProgramState stackValue(ProgramState ps, SymbolicValue sv) {
+    System.out.println("Stacking "+sv);
     Deque<SymbolicValue> newStack = new LinkedList<>(ps.stack);
     newStack.push(sv);
     return new ProgramState(ps.values, ps.constraints, ps.visitedPoints, newStack);
   }
 
   static Pair<ProgramState, List<SymbolicValue>> unstack(ProgramState programState, int nbElements) {
+    if(nbElements == 0) {
+      return new Pair<>(programState, Collections.<SymbolicValue>emptyList());
+    }
     Preconditions.checkArgument(programState.stack.size() >= nbElements, nbElements);
     Deque<SymbolicValue> newStack = new LinkedList<>(programState.stack);
     List<SymbolicValue> result = Lists.newArrayList();
     for (int i = 0; i < nbElements; i++) {
       result.add(newStack.pop());
     }
+    System.out.println("Untacking "+result);
     return new Pair<>(new ProgramState(programState.values, programState.constraints, programState.visitedPoints, newStack), result);
   }
 

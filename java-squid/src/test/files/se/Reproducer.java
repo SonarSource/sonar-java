@@ -21,7 +21,8 @@ class A {
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
-    i = array2.length; // Noncompliant 2 {{NullPointerException might be thrown as 'array2' is nullable here}}
+    // Noncompliant@+1
+    i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
   }
 
   @CheckForNull

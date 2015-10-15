@@ -61,7 +61,6 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
@@ -423,8 +422,6 @@ public class CFG {
       case NEW_ARRAY:
         buildNewArray((NewArrayTree) tree);
         break;
-      // Java 8 constructions : ignored for now.
-      case METHOD_REFERENCE:
         // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
         //Ignore assert statement as they are disabled by default in JVM
@@ -435,6 +432,7 @@ public class CFG {
       case ENUM:
       case ANNOTATION_TYPE:
       case INTERFACE:
+      case METHOD_REFERENCE:
       case LAMBDA_EXPRESSION:
         // simple instructions
       case IDENTIFIER:
