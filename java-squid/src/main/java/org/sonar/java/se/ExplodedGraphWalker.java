@@ -178,7 +178,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     node = null;
     programState = null;
     constraintManager = null;
-    System.out.println("=============================");
   }
 
   private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
@@ -222,12 +221,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
-    } else {
-//      SymbolicValue val = getVal(condition);
-//
-//      if (val != null) {
-//        programState = ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.TRUE);
-//      }
     }
     if (pair.b != null) {
       ProgramState ps = ProgramState.stackValue(pair.b, SymbolicValue.TRUE_LITERAL);
@@ -236,19 +229,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
-    } else {
-//      SymbolicValue val = getVal(condition);
-//      if (val != null) {
-//        programState = ConstraintManager.setConstraint(programState, val, ConstraintManager.BooleanConstraint.FALSE);
-//      }
     }
 
   }
 
   private void visit(Tree tree, Tree terminator) {
     LOG.debug("visiting node " + tree.kind().name() + " at line " + ((JavaTree) tree).getLine());
-    System.out.println("visiting node " + tree.kind().name() + " at line " + ((JavaTree) tree).getLine());
-    System.out.println("??>"+programState.stack.size()+"  "+programPosition.block.id()+"-"+programPosition.i);
     if(!checkerDispatcher.executeCheckPreStatement(tree)) {
       //Some of the check pre statement sink the execution on this node.
       return;
@@ -339,7 +325,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         //consume one and produce one
         Pair<ProgramState, List<SymbolicValue>> unstackUnary = ProgramState.unstack(programState, 1);
         programState = unstackUnary.a;
-        programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(tree));
+        SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
+        unarySymbolicValue.computedFrom(unstackUnary.b);
+        programState = ProgramState.stackValue(programState, unarySymbolicValue);
         break;
       case IDENTIFIER:
         Symbol symbol = ((IdentifierTree) tree).symbol();

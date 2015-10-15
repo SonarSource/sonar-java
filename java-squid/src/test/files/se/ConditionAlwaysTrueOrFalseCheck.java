@@ -13,11 +13,10 @@ public static class Class extends SuperClass {
   public void assign(boolean parameter) {
     parameter = false;
     if (parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
-      if (parameter) { // Compliant, always false
+      if (parameter) { // Compliant, unreachable
       }
     }
     if (!parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
-      // false positive
       if (!parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
@@ -133,9 +132,9 @@ public static class Class extends SuperClass {
   }
 
   public void identifier_field() {
-    if (field == false && field == true) { // Compliant
+    if (field == false && field == true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (field == false || field == true) { // Compliant
+    if (field == false || field == true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -367,7 +366,7 @@ public static class Class extends SuperClass {
     }
   }
 
-  public void statement_switch() {
+  public void statement_switch(boolean condition) {
     switch (expression) {
       case 1:
       case 2:
@@ -418,16 +417,16 @@ public static class Class extends SuperClass {
     }
     if (condition || !condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    //False negative: Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if ((parameter1 == parameter2 || condition) && !(parameter1 == parameter2 || condition)) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if ((parameter1 == parameter2 || condition) || !(parameter1 == parameter2 || condition)) {
     }
     // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (!(parameter1 == parameter2 || condition) && (parameter1 == parameter2 || condition)) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (!(parameter1 == parameter2 || condition) || (parameter1 == parameter2 || condition)) {
     }
   }
@@ -953,8 +952,7 @@ public static class Class extends SuperClass {
 
   public void test_condition_assignment(boolean local1, boolean local2) {
     if (local1 = false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
-      //false positive: it should not be reached
-      if (false) { // Noncompliant
+      if (false) { // compliant, unreachable
       }
     } else {
       if (local1) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -964,8 +962,7 @@ public static class Class extends SuperClass {
       if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     } else {
-      //false positive: it should not be reached
-      if (false) { // Noncompliant
+      if (false) { // compliant unreachable
       }
     }
   }
