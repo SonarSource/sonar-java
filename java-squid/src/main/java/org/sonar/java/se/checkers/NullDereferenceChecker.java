@@ -19,6 +19,9 @@
  */
 package org.sonar.java.se.checkers;
 
+import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.check.Priority;
+import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ProgramState;
@@ -29,10 +32,16 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+@Rule(
+  key = "S2259",
+  name = "Null pointers should not be dereferenced",
+  priority = Priority.BLOCKER)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("10min")
 public class NullDereferenceChecker extends SEChecker {
-
-  private static final String RULE_KEY = "squid:S2259";
 
   @Override
   public void checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -55,7 +64,7 @@ public class NullDereferenceChecker extends SEChecker {
     }
     if (val != null) {
       if (context.isNull(val)) {
-        context.addIssue(syntaxNode, RULE_KEY, "NullPointerException might be thrown as '" + name + "' is nullable here");
+        context.addIssue(syntaxNode, this, "NullPointerException might be thrown as '" + name + "' is nullable here");
         context.createSink();
         return;
       } else {

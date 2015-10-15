@@ -19,10 +19,14 @@
  */
 package org.sonar.java.se.checkers;
 
+import org.sonar.api.rule.RuleKey;
+import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public abstract class SEChecker {
+public abstract class SEChecker implements JavaCheck {
 
   public void init(){}
 
@@ -33,6 +37,11 @@ public abstract class SEChecker {
 
   public void checkEndOfExecution(CheckerContext context) {
     //By default do nothing
+  }
+
+  public static RuleKey getRuleKey(SEChecker checker) {
+    Rule rule = AnnotationUtils.getAnnotation(checker, Rule.class);
+    return RuleKey.of("squid", rule.key());
   }
 
 }

@@ -20,14 +20,23 @@
 package org.sonar.java.se.checkers;
 
 import com.google.common.collect.Sets;
+import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.check.Priority;
+import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
+import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Set;
 
+@Rule(
+  key = "S2583",
+  name = "Conditions should not unconditionally evaluate to \"TRUE\" or to \"FALSE\"",
+  priority = Priority.BLOCKER)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
+@SqaleConstantRemediation("15min")
 public class ConditionAlwaysTrueOrFalseChecker extends SEChecker {
-
-  private static final String RULE_KEY = "squid:S2583";
 
   private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
   private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
@@ -41,10 +50,10 @@ public class ConditionAlwaysTrueOrFalseChecker extends SEChecker {
   @Override
   public void checkEndOfExecution(CheckerContext context) {
     for (Tree condition : Sets.difference(evaluatedToFalse, evaluatedToTrue)) {
-      context.addIssue(condition, RULE_KEY, "Change this condition so that it does not always evaluate to \"false\"");
+      context.addIssue(condition, this, "Change this condition so that it does not always evaluate to \"false\"");
     }
     for (Tree condition : Sets.difference(evaluatedToTrue, evaluatedToFalse)) {
-      context.addIssue(condition, RULE_KEY, "Change this condition so that it does not always evaluate to \"true\"");
+      context.addIssue(condition, this, "Change this condition so that it does not always evaluate to \"true\"");
     }
   }
 

@@ -29,10 +29,10 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CompIssue;
-import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
+import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -79,12 +79,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
-  public void addIssue(Tree tree, JavaCheckMessage checkMessage) {
-    checkMessage.setLine(((JavaTree) tree).getLine());
-    sourceFile.log(checkMessage);
-  }
-
-  @Override
   public void addIssue(Tree tree, JavaCheck javaCheck, String message) {
     addIssue(((JavaTree) tree).getLine(), javaCheck, message, null);
   }
@@ -109,7 +103,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     Preconditions.checkNotNull(javaCheck);
     Preconditions.checkNotNull(message);
     RuleKey key = getRuleKey(javaCheck);
-    if (key != null) {
+    if (key != null && sonarComponents != null) {
       Issuable issuable = sonarComponents.issuableFor(file);
       if (issuable != null) {
         Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
@@ -146,7 +140,9 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @CheckForNull
   private RuleKey getRuleKey(JavaCheck check) {
-    if (sonarComponents != null) {
+    if (check instanceof SEChecker) {
+      return SEChecker.getRuleKey((SEChecker) check);
+    } else if (sonarComponents != null) {
       return sonarComponents.getRuleKey(check);
     }
     return null;

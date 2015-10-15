@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.se.checkers.SEChecker;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -62,6 +61,7 @@ public class CheckerDispatcher implements CheckerContext {
     }
   }
 
+  @Override
   public ProgramState getState() {
     return explodedGraphWalker.programState;
   }
@@ -77,8 +77,8 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   @Override
-  public void addIssue(Tree tree, String ruleKey, String message) {
-    context.addIssue(tree, new JavaCheckMessage(ruleKey, message));
+  public void addIssue(Tree tree, SEChecker check, String message) {
+    context.addIssue(tree, check, message);
   }
 
 
