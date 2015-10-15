@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -45,7 +46,7 @@ public class CheckerDispatcher implements CheckerContext {
     ProgramState ps;
     for (SECheck checker : checks) {
       ps = checker.checkPreStatement(this, syntaxNode);
-      if(ps == null) {
+      if (ps == null) {
         return false;
       }
       explodedGraphWalker.programState = ps;
@@ -53,7 +54,6 @@ public class CheckerDispatcher implements CheckerContext {
     return true;
 
   }
-
 
   public void executeCheckPostStatement(Tree syntaxNode) {
     this.syntaxNode = syntaxNode;
@@ -66,9 +66,8 @@ public class CheckerDispatcher implements CheckerContext {
       checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
     } else {
       explodedGraphWalker.enqueue(
-          new ExplodedGraph.ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
-          explodedGraphWalker.programState
-      );
+        new ExplodedGraph.ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
+        explodedGraphWalker.programState);
       return;
     }
     if (!transition) {
@@ -79,11 +78,6 @@ public class CheckerDispatcher implements CheckerContext {
   @Override
   public ProgramState getState() {
     return explodedGraphWalker.programState;
-  }
-
-  @Override
-  public ProgramState setConstraint(SymbolicValue val, ConstraintManager.NullConstraint nl) {
-    return ConstraintManager.setConstraint(getState(), val, nl);
   }
 
   @Override
@@ -113,12 +107,7 @@ public class CheckerDispatcher implements CheckerContext {
     return new Object();
   }
 
-  @Override
-  public SymbolicValue getVal(Tree expression) {
-    return explodedGraphWalker.getVal(expression);
-  }
-
-  public void executeCheckEndOfExecution() {
+  public void executeCheckEndOfExecution(MethodTree tree) {
     for (SECheck checker : checks) {
       checker.checkEndOfExecution(this);
     }
