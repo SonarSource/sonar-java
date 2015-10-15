@@ -86,4 +86,8 @@ class A0 {
 
   }
 
+  void lambdas() {
+    foo(a -> a, x -> y);
+  }
+
 }
