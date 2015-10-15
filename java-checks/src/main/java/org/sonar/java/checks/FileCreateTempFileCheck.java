@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -52,17 +53,19 @@ import java.util.Map;
   key = "S2976",
   name = "\"File.createTempFile\" should not be used to create a directory",
   priority = Priority.CRITICAL,
-  tags = {Tag.OWASP_A9, Tag.SECURITY})
+  tags = {Tag.JAVA_7, Tag.OWASP_A9, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("5min")
-public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
 
   private enum State {
     CREATE_TMP_FILE,
     DELETE,
     MKDIR
   }
+
+  private static final int JAVA_VERSION = 7;
 
   private static final String JAVA_IO_FILE = "java.io.File";
   private static final MethodMatcher FILE_CREATE_TEMP_FILE = MethodMatcher.create()
@@ -74,6 +77,11 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
 
   private final Deque<Map<Symbol, State>> symbolStack = new LinkedList<>();
   private JavaFileScannerContext context;
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(Integer version) {
+    return JAVA_VERSION <= version;
+  }
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
@@ -142,5 +150,4 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     }
     return null;
   }
-
 }

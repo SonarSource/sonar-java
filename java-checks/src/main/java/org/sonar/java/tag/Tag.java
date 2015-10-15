@@ -22,6 +22,7 @@ package org.sonar.java.tag;
 public final class Tag {
 
   public static final String BUG = "bug";
+  public static final String JAVA_7 = "java7";
   public static final String JAVA_8 = "java8";
   public static final String CONVENTION = "convention";
   public static final String JUNIT = "junit";
