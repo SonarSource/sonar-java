@@ -1,8 +1,6 @@
 @SomeAnnotation(name = value)
 package javax.annotation;
 
-import java.lang.Object;
-import java.util.ArrayList;
 import java.util.List;
 
 @interface CheckForNull {}
@@ -356,11 +354,12 @@ class NullPointerTest {
 	  }
   
   private  Object a = null;
+
   public void newInstance() {
-      if (a == null) {
-        testPrimitiveForEachLoopGood();
-        }
-        a.toString();
+    if (a == null) {
+      testPrimitiveForEachLoopGood();
+    }
+    a.toString();
   }
   protected Constructor constructor = null;
   public void newInstanceBis() throws IllegalAccessException, InstantiationException {
