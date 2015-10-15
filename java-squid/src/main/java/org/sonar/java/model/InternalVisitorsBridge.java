@@ -25,6 +25,7 @@ import com.sonar.sslr.api.RecognitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
 import org.sonar.java.ast.visitors.VisitorContext;
@@ -38,6 +39,7 @@ import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.List;
@@ -52,6 +54,8 @@ public class InternalVisitorsBridge {
   private List<File> projectClasspath;
   private boolean analyseAccessors;
   private VisitorContext context;
+  @Nullable
+  private Integer javaVersion;
 
   public InternalVisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
@@ -77,6 +81,10 @@ public class InternalVisitorsBridge {
     }
   }
 
+  public void setJavaVersion(Integer javaVersion) {
+    this.javaVersion = javaVersion;
+  }
+
   public void visitFile(@Nullable Tree parsedTree) {
     semanticModel = null;
     CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
@@ -95,13 +103,30 @@ public class InternalVisitorsBridge {
       }
     }
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, analyseAccessors, sonarComponents);
-    for (JavaFileScanner scanner : scanners) {
+    for (JavaFileScanner scanner : executableScanners(scanners)) {
       scanner.scanFile(javaFileScannerContext);
     }
     if (semanticModel != null) {
       // Close class loader after all the checks.
       semanticModel.done();
     }
+  }
+
+  private List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners) {
+    ImmutableList.Builder<JavaFileScanner> results = ImmutableList.builder();
+    for (JavaFileScanner scanner : scanners) {
+      if (shouldBeExecuted(scanner)) {
+        results.add(scanner);
+      }
+    }
+    return results.build();
+  }
+
+  private boolean shouldBeExecuted(JavaFileScanner scanner) {
+    if (javaVersion != null && scanner instanceof JavaVersionAwareVisitor) {
+      return ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion);
+    }
+    return true;
   }
 
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents) {

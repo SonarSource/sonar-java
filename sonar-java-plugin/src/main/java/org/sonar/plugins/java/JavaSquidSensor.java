@@ -20,6 +20,8 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
@@ -41,6 +43,8 @@ import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
 import org.sonar.plugins.java.bridges.DesignBridge;
 
+import javax.annotation.CheckForNull;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -50,6 +54,8 @@ import java.util.List;
 @DependsUpon(JavaUtils.BARRIER_BEFORE_SQUID)
 @DependedUpon(value = JavaUtils.BARRIER_AFTER_SQUID)
 public class JavaSquidSensor implements Sensor {
+
+  private static final Logger LOG = LoggerFactory.getLogger(JavaSquidSensor.class);
 
   private final JavaClasspath javaClasspath;
   private final SonarComponents sonarComponents;
@@ -118,7 +124,25 @@ public class JavaSquidSensor implements Sensor {
     Charset charset = fs.encoding();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setSeparateAccessorsFromMethods(analyzePropertyAccessors);
+    Integer javaVersion = getJavaVersion();
+    if (javaVersion != null) {
+      conf.setJavaVersion(javaVersion);
+    }
     return conf;
+  }
+
+  @CheckForNull
+  private Integer getJavaVersion() {
+    String javaVersion = settings.getString(Java.SOURCE_VERSION);
+    if (javaVersion != null) {
+      try {
+        return Integer.parseInt(javaVersion.replaceAll("1.", ""));
+      } catch (NumberFormatException e) {
+        LOG.warn("Invalid Java version set for property \"sonar.java.source\" (got \"" + javaVersion + "\"). "
+          + "The property will be ignored. Accepted formats are \"1.X\", or simply \"X\" (for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
+      }
+    }
+    return null;
   }
 
   @Override

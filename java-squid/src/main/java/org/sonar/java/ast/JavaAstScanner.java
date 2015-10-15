@@ -170,6 +170,7 @@ public class JavaAstScanner {
     JavaAstScanner astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
     if (visitorsBridge != null) {
       visitorsBridge.setCharset(conf.getCharset());
+      visitorsBridge.setJavaVersion(conf.javaVersion());
       astScanner.setVisitorBridge(visitorsBridge);
     }
     return astScanner;

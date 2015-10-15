@@ -99,6 +99,12 @@ public class JavaSquidSensorTest {
 
     settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);
     jss.analyse(project, context);
+
+    settings.setProperty(Java.SOURCE_VERSION, "wrongFormat");
+    jss.analyse(project, context);
+
+    settings.setProperty(Java.SOURCE_VERSION, "1.7");
+    jss.analyse(project, context);
   }
 
   private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {

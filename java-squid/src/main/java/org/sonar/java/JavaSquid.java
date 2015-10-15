@@ -114,6 +114,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
     InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
+    visitorsBridge.setJavaVersion(conf.javaVersion());
     return visitorsBridge;
   }
 
