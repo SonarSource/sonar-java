@@ -42,7 +42,7 @@ import static org.fest.assertions.Fail.fail;
   }
   @Test
   public void reproducer() throws Exception {
-    JavaCheckVerifier.verify("src/test/files/se/Reproducer.java", new SymbolicExecutionVisitor());
+    JavaCheckVerifier.verify("src/test/files/se/Reproducer.java", new IssueVisitor());
   }
 
   @Test
