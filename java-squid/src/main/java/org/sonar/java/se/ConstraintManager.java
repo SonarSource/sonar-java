@@ -19,14 +19,8 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeCastTree;
-import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
@@ -60,72 +54,17 @@ public class ConstraintManager {
     return createSymbolicValue(variable);
   }
 
-  public SymbolicValue eval(ProgramState programState, Tree syntaxNode) {
-    syntaxNode = skipTrivial(syntaxNode);
-    switch (syntaxNode.kind()) {
-      case ASSIGNMENT: {
-        return eval(programState, ((AssignmentExpressionTree) syntaxNode).variable());
+  public SymbolicValue evalLiteral(LiteralTree syntaxNode) {
+    if (syntaxNode.is(Tree.Kind.NULL_LITERAL)) {
+      return SymbolicValue.NULL_LITERAL;
+    } else if (syntaxNode.is(Tree.Kind.BOOLEAN_LITERAL)) {
+      boolean value = Boolean.parseBoolean(syntaxNode.value());
+      if (value) {
+        return SymbolicValue.TRUE_LITERAL;
       }
-      case NULL_LITERAL: {
-        return SymbolicValue.NULL_LITERAL;
-      }
-      case BOOLEAN_LITERAL: {
-        boolean value = Boolean.parseBoolean(((LiteralTree) syntaxNode).value());
-        if (value) {
-          return SymbolicValue.TRUE_LITERAL;
-        }
-        return SymbolicValue.FALSE_LITERAL;
-      }
-      case VARIABLE: {
-        Symbol symbol = ((VariableTree) syntaxNode).symbol();
-        SymbolicValue result = programState.values.get(symbol);
-        if (result != null) {
-          // symbolic value associated with local variable
-          return result;
-        }
-        break;
-      }
-      case IDENTIFIER: {
-        Symbol symbol = ((IdentifierTree) syntaxNode).symbol();
-        SymbolicValue result = programState.values.get(symbol);
-        if (result != null) {
-          // symbolic value associated with local variable
-          return result;
-        }
-        break;
-      }
-      case LOGICAL_COMPLEMENT: {
-        UnaryExpressionTree unaryExpressionTree = (UnaryExpressionTree) syntaxNode;
-        SymbolicValue val = eval(programState, unaryExpressionTree.expression());
-        if (SymbolicValue.FALSE_LITERAL.equals(val)) {
-          return SymbolicValue.TRUE_LITERAL;
-        } else if (val.equals(SymbolicValue.TRUE_LITERAL)) {
-          return SymbolicValue.FALSE_LITERAL;
-        }
-        // if not tied to a concrete value, create symbolic value with no constraint for now.
-        // TODO : create constraint between expression and created symbolic value
-      }
+      return SymbolicValue.FALSE_LITERAL;
     }
     return createSymbolicValue(syntaxNode);
-  }
-
-  /**
-   * Remove parenthesis and type cast.
-   */
-  private static Tree skipTrivial(Tree expression) {
-    do {
-      switch (expression.kind()) {
-        case PARENTHESIZED_EXPRESSION:
-          expression = ((ParenthesizedTree) expression).expression();
-          break;
-        case TYPE_CAST:
-          expression = ((TypeCastTree) expression).expression();
-          break;
-        default:
-          return expression;
-      }
-    } while (true);
-
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
