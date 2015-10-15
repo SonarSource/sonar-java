@@ -49,6 +49,7 @@ import java.util.Map;
 @SqaleConstantRemediation("10min")
 public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
 
+  private static final String RULE_KEY = "squid:S2259";
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -95,7 +96,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       case METHOD_INVOCATION:
         ProgramState ps = context.getState();
         if (((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-          ps = context.setConstraint(val, ConstraintManager.NullConstraint.NULL);
+          ps = val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL);
         }
         return ps;
     }
@@ -110,10 +111,10 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
       expressionTree = ((SwitchStatementTree) syntaxNode).expression();
     }
-    if(expressionTree != null) {
-      if(expressionTree.is(Tree.Kind.IDENTIFIER)) {
+    if (expressionTree != null) {
+      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
         name = ((IdentifierTree) expressionTree).name();
-      } else if(expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
         name = ((MethodInvocationTree) expressionTree).symbol().name();
       }
     }

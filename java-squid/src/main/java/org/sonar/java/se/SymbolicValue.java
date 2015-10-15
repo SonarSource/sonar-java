@@ -79,11 +79,11 @@ public interface SymbolicValue {
     public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       Object data = programState.constraints.get(this);
       // update program state only for a different constraint
-      if(data instanceof BooleanConstraint) {
+      if (data instanceof BooleanConstraint) {
         BooleanConstraint bc = (BooleanConstraint) data;
-        if((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
-            (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
-          //setting null where value is known to be non null or the contrary
+        if ((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
+          (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
+          // setting null where value is known to be non null or the contrary
           return null;
         }
       }
@@ -102,11 +102,11 @@ public interface SymbolicValue {
     @Override
     public ProgramState setConstraint(ProgramState programState, NullConstraint nullConstraint) {
       Object data = programState.constraints.get(this);
-      if(data instanceof NullConstraint) {
+      if (data instanceof NullConstraint) {
         NullConstraint nc = (NullConstraint) data;
-        if((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
-            (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
-          //setting null where value is known to be non null or the contrary
+        if ((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
+          (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
+          // setting null where value is known to be non null or the contrary
           return null;
         }
       }
@@ -156,7 +156,6 @@ public interface SymbolicValue {
       return "EQ_TO_" + super.toString();
     }
 
-
     private ProgramState copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
       ProgramState result = programState;
       Object constraintLeft = programState.constraints.get(from);
@@ -200,10 +199,10 @@ public interface SymbolicValue {
 
   }
 
-  class NotSymbolicValue extends ObjectSymbolicValue {
-    private SymbolicValue operand;
+  abstract class UnarySymbolicValue extends ObjectSymbolicValue {
+    protected SymbolicValue operand;
 
-    public NotSymbolicValue(int id) {
+    public UnarySymbolicValue(int id) {
       super(id);
     }
 
@@ -213,9 +212,36 @@ public interface SymbolicValue {
       this.operand = symbolicValues.get(0);
     }
 
+  }
+
+  class NotSymbolicValue extends UnarySymbolicValue {
+
+    public NotSymbolicValue(int id) {
+      super(id);
+    }
+
     @Override
     public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       return operand.setConstraint(programState, booleanConstraint.inverse());
+    }
+  }
+
+  class InstanceOfSymbolicValue extends UnarySymbolicValue {
+    public InstanceOfSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
+        if (NullConstraint.NULL.equals(programState.constraints.get(operand))) {
+          // irrealizable constraint : instance of true if operand is null
+          return null;
+        }
+        // if instanceof is true then we know for sure that expression is not null.
+        return operand.setConstraint(programState, NullConstraint.NOT_NULL);
+      }
+      return programState;
     }
   }
 }
