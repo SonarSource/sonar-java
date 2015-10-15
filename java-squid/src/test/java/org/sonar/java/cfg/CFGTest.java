@@ -227,6 +227,7 @@ public class CFGTest {
       name = null;
       switch (kind) {
         case METHOD_INVOCATION:
+        case METHOD_REFERENCE:
         case MEMBER_SELECT:
         case NULL_LITERAL:
         case EQUAL_TO:
@@ -926,6 +927,7 @@ public class CFGTest {
         element(Tree.Kind.INSTANCE_OF)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(0, 1),
       block(
+        element(Kind.METHOD_REFERENCE),
         element(Tree.Kind.LAMBDA_EXPRESSION),
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.METHOD_INVOCATION),
@@ -996,6 +998,18 @@ public class CFGTest {
       terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(2),
       block(element(Kind.IDENTIFIER, "c")).successors(1),
       terminator(Kind.RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void method_reference() throws Exception {
+    final CFG cfg = buildCFG("void fun() { foo(Object::toString); }");
+    final CFGChecker cfgChecker = checker(
+        block(
+            element(Kind.METHOD_REFERENCE),
+            element(Kind.IDENTIFIER, "foo"),
+            element(Kind.METHOD_INVOCATION)
+        ).successors(0));
     cfgChecker.check(cfg);
   }
 }

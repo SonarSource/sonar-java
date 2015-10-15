@@ -30,9 +30,24 @@ import java.util.Map;
 
 public interface SymbolicValue {
 
-  SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0);
-  SymbolicValue TRUE_LITERAL = new ObjectSymbolicValue(1);
-  SymbolicValue FALSE_LITERAL = new ObjectSymbolicValue(2);
+  SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0) {
+    @Override
+    public String toString() {
+      return super.toString()+"_NULL";
+    }
+  };
+  SymbolicValue TRUE_LITERAL = new ObjectSymbolicValue(1){
+    @Override
+    public String toString() {
+      return super.toString()+"_TRUE";
+    }
+  };
+  SymbolicValue FALSE_LITERAL = new ObjectSymbolicValue(2){
+    @Override
+    public String toString() {
+      return super.toString()+"_FALSE";
+    }
+  };
 
   void computedFrom(List<SymbolicValue> symbolicValues);
 
