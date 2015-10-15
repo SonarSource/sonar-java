@@ -48,6 +48,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
+import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -356,7 +357,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case CHAR_LITERAL:
       case STRING_LITERAL:
       case NULL_LITERAL:
-        SymbolicValue val = constraintManager.eval(programState, tree);
+        SymbolicValue val = constraintManager.evalLiteral((LiteralTree) tree);
         programState = ProgramState.stackValue(programState, val);
         break;
       case LAMBDA_EXPRESSION:
