@@ -224,6 +224,39 @@ public class JavaTest {
     orchestrator.executeBuild(build);
     Resource project = orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics("com.sonarsource.it.samples:java-inner-classes", "violations"));
     assertThat(project.getMeasureIntValue("violations")).isEqualTo(1);
+  }
 
+  @Test
+  public void java_aware_visitor_rely_on_java_version() {
+    String sonarJavaSource = "sonar.java.source";
+
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("java-version-aware-visitor"))
+      .setCleanSonarGoals()
+      .setProperty("sonar.profile", "java-version-aware-visitor")
+      .setProperty("sonar.dynamicAnalysis", "false");
+
+    // no java version specified. got issue on java 7 code
+    orchestrator.executeBuild(build);
+    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
+
+    // invalid java version. got issue on java 7 code
+    build.setProperty(sonarJavaSource, "jdk_1.6");
+    BuildResult buildResult = orchestrator.executeBuild(build);
+    // build should not fail
+    assertThat(buildResult.getStatus()).isEqualTo(0);
+    // build logs should contains warning related to sources
+    assertThat(buildResult.getLogs()).contains(
+      "Invalid Java version set for property \"sonar.java.source\"");
+    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
+
+    // upper version. got issue on java 7 code
+    build.setProperty(sonarJavaSource, "1.8");
+    orchestrator.executeBuild(build);
+    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
+
+    // lower version. no issue on java 7 code
+    build.setProperty(sonarJavaSource, "1.6");
+    orchestrator.executeBuild(build);
+    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(0);
   }
 }

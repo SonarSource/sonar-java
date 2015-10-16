@@ -57,6 +57,7 @@ public class JavaTestSuite {
       }))).getAbsolutePath()))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-extension.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-suppress-warnings.xml"))
+      .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-version-aware-visitor.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-dit.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-ignored-test.xml"))
       .restoreProfileAtStartup(FileLocation.ofClasspath("/profile-java-complexity.xml"))
