@@ -34,6 +34,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.wsclient.SonarClient;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -110,11 +112,16 @@ public class JavaRulingTest {
   @Test
   public void sonarqube_server() throws Exception {
     // sonarqube/server/sonar-server (v.5.1.2)
-    test_project("org.codehaus.sonar:sonar-server", "sonar-server");
+    test_project("org.codehaus.sonar:sonar-server", "sonarqube/server", "sonar-server");
   }
 
   private static void test_project(String projectKey, String projectName) throws IOException {
-    File pomFile = FileLocation.of("../sources/" + projectName + "/pom.xml").getFile();
+    test_project(projectKey, null, projectName);
+  }
+
+  private static void test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
+    String pomLocation = "../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
+    File pomFile = FileLocation.of(pomLocation).getFile();
     orchestrator.getServer().provisionProject(projectKey, projectName);
     orchestrator.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
