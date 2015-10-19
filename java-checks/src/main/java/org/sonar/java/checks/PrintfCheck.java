@@ -147,7 +147,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       String param = rawParam;
       int argIndex = index;
       if (param.contains("$")) {
-        argIndex = Integer.valueOf(param.substring(0, param.indexOf("$"))) - 1;
+        argIndex = getIndex(param) - 1;
         if (argIndex == -1) {
           addIssue(mit, "Arguments are numbered starting from 1.");
           return;
@@ -159,16 +159,28 @@ public class PrintfCheck extends AbstractMethodDetection {
       ExpressionTree argExpressionTree = args.get(argIndex);
       unusedArgs.remove(argExpressionTree);
       Type argType = argExpressionTree.symbolType();
-      if (param.startsWith("d") && !isNumerical(argType)) {
-        addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
-      }
-      if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
-        addIssue(mit, "Directly inject the boolean value.");
-      }
+      checkNumerical(mit, param, argType);
+      checkBoolean(mit, param, argType);
       checkTimeConversion(mit, param, argType);
 
     }
     reportUnusedArgs(mit, args, unusedArgs);
+  }
+
+  private static Integer getIndex(String param) {
+    return Integer.valueOf(param.substring(0, param.indexOf("$")));
+  }
+
+  private void checkBoolean(MethodInvocationTree mit, String param, Type argType) {
+    if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
+      addIssue(mit, "Directly inject the boolean value.");
+    }
+  }
+
+  private void checkNumerical(MethodInvocationTree mit, String param, Type argType) {
+    if (param.startsWith("d") && !isNumerical(argType)) {
+      addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
+    }
   }
 
   private void checkTimeConversion(MethodInvocationTree mit, String param, Type argType) {
@@ -194,14 +206,24 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private static boolean isNumerical(Type argType) {
     return argType.isNumerical()
-      || argType.is("java.math.BigInteger")
-      || argType.is("java.math.BigDecimal")
-      || argType.is("java.lang.Byte")
-      || argType.is("java.lang.Short")
-      || argType.is("java.lang.Integer")
-      || argType.is("java.lang.Long")
-      || argType.is("java.lang.Float")
-      || argType.is("java.lang.Double");
+      || isOneOf(argType,
+        "java.math.BigInteger",
+        "java.math.BigDecimal",
+        "java.lang.Byte",
+        "java.lang.Short",
+        "java.lang.Integer",
+        "java.lang.Long",
+        "java.lang.Float",
+        "java.lang.Double");
+  }
+
+  private static boolean isOneOf(Type argType, String... fullyQualifiedNames) {
+    for (String fullyQualifiedName : fullyQualifiedNames) {
+      if (argType.is(fullyQualifiedName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean usesMessageFormat(String formatString, List<String> params) {
