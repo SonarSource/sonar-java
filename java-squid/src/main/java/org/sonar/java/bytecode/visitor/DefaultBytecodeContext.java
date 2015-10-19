@@ -56,7 +56,7 @@ public class DefaultBytecodeContext implements BytecodeContext {
   @Override
   public void reportIssue(JavaCheck check, Resource resource, String message, int line) {
     if (sonarComponents != null) {
-      sonarComponents.addIssue(new File(resource.getPath()), check, line, message);
+      sonarComponents.addIssue(new File(resource.getPath()), check, line, message, null);
     }
   }
 

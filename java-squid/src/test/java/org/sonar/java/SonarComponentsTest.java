@@ -203,7 +203,7 @@ public class SonarComponentsTest {
       expectedRegistrar
     });
 
-    sonarComponents.addIssue(new File(""), expectedCheck, 0, "message");
+    sonarComponents.addIssue(new File(""), expectedCheck, 0, "message", null);
     verify(issuable, never()).addIssue(any(Issue.class));
   }
 
@@ -225,7 +225,7 @@ public class SonarComponentsTest {
       expectedRegistrar
     });
 
-    sonarComponents.addIssue(file, expectedCheck, 0, "message");
+    sonarComponents.addIssue(file, expectedCheck, 0, "message", null);
     verify(issuable, never()).addIssue(any(Issue.class));
   }
 
@@ -251,8 +251,8 @@ public class SonarComponentsTest {
       expectedRegistrar
     });
 
-    sonarComponents.addIssue(file, expectedCheck, -5, "message on wrong line");
-    sonarComponents.addIssue(file, expectedCheck, 42, "message on line");
+    sonarComponents.addIssue(file, expectedCheck, -5, "message on wrong line", null);
+    sonarComponents.addIssue(file, expectedCheck, 42, "message on line", 1.0);
     verify(issuable, times(2)).addIssue(any(Issue.class));
   }
 

@@ -20,13 +20,9 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.CompIssue;
 import org.sonar.java.SonarComponents;
@@ -41,15 +37,11 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
-import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Set;
 
@@ -99,31 +91,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
-    Preconditions.checkNotNull(javaCheck);
-    Preconditions.checkNotNull(message);
-    RuleKey key = getRuleKey(javaCheck);
-    if (key != null) {
-      Issuable issuable = sonarComponents.issuableFor(file);
-      if (issuable != null) {
-        Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
-          .ruleKey(key)
-          .message(message);
-        if (line > 0) {
-          issueBuilder.line(line);
-        }
-        if (cost == null) {
-          Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
-          Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
-          if (linear != null || linearWithOffset != null) {
-            throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
-          }
-        } else {
-          issueBuilder.effortToFix(cost);
-        }
-        Issue issue = issueBuilder.build();
-        issuable.addIssue(issue);
-      }
-    }
+    sonarComponents.addIssue(file, javaCheck, line, message, cost);
   }
 
   @Override
@@ -148,7 +116,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public void addIssue(File file, JavaCheck check, int line, String message) {
     if (sonarComponents != null) {
-      sonarComponents.addIssue(file, check, line, message);
+      sonarComponents.addIssue(file, check, line, message, null);
     }
   }
 
