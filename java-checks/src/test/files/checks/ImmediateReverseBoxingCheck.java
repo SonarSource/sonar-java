@@ -40,7 +40,7 @@ abstract class A {
   
   abstract Integer createInteger();
   
-  void otherThanInts(byte b, double d, float f, long l, short s) {
+  void otherThanInts(byte b, double d, float f, long l, short s, char c) {
     new Byte(b).byteValue(); // Noncompliant {{Remove the boxing of "b".}}
     Byte.valueOf(b).byteValue(); // Noncompliant
     new Double(1.).doubleValue(); // Noncompliant
@@ -53,6 +53,9 @@ abstract class A {
     Short.valueOf(s).shortValue(); // Noncompliant
     new Boolean(true).booleanValue(); // Noncompliant
     int i1 = new Double(d).intValue(); // Noncompliant
+    Character.valueOf(c).charValue(); // Noncompliant
+    new Character(c).charValue(); // Noncompliant
+    Character c1 = new Character(); // Compliant - Assuming that there is an Character class in the same package, which is not "java.lang.Character".
   }
   
 }

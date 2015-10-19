@@ -65,6 +65,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
     .put("java.lang.Integer", "int")
     .put("java.lang.Long", "long")
     .put("java.lang.Short", "short")
+    .put("java.lang.Character", "char")
     .build();
 
   private static final MethodInvocationMatcherCollection unboxingInvocationMatchers = unboxingInvocationMatchers();
@@ -157,7 +158,7 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
 
   private static Symbol.TypeSymbol wrapperClassSymbol(NewClassTree newClassTree) {
     Symbol.TypeSymbol classSymbol = newClassTree.symbolType().symbol();
-    if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(newClassTree.symbolType().fullyQualifiedName())) {
+    if (PRIMITIVE_TYPES_BY_WRAPPER.containsKey(newClassTree.symbolType().fullyQualifiedName()) && !newClassTree.arguments().isEmpty()) {
       return classSymbol;
     }
     return null;
@@ -202,11 +203,15 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
 
   private static MethodInvocationMatcherCollection unboxingInvocationMatchers() {
     MethodInvocationMatcherCollection matchers = MethodInvocationMatcherCollection.create();
-    for (String primitiveType : PRIMITIVE_TYPES_BY_WRAPPER.values()) {
-      matchers.add(
-        MethodMatcher.create()
-          .callSite("boolean".equals(primitiveType) ? TypeCriteria.is("java.lang.Boolean") : TypeCriteria.subtypeOf("java.lang.Number"))
-          .name(primitiveType + "Value"));
+    for (Entry<String, String> type : PRIMITIVE_TYPES_BY_WRAPPER.entrySet()) {
+      String primitiveType = type.getValue();
+      TypeCriteria typeCriteria;
+      if ("char".equals(primitiveType) || "boolean".equals(primitiveType)) {
+        typeCriteria = TypeCriteria.is(type.getKey());
+      } else {
+        typeCriteria = TypeCriteria.subtypeOf("java.lang.Number");
+      }
+      matchers.add(MethodMatcher.create().callSite(typeCriteria).name(primitiveType + "Value"));
     }
     return matchers;
   }
