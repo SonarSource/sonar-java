@@ -23,7 +23,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.JavaCheckMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaCheck;
@@ -33,10 +32,10 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
+import org.sonar.squidbridge.api.CheckMessage;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -103,7 +102,7 @@ public class VisitorsBridge extends InternalVisitorsBridge {
     @Deprecated
     private void addIssueForCheckMessageVerifier(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
       // compatibility with CheckMessageVerifier
-      JavaCheckMessage checkMessage = new JavaCheckMessage(javaCheck, message);
+      CheckMessage checkMessage = new CheckMessage(javaCheck, message);
       if (line > 0) {
         checkMessage.setLine(line);
       }
