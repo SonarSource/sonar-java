@@ -105,7 +105,7 @@ public class PrintfCheck extends AbstractMethodDetection {
         return;
       }
       cleanupLineSeparator(params);
-      if (params.size() > args.size()) {
+      if (argIndexes(params).size() > args.size()) {
         addIssue(mit, "Not enough arguments.");
         return;
       }
@@ -113,6 +113,20 @@ public class PrintfCheck extends AbstractMethodDetection {
     } else if (isConcatenationOnSameLine(formatStringTree)) {
       addIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
+  }
+
+  private static Set<Integer> argIndexes(List<String> params) {
+    int index = 0;
+    Set<Integer> result = Sets.newHashSet();
+    for (String rawParam : params) {
+      if (rawParam.contains("$")) {
+        result.add(getIndex(rawParam));
+      } else if (!rawParam.startsWith("<")) {
+        index++;
+        result.add(index);
+      }
+    }
+    return result;
   }
 
   private static boolean isConcatenationOnSameLine(ExpressionTree formatStringTree) {
@@ -153,7 +167,7 @@ public class PrintfCheck extends AbstractMethodDetection {
           return;
         }
         param = param.substring(param.indexOf("$") + 1);
-      } else {
+      } else if (!param.startsWith("<")) {
         index++;
       }
       ExpressionTree argExpressionTree = args.get(argIndex);
@@ -254,7 +268,7 @@ public class PrintfCheck extends AbstractMethodDetection {
         continue;
       }
       StringBuilder param = new StringBuilder();
-      for (int groupIndex : new int[] {1, 5, 6}) {
+      for (int groupIndex : new int[] {1, 2, 5, 6}) {
         if (matcher.group(groupIndex) != null) {
           param.append(matcher.group(groupIndex));
         }

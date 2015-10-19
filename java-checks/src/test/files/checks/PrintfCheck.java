@@ -3,8 +3,10 @@ import java.io.PrintWriter;
 import java.util.Formatter;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Calendar;
+
 class A {
-  void foo(){
+  void foo(Calendar c){
     Object myObject;
     double value;
     String.format("The value of my integer is %d", "Hello World");  // Noncompliant {{An 'int' is expected rather than a String.}}
@@ -73,6 +75,8 @@ class A {
     String.format("value is %d", value); // Compliant
 
     String.format("%0$s", "tmp"); // Noncompliant {{Arguments are numbered starting from 1.}}
-
+    
+    String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
+    String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
   }
 }
