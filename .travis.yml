@@ -21,6 +21,10 @@ matrix:
       env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
     - jdk: oraclejdk8
       env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
+    - jdk: oraclejdk8
+      env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
+    - jdk: oraclejdk8
+      env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
 
 cache:
   directories:
