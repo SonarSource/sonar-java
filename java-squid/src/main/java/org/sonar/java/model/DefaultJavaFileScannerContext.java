@@ -53,15 +53,18 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
   private final File file;
+  private final Integer javaVersion;
 
   public DefaultJavaFileScannerContext(
-    CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents) {
+    CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
+    @Nullable Integer javaVersion) {
     this.tree = tree;
     this.sourceFile = sourceFile;
     this.file = file;
     this.semanticModel = semanticModel;
     this.sonarComponents = sonarComponents;
     this.complexityVisitor = new ComplexityVisitor(analyseAccessors);
+    this.javaVersion = javaVersion;
   }
 
   @Override
@@ -98,6 +101,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Nullable
   public Object getSemanticModel() {
     return semanticModel;
+  }
+
+  @Override
+  @Nullable
+  public Integer getJavaVersion() {
+    return this.javaVersion;
   }
 
   @Override

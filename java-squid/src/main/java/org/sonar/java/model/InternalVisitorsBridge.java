@@ -130,7 +130,14 @@ public class InternalVisitorsBridge {
   }
 
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents) {
-    return new DefaultJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors, sonarComponents);
+    return new DefaultJavaFileScannerContext(
+      tree,
+      (SourceFile) getContext().peekSourceCode(),
+      getContext().getFile(),
+      semanticModel,
+      analyseAccessors,
+      sonarComponents,
+      javaVersion);
   }
 
   private boolean isNotJavaLangOrSerializable(String packageName) {

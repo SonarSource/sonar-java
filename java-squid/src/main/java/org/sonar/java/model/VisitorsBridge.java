@@ -83,7 +83,7 @@ public class VisitorsBridge extends InternalVisitorsBridge {
 
     public TestJavaFileScannerContext(
       CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents) {
-      super(tree, sourceFile, file, semanticModel, analyseAccessors, sonarComponents);
+      super(tree, sourceFile, file, semanticModel, analyseAccessors, sonarComponents, null);
     }
 
     public Set<AnalyzerMessage> getIssues() {
