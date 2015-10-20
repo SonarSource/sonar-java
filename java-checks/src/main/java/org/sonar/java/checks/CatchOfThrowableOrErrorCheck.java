@@ -33,8 +33,10 @@ import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -53,22 +55,29 @@ import java.util.List;
 @SqaleConstantRemediation("20min")
 public class CatchOfThrowableOrErrorCheck extends SubscriptionBaseVisitor {
 
+  private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
+  private final ThrowableExceptionVisitor throwableExceptionVisitor = new ThrowableExceptionVisitor();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CATCH);
+    return ImmutableList.of(Tree.Kind.TRY_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    CatchTree catchTree = (CatchTree) tree;
-    TypeTree typeTree = catchTree.parameter().type();
-
-    if (typeTree.is(Tree.Kind.UNION_TYPE)) {
-      for (TypeTree alternativeTypeTree : ((UnionTypeTree) typeTree).typeAlternatives()) {
-        checkType(alternativeTypeTree, catchTree);
+    TryStatementTree tryStatement = (TryStatementTree) tree;
+    if (throwableExceptionVisitor.containsExplicitThrowableException(tryStatement.block())) {
+      return;
+    }
+    for (CatchTree catchTree : tryStatement.catches()) {
+      TypeTree typeTree = catchTree.parameter().type();
+      if (typeTree.is(Tree.Kind.UNION_TYPE)) {
+        for (TypeTree alternativeTypeTree : ((UnionTypeTree) typeTree).typeAlternatives()) {
+          checkType(alternativeTypeTree, catchTree);
+        }
+      } else {
+        checkType(typeTree, catchTree);
       }
-    } else {
-      checkType(typeTree, catchTree);
     }
   }
 
@@ -76,7 +85,7 @@ public class CatchOfThrowableOrErrorCheck extends SubscriptionBaseVisitor {
     Type type = typeTree.symbolType();
     if (type.is("java.lang.Error")) {
       insertIssue(typeTree, type);
-    } else if (type.is("java.lang.Throwable")) {
+    } else if (type.is(JAVA_LANG_THROWABLE)) {
       GuavaCloserRethrowVisitor visitor = new GuavaCloserRethrowVisitor(catchTree.parameter().symbol());
       catchTree.block().accept(visitor);
       if (!visitor.foundRethrow) {
@@ -122,7 +131,43 @@ public class CatchOfThrowableOrErrorCheck extends SubscriptionBaseVisitor {
     }
 
     private static MethodMatcher rethrowMethod() {
-      return MethodMatcher.create().typeDefinition("com.google.common.io.Closer").name("rethrow").addParameter("java.lang.Throwable");
+      return MethodMatcher.create().typeDefinition("com.google.common.io.Closer").name("rethrow").addParameter(JAVA_LANG_THROWABLE);
+    }
+  }
+
+  private static class ThrowableExceptionVisitor extends BaseTreeVisitor {
+    private boolean containsExplicitThrowable;
+
+    boolean containsExplicitThrowableException(Tree tree) {
+      containsExplicitThrowable = false;
+      tree.accept(this);
+      return containsExplicitThrowable;
+    }
+
+    @Override
+    public void visitMethodInvocation(MethodInvocationTree tree) {
+      checkIfThrowThrowable(tree.symbol());
+      super.visitMethodInvocation(tree);
+    }
+
+    @Override
+    public void visitNewClass(NewClassTree tree) {
+      checkIfThrowThrowable(tree.constructorSymbol());
+      super.visitNewClass(tree);
+    }
+
+    private void checkIfThrowThrowable(Symbol symbol) {
+      if (containsExplicitThrowable) {
+        return;
+      }
+      if (symbol.isMethodSymbol()) {
+        for (Type type : ((Symbol.MethodSymbol) symbol).thrownTypes()) {
+          if (type.is(JAVA_LANG_THROWABLE)) {
+            containsExplicitThrowable = true;
+            return;
+          }
+        }
+      }
     }
   }
 }

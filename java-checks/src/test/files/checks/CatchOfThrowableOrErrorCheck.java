@@ -9,8 +9,8 @@ class A {
     } catch (Error e) {               // Noncompliant {{Catch Exception instead of Error.}}
     } catch (StackOverflowError e) {  // Compliant
     } catch (Foo |
-        Error |                       // Noncompliant {{Catch Exception instead of Error.}}
-        RuntimeException e) {
+      Error |                       // Noncompliant {{Catch Exception instead of Error.}}
+      RuntimeException e) {
       try {
       } catch (Error e) {             // Noncompliant {{Catch Exception instead of Error.}}
       }
@@ -40,5 +40,32 @@ class A {
       throw closer.rethrow(e, A.class, A.class);
     } finally {
     }
+  }
+
+  private void exception1() {
+    try {
+      unknown();
+      f();
+      new ThrowingThrowable();
+    } catch (java.lang.Throwable e) {
+
+    }
+  }
+
+  private void exception2() {
+    try {
+      throwingThrowable();
+      throwingThrowable();
+    } catch (java.lang.Throwable e) {
+
+    }
+  }
+
+  class ThrowingThrowable {
+    public ThrowingThrowable() throws RuntimeException, java.lang.Throwable{
+    }
+  }
+
+  private static void throwingThrowable() throws java.lang.Throwable {
   }
 }
