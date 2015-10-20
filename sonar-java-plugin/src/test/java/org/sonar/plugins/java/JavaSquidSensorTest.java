@@ -51,6 +51,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -94,9 +95,7 @@ public class JavaSquidSensorTest {
     jss.analyse(project, context);
 
     String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    verify(sonarComponents).addIssue(eq(file.getAbsoluteFile()), any(JavaCheck.class), eq(70), eq(message), isNull(Double.class));
-    verify(sonarComponents).addIssue(eq(file.getAbsoluteFile()), any(JavaCheck.class), eq(80), eq(message), isNull(Double.class));
-    verify(sonarComponents).addIssue(eq(file.getAbsoluteFile()), any(JavaCheck.class), eq(129), eq(message), isNull(Double.class));
+    verify(sonarComponents, times(3)).addIssue(eq(file.getAbsoluteFile()), any(JavaCheck.class), any(Integer.class), eq(message), isNull(Double.class));
 
     settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);
     jss.analyse(project, context);
