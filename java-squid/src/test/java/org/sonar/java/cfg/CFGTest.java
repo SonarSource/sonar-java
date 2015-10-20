@@ -21,11 +21,6 @@ package org.sonar.java.cfg;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG.Block;
@@ -39,6 +34,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -277,6 +278,7 @@ public class CFGTest {
         case WHILE_STATEMENT:
         case DO_STATEMENT:
         case THROW_STATEMENT:
+        case SYNCHRONIZED_STATEMENT:
           break;
         default:
           throw new IllegalArgumentException("Unexpected terminator kind!");
@@ -877,9 +879,10 @@ public class CFGTest {
       block(
         element(Tree.Kind.IDENTIFIER, "a"),
         element(Tree.Kind.NULL_LITERAL),
-        element(Tree.Kind.EQUAL_TO)).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
+        element(Tree.Kind.EQUAL_TO)).terminator(Tree.Kind.IF_STATEMENT).successors(1, 3),
       block(
-        element(Tree.Kind.IDENTIFIER, "a"),
+        element(Tree.Kind.IDENTIFIER, "a")).terminator(Tree.Kind.SYNCHRONIZED_STATEMENT).successors(2),
+      block(
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.METHOD_INVOCATION),
         element(Tree.Kind.IDENTIFIER, "bar"),
