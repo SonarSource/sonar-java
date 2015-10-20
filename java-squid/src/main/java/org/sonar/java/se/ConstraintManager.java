@@ -19,11 +19,7 @@
  */
 package org.sonar.java.se;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.CheckForNull;
-
+import com.google.common.collect.Maps;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -35,7 +31,10 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import com.google.common.collect.Maps;
+import javax.annotation.CheckForNull;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConstraintManager {
 
