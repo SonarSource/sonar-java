@@ -64,6 +64,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -754,8 +755,10 @@ public class CFG {
 
   private void buildSynchronizedStatement(SynchronizedStatementTree tree) {
     SynchronizedStatementTree sst = tree;
-    // Naively build synchronized statement.
+    // First create the block of the statement,
     build(sst.block());
+    // Then create a single block with the SYNCHRONIZED tree as terminator
+    currentBlock = createUnconditionalJump(tree, currentBlock);
     build(sst.expression());
   }
 
