@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
@@ -39,10 +38,8 @@ import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.List;
 
 public class InternalVisitorsBridge {
@@ -55,16 +52,6 @@ public class InternalVisitorsBridge {
   private List<File> projectClasspath;
   private boolean analyseAccessors;
   private VisitorContext context;
-
-  @VisibleForTesting
-  public InternalVisitorsBridge(JavaFileScanner visitor) {
-    this(Arrays.asList(visitor), Lists.<File>newArrayList(), null);
-  }
-
-  @VisibleForTesting
-  public InternalVisitorsBridge(JavaFileScanner visitor, List<File> projectClasspath) {
-    this(Arrays.asList(visitor), projectClasspath, null);
-  }
 
   public InternalVisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();

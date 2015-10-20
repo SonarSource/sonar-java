@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.SourceProject;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -44,19 +46,19 @@ public class InternalVisitorsBridgeTest {
 
   @Test
   public void test_semantic_exclusions() {
-    InternalVisitorsBridge visitorsBridgeWithoutSemantic = new InternalVisitorsBridge(new JavaFileScanner() {
+    InternalVisitorsBridge visitorsBridgeWithoutSemantic = new InternalVisitorsBridge(Collections.singletonList(new JavaFileScanner() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(context.getSemanticModel() == null).isTrue();
       }
-    });
+    }), Lists.<File>newArrayList(), null);
     visitorsBridgeWithoutSemantic.setContext(context);
     checkFile(contstructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
-    InternalVisitorsBridge visitorsBridgeWithSemantic = new InternalVisitorsBridge(new IssuableSubscriptionVisitor() {
+    InternalVisitorsBridge visitorsBridgeWithSemantic = new InternalVisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
       public ClassTree enclosingClass;
 
       @Override
@@ -79,7 +81,7 @@ public class InternalVisitorsBridgeTest {
           assertThat(context.getMethodComplexityNodes(enclosingClass, ((MethodTree) tree)).size()).isEqualTo(context.getMethodComplexity(enclosingClass, ((MethodTree) tree)));
         }
       }
-    });
+    }), Lists.<File>newArrayList(), null);
     visitorsBridgeWithSemantic.setContext(context);
     checkFile(contstructFileName("java", "lang", "annotation", "Foo.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithSemantic);
     checkFile(contstructFileName("java", "io", "File.java"), "package java.io; class A {}", visitorsBridgeWithSemantic);
