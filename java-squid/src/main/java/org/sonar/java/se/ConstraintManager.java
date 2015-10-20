@@ -19,10 +19,11 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.annotation.CheckForNull;
+
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -33,6 +34,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+
+import com.google.common.collect.Maps;
 
 public class ConstraintManager {
 
@@ -135,6 +138,10 @@ public class ConstraintManager {
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
     return NullConstraint.NULL.equals(ps.constraints.get(val));
+  }
+
+  public boolean isConstrained(ProgramState ps, SymbolicValue val) {
+    return ps.constraints.containsKey(val);
   }
 
   public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
