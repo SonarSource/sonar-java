@@ -269,6 +269,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case METHOD_INVOCATION:
         setSymbolicValueOnFields((MethodInvocationTree) tree);
         break;
+      case IDENTIFIER:
+        if (terminator != null && terminator.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
+          resetConstraintsOnFields();
+        }
       default:
     }
     checkerDispatcher.executeCheckPreStatement(tree);
@@ -276,7 +280,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
     if (isLocalMethodInvocation(tree)) {
-      resetNullValuesOnFields(tree);
+      resetConstraintsOnFields();
     }
   }
 
@@ -295,11 +299,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     return false;
   }
 
-  private void resetNullValuesOnFields(MethodInvocationTree tree) {
+  private void resetConstraintsOnFields() {
     boolean changed = false;
     Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
     for (Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      if (constraintManager.isNull(programState, entry.getValue())) {
+      if (constraintManager.isConstrained(programState, entry.getValue())) {
         Symbol symbol = entry.getKey();
         if (isField(symbol)) {
           VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
@@ -317,7 +321,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private static boolean isField(Symbol symbol) {
-    return !symbol.owner().isMethodSymbol();
+    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
   }
 
   private void setSymbolicValueNullValue(VariableTree variableTree) {
