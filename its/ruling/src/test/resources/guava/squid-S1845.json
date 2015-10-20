@@ -18,6 +18,11 @@
 'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
 87,
 ],
+'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+117,
+127,
+479,
+],
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 615,
 3687,

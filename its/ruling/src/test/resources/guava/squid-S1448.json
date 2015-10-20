@@ -15,6 +15,12 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableList.java':[
 54,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+57,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+59,
+],
 'com.google.guava:guava:src/com/google/common/collect/Iterables.java':[
 61,
 ],

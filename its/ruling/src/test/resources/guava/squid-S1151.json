@@ -5,6 +5,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableMap.java':[
 273,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+324,
+],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableTable.java':[
 92,
 ],

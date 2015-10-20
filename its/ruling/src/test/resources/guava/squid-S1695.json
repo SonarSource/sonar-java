@@ -11,6 +11,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableMultimap.java':[
 216,
 ],
+'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+890,
+],
 'com.google.guava:guava:src/com/google/common/collect/ObjectArrays.java':[
 240,
 ],

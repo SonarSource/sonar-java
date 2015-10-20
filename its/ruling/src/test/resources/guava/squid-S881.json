@@ -36,6 +36,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java':[
 158,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+382,
+],
 'com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java':[
 330,
 335,

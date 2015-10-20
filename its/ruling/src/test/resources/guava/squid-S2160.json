@@ -121,6 +121,15 @@
 53,
 449,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+57,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+50,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+59,
+],
 'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
 83,
 159,
@@ -146,6 +155,11 @@
 345,
 405,
 430,
+],
+'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+653,
+748,
+827,
 ],
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 3901,

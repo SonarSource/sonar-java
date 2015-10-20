@@ -35,6 +35,9 @@
 'com.google.guava:guava:src/com/google/common/collect/MapConstraint.java':[
 56,
 ],
+'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+639,
+],
 'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
 1836,
 ],

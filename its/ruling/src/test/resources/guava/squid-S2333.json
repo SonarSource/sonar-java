@@ -11,6 +11,10 @@
 'com.google.guava:guava:src/com/google/common/cache/Striped64.java':[
 99,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+795,
+807,
+],
 'com.google.guava:guava:src/com/google/common/collect/SingletonImmutableSet.java':[
 75,
 ],

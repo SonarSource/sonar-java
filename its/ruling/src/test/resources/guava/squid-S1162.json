@@ -32,6 +32,9 @@
 545,
 555,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+780,
+],
 'com.google.guava:guava:src/com/google/common/eventbus/Subscriber.java':[
 104,
 ],

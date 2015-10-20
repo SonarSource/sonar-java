@@ -25,6 +25,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
 360,
 ],
+'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+854,
+],
 'com.google.guava:guava:src/com/google/common/eventbus/EventBus.java':[
 174,
 ],

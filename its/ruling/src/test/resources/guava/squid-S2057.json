@@ -66,6 +66,12 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
 449,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+550,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+516,
+],
 'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
 159,
 ],

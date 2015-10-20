@@ -270,6 +270,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSet.java':[
 313,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+286,
+],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableTable.java':[
 159,
 238,
@@ -288,6 +291,9 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/MapConstraints.java':[
 54,
+],
+'com.google.guava:guava:src/com/google/common/collect/MapMaker.java':[
+135,
 ],
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 608,

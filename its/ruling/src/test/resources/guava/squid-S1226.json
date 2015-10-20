@@ -51,6 +51,9 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableMultiset.java':[
 286,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+232,
+],
 'com.google.guava:guava:src/com/google/common/collect/LinkedListMultimap.java':[
 330,
 335,

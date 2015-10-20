@@ -32,6 +32,10 @@
 102,
 117,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+144,
+157,
+],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMapFauxverideShim.java':[
 95,
 110,

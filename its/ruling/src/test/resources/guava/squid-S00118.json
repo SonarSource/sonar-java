@@ -201,8 +201,14 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMapFauxverideShim.java':[
 26,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+50,
+],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultisetFauxverideShim.java':[
 34,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+59,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSetFauxverideShim.java':[
 35,

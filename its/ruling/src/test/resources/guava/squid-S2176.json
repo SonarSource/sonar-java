@@ -34,6 +34,16 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
 172,
 ],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+408,
+843,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMultiset.java':[
+412,
+],
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
+438,
+],
 'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
 2793,
 ],
