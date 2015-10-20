@@ -22,16 +22,6 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
 import org.codehaus.plexus.util.StringOutputStream;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -71,6 +61,18 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
+
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CFG {
 
@@ -753,8 +755,10 @@ public class CFG {
 
   private void buildSynchronizedStatement(SynchronizedStatementTree tree) {
     SynchronizedStatementTree sst = tree;
-    // Naively build synchronized statement.
+    // First create the block of the statement,
     build(sst.block());
+    // Then create a single block with the SYNCHRONIZED tree as terminator
+    currentBlock = createUnconditionalJump(tree, currentBlock);
     build(sst.expression());
   }
 

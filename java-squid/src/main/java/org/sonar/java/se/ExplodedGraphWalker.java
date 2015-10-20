@@ -19,15 +19,12 @@
  */
 package org.sonar.java.se;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.annotation.CheckForNull;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -51,12 +48,14 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
+import javax.annotation.CheckForNull;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
@@ -269,6 +268,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case METHOD_INVOCATION:
         setSymbolicValueOnFields((MethodInvocationTree) tree);
         break;
+      case IDENTIFIER:
+        if (terminator != null && terminator.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
+          resetConstraintsOnFields();
+        }
       default:
     }
     checkerDispatcher.executeCheckPreStatement(tree);
@@ -276,7 +279,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
     if (isLocalMethodInvocation(tree)) {
-      resetNullValuesOnFields(tree);
+      resetConstraintsOnFields();
     }
   }
 
@@ -295,11 +298,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     return false;
   }
 
-  private void resetNullValuesOnFields(MethodInvocationTree tree) {
+  private void resetConstraintsOnFields() {
     boolean changed = false;
     Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
     for (Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      if (constraintManager.isNull(programState, entry.getValue())) {
+      if (constraintManager.isConstrained(programState, entry.getValue())) {
         Symbol symbol = entry.getKey();
         if (isField(symbol)) {
           VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
@@ -317,7 +320,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private static boolean isField(Symbol symbol) {
-    return !symbol.owner().isMethodSymbol();
+    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
   }
 
   private void setSymbolicValueNullValue(VariableTree variableTree) {

@@ -710,7 +710,7 @@ public static class Class extends SuperClass {
   }
   public void test_instance_fields2(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
-      otherMethod();
+      System.out.println();
       if (field) { // Noncompliant
       }
       if (field1 == field2) { // Compliant
@@ -724,7 +724,7 @@ public static class Class extends SuperClass {
   public void test_instance_fields3(boolean local, boolean local1, boolean local2) {
 
     if (field && field1 == field2 && local && local1 == local2) {
-      if (otherMethod()) {
+      if (Integer.toString(intField).length() > 10) {
         if (field) { // Noncompliant
         }
         if (field1 == field2) { // Compliant
@@ -775,6 +775,34 @@ public static class Class extends SuperClass {
     }
     if (instance1.field && field1 == instance2.field2) {
       if (field && field1 == instance2.field2) { // Compliant
+      }
+    }
+  }
+  public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
+    if (field && field1 == field2 && local && local1 == local2) {
+      otherMethod();
+      if (field) {
+      }
+      if (field1 == field2) {
+      }
+      if (local) { // Noncompliant
+      }
+      if (local1 == local2) { //False negative Noncompliant
+      }
+    }
+  }
+  public void test_instance_fields7(boolean local, boolean local1, boolean local2) {
+
+    if (field && field1 == field2 && local && local1 == local2) {
+      if (otherMethod()) {
+        if (field) {
+        }
+        if (field1 == field2) {
+        }
+        if (local) { // Noncompliant
+        }
+        if (local1 == local2) { //False negative Noncompliant
+        }
       }
     }
   }

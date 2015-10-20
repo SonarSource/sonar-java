@@ -1,10 +1,6 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Suppliers.java':[
-130,
-],
 'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
 4053,
-4077,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
 339,
@@ -31,9 +27,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
 735,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/RateLimiter.java':[
-197,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/SerializingExecutor.java':[
 147,
