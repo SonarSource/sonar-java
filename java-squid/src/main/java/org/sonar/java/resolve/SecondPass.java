@@ -85,12 +85,6 @@ public class SecondPass implements JavaSymbol.Completer {
     ClassTree tree = symbol.declaration;
     completeTypeParameters(tree.typeParameters(), env);
 
-    populateSuperclass(symbol, env, type);
-
-    if ((symbol.flags() & Flags.INTERFACE) == 0) {
-      symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
-    }
-
     //Interfaces
     ImmutableList.Builder<JavaType> interfaces = ImmutableList.builder();
     for (Tree interfaceTree : tree.superInterfaces()) {
@@ -113,6 +107,12 @@ public class SecondPass implements JavaSymbol.Completer {
     }
 
     type.interfaces = interfaces.build();
+
+    populateSuperclass(symbol, env, type);
+
+    if ((symbol.flags() & Flags.INTERFACE) == 0) {
+      symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
+    }
   }
 
   private void populateSuperclass(JavaSymbol.TypeJavaSymbol symbol, Resolve.Env env, JavaType.ClassJavaType type) {
