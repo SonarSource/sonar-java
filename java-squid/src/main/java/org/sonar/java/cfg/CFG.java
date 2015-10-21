@@ -244,7 +244,7 @@ public class CFG {
   }
 
   private boolean notActive(Block block) {
-    if (block == currentBlock &&block.successors.size() > 1) {
+    if (block.equals(currentBlock) && block.successors.size() > 1) {
       return false;
     }
     return block.notActive();
@@ -411,13 +411,13 @@ public class CFG {
       case NEW_ARRAY:
         buildNewArray((NewArrayTree) tree);
         break;
-        // Java 8 constructions : ignored for now.
+      // Java 8 constructions : ignored for now.
       case METHOD_REFERENCE:
         // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
         //Ignore assert statement as they are disabled by default in JVM
         break;
-        // store declarations as complete blocks.
+      // store declarations as complete blocks.
       case EMPTY_STATEMENT:
       case CLASS:
       case ENUM:
@@ -441,17 +441,15 @@ public class CFG {
     }
   }
 
-  private void buildReturnStatement(ReturnStatementTree tree) {
-    ReturnStatementTree s = tree;
-    currentBlock = createUnconditionalJump(s, exitBlock);
-    ExpressionTree expression = s.expression();
+  private void buildReturnStatement(ReturnStatementTree returnStatement) {
+    currentBlock = createUnconditionalJump(returnStatement, exitBlock);
+    ExpressionTree expression = returnStatement.expression();
     if (expression != null) {
       build(expression);
     }
   }
 
-  private void buildMethodInvocation(MethodInvocationTree tree) {
-    MethodInvocationTree mit = tree;
+  private void buildMethodInvocation(MethodInvocationTree mit) {
     currentBlock.elements.add(mit);
     build(mit.methodSelect());
     for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
@@ -459,8 +457,7 @@ public class CFG {
     }
   }
 
-  private void buildIfStatement(IfStatementTree tree) {
-    IfStatementTree ifStatementTree = tree;
+  private void buildIfStatement(IfStatementTree ifStatementTree) {
     Block next = currentBlock;
     // process else-branch
     Block elseBlock = next;
@@ -482,8 +479,7 @@ public class CFG {
     buildCondition(ifStatementTree.condition(), thenBlock, elseBlock);
   }
 
-  private void buildConditionalExpression(ConditionalExpressionTree tree) {
-    ConditionalExpressionTree cond = tree;
+  private void buildConditionalExpression(ConditionalExpressionTree cond) {
     Block next = currentBlock;
     // process else-branch
     ExpressionTree elseStatement = cond.falseExpression();
@@ -520,8 +516,7 @@ public class CFG {
     build(tree.expression());
   }
 
-  private void buildMemberSelect(MemberSelectExpressionTree tree) {
-    MemberSelectExpressionTree mse = tree;
+  private void buildMemberSelect(MemberSelectExpressionTree mse) {
     currentBlock.elements.add(mse);
     // int.class or String[].class are memberSelectExpression which expression part is not an expression.
     if (!"class".equals(mse.identifier().name())) {
@@ -551,16 +546,13 @@ public class CFG {
     build(tree.leftOperand());
   }
 
-  private void buildLabeledStatement(LabeledStatementTree tree) {
-    LabeledStatementTree s = tree;
-    build(s.statement());
+  private void buildLabeledStatement(LabeledStatementTree labeledStatement) {
+    build(labeledStatement.statement());
     currentBlock = createBlock(currentBlock);
-    labels.put(s.label().name(), currentBlock);
-    return;
+    labels.put(labeledStatement.label().name(), currentBlock);
   }
 
-  private void buildSwitchStatement(SwitchStatementTree tree) {
-    SwitchStatementTree switchStatementTree = tree;
+  private void buildSwitchStatement(SwitchStatementTree switchStatementTree) {
     Block switchSuccessor = currentBlock;
     // process condition
     currentBlock = createBlock();
@@ -610,37 +602,35 @@ public class CFG {
     }
   }
 
-  private void buildWhileStatement(WhileStatementTree tree) {
-    WhileStatementTree s = tree;
+  private void buildWhileStatement(WhileStatementTree whileStatement) {
     Block falseBranch = currentBlock;
     Block loopback = createBlock();
     // process body
     currentBlock = createBlock(loopback);
     continueTargets.addLast(loopback);
     breakTargets.addLast(falseBranch);
-    build(s.statement());
+    build(whileStatement.statement());
     breakTargets.removeLast();
     continueTargets.removeLast();
     Block bodyBlock = currentBlock;
     // process condition
-    currentBlock = createBranch(s, bodyBlock, falseBranch);
-    buildCondition(s.condition(), bodyBlock, falseBranch);
+    currentBlock = createBranch(whileStatement, bodyBlock, falseBranch);
+    buildCondition(whileStatement.condition(), bodyBlock, falseBranch);
     loopback.addSuccessor(currentBlock);
     currentBlock = createBlock(currentBlock);
   }
 
-  private void buildDoWhileStatement(DoWhileStatementTree tree) {
-    DoWhileStatementTree s = tree;
+  private void buildDoWhileStatement(DoWhileStatementTree doWhileStatementTree) {
     Block falseBranch = currentBlock;
     Block loopback = createBlock();
     // process condition
-    currentBlock = createBranch(s, loopback, falseBranch);
-    buildCondition(s.condition(), loopback, falseBranch);
+    currentBlock = createBranch(doWhileStatementTree, loopback, falseBranch);
+    buildCondition(doWhileStatementTree.condition(), loopback, falseBranch);
     // process body
     currentBlock = createBlock(currentBlock);
     continueTargets.addLast(loopback);
     breakTargets.addLast(falseBranch);
-    build(s.statement());
+    build(doWhileStatementTree.statement());
     breakTargets.removeLast();
     continueTargets.removeLast();
     loopback.addSuccessor(currentBlock);
@@ -696,9 +686,8 @@ public class CFG {
     }
   }
 
-  private void buildTryStatement(TryStatementTree tree) {
+  private void buildTryStatement(TryStatementTree tryStatementTree) {
     // FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
-    TryStatementTree tryStatementTree = tree;
     currentBlock = createBlock(currentBlock);
     BlockTree finallyBlock = tryStatementTree.finallyBlock();
     if (finallyBlock != null) {
@@ -708,22 +697,20 @@ public class CFG {
     build(tryStatementTree.block());
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
-    currentBlock.elements.add(tree);
+    currentBlock.elements.add(tryStatementTree);
   }
 
-  private void buildThrowStatement(ThrowStatementTree tree) {
+  private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
     // FIXME this won't work if it is intended to be caught by a try statement.
-    ThrowStatementTree throwStatementTree = tree;
     currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
     build(throwStatementTree.expression());
   }
 
-  private void buildSynchronizedStatement(SynchronizedStatementTree tree) {
-    SynchronizedStatementTree sst = tree;
+  private void buildSynchronizedStatement(SynchronizedStatementTree sst) {
     // First create the block of the statement,
     build(sst.block());
     // Then create a single block with the SYNCHRONIZED tree as terminator
-    currentBlock = createUnconditionalJump(tree, currentBlock);
+    currentBlock = createUnconditionalJump(sst, currentBlock);
     build(sst.expression());
   }
 
@@ -789,7 +776,7 @@ public class CFG {
         // process RHS
         buildConditionalAnd((BinaryExpressionTree) syntaxNode, trueBlock, falseBlock);
         break;
-        // Skip syntactic sugar:
+      // Skip syntactic sugar:
       case PARENTHESIZED_EXPRESSION:
         buildCondition(((ParenthesizedTree) syntaxNode).expression(), trueBlock, falseBlock);
         break;

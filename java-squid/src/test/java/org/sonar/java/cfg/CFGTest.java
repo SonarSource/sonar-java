@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -75,9 +76,7 @@ public class CFGTest {
     private final List<BlockChecker> checkers = new ArrayList<>();
 
     CFGChecker(BlockChecker... checkers) {
-      for (BlockChecker checker : checkers) {
-        this.checkers.add(checker);
-      }
+      Collections.addAll(this.checkers, checkers);
     }
 
     public void check(final CFG cfg) {
@@ -119,9 +118,7 @@ public class CFGTest {
     }
 
     BlockChecker(final ElementChecker... checkers) {
-      for (final ElementChecker checker : checkers) {
-        this.checkers.add(checker);
-      }
+      Collections.addAll(this.checkers, checkers);
       if (this.checkers.isEmpty()) {
         throw new IllegalArgumentException("Only terminator may have no elements!");
       }
@@ -846,11 +843,6 @@ public class CFGTest {
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
-    try {
-
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
   }
 
   @Test
