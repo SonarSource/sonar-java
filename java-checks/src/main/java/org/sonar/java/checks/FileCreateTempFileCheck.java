@@ -24,6 +24,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -65,8 +66,6 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     MKDIR
   }
 
-  private static final int JAVA_VERSION = 7;
-
   private static final String JAVA_IO_FILE = "java.io.File";
   private static final MethodMatcher FILE_CREATE_TEMP_FILE = MethodMatcher.create()
     .typeDefinition(JAVA_IO_FILE).name("createTempFile").withNoParameterConstraint();
@@ -80,7 +79,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public boolean isCompatibleWithJavaVersion(Integer version) {
-    return JAVA_VERSION <= version;
+    return JavaVersionHelper.java7Compatible(version);
   }
 
   @Override
