@@ -24,6 +24,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -45,7 +47,12 @@ import java.util.List;
 @Beta
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor {
+public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(Integer version) {
+    return JavaVersionHelper.java8Compatible(version);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -84,5 +91,4 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor {
   private static boolean isReturnStatement(Tree tree) {
     return tree.is(Tree.Kind.RETURN_STATEMENT);
   }
-
 }
