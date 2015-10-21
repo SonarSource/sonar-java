@@ -70,38 +70,32 @@ public class ConstraintManager {
     return result;
   }
 
-  public SymbolicValue eval(ProgramState programState, Tree syntaxNode) {
-    syntaxNode = skipTrivial(syntaxNode);
+  public SymbolicValue eval(ProgramState programState, Tree node) {
+    Tree syntaxNode = skipTrivial(node);
     switch (syntaxNode.kind()) {
-      case NULL_LITERAL: {
+      case NULL_LITERAL:
         return SymbolicValue.NULL_LITERAL;
-      }
-      case BOOLEAN_LITERAL: {
+      case BOOLEAN_LITERAL:
         boolean value = Boolean.parseBoolean(((LiteralTree) syntaxNode).value());
         if (value) {
           return SymbolicValue.TRUE_LITERAL;
         }
         return SymbolicValue.FALSE_LITERAL;
-      }
-      case VARIABLE: {
-        Symbol symbol = ((VariableTree) syntaxNode).symbol();
-        SymbolicValue result = programState.values.get(symbol);
-        if (result != null) {
+      case VARIABLE:
+        SymbolicValue variableResult = programState.values.get(((VariableTree) syntaxNode).symbol());
+        if (variableResult != null) {
           // symbolic value associated with local variable
-          return result;
+          return variableResult;
         }
         break;
-      }
-      case IDENTIFIER: {
-        Symbol symbol = ((IdentifierTree) syntaxNode).symbol();
-        SymbolicValue result = programState.values.get(symbol);
-        if (result != null) {
+      case IDENTIFIER:
+        SymbolicValue identifierResult = programState.values.get(((IdentifierTree) syntaxNode).symbol());
+        if (identifierResult != null) {
           // symbolic value associated with local variable
-          return result;
+          return identifierResult;
         }
         break;
-      }
-      case LOGICAL_COMPLEMENT: {
+      case LOGICAL_COMPLEMENT:
         UnaryExpressionTree unaryExpressionTree = (UnaryExpressionTree) syntaxNode;
         SymbolicValue val = eval(programState, unaryExpressionTree.expression());
         if (SymbolicValue.FALSE_LITERAL.equals(val)) {
@@ -111,7 +105,7 @@ public class ConstraintManager {
         }
         // if not tied to a concrete value, create symbolic value with no constraint for now.
         // TODO : create constraint between expression and created symbolic value
-      }
+      default:
     }
     return createSymbolicValue(syntaxNode);
   }
@@ -119,7 +113,8 @@ public class ConstraintManager {
   /**
    * Remove parenthesis and type cast.
    */
-  private static Tree skipTrivial(Tree expression) {
+  private static Tree skipTrivial(Tree givenExpression) {
+    Tree expression = givenExpression;
     do {
       switch (expression.kind()) {
         case PARENTHESIZED_EXPRESSION:
@@ -132,7 +127,6 @@ public class ConstraintManager {
           return expression;
       }
     } while (true);
-
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
@@ -143,12 +137,12 @@ public class ConstraintManager {
     return ps.constraints.containsKey(val);
   }
 
-  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree condition) {
+  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState, Tree givenCondition) {
     // FIXME condition value should be evaluated to determine if it is worth exploring this branch. This should probably be done in a
     // dedicated checker.
-    condition = skipTrivial(condition);
+    Tree condition = skipTrivial(givenCondition);
     switch (condition.kind()) {
-      case INSTANCE_OF: {
+      case INSTANCE_OF:
         InstanceOfTree instanceOfTree = (InstanceOfTree) condition;
         SymbolicValue exprValue = eval(programState, instanceOfTree.expression());
         if (isNull(programState, exprValue)) {
@@ -156,23 +150,21 @@ public class ConstraintManager {
         }
         // if instanceof is true then we know for sure that expression is not null.
         return new Pair<>(programState, setConstraint(programState, exprValue, NullConstraint.NOT_NULL));
-      }
-      case EQUAL_TO: {
+      case EQUAL_TO:
         BinaryExpressionTree equalTo = (BinaryExpressionTree) condition;
-        SymbolicValue lhs = eval(programState, equalTo.leftOperand());
-        SymbolicValue rhs = eval(programState, equalTo.rightOperand());
-        if (isNull(programState, lhs)) {
-          ProgramState stateNull = setConstraint(programState, rhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, rhs, NullConstraint.NOT_NULL);
+        SymbolicValue equalToLhs = eval(programState, equalTo.leftOperand());
+        SymbolicValue equalToRhs = eval(programState, equalTo.rightOperand());
+        if (isNull(programState, equalToLhs)) {
+          ProgramState stateNull = setConstraint(programState, equalToRhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, equalToRhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
-        } else if (isNull(programState, rhs)) {
-          ProgramState stateNull = setConstraint(programState, lhs, NullConstraint.NULL);
-          ProgramState stateNotNull = setConstraint(programState, lhs, NullConstraint.NOT_NULL);
+        } else if (isNull(programState, equalToRhs)) {
+          ProgramState stateNull = setConstraint(programState, equalToLhs, NullConstraint.NULL);
+          ProgramState stateNotNull = setConstraint(programState, equalToLhs, NullConstraint.NOT_NULL);
           return new Pair<>(stateNotNull, stateNull);
         }
         break;
-      }
-      case NOT_EQUAL_TO: {
+      case NOT_EQUAL_TO:
         BinaryExpressionTree notEqualTo = (BinaryExpressionTree) condition;
         SymbolicValue lhs = eval(programState, notEqualTo.leftOperand());
         SymbolicValue rhs = eval(programState, notEqualTo.rightOperand());
@@ -186,7 +178,6 @@ public class ConstraintManager {
           return new Pair<>(stateNull, stateNotNull);
         }
         break;
-      }
       case LOGICAL_COMPLEMENT:
         return assumeDual(programState, ((UnaryExpressionTree) condition).expression()).invert();
       case CONDITIONAL_OR:
@@ -196,8 +187,7 @@ public class ConstraintManager {
         BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) condition;
         return assumeDual(programState, binaryExpressionTree.rightOperand());
       case BOOLEAN_LITERAL:
-        LiteralTree literalTree = ((LiteralTree) condition);
-        if ("true".equals(literalTree.value())) {
+        if ("true".equals(((LiteralTree) condition).value())) {
           return new Pair<>(null, programState);
         }
         return new Pair<>(programState, null);
@@ -205,6 +195,7 @@ public class ConstraintManager {
         IdentifierTree id = (IdentifierTree) condition;
         SymbolicValue eval = eval(programState, id);
         return new Pair<>(setConstraint(programState, eval, BooleanConstraint.FALSE), setConstraint(programState, eval, BooleanConstraint.TRUE));
+      default:
     }
     return new Pair<>(programState, programState);
   }
@@ -259,3 +250,4 @@ public class ConstraintManager {
     FALSE,
   }
 }
+
