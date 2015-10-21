@@ -69,9 +69,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseCheck;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
-  private ExplodedGraph.Node node;
-  public ExplodedGraph.ProgramPoint programPosition;
-  public ProgramState programState;
+  protected ExplodedGraph.ProgramPoint programPosition;
+  protected ProgramState programState;
 
   private CheckerDispatcher checkerDispatcher;
 
@@ -85,7 +84,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
-  public ExplodedGraphWalker(JavaFileScannerContext context) throws MaximumStepsReachedException {
+  public ExplodedGraphWalker(JavaFileScannerContext context) {
     alwaysTrueOrFalseCheck = new ConditionAlwaysTrueOrFalseCheck();
     this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SECheck>newArrayList(alwaysTrueOrFalseCheck, new NullDereferenceCheck()));
   }
@@ -134,6 +133,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), startingState);
     }
     steps = 0;
+    ExplodedGraph.Node node;
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
@@ -168,7 +168,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     // Cleanup:
     explodedGraph = null;
     workList = null;
-    node = null;
     programState = null;
     constraintManager = null;
   }
@@ -194,6 +193,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
             handleBranch(block, forStatement.condition(), false);
             return;
           }
+        default:
       }
     }
     // unconditional jumps, for-statement, switch-statement:
@@ -259,7 +259,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         }
         break;
       case ASSIGNMENT:
-        AssignmentExpressionTree assignmentExpressionTree = ((AssignmentExpressionTree) tree);
+        AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
         // FIXME restricted to identifiers for now.
         if (assignmentExpressionTree.variable().is(Tree.Kind.IDENTIFIER)) {
           SymbolicValue value = getVal(assignmentExpressionTree.expression());
@@ -273,6 +273,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         if (terminator != null && terminator.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
           resetConstraintsOnFields();
         }
+        break;
       default:
     }
     checkerDispatcher.executeCheckPreStatement(tree);
@@ -303,15 +304,16 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     boolean changed = false;
     Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
     for (Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      if (constraintManager.isConstrained(programState, entry.getValue())) {
-        Symbol symbol = entry.getKey();
-        if (isField(symbol)) {
-          VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-          if (variable != null) {
-            changed = true;
-            SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
-            values.put(symbol, nonNullValue);
-          }
+      if (!constraintManager.isConstrained(programState, entry.getValue())) {
+        continue;
+      }
+      Symbol symbol = entry.getKey();
+      if (isField(symbol)) {
+        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+        if (variable != null) {
+          changed = true;
+          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
+          values.put(symbol, nonNullValue);
         }
       }
     }
