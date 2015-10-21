@@ -23,6 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,11 +44,16 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor {
+public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.LAMBDA_EXPRESSION);
+  }
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(Integer version) {
+    return JavaVersionHelper.java8Compatible(version);
   }
 
   @Override
