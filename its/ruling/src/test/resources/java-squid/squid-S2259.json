@@ -1,0 +1,12 @@
+{
+'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/ast/parser/TreeFactory.java':[
+1094,
+1094,
+],
+'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/ast/visitors/AccessorsUtils.java':[
+121,
+],
+'org.sonarsource.java:java-squid:src/main/java/org/sonar/java/bytecode/visitor/DependenciesVisitor.java':[
+83,
+],
+}
