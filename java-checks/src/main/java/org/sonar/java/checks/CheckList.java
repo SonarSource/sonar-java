@@ -358,6 +358,7 @@ public final class CheckList {
       .add(AnnotationArgumentOrderCheck.class)
       .add(DeadStoreCheck.class)
       .add(DataStoredInSessionCheck.class)
+      .add(DiamondOperatorCheck.class)
       .build();
   }
 

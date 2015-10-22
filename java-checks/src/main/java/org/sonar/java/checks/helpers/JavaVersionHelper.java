@@ -37,6 +37,10 @@ public class JavaVersionHelper {
     return notSetOrAtLeast(javaVersion, JAVA_8);
   }
 
+  public static boolean java7Guaranteed(@Nullable Integer javaVersion) {
+    return setAndAtLeast(javaVersion, JAVA_7);
+  }
+
   public static boolean java8Guaranteed(@Nullable Integer javaVersion) {
     return setAndAtLeast(javaVersion, JAVA_8);
   }
