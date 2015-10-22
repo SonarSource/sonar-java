@@ -21,6 +21,8 @@ package org.sonar.java;
 
 import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
+
 /**
  * Implementing this interface allows a check to be executed - or not - during analysis, depending
  * of expected java version.
@@ -30,11 +32,11 @@ import com.google.common.annotations.Beta;
 @Beta
 public interface JavaVersionAwareVisitor {
   /**
-   * Control if the check is compatible with the java version of the project being analyzed. This method will only be called if
-   * property <code>sonar.java.source</code> has been set. Note that if the property is not set, check implementing this interface
-   * will be executed.
-   * @param version The java version of the sources (6 for java 1.6, 7 for 1.7, etc.).
+   * Control if the check is compatible with the java version of the project being analyzed. The version used as parameter depends of the
+   * property <code>sonar.java.source</code>. Note that if the property is not set, The method will be called with <code>null</code> as parameter.
+   *
+   * @param version The java version of the sources (6 for java 1.6, 7 for 1.7, etc.), <code>null</code> if property not set.
    * @return true if the check is compatible with detected java version and should be executed on sources, false otherwise.
    */
-  boolean isCompatibleWithJavaVersion(Integer version);
+  boolean isCompatibleWithJavaVersion(@Nullable Integer version);
 }

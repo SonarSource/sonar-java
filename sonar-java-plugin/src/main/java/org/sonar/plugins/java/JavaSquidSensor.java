@@ -65,7 +65,7 @@ public class JavaSquidSensor implements Sensor {
   private final NoSonarFilter noSonarFilter;
 
   public JavaSquidSensor(JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
-                         DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
+    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
     this.noSonarFilter = noSonarFilter;
     this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
@@ -124,10 +124,7 @@ public class JavaSquidSensor implements Sensor {
     Charset charset = fs.encoding();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setSeparateAccessorsFromMethods(analyzePropertyAccessors);
-    Integer javaVersion = getJavaVersion();
-    if (javaVersion != null) {
-      conf.setJavaVersion(javaVersion);
-    }
+    conf.setJavaVersion(getJavaVersion());
     return conf;
   }
 

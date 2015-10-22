@@ -55,7 +55,7 @@ public class JavaConfiguration {
     return javaVersion;
   }
 
-  public void setJavaVersion(Integer javaVersion) {
+  public void setJavaVersion(@Nullable Integer javaVersion) {
     this.javaVersion = javaVersion;
   }
 

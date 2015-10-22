@@ -154,10 +154,15 @@ public class JavaAstScanner {
 
   @VisibleForTesting
   public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge) {
+    scanSingleFileForTests(file, visitorsBridge, new JavaConfiguration(Charset.forName("UTF-8")));
+  }
+
+  @VisibleForTesting
+  public static void scanSingleFileForTests(File file, VisitorsBridge visitorsBridge, JavaConfiguration conf) {
     if (!file.isFile()) {
       throw new IllegalArgumentException("File '" + file + "' not found.");
     }
-    JavaAstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitorsBridge);
+    JavaAstScanner scanner = create(conf, visitorsBridge);
 
     scanner.scan(Collections.singleton(file));
     Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));

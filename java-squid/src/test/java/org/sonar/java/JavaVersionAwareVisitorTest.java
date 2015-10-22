@@ -148,7 +148,7 @@ public class JavaVersionAwareVisitorTest {
 
     @Override
     public boolean isCompatibleWithJavaVersion(Integer version) {
-      return target <= version;
+      return version == null || target <= version;
     }
 
     @Override

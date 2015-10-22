@@ -81,8 +81,12 @@ public class InternalVisitorsBridge {
     }
   }
 
-  public void setJavaVersion(Integer javaVersion) {
+  public void setJavaVersion(@Nullable Integer javaVersion) {
     this.javaVersion = javaVersion;
+  }
+
+  public Integer getJavaVersion() {
+    return this.javaVersion;
   }
 
   public void visitFile(@Nullable Tree parsedTree) {
@@ -123,7 +127,7 @@ public class InternalVisitorsBridge {
   }
 
   private boolean shouldBeExecuted(JavaFileScanner scanner) {
-    if (javaVersion != null && scanner instanceof JavaVersionAwareVisitor) {
+    if (scanner instanceof JavaVersionAwareVisitor) {
       return ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion);
     }
     return true;
