@@ -45,6 +45,8 @@ class Person6<E, F extends Serializable> implements Serializable {
   List<? extends E> otherThings; // Noncompliant {{Make "otherThings" transient or serializable.}}
   List<? extends F> otherSerializableThings; // Compliant
   List<?> otherUnknown; // Noncompliant {{Make "otherUnknown" transient or serializable.}}
+  List<? super F> super1;
+  List<? super E> super2; // Noncompliant
 }
 
 class Person7 implements Serializable {

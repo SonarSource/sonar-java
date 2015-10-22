@@ -128,7 +128,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     } else if (tree.is(Tree.Kind.CLASS)) {
       Symbol.TypeSymbol symbol = ((ClassTree) tree).symbol();
       return implementsSerializable(symbol.type());
-    } else if (tree.is(Tree.Kind.EXTENDS_WILDCARD, Tree.Kind.UNBOUNDED_WILDCARD)) {
+    } else if (tree.is(Tree.Kind.EXTENDS_WILDCARD, Tree.Kind.SUPER_WILDCARD, Tree.Kind.UNBOUNDED_WILDCARD)) {
       TypeTree bound = ((WildcardTree) tree).bound();
       return bound != null && implementsSerializable(bound.symbolType());
     }
