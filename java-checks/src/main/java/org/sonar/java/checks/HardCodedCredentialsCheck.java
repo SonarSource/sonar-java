@@ -38,6 +38,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -51,8 +52,8 @@ import java.util.regex.Pattern;
 @SqaleConstantRemediation("30min")
 public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
 
-  private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("password=..", Pattern.CASE_INSENSITIVE);
-  private static final Pattern PASSWORD_VARIABLE_PATTERN = Pattern.compile("password", Pattern.CASE_INSENSITIVE);
+  private static final Pattern PASSWORD_LITERAL_PATTERN = Pattern.compile("(password|passwd|pwd)=..", Pattern.CASE_INSENSITIVE);
+  private static final Pattern PASSWORD_VARIABLE_PATTERN = Pattern.compile("(password|passwd|pwd)", Pattern.CASE_INSENSITIVE);
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -64,21 +65,24 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
     if (tree.is(Tree.Kind.STRING_LITERAL)) {
       String literalValue = ((LiteralTree) tree).value();
       if (PASSWORD_LITERAL_PATTERN.matcher(literalValue).find()) {
-        addIssue(tree);
+        reportIssue(tree);
       }
     } else if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
-      if (isStringLiteral(variable.initializer()) && isPasswordVariableName(variable.simpleName())) {
-        addIssue(tree);
+      IdentifierTree simpleName = variable.simpleName();
+      if (isStringLiteral(variable.initializer()) && isPasswordVariableName(simpleName)) {
+        reportIssue(simpleName);
       }
     } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
       AssignmentExpressionTree assignmentExpression = (AssignmentExpressionTree) tree;
-      if (isStringLiteral(assignmentExpression.expression()) && isPasswordVariable(assignmentExpression.variable())) {
-        addIssue(tree);
+      ExpressionTree variable = assignmentExpression.variable();
+      if (isStringLiteral(assignmentExpression.expression()) && isPasswordVariable(variable)) {
+        reportIssue(variable);
       }
     } else {
-      if (isSettingPassword((MethodInvocationTree) tree)) {
-        addIssue(tree);
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (isSettingPassword(mit)) {
+        reportIssue((mit).methodSelect());
       }
     }
   }
@@ -109,7 +113,7 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
     return true;
   }
 
-  private static boolean isStringLiteral(ExpressionTree initializer) {
+  private static boolean isStringLiteral(@Nullable ExpressionTree initializer) {
     return initializer != null && initializer.is(Tree.Kind.STRING_LITERAL);
   }
 
@@ -126,8 +130,8 @@ public class HardCodedCredentialsCheck extends SubscriptionBaseVisitor {
     return false;
   }
 
-  private void addIssue(Tree tree) {
-    addIssue(tree, "Remove this hard-coded password.");
+  private void reportIssue(Tree tree) {
+    reportIssue(tree, "Remove this hard-coded password.");
   }
 
 }
