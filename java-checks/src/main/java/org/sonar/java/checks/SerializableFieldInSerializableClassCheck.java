@@ -29,6 +29,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
@@ -66,12 +67,16 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     if (isSerializable(classTree) && !hasSpecialHandlingSerializationMethods(classTree)) {
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
-          VariableTree variableTree = (VariableTree) member;
-          if (!isStatic(variableTree) && !isTransientOrSerializable(variableTree) && !isCollectionOfSerializable(variableTree.type())) {
-            addIssue(member, "Make \"" + variableTree.simpleName().name() + "\" transient or serializable.");
-          }
+          checkVariableMember((VariableTree) member);
         }
       }
+    }
+  }
+
+  private void checkVariableMember(VariableTree variableTree) {
+    if (!isStatic(variableTree) && !isTransientOrSerializable(variableTree) && !isCollectionOfSerializable(variableTree.type())) {
+      IdentifierTree simpleName = variableTree.simpleName();
+      reportIssue(simpleName, "Make \"" + simpleName.name() + "\" transient or serializable.");
     }
   }
 
@@ -131,10 +136,8 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
   }
 
   private static boolean implementsSerializable(@Nullable Type type) {
-    if (type == null || type.isUnknown()) {
-      return false;
-    }
-    if (type.isPrimitive()) {
+    if (type == null || type.isUnknown() || type.isPrimitive()) {
+      // do not raise an issue if type is unknown
       return true;
     }
     if (type.isArray()) {
