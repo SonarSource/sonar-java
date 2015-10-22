@@ -29,9 +29,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/IssuesFinderSort.java':[
 53,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/Result.java':[
-122,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/measure/MeasureFilterFactory.java':[
 154,
 ],

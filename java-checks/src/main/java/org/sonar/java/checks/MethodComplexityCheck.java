@@ -24,6 +24,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
+import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -42,10 +45,17 @@ import java.util.List;
   tags = {Tag.BRAIN_OVERLOAD})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point above the threshold" )
+@SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point above the threshold")
 public class MethodComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 10;
+  private static final MethodInvocationMatcherCollection EXCLUDED_METHODS = MethodInvocationMatcherCollection.create(
+    MethodMatcher.create()
+      .name("equals")
+      .addParameter(TypeCriteria.anyType()),
+    MethodMatcher.create()
+      .name("hashCode")
+  );
 
   @RuleProperty(
     key = "Threshold",
@@ -61,6 +71,9 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
+    if (EXCLUDED_METHODS.anyMatch(methodTree)) {
+      return;
+    }
     List<Tree> complexity = context.getComplexityNodes(methodTree);
     int size = complexity.size();
     if (size > max) {
