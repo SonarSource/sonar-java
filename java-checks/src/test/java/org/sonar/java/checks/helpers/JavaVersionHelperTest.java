@@ -51,4 +51,12 @@ public class JavaVersionHelperTest {
     assertThat(JavaVersionHelper.java8Compatible(null)).isTrue();
   }
 
+  @Test
+  public void java_8_required() throws Exception {
+    assertThat(JavaVersionHelper.java8Guaranteed(6)).isFalse();
+    assertThat(JavaVersionHelper.java8Guaranteed(7)).isFalse();
+    assertThat(JavaVersionHelper.java8Guaranteed(8)).isTrue();
+    assertThat(JavaVersionHelper.java8Guaranteed(null)).isFalse();
+  }
+
 }
