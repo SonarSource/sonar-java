@@ -5,33 +5,33 @@ import java.io.InputStream;
 
 class Foo {
   private final static int VALUE;
-  static { VALUE = 4; }                 // Noncompliant {{Move this closing curly brace to the next line.}}
+  static { VALUE = 4; }
   
   public void myMethod() throws IOException {
     if(something) {
-      executeTask();}                   // Noncompliant {{Move this closing curly brace to the next line.}}
+      executeTask();}                   // Noncompliant [[sc=21;ec=22]] {{Move this closing curly brace to the next line.}}
     else if (somethingElse) {
       doSomethingElse();
-    }                                   // Compliant
+    }
 
     if (0) {
     ; } else if (0) {                   // Noncompliant {{Move this closing curly brace to the next line.}}
-    } else {                            // Compliant
-    }                                   // Compliant
+    } else {
+    }
 
     try {
       generateOrder();
-    }                                   // Compliant
-    finally { closeConnection();}       // Noncompliant {{Move this closing curly brace to the next line.}}
+    }
+    finally { closeConnection();}
     
     try {
       executeTask();
-    } catch (Exception e) { }           // Noncompliant {{Move this closing curly brace to the next line.}}
+    } catch (Exception e) { }
   }
   
-  public int foo1() { return 0; }       // Noncompliant {{Move this closing curly brace to the next line.}}
+  public int foo1() { return 0; }
   
-  public void foo2() { }                // Noncompliant {{Move this closing curly brace to the next line.}}
+  public void foo2() { }
   
   public void foo3(boolean test) {
     if (test) {
@@ -64,7 +64,7 @@ class Foo {
       do { 
       } while(true);    }               // Noncompliant {{Move this closing curly brace to the next line.}}
     if(test) {
-      while(true) { break; }            // Noncompliant {{Move this closing curly brace to the next line.}}
+      while(true) { break; }
     }
   }
   
@@ -102,9 +102,9 @@ class Foo {
   public void fooLast() {
   }}                                    // Noncompliant {{Move this closing curly brace to the next line.}}
 
-@Properties({}) // Compliant
+@Properties({})
 class Exceptions {
-  int[] numbers = new int[] { 0, 1 };   // Compliant
+  int[] numbers = new int[] { 0, 1 };
 }
 
 class Bar {
@@ -115,17 +115,17 @@ class Bar {
   }
 }
 
-class EmptyClass {}                     // Noncompliant {{Move this closing curly brace to the next line.}}
+class EmptyClass {}
 
 abstract class AbstractClass {
   abstract void foo();}                 // Noncompliant {{Move this closing curly brace to the next line.}}
 
-@interface XmlIDREF {}                  // Noncompliant {{Move this closing curly brace to the next line.}}
+@interface XmlIDREF {}
 
-enum MethodType { GET, POST }           // Noncompliant {{Move this closing curly brace to the next line.}}
+enum MethodType { GET, POST }
 
 enum XmlNsForm {UNQUALIFIED, QUALIFIED, UNSET
-}                                       // Compliant
+}
 
 enum MyEnum {A, B, C {
   }}                                    // Noncompliant {{Move this closing curly brace to the next line.}}

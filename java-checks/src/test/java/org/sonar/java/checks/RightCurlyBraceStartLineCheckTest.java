@@ -22,12 +22,10 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import java.io.IOException;
-
 public class RightCurlyBraceStartLineCheckTest {
 
   @Test
-  public void detected() throws IOException {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/RightCurlyBraceStartLineCheck.java", new RightCurlyBraceStartLineCheck());
   }
 }

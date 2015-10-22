@@ -49,8 +49,13 @@ public class RightCurlyBraceStartLineCheck extends SubscriptionBaseVisitor {
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(
-      Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER, Tree.Kind.INITIALIZER,
-      Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.ENUM);
+      Tree.Kind.BLOCK,
+      Tree.Kind.STATIC_INITIALIZER,
+      Tree.Kind.INITIALIZER,
+      Tree.Kind.CLASS,
+      Tree.Kind.INTERFACE,
+      Tree.Kind.ANNOTATION_TYPE,
+      Tree.Kind.ENUM);
   }
 
   @Override
@@ -65,18 +70,12 @@ public class RightCurlyBraceStartLineCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkBlockBody(SyntaxToken openBraceToken, SyntaxToken closeBraceToken, List<? extends Tree> trees) {
-    if (openBraceToken.line() == closeBraceToken.line()) {
-      insertIssue(closeBraceToken);
-    } else if (!trees.isEmpty()) {
+    if (openBraceToken.line() != closeBraceToken.line() && !trees.isEmpty()) {
       Tree lastTree = trees.get(trees.size() - 1);
       SyntaxToken lastToken = LastSyntaxTokenFinder.lastSyntaxToken(lastTree);
       if (lastToken.line() == closeBraceToken.line()) {
-        insertIssue(closeBraceToken);
+        reportIssue(closeBraceToken, "Move this closing curly brace to the next line.");
       }
     }
-  }
-
-  private void insertIssue(SyntaxToken token) {
-    addIssue(token, "Move this closing curly brace to the next line.");
   }
 }
