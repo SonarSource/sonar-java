@@ -58,6 +58,12 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
+  public void verify_line_issues_with_java_version() {
+    IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
+    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifier.java", visitor, 7);
+  }
+
+  @Test
   public void verify_unexpected_issue() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues().withIssue(4, "extra message");
 
@@ -118,6 +124,11 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_no_issue() {
     JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR);
+  }
+
+  @Test
+  public void verify_no_issue_with_no_java_version() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR, null);
   }
 
   @Test

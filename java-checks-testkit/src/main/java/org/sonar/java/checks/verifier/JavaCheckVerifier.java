@@ -34,6 +34,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Fail;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridge;
@@ -41,7 +42,10 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,6 +91,8 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   private boolean expectNoIssues = false;
   private String expectFileIssue;
   private Integer expectFileIssueOnline;
+  private boolean providedJavaVersion = false;
+  private Integer javaVersion;
 
   private static final Map<String, IssueAttribute> ATTRIBUTE_MAP = ImmutableMap.<String, IssueAttribute>builder()
     .put("message", IssueAttribute.MESSAGE)
@@ -114,14 +120,14 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   /**
-   * Verifies that the provided file will raise all the expected issues when analyzed with the given check. 
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check.
    *
    * <br /><br />
    *
    * By default, any jar or zip archive present in the folder defined by {@link JavaCheckVerifier#DEFAULT_TEST_JARS_DIRECTORY} will be used
-   * to add extra classes to the classpath. If this folder is empty or does not exist, then the analysis will be based on the source of 
+   * to add extra classes to the classpath. If this folder is empty or does not exist, then the analysis will be based on the source of
    * the provided file.
-   * 
+   *
    * @param filename The file to be analyzed
    * @param check The check to be used for the analysis
    */
@@ -130,7 +136,22 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   /**
-   * Verifies that the provided file will raise all the expected issues when analyzed with the given check, 
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check and a given
+   * java version used for the sources.
+   *
+   * @param filename The file to be analyzed
+   * @param check The check to be used for the analysis
+   * @param javaVersion The version to consider for the analysis, null to force case of java version not detected
+   */
+  public static void verify(String filename, JavaFileScanner check, @Nullable Integer javaVersion) {
+    JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
+    javaCheckVerifier.providedJavaVersion = true;
+    javaCheckVerifier.javaVersion = javaVersion;
+    scanFile(filename, check, javaCheckVerifier);
+  }
+
+  /**
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check,
    * but using having the classpath extended with a collection of files (classes/jar/zip).
    *
    * @param filename The file to be analyzed
@@ -142,7 +163,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   /**
-   * Verifies that the provided file will raise all the expected issues when analyzed with the given check, 
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check,
    * using jars/zips files from the given directory to extends the classpath.
    *
    * @param filename The file to be analyzed
@@ -164,6 +185,21 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   public static void verifyNoIssue(String filename, JavaFileScanner check) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectNoIssues = true;
+    scanFile(filename, check, javaCheckVerifier);
+  }
+
+  /**
+   * Verifies that the provided file will not raise any issue when analyzed with the given check.
+   *
+   * @param filename The file to be analyzed
+   * @param check The check to be used for the analysis
+   * @param javaVersion The version to consider for the analysis, null to force case of java version not detected
+   */
+  public static void verifyNoIssue(String filename, JavaFileScanner check, @Nullable Integer javaVersion) {
+    JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
+    javaCheckVerifier.expectNoIssues = true;
+    javaCheckVerifier.providedJavaVersion = true;
+    javaCheckVerifier.javaVersion = javaVersion;
     scanFile(filename, check, javaCheckVerifier);
   }
 
@@ -195,7 +231,9 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
     VisitorsBridge visitorsBridge = new VisitorsBridge(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
+    JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
+    conf.setJavaVersion(javaCheckVerifier.javaVersion);
+    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, conf);
     VisitorsBridge.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues(), javaCheckVerifier);
   }
@@ -275,7 +313,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
 
   private static void checkIssues(Set<AnalyzerMessage> issues, JavaCheckVerifier javaCheckVerifier) {
     if (javaCheckVerifier.expectNoIssues) {
-      assertNoIssues(javaCheckVerifier.expected, issues);
+      assertNoIssues(javaCheckVerifier.expected, issues, javaCheckVerifier.providedJavaVersion);
     } else if (StringUtils.isNotEmpty(javaCheckVerifier.expectFileIssue)) {
       assertSingleIssue(javaCheckVerifier.expectFileIssueOnline, javaCheckVerifier.expectFileIssue, issues);
     } else {
@@ -360,10 +398,12 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     assertThat(issue.getMessage()).isEqualTo(expectFileIssue);
   }
 
-  private static void assertNoIssues(Multimap<Integer, Map<IssueAttribute, String>> expected, Set<AnalyzerMessage> issues) {
+  private static void assertNoIssues(Multimap<Integer, Map<IssueAttribute, String>> expected, Set<AnalyzerMessage> issues, boolean providedJavaVersion) {
     assertThat(issues).overridingErrorMessage("No issues expected but got: " + issues).isEmpty();
-    // make sure we do not copy&paste verifyNoIssue call when we intend to call verify
-    assertThat(expected.isEmpty()).overridingErrorMessage("The file should not declare noncompliants when no issues are expected").isTrue();
+    if (!providedJavaVersion) {
+      // make sure we do not copy&paste verifyNoIssue call when we intend to call verify
+      assertThat(expected.isEmpty()).overridingErrorMessage("The file should not declare noncompliants when no issues are expected").isTrue();
+    }
   }
 
 }
