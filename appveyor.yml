@@ -6,6 +6,8 @@ branches:
 
 cache:
   - C:\Users\appveyor\.m2 -> **\pom.xml
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
 
 install:
   - git submodule update --init --recursive
@@ -19,23 +21,6 @@ environment:
   - RUN: ruling
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0
     SQ_VERSION: LATEST_RELEASE
-    PROJECT: fluent_http
-  - RUN: ruling 
-    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    SQ_VERSION: LATEST_RELEASE
-    PROJECT: apache_commons_beanutils
-  - RUN: ruling
-    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    SQ_VERSION: LATEST_RELEASE
-    PROJECT: guava
-  - RUN: ruling
-    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    SQ_VERSION: LATEST_RELEASE
-    PROJECT: java_squid
-  - RUN: ruling
-    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
-    SQ_VERSION: LATEST_RELEASE
-    PROJECT: sonarqube_server
   - RUN: ci
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0
   - RUN: plugin
