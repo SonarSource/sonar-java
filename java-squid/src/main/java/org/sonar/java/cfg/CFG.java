@@ -22,7 +22,6 @@ package org.sonar.java.cfg;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.codehaus.plexus.util.StringOutputStream;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -39,11 +38,9 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -65,7 +62,6 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
@@ -190,36 +186,6 @@ public class CFG {
       }
       if (successors.remove(inactiveBlock)) {
         successors.addAll(inactiveBlock.successors);
-      }
-    }
-
-    @Override
-    public String toString() {
-      StringOutputStream buffer = new StringOutputStream();
-      debugTo(new PrintStream(buffer));
-      return buffer.toString();
-    }
-
-    void debugTo(PrintStream out) {
-      if (id != 0) {
-        out.println("B" + id + ":");
-      } else {
-        out.println("B" + id + " (Exit) :");
-      }
-      int i = 0;
-      for (Tree tree : elements()) {
-        out.println("  " + i + ": " + syntaxNodeToDebugString(tree));
-        i++;
-      }
-      if (terminator != null) {
-        out.println("  T: " + syntaxNodeToDebugString(terminator));
-      }
-      if (!successors.isEmpty()) {
-        out.print("  Successors:");
-        for (Block successor : successors) {
-          out.print(" B" + successor.id);
-        }
-        out.println();
       }
     }
   }
@@ -857,42 +823,6 @@ public class CFG {
     result.addTrueSuccessor(trueBranch);
     result.addFalseSuccessor(falseBranch);
     return result;
-  }
-
-  public void debugTo(PrintStream out) {
-    for (Block block : Lists.reverse(blocks)) {
-      block.debugTo(out);
-    }
-    out.println();
-  }
-
-  @Override
-  public String toString() {
-    StringOutputStream buffer = new StringOutputStream();
-    debugTo(new PrintStream(buffer));
-    return buffer.toString();
-  }
-
-  private static String syntaxNodeToDebugString(Tree syntaxNode) {
-    StringBuilder sb = new StringBuilder(syntaxNode.kind().name())
-      .append(' ').append(Integer.toHexString(syntaxNode.hashCode()));
-    switch (syntaxNode.kind()) {
-      case VARIABLE:
-        sb.append(' ').append(((VariableTree) syntaxNode).simpleName().name());
-        break;
-      case IDENTIFIER:
-        sb.append(' ').append(((IdentifierTree) syntaxNode).identifierToken().text());
-        break;
-      case INT_LITERAL:
-        sb.append(' ').append(((LiteralTree) syntaxNode).token().text());
-        break;
-      case METHOD_INVOCATION:
-        methodNodeToDebugString((MethodInvocationTree) syntaxNode, sb);
-        break;
-      default:
-        // Nothing to do
-    }
-    return sb.toString();
   }
 
   private static void methodNodeToDebugString(MethodInvocationTree method, StringBuilder sb) {
