@@ -24,8 +24,20 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
+  private static final String TEST_FILE = "src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck.java";
+
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck.java", new AbstractClassNoFieldShouldBeInterfaceCheck());
+  public void test_no_version() {
+    JavaCheckVerifier.verifyNoIssue(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), null);
+  }
+
+  @Test
+  public void test_with_java_7() {
+    JavaCheckVerifier.verifyNoIssue(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 7);
+  }
+
+  @Test
+  public void test_with_java_8() {
+    JavaCheckVerifier.verify(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), 8);
   }
 }
