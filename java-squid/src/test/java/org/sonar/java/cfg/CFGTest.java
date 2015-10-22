@@ -24,6 +24,7 @@ import com.sonar.sslr.api.typed.ActionParser;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG.Block;
+import org.sonar.java.model.CFGDebug;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -94,7 +95,7 @@ public class CFGTest {
         assertThat(exitBlock.successors()).isEmpty();
         assertThat(cfg.blocks()).as("CFG entry block is no longer in the list of blocks!").contains(cfg.entry());
       } catch (final Throwable e) {
-        cfg.debugTo(System.out);
+        System.out.println(CFGDebug.toString(cfg));
         throw e;
       }
     }
