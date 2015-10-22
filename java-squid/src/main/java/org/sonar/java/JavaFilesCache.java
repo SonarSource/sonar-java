@@ -184,7 +184,7 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private static boolean isSuppressWarningsAnnotation(AnnotationTree annotationTree) {
-    return annotationTree.annotationType().symbolType().is("java.lang.SuppressWarnings");
+    return annotationTree.annotationType().symbolType().is("java.lang.SuppressWarnings") && !annotationTree.arguments().isEmpty();
   }
 
   private static List<String> getSuppressWarningArgs(AnnotationTree annotationTree) {
