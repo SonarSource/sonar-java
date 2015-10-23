@@ -124,7 +124,9 @@ public class JavaSquidSensor implements Sensor {
     Charset charset = fs.encoding();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setSeparateAccessorsFromMethods(analyzePropertyAccessors);
-    conf.setJavaVersion(getJavaVersion());
+    Integer javaVersion = getJavaVersion();
+    LOG.info("Configured Java source version: " + (javaVersion == null ? "none" : javaVersion));
+    conf.setJavaVersion(javaVersion);
     return conf;
   }
 
