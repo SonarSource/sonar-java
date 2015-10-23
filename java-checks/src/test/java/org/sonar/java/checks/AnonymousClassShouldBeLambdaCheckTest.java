@@ -24,9 +24,20 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class AnonymousClassShouldBeLambdaCheckTest {
 
+  private static final String FILENAME = "src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java";
+
   @Test
-  public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassShouldBeLambdaCheck.java", new AnonymousClassShouldBeLambdaCheck());
+  public void java8() {
+    JavaCheckVerifier.verify(FILENAME, new AnonymousClassShouldBeLambdaCheck(), 8);
   }
 
+  @Test
+  public void java7() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME, new AnonymousClassShouldBeLambdaCheck(), 7);
+  }
+
+  @Test
+  public void unknown_version() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME, new AnonymousClassShouldBeLambdaCheck(), null);
+  }
 }

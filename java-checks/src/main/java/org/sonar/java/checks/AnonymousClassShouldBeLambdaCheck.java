@@ -23,6 +23,8 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,9 +36,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Rule(
@@ -44,12 +48,18 @@ import java.util.List;
   name = "Anonymous inner classes containing only one method should become lambdas",
   priority = Priority.MAJOR,
   tags = {Tag.JAVA_8})
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
 
   private JavaFileScannerContext context;
   private List<IdentifierTree> enumConstants;
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
+    return JavaVersionHelper.java8Guaranteed(version);
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
