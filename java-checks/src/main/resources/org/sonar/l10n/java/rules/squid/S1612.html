@@ -1,5 +1,9 @@
 <p>Method/constructor references are more compact and readable than using lambdas, and are therefore preferred.</p>
 
+<p>
+  <em>Note</em> that this rule is automatically disabled when the project's <code>java.source.version</code> is lower than <code>8</code>.
+</p>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
   List<Integer> list = new ArrayList<Integer>();

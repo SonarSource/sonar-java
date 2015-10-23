@@ -2,9 +2,13 @@
 
 <p>With Java 8, most uses of anonymous inner classes should be replaced by lambdas to highly increase the readability of the source code.</p>
 
+<p>
+  <em>Note</em> that this rule is automatically disabled when the project's <code>java.source.version</code> is lower than <code>8</code>.
+</p>
+
 <h2>Noncompliant Code Example</h2>
 <pre>
-myCollection.map(new Mapper<String,String>() {
+myCollection.map(new Mapper&lt;String,String&gt;() {
   public String map(String input) {
     return new StringBuilder(input).reverse().toString();
   }
@@ -13,5 +17,5 @@ myCollection.map(new Mapper<String,String>() {
 
 <h2>Compliant Solution</h2>
 <pre>
-myCollection.map(element -> new StringBuilder(element).reverse().toString());
+myCollection.map(element -&gt; new StringBuilder(element).reverse().toString());
 </pre>
