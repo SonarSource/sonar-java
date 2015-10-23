@@ -70,6 +70,9 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     if (methodTree.block() == null) {
       return;
