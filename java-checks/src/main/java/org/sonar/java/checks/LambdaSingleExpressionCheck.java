@@ -36,6 +36,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -50,7 +52,7 @@ import java.util.List;
 public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   @Override
-  public boolean isCompatibleWithJavaVersion(Integer version) {
+  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
     return JavaVersionHelper.java8Compatible(version);
   }
 

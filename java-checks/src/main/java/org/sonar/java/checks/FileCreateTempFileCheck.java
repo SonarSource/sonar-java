@@ -78,7 +78,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
   private JavaFileScannerContext context;
 
   @Override
-  public boolean isCompatibleWithJavaVersion(Integer version) {
+  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
     return JavaVersionHelper.java7Compatible(version);
   }
 
