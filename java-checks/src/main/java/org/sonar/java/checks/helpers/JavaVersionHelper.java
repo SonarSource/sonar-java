@@ -46,7 +46,7 @@ public class JavaVersionHelper {
   }
 
   private static String compatibilityMessage(@Nullable Integer provided, int expeced) {
-    return provided == null ? " (sonar.java.source not set. Assuming " + expeced + " or greater.)" : "";
+    return provided == null ? (" (sonar.java.source not set. Assuming " + expeced + " or greater.)") : "";
   }
 
   private static boolean notSetOrAtLeast(@Nullable Integer providedJavaVersion, Integer requiredJavaVersion) {
