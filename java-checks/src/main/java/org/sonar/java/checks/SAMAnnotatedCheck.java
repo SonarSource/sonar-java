@@ -26,6 +26,8 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -39,6 +41,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -49,9 +52,10 @@ import java.util.List;
   name = "@FunctionalInterface annotation should be used to flag Single Abstract Method interfaces",
   priority = Priority.MAJOR,
   tags = {Tag.JAVA_8})
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
-public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {
+public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>().
       put("equals", ImmutableList.of("Object")).
@@ -64,6 +68,11 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {
       put("wait", ImmutableList.of("long")).
       put("wait", ImmutableList.of("long", "int")).
       build();
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(Integer version) {
+    return JavaVersionHelper.java8Guaranteed(version);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -114,19 +123,26 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor {
   private static boolean isNotObjectMethod(MethodTree method) {
     ImmutableCollection<List<String>> methods = OBJECT_METHODS.get(method.simpleName().name());
     if (methods != null) {
-      for (List<String> arguments : methods) {
-        List<String> args = Lists.newArrayList(arguments);
-        if (method.parameters().size() == args.size()) {
-          for (VariableTree var : method.parameters()) {
-            args.remove(var.type().symbolType().name());
-          }
-          if (args.isEmpty()) {
-            return false;
-          }
+      for (List<String> types : methods) {
+        if (sameParameters(method.parameters(), types)) {
+          return false;
         }
       }
     }
     return true;
+  }
+
+  private static boolean sameParameters(List<VariableTree> provided, List<String> expectedTypes) {
+    List<String> args = Lists.newArrayList(expectedTypes);
+    if (provided.size() == args.size()) {
+      for (VariableTree var : provided) {
+        args.remove(var.type().symbolType().name());
+      }
+      if (args.isEmpty()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean isNonStaticNonDefaultMethod(Tree memberTree) {

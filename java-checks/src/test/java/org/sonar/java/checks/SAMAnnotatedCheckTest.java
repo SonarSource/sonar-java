@@ -24,8 +24,20 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SAMAnnotatedCheckTest {
 
+  private static final String FILE = "src/test/files/checks/SAMAnnotatedCheck.java";
+
   @Test
-  public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SAMAnnotatedCheck.java", new SAMAnnotatedCheck());
+  public void no_issue_with_no_java_version() {
+    JavaCheckVerifier.verifyNoIssue(FILE, new SAMAnnotatedCheck(), null);
+  }
+
+  @Test
+  public void all_issues_with_java_8() {
+    JavaCheckVerifier.verify(FILE, new SAMAnnotatedCheck(), 8);
+  }
+
+  @Test
+  public void no_issue_with_java_7() {
+    JavaCheckVerifier.verifyNoIssue(FILE, new SAMAnnotatedCheck(), 7);
   }
 }
