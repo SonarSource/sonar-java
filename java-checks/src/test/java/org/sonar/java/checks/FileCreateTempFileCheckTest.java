@@ -25,8 +25,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class FileCreateTempFileCheckTest {
 
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/FileCreateTempFileCheck.java", new FileCreateTempFileCheck());
+  public void no_version() {
+    JavaCheckVerifier.verify("src/test/files/checks/FileCreateTempFileCheck_no_version.java", new FileCreateTempFileCheck());
+  }
+
+  @Test
+  public void java_7() {
+    JavaCheckVerifier.verify("src/test/files/checks/FileCreateTempFileCheck.java", new FileCreateTempFileCheck(), 7);
   }
 
 }

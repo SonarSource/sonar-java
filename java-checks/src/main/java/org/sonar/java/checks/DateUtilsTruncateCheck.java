@@ -34,6 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -48,7 +49,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection implements J
 
   @Override
   public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Guaranteed(version);
+    return JavaVersionHelper.java8Compatible(version);
   }
 
   @Override
@@ -61,7 +62,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection implements J
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Use \"Instant.truncatedTo\" instead.");
+    addIssue(mit, "Use \"Instant.truncatedTo\" instead." + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
   }
 
   private static MethodMatcher truncateMethodMatcher(String firstParameterType) {

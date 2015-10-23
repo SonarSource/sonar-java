@@ -37,16 +37,16 @@ public class JavaVersionHelper {
     return notSetOrAtLeast(javaVersion, JAVA_8);
   }
 
-  public static boolean java7Guaranteed(@Nullable Integer javaVersion) {
-    return setAndAtLeast(javaVersion, JAVA_7);
+  public static String java7CompatibilityMessage(@Nullable Integer javaVersion) {
+    return compatibilityMessage(javaVersion, JAVA_7);
   }
 
-  public static boolean java8Guaranteed(@Nullable Integer javaVersion) {
-    return setAndAtLeast(javaVersion, JAVA_8);
+  public static String java8CompatibilityMessage(@Nullable Integer javaVersion) {
+    return compatibilityMessage(javaVersion, JAVA_8);
   }
 
-  private static boolean setAndAtLeast(@Nullable Integer providedJavaVersion, Integer requiredJavaVersion) {
-    return providedJavaVersion != null && isAtLeast(providedJavaVersion, requiredJavaVersion);
+  private static String compatibilityMessage(@Nullable Integer provided, int expeced) {
+    return provided == null ? " (sonar.java.source not set. Assuming " + expeced + " or greater.)" : "";
   }
 
   private static boolean notSetOrAtLeast(@Nullable Integer providedJavaVersion, Integer requiredJavaVersion) {

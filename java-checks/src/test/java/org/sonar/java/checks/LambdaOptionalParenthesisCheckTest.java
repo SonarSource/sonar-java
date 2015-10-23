@@ -25,7 +25,12 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class LambdaOptionalParenthesisCheckTest {
 
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaOptionalParenthesisCheck.java", new LambdaOptionalParenthesisCheck());
+  public void no_version() {
+    JavaCheckVerifier.verify("src/test/files/checks/LambdaOptionalParenthesisCheck_no_version.java", new LambdaOptionalParenthesisCheck());
+  }
+
+  @Test
+  public void java8() {
+    JavaCheckVerifier.verify("src/test/files/checks/LambdaOptionalParenthesisCheck.java", new LambdaOptionalParenthesisCheck(), 8);
   }
 }

@@ -28,7 +28,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheckTest {
 
   @Test
   public void test_no_version() {
-    JavaCheckVerifier.verifyNoIssue(TEST_FILE, new AbstractClassNoFieldShouldBeInterfaceCheck(), null);
+    JavaCheckVerifier.verify("src/test/files/checks/AbstractClassNoFieldShouldBeInterfaceCheck_no_version.java", new AbstractClassNoFieldShouldBeInterfaceCheck(), (Integer) null);
   }
 
   @Test

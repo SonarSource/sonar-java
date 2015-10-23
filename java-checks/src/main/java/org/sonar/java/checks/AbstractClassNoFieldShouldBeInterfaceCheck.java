@@ -50,7 +50,7 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
 
   @Override
   public boolean isCompatibleWithJavaVersion(Integer version) {
-    return JavaVersionHelper.java8Guaranteed(version);
+    return JavaVersionHelper.java8Compatible(version);
   }
 
   @Override
@@ -62,7 +62,9 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.superClass() == null && classIsAbstract(classTree) && classHasNoFieldAndProtectedMethod(classTree)) {
-      addIssue(classTree, "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface.");
+      addIssue(
+        classTree,
+        "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface." + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
     }
   }
 

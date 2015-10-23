@@ -38,6 +38,6 @@ public class AnonymousClassShouldBeLambdaCheckTest {
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new AnonymousClassShouldBeLambdaCheck(), null);
+    JavaCheckVerifier.verify("src/test/files/checks/AnonymousClassShouldBeLambdaCheck_no_version.java", new AnonymousClassShouldBeLambdaCheck(), (Integer) null);
   }
 }

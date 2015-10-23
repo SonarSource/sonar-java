@@ -129,7 +129,11 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     if (FILE_DELETE.matches(mit)) {
       checkAndAdvanceState(mit, State.CREATE_TMP_FILE, State.DELETE);
     } else if (FILE_MKDIR.matches(mit) && State.MKDIR.equals(checkAndAdvanceState(mit, State.DELETE, State.MKDIR))) {
-      context.addIssue(mit, this, "Use \"Files.createTempDirectory\" or a library function to create this directory instead.");
+      context.addIssue(
+        mit,
+        this,
+        "Use \"Files.createTempDirectory\" or a library function to create this directory instead." +
+          JavaVersionHelper.java7CompatibilityMessage(context.getJavaVersion()));
     }
   }
 

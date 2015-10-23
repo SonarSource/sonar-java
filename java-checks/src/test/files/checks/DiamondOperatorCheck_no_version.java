@@ -6,7 +6,7 @@ import java.util.Map;
 
 class A {
   List<Object> myList1 = new ArrayList<>(); // Compliant
-  List<Object> myList2 = new ArrayList<Object>(); // Noncompliant [[sc=39;ec=47]] {{Replace the type specification in this constructor call with the diamond operator ("<>").}}
+  List<Object> myList2 = new ArrayList<Object>(); // Noncompliant [[sc=39;ec=47]] {{Replace the type specification in this constructor call with the diamond operator ("<>"). (sonar.java.source not set. Assuming 7 or greater.)}}
 
   void foo() {
     List<Object> myList;

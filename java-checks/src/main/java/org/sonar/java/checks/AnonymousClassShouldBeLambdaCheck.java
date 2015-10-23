@@ -41,6 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -58,7 +59,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
 
   @Override
   public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Guaranteed(version);
+    return JavaVersionHelper.java8Compatible(version);
   }
 
   @Override
@@ -82,7 +83,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
       if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && hasOnlyOneMethod(classBody.members())) {
-        context.addIssue(identifier, this, "Make this anonymous inner class a lambda");
+        context.addIssue(identifier, this, "Make this anonymous inner class a lambda" + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
       }
     }
   }

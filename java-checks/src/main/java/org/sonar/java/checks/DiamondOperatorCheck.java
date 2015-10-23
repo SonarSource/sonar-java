@@ -62,7 +62,7 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
 
   @Override
   public boolean isCompatibleWithJavaVersion(Integer version) {
-    return JavaVersionHelper.java7Guaranteed(version);
+    return JavaVersionHelper.java7Compatible(version);
   }
 
   @Override
@@ -77,7 +77,10 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
     if (newClassTree.classBody() == null && isParameterizedType(newTypeTree)) {
       TypeTree type = getTypeFromExpression(tree.parent());
       if (type != null && isParameterizedType(type)) {
-        reportIssue(((ParameterizedTypeTree) newTypeTree).typeArguments(), "Replace the type specification in this constructor call.");
+        reportIssue(
+          ((ParameterizedTypeTree) newTypeTree).typeArguments(),
+          "Replace the type specification in this constructor call with the diamond operator (\"<>\")." +
+            JavaVersionHelper.java7CompatibilityMessage(context.getJavaVersion()));
       }
     }
   }

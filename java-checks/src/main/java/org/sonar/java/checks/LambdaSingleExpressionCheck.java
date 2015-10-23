@@ -67,7 +67,7 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
       if (singleStatementIsReturn(lambdaExpressionTree)) {
         message += " and then remove useless return keyword";
       }
-      addIssue(lambdaExpressionTree.body(), message);
+      addIssue(lambdaExpressionTree.body(), message + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
     }
   }
 

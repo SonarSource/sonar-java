@@ -38,6 +38,6 @@ public class DateUtilsTruncateCheckTest {
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new DateUtilsTruncateCheck(), null);
+    JavaCheckVerifier.verify("src/test/files/checks/DateUtilsTruncateCheck_no_version.java", new DateUtilsTruncateCheck(), (Integer) null);
   }
 }

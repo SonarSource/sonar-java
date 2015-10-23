@@ -24,16 +24,14 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DiamondOperatorCheckTest {
 
-  private static final String TEST_FILE = "src/test/files/checks/DiamondOperatorCheck.java";
-
   @Test
   public void test_no_version() {
-    JavaCheckVerifier.verifyNoIssue(TEST_FILE, new DiamondOperatorCheck(), null);
+    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck_no_version.java", new DiamondOperatorCheck());
   }
 
   @Test
   public void test_with_java_7() {
-    JavaCheckVerifier.verify(TEST_FILE, new DiamondOperatorCheck(), 7);
+    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck.java", new DiamondOperatorCheck(), 7);
   }
 
 }

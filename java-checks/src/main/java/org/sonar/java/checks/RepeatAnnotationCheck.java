@@ -39,6 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -55,7 +56,7 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
 
   @Override
   public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Guaranteed(version);
+    return JavaVersionHelper.java8Compatible(version);
   }
 
   @Override
@@ -69,7 +70,10 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     if (isArrayInitialized(annotationTree)) {
       NewArrayTree arrayTree = (NewArrayTree) annotationTree.arguments().get(0);
       if (isAllSameAnnotation(arrayTree.initializers()) && isAnnotationRepeatable(arrayTree.initializers().get(0))) {
-        context.addIssue(annotationTree, this, "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group");
+        context.addIssue(
+          annotationTree,
+          this,
+          "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group" + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
       }
     }
     super.visitAnnotation(annotationTree);

@@ -28,7 +28,7 @@ public class SAMAnnotatedCheckTest {
 
   @Test
   public void no_issue_with_no_java_version() {
-    JavaCheckVerifier.verifyNoIssue(FILE, new SAMAnnotatedCheck(), null);
+    JavaCheckVerifier.verify("src/test/files/checks/SAMAnnotatedCheck_no_version.java", new SAMAnnotatedCheck());
   }
 
   @Test

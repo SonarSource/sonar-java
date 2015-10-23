@@ -25,8 +25,13 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class LambdaSingleExpressionCheckTest {
 
   @Test
-  public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/LambdaSingleExpressionCheck.java", new LambdaSingleExpressionCheck());
+  public void no_version() {
+    JavaCheckVerifier.verify("src/test/files/checks/LambdaSingleExpressionCheck_no_version.java", new LambdaSingleExpressionCheck());
+  }
+
+  @Test
+  public void java_8() {
+    JavaCheckVerifier.verify("src/test/files/checks/LambdaSingleExpressionCheck.java", new LambdaSingleExpressionCheck(), 8);
   }
 
 }

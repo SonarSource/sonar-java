@@ -38,6 +38,6 @@ public class RepeatAnnotationCheckTest {
 
   @Test
   public void unknown_version() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME, new RepeatAnnotationCheck(), null);
+    JavaCheckVerifier.verify("src/test/files/checks/RepeatAnnotationCheck_no_version.java", new RepeatAnnotationCheck());
   }
 }
