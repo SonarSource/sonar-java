@@ -6,6 +6,9 @@ branches:
 
 cache:
   - C:\Users\appveyor\.m2 -> **\pom.xml
+  - C:\ProgramData\chocolatey\bin -> appveyor.yml
+  - C:\ProgramData\chocolatey\lib -> appveyor.yml
+  - C:\bin\apache-maven-* -> appveyor.yml
 
 install:
   - git submodule update --init --recursive
