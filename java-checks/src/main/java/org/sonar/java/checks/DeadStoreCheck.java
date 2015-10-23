@@ -117,7 +117,7 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
           }
           break;
         case VARIABLE:
-          out = handleVariable(out, element);
+          out = handleVariable(out, (VariableTree) element);
           break;
         case NEW_CLASS:
           ClassTree body = ((NewClassTree) element).classBody();
@@ -180,10 +180,8 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
     reportIssue(element, "Remove this useless assignment to local variable \"" + symbol.name() + "\".");
   }
 
-  private Set<Symbol> handleVariable(Set<Symbol> out, Tree element) {
-    Symbol symbol;
-    VariableTree localVar = (VariableTree) element;
-    symbol = localVar.symbol();
+  private Set<Symbol> handleVariable(Set<Symbol> out, VariableTree localVar) {
+    Symbol symbol = localVar.symbol();
     if (localVar.initializer() != null && !out.contains(symbol)) {
       createIssue(localVar.simpleName(), symbol);
     }
