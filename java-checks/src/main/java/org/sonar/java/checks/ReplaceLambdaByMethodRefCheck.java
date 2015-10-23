@@ -22,6 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -35,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -47,11 +50,17 @@ import java.util.List;
   name = "Lambdas should be replaced with method references",
   priority = Priority.MINOR,
   tags = {Tag.JAVA_8})
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner {
+public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
 
   private JavaFileScannerContext context;
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
+    return JavaVersionHelper.java8Compatible(version);
+  }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

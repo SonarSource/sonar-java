@@ -24,9 +24,15 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ReplaceLambdaByMethodRefCheckTest {
 
+  private static final String FILENAME = "src/test/files/checks/ReplaceLambdaByMethodRefCheck.java";
+
   @Test
-  public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/ReplaceLambdaByMethodRefCheck.java", new ReplaceLambdaByMethodRefCheck());
+  public void java8() {
+    JavaCheckVerifier.verify(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
   }
 
+  @Test
+  public void java7() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME, new ReplaceLambdaByMethodRefCheck(), 7);
+  }
 }
