@@ -24,8 +24,20 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class DateUtilsTruncateCheckTest {
 
+  private static final String FILENAME = "src/test/files/checks/DateUtilsTruncateCheck.java";
+
   @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/DateUtilsTruncateCheck.java", new DateUtilsTruncateCheck());
+  public void java8() {
+    JavaCheckVerifier.verify(FILENAME, new DateUtilsTruncateCheck(), 8);
+  }
+
+  @Test
+  public void java7() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME, new DateUtilsTruncateCheck(), 7);
+  }
+
+  @Test
+  public void unknown_version() {
+    JavaCheckVerifier.verifyNoIssue(FILENAME, new DateUtilsTruncateCheck(), null);
   }
 }

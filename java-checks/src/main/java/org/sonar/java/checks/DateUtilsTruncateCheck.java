@@ -23,13 +23,17 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Rule(
@@ -37,9 +41,15 @@ import java.util.List;
   name = "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
   priority = Priority.CRITICAL,
   tags = {Tag.JAVA_8, Tag.PERFORMANCE})
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("10min")
-public class DateUtilsTruncateCheck extends AbstractMethodDetection {
+public class DateUtilsTruncateCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
+
+  @Override
+  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
+    return JavaVersionHelper.java8Guaranteed(version);
+  }
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
