@@ -43,7 +43,7 @@ public final class ParameterSignatureScanner {
   }
 
   public static List<Parameter> scanArguments(String argumentsSignature) {
-    List<Parameter> arguments = new ArrayList<Parameter>();
+    List<Parameter> arguments = new ArrayList<>();
 
     ParameterSignatureScanner scanner = new ParameterSignatureScanner(argumentsSignature);
     while (scanner.hasNext()) {

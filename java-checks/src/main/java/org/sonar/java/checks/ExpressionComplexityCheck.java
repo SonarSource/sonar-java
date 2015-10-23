@@ -53,8 +53,8 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
     defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
-  private final Deque<Integer> count = new LinkedList<Integer>();
-  private final Deque<Integer> level = new LinkedList<Integer>();
+  private final Deque<Integer> count = new LinkedList<>();
+  private final Deque<Integer> level = new LinkedList<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

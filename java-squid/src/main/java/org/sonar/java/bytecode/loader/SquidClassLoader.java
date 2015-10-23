@@ -42,7 +42,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
    */
   public SquidClassLoader(List<File> files) {
     super(null);
-    loaders = new ArrayList<Loader>();
+    loaders = new ArrayList<>();
     for (File file : files) {
       if (file.exists()) {
         if (file.isDirectory()) {
@@ -80,7 +80,7 @@ public class SquidClassLoader extends ClassLoader implements Closeable {
 
   @Override
   protected Enumeration<URL> findResources(String name) throws IOException {
-    List<URL> result = new ArrayList<URL>();
+    List<URL> result = new ArrayList<>();
     for (Loader loader : loaders) {
       URL url = loader.findResource(name);
       if (url != null) {

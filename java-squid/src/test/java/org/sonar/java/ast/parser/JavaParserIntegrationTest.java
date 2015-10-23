@@ -45,7 +45,7 @@ public class JavaParserIntegrationTest {
 
   @Parameterized.Parameters
   public static Collection<Object[]> data() throws URISyntaxException {
-    Collection<Object[]> parameters = new ArrayList<Object[]>();
+    Collection<Object[]> parameters = new ArrayList<>();
     addParametersForPath(parameters, "src/main/java/");
     addParametersForPath(parameters, "src/test/java/");
     addParametersForPath(parameters, "src/test/files/");

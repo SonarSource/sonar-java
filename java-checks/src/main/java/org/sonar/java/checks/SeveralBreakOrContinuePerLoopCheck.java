@@ -51,8 +51,8 @@ import java.util.Deque;
 @SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "per extra \"break\" or \"continue\" statement")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Deque<Integer> breakAndContinueCounter = new ArrayDeque<Integer>();
-  private final Deque<Boolean> currentScopeIsSwitch = new ArrayDeque<Boolean>();
+  private final Deque<Integer> breakAndContinueCounter = new ArrayDeque<>();
+  private final Deque<Boolean> currentScopeIsSwitch = new ArrayDeque<>();
   private int loopCount;
 
   private JavaFileScannerContext context;

@@ -137,7 +137,7 @@ public class DesignBridge {
   }
 
   private static String serializeDsm(DirectedGraph<Resource, Dependency> graph, Collection<Resource> sources, Set<Edge> feedbackEdges) {
-    Dsm<Resource>  dsm = new Dsm<Resource>(graph, sources, feedbackEdges);
+    Dsm<Resource>  dsm = new Dsm<>(graph, sources, feedbackEdges);
     DsmTopologicalSorter.sort(dsm);
     return DsmSerializer.serialize(dsm);
   }

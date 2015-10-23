@@ -51,7 +51,7 @@ import java.util.List;
 @SqaleConstantRemediation("10min")
 public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private Deque<Boolean> isClassStack = new ArrayDeque<Boolean>();
+  private Deque<Boolean> isClassStack = new ArrayDeque<>();
 
   private JavaFileScannerContext context;
 

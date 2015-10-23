@@ -34,7 +34,7 @@ public class AsmClassProviderImpl extends AsmClassProvider {
   private static final Logger LOG = LoggerFactory.getLogger(AsmClassProviderImpl.class);
 
   private final ClassLoader classLoader;
-  private final Map<String, AsmClass> asmClassCache = new HashMap<String, AsmClass>();
+  private final Map<String, AsmClass> asmClassCache = new HashMap<>();
 
   public AsmClassProviderImpl() {
     this.classLoader = Thread.currentThread().getContextClassLoader();

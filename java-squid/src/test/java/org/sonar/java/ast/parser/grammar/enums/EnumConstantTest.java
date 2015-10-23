@@ -52,7 +52,7 @@ public class EnumConstantTest {
   @Test
   public void test_annotation() {
     LexerlessGrammarBuilder b = JavaLexer.createGrammarBuilder();
-    ActionParser<Tree> parser = new ActionParser<Tree>(Charsets.UTF_8, b, JavaGrammar.class, new TreeFactory(), new JavaNodeBuilder(), JavaLexer.ENUM_CONSTANT);
+    ActionParser<Tree> parser = new ActionParser<>(Charsets.UTF_8, b, JavaGrammar.class, new TreeFactory(), new JavaNodeBuilder(), JavaLexer.ENUM_CONSTANT);
     EnumConstantTreeImpl node = (EnumConstantTreeImpl) parser.parse("@Foo CONSTANT");
     org.fest.assertions.Assertions.assertThat(node.modifiers().size()).isEqualTo(1);
     org.fest.assertions.Assertions.assertThat(((IdentifierTree)((AnnotationTreeImpl) node.modifiers().get(0)).annotationType()).identifierToken().text()).isEqualTo("Foo");

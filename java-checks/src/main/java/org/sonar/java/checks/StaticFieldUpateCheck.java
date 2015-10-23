@@ -74,7 +74,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
     Kind.PREFIX_DECREMENT,
     Kind.PREFIX_INCREMENT};
 
-  private Deque<Boolean> withinStaticMethod = new LinkedList<Boolean>();
+  private Deque<Boolean> withinStaticMethod = new LinkedList<>();
 
   @Override
   public List<Kind> nodesToVisit() {

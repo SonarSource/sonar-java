@@ -47,7 +47,7 @@ import java.util.Set;
 
 public class StatementVisitor extends BaseTreeVisitor {
   private int statements;
-  private Set<Tree> variableTypes = new HashSet<Tree>();
+  private Set<Tree> variableTypes = new HashSet<>();
 
   public int numberOfStatements(Tree tree) {
     statements = 0;

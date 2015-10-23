@@ -92,7 +92,7 @@ public class AsmMethod extends AsmResource {
   }
 
   public List<AsmField> getCallsToField() {
-    List<AsmField> callsToField = new ArrayList<AsmField>();
+    List<AsmField> callsToField = new ArrayList<>();
     for (AsmEdge usage : getOutgoingEdges()) {
       if (usage.getUsage() == SourceCodeEdgeUsage.CALLS_FIELD) {
         callsToField.add((AsmField) usage.getTo());
@@ -102,7 +102,7 @@ public class AsmMethod extends AsmResource {
   }
 
   public List<AsmMethod> getCallsToMethod() {
-    List<AsmMethod> callsToMethod = new ArrayList<AsmMethod>();
+    List<AsmMethod> callsToMethod = new ArrayList<>();
     for (AsmEdge usage : getOutgoingEdges()) {
       if (usage.getUsage() == SourceCodeEdgeUsage.CALLS_METHOD) {
         callsToMethod.add((AsmMethod) usage.getTo());

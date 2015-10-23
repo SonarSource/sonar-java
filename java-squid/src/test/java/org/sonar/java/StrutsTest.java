@@ -74,7 +74,7 @@ public class StrutsTest {
   private Map<String, Double> getMetrics() {
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     verify(context, atLeastOnce()).saveMeasure(any(InputFile.class), captor.capture());
-    Map<String, Double> metrics = new HashMap<String, Double>();
+    Map<String, Double> metrics = new HashMap<>();
     for (Measure measure : captor.getAllValues()) {
       if (measure.getValue() != null) {
         if (metrics.get(measure.getMetricKey()) == null) {

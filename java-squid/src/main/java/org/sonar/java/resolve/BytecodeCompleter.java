@@ -55,8 +55,8 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
   /**
    * Indexed by flat name.
    */
-  private final Map<String, JavaSymbol.TypeJavaSymbol> classes = new HashMap<String, JavaSymbol.TypeJavaSymbol>();
-  private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<String, JavaSymbol.PackageJavaSymbol>();
+  private final Map<String, JavaSymbol.TypeJavaSymbol> classes = new HashMap<>();
+  private final Map<String, JavaSymbol.PackageJavaSymbol> packages = new HashMap<>();
 
   private ClassLoader classLoader;
 

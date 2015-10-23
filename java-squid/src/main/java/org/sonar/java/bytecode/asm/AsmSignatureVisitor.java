@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class AsmSignatureVisitor extends SignatureVisitor {
 
-  private final Set<String> internalNames = new HashSet<String>();
+  private final Set<String> internalNames = new HashSet<>();
 
 
   public AsmSignatureVisitor() {

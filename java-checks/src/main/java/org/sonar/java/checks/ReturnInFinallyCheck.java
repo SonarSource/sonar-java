@@ -46,7 +46,7 @@ import java.util.LinkedList;
 @SqaleConstantRemediation("30min")
 public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
 
-  private final Deque<Boolean> isInFinally = new LinkedList<Boolean>();
+  private final Deque<Boolean> isInFinally = new LinkedList<>();
   private JavaFileScannerContext context;
 
   @Override

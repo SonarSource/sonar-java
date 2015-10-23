@@ -89,7 +89,7 @@ public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileSca
   }
 
   private static String merge(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<String>();
+    Deque<String> pieces = new LinkedList<>();
     ExpressionTree expr = tree;
     while (expr.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;

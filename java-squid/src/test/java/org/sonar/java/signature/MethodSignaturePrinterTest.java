@@ -30,7 +30,7 @@ public class MethodSignaturePrinterTest {
 
   @Test
   public void testPrint() {
-    List<Parameter> argumentTypes = new ArrayList<Parameter>();
+    List<Parameter> argumentTypes = new ArrayList<>();
     MethodSignature method = new MethodSignature("read", new Parameter(JvmJavaType.V, false), argumentTypes);
     assertThat(MethodSignaturePrinter.print(method)).isEqualTo("read()V");
 

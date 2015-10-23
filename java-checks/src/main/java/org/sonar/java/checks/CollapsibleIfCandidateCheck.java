@@ -48,7 +48,7 @@ import java.util.Deque;
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Boolean> outerIf = new ArrayDeque<Boolean>();
+  private Deque<Boolean> outerIf = new ArrayDeque<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {

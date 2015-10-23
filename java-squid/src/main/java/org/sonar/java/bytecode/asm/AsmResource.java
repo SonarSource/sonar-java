@@ -30,7 +30,7 @@ public class AsmResource {
   private int accessFlags;
   AsmClass parent;
   boolean used = false;
-  private final List<AsmEdge> outgoingEdges = new ArrayList<AsmEdge>();
+  private final List<AsmEdge> outgoingEdges = new ArrayList<>();
 
   void setAccessFlags(int accessFlags) {
     this.accessFlags = accessFlags;
@@ -43,7 +43,7 @@ public class AsmResource {
   }
 
   public Set<AsmClass> getDistinctUsedAsmClasses() {
-    Set<AsmClass> distinctUsedAsmClasses = new HashSet<AsmClass>();
+    Set<AsmClass> distinctUsedAsmClasses = new HashSet<>();
     for (AsmEdge usage : getOutgoingEdges()) {
       if (usage.getUsage() == SourceCodeEdgeUsage.USES) {
         distinctUsedAsmClasses.add((AsmClass) usage.getTo());
@@ -53,7 +53,7 @@ public class AsmResource {
   }
 
   public Set<AsmClass> getImplementedInterfaces() {
-    Set<AsmClass> implementedInterfaces = new HashSet<AsmClass>();
+    Set<AsmClass> implementedInterfaces = new HashSet<>();
     for (AsmEdge usage : getOutgoingEdges()) {
       if (usage.getUsage() == SourceCodeEdgeUsage.IMPLEMENTS) {
         implementedInterfaces.add((AsmClass) usage.getTo());
