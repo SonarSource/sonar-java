@@ -41,6 +41,7 @@ import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -132,7 +133,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   /**
    * FIXME(mpaladin) DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
    **/
-  private static final boolean ENABLE_NEW_APIS = true;
+  private static final boolean ENABLE_NEW_APIS = false;
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
