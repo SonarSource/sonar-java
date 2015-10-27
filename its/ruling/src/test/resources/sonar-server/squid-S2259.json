@@ -11,16 +11,9 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/debt/DebtModelBackup.java':[
 120,
 239,
-330,
-330,
-349,
-349,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/duplication/ws/DuplicationsJsonWriter.java':[
 119,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/index/IssueIndex.java':[
-352,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/IssueShowAction.java':[
 176,
@@ -41,8 +34,5 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/RegisterRules.java':[
 279,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/ui/ViewProxy.java':[
-202,
 ],
 }
