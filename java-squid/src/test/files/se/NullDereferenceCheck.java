@@ -638,6 +638,10 @@ class NullPointerTest {
     undefined.field; // Coverage
     a = 1 + 2; // Coverage
   }
+  
+  public boolean testCascadedAndReturn(@Nullable Resource from, @Nullable Resource to) {
+    return from != null && to != null && from.equals(to.child());
+  }
 
   static int a;
 

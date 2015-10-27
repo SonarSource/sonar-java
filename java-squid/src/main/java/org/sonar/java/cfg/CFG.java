@@ -61,6 +61,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
@@ -131,6 +132,17 @@ public class CFG {
 
     public Block falseBlock() {
       return falseBlock;
+    }
+
+    Block branchingBlock() {
+      if (elements.isEmpty() && terminator != null) {
+        if (terminator.is(Tree.Kind.CONDITIONAL_AND)) {
+          return falseBlock;
+        } else if (terminator.is(Tree.Kind.CONDITIONAL_OR)) {
+          return trueBlock;
+        }
+      }
+      return this;
     }
 
     void addSuccessor(Block successor) {
@@ -525,13 +537,14 @@ public class CFG {
   }
 
   private void buildConditionalAnd(BinaryExpressionTree tree) {
+    // If the current block is itself a conditional expression, the false block should branch to the false block of it
+    final Block falseBlock = currentBlock;
     // process RHS
-    Block falseBlock = currentBlock;
     currentBlock = createBlock(falseBlock);
     build(tree.rightOperand());
-    Block trueBlock = currentBlock;
+    final Block trueBlock = currentBlock;
     // process LHS
-    currentBlock = createBranch(tree, trueBlock, falseBlock);
+    currentBlock = createBranch(tree, trueBlock, falseBlock.branchingBlock());
     build(tree.leftOperand());
   }
 
@@ -542,7 +555,7 @@ public class CFG {
     build(tree.rightOperand());
     Block falseBlock = currentBlock;
     // process LHS
-    currentBlock = createBranch(tree, trueBlock, falseBlock);
+    currentBlock = createBranch(tree, trueBlock.branchingBlock(), falseBlock);
     build(tree.leftOperand());
   }
 
