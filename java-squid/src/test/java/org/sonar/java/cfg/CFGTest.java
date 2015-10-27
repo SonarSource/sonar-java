@@ -108,9 +108,11 @@ public class CFGTest {
 
   private static class BlockChecker {
 
-    private int[] successorIDs;
+    private int[] successorIDs = new int[] {};
     private final List<ElementChecker> checkers = new ArrayList<>();
     private TerminatorChecker terminatorChecker;
+    private int ifTrue = -1;
+    private int ifFalse = -1;
 
     BlockChecker(final Tree.Kind kind, final int... ids) {
       successors(ids);
@@ -125,12 +127,31 @@ public class CFGTest {
     }
 
     BlockChecker successors(final int... ids) {
+      if (ifTrue != -1 || ifFalse != -1) {
+        throw new IllegalArgumentException("Cannot mix true/false with generic successors!");
+      }
       successorIDs = new int[ids.length];
       int n = 0;
       for (int i : ids) {
         successorIDs[n++] = i;
       }
       Arrays.sort(successorIDs);
+      return this;
+    }
+
+    BlockChecker ifTrue(final int id) {
+      if (successorIDs.length > 0) {
+        throw new IllegalArgumentException("Cannot mix true/false with generic successors!");
+      }
+      ifTrue = id;
+      return this;
+    }
+
+    BlockChecker ifFalse(final int id) {
+      if (successorIDs.length > 0) {
+        throw new IllegalArgumentException("Cannot mix true/false with generic successors!");
+      }
+      ifFalse = id;
       return this;
     }
 
@@ -145,7 +166,14 @@ public class CFGTest {
       for (final Tree element : block.elements()) {
         checkerIterator.next().check(element);
       }
-      if (successorIDs != null) {
+      if (successorIDs.length == 0) {
+        if (ifTrue != -1) {
+          assertThat(block.trueBlock().id()).as("Expected true successor block " + block.id()).isEqualTo(ifTrue);
+        }
+        if (ifFalse != -1) {
+          assertThat(block.falseBlock().id()).as("Expected true successor block " + block.id()).isEqualTo(ifFalse);
+        }
+      } else {
         assertThat(block.successors()).as("Expected number of successors in block " + block.id()).hasSize(successorIDs.length);
         final int[] actualSuccessorIDs = new int[successorIDs.length];
         int n = 0;
@@ -945,4 +973,29 @@ public class CFGTest {
     cfgChecker.check(cfg);
   }
 
+  @Test
+  public void returnCascadedAnd() throws Exception {
+    final CFG cfg = buildCFG(
+      "void andAll(boolean a, boolean b, boolean c) { return a && b && c;}");
+    final CFGChecker cfgChecker = checker(
+      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_AND).ifTrue(4).ifFalse(1),
+      block(element(Kind.IDENTIFIER, "b")).successors(3),
+      terminator(Kind.CONDITIONAL_AND).ifTrue(2).ifFalse(1),
+      block(element(Kind.IDENTIFIER, "c")).successors(1),
+      terminator(Kind.RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void returnCascadedOr() throws Exception {
+    final CFG cfg = buildCFG(
+      "void orAll(boolean a, boolean b, boolean c) { return a || b || c;}");
+    final CFGChecker cfgChecker = checker(
+      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(4),
+      block(element(Kind.IDENTIFIER, "b")).successors(3),
+      terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(2),
+      block(element(Kind.IDENTIFIER, "c")).successors(1),
+      terminator(Kind.RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+  }
 }
