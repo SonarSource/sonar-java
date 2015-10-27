@@ -40,7 +40,7 @@ class Foo {
   public void foo4(boolean test) {
     if (test) {
     } else {
-    continue; }                         // Noncompliant {{Move this closing curly brace to the next line.}}
+    return; }                         // Noncompliant {{Move this closing curly brace to the next line.}}
   }
   
   public void foo5() {

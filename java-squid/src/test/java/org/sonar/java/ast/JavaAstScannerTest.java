@@ -198,13 +198,13 @@ public class JavaAstScannerTest {
         }
 
         @Override
-        public Kind kind() {
-          return null;
+        public void accept(TreeVisitor visitor) {
+
         }
 
         @Override
-        public void accept(TreeVisitor visitor) {
-
+        public Kind kind() {
+          return null;
         }
 
         @Override

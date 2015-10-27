@@ -17,16 +17,16 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.se.JavaCheckVerifier;
 
-public class UselessConditionCheckTest {
+public class ConditionAlwaysTrueOrFalseCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UselessConditionCheck.java", new UselessConditionCheck());
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionAlwaysTrueOrFalseCheck());
   }
 
 }
