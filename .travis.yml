@@ -1,34 +1,35 @@
 language: java
 sudo: false
-
 jdk:
-  - oraclejdk7
-
+- oraclejdk7
 install: true
 script: ./travis.sh
 env:
+  matrix:
   - TEST=CI
-  - TEST=plugin
-    SQ_VERSION=DEV
-  - TEST=plugin
-    SQ_VERSION=LTS
+  - TEST=plugin SQ_VERSION=DEV
+  - TEST=plugin SQ_VERSION=LTS
+  global:
+  - secure: geBZ+KUmM5xXDBOAtj+1h27iO3/DpAwY5XZdeFYemS9GHBaIHMHuwmN9wQ+w21/d2QaMQcH6G5Cbd2j4mnJD71Ir0wzUgpmyBpQRTZ4oqcDfS2Aim99uZZ2axUR1d/cjqXbYU/4irR3/jg94TAybXxvXf2qbyajlRNYE2k9jAZo=
+  - secure: XghyX1gWn1I22JOHvAHii6hwIkz0geRQEMDml5YC0c1atdkpHK9N818nc1TZOrzEmeatPdlAPwpHpGMlzAjssEBAOxGppoqqNeL6yNRF/iIVF0Y5gLTwkfC+/e1zseyo8bc2Y4YrFU4YdaXh5EV5wy9oL9GpA3tezlFvQ0k/a7Y=
+  - secure: cORUuInzJzUzXgkLMuNHmwJ3aH9pTS4n5/+wHHPqZFxNYJ9vHYdiXhUEL+DX1A5GS7adKCEykuGmEo4OMivuXh4tZHy8C+b8sR2TFo26DTEWBlsQ9xv8YB7C3Nzb88mfto9jcz0AH5DQlzV30GGIp2brYE2w3d7YIxKjJ3ps4No=
+  - secure: L4yqbfWyuOSVNm9EnGBpCo3nl+DBn4etm5SSwchRtY/wKYUJ6c1IjGGBAz1vGfMJDWia4qot4nkjG1M8tmX3hUl2y7MIJr48/T4vDM6TrTNmezcepFmZQQkE+fJEdWGnjwin+O18PBScyXOiacFntoW+gDmD2l7T6eZo4EIW/YM=
+  - secure: KbKpdWJxAXSSJr5cLA+4o0571PUg5TGr1Dpt4cLNe+1grxUW91HOPQSDZlRBGF+m9/fh15x0UEs0L9UdBpzUIWocGuPy3WVvKP43q3Zv2lyf+COYmkOKu9I9oyVdkuf3MKDMENB2PuI8J6YygaE1UlJVHN9W8LENOTYnc8LmHZk=
 matrix:
   fast_finish: true
   include:
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
-
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
 cache:
   directories:
-    - '$HOME/.m2/repository'
-
+  - $HOME/.m2/repository
 notifications:
   email: false
