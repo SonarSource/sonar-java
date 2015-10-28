@@ -63,7 +63,6 @@ public class ProgramState {
   }
 
   static ProgramState stackValue(ProgramState ps, SymbolicValue sv) {
-    System.out.println("Stacking "+sv);
     Deque<SymbolicValue> newStack = new LinkedList<>(ps.stack);
     newStack.push(sv);
     return new ProgramState(ps.values, ps.constraints, ps.visitedPoints, newStack);
@@ -79,7 +78,6 @@ public class ProgramState {
     for (int i = 0; i < nbElements; i++) {
       result.add(newStack.pop());
     }
-    System.out.println("Untacking "+result);
     return new Pair<>(new ProgramState(programState.values, programState.constraints, programState.visitedPoints, newStack), result);
   }
 
