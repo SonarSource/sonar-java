@@ -49,8 +49,6 @@ import java.util.Map;
 @SqaleConstantRemediation("10min")
 public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
 
-  private static final String RULE_KEY = "squid:S2259";
-
   @Override
   public void scanFile(JavaFileScannerContext context) {
     Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(NullDereferenceCheck.class);
