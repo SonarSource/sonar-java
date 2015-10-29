@@ -127,7 +127,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         }
       });
 
-      if (variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
+      if (variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")
+        || variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.Nullable")
+      ) {
         startingStates = Iterables.concat(Iterables.transform(startingStates, new Function<ProgramState, List<ProgramState>>() {
           @Override
           public List<ProgramState> apply(ProgramState input) {
