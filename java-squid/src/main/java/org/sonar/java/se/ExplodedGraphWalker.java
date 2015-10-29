@@ -39,6 +39,7 @@ import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -284,6 +285,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           programState = ProgramState.put(programState, ((IdentifierTree) assignmentExpressionTree.variable()).symbol(), value);
           programState = ProgramState.stackValue(programState, value);
         }
+        break;
+      case ARRAY_ACCESS_EXPRESSION:
+        ArrayAccessExpressionTree arrayAccessExpressionTree = (ArrayAccessExpressionTree) tree;
+        //unstack expression and dimension
+        Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 2);
+        programState = unstack.a;
+        programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(arrayAccessExpressionTree));
         break;
       case NEW_ARRAY:
         NewArrayTree newArrayTree = (NewArrayTree) tree;
