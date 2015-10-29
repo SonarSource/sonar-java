@@ -111,8 +111,9 @@ class NullPointerTest {
 
   public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) {
     a1.hashCode(); // No issue
+    // Noncompliant@+1
     a2.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'a2' is nullable here}}
-    a3.hashCode(); // False negative
+    a3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'a3' is nullable here}}
 
     a1.a.hashCode(); // No issue
     a1.b.hashCode(); // False negative
@@ -465,6 +466,7 @@ class NullPointerTest {
   public void testComplexLoop(@Nullable Object nullableObject) {
     Object object1 = null, object11 = null, object12 = null;
     for (int i = 0; object11 == null; i += 1) {
+      // Noncompliant@+1
       object11.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object11' is nullable here}}
       object12.hashCode();
       nullableObject.hashCode();
@@ -481,6 +483,7 @@ class NullPointerTest {
     Object object2 = null, object21 = null, object22 = null;
     int i = 0;
     while(object21 == null) {
+      // Noncompliant@+1
       object21.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object21' is nullable here}}
       object22.hashCode(); // no issue, as npe is thrown on previous line
       nullableObject.hashCode();
@@ -492,6 +495,7 @@ class NullPointerTest {
       object21 = null;
     }
     //(false positive ?)
+    // Noncompliant@+1
     object2.hashCode(); // Noncompliant
 
     Object object3 = null;
@@ -566,4 +570,14 @@ class NullPointerTest {
     a = 0;
   }
 
+  public void hasNullableParameters(String a, @Nullable String b) {
+    a.length();
+    b.length(); // Noncompliant {{NullPointerException might be thrown as 'b' is nullable here}}
+  }
+  
+  public void test(@CheckForNull A a, @CheckForNull A b) {
+    // Noncompliant@+1
+    a.hashCode(); // Noncompliant 
+    b.hashCode(); // Noncompliant
+  }
 }
