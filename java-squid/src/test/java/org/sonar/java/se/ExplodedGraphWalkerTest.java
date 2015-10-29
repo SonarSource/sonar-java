@@ -46,6 +46,11 @@ import static org.fest.assertions.Fail.fail;
   }
 
   @Test
+  public void tempTestClass() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/TempTestClass.java", new IssueVisitor());
+  }
+
+  @Test
   public void test2() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor() {
       @Override
