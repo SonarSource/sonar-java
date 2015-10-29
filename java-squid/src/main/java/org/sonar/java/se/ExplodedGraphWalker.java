@@ -201,9 +201,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
             handleBranch(block, forStatement.condition(), false);
             return;
           }
+        case SYNCHRONIZED_STATEMENT:
+          resetFieldValues(null);
       }
     }
-    // unconditional jumps, for-statement, switch-statement:
+    // unconditional jumps, for-statement, switch-statement, synchronized:
     for (CFG.Block successor : block.successors()) {
       enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState);
     }
@@ -391,7 +393,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
     if (isLocalMethodInvocation(tree)) {
-      resetNullValuesOnFields(tree);
+      resetFieldValues(tree);
     }
   }
 
@@ -410,19 +412,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     return false;
   }
 
-  private void resetNullValuesOnFields(MethodInvocationTree tree) {
+  private void resetFieldValues(MethodInvocationTree tree) {
     boolean changed = false;
     Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
     for (Map.Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      if (constraintManager.isNull(programState, entry.getValue())) {
-        Symbol symbol = entry.getKey();
-        if (isField(symbol)) {
-          VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-          if (variable != null) {
-            changed = true;
-            SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
-            values.put(symbol, nonNullValue);
-          }
+      Symbol symbol = entry.getKey();
+      if (isField(symbol)) {
+        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+        if (variable != null) {
+          changed = true;
+          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
+          values.put(symbol, nonNullValue);
         }
       }
     }
@@ -432,7 +432,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private static boolean isField(Symbol symbol) {
-    return !symbol.owner().isMethodSymbol();
+    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
   }
 
   private void logState(MethodInvocationTree mit) {

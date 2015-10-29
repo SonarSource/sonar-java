@@ -8,6 +8,7 @@ public static class Class extends SuperClass {
     }
   }
 
+  private Object instanceVariable;
   private boolean field, field1, field2;
 
   public void assign(boolean parameter) {
@@ -790,7 +791,7 @@ public static class Class extends SuperClass {
   public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
       otherMethod();
-      if (field) { // Noncompliant
+      if (field) {
       }
       if (field1 == field2) {
       }
@@ -804,7 +805,7 @@ public static class Class extends SuperClass {
 
     if (field && field1 == field2 && local && local1 == local2) {
       if (otherMethod()) {
-        if (field) { // Noncompliant
+        if (field) {
         }
         if (field1 == field2) {
         }
@@ -819,7 +820,7 @@ public static class Class extends SuperClass {
   public void test_instance_fields6(boolean local, boolean local1, boolean local2) {
     if (field && field1 == field2 && local && local1 == local2) {
       otherMethod();
-      if (field) { // Noncompliant
+      if (field) {
       }
       if (field1 == field2) {
       }
@@ -834,6 +835,36 @@ public static class Class extends SuperClass {
 
     if (field && field1 == field2 && local && local1 == local2) {
       if (otherMethod()) {
+        if (field) {
+        }
+        if (field1 == field2) {
+        }
+        if (local) { // Noncompliant
+        }
+        if (local1 == local2) { //False negative Noncompliant
+        }
+      }
+    }
+  }
+
+  public void test_instance_fields8(boolean local, boolean local1, boolean local2) {
+    if (field && field1 == field2 && local && local1 == local2) {
+      instanceVariable.otherMethod();
+      if (field) { // Noncompliant
+      }
+      if (field1 == field2) {
+      }
+      if (local) { // Noncompliant
+      }
+      if (local1 == local2) { //False negative Noncompliant
+      }
+    }
+  }
+
+  public void test_instance_fields9(boolean local, boolean local1, boolean local2) {
+
+    if (field && field1 == field2 && local && local1 == local2) {
+      if (instanceVariable.otherMethod()) {
         if (field) { // Noncompliant
         }
         if (field1 == field2) {
@@ -1150,4 +1181,31 @@ class SuperClass {
         && env.prodMode()
         && request.header(ACCEPT_ENCODING, "").contains(GZIP);
   }
+  
+  private Object mutex;
+  public boolean doubleMutexCondition() {
+    if (mutex == null) {
+      synchronized (this) {
+        if (mutex == null) {
+          mutex = new Mutex();
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  
+  private boolean initialized;
+  public boolean doubleBooleanMutexCondition() {
+    if (!initialized) {
+      synchronized (this) {
+        if (!initialized) {
+          initialized = true;
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
 }
