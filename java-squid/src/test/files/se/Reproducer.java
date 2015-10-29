@@ -1,5 +1,6 @@
 package javax.annotation;
 import javax.annotation.CheckForNull;
+import java.lang.Object;
 
 @interface CheckForNull {}
 
@@ -23,6 +24,13 @@ class A {
     Object[] array2 = checkForNullMethod();
     // Noncompliant@+1
     i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
+  }
+
+  void testArrayAccess() {
+    Object[] foo = new Object[10];
+    if (foo[0] == null) {
+      
+    }
   }
 
   @CheckForNull
