@@ -11,12 +11,6 @@
 'com.google.guava:guava:src/com/google/common/io/Closer.java':[
 224,
 ],
-'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
-428,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractFuture.java':[
-199,
-],
 'com.google.guava:guava:src/com/google/common/util/concurrent/AbstractScheduledService.java':[
 494,
 ],
