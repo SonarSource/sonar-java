@@ -28,7 +28,7 @@
       <groupId>org.sonarsource.java</groupId>
       <artifactId>sonar-java-plugin</artifactId>
       <type>sonar-plugin</type>
-      <version>3.5</version>
+      <version>3.7-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
 
