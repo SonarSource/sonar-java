@@ -20,7 +20,6 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Multimap;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -47,7 +46,6 @@ import static org.fest.assertions.Fail.fail;
   }
 
   @Test
-  @Ignore("Ignored as this is only for reporting test cases until we fix them")
   public void guava_testcases() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/TempTestClass.java", new IssueVisitor());
   }
