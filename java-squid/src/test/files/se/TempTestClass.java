@@ -1,9 +1,5 @@
 package javax.annotation;
 
-import org.sonar.java.resolve.Flags;
-import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
-
 @interface CheckForNull {}
 public class TempTestClass {
 
@@ -14,41 +10,6 @@ public class TempTestClass {
     //FP because of casting and type difference, we can actually end up with diff value but we'll live with it for now.
     if (size != longSize) { // Noncompliant
       throw new ArrayIndexOutOfBoundsException("Required array size too large: " + longSize);
-    }
-  }
-
-  private boolean initialized;
-
-  public static boolean indirectNull(CharSequence s1, CharSequence s2) {
-    int length = s1.length();
-    if (s1 == s2) {
-      return true;
-    }
-    //FP SONARJAVA-1353
-    if (length != s2.length()) { // Noncompliant
-      return false;
-    }
-    return true;
-  }
-
-  ReferenceEntry removeEntryFromChain(ReferenceEntry first, ReferenceEntry entry) {
-    int newCount = count;
-    ReferenceEntry newFirst = entry.getNext();
-    //FP SONARJAVA-1353
-    for (ReferenceEntry e = first; e != entry; e = e.getNext()) { // Noncompliant
-    }
-    return newFirst;
-  }
-
-  private Boolean nonNullReassignment(Object a, Object b) {
-    if (a == null) {
-      return null;
-    }
-    if (a == b) {
-      return true;
-    } else {
-      //FP SONARJAVA-1353
-      return b.flags(); // Noncompliant
     }
   }
 
