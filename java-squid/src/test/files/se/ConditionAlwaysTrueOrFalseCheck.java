@@ -1,3 +1,6 @@
+package javax.annotation;
+@interface CheckForNull {}
+
 public static class Class extends SuperClass {
 
   private static class Class {
@@ -1207,5 +1210,18 @@ class SuperClass {
     }
     return false;
   }
+
+  private void nullableMethodReturn() {
+    Object foo = nullableMethod();
+    if(foo == null) { // compliant, both path are possible.
+
+    }
+  }
+
+  @CheckForNull
+  private Object nullableMethod() {
+    return null;
+  }
+
 
 }
