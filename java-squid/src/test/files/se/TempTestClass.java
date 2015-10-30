@@ -106,17 +106,4 @@ public class TempTestClass {
     long signifRounded = increment ? signifFloor + 1 : signifFloor; // Noncompliant
   }
 
-  private void nullableMethodReturn() {
-   Object foo = nullableMethod();
-    //FP SONARJAVA-1354 only sv with null constraint is explored
-    if(foo == null) { // Noncompliant
-
-    }
-  }
-
-  @CheckForNull
-  private Object nullableMethod() {
-    return null;
-  }
-
 }
