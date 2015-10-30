@@ -179,7 +179,11 @@ public interface SymbolicValue {
         result = to.setConstraint(result, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
       } else if (constraintLeft instanceof NullConstraint) {
         NullConstraint nullConstraint = (NullConstraint) constraintLeft;
-        result = to.setConstraint(result, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
+        if(nullConstraint.equals(NullConstraint.NULL)) {
+          result = to.setConstraint(result, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
+        } else if(shouldNotInverse().equals(booleanConstraint)) {
+          result = to.setConstraint(result, nullConstraint);
+        }
       }
       return result;
     }

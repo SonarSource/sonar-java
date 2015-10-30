@@ -580,4 +580,16 @@ class NullPointerTest {
     a.hashCode(); // Noncompliant 
     b.hashCode(); // Noncompliant
   }
+
+  public boolean indirectNull(CharSequence s1, CharSequence s2) {
+    int length = s1.length();
+    if (s1 == s2) {
+      return true;
+    }
+    if (length != s2.length()) {
+      return false;
+    }
+    return true;
+  }
+
 }
