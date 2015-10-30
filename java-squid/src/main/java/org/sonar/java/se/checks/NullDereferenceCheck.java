@@ -67,6 +67,11 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       return context.getState();
     }
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
+      if("class".equals(((MemberSelectExpressionTree) syntaxNode).identifier().name())) {
+        // expression ClassName.class won't raise NPE.
+        return context.getState();
+      }
+
       if (context.isNull(currentVal)) {
         context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
         return null;
