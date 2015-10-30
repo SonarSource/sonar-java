@@ -592,4 +592,8 @@ class NullPointerTest {
     return true;
   }
 
+  void foo(Object qix, @Nullable Object bar) {
+    foo(bar, NullPointerTest.class);
+  }
+
 }
