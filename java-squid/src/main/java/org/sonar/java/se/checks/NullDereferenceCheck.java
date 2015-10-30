@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -39,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
 import java.util.Map;
 
 @Rule(
@@ -82,23 +84,30 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       context.createSink();
       return;
     }
-    context.addTransition(setNullConstraint(context, syntaxNode));
+    List<ProgramState> programStates = setNullConstraint(context, syntaxNode);
+    for (ProgramState programState : programStates) {
+      context.addTransition(programState);
+    }
   }
 
-  private ProgramState setNullConstraint(CheckerContext context, Tree syntaxNode) {
+  private List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
-    switch (syntaxNode.kind()) {
-      case NULL_LITERAL:
-        assert val.equals(SymbolicValue.NULL_LITERAL);
-        return context.getState();
-      case METHOD_INVOCATION:
-        ProgramState ps = context.getState();
-        if (((MethodInvocationTree) syntaxNode).symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")) {
-          ps = val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL);
-        }
-        return ps;
+    if (syntaxNode.is(Tree.Kind.NULL_LITERAL)) {
+      //invariant to check that value was correctly evaluated.
+      assert val != null && val.equals(SymbolicValue.NULL_LITERAL);
+    } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      if (isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
+        return Lists.newArrayList(
+            val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL),
+            val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL)
+        );
+      }
     }
-    return context.getState();
+    return Lists.newArrayList(context.getState());
+  }
+
+  private static boolean isAnnotatedCheckForNull(MethodInvocationTree syntaxNode) {
+    return syntaxNode.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull");
   }
 
   private static String getName(Tree syntaxNode) {
