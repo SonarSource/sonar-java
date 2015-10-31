@@ -38,11 +38,9 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -63,12 +61,14 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-import java.io.PrintStream;
+
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class CFG {
 
@@ -105,31 +105,99 @@ public class CFG {
   }
 
   public static class Block {
-    public final int id;
+
+    private int id;
     private final List<Tree> elements = new ArrayList<>();
-    private final List<Block> successors = new ArrayList<>();
-    private final List<Block> predecessors = new ArrayList<>();
+    private final Set<Block> successors = new HashSet<>();
+    private final Set<Block> predecessors = new HashSet<>();
+    private Block trueBlock;
+    private Block falseBlock;
     private Tree terminator;
 
     public Block(int id) {
       this.id = id;
     }
 
+    public int id() {
+      return id;
+    }
+
     public List<Tree> elements() {
       return Lists.reverse(elements);
     }
 
-    public List<Block> predecessors() {
+    public Block trueBlock() {
+      return trueBlock;
+    }
+
+    public Block falseBlock() {
+      return falseBlock;
+    }
+
+    Block branchingBlock() {
+      if (elements.isEmpty() && terminator != null) {
+        if (terminator.is(Tree.Kind.CONDITIONAL_AND)) {
+          return falseBlock;
+        } else if (terminator.is(Tree.Kind.CONDITIONAL_OR)) {
+          return trueBlock;
+        }
+      }
+      return this;
+    }
+
+    void addSuccessor(Block successor) {
+      successors.add(successor);
+    }
+
+    public void addTrueSuccessor(Block successor) {
+      if (trueBlock != null) {
+        throw new IllegalStateException("Attempt to re-assign a true successor");
+      }
+      successors.add(successor);
+      trueBlock = successor;
+    }
+
+    public void addFalseSuccessor(Block successor) {
+      if (falseBlock != null) {
+        throw new IllegalStateException("Attempt to re-assign a false successor");
+      }
+      successors.add(successor);
+      falseBlock = successor;
+    }
+
+    public Set<Block> predecessors() {
       return predecessors;
     }
 
-    public List<Block> successors() {
+    public Set<Block> successors() {
       return successors;
     }
 
     @CheckForNull
     public Tree terminator() {
       return terminator;
+    }
+
+    public boolean notActive() {
+      return terminator == null && elements.isEmpty();
+    }
+
+    private void prune(Block inactiveBlock) {
+      if (inactiveBlock.equals(trueBlock)) {
+        if (inactiveBlock.successors.size() != 1) {
+          throw new IllegalStateException("True successor must be replaced by a uniuqe successor!");
+        }
+        trueBlock = inactiveBlock.successors.iterator().next();
+      }
+      if (inactiveBlock.equals(falseBlock)) {
+        if (inactiveBlock.successors.size() != 1) {
+          throw new IllegalStateException("True successor must be replaced by a uniuqe successor!");
+        }
+        falseBlock = inactiveBlock.successors.iterator().next();
+      }
+      if (successors.remove(inactiveBlock)) {
+        successors.addAll(inactiveBlock.successors);
+      }
     }
   }
 
@@ -157,7 +225,7 @@ public class CFG {
       }
       b.successors.add(target);
     }
-
+    prune();
     for (Block b : blocks) {
       for (Block successor : b.successors) {
         successor.predecessors.add(b);
@@ -165,9 +233,47 @@ public class CFG {
     }
   }
 
+  private void prune() {
+    List<Block> inactiveBlocks = new ArrayList<>();
+    boolean first = true;
+    for (Block block : blocks) {
+      if (!first && notActive(block)) {
+        inactiveBlocks.add(block);
+      }
+      first = false;
+    }
+    if (!inactiveBlocks.isEmpty()) {
+      removeInactiveBlocks(inactiveBlocks);
+      if (inactiveBlocks.contains(currentBlock)) {
+        currentBlock = currentBlock.successors.iterator().next();
+      }
+      int id = 0;
+      for (Block block : blocks) {
+        block.id = id;
+        id += 1;
+      }
+    }
+  }
+
+  private boolean notActive(Block block) {
+    if (block.equals(currentBlock) && block.successors.size() > 1) {
+      return false;
+    }
+    return block.notActive();
+  }
+
+  private void removeInactiveBlocks(List<Block> inactiveBlocks) {
+    for (Block inactiveBlock : inactiveBlocks) {
+      for (Block block : blocks) {
+        block.prune(inactiveBlock);
+      }
+    }
+    blocks.removeAll(inactiveBlocks);
+  }
+
   private Block createBlock(Block successor) {
     Block result = createBlock();
-    result.successors.add(successor);
+    result.addSuccessor(successor);
     return result;
   }
 
@@ -319,8 +425,9 @@ public class CFG {
         break;
       // Java 8 constructions : ignored for now.
       case METHOD_REFERENCE:
-      // assert can be ignored by VM so skip them for now.
+        // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
+        //Ignore assert statement as they are disabled by default in JVM
         break;
       // store declarations as complete blocks.
       case EMPTY_STATEMENT:
@@ -329,7 +436,7 @@ public class CFG {
       case ANNOTATION_TYPE:
       case INTERFACE:
       case LAMBDA_EXPRESSION:
-      // simple instructions
+        // simple instructions
       case IDENTIFIER:
       case INT_LITERAL:
       case LONG_LITERAL:
@@ -346,17 +453,15 @@ public class CFG {
     }
   }
 
-  private void buildReturnStatement(ReturnStatementTree tree) {
-    ReturnStatementTree s = tree;
-    currentBlock = createUnconditionalJump(s, exitBlock);
-    ExpressionTree expression = s.expression();
+  private void buildReturnStatement(ReturnStatementTree returnStatement) {
+    currentBlock = createUnconditionalJump(returnStatement, exitBlock);
+    ExpressionTree expression = returnStatement.expression();
     if (expression != null) {
       build(expression);
     }
   }
 
-  private void buildMethodInvocation(MethodInvocationTree tree) {
-    MethodInvocationTree mit = tree;
+  private void buildMethodInvocation(MethodInvocationTree mit) {
     currentBlock.elements.add(mit);
     build(mit.methodSelect());
     for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
@@ -364,8 +469,7 @@ public class CFG {
     }
   }
 
-  private void buildIfStatement(IfStatementTree tree) {
-    IfStatementTree ifStatementTree = tree;
+  private void buildIfStatement(IfStatementTree ifStatementTree) {
     Block next = currentBlock;
     // process else-branch
     Block elseBlock = next;
@@ -387,8 +491,7 @@ public class CFG {
     buildCondition(ifStatementTree.condition(), thenBlock, elseBlock);
   }
 
-  private void buildConditionalExpression(ConditionalExpressionTree tree) {
-    ConditionalExpressionTree cond = tree;
+  private void buildConditionalExpression(ConditionalExpressionTree cond) {
     Block next = currentBlock;
     // process else-branch
     ExpressionTree elseStatement = cond.falseExpression();
@@ -425,8 +528,7 @@ public class CFG {
     build(tree.expression());
   }
 
-  private void buildMemberSelect(MemberSelectExpressionTree tree) {
-    MemberSelectExpressionTree mse = tree;
+  private void buildMemberSelect(MemberSelectExpressionTree mse) {
     currentBlock.elements.add(mse);
     // int.class or String[].class are memberSelectExpression which expression part is not an expression.
     if (!"class".equals(mse.identifier().name())) {
@@ -435,13 +537,14 @@ public class CFG {
   }
 
   private void buildConditionalAnd(BinaryExpressionTree tree) {
+    // If the current block is itself a conditional expression, the false block should branch to the false block of it
+    final Block falseBlock = currentBlock;
     // process RHS
-    Block falseBlock = currentBlock;
     currentBlock = createBlock(falseBlock);
     build(tree.rightOperand());
-    Block trueBlock = currentBlock;
+    final Block trueBlock = currentBlock;
     // process LHS
-    currentBlock = createBranch(tree, trueBlock, falseBlock);
+    currentBlock = createBranch(tree, trueBlock, falseBlock.branchingBlock());
     build(tree.leftOperand());
   }
 
@@ -452,21 +555,17 @@ public class CFG {
     build(tree.rightOperand());
     Block falseBlock = currentBlock;
     // process LHS
-    currentBlock = createBranch(tree, trueBlock, falseBlock);
+    currentBlock = createBranch(tree, trueBlock.branchingBlock(), falseBlock);
     build(tree.leftOperand());
   }
 
-  private void buildLabeledStatement(LabeledStatementTree tree) {
-    LabeledStatementTree s = tree;
-    build(s.statement());
+  private void buildLabeledStatement(LabeledStatementTree labeledStatement) {
+    build(labeledStatement.statement());
     currentBlock = createBlock(currentBlock);
-    labels.put(s.label().name(), currentBlock);
-    return;
+    labels.put(labeledStatement.label().name(), currentBlock);
   }
 
-  private void buildSwitchStatement(SwitchStatementTree tree) {
-    // FIXME useless node created for default cases.
-    SwitchStatementTree switchStatementTree = tree;
+  private void buildSwitchStatement(SwitchStatementTree switchStatementTree) {
     Block switchSuccessor = currentBlock;
     // process condition
     currentBlock = createBlock();
@@ -480,7 +579,7 @@ public class CFG {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
-        switches.getLast().successors.add(currentBlock);
+        switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.
           currentBlock = createBlock(currentBlock);
@@ -516,40 +615,38 @@ public class CFG {
     }
   }
 
-  private void buildWhileStatement(WhileStatementTree tree) {
-    WhileStatementTree s = tree;
+  private void buildWhileStatement(WhileStatementTree whileStatement) {
     Block falseBranch = currentBlock;
     Block loopback = createBlock();
     // process body
     currentBlock = createBlock(loopback);
     continueTargets.addLast(loopback);
     breakTargets.addLast(falseBranch);
-    build(s.statement());
+    build(whileStatement.statement());
     breakTargets.removeLast();
     continueTargets.removeLast();
     Block bodyBlock = currentBlock;
     // process condition
-    currentBlock = createBranch(s, bodyBlock, falseBranch);
-    buildCondition(s.condition(), bodyBlock, falseBranch);
-    loopback.successors.add(currentBlock);
+    currentBlock = createBranch(whileStatement, bodyBlock, falseBranch);
+    buildCondition(whileStatement.condition(), bodyBlock, falseBranch);
+    loopback.addSuccessor(currentBlock);
     currentBlock = createBlock(currentBlock);
   }
 
-  private void buildDoWhileStatement(DoWhileStatementTree tree) {
-    DoWhileStatementTree s = tree;
+  private void buildDoWhileStatement(DoWhileStatementTree doWhileStatementTree) {
     Block falseBranch = currentBlock;
     Block loopback = createBlock();
     // process condition
-    currentBlock = createBranch(s, loopback, falseBranch);
-    buildCondition(s.condition(), loopback, falseBranch);
+    currentBlock = createBranch(doWhileStatementTree, loopback, falseBranch);
+    buildCondition(doWhileStatementTree.condition(), loopback, falseBranch);
     // process body
     currentBlock = createBlock(currentBlock);
     continueTargets.addLast(loopback);
     breakTargets.addLast(falseBranch);
-    build(s.statement());
+    build(doWhileStatementTree.statement());
     breakTargets.removeLast();
     continueTargets.removeLast();
-    loopback.successors.add(currentBlock);
+    loopback.addSuccessor(currentBlock);
     currentBlock = createBlock(currentBlock);
   }
 
@@ -564,7 +661,7 @@ public class CFG {
     breakTargets.removeLast();
     continueTargets.removeLast();
     currentBlock = createBranch(tree, currentBlock, afterLoop);
-    loopback.successors.add(currentBlock);
+    loopback.addSuccessor(currentBlock);
     build(tree.variable());
     build(tree.expression());
     currentBlock = createBlock(currentBlock);
@@ -594,7 +691,7 @@ public class CFG {
     } else {
       currentBlock = createUnconditionalJump(tree, body);
     }
-    updateBlock.successors.add(currentBlock);
+    updateBlock.addSuccessor(currentBlock);
     // process init
     currentBlock = createBlock(currentBlock);
     for (StatementTree init : Lists.reverse(tree.initializer())) {
@@ -602,9 +699,8 @@ public class CFG {
     }
   }
 
-  private void buildTryStatement(TryStatementTree tree) {
+  private void buildTryStatement(TryStatementTree tryStatementTree) {
     // FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
-    TryStatementTree tryStatementTree = tree;
     currentBlock = createBlock(currentBlock);
     BlockTree finallyBlock = tryStatementTree.finallyBlock();
     if (finallyBlock != null) {
@@ -614,20 +710,20 @@ public class CFG {
     build(tryStatementTree.block());
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
-    currentBlock.elements.add(tree);
+    currentBlock.elements.add(tryStatementTree);
   }
 
-  private void buildThrowStatement(ThrowStatementTree tree) {
+  private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
     // FIXME this won't work if it is intended to be caught by a try statement.
-    ThrowStatementTree throwStatementTree = tree;
     currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
     build(throwStatementTree.expression());
   }
 
-  private void buildSynchronizedStatement(SynchronizedStatementTree tree) {
-    SynchronizedStatementTree sst = tree;
-    // Naively build synchronized statement.
+  private void buildSynchronizedStatement(SynchronizedStatementTree sst) {
+    // First create the block of the statement,
     build(sst.block());
+    // Then create a single block with the SYNCHRONIZED tree as terminator
+    currentBlock = createUnconditionalJump(sst, currentBlock);
     build(sst.expression());
   }
 
@@ -679,7 +775,7 @@ public class CFG {
     Block result = createBlock();
     result.terminator = terminator;
     if (target != null) {
-      result.successors.add(target);
+      result.addSuccessor(target);
     }
     return result;
   }
@@ -723,54 +819,9 @@ public class CFG {
   private Block createBranch(Tree terminator, Block trueBranch, Block falseBranch) {
     Block result = createBlock();
     result.terminator = terminator;
-    result.successors.add(trueBranch);
-    result.successors.add(falseBranch);
+    result.addTrueSuccessor(trueBranch);
+    result.addFalseSuccessor(falseBranch);
     return result;
-  }
-
-  public void debugTo(PrintStream out) {
-    for (Block block : Lists.reverse(blocks)) {
-      if (block.id != 0) {
-        out.println("B" + block.id + ":");
-      } else {
-        out.println("B" + block.id + " (Exit) :");
-      }
-      int i = 0;
-      for (Tree tree : block.elements()) {
-        out.println("  " + i + ": " + syntaxNodeToDebugString(tree));
-        i++;
-      }
-      if (block.terminator != null) {
-        out.println("  T: " + syntaxNodeToDebugString(block.terminator));
-      }
-      if (!block.successors.isEmpty()) {
-        out.print("  Successors:");
-        for (Block successor : block.successors) {
-          out.print(" B" + successor.id);
-        }
-        out.println();
-      }
-    }
-    out.println();
-  }
-
-  private static String syntaxNodeToDebugString(Tree syntaxNode) {
-    StringBuilder sb = new StringBuilder(syntaxNode.kind().name())
-      .append(' ').append(Integer.toHexString(syntaxNode.hashCode()));
-    switch (syntaxNode.kind()) {
-      case VARIABLE:
-        sb.append(' ').append(((VariableTree) syntaxNode).simpleName().name());
-        break;
-      case IDENTIFIER:
-        sb.append(' ').append(((IdentifierTree) syntaxNode).identifierToken().text());
-        break;
-      case INT_LITERAL:
-        sb.append(' ').append(((LiteralTree) syntaxNode).token().text());
-        break;
-      default:
-        //no need to debug other syntaxNodes
-    }
-    return sb.toString();
   }
 
 }
