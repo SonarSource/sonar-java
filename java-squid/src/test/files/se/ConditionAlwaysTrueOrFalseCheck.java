@@ -414,6 +414,8 @@ public static class Class extends SuperClass {
     // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 < parameter2) {
     }
+  }
+  public void tests2(boolean parameter1, boolean parameter2, boolean condition) {
     // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "true"}}
     if (parameter1 == parameter2 || parameter1 != parameter2) {
     }
@@ -421,16 +423,16 @@ public static class Class extends SuperClass {
     }
     if (condition || !condition) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    //False negative: Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if ((parameter1 == parameter2 || condition) && !(parameter1 == parameter2 || condition)) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    //False negative: Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if ((parameter1 == parameter2 || condition) || !(parameter1 == parameter2 || condition)) {
     }
     // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (!(parameter1 == parameter2 || condition) && (parameter1 == parameter2 || condition)) {
     }
-    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    //False negative: Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (!(parameter1 == parameter2 || condition) || (parameter1 == parameter2 || condition)) {
     }
   }

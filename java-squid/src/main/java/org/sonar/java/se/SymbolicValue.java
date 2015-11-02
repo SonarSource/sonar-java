@@ -154,15 +154,21 @@ public interface SymbolicValue {
 
     @Override
     public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      ProgramState result = programState;
       if (leftOp.equals(rightOp)) {
         return shouldNotInverse().equals(booleanConstraint) ? programState : null;
       }
-      programState = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
-      if (programState == null) {
+      result = copyConstraint(leftOp, rightOp, result, booleanConstraint);
+      if (result == null) {
         return null;
       }
-      programState = copyConstraint(rightOp, leftOp, programState, booleanConstraint);
-      return programState;
+      result = copyConstraint(rightOp, leftOp, result, booleanConstraint);
+      if(result == programState) {
+        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+        temp.put(this, booleanConstraint);
+        return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+      }
+      return result;
 
     }
 
