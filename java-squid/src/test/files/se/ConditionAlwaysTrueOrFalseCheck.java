@@ -1223,5 +1223,13 @@ class SuperClass {
     return null;
   }
 
-
+  static void fromEntryArray(boolean foo) {
+    Entry entry = new Object();
+    printState();
+    boolean reusable = entry instanceof ImmutableMapEntry
+        && entry.isReusable();
+    printState();
+    reusable ? entry : new Object(); // compliant both path are explored.
+    return;
+  }
 }
