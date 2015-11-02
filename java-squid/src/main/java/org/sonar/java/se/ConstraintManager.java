@@ -98,4 +98,8 @@ public class ConstraintManager {
       return TRUE;
     }
   }
+
+  public static class TypedConstraint {
+    //Empty class for now, but should store the resolved type for instanceof operator.
+  }
 }

@@ -258,7 +258,14 @@ public interface SymbolicValue {
           return null;
         }
         // if instanceof is true then we know for sure that expression is not null.
-        return operand.setConstraint(programState, NullConstraint.NOT_NULL);
+        ProgramState ps = operand.setConstraint(programState, NullConstraint.NOT_NULL);
+        if(ps.equals(programState)) {
+          //FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint should store the deduced type.
+          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+          temp.put(this, new ConstraintManager.TypedConstraint());
+          ps = new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+        }
+        return ps;
       }
       return programState;
     }
