@@ -494,9 +494,7 @@ class NullPointerTest {
       }
       object21 = null;
     }
-    //(false positive ?)
-    // Noncompliant@+1
-    object2.hashCode(); // Noncompliant
+    object2.hashCode();
 
     Object object3 = null;
     int i = 0;
@@ -596,4 +594,12 @@ class NullPointerTest {
     foo(bar, NullPointerTest.class);
   }
 
+  void while_loop() {
+    Object currentParent = new Object();
+    while (currentParent != null) {
+      printState();
+      currentParent.toString();
+      currentParent = null;
+    }
+  }
 }

@@ -492,13 +492,13 @@ public static class Class extends SuperClass {
       if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
-    if (local2) { // Compliant
+    if (local2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
   public void test_label() {
     label:
-    while (true) { // Compliant
+    while (true) { // compliant excluded from check as it is a common construction.
     }
   }
 

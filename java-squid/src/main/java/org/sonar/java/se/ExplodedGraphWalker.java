@@ -57,6 +57,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -203,8 +204,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
             handleBranch(block, forStatement.condition(), false);
             return;
           }
+          break;
+        case WHILE_STATEMENT:
+          ExpressionTree condition = ((WhileStatementTree) block.terminator()).condition();
+          handleBranch(block, condition, !condition.is(Tree.Kind.BOOLEAN_LITERAL));
+          return;
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues(null);
+          break;
       }
     }
     // unconditional jumps, for-statement, switch-statement, synchronized:
