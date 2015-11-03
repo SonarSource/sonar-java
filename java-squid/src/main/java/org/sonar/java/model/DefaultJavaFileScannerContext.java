@@ -21,27 +21,19 @@ package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.rule.RuleKey;
 import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.CompIssue;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.SourceFile;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.List;
 import java.util.Set;
@@ -115,25 +107,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     return sourceFile.getKey();
   }
 
-  @CheckForNull
-  private RuleKey getRuleKey(JavaCheck check) {
-    if (sonarComponents != null) {
-      return sonarComponents.getRuleKey(check);
-    }
-    return null;
-  }
-
   @Override
   public void addIssue(File file, JavaCheck check, int line, String message) {
     if (sonarComponents != null) {
       sonarComponents.addIssue(file, check, line, message, null);
     }
   }
-
-  /**
-   * FIXME(mpaladin) DO NOT GO ON RELEASE WITH THIS CONSTANT SET TO TRUE
-   **/
-  private static final boolean ENABLE_NEW_APIS = false;
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree tree, String message) {
@@ -142,37 +121,12 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    if (ENABLE_NEW_APIS) {
-      InputFile inputFile = sonarComponents.inputFromIOFile(file);
-      RuleKey ruleKey = getRuleKey(javaCheck);
-      if (ruleKey != null) {
-        CompIssue compIssue = CompIssue.create(inputFile, sonarComponents.issuableFor(file), ruleKey, cost != null ? (double) cost : null);
-        AnalyzerMessage.TextSpan textSpan = textSpanFor(syntaxNode);
-        if (textSpan == null) {
-          compIssue.setPrimaryLocation(message, null);
-        } else {
-          compIssue.setPrimaryLocation(message, textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
-        }
-        for (Location location : secondary) {
-          AnalyzerMessage.TextSpan secondarySpan = textSpanFor(location.syntaxNode);
-          compIssue.addSecondaryLocation(secondarySpan.startLine, secondarySpan.startCharacter, secondarySpan.endLine, secondarySpan.endCharacter, location.msg);
-        }
-        compIssue.save();
-      }
-    } else {
-      addIssue(syntaxNode, javaCheck, message, cost != null ? (double) cost : null);
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(syntaxNode), message, cost != null ? cost : 0);
+    for (Location location : secondary) {
+      AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
+      analyzerMessage.secondaryLocations.add(secondaryLocation);
     }
-  }
-
-  protected static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
-    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(syntaxNode);
-    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(syntaxNode);
-    return new AnalyzerMessage.TextSpan(
-      firstSyntaxToken.line(),
-      firstSyntaxToken.column(),
-      lastSyntaxToken.line(),
-      lastSyntaxToken.column() + lastSyntaxToken.text().length()
-    );
+    sonarComponents.reportIssue(analyzerMessage);
   }
 
   @Override

@@ -12,10 +12,6 @@
 
   <name>SonarQube Java :: Squid</name>
 
-  <properties>
-    <sonar.exclusions>src/main/java/org/sonar/java/CompIssue.java</sonar.exclusions>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.sslr</groupId>
@@ -24,6 +20,11 @@
     <dependency>
       <groupId>org.codehaus.sonar.sslr-squid-bridge</groupId>
       <artifactId>sslr-squid-bridge</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>sonar-compat</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>

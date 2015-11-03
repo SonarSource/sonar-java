@@ -49,6 +49,7 @@
     <module>java-jacoco</module>
     <module>sonar-jacoco-listeners</module>
     <module>java-jacoco-previous</module>
+    <module>sonar-compat</module>
   </modules>
 
   <scm>

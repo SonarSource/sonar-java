@@ -123,9 +123,9 @@ public class VisitorsBridge extends InternalVisitorsBridge {
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
       File file = getFile();
-      AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpanFor(syntaxNode), message, cost != null ? cost : 0);
+      AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(syntaxNode), message, cost != null ? cost : 0);
       for (Location location : secondary) {
-        AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, textSpanFor(location.syntaxNode), location.msg, 0);
+        AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
         analyzerMessage.secondaryLocations.add(secondaryLocation);
       }
       issues.add(analyzerMessage);

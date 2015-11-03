@@ -19,7 +19,11 @@
  */
 package org.sonar.java;
 
+import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
+import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -101,6 +105,17 @@ public class AnalyzerMessage {
     public String toString() {
       return "(" + startLine + ":" + startCharacter + ")-(" + endLine + ":" + endCharacter + ")";
     }
+  }
+
+  public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
+    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(syntaxNode);
+    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(syntaxNode);
+    return new AnalyzerMessage.TextSpan(
+      firstSyntaxToken.line(),
+      firstSyntaxToken.column(),
+      lastSyntaxToken.line(),
+      lastSyntaxToken.column() + lastSyntaxToken.text().length()
+    );
   }
 
 }

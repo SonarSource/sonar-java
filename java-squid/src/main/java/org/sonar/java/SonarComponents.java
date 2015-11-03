@@ -19,10 +19,12 @@
  */
 package org.sonar.java;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
@@ -30,7 +32,6 @@ import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
-import org.sonar.api.issue.Issue;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
@@ -52,23 +53,26 @@ import java.util.List;
 
 public class SonarComponents implements BatchExtension {
 
+  private static final boolean IS_SONARQUBE_52 = isSonarQube52();
+
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
   private final JavaTestClasspath javaTestClasspath;
   private final CheckFactory checkFactory;
+  private final SensorContext context;
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
-    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath,
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, SensorContext context,
     CheckFactory checkFactory) {
-    this(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory, null);
+    this(fileLinesContextFactory, resourcePerspectives, fs, javaClasspath, javaTestClasspath, checkFactory, context, null);
   }
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
-    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory,
+    JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, CheckFactory checkFactory, SensorContext context,
     @Nullable CheckRegistrar[] checkRegistrars) {
     this.fileLinesContextFactory = fileLinesContextFactory;
     this.resourcePerspectives = resourcePerspectives;
@@ -76,6 +80,7 @@ public class SonarComponents implements BatchExtension {
     this.javaClasspath = javaClasspath;
     this.javaTestClasspath = javaTestClasspath;
     this.checkFactory = checkFactory;
+    this.context = context;
     this.checks = Lists.newArrayList();
     this.testChecks = Lists.newArrayList();
 
@@ -115,8 +120,8 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives.as(Highlightable.class, inputFromIOFile(file));
   }
 
-  public Issuable issuableFor(File file) {
-    return resourcePerspectives.as(Issuable.class, inputPathFromIOFile(file));
+  public Issuable issuableFor(InputPath inputPath) {
+    return resourcePerspectives.as(Issuable.class, inputPath);
   }
 
   public List<File> getJavaClasspath() {
@@ -183,31 +188,77 @@ public class SonarComponents implements BatchExtension {
   }
 
   public void addIssue(File file, JavaCheck check, int line, String message, @Nullable Double cost) {
+    reportIssue(new AnalyzerMessage(check, file, line, message, cost != null ? cost.intValue() : 0));
+  }
+
+  public void reportIssue(AnalyzerMessage analyzerMessage) {
+    JavaCheck check = analyzerMessage.getCheck();
     Preconditions.checkNotNull(check);
-    Preconditions.checkNotNull(message);
+    Preconditions.checkNotNull(analyzerMessage.getMessage());
     RuleKey key = getRuleKey(check);
-    if (key != null) {
-      Issuable issuable = issuableFor(file);
-      if (issuable != null) {
-        Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
-          .ruleKey(key)
-          .message(message);
-        if (line > 0) {
-          // Optional line index, starting from 1. It must not be zero or negative.
-          issueBuilder.line(line);
-        }
-        if (cost == null) {
-          Annotation linear = AnnotationUtils.getAnnotation(check, SqaleLinearRemediation.class);
-          Annotation linearWithOffset = AnnotationUtils.getAnnotation(check, SqaleLinearWithOffsetRemediation.class);
-          if (linear != null || linearWithOffset != null) {
-            throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
-          }
-        } else {
-          issueBuilder.effortToFix(cost);
-        }
-        Issue issue = issueBuilder.build();
-        issuable.addIssue(issue);
+    if (key == null) {
+      return;
+    }
+    File file = analyzerMessage.getFile();
+    InputPath inputPath = inputPathFromIOFile(file);
+    if (inputPath == null) {
+      return;
+    }
+    Double cost = analyzerMessage.getCost();
+    assertEffortToFixIsNotRequired(check, cost);
+    if (IS_SONARQUBE_52) {
+      reportIssueAfterSQ52(analyzerMessage, key, inputPath, cost);
+    } else {
+      reportIssueBeforeSQ52(inputPath, key, cost, analyzerMessage.getMessage(), analyzerMessage.getLine());
+    }
+  }
+
+  @VisibleForTesting
+  void reportIssueAfterSQ52(AnalyzerMessage analyzerMessage, RuleKey key, InputPath inputPath, Double cost) {
+    JavaIssue issue = JavaIssue.create(context, key, cost);
+    AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
+    if (textSpan == null) {
+      // either an issue at file or folder level
+      issue.setPrimaryLocationOnFile(inputPath, analyzerMessage.getMessage());
+    } else {
+      issue.setPrimaryLocation((InputFile) inputPath, analyzerMessage.getMessage(), textSpan.startLine, textSpan.startCharacter, textSpan.endLine, textSpan.endCharacter);
+    }
+    for (AnalyzerMessage location : analyzerMessage.secondaryLocations) {
+      AnalyzerMessage.TextSpan secondarySpan = location.primaryLocation();
+      issue.addSecondaryLocation(
+        inputFromIOFile(location.getFile()), secondarySpan.startLine, secondarySpan.startCharacter, secondarySpan.endLine, secondarySpan.endCharacter, location.getMessage());
+    }
+    issue.save();
+  }
+
+  private void reportIssueBeforeSQ52(InputPath inputFile, RuleKey key, @Nullable Double cost, String message, @Nullable Integer line) {
+    Issuable issuable = issuableFor(inputFile);
+    if (issuable != null) {
+      Issuable.IssueBuilder newIssueBuilder = issuable.newIssueBuilder()
+        .ruleKey(key)
+        .message(message)
+        .line(line)
+        .effortToFix(cost);
+      issuable.addIssue(newIssueBuilder.build());
+    }
+  }
+
+  private static void assertEffortToFixIsNotRequired(JavaCheck check, @Nullable Double cost) {
+    if (cost == null) {
+      Annotation linear = AnnotationUtils.getAnnotation(check, SqaleLinearRemediation.class);
+      Annotation linearWithOffset = AnnotationUtils.getAnnotation(check, SqaleLinearWithOffsetRemediation.class);
+      if (linear != null || linearWithOffset != null) {
+        throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
       }
+    }
+  }
+
+  private static boolean isSonarQube52() {
+    try {
+      Issuable.IssueBuilder.class.getMethod("newLocation");
+      return true;
+    } catch (NoSuchMethodException e) {
+      return false;
     }
   }
 }
