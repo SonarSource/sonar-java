@@ -646,7 +646,14 @@ public class SymbolTableTest {
     assertThat(result.reference(11, 21).getName()).isEqualTo("this");
     assertThat(result.reference(12, 25).owner).isSameAs(result.symbol("A"));
     assertThat(result.reference(13, 21)).isSameAs(result.symbol("A"));
+  }
 
+  @Test
+  public void UnionType() throws Exception {
+    Result result = Result.createFor("UnionTypes");
+    Symbol symbol = result.symbol("e");
+    assertThat(symbol.isVariableSymbol()).isTrue();
+    assertThat(symbol.type()).isNotSameAs(Symbols.unknownType);
   }
 
   @Test
