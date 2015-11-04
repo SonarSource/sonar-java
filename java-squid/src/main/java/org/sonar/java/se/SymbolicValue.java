@@ -21,10 +21,12 @@ package org.sonar.java.se;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 import org.sonar.java.se.ConstraintManager.NullConstraint;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,9 +53,11 @@ public interface SymbolicValue {
 
   void computedFrom(List<SymbolicValue> symbolicValues);
 
-  ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint);
+  ProgramState setSingleConstraint(ProgramState state, NullConstraint notNull);
 
-  ProgramState setConstraint(ProgramState programState, NullConstraint nullConstraint);
+  List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint);
+
+  List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint);
 
   class ObjectSymbolicValue implements SymbolicValue {
 
@@ -91,7 +95,26 @@ public interface SymbolicValue {
     }
 
     @Override
-    public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+    public List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint) {
+      Object data = programState.constraints.get(this);
+      if (data instanceof NullConstraint) {
+        NullConstraint nc = (NullConstraint) data;
+        if ((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
+          (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
+          // setting null where value is known to be non null or the contrary
+          return ImmutableList.of();
+        }
+      }
+      if (data == null || !data.equals(nullConstraint)) {
+        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+        temp.put(this, nullConstraint);
+        return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+      }
+      return ImmutableList.of(programState);
+    }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       Object data = programState.constraints.get(this);
       // update program state only for a different constraint
       if (data instanceof BooleanConstraint) {
@@ -99,7 +122,7 @@ public interface SymbolicValue {
         if ((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
           (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
           // setting null where value is known to be non null or the contrary
-          return null;
+          return ImmutableList.of();
         }
       }
       if (data == null || !data.equals(booleanConstraint)) {
@@ -108,29 +131,19 @@ public interface SymbolicValue {
         if (programState.values.containsValue(this)) {
           Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
           temp.put(this, booleanConstraint);
-          return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+          return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
         }
       }
-      return programState;
+      return ImmutableList.of(programState);
     }
 
     @Override
-    public ProgramState setConstraint(ProgramState programState, NullConstraint nullConstraint) {
-      Object data = programState.constraints.get(this);
-      if (data instanceof NullConstraint) {
-        NullConstraint nc = (NullConstraint) data;
-        if ((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
-          (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
-          // setting null where value is known to be non null or the contrary
-          return null;
-        }
+    public ProgramState setSingleConstraint(ProgramState programState, NullConstraint nullConstraint) {
+      final List<ProgramState> states = setConstraint(programState, nullConstraint);
+      if (states.size() != 1) {
+        throw new IllegalStateException("Only a single program state is expected at this location");
       }
-      if (data == null || !data.equals(nullConstraint)) {
-        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-        temp.put(this, nullConstraint);
-        return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
-      }
-      return programState;
+      return states.get(0);
     }
   }
 
@@ -153,22 +166,29 @@ public interface SymbolicValue {
     }
 
     @Override
-    public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      ProgramState result = programState;
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (leftOp.equals(rightOp)) {
-        return shouldNotInverse().equals(booleanConstraint) ? programState : null;
+        if (shouldNotInverse().equals(booleanConstraint)) {
+          return ImmutableList.of(programState);
+        }
+        return ImmutableList.of();
       }
-      result = copyConstraint(leftOp, rightOp, result, booleanConstraint);
-      if (result == null) {
-        return null;
+      List<ProgramState> result = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
+      if (result.isEmpty()) {
+        return ImmutableList.of();
       }
-      result = copyConstraint(rightOp, leftOp, result, booleanConstraint);
-      if(result == programState) {
-        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-        temp.put(this, booleanConstraint);
-        return new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+      List<ProgramState> reversedResult = new ArrayList<>();
+      for (ProgramState ps : result) {
+        List<ProgramState> reversedStates = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
+        if (reversedStates.size() == 1 && reversedStates.get(0) == programState) {
+          Map<SymbolicValue, Object> newConstraints = Maps.newHashMap(programState.constraints);
+          newConstraints.put(this, booleanConstraint);
+          reversedResult.add(new ProgramState(programState.values, newConstraints, programState.visitedPoints, programState.stack));
+        } else {
+          reversedResult.addAll(reversedStates);
+        }
       }
-      return result;
+      return reversedResult;
 
     }
 
@@ -177,21 +197,20 @@ public interface SymbolicValue {
       return "EQ_TO_" + super.toString();
     }
 
-    private ProgramState copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-      ProgramState result = programState;
+    private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
       Object constraintLeft = programState.constraints.get(from);
       if (constraintLeft instanceof BooleanConstraint) {
         BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
-        result = to.setConstraint(result, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
+        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
       } else if (constraintLeft instanceof NullConstraint) {
         NullConstraint nullConstraint = (NullConstraint) constraintLeft;
-        if(nullConstraint.equals(NullConstraint.NULL)) {
-          result = to.setConstraint(result, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
-        } else if(shouldNotInverse().equals(booleanConstraint)) {
-          result = to.setConstraint(result, nullConstraint);
+        if (nullConstraint.equals(NullConstraint.NULL)) {
+          return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
+        } else if (shouldNotInverse().equals(booleanConstraint)) {
+          return to.setConstraint(programState, nullConstraint);
         }
       }
-      return result;
+      return ImmutableList.of(programState);
     }
 
   }
@@ -246,7 +265,7 @@ public interface SymbolicValue {
     }
 
     @Override
-    public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       return operand.setConstraint(programState, booleanConstraint.inverse());
     }
   }
@@ -257,23 +276,140 @@ public interface SymbolicValue {
     }
 
     @Override
-    public ProgramState setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
         if (NullConstraint.NULL.equals(programState.constraints.get(operand))) {
           // irrealizable constraint : instance of true if operand is null
-          return null;
+          return ImmutableList.of();
         }
         // if instanceof is true then we know for sure that expression is not null.
-        ProgramState ps = operand.setConstraint(programState, NullConstraint.NOT_NULL);
-        if(ps.equals(programState)) {
+        List<ProgramState> ps = operand.setConstraint(programState, NullConstraint.NOT_NULL);
+        if (ps.size() == 1 && ps.get(0).equals(programState)) {
           //FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint should store the deduced type.
           Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
           temp.put(this, new ConstraintManager.TypedConstraint());
-          ps = new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack);
+          return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
         }
         return ps;
       }
-      return programState;
+      return ImmutableList.of(programState);
+    }
+  }
+
+  abstract class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
+
+    protected BooleanExpressionSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    BooleanConstraint shouldNotInverse() {
+      return BooleanConstraint.TRUE;
+    }
+  }
+
+  class AndSymbolicValue extends BooleanExpressionSymbolicValue {
+
+    public AndSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      final List<ProgramState> states = new ArrayList<>();
+      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
+        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+        for (ProgramState ps : trueFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+        }
+      } else {
+        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+        for (ProgramState ps : falseFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+        }
+        for (ProgramState ps : trueFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+        }
+      }
+      return states;
+    }
+
+    @Override
+    public String toString() {
+      return leftOp + " & " + rightOp;
+    }
+  }
+
+  class OrSymbolicValue extends BooleanExpressionSymbolicValue {
+
+    public OrSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      final List<ProgramState> states = new ArrayList<>();
+      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
+        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+        for (ProgramState ps : trueFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+        }
+        for (ProgramState ps : falseFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+        }
+      } else {
+        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+        for (ProgramState ps : falseFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+        }
+      }
+      return states;
+    }
+
+    @Override
+    public String toString() {
+      return leftOp + " | " + rightOp;
+    }
+  }
+
+  class XorSymbolicValue extends BooleanExpressionSymbolicValue {
+
+    public XorSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      final List<ProgramState> states = new ArrayList<>();
+      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
+        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+        for (ProgramState ps : trueFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+        }
+        for (ProgramState ps : falseFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+        }
+      } else {
+        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+        for (ProgramState ps : trueFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+        }
+        for (ProgramState ps : falseFirstOp) {
+          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+        }
+      }
+      return states;
+    }
+
+    @Override
+    public String toString() {
+      return leftOp + " ^ " + rightOp;
     }
   }
 }

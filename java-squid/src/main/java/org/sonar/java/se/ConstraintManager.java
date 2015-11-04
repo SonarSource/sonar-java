@@ -41,6 +41,15 @@ public class ConstraintManager {
       case LOGICAL_COMPLEMENT:
         result = new SymbolicValue.NotSymbolicValue(counter++);
         break;
+      case AND:
+        result = new SymbolicValue.AndSymbolicValue(counter++);
+        break;
+      case OR:
+        result = new SymbolicValue.OrSymbolicValue(counter++);
+        break;
+      case XOR:
+        result = new SymbolicValue.XorSymbolicValue(counter++);
+        break;
       case INSTANCE_OF:
         result = new SymbolicValue.InstanceOfSymbolicValue(counter++);
         break;
@@ -71,10 +80,12 @@ public class ConstraintManager {
     return NullConstraint.NULL.equals(ps.constraints.get(val));
   }
 
-  public Pair<ProgramState, ProgramState> assumeDual(ProgramState programState) {
+  public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
     Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
     SymbolicValue sv = unstack.b.get(0);
-    return new Pair<>(sv.setConstraint(unstack.a, BooleanConstraint.FALSE), sv.setConstraint(unstack.a, BooleanConstraint.TRUE));
+    final List<ProgramState> falseConstraint = sv.setConstraint(unstack.a, BooleanConstraint.FALSE);
+    final List<ProgramState> trueConstraint = sv.setConstraint(unstack.a, BooleanConstraint.TRUE);
+    return new Pair<>(falseConstraint, trueConstraint);
   }
 
   public enum NullConstraint {

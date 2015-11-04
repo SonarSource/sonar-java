@@ -114,14 +114,14 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   /**
-   * Verifies that the provided file will raise all the expected issues when analyzed with the given check. 
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check.
    *
    * <br /><br />
    *
    * By default, any jar or zip archive present in the folder defined by {@link JavaCheckVerifier#DEFAULT_TEST_JARS_DIRECTORY} will be used
-   * to add extra classes to the classpath. If this folder is empty or does not exist, then the analysis will be based on the source of 
+   * to add extra classes to the classpath. If this folder is empty or does not exist, then the analysis will be based on the source of
    * the provided file.
-   * 
+   *
    * @param filename The file to be analyzed
    * @param check The check to be used for the analysis
    */
@@ -130,7 +130,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   /**
-   * Verifies that the provided file will raise all the expected issues when analyzed with the given check, 
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check,
    * but using having the classpath extended with a collection of files (classes/jar/zip).
    *
    * @param filename The file to be analyzed
@@ -142,7 +142,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   }
 
   /**
-   * Verifies that the provided file will raise all the expected issues when analyzed with the given check, 
+   * Verifies that the provided file will raise all the expected issues when analyzed with the given check,
    * using jars/zips files from the given directory to extends the classpath.
    *
    * @param filename The file to be analyzed
@@ -301,7 +301,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     int line = issue.getLine();
     if (expected.containsKey(line)) {
       Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
-      assertEquals(issue.getMessage(), attrs, IssueAttribute.MESSAGE);
+      assertEquals(issue, attrs, IssueAttribute.MESSAGE);
       Double cost = issue.getCost();
       if (cost != null) {
         assertEquals(Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
@@ -350,6 +350,12 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   private static void assertEquals(String value, Map<IssueAttribute, String> attributes, IssueAttribute attribute) {
     if (attributes.containsKey(attribute)) {
       assertThat(value).as("attribute mismatch for " + attribute + ": " + attributes).isEqualTo(attributes.get(attribute));
+    }
+  }
+
+  private static void assertEquals(AnalyzerMessage issue, Map<IssueAttribute, String> attributes, IssueAttribute attribute) {
+    if (attributes.containsKey(attribute)) {
+      assertThat(issue.getMessage()).as("line " + issue.getLine() + " attribute mismatch for " + attribute + ": " + attributes).isEqualTo(attributes.get(attribute));
     }
   }
 

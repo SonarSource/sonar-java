@@ -59,6 +59,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -134,9 +135,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         startingStates = Iterables.concat(Iterables.transform(startingStates, new Function<ProgramState, List<ProgramState>>() {
           @Override
           public List<ProgramState> apply(ProgramState input) {
-            return Lists.newArrayList(
-              sv.setConstraint(input, NullConstraint.NULL),
-              sv.setConstraint(input, NullConstraint.NOT_NULL));
+            List<ProgramState> states = new ArrayList<>();
+            states.addAll(sv.setConstraint(input, NullConstraint.NULL));
+            states.addAll(sv.setConstraint(input, NullConstraint.NOT_NULL));
+            return states;
           }
         }));
 
@@ -225,24 +227,23 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
-    Pair<ProgramState, ProgramState> pair = constraintManager.assumeDual(programState);
-    if (pair.a != null) {
+    Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
+    for (ProgramState state : pair.a) {
       // enqueue false-branch, if feasible
-      ProgramState ps = ProgramState.stackValue(pair.a, SymbolicValue.FALSE_LITERAL);
+      ProgramState ps = ProgramState.stackValue(state, SymbolicValue.FALSE_LITERAL);
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), ps);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
     }
-    if (pair.b != null) {
-      ProgramState ps = ProgramState.stackValue(pair.b, SymbolicValue.TRUE_LITERAL);
+    for (ProgramState state : pair.b) {
+      ProgramState ps = ProgramState.stackValue(state, SymbolicValue.TRUE_LITERAL);
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), ps);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
     }
-
   }
 
   private void visit(Tree tree, Tree terminator) {
@@ -309,14 +310,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         programState = ProgramState.unstack(programState, newArrayTree.initializers().size()).a;
         SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
         programState = ProgramState.stackValue(programState, svNewArray);
-        programState = svNewArray.setConstraint(programState, NullConstraint.NOT_NULL);
+        programState = svNewArray.setSingleConstraint(programState, NullConstraint.NOT_NULL);
         break;
       case NEW_CLASS:
         NewClassTree newClassTree = (NewClassTree) tree;
         programState = ProgramState.unstack(programState, newClassTree.arguments().size()).a;
         SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
         programState = ProgramState.stackValue(programState, svNewClass);
-        programState = svNewClass.setConstraint(programState, NullConstraint.NOT_NULL);
+        programState = svNewClass.setSingleConstraint(programState, NullConstraint.NOT_NULL);
         break;
       case MULTIPLY:
       case DIVIDE:

@@ -50,19 +50,19 @@ public static class Class extends SuperClass {
   }
 
   public void bitwise_and(boolean parameter1, boolean parameter2) {
-    if (false & false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false & false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (false & true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false & true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (false & parameter2) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false & parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (true & false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (true & false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (true & true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (true & true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (true & parameter2) { // Compliant, unknown
     }
-    if (parameter1 & false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (parameter1 & false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (parameter1 & true) { // Compliant, unknown
     }
@@ -94,36 +94,36 @@ public static class Class extends SuperClass {
   }
 
   public void bitwise_or(boolean parameter1, boolean parameter2) {
-    if (false | false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false | false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (false | true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (false | true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (false | parameter2) { // Compliant, unknown
     }
-    if (true | false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (true | false) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (true | true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (true | true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (true | parameter2) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (true | parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (parameter1 | false) { // Compliant, unknown
     }
-    if (parameter1 | true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (parameter1 | true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (parameter1 | parameter2) { // Compliant, unknown
     }
   }
 
   public void conditional_bitwise_xor(boolean parameter1, boolean parameter2) {
-    if (false ^ false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false ^ false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (false ^ true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (false ^ true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (false ^ parameter2) { // Compliant, unknown
     }
-    if (true ^ false) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (true ^ false) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (true ^ true) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (true ^ true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (true ^ parameter2) { // Compliant, unknown
     }
@@ -160,15 +160,15 @@ public static class Class extends SuperClass {
     }
     if (parameter && !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (parameter & !parameter) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (parameter & !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (parameter || !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (parameter | !parameter) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (parameter | !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (parameter ^ parameter) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (parameter ^ parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (parameter ^ !parameter) { // b-Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (parameter ^ !parameter) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
@@ -1152,8 +1152,8 @@ public static class Class extends SuperClass {
     boolean b1 = false;
     boolean b2 = false;
     int value;
-    value = (b1 ^ b2) ? 1 : 2; // False Negative - Not handled
-    value = (b1 ^ !b2) ? 1 : 2; // False Negative - Not handled
+    value = (b1 ^ b2) ? 1 : 2; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    value = (b1 ^ !b2) ? 1 : 2; // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
   }
 
 }
