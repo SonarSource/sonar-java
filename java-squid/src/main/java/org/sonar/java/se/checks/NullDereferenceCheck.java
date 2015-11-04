@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -77,7 +78,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
         return null;
       }
       // we dereferenced the symbolic value so we can assume it is not null
-      return currentVal.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL);
+      return currentVal.setSingleConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL);
     }
     return context.getState();
   }
@@ -102,10 +103,10 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       assert val != null && val.equals(SymbolicValue.NULL_LITERAL);
     } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       if (isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
-        return Lists.newArrayList(
-            val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL),
-            val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL)
-        );
+        List<ProgramState> states = new ArrayList<>();
+        states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL));
+        states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL));
+        return states;
       }
     }
     return Lists.newArrayList(context.getState());

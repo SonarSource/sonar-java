@@ -593,8 +593,15 @@ class NullPointerTest {
   void foo(Object qix, @Nullable Object bar) {
     foo(bar, NullPointerTest.class);
   }
+  
 
-  void while_loop() {
+  public void maybePropagateCancellation(@Nullable Object related) {
+    if (related != null & isCancelled()) {
+      related.toString();
+    }
+  }
+  
+    void while_loop() {
     Object currentParent = new Object();
     while (currentParent != null) {
       printState();
