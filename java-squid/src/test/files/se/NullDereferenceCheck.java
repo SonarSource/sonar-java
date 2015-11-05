@@ -76,12 +76,10 @@ class NullPointerTest {
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
-    // Noncompliant@+1
     i = array2.length; // Noncompliant {{NullPointerException might be thrown as 'array2' is nullable here}}
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;
-    // Noncompliant@+1
     i = checkForNullMethod().length; // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
 
@@ -111,7 +109,6 @@ class NullPointerTest {
 
   public void testMemberSelect(A a1, @CheckForNull A a2, @Nullable A a3) {
     a1.hashCode(); // No issue
-    // Noncompliant@+1
     a2.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'a2' is nullable here}}
     a3.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'a3' is nullable here}}
 
@@ -207,13 +204,6 @@ class NullPointerTest {
     } else {
       argument4 = null;
     }
-    // Noncompliant@+7
-    // Noncompliant@+6
-    // Noncompliant@+5
-    // Noncompliant@+4
-    // Noncompliant@+3
-    // Noncompliant@+2
-    // Noncompliant@+1
     argument4.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'argument4' is nullable here}}
   }
 
@@ -304,7 +294,6 @@ class NullPointerTest {
       }
       object1 = null;
       object3 = new Object();
-      // Noncompliant@+1
     } while (object1.hashCode() < 0); // Noncompliant {{NullPointerException might be thrown as 'object1' is nullable here}}
     object1.hashCode(); // issue already raised
     object2.hashCode(); // Compliant
@@ -466,7 +455,6 @@ class NullPointerTest {
   public void testComplexLoop(@Nullable Object nullableObject) {
     Object object1 = null, object11 = null, object12 = null;
     for (int i = 0; object11 == null; i += 1) {
-      // Noncompliant@+1
       object11.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object11' is nullable here}}
       object12.hashCode();
       nullableObject.hashCode();
@@ -483,7 +471,6 @@ class NullPointerTest {
     Object object2 = null, object21 = null, object22 = null;
     int i = 0;
     while(object21 == null) {
-      // Noncompliant@+1
       object21.hashCode(); // Noncompliant {{NullPointerException might be thrown as 'object21' is nullable here}}
       object22.hashCode(); // no issue, as npe is thrown on previous line
       nullableObject.hashCode();
@@ -574,8 +561,7 @@ class NullPointerTest {
   }
   
   public void test(@CheckForNull A a, @CheckForNull A b) {
-    // Noncompliant@+1
-    a.hashCode(); // Noncompliant 
+    a.hashCode(); // Noncompliant
     b.hashCode(); // Noncompliant
   }
 

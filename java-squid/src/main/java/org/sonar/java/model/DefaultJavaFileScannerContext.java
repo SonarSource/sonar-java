@@ -22,8 +22,9 @@ package org.sonar.java.model;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -53,7 +54,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final ComplexityVisitor complexityVisitor;
   private final File file;
   private final Integer javaVersion;
-  private final Map<Class<? extends SECheck>, Multimap<Tree, String>> seIssues = new HashMap<>();
+  private final Map<Class<? extends SECheck>, SetMultimap<Tree, String>> seIssues = new HashMap<>();
 
   public DefaultJavaFileScannerContext(
     CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
@@ -163,7 +164,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   public void reportSEIssue(Class<? extends SECheck> check, Tree tree, String message) {
     if (!seIssues.containsKey(check)) {
-      seIssues.put(check, LinkedListMultimap.<Tree, String>create());
+      seIssues.put(check, LinkedHashMultimap.<Tree, String>create());
     }
     seIssues.get(check).put(tree, message);
   }
