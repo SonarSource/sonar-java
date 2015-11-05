@@ -39,6 +39,7 @@ import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -56,6 +57,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -285,6 +287,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
           programState = unstack.a;
           programState = ProgramState.put(programState, variableTree.symbol(), unstack.b.get(0));
+        }
+        break;
+      case TYPE_CAST:
+        TypeCastTree typeCast = (TypeCastTree) tree;
+        Type type = typeCast.type().symbolType();
+        if (type.isPrimitive()) {
+          Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
+          programState = unstack.a;
+          programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(typeCast.expression()));
         }
         break;
       case ASSIGNMENT:

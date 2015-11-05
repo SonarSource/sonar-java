@@ -1234,4 +1234,12 @@ class SuperClass {
     reusable ? entry : new Object(); // compliant both path are explored.
     return;
   }
+  
+  private void castNumbers(long n, long m) {
+    long product = n * m;
+    int truncatedProduct = (int) product;
+    if (product == truncatedProduct) {
+      handleProper(truncatedProduct);
+    }
+  }
 }
