@@ -19,8 +19,14 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
+import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
+import org.sonar.plugins.java.api.semantic.Type;
 
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 public class Types {
@@ -82,6 +88,98 @@ public class Types {
     }
 
     return result;
+  }
+
+  /**
+   * Compute the "Least Upper Bound" ("lub", jls8 §4.10.4) of a list of type. The "lub" is a shared supertype that is more specific than any
+   * other shared supertype (that is, no other shared supertype is a subtype of the least upper bound)
+   *
+   * Parameterized types are currently ignored, as the method is used only to handle Union Types Trees, themselves being used only
+   * in catch trees. Note that Exceptions (any subclass of Throwable) cannot be generic (jls8 §8.1.2, §11.1.1: "compile-time error if a generic
+   * class is a direct or indirect subclass of Throwable")
+   *
+   * @param types
+   * @return the least upper bound of the types
+   */
+  public Type leastUpperBound(List<Type> types) {
+    Preconditions.checkArgument(types.size() > 1);
+
+    List<Set<Type>> supertypes = supertypes(types);
+
+    List<Type> candidates = intersection(supertypes);
+    List<Type> minimalCandidates = minimalCandidates(candidates);
+    if (minimalCandidates.isEmpty()) {
+      return Symbols.unknownType;
+    }
+
+    return best(minimalCandidates);
+  }
+
+  private static Type best(List<Type> minimalCandidates) {
+    Type result = Symbols.unknownType;
+    for (Type type : minimalCandidates) {
+      if (!type.symbol().isInterface()) {
+        // first type which is not a interface
+        return type;
+      } else if (result.isUnknown()) {
+        // save first interface
+        result = type;
+      }
+    }
+    // huge approximation: should be the bound of all the minimalCandidates, not only the first type
+    return result;
+  }
+
+  private static List<Set<Type>> supertypes(Iterable<Type> types) {
+    List<Set<Type>> results = new LinkedList<>();
+    for (Type type : types) {
+      checkParametrizedType(type);
+      Set<Type> supertypes = new LinkedHashSet<>();
+      supertypes.add(type);
+      for (Type supertype : ((JavaType) type).symbol.superTypes()) {
+        checkParametrizedType(supertype);
+        supertypes.add(supertype);
+      }
+      results.add(supertypes);
+    }
+    return results;
+  }
+
+  private static void checkParametrizedType(Type type) {
+    if (type instanceof ParametrizedTypeJavaType) {
+      throw new IllegalArgumentException("Generics are not handled");
+    }
+  }
+
+  private static List<Type> intersection(List<Set<Type>> supertypes) {
+    List<Type> results = new LinkedList<>(supertypes.get(0));
+    for (int i = 1; i < supertypes.size(); i++) {
+      results.retainAll(supertypes.get(i));
+    }
+    return results;
+  }
+
+  /**
+   * Let MEC, the minimal erased candidate set for U1 ... Uk, be:
+   * MEC = { V | V in EC, and for all W != V in EC, it is not the case that W <: V }
+   * @param erasedCandidates
+   * @return
+   */
+  private static List<Type> minimalCandidates(List<Type> erasedCandidates) {
+    List<Type> results = new LinkedList<>();
+    for (Type v : erasedCandidates) {
+      boolean isValid = true;
+      for (Type w : erasedCandidates) {
+        if (!w.equals(v) && w.isSubtypeOf(v)) {
+          isValid = false;
+          break;
+        }
+      }
+      if (isValid) {
+        results.add(v);
+      }
+    }
+    return results;
   }
 
 }

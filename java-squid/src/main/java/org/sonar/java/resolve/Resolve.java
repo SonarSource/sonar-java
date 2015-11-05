@@ -695,6 +695,10 @@ public class Resolve {
     return true;
   }
 
+  Type leastUpperBound(List<Type> typeAlternatives) {
+    return types.leastUpperBound(typeAlternatives);
+  }
+
   Resolution unresolved() {
     Resolution resolution = new Resolution(symbolNotFound);
     resolution.type = Symbols.unknownType;

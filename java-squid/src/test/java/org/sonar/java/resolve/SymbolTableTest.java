@@ -651,9 +651,29 @@ public class SymbolTableTest {
   @Test
   public void UnionType() throws Exception {
     Result result = Result.createFor("UnionTypes");
-    Symbol symbol = result.symbol("e");
-    assertThat(symbol.isVariableSymbol()).isTrue();
-    assertThat(symbol.type()).isNotSameAs(Symbols.unknownType);
+
+    JavaSymbol exceptionVariableSymbol = result.symbol("e0");
+    assertThat(exceptionVariableSymbol.type()).isNotSameAs(Symbols.unknownType);
+    assertThat(exceptionVariableSymbol.type().is("java.lang.Exception")).isTrue();
+    JavaSymbol methodSymbol = result.reference(6, 13);
+    assertThat(methodSymbol.owner).isSameAs(result.symbol("UnionTypes"));
+    JavaSymbol methodDeclarationSymbol = result.symbol("unwrapException", 18);
+    assertThat(methodSymbol).isEqualTo(methodDeclarationSymbol);
+    assertThat(methodDeclarationSymbol.usages()).hasSize(1);
+
+    exceptionVariableSymbol = result.symbol("e1");
+    assertThat(exceptionVariableSymbol.type()).isNotSameAs(Symbols.unknownType);
+    assertThat(exceptionVariableSymbol.type().is("UnionTypes$B")).isTrue();
+    methodSymbol = result.reference(8, 13);
+    assertThat(methodSymbol.owner).isSameAs(result.symbol("UnionTypes"));
+    methodDeclarationSymbol = result.symbol("unwrapException", 22);
+    assertThat(methodSymbol).isEqualTo(methodDeclarationSymbol);
+    assertThat(methodDeclarationSymbol.usages()).hasSize(1);
+
+    exceptionVariableSymbol = result.symbol("e2");
+    assertThat(exceptionVariableSymbol.type()).isEqualTo(Symbols.unknownType);
+    methodDeclarationSymbol = result.symbol("unwrapException", 26);
+    assertThat(methodDeclarationSymbol.usages()).isEmpty();
   }
 
   @Test

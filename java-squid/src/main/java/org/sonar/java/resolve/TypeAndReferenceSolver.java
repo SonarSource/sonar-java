@@ -31,6 +31,7 @@ import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -65,12 +66,14 @@ import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +146,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       }
     }
   }
-  
+
   private static void addConstantValue(AnnotationTree tree, AnnotationInstanceResolve annotationInstance) {
     Collection<Symbol> scopeSymbols = tree.annotationType().symbolType().symbol().memberSymbols();
     for (ExpressionTree expressionTree : tree.arguments()) {
@@ -540,9 +543,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitUnionType(UnionTypeTree tree) {
-    resolveAs((List<? extends Tree>) tree.typeAlternatives(), JavaSymbol.TYP);
-    //TODO compute type of union type: lub(alternatives) cf JLS8 14.20
-    registerType(tree, Symbols.unknownType);
+    resolveAs((List<TypeTree>) tree.typeAlternatives(), JavaSymbol.TYP);
+    ImmutableList.Builder<Type> uniontype = ImmutableList.builder();
+    for (TypeTree typeTree : tree.typeAlternatives()) {
+      uniontype.add(typeTree.symbolType());
+    }
+    registerType(tree, (JavaType) resolve.leastUpperBound(uniontype.build()));
   }
 
   @Override
