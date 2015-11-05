@@ -1,7 +1,4 @@
 {
-'com.google.guava:guava:src/com/google/common/base/Strings.java':[
-168,
-],
 'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
 4053,
 ],
@@ -13,18 +10,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/io/Closer.java':[
 224,
-],
-'com.google.guava:guava:src/com/google/common/primitives/Chars.java':[
-85,
-],
-'com.google.guava:guava:src/com/google/common/primitives/Ints.java':[
-92,
-],
-'com.google.guava:guava:src/com/google/common/primitives/Shorts.java':[
-91,
-],
-'com.google.guava:guava:src/com/google/common/primitives/SignedBytes.java':[
-65,
 ],
 'com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java':[
 92,
