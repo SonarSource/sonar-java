@@ -14,12 +14,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-deprecated</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>java-squid</artifactId>
       <version>${project.version}</version>
