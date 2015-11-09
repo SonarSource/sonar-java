@@ -389,8 +389,23 @@ public class Resolve {
     return findMethod(env, callSite, site, name, argTypes, typeParams, false);
   }
 
+  private Resolution findConstructor(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
+    return findMethod(env, site, site, "<init>", argTypes, typeParams, autoboxing);
+  }
+
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
+    JavaType superclass = site.getSymbol().getSuperclass();
     Resolution bestSoFar = unresolved();
+    // handle constructors
+    if ("this".equals(name)) {
+      return findConstructor(env, site, argTypes, typeParams, autoboxing);
+    } else if ("super".equals(name)) {
+      if (superclass == null) {
+        return bestSoFar;
+      }
+      return findConstructor(env, superclass, argTypes, typeParams, autoboxing);
+    }
+    // look in site members
     for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
       if (symbol.kind == JavaSymbol.MTH) {
         JavaSymbol best = selectBest(env, callSite.symbol, argTypes, symbol, bestSoFar.symbol, autoboxing);
@@ -403,7 +418,6 @@ public class Resolve {
       }
     }
     //look in supertypes for more specialized method (overloading).
-    JavaType superclass = site.getSymbol().getSuperclass();
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
       method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, superclass), site);
@@ -440,23 +454,23 @@ public class Resolve {
   }
 
   /**
-   * @param symbol    candidate
+   * @param candidate    candidate
    * @param bestSoFar previously found best match
    */
-  private JavaSymbol selectBest(Env env, JavaSymbol.TypeJavaSymbol site, List<JavaType> argTypes, JavaSymbol symbol, JavaSymbol bestSoFar, boolean autoboxing) {
+  private JavaSymbol selectBest(Env env, JavaSymbol.TypeJavaSymbol site, List<JavaType> argTypes, JavaSymbol candidate, JavaSymbol bestSoFar, boolean autoboxing) {
     // TODO get rid of null check
-    if (symbol.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(symbol, site) || symbol.type == null) {
+    if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, site) || candidate.type == null) {
       return bestSoFar;
     }
-    boolean isVarArgs = ((JavaSymbol.MethodJavaSymbol) symbol).isVarArgs();
-    if (!isArgumentsAcceptable(argTypes, ((JavaType.MethodJavaType) symbol.type).argTypes, isVarArgs, autoboxing)) {
+    boolean isVarArgs = ((JavaSymbol.MethodJavaSymbol) candidate).isVarArgs();
+    if (!isArgumentsAcceptable(argTypes, ((JavaType.MethodJavaType) candidate.type).argTypes, isVarArgs, autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
-    if (!isAccessible(env, site, symbol)) {
-      return new AccessErrorJavaSymbol(symbol, Symbols.unknownType);
+    if (!isAccessible(env, site, candidate)) {
+      return new AccessErrorJavaSymbol(candidate, Symbols.unknownType);
     }
-    JavaSymbol mostSpecific = selectMostSpecific(symbol, bestSoFar);
+    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
       mostSpecific = bestSoFar;
@@ -569,11 +583,11 @@ public class Resolve {
    * Is class accessible in given environment?
    */
   @VisibleForTesting
-  boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol c) {
+  static boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol c) {
     final boolean result;
     switch (c.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
-        result = env.enclosingClass.outermostClass() == c.owner().outermostClass();
+        result = sameOutermostClass(env.enclosingClass, c.owner());
         break;
       case 0:
         result = env.packge == c.packge();
@@ -594,7 +608,7 @@ public class Resolve {
   /**
    * Is given class a subclass of given base class, or an inner class of a subclass?
    */
-  private boolean isInnerSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
+  private static boolean isInnerSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
     while (c != null && isSubClass(c, base)) {
       c = c.owner().enclosingClass();
     }
@@ -605,7 +619,7 @@ public class Resolve {
    * Is given class a subclass of given base class?
    */
   @VisibleForTesting
-  boolean isSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
+  static boolean isSubClass(JavaSymbol.TypeJavaSymbol c, JavaSymbol base) {
     // TODO get rid of null check
     if (c == null) {
       return false;
@@ -634,12 +648,12 @@ public class Resolve {
    * <p/>
    * Symbol is accessible only if not overridden by another symbol. If overridden, then strictly speaking it is not a member.
    */
-  private boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
+  private static boolean isAccessible(Env env, JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PRIVATE:
         //if enclosing class is null, we are checking accessibility for imports so we return false.
         // no check of overriding, because private members cannot be overridden
-        return env.enclosingClass != null && (env.enclosingClass.outermostClass() == symbol.owner().outermostClass())
+        return env.enclosingClass != null && sameOutermostClass(env.enclosingClass, symbol.owner())
             && isInheritedIn(symbol, site);
       case 0:
         return (env.packge == symbol.packge())
@@ -658,6 +672,10 @@ public class Resolve {
     }
   }
 
+  static boolean sameOutermostClass(JavaSymbol s1, JavaSymbol s2) {
+    return s1.outermostClass() == s2.outermostClass();
+  }
+
   private static boolean notOverriddenIn(JavaSymbol.TypeJavaSymbol site, JavaSymbol symbol) {
     // TODO see Javac
     return true;
@@ -667,7 +685,7 @@ public class Resolve {
    * Is symbol inherited in given class?
    */
   @VisibleForTesting
-  boolean isInheritedIn(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol clazz) {
+  static boolean isInheritedIn(JavaSymbol symbol, JavaSymbol.TypeJavaSymbol clazz) {
     switch (symbol.flags() & Flags.ACCESS_FLAGS) {
       case Flags.PUBLIC:
         return true;

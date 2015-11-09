@@ -414,6 +414,35 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void ConstructorResolution() throws Exception {
+    Result result = Result.createFor("PrivateConstructors");
+    JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("PrivateConstructorClass");
+    List<JavaSymbol> constructors = classSymbol.members.lookup("<init>");
+    JavaSymbol ObjectConstructor = constructors.get(0);
+    JavaSymbol stringConstructor = constructors.get(1);
+
+    JavaSymbol.MethodJavaSymbol constructorReference;
+
+    // this(s) - > PrivateConstructorClass(s)
+    constructorReference = (JavaSymbol.MethodJavaSymbol) result.reference(11, 7);
+    assertThat(constructorReference.owner()).isSameAs(classSymbol);
+    assertThat(constructorReference).isEqualTo(stringConstructor);
+
+    // super(s) -> PrivateConstructorClass(s)
+    constructorReference = (JavaSymbol.MethodJavaSymbol) result.reference(17, 7);
+    assertThat(constructorReference.owner()).isSameAs(classSymbol);
+    assertThat(constructorReference).isEqualTo(stringConstructor);
+
+    // super(s) -> PrivateConstructorClass(o)
+    constructorReference = (JavaSymbol.MethodJavaSymbol) result.reference(24, 5);
+    assertThat(constructorReference.owner()).isSameAs(classSymbol);
+    assertThat(constructorReference).isEqualTo(ObjectConstructor);
+
+    assertThat(stringConstructor.usages()).hasSize(2);
+    assertThat(ObjectConstructor.usages()).hasSize(1);
+  }
+
+  @Test
   public void CompleteHierarchyOfTypes() {
     Result result = Result.createFor("CompleteHierarchyOfTypes");
 
@@ -434,11 +463,19 @@ public class SymbolTableTest {
     Result result = Result.createFor("Accessibility");
 
     JavaSymbol.TypeJavaSymbol typeSymbol;
-    typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Target", 14);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Member", 9).type);
+    typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("D1", 11);
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("A1", 6).type);
 
-    typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Target", 29);
-    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("Member", 20).type);
+    typeSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("D2", 31);
+    assertThat(typeSymbol.getSuperclass()).isSameAs(result.symbol("A2", 19).type);
+
+    JavaSymbol.VariableJavaSymbol variableSymbol;
+    variableSymbol = (JavaSymbol.VariableJavaSymbol) result.reference(32, 15, "j");
+    assertThat(variableSymbol).isSameAs(result.symbol("j", 17));
+
+    JavaSymbol.MethodJavaSymbol methodSymbol;
+    methodSymbol = (JavaSymbol.MethodJavaSymbol) result.reference(34, 9, "foo");
+    assertThat(methodSymbol).isSameAs(result.symbol("foo", 22));
   }
 
   @Test

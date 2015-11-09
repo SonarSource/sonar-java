@@ -1,40 +1,39 @@
-@SuppressWarnings("all")
 class Accessibility {
-  private Object foo;
-
   private class Example1 {
-    class Member {
+    class A1 {
     }
-    class Superclass {
-      class Member {
+    class B1 {
+      class A1 {
       }
     }
 
-    class Subclass extends Superclass {
-      class Target extends Member { // Member = Superclass.Member
+    class C1 extends B1 {
+      class D1 extends A1 { // A1 = B1.A1, shadowing Example1.A1
       }
     }
   }
 
   private class Example2 {
-    class Member {
+    int j;
+
+    class A2 {
     }
 
-    class Superclass {
-      private class Member {
-      }
+    void foo() {}
+
+    class B2 {
+      private int j;
+      private class A2 {}
+      private void foo() {}
     }
 
-    class Subclass extends Superclass {
-      class Target extends Member { // Member = Example2.Member
+    class C2 extends B2 {
+      class D2 extends A2 {} // A2 = Example2.A2, B2.A2 innacessible
+      int i = j; // j = Example2.j, B2.j innacessible
+      void bar() {
+        foo(); // foo = Example2.foo, B2.foo innacessible
       }
     }
   }
 
-}
-
-class Plop extends Accessibility {
-      void fun() {
-        foo.getClass();
-      }
 }
