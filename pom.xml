@@ -10,7 +10,7 @@
 
   <groupId>org.sonarsource.java</groupId>
   <artifactId>java</artifactId>
-  <version>3.7</version>
+  <version>3.7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>SonarQube Java</name>
