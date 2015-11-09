@@ -22,13 +22,11 @@ package org.sonar.java.se;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 import org.sonar.java.se.ConstraintManager.NullConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public interface SymbolicValue {
 
@@ -106,9 +104,7 @@ public interface SymbolicValue {
         }
       }
       if (data == null || !data.equals(nullConstraint)) {
-        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-        temp.put(this, nullConstraint);
-        return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+        return ImmutableList.of(programState.constraint(this, nullConstraint));
       }
       return ImmutableList.of(programState);
     }
@@ -128,10 +124,8 @@ public interface SymbolicValue {
       if (data == null || !data.equals(booleanConstraint)) {
 
         // store constraint only if symbolic value can be reached by a symbol.
-        if (programState.values.containsValue(this)) {
-          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-          temp.put(this, booleanConstraint);
-          return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+        if (programState.isReachable(this)) {
+          return ImmutableList.of(programState.constraint(this, booleanConstraint));
         }
       }
       return ImmutableList.of(programState);
@@ -181,9 +175,7 @@ public interface SymbolicValue {
       for (ProgramState ps : result) {
         List<ProgramState> reversedStates = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
         if (reversedStates.size() == 1 && reversedStates.get(0) == programState) {
-          Map<SymbolicValue, Object> newConstraints = Maps.newHashMap(programState.constraints);
-          newConstraints.put(this, booleanConstraint);
-          reversedResult.add(new ProgramState(programState.values, newConstraints, programState.visitedPoints, programState.stack));
+          reversedResult.add(programState.constraint(this, booleanConstraint));
         } else {
           reversedResult.addAll(reversedStates);
         }
@@ -286,9 +278,7 @@ public interface SymbolicValue {
         List<ProgramState> ps = operand.setConstraint(programState, NullConstraint.NOT_NULL);
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           //FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint should store the deduced type.
-          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-          temp.put(this, new ConstraintManager.TypedConstraint());
-          return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+          return ImmutableList.of(programState.constraint(this, new ConstraintManager.TypedConstraint()));
         }
         return ps;
       }
