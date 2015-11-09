@@ -49,7 +49,7 @@ public class UnusedProtectedMethodCheck extends BytecodeVisitor {
   public void visitMethod(AsmMethod asmMethod) {
     if (isUnusedNonOverridenProtectedMethod(asmMethod) && !asmClass.isAbstract() && !SerializableContract.methodMatch(asmMethod)) {
       int methodLineNumber = getMethodLineNumber(asmMethod);
-      getContext().reportIssue(this, getSourceFile(asmClass), "Protected method '" + asmMethod.getName() + "(...)' is never used.", methodLineNumber > 0 ? methodLineNumber : 0);
+      getContext().reportIssue(this, getSourceFile(asmClass), "Protected method '" + asmMethod.getName() + "(...)' is never used.", methodLineNumber);
     }
   }
 

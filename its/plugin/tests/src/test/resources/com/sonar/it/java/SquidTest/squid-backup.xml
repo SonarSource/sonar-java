@@ -13,5 +13,10 @@
       <key>S1228</key>
       <priority>MAJOR</priority>
     </rule>
+    <rule>
+      <repositoryKey>squid</repositoryKey>
+      <key>UnusedPrivateMethod</key>
+      <priority>MAJOR</priority>
+    </rule>
   </rules>
 </profile>
