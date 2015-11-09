@@ -192,7 +192,8 @@ public class SonarComponents implements BatchExtension {
         Issuable.IssueBuilder issueBuilder = issuable.newIssueBuilder()
           .ruleKey(key)
           .message(message);
-        if (line > -1) {
+        if (line > 0) {
+          // Optional line index, starting from 1. It must not be zero or negative.
           issueBuilder.line(line);
         }
         if (cost == null) {

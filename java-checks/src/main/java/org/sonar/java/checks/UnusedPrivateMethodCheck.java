@@ -71,7 +71,7 @@ public class UnusedPrivateMethodCheck extends BytecodeVisitor {
         messageStr += Joiner.on(",").join(params) + ")' is never used.";
       }
       int line = getMethodLineNumber(asmMethod);
-      getContext().reportIssue(this, getSourceFile(asmClass), messageStr, line > 0 ? line : 0);
+      getContext().reportIssue(this, getSourceFile(asmClass), messageStr, line);
     }
   }
 
