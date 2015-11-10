@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -67,6 +68,9 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
       return;
     }
     MethodTree methodTree = (MethodTree) tree;
+    if (Boolean.TRUE.equals(((MethodTreeImpl) methodTree).isOverriding())) {
+      return;
+    }
     List<Symbol> booleanParameterSymbols = getBooleanParametersAsSymbol(methodTree.parameters());
     BlockTree blockTree = methodTree.block();
 
@@ -74,7 +78,7 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
       for (Symbol variable : booleanParameterSymbols) {
         Collection<IdentifierTree> usages = variable.usages();
         if (usages.size() == 1) {
-          blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), tree));
+          blockTree.accept(new ConditionalStatementVisitor(variable.name(), Iterables.get(usages, 0), methodTree));
         }
       }
     }
@@ -101,10 +105,10 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
   private class ConditionalStatementVisitor extends BaseTreeVisitor {
 
     private final String variableName;
-    private final Tree method;
+    private final MethodTree method;
     private IdentifierTree usage;
 
-    public ConditionalStatementVisitor(String variableName, IdentifierTree usage, Tree method) {
+    public ConditionalStatementVisitor(String variableName, IdentifierTree usage, MethodTree method) {
       this.variableName = variableName;
       this.usage = usage;
       this.method = method;
@@ -122,7 +126,7 @@ public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
 
     private void checkParameterUsage(ExpressionTree condition) {
       if (usage.equals(condition)) {
-        addIssue(method, MessageFormat.format("Provide multiple methods instead of using \"{0}\" to determine which action to take.", variableName));
+        reportIssue(method.simpleName(), MessageFormat.format("Provide multiple methods instead of using \"{0}\" to determine which action to take.", variableName));
       }
     }
   }

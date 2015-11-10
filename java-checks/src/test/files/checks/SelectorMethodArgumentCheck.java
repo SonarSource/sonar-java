@@ -1,5 +1,5 @@
 class A {
-  public void tempt(String name, boolean ofAge) { // Noncompliant {{Provide multiple methods instead of using "ofAge" to determine which action to take.}}
+  public void tempt(String name, boolean ofAge) { // Noncompliant [[sc=15;ec=20]] {{Provide multiple methods instead of using "ofAge" to determine which action to take.}}
     if (ofAge) {
       offerLiquor(name);
     } else {
@@ -76,5 +76,11 @@ abstract class B {
 
   public int lap(int a, boolean b) { // Compliant
     return b && false ? a+1 : a-1;
+  }
+}
+
+class BB extends B {
+  public int bar(int a, boolean b) {
+    return b ? a+1 : a-1;
   }
 }
