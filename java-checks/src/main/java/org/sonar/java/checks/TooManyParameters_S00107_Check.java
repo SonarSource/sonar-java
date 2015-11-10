@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -67,6 +68,10 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
 
   @Override
   public void visitMethod(MethodTree tree) {
+    super.visitMethod(tree);
+    if (Boolean.TRUE.equals(((MethodTreeImpl) tree).isOverriding())) {
+      return;
+    }
     int max;
     String partialMessage;
     if (tree.is(Tree.Kind.CONSTRUCTOR)) {
@@ -78,9 +83,8 @@ public class TooManyParameters_S00107_Check extends BaseTreeVisitor implements J
     }
     int size = tree.parameters().size();
     if (size > max) {
-      context.addIssue(tree, this, partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
+      context.reportIssue(this, tree.simpleName(), partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
     }
-    super.visitMethod(tree);
   }
 
 }

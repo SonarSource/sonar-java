@@ -34,7 +34,7 @@ public class TooManyParameters_S00107_CheckTest {
     TooManyParameters_S00107_Check check = new TooManyParameters_S00107_Check();
     check.maximum = 8;
     check.constructorMax = 5;
-    JavaCheckVerifier.verify("src/test/files/checks/TooManyParameters.java", new TooManyParameters_S00107_Check());
+    JavaCheckVerifier.verify("src/test/files/checks/TooManyParametersCustom.java", check);
   }
 
 }
