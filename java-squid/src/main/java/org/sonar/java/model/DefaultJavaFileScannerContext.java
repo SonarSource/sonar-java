@@ -36,7 +36,6 @@ import org.sonar.squidbridge.api.SourceFile;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
@@ -152,11 +151,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
     return complexityVisitor.scan(enclosingClass, methodTree);
-  }
-
-  @Override
-  public void addNoSonarLines(Set<Integer> lines) {
-    sourceFile.addNoSonarTagLines(lines);
   }
 
 }
