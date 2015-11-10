@@ -24,9 +24,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
-import org.sonar.java.checks.methods.MethodMatcher;
-import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -49,13 +46,6 @@ import java.util.List;
 public class MethodComplexityCheck extends SubscriptionBaseVisitor {
 
   private static final int DEFAULT_MAX = 10;
-  private static final MethodInvocationMatcherCollection EXCLUDED_METHODS = MethodInvocationMatcherCollection.create(
-    MethodMatcher.create()
-      .name("equals")
-      .addParameter(TypeCriteria.anyType()),
-    MethodMatcher.create()
-      .name("hashCode")
-  );
 
   @RuleProperty(
     key = "Threshold",
@@ -71,7 +61,7 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (EXCLUDED_METHODS.anyMatch(methodTree)) {
+    if (isExcluded(methodTree)) {
       return;
     }
     List<Tree> complexity = context.getComplexityNodes(methodTree);
@@ -87,6 +77,16 @@ public class MethodComplexityCheck extends SubscriptionBaseVisitor {
         flow,
         size - max);
     }
+  }
+
+  private static boolean isExcluded(MethodTree methodTree) {
+    String name = methodTree.simpleName().name();
+    if ("equals".equals(name)) {
+      return methodTree.parameters().size() == 1;
+    } else if ("hashCode".equals(name)) {
+      return methodTree.parameters().isEmpty();
+    }
+    return false;
   }
 
   public void setMax(int max) {

@@ -36,4 +36,11 @@ public class MethodComplexityCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/MethodComplexityNoncompliant.java", check);
   }
 
+  @Test
+  public void javaLangPackage() {
+    MethodComplexityCheck check = new MethodComplexityCheck();
+    check.setMax(1);
+    JavaCheckVerifier.verify("src/test/files/checks/MethodComplexityJavaLangPackage.java", check);
+  }
+
 }
