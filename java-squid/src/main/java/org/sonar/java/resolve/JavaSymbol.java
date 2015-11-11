@@ -25,7 +25,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
-import org.apache.commons.lang.BooleanUtils;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -35,6 +34,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
@@ -486,38 +486,33 @@ public class JavaSymbol implements Symbol {
       }
     }
 
-    public Boolean isOverriden() {
-      Boolean result = false;
+    @CheckForNull
+    public MethodJavaSymbol overriddenSymbol() {
       TypeJavaSymbol enclosingClass = enclosingClass();
       for (JavaType.ClassJavaType superType : enclosingClass.superTypes()) {
-        Boolean overrideFromType = overridesFromSymbol(superType);
-        if (overrideFromType == null) {
-          result = null;
-        } else if (BooleanUtils.isTrue(overrideFromType)) {
-          return true;
+        MethodJavaSymbol overridden = overriddenSymbolFrom(superType);
+        if (overridden != null) {
+          return overridden;
         }
       }
-      return result;
+      return null;
     }
 
     @Nullable
-    private Boolean overridesFromSymbol(JavaType.ClassJavaType classType) {
-      Boolean result = false;
+    private MethodJavaSymbol overriddenSymbolFrom(JavaType.ClassJavaType classType) {
       if (classType.isTagged(JavaType.UNKNOWN)) {
         return null;
       }
       List<JavaSymbol> symbols = classType.getSymbol().members().lookup(name);
       for (JavaSymbol overrideSymbol : symbols) {
-        if (overrideSymbol.isKind(JavaSymbol.MTH) && canOverride((MethodJavaSymbol) overrideSymbol)) {
-          Boolean isOverriding = isOverriding((MethodJavaSymbol) overrideSymbol, classType);
-          if (isOverriding == null) {
-            result = null;
-          } else if (BooleanUtils.isTrue(isOverriding)) {
-            return true;
+        if (overrideSymbol.isKind(JavaSymbol.MTH)) {
+          MethodJavaSymbol methodJavaSymbol = (MethodJavaSymbol) overrideSymbol;
+          if (canOverride(methodJavaSymbol) && Boolean.TRUE.equals(isOverriding(methodJavaSymbol, classType))) {
+            return methodJavaSymbol;
           }
         }
       }
-      return result;
+      return null;
     }
 
     /**

@@ -266,7 +266,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     if (symbol == null) {
       return null;
     }
-    return symbol.isOverriden();
+    return symbol.overriddenSymbol() != null;
   }
 
   private boolean isStatic() {
