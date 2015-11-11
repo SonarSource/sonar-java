@@ -25,6 +25,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 public class CheckerDispatcher implements CheckerContext {
@@ -81,7 +82,10 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   @Override
-  public boolean isNull(SymbolicValue val) {
+  public boolean isNull(@Nullable SymbolicValue val) {
+    if(val == null) {
+      return false;
+    }
     return explodedGraphWalker.constraintManager.isNull(getState(), val);
   }
 

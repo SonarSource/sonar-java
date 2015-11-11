@@ -27,11 +27,11 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.ConstraintManager.NullConstraint;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -65,7 +65,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
@@ -434,22 +433,40 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void resetFieldValues(MethodInvocationTree tree) {
-    boolean changed = false;
-    Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
-    for (Map.Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      Symbol symbol = entry.getKey();
-      if (isField(symbol)) {
-        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-        if (variable != null) {
-          changed = true;
-          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
-          values.put(symbol, nonNullValue);
+    final PMap<Symbol, SymbolicValue>[] values = new PMap[]{programState.values};
+    programState.values.forEach(new PMap.Consumer<Symbol, SymbolicValue>() {
+      @Override
+      public void accept(Symbol symbol, SymbolicValue value) {
+        if (isField(symbol)) {
+          VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+          if (variable != null) {
+            SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
+            values[0] = values[0].put(symbol, nonNullValue);
+          }
         }
       }
+    });
+    if(programState.values != values [0]) {
+      programState = new ProgramState(values[0], programState.constraints, programState.visitedPoints, programState.stack);
     }
-    if (changed) {
-      programState = new ProgramState(values, programState.constraints, programState.visitedPoints, programState.stack);
-    }
+
+
+//    boolean changed = false;
+//    Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
+//    for (Map.Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
+//      Symbol symbol = entry.getKey();
+//      if (isField(symbol)) {
+//        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+//        if (variable != null) {
+//          changed = true;
+//          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
+//          values.put(symbol, nonNullValue);
+//        }
+//      }
+//    }
+//    if (changed) {
+//      programState = new ProgramState(values, programState.constraints, programState.visitedPoints, programState.stack);
+//    }
   }
 
   private static boolean isField(Symbol symbol) {

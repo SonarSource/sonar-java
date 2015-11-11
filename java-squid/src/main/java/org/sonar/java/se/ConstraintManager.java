@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ConstraintManager {
 
-  private int counter = ProgramState.EMPTY_STATE.constraints.size();
+  private int counter = 3;
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
