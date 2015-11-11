@@ -24,6 +24,9 @@ public class Fruit extends Food {
     if (obj == this) {
       return true;
     }
+    if (obj == null) {
+      return false;
+    }
     if (Fruit.class == obj.getClass()) { // Noncompliant; broken for child classes
       return ripe.equals(((Fruit)obj).getRipe());
     }
@@ -44,6 +47,9 @@ public class Fruit extends Food {
   public boolean equals(Object obj) {
     if (obj == this) {
       return true;
+    }
+    if (obj == null) {
+      return false;
     }
     if (this.getClass() == obj.getClass()) {
       return ripe.equals(((Fruit)obj).getRipe());
