@@ -411,29 +411,31 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (tree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
       programState = ProgramState.unstack(programState, programState.stack.size()).a;
     }
-    removeUnreachableSymbolicValues();
+    programState = removeUnreachableSymbolicValues(programState);
   }
 
-  private void removeUnreachableSymbolicValues() {
+  private ProgramState removeUnreachableSymbolicValues(final ProgramState ps) {
     final List<SymbolicValue> unreachableValues = new ArrayList<>();
-    programState.constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+    ps.constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
       @Override
       public void accept(SymbolicValue sv, Object value) {
-        if(sv instanceof SymbolicValue.ObjectSymbolicValue && !programState.isReachable(sv)) {
+        if (sv!= SymbolicValue.NULL_LITERAL && sv!=SymbolicValue.TRUE_LITERAL && sv!=SymbolicValue.FALSE_LITERAL &&
+            !(sv instanceof SymbolicValue.BinarySymbolicValue || sv instanceof SymbolicValue.UnarySymbolicValue) && !ps.isReachable(sv) && !ps.stack.contains(sv)) {
           unreachableValues.add(sv);
         }
       }
     });
 
-    PMap<SymbolicValue, Object> cleanedConstraints = programState.constraints;
+    PMap<SymbolicValue, Object> cleanedConstraints = ps.constraints;
     for (SymbolicValue unreachableValue : unreachableValues) {
       cleanedConstraints = cleanedConstraints.remove(unreachableValue);
     }
 
-    if(programState.constraints != cleanedConstraints) {
-      programState = new ProgramState(programState.values, programState.constraints, programState.visitedPoints, programState.stack);
+    if(ps.constraints != cleanedConstraints) {
+      ProgramState programState = new ProgramState(ps.values, cleanedConstraints, ps.visitedPoints, ps.stack);
+      return programState;
     }
-
+    return ps;
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
@@ -493,7 +495,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
-  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState) {
+  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState ps) {
+    ProgramState programState = removeUnreachableSymbolicValues(ps);
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     debugPrint(programState);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {

@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -38,7 +39,10 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     try {
-      tree.accept(new ExplodedGraphWalker(context));
+      System.out.println(context.getFile().getName()+"#"+ ((MethodTree) tree).simpleName().name());
+      ExplodedGraphWalker visitor = new ExplodedGraphWalker(context);
+      tree.accept(visitor);
+      System.out.println("--->"+visitor.steps);
     } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
       LOG.error("Could not complete symbolic execution: ", exception);
     }
