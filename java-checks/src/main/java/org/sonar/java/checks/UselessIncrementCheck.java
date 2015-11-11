@@ -23,10 +23,12 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
@@ -53,24 +55,31 @@ public class UselessIncrementCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     if (tree.is(Tree.Kind.RETURN_STATEMENT)) {
       ExpressionTree returnExpression = ((ReturnStatementTree) tree).expression();
       if (returnExpression != null && isPostfix(returnExpression)) {
-        addIssue(returnExpression);
+        UnaryExpressionTree unaryExpression = (UnaryExpressionTree) returnExpression;
+        ExpressionTree expression = ExpressionsHelper.skipParentheses(unaryExpression.expression());
+        if (expression.is(Tree.Kind.IDENTIFIER) && ((IdentifierTree) expression).symbol().owner().isMethodSymbol()) {
+          reportIssue(unaryExpression);
+        }
       }
-    } else if (tree.is(Tree.Kind.ASSIGNMENT)) {
+    } else {
       AssignmentExpressionTree aet = (AssignmentExpressionTree) tree;
       if (isPostfix(aet.expression())) {
         UnaryExpressionTree postfix = (UnaryExpressionTree) aet.expression();
         if (SyntacticEquivalence.areEquivalent(aet.variable(), postfix.expression())) {
-          addIssue(postfix);
+          reportIssue(postfix);
         }
       }
     }
   }
 
-  private void addIssue(ExpressionTree expression) {
-    addIssue(expression, "Remove this increment or correct the code not to waste it.");
+  private void reportIssue(UnaryExpressionTree expression) {
+    reportIssue(expression.operatorToken(), "Remove this increment or correct the code not to waste it.");
   }
 
   private static boolean isPostfix(ExpressionTree tree) {
