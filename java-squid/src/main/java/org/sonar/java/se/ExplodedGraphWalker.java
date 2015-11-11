@@ -27,11 +27,11 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.collections.PMap;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.ConstraintManager.NullConstraint;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -65,7 +65,6 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
@@ -77,7 +76,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private static final Logger LOG = LoggerFactory.getLogger(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
-  private static final boolean DEBUG_MODE_ACTIVATED = false;
+  private boolean DEBUG_MODE_ACTIVATED = false;
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private ExplodedGraph explodedGraph;
@@ -100,6 +99,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public ExplodedGraphWalker(JavaFileScannerContext context) throws MaximumStepsReachedException {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
+    DEBUG_MODE_ACTIVATED = false && context.getFile().getName().contains("RuleNormalizer");
     this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck()));
   }
 
@@ -108,6 +108,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     super.visitMethod(tree);
     BlockTree body = tree.block();
     if (body != null) {
+      DEBUG_MODE_ACTIVATED &= tree.simpleName().name().equals("normalize");
       execute(tree);
     }
   }
@@ -410,6 +411,31 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (tree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
       programState = ProgramState.unstack(programState, programState.stack.size()).a;
     }
+    programState = removeUnreachableSymbolicValues(programState);
+  }
+
+  private ProgramState removeUnreachableSymbolicValues(final ProgramState ps) {
+    final List<SymbolicValue> unreachableValues = new ArrayList<>();
+    ps.constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+      @Override
+      public void accept(SymbolicValue sv, Object value) {
+        if (sv!= SymbolicValue.NULL_LITERAL && sv!=SymbolicValue.TRUE_LITERAL && sv!=SymbolicValue.FALSE_LITERAL &&
+            !(sv instanceof SymbolicValue.BinarySymbolicValue || sv instanceof SymbolicValue.UnarySymbolicValue) && !ps.isReachable(sv) && !ps.stack.contains(sv)) {
+          unreachableValues.add(sv);
+        }
+      }
+    });
+
+    PMap<SymbolicValue, Object> cleanedConstraints = ps.constraints;
+    for (SymbolicValue unreachableValue : unreachableValues) {
+      cleanedConstraints = cleanedConstraints.remove(unreachableValue);
+    }
+
+    if(ps.constraints != cleanedConstraints) {
+      ProgramState programState = new ProgramState(ps.values, cleanedConstraints, ps.visitedPoints, ps.stack);
+      return programState;
+    }
+    return ps;
   }
 
   private void setSymbolicValueOnFields(MethodInvocationTree tree) {
@@ -434,22 +460,23 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void resetFieldValues(MethodInvocationTree tree) {
-    boolean changed = false;
-    Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
-    for (Map.Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      Symbol symbol = entry.getKey();
-      if (isField(symbol)) {
-        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-        if (variable != null) {
-          changed = true;
-          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
-          values.put(symbol, nonNullValue);
+    final PMap<Symbol, SymbolicValue>[] values = new PMap[]{programState.values};
+    programState.values.forEach(new PMap.Consumer<Symbol, SymbolicValue>() {
+      @Override
+      public void accept(Symbol symbol, SymbolicValue value) {
+        if (isField(symbol)) {
+          VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
+          if (variable != null) {
+            SymbolicValue nonNullValue = constraintManager.createSymbolicValue(variable);
+            values[0] = values[0].put(symbol, nonNullValue);
+          }
         }
       }
+    });
+    if(programState.values != values [0]) {
+      programState = new ProgramState(values[0], programState.constraints, programState.visitedPoints, programState.stack);
     }
-    if (changed) {
-      programState = new ProgramState(values, programState.constraints, programState.visitedPoints, programState.stack);
-    }
+
   }
 
   private static boolean isField(Symbol symbol) {
@@ -464,14 +491,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void debugPrint(Object... toPrint) {
     if (DEBUG_MODE_ACTIVATED) {
-      LOG.error(Joiner.on(" - ").join(toPrint));
+      LOG.error(Joiner.on(" - ").join(toPrint)+"   "+workList.size());
     }
   }
 
-  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState) {
+  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState ps) {
+    ProgramState programState = removeUnreachableSymbolicValues(ps);
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
+    debugPrint(programState);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
-      debugPrint(programState);
       return;
     }
     Multiset<ExplodedGraph.ProgramPoint> visitedPoints = HashMultiset.create(programState.visitedPoints);
@@ -482,6 +510,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       return;
     }
     workList.addFirst(node);
+    if(steps + workList.size() > MAX_STEPS) {
+      throw new MaximumStepsReachedException("Fail fast : Number of max steps will be reached");
+    }
   }
 
 }

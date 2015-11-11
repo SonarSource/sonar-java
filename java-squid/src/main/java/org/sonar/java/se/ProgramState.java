@@ -21,43 +21,40 @@ package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
+import org.sonar.java.collections.AVLTree;
+import org.sonar.java.collections.PMap;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import javax.annotation.CheckForNull;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class ProgramState {
 
   public static final ProgramState EMPTY_STATE = new ProgramState(
-    Maps.<Symbol, SymbolicValue>newHashMap(),
+      AVLTree.<Symbol, SymbolicValue>create(),
     /* Empty state knows that null literal is null */
-    ImmutableMap.<SymbolicValue, Object>builder()
+      AVLTree.<SymbolicValue, Object>create()
       .put(SymbolicValue.NULL_LITERAL, ConstraintManager.NullConstraint.NULL)
       .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
-      .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE)
-      .build(),
+      .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE),
     HashMultiset.<ExplodedGraph.ProgramPoint>create(),
     Lists.<SymbolicValue>newLinkedList());
 
   final Multiset<ExplodedGraph.ProgramPoint> visitedPoints;
   final Deque<SymbolicValue> stack;
-  Map<Symbol, SymbolicValue> values;
-  Map<SymbolicValue, Object> constraints;
+  PMap<Symbol, SymbolicValue> values;
+  PMap<SymbolicValue, Object> constraints;
 
-  public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints, Multiset<ExplodedGraph.ProgramPoint> visitedPoints, Deque<SymbolicValue> stack) {
-    this.values = ImmutableMap.copyOf(values);
-    this.constraints = ImmutableMap.copyOf(constraints);
+  public ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Object> constraints, Multiset<ExplodedGraph.ProgramPoint> visitedPoints, Deque<SymbolicValue> stack) {
+    this.values = values;
+    this.constraints = constraints;
     this.visitedPoints = Multisets.unmodifiableMultiset(visitedPoints);
     this.stack = stack;
   }
@@ -85,14 +82,19 @@ public class ProgramState {
     if (symbol.isUnknown()) {
       return programState;
     }
-    SymbolicValue symbolicValue = programState.values.get(symbol);
-    // update program state only for a different symbolic value
-    if (symbolicValue == null || !symbolicValue.equals(value)) {
-      Map<Symbol, SymbolicValue> temp = Maps.newHashMap(programState.values);
-      temp.put(symbol, value);
-      return new ProgramState(temp, programState.constraints, programState.visitedPoints, programState.stack);
+    PMap<Symbol, SymbolicValue> newValue = programState.values.put(symbol, value);
+    if(newValue != programState.values) {
+      return new ProgramState(newValue, programState.constraints, programState.visitedPoints, programState.stack);
     }
     return programState;
+  }
+
+  ProgramState constraint(SymbolicValue sv, Object contraint) {
+    PMap<SymbolicValue, Object> newConstraint = constraints.put(sv, contraint);
+    if(constraints == newConstraint) {
+      return this;
+    }
+    return new ProgramState(values, newConstraint, visitedPoints, stack);
   }
 
   @CheckForNull
@@ -127,4 +129,16 @@ public class ProgramState {
     return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
   }
 
+  public boolean isReachable(final SymbolicValue sv) {
+    class ContainsValue implements PMap.Consumer<Symbol, SymbolicValue> {
+      boolean result = false;
+      @Override
+      public void accept(Symbol key, SymbolicValue value) {
+        result |= sv == value;
+      }
+    }
+    ContainsValue containsValue = new ContainsValue();
+    values.forEach(containsValue);
+    return containsValue.result;
+  }
 }

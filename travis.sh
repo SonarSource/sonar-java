@@ -26,7 +26,7 @@ plugin|ruling)
   cd its/$TEST
   EXTRA_PARAMS=
   [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-Dtest=JavaRulingTest#$PROJECT"
-  mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false $EXTRA_PARAMS
+  mvn package -X -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false $EXTRA_PARAMS
   ;;
 
 *)

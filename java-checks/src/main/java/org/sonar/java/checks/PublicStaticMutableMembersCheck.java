@@ -34,6 +34,7 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -102,6 +103,13 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
 
   private static final Set<Symbol> IMMUTABLE_CANDIDATES = new HashSet<>();
   private static final Multimap<Tree, Symbol> CLASS_IMMUTABLE_CANDIDATES = ArrayListMultimap.create();
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    CLASS_IMMUTABLE_CANDIDATES.clear();
+    super.scanFile(context);
+    CLASS_IMMUTABLE_CANDIDATES.clear();
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
