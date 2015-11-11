@@ -26,6 +26,8 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -36,6 +38,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -108,6 +111,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
 
   @Override
   public void visitMethod(MethodTree methodTree) {
+    if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.ABSTRACT)) {
+      return;
+    }
     boolean isUnitTest = isUnitTest(methodTree);
     inUnitTest.push(isUnitTest);
     methodContainsAssertion.push(false);
@@ -123,7 +129,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     if (isUnitTest &&
         !expectAssertion(methodTree) &&
         (!containsAssertion || badSoftAssertionUsage(containsSoftAssertionDecl, containsAssertjAssertAll, containsJunitSoftAssertionUsage))) {
-      context.addIssue(methodTree, this, "Add at least one assertion to this test case.");
+      context.reportIssue(this, methodTree.simpleName(), "Add at least one assertion to this test case.");
     }
   }
 
@@ -217,8 +223,12 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
   }
 
   private static boolean isUnitTest(MethodTree methodTree) {
-    if (methodTree.symbol().metadata().isAnnotatedWith("org.junit.Test")) {
-      return true;
+    JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) methodTree.symbol();
+    while (symbol != null) {
+      if (symbol.metadata().isAnnotatedWith("org.junit.Test")) {
+        return true;
+      }
+      symbol = symbol.overriddenSymbol();
     }
     Symbol.TypeSymbol enclosingClass = methodTree.symbol().enclosingClass();
     return enclosingClass != null && enclosingClass.type().isSubtypeOf("junit.framework.TestCase") && methodTree.simpleName().name().startsWith("test");

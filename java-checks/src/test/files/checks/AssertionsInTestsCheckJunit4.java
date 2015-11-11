@@ -4,6 +4,7 @@ import org.junit.Rule;
 import org.fest.assertions.Assertions;
 
 import java.lang.IllegalStateException;
+import java.lang.Override;
 import java.util.List;
 import org.mockito.Mockito;
 import org.junit.rules.ExpectedException;
@@ -107,7 +108,7 @@ public class AssertionsInTestsCheckTest {
   }
 
   @Test
-  public void nonCompliant1() { // Noncompliant {{Add at least one assertion to this test case.}}
+  public void nonCompliant1() { // Noncompliant [[sc=15;ec=28]] {{Add at least one assertion to this test case.}}
   }
 
   @Test
@@ -161,6 +162,18 @@ public class AssertionsInTestsCheckTest {
     compliant1();
   }
 
+}
+
+abstract class AbstractTest {
+  @Test
+  public abstract void nonCompliant1();
+}
+
+class ImplTest extends AbstractTest {
+  @Override
+  public void nonCompliant1() { // Noncompliant
+    // overridden test
+  }
 }
 
 class OtherTest extends TestCase {
