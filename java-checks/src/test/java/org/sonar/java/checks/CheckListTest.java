@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -41,6 +42,27 @@ import static org.fest.assertions.Fail.fail;
 public class CheckListTest {
 
   private static final String ARTIFICIAL_DESCRIPTION = "-1";
+
+  private static final List<String> SE_CHEKS = ImmutableList.of(
+      "NullDereferenceCheck",
+      "ConditionAlwaysTrueOrFalseCheck"
+  );
+
+  /**
+   * Enforces that each check declared in list.
+   */
+  @Test
+  public void count() {
+    int count = 0;
+    List<File> files = (List<File>) FileUtils.listFiles(new File("src/main/java/org/sonar/java/checks/"), new String[] {"java"}, false);
+    for (File file : files) {
+      if (file.getName().endsWith("Check.java")) {
+        count++;
+      }
+    }
+    assertThat(CheckList.getChecks().size()).isEqualTo(count + SE_CHEKS.size());
+  }
+
 
   private static class CustomRulesDefinition implements RulesDefinition {
 
@@ -75,6 +97,9 @@ public class CheckListTest {
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       String simpleName = cls.getSimpleName();
+      if (SE_CHEKS.contains(simpleName)) {
+        continue;
+      }
       assertThat(getClass().getResource(testName))
         .overridingErrorMessage("No test for " + simpleName)
         .isNotNull();
