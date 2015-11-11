@@ -4,7 +4,7 @@ class A extends junit.framework.TestCase {
   void testFoo() {
   }
 }
-class B extends junit.framework.TestCase { // Noncompliant {{Add some tests to this class.}}
+class B extends junit.framework.TestCase { // Noncompliant [[sc=7;ec=8]] {{Add some tests to this class.}}
   void foo() {
   }
 }
@@ -37,4 +37,20 @@ class TestNGTest {
   @org.testng.annotations.Test
   void foo() {
   }
+}
+
+@org.testng.annotations.Test
+public class FooTest {
+  public void test1() {
+  }
+
+  public void test2() {
+  }
+}
+
+@org.testng.annotations.Test
+public class TestNGClassTest { // Noncompliant
+  public int field;
+  private void test1() { }
+  public static void foo() {}
 }
