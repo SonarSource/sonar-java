@@ -177,7 +177,7 @@ public class CFG {
       return terminator;
     }
 
-    public boolean notActive() {
+    public boolean isInactive() {
       return terminator == null && elements.isEmpty();
     }
 
@@ -225,6 +225,10 @@ public class CFG {
       b.successors.add(target);
     }
     prune();
+    computePredecessors(blocks);
+  }
+
+  private static void computePredecessors(List<Block> blocks) {
     for (Block b : blocks) {
       for (Block successor : b.successors) {
         successor.predecessors.add(b);
@@ -236,7 +240,7 @@ public class CFG {
     List<Block> inactiveBlocks = new ArrayList<>();
     boolean first = true;
     for (Block block : blocks) {
-      if (!first && notActive(block)) {
+      if (!first && isInactive(block)) {
         inactiveBlocks.add(block);
       }
       first = false;
@@ -254,11 +258,11 @@ public class CFG {
     }
   }
 
-  private boolean notActive(Block block) {
+  private boolean isInactive(Block block) {
     if (block.equals(currentBlock) && block.successors.size() > 1) {
       return false;
     }
-    return block.notActive();
+    return block.isInactive();
   }
 
   private void removeInactiveBlocks(List<Block> inactiveBlocks) {
@@ -283,8 +287,9 @@ public class CFG {
   }
 
   public static CFG build(MethodTree tree) {
-    Preconditions.checkArgument(tree.block() != null, "Cannot build CFG for method with no body.");
-    return new CFG(tree.block(), tree.symbol());
+    BlockTree block = tree.block();
+    Preconditions.checkArgument(block != null, "Cannot build CFG for method with no body.");
+    return new CFG(block, tree.symbol());
   }
 
   private void build(List<? extends Tree> trees) {

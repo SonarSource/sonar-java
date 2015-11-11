@@ -35,19 +35,19 @@ public interface SymbolicValue {
   SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0) {
     @Override
     public String toString() {
-      return super.toString()+"_NULL";
+      return super.toString() + "_NULL";
     }
   };
-  SymbolicValue TRUE_LITERAL = new ObjectSymbolicValue(1){
+  SymbolicValue TRUE_LITERAL = new ObjectSymbolicValue(1) {
     @Override
     public String toString() {
-      return super.toString()+"_TRUE";
+      return super.toString() + "_TRUE";
     }
   };
-  SymbolicValue FALSE_LITERAL = new ObjectSymbolicValue(2){
+  SymbolicValue FALSE_LITERAL = new ObjectSymbolicValue(2) {
     @Override
     public String toString() {
-      return super.toString()+"_FALSE";
+      return super.toString() + "_FALSE";
     }
   };
 
@@ -99,8 +99,7 @@ public interface SymbolicValue {
       Object data = programState.constraints.get(this);
       if (data instanceof NullConstraint) {
         NullConstraint nc = (NullConstraint) data;
-        if ((NullConstraint.NULL.equals(nullConstraint) && NullConstraint.NOT_NULL.equals(nc)) ||
-          (NullConstraint.NULL.equals(nc) && NullConstraint.NOT_NULL.equals(nullConstraint))) {
+        if (!nc.equals(nullConstraint)) {
           // setting null where value is known to be non null or the contrary
           return ImmutableList.of();
         }
@@ -119,20 +118,16 @@ public interface SymbolicValue {
       // update program state only for a different constraint
       if (data instanceof BooleanConstraint) {
         BooleanConstraint bc = (BooleanConstraint) data;
-        if ((BooleanConstraint.TRUE.equals(booleanConstraint) && BooleanConstraint.FALSE.equals(bc)) ||
-          (BooleanConstraint.TRUE.equals(bc) && BooleanConstraint.FALSE.equals(booleanConstraint))) {
+        if (!bc.equals(booleanConstraint)) {
           // setting null where value is known to be non null or the contrary
           return ImmutableList.of();
         }
       }
-      if (data == null || !data.equals(booleanConstraint)) {
-
+      if ((data == null || !data.equals(booleanConstraint)) && programState.values.containsValue(this)) {
         // store constraint only if symbolic value can be reached by a symbol.
-        if (programState.values.containsValue(this)) {
-          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-          temp.put(this, booleanConstraint);
-          return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
-        }
+        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
+        temp.put(this, booleanConstraint);
+        return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
       }
       return ImmutableList.of(programState);
     }
@@ -173,22 +168,22 @@ public interface SymbolicValue {
         }
         return ImmutableList.of();
       }
-      List<ProgramState> result = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
-      if (result.isEmpty()) {
+      List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
+      if (copiedConstraints.isEmpty()) {
         return ImmutableList.of();
       }
-      List<ProgramState> reversedResult = new ArrayList<>();
-      for (ProgramState ps : result) {
-        List<ProgramState> reversedStates = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
-        if (reversedStates.size() == 1 && reversedStates.get(0) == programState) {
+      List<ProgramState> results = new ArrayList<>();
+      for (ProgramState ps : copiedConstraints) {
+        List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
+        if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
           Map<SymbolicValue, Object> newConstraints = Maps.newHashMap(programState.constraints);
           newConstraints.put(this, booleanConstraint);
-          reversedResult.add(new ProgramState(programState.values, newConstraints, programState.visitedPoints, programState.stack));
+          results.add(new ProgramState(programState.values, newConstraints, programState.visitedPoints, programState.stack));
         } else {
-          reversedResult.addAll(reversedStates);
+          results.addAll(copiedConstraintsRightToLeft);
         }
       }
-      return reversedResult;
+      return results;
 
     }
 
@@ -285,7 +280,8 @@ public interface SymbolicValue {
         // if instanceof is true then we know for sure that expression is not null.
         List<ProgramState> ps = operand.setConstraint(programState, NullConstraint.NOT_NULL);
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
-          //FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint should store the deduced type.
+          // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
+          // should store the deduced type.
           Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
           temp.put(this, new ConstraintManager.TypedConstraint());
           return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));

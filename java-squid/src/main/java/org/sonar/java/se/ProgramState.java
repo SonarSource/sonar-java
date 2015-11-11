@@ -28,8 +28,6 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
-import javax.annotation.CheckForNull;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -95,7 +93,6 @@ public class ProgramState {
     return programState;
   }
 
-  @CheckForNull
   public SymbolicValue peekValue() {
     return stack.peek();
   }

@@ -68,7 +68,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       return context.getState();
     }
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      if("class".equals(((MemberSelectExpressionTree) syntaxNode).identifier().name())) {
+      if ("class".equals(((MemberSelectExpressionTree) syntaxNode).identifier().name())) {
         // expression ClassName.class won't raise NPE.
         return context.getState();
       }
@@ -99,15 +99,13 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
   private List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.NULL_LITERAL)) {
-      //invariant to check that value was correctly evaluated.
+      // invariant to check that value was correctly evaluated.
       assert val != null && val.equals(SymbolicValue.NULL_LITERAL);
-    } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
-      if (isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
-        List<ProgramState> states = new ArrayList<>();
-        states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL));
-        states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL));
-        return states;
-      }
+    } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
+      List<ProgramState> states = new ArrayList<>();
+      states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL));
+      states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL));
+      return states;
     }
     return Lists.newArrayList(context.getState());
   }
