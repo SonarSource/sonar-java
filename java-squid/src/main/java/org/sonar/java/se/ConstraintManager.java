@@ -31,30 +31,31 @@ public class ConstraintManager {
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
+    counter++;
     switch (syntaxNode.kind()) {
       case EQUAL_TO:
-        result = new SymbolicValue.EqualToSymbolicValue(counter++);
+        result = new SymbolicValue.EqualToSymbolicValue(counter);
         break;
       case NOT_EQUAL_TO:
-        result = new SymbolicValue.NotEqualToSymbolicValue(counter++);
+        result = new SymbolicValue.NotEqualToSymbolicValue(counter);
         break;
       case LOGICAL_COMPLEMENT:
-        result = new SymbolicValue.NotSymbolicValue(counter++);
+        result = new SymbolicValue.NotSymbolicValue(counter);
         break;
       case AND:
-        result = new SymbolicValue.AndSymbolicValue(counter++);
+        result = new SymbolicValue.AndSymbolicValue(counter);
         break;
       case OR:
-        result = new SymbolicValue.OrSymbolicValue(counter++);
+        result = new SymbolicValue.OrSymbolicValue(counter);
         break;
       case XOR:
-        result = new SymbolicValue.XorSymbolicValue(counter++);
+        result = new SymbolicValue.XorSymbolicValue(counter);
         break;
       case INSTANCE_OF:
-        result = new SymbolicValue.InstanceOfSymbolicValue(counter++);
+        result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
       default:
-        result = new SymbolicValue.ObjectSymbolicValue(counter++);
+        result = new SymbolicValue.ObjectSymbolicValue(counter);
     }
     return result;
   }
