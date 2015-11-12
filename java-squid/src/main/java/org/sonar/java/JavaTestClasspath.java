@@ -24,6 +24,7 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.utils.TimeProfiler;
 
 import java.io.File;
 import java.util.List;
@@ -38,12 +39,14 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
   @Override
   protected void init() {
     if (!initialized) {
+      TimeProfiler profiler = new TimeProfiler(getClass()).start("JavaTestClasspath initialization");
       initialized = true;
       validateLibraries = project.getModules().isEmpty();
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
+      profiler.stop();
     }
   }
 

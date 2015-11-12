@@ -26,6 +26,7 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
+import org.sonar.api.utils.TimeProfiler;
 
 import java.io.File;
 import java.util.List;
@@ -41,6 +42,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
   @Override
   protected void init() {
     if (!initialized) {
+      TimeProfiler profiler = new TimeProfiler(getClass()).start("JavaClasspath initialization");
       initialized = true;
       validateLibraries = project.getModules().isEmpty();
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES);
@@ -55,6 +57,7 @@ public class JavaClasspath extends AbstractJavaClasspath {
       if (useDeprecatedProperties && !elements.isEmpty()) {
         LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
       }
+      profiler.stop();
     }
   }
 
