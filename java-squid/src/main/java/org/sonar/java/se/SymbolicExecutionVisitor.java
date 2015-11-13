@@ -39,8 +39,9 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   public void visitNode(Tree tree) {
     try {
       tree.accept(new ExplodedGraphWalker(context));
-    } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-      LOG.error("Could not complete symbolic execution: ", exception);
+    } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException exception) {
+      LOG.error("Could not complete symbolic execution: ", exception.getMessage());
+      LOG.debug("Could not complete symbolic execution: ", exception);
     }
 
   }

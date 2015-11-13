@@ -26,7 +26,6 @@ matrix:
     - jdk: oraclejdk8
       env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
     - jdk: oraclejdk8
-      before_install: echo "MAVEN_OPTS='-Xmx1024m'" > ~/.mavenrc
       env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
 
 cache:

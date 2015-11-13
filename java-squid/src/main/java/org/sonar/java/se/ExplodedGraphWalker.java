@@ -61,6 +61,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -80,6 +81,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private static final boolean DEBUG_MODE_ACTIVATED = false;
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
+  private MethodTree methodTree;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
   private ExplodedGraph.Node node;
@@ -91,6 +93,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   @VisibleForTesting
   int steps;
   ConstraintManager constraintManager;
+
+  public static class ExplodedGraphTooBigException extends RuntimeException {
+    public ExplodedGraphTooBigException(String s) {
+      super(s);
+    }
+  }
 
   public static class MaximumStepsReachedException extends RuntimeException {
     public MaximumStepsReachedException(String s) {
@@ -116,6 +124,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     checkerDispatcher.init();
     CFG cfg = CFG.build(tree);
     explodedGraph = new ExplodedGraph();
+    methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
     LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
@@ -481,6 +490,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       debugPrint(programState);
       return;
     }
+    if (isExplodedGraphTooBig(programState)) {
+      throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
+        + methodTree.simpleName().name() + "in class " + methodTree.symbol().owner().name());
+    }
     Multiset<ExplodedGraph.ProgramPoint> visitedPoints = HashMultiset.create(programState.visitedPoints);
     visitedPoints.add(programPoint);
     ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, new ProgramState(programState.values, programState.constraints, visitedPoints, programState.stack));
@@ -489,6 +502,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       return;
     }
     workList.addFirst(cachedNode);
+  }
+
+  private boolean isExplodedGraphTooBig(ProgramState programState) {
+    // Arbitrary formula to avoid out of memory errors.
+    return steps + workList.size() > MAX_STEPS / 2 && programState.constraints.size() > 100;
   }
 
 }
