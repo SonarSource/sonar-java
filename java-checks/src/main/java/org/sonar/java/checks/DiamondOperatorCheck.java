@@ -58,7 +58,7 @@ import java.util.List;
   tags = {Tag.JAVA_7, Tag.CLUMSY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("5min")
+@SqaleConstantRemediation("1min")
 public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
 
   @Override
