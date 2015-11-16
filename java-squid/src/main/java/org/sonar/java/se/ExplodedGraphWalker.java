@@ -506,7 +506,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private boolean isExplodedGraphTooBig(ProgramState programState) {
     // Arbitrary formula to avoid out of memory errors.
-    return steps + workList.size() > MAX_STEPS / 2 && programState.constraints.size() > 100;
+    return steps + workList.size() > MAX_STEPS / 2 && programState.constraints.size() > 75;
   }
 
 }
