@@ -20,6 +20,7 @@
 package org.sonar.java.bytecode;
 
 import com.google.common.collect.Lists;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -27,7 +28,8 @@ import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmClassProvider;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
-import org.sonar.plugins.java.api.JavaResourceLocator;
+
+import java.io.InterruptedIOException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -39,25 +41,53 @@ public class BytecodeScannerTest {
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
+  private AsmClassProvider asmProvider;
+  private AsmClass asmClass;
+  private BytecodeScanner bytecodeScanner;
 
-  @Test
-  public void rethrow_exception_when_error_during_analysis() throws Exception {
-    String className = "com.pack.MyClass";
-    JavaResourceLocator javaResourceLocator = null;
-    AsmClassProvider asmProvider = mock(AsmClassProvider.class);
-    AsmClass asmClass = mock(AsmClass.class);
+  @Before
+  public void setUp() throws Exception {
+    asmProvider = mock(AsmClassProvider.class);
+    asmClass = mock(AsmClass.class);
     when(asmProvider.getClass(anyString(), any(AsmClassProvider.DETAIL_LEVEL.class))).thenReturn(asmClass);
-    BytecodeScanner bytecodeScanner = new BytecodeScanner(new DefaultBytecodeContext(null));
-    bytecodeScanner.accept(new Visitor());
-    thrown.expectMessage("Unable to analyze .class file com.pack.MyClass");
-    bytecodeScanner.scanClasses(Lists.newArrayList(className), asmProvider);
-
+    bytecodeScanner = new BytecodeScanner(new DefaultBytecodeContext(null));
   }
 
-  private static class Visitor extends BytecodeVisitor {
+
+  @Test
+  public void rethrow_exception_when_error_during_analysis() {
+    String className = "com.pack.MyClass";
+    bytecodeScanner.accept(new CheckThrowingException(new NullPointerException()));
+    thrown.expectMessage("Unable to analyze .class file com.pack.MyClass");
+    bytecodeScanner.scanClasses(Lists.newArrayList(className), asmProvider);
+  }
+
+  @Test
+  public void analysis_cancelled_on_InterruptedIOException() {
+    String className = "com.pack.MyClass";
+    bytecodeScanner.accept(new CheckThrowingException(new RuntimeException("", new InterruptedIOException())));
+    thrown.expectMessage("Analysis cancelled");
+    bytecodeScanner.scanClasses(Lists.newArrayList(className), asmProvider);
+  }
+
+  @Test
+  public void analysis_cancelled_on_InterruptedException() {
+    String className = "com.pack.MyClass";
+    bytecodeScanner.accept(new CheckThrowingException(new RuntimeException("", new InterruptedException())));
+    thrown.expectMessage("Analysis cancelled");
+    bytecodeScanner.scanClasses(Lists.newArrayList(className), asmProvider);
+  }
+
+  private static class CheckThrowingException extends BytecodeVisitor {
+    private final RuntimeException e;
+
+    public CheckThrowingException(RuntimeException e) {
+      this.e = e;
+    }
+
     @Override
     public void visitClass(AsmClass asmClass) {
-      throw new NullPointerException();
+      throw e;
     }
   }
 }

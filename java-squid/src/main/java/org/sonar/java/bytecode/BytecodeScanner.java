@@ -19,6 +19,7 @@
  */
 package org.sonar.java.bytecode;
 
+import com.google.common.base.Throwables;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmClassProvider;
 import org.sonar.java.bytecode.asm.AsmClassProvider.DETAIL_LEVEL;
@@ -32,6 +33,7 @@ import org.sonar.squidbridge.api.CodeScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
+import java.io.InterruptedIOException;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -79,8 +81,16 @@ public class BytecodeScanner extends CodeScanner<BytecodeVisitor> {
         BytecodeVisitorNotifier visitorNotifier = new BytecodeVisitorNotifier(asmClass, visitorArray);
         visitorNotifier.notifyVisitors();
       } catch (Exception exception) {
+        checkInterrrupted(exception);
         throw new AnalysisException("Unable to analyze .class file " + key, exception);
       }
+    }
+  }
+
+  private static void checkInterrrupted(Exception e) {
+    Throwable cause = Throwables.getRootCause(e);
+    if (cause instanceof InterruptedException || cause instanceof InterruptedIOException) {
+      throw new AnalysisException("Analysis cancelled", e);
     }
   }
 
