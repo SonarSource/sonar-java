@@ -20,6 +20,7 @@
 package org.sonar.java.ast;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
@@ -42,7 +43,9 @@ import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
+import java.io.InterruptedIOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Collections;
@@ -90,22 +93,45 @@ public class JavaAstScanner {
 
     ProgressReport progressReport = new ProgressReport("Report about progress of Java AST analyzer", TimeUnit.SECONDS.toMillis(10));
     progressReport.start(Lists.newArrayList(files));
-    for (File file : files) {
-      context.setFile(file);
-      try {
-        Tree ast = parser.parse(file);
-        visitor.visitFile(ast);
-        progressReport.nextFile();
-      } catch (RecognitionException e) {
-        LOG.error("Unable to parse source file : " + file.getAbsolutePath());
-        LOG.error(e.getMessage());
 
-        parseErrorWalkAndVisit(e, file);
-      } catch (Exception e) {
-        throw new AnalysisException(getAnalyisExceptionMessage(file), e);
+    boolean successfulyCompleted = false;
+    try {
+      for (File file : files) {
+        simpleScan(file, context);
+        progressReport.nextFile();
+      }
+      successfulyCompleted = true;
+    } finally {
+      if (successfulyCompleted) {
+        progressReport.stop();
+      } else {
+        progressReport.cancel();
       }
     }
-    progressReport.stop();
+  }
+
+  private void simpleScan(File file, VisitorContext context) {
+    context.setFile(file);
+    try {
+      Tree ast = parser.parse(file);
+      visitor.visitFile(ast);
+    } catch (RecognitionException e) {
+      checkInterrrupted(e);
+      LOG.error("Unable to parse source file : " + file.getAbsolutePath());
+      LOG.error(e.getMessage());
+
+      parseErrorWalkAndVisit(e, file);
+    } catch (Exception e) {
+      checkInterrrupted(e);
+      throw new AnalysisException(getAnalyisExceptionMessage(file), e);
+    }
+  }
+
+  private static void checkInterrrupted(Exception e) {
+    Throwable cause = Throwables.getRootCause(e);
+    if (cause instanceof InterruptedException || cause instanceof InterruptedIOException) {
+      throw new AnalysisException("Analysis cancelled", e);
+    }
   }
 
   private void parseErrorWalkAndVisit(RecognitionException e, File file) {

@@ -52,6 +52,7 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
 import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
+import java.io.InterruptedIOException;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -106,70 +107,95 @@ public class JavaAstScannerTest {
   @Test
   public void should_not_fail_whole_analysis_upon_parse_error_and_notify_audit_listeners() {
     FakeAuditListener listener = spy(new FakeAuditListener());
-    JavaAstScanner scanner = new JavaAstScanner(new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
+    JavaAstScanner scanner = defaultJavaAstScanner();
     scanner.setVisitorBridge(new VisitorsBridge(listener));
 
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
     verify(listener).processRecognitionException(Mockito.any(RecognitionException.class));
   }
 
+
+  @Test
+  public void should_interrupt_analysis_when_InterrptedException_is_thrown() throws Exception {
+    File file = new File("src/test/files/metrics/NoSonar.java");
+
+    thrown.expectMessage("Analysis cancelled");
+    thrown.expect(new AnalysisExceptionBaseMatcher(RecognitionException.class, "instanceof AnalysisException with RecognitionException cause"));
+
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedException()))));
+  }
+
+  @Test
+  public void should_interrupt_analysis_when_InterrptedIOException_is_thrown() throws Exception {
+    File file = new File("src/test/files/metrics/NoSonar.java");
+
+    thrown.expectMessage("Analysis cancelled");
+    thrown.expect(new AnalysisExceptionBaseMatcher(RecognitionException.class, "instanceof AnalysisException with RecognitionException cause"));
+
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new CheckThrowingException(new RecognitionException(42, "interrupted", new InterruptedIOException()))));
+  }
+
   @Test
   public void should_propagate_visitor_exception_when_there_also_is_a_parse_error() {
-    JavaAstScanner scanner = new JavaAstScanner(new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
-    scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
-
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        throw new NullPointerException("foo");
-      }
-    }));
+    JavaAstScanner scanner = defaultJavaAstScanner();
+    scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingException(new NullPointerException("foo"))));
 
     thrown.expectMessage("SonarQube is unable to analyze file");
-    thrown.expect(new BaseMatcher() {
+    thrown.expect(new AnalysisExceptionBaseMatcher(NullPointerException.class, "instanceof AnalysisException with NullPointerException cause"));
 
-      @Override
-      public boolean matches(Object item) {
-        return item instanceof AnalysisException &&
-          ((AnalysisException) item).getCause() instanceof NullPointerException;
-      }
-
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("instanceof AnalysisException with NullPointerException cause");
-      }
-
-    });
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerParseError.txt")));
   }
 
   @Test
   public void should_propagate_visitor_exception_when_no_parse_error() {
-    JavaAstScanner scanner = new JavaAstScanner(new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
-    scanner.setVisitorBridge(new VisitorsBridge(new JavaFileScanner() {
-
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        throw new NullPointerException("foo");
-      }
-    }));
-
+    JavaAstScanner scanner = defaultJavaAstScanner();
+    scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingException(new NullPointerException("foo"))));
 
     thrown.expectMessage("SonarQube is unable to analyze file");
-    thrown.expect(new BaseMatcher() {
+    thrown.expect(new AnalysisExceptionBaseMatcher(NullPointerException.class, "instanceof AnalysisException with NullPointerException cause"));
 
-      @Override
-      public boolean matches(Object item) {
-        return item instanceof AnalysisException &&
-          ((AnalysisException) item).getCause() instanceof NullPointerException;
-      }
-
-      @Override
-      public void describeTo(Description description) {
-        description.appendText("instanceof AnalysisException with NullPointerException cause");
-      }
-
-    });
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
+  }
+
+  private static JavaAstScanner defaultJavaAstScanner() {
+    return new JavaAstScanner(new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
+  }
+
+  private static class CheckThrowingException implements JavaFileScanner {
+
+    private final RuntimeException exception;
+
+    public CheckThrowingException(RuntimeException e) {
+      this.exception = e;
+    }
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      throw exception;
+    }
+  }
+
+  private static class AnalysisExceptionBaseMatcher extends BaseMatcher {
+
+    private final Class<? extends Exception> expectedCause;
+    private final String description;
+
+    public AnalysisExceptionBaseMatcher(Class<? extends Exception> expectedCause, String description) {
+      this.expectedCause = expectedCause;
+      this.description = description;
+    }
+
+    @Override
+    public boolean matches(Object item) {
+      return item instanceof AnalysisException
+        && expectedCause.equals(((AnalysisException) item).getCause().getClass());
+    }
+
+    @Override
+    public void describeTo(Description description) {
+      description.appendText(this.description);
+    }
+
   }
 
   private static class FakeAuditListener implements JavaFileScanner, AstScannerExceptionHandler {
