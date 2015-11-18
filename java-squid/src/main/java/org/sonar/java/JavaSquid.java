@@ -91,11 +91,11 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents));
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents, true));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(astScanner);
-    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents));
+    astScannerForTests.setVisitorBridge(createVisitorBridge(testCodeVisitors, testClasspath, conf, sonarComponents, false));
 
     //Bytecode scanner
     BytecodeContext bytecodeContext = new DefaultBytecodeContext(sonarComponents, javaResourceLocator);
@@ -110,8 +110,7 @@ public class JavaSquid implements SourceCodeSearchEngine {
   }
 
   private static InternalVisitorsBridge createVisitorBridge(
-      Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents) {
-    boolean enableSymbolicExecution = true;
+      Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
     InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
