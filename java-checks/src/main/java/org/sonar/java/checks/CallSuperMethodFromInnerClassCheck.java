@@ -80,7 +80,8 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol symbol = tree.symbol();
-      if (symbol.isMethodSymbol() && tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
+      if (symbol.isMethodSymbol() && !"<init>".equals(symbol.name()) && tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol)
+        && outerClassHasMethodWithSameName(symbol)) {
         String methodName = ((IdentifierTree) tree.methodSelect()).name();
         addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }

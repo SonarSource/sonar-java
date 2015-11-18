@@ -67,3 +67,39 @@ class OuterClass {
   }
   
 }
+
+class D {
+  public D(String s) {
+  }
+  
+  public class C extends D {
+    C() {
+      super(null); // Compliant
+    }
+  }
+}
+
+public class Parent {
+
+  public Parent () {
+    doSomething();  // Noncompliant
+  }
+
+  public void doSomething () {  // not final; can be overridden
+  }
+}
+
+public class Child extends Parent {
+
+  private String foo;
+
+  public Child(String foo) {
+    super(); // leads to call doSomething() in Parent constructor which triggers a NullPointerException as foo has not yet been initialized
+    this.foo = foo;
+  }
+
+  public void doSomething () {
+    System.out.println(this.foo.length());
+  }
+
+}
