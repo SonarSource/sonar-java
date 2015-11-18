@@ -1,4 +1,4 @@
-interface notAnnotated { // Noncompliant {{Annotate the "notAnnotated" interface with the @FunctionInterface annotation (sonar.java.source not set. Assuming 8 or greater.)}}
+interface notAnnotated { // Noncompliant {{Annotate the "notAnnotated" interface with the @FunctionalInterface annotation (sonar.java.source not set. Assuming 8 or greater.)}}
   public int transform(int a);
 }
 interface notAnnotatedWithTwoMethods {
@@ -21,7 +21,7 @@ interface Annotated {
   public int transform(int a);
 }
 
-interface MyFunc { // Noncompliant {{Annotate the "MyFunc" interface with the @FunctionInterface annotation (sonar.java.source not set. Assuming 8 or greater.)}}
+interface MyFunc { // Noncompliant {{Annotate the "MyFunc" interface with the @FunctionalInterface annotation (sonar.java.source not set. Assuming 8 or greater.)}}
   int func(Object b);
   String toString();
 }
