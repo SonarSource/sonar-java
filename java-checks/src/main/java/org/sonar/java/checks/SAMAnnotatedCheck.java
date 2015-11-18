@@ -87,7 +87,7 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
     if (hasOneAbstractMethod(classTree) && !isAnnotated(classTree)) {
       addIssue(
         tree,
-        "Annotate the \"" + classTree.simpleName().name() + "\" interface with the @FunctionInterface annotation" +
+        "Annotate the \"" + classTree.simpleName().name() + "\" interface with the @FunctionalInterface annotation" +
           JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
     }
   }
