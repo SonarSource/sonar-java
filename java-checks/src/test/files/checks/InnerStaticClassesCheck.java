@@ -168,3 +168,15 @@ public class A1 {
   void method(Object j) {}
 
 }
+
+class A2 extends A3 {
+  A2(Object o){}
+}
+
+class A3 {
+  class Inner extends A2 {
+    public Inner() {
+      super(A3.this);
+    }
+  }
+}
