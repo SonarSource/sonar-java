@@ -70,6 +70,10 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     return superType != null && superType.equals(classSymbol.owner().type());
   }
 
+  private static boolean isConstructor(Symbol symbol) {
+    return "<init>".equals(symbol.name());
+  }
+
   private class MethodInvocationVisitor extends BaseTreeVisitor {
     private final Symbol.TypeSymbol classSymbol;
 
@@ -80,11 +84,15 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol symbol = tree.symbol();
-      if (symbol.isMethodSymbol() && tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol)) {
+      if (tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isCallToSuperclassMethod(symbol)) {
         String methodName = ((IdentifierTree) tree.methodSelect()).name();
         addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
       super.visitMethodInvocation(tree);
+    }
+
+    private boolean isCallToSuperclassMethod(Symbol symbol) {
+      return symbol.isMethodSymbol() && !isConstructor(symbol) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol);
     }
 
     private boolean isInherited(Symbol symbol) {
