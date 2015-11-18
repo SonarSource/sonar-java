@@ -1,3 +1,5 @@
+import org.fest.assertions.GenericAssert;
+
 import java.lang.Integer;
 
 class A {
@@ -40,5 +42,12 @@ class A {
     org.fest.assertions.Fail.fail("foo");
     org.fest.assertions.Fail.fail("foo",  null);
     org.fest.assertions.Fail.failure("foo");
+  }
+  
+  class MyCustomGenericAssert extends GenericAssert<String, String> {
+
+    protected MyCustomGenericAssert(Class<String> selfType, String actual) {
+      super(selfType, actual); // Compliant
+    }
   }
 }

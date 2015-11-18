@@ -29,6 +29,7 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -67,7 +68,11 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if(mit.symbol().owner().type().isSubtypeOf(GENERIC_ASSERT) && !FEST_AS_METHOD.matches(mit)) {
+    Symbol symbol = mit.symbol();
+    if (symbol.owner().type().isSubtypeOf(GENERIC_ASSERT) && !FEST_AS_METHOD.matches(mit)) {
+      if (isConstructor(symbol)) {
+        return;
+      }
       FestVisitor visitor = new FestVisitor();
       mit.methodSelect().accept(visitor);
       if(!visitor.useDescription) {
@@ -78,6 +83,10 @@ public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {
         addIssue(mit, "Add a message to this assertion.");
       }
     }
+  }
+
+  private static boolean isConstructor(Symbol symbol) {
+    return "<init>".equals(symbol.name());
   }
 
   private static boolean isAssertingOnStringWithNoMessage(MethodInvocationTree mit) {
