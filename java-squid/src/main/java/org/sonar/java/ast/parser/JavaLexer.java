@@ -445,28 +445,4 @@ public enum JavaLexer implements GrammarRuleKey {
     return b.regexp("\\p{javaJavaIdentifierPart}");
   }
 
-  private final String internalName;
-
-  private JavaLexer() {
-    String name = name();
-    StringBuilder sb = new StringBuilder();
-    int i = 0;
-    while (i < name.length()) {
-      if (name.charAt(i) == '_' && i + 1 < name.length()) {
-        i++;
-        sb.append(name.charAt(i));
-      } else {
-        sb.append(Character.toLowerCase(name.charAt(i)));
-      }
-      i++;
-    }
-    this.internalName = sb.toString();
-  }
-
-  @Override
-  public String toString() {
-    // This allows to keep compatibility with old XPath expressions
-    return internalName;
-  }
-
 }
