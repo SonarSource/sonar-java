@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.InstanceOfTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
@@ -84,8 +85,9 @@ public class CFG {
   private final Deque<Block> continueTargets = new LinkedList<>();
 
   private final Deque<Block> switches = new LinkedList<>();
-  private Map<String, Block> labels = Maps.newHashMap();
-  private final List<Block> gotos = new LinkedList<>();
+  private String pendingLabel = null;
+  private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
+  private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
 
   public Symbol.MethodSymbol methodSymbol() {
     return methodSymbol;
@@ -206,23 +208,6 @@ public class CFG {
     currentBlock = createBlock(exitBlock);
     for (StatementTree statementTree : Lists.reverse(tree.body())) {
       build(statementTree);
-    }
-
-    for (Block b : gotos) {
-      assert b.successors.isEmpty();
-      Tree s = b.terminator;
-      assert s != null;
-      String label;
-      if (s.is(Tree.Kind.BREAK_STATEMENT)) {
-        label = ((BreakStatementTree) s).label().name();
-      } else {
-        label = ((ContinueStatementTree) s).label().name();
-      }
-      Block target = labels.get(label);
-      if (target == null) {
-        throw new IllegalStateException("Undeclared label: " + label);
-      }
-      b.successors.add(target);
     }
     prune();
     computePredecessors(blocks);
@@ -563,9 +548,11 @@ public class CFG {
   }
 
   private void buildLabeledStatement(LabeledStatementTree labeledStatement) {
+    String name = labeledStatement.label().name();
+    labelsBreakTarget.put(name, currentBlock);
+    pendingLabel = name;
     build(labeledStatement.statement());
     currentBlock = createBlock(currentBlock);
-    labels.put(labeledStatement.label().name(), currentBlock);
   }
 
   private void buildSwitchStatement(SwitchStatementTree switchStatementTree) {
@@ -595,27 +582,31 @@ public class CFG {
   }
 
   private void buildBreakStatement(BreakStatementTree tree) {
-    if (tree.label() == null) {
+    IdentifierTree label = tree.label();
+    Block targetBlock;
+    if (label == null) {
       if (breakTargets.isEmpty()) {
         throw new IllegalStateException("'break' statement not in loop or switch statement");
       }
-      currentBlock = createUnconditionalJump(tree, breakTargets.getLast());
+      targetBlock = breakTargets.getLast();
     } else {
-      currentBlock = createUnconditionalJump(tree, null);
-      gotos.add(currentBlock);
+      targetBlock = labelsBreakTarget.get(label.name());
     }
+    currentBlock = createUnconditionalJump(tree, targetBlock);
   }
 
   private void buildContinueStatement(ContinueStatementTree tree) {
-    if (tree.label() == null) {
+    IdentifierTree label = tree.label();
+    Block targetBlock;
+    if (label == null) {
       if (continueTargets.isEmpty()) {
         throw new IllegalStateException("'continue' statement not in loop or switch statement");
       }
-      currentBlock = createUnconditionalJump(tree, continueTargets.getLast());
+      targetBlock = continueTargets.getLast();
     } else {
-      currentBlock = createUnconditionalJump(tree, null);
-      gotos.add(currentBlock);
+      targetBlock = labelsContinueTarget.get(label.name());
     }
+    currentBlock = createUnconditionalJump(tree, targetBlock);
   }
 
   private void buildWhileStatement(WhileStatementTree whileStatement) {
@@ -623,7 +614,7 @@ public class CFG {
     Block loopback = createBlock();
     // process body
     currentBlock = createBlock(loopback);
-    continueTargets.addLast(loopback);
+    addContinueTarget(loopback);
     breakTargets.addLast(falseBranch);
     build(whileStatement.statement());
     breakTargets.removeLast();
@@ -644,7 +635,7 @@ public class CFG {
     buildCondition(doWhileStatementTree.condition(), loopback, falseBranch);
     // process body
     currentBlock = createBlock(currentBlock);
-    continueTargets.addLast(loopback);
+    addContinueTarget(loopback);
     breakTargets.addLast(falseBranch);
     build(doWhileStatementTree.statement());
     breakTargets.removeLast();
@@ -658,7 +649,7 @@ public class CFG {
     Block afterLoop = currentBlock;
     currentBlock = createBlock();
     Block loopback = currentBlock;
-    continueTargets.addLast(loopback);
+    addContinueTarget(loopback);
     breakTargets.addLast(afterLoop);
     build(tree.statement());
     breakTargets.removeLast();
@@ -670,6 +661,14 @@ public class CFG {
     currentBlock = createBlock(currentBlock);
   }
 
+  private void addContinueTarget(Block target) {
+    continueTargets.addLast(target);
+    if(pendingLabel != null) {
+      labelsContinueTarget.put(pendingLabel, target);
+      pendingLabel = null;
+    }
+  }
+
   private void buildForStatement(ForStatementTree tree) {
     Block falseBranch = currentBlock;
     // process step
@@ -678,7 +677,7 @@ public class CFG {
     for (StatementTree updateTree : Lists.reverse(tree.update())) {
       build(updateTree);
     }
-    continueTargets.addLast(currentBlock);
+    addContinueTarget(currentBlock);
     // process body
     currentBlock = createBlock(currentBlock);
     breakTargets.addLast(falseBranch);

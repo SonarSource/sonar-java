@@ -804,7 +804,7 @@ public class CFGTest {
         element(Tree.Kind.INT_LITERAL, 5),
         element(Tree.Kind.EQUAL_TO)
         ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.BREAK_STATEMENT, 5),
+      terminator(Tree.Kind.BREAK_STATEMENT, 0),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.POSTFIX_INCREMENT)
@@ -814,27 +814,33 @@ public class CFGTest {
 
   @Test
   public void continue_on_label() {
-    final CFG cfg = buildCFG("void fun() { foo: for(int i = 0; i<10;i++) { if(i==5) continue foo; } }");
+    final CFG cfg = buildCFG("void fun() { foo: for(int i = 0; i<10;i++) { plop(); if(i==5) continue foo; plop();} }");
     final CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.INT_LITERAL, 0),
         element(Tree.Kind.VARIABLE, "i")
-        ).successors(4),
+        ).successors(5),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.INT_LITERAL, 10),
         element(Tree.Kind.LESS_THAN)
-        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 3),
+        ).terminator(Tree.Kind.FOR_STATEMENT).successors(0, 4),
       block(
+        element(Tree.Kind.IDENTIFIER, "plop"),
+        element(Kind.METHOD_INVOCATION),
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.INT_LITERAL, 5),
         element(Tree.Kind.EQUAL_TO)
-        ).terminator(Tree.Kind.IF_STATEMENT).successors(1, 2),
-      terminator(Tree.Kind.CONTINUE_STATEMENT, 5),
+        ).terminator(Tree.Kind.IF_STATEMENT).successors(2,3),
+      terminator(Tree.Kind.CONTINUE_STATEMENT, 1),
+        block(
+            element(Tree.Kind.IDENTIFIER, "plop"),
+            element(Kind.METHOD_INVOCATION)
+        ).successors(1),
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.POSTFIX_INCREMENT)
-        ).successors(4));
+        ).successors(5));
     cfgChecker.check(cfg);
   }
 
