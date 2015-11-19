@@ -10,7 +10,15 @@ import java.lang.Object;
 
 class A {
   public void testCheckNotNull2(@CheckForNull Object parameter) {
-    String x = a == b ? foo(a) : foo(b);
+    long remainingNanos = 0;
+    final long endNanos = remainingNanos > 0 ? System.nanoTime() + remainingNanos : 0;
+    label :
+    do{
+      if(remainingNanos <0 ){
+        break label;
+      }
+    } while ( remainingNanos >0);
+//    String x = a == b ? foo(a) : foo(b);
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;

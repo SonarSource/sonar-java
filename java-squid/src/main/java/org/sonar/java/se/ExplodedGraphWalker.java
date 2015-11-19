@@ -423,6 +423,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
 
     checkerDispatcher.executeCheckPostStatement(tree);
+    clearStack(tree);
+  }
+
+  public void clearStack(Tree tree) {
     if (tree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
       programState = ProgramState.unstack(programState, programState.stack.size()).a;
     }
