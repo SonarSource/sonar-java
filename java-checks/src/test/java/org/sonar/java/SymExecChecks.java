@@ -21,10 +21,9 @@ package org.sonar.java;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.sonar.java.checks.CloseResourceCheckTest;
 import org.sonar.java.checks.LocksNotUnlockedCheckTest;
 
 @RunWith(Suite.class)
-@Suite.SuiteClasses({CloseResourceCheckTest.class, LocksNotUnlockedCheckTest.class})
+@Suite.SuiteClasses({LocksNotUnlockedCheckTest.class})
 public class SymExecChecks {
 }

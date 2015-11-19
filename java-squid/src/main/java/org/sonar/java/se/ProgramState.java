@@ -31,11 +31,25 @@ import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class ProgramState {
+
+  public static class Pop {
+
+    public final ProgramState state;
+    public final List<SymbolicValue> values;
+
+    public Pop(ProgramState programState, List<SymbolicValue> result) {
+      state = programState;
+      values = result;
+    }
+
+  }
 
   private int hashCode;
   private final int constraintSize;
@@ -79,19 +93,19 @@ public class ProgramState {
     this.stack = ps.stack;
   }
 
-  ProgramState stackValue(SymbolicValue sv) {
+  public ProgramState stackValue(SymbolicValue sv) {
     Deque<SymbolicValue> newStack = new LinkedList<>(stack);
     newStack.push(sv);
     return new ProgramState(this, newStack);
   }
 
   ProgramState clearStack() {
-    return unstackValue(stack.size()).a;
+    return unstackValue(stack.size()).state;
   }
 
-  Pair<ProgramState, List<SymbolicValue>> unstackValue(int nbElements) {
+  public Pop unstackValue(int nbElements) {
     if (nbElements == 0) {
-      return new Pair<>(this, Collections.<SymbolicValue>emptyList());
+      return new Pop(this, Collections.<SymbolicValue>emptyList());
     }
     Preconditions.checkArgument(stack.size() >= nbElements, nbElements);
     Deque<SymbolicValue> newStack = new LinkedList<>(stack);
@@ -99,11 +113,19 @@ public class ProgramState {
     for (int i = 0; i < nbElements; i++) {
       result.add(newStack.pop());
     }
-    return new Pair<>(new ProgramState(this, newStack), result);
+    return new Pop(new ProgramState(this, newStack), result);
   }
 
   public SymbolicValue peekValue() {
     return stack.peek();
+  }
+
+  public List<SymbolicValue> peekValues(int n) {
+    if (n > stack.size()) {
+      throw new IllegalStateException("At least " + n + " values were expected on the stack!");
+    }
+    final ArrayList<SymbolicValue> result = new ArrayList<>(stack);
+    return result.subList(0, n);
   }
 
   int numberOfTimeVisited(ExplodedGraph.ProgramPoint programPoint) {
@@ -213,5 +235,22 @@ public class ProgramState {
   @CheckForNull
   public SymbolicValue getValue(Symbol symbol) {
     return values.get(symbol);
+  }
+
+  public void forEachConstraints(PMap.Consumer<SymbolicValue, Object> action) {
+    constraints.forEach(action);
+  }
+
+  public Set<SymbolicValue> getFieldValues() {
+    final HashSet<SymbolicValue> fieldValues = new HashSet<>();
+    values.forEach(new PMap.Consumer<Symbol, SymbolicValue>() {
+      @Override
+      public void accept(Symbol key, SymbolicValue value) {
+        if (isField(key)) {
+          fieldValues.add(value);
+        }
+      }
+    });
+    return fieldValues;
   }
 }

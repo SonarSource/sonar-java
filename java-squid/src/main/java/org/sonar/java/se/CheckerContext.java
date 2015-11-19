@@ -33,4 +33,6 @@ public interface CheckerContext {
   ProgramState getState();
 
   boolean isNull(SymbolicValue val);
+
+  ConstraintManager getConstraintManager();
 }

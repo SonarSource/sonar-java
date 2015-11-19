@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
+import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 
 import java.util.List;
@@ -307,6 +308,7 @@ public final class CheckList {
       .add(SynchronizedFieldAssignmentCheck.class)
       .add(NullDereferenceCheck.class)
       .add(ConditionAlwaysTrueOrFalseCheck.class)
+      .add(UnclosedResourcesCheck.class)
       .add(StaticFieldUpateCheck.class)
       .add(IgnoredStreamReturnValueCheck.class)
       .add(DateUtilsTruncateCheck.class)
@@ -315,7 +317,6 @@ public final class CheckList {
       .add(ChildClassShadowFieldCheck.class)
       .add(OperatorPrecedenceCheck.class)
       .add(NestedEnumStaticCheck.class)
-      .add(CloseResourceCheck.class)
       .add(UnusedReturnedDataCheck.class)
       .add(StringToStringCheck.class)
       .add(ThreadStartedInConstructorCheck.class)

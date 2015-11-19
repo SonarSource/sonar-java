@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 import org.sonar.java.se.ConstraintManager.NullConstraint;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,9 +52,15 @@ public class SymbolicValue {
   };
 
   private final int id;
+  private final Tree syntaxNode;
 
   public SymbolicValue(int id) {
+    this(id, null);
+  }
+
+  public SymbolicValue(int id, Tree syntaxNode) {
     this.id = id;
+    this.syntaxNode = syntaxNode;
   }
 
   @Override
@@ -120,6 +127,14 @@ public class SymbolicValue {
       throw new IllegalStateException("Only a single program state is expected at this location");
     }
     return states.get(0);
+  }
+
+  public Tree syntaxNode() {
+    return syntaxNode;
+  }
+
+  public SymbolicValue wrappedValue() {
+    return this;
   }
 
   abstract static class BinarySymbolicValue extends SymbolicValue {
@@ -384,6 +399,26 @@ public class SymbolicValue {
     @Override
     public String toString() {
       return leftOp + " ^ " + rightOp;
+    }
+  }
+
+  public static class ResourceWrapperSymbolicValue extends SymbolicValue {
+
+    private final SymbolicValue dependent;
+
+    public ResourceWrapperSymbolicValue(int id, SymbolicValue dependent) {
+      super(id);
+      this.dependent = dependent;
+    }
+
+    @Override
+    public Tree syntaxNode() {
+      return dependent.syntaxNode();
+    }
+
+    @Override
+    public SymbolicValue wrappedValue() {
+      return dependent.wrappedValue();
     }
   }
 }

@@ -58,17 +58,17 @@ class A {
     fis.available();
     myMethod(fis);
 
-    br = new BufferedReader(new FileReader("")); // Compliant - only look at local variables
+    br = new BufferedReader(new FileReader("")); // Noncompliant {{Close this "FileReader".}}
 
     BufferedWriter bw = new BufferedWriter(new FileWriter("")); // Compliant - closeable state is lost
     Object o = getObject(bw);
 
-    closeable = new FileReader(""); // Compliant - responsability of closing the variable is not in the method
+    closeable = new FileReader(""); // Noncompliant {{Close this "FileReader".}}
 
     OutputStream ubaos = new UnsyncByteArrayOutputStream(); // Compliant - UnsyncByteArrayOutputStream does not implements close()
     ubaos.write(0);
 
-    Reader reader = new BufferedReader(br); // Compliant - uses a field
+    Reader reader = new BufferedReader(br); // Noncompliant {{Close this "BufferedReader".}}
 
     RandomAccessFile raf = new RandomAccessFile("", "r"); // Compliant - Closeable is returned so its state is unknown
     return (Closeable) raf;
@@ -196,9 +196,9 @@ class A {
 
     BufferedWriter bw;
     if (test) {
-      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "BufferedWriter".}}
+      bw = new BufferedWriter(new FileWriter("")); // Noncompliant {{Close this "FileWriter".}}
     } else {
-      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "BufferedWriter".}}
+      bw = new BufferedWriter(new FileWriter(""));// Noncompliant {{Close this "FileWriter".}}
     }
 
     FileInputStream fis; // Not closed in else branch
@@ -250,7 +250,7 @@ class A {
   }
 
   void closeable_not_closed_in_every_paths_when_using_switch(MyEnum enumValue) throws Exception {
-    FileWriter fw = new FileWriter(""); // False-negative : NonCompliant
+    FileWriter fw = new FileWriter(""); // NonCompliant
     switch (enumValue) {
       case A:
         // known engine limitation: break statements are ignored when within other statements
@@ -539,15 +539,15 @@ class MyCloseable implements Closeable {
   }
 
   void if_nested_in_for() {
-    for (;;) {
-      if (true) {
+    for (int i = 0; i < 4; i++) {
+      if (i > 2) {
         FileInputStream auxinput = new FileInputStream();
         auxinput.close();
       }
     }
 
-    for (;;) {
-      if (true) {
+    for (int i = 0; i < 4; i++) {
+      if (i > 2) {
         FileInputStream auxinput = new FileInputStream();
         auxinput.close();
       } else {

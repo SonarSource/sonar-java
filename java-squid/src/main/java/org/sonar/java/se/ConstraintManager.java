@@ -19,14 +19,21 @@
  */
 package org.sonar.java.se;
 
+import org.sonar.java.collections.PMap;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class ConstraintManager {
 
   private int counter = ProgramState.EMPTY_STATE.constraintsSize();
+
+  public SymbolicValue createWrappedSymbolicValue(SymbolicValue dependent) {
+    return new SymbolicValue.ResourceWrapperSymbolicValue(counter++, dependent);
+  }
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
@@ -53,7 +60,7 @@ public class ConstraintManager {
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
       default:
-        result = new SymbolicValue(counter);
+        result = new SymbolicValue(counter, syntaxNode);
     }
     counter++;
     return result;
@@ -76,18 +83,28 @@ public class ConstraintManager {
     return NullConstraint.NULL.equals(ps.getConstraint(val));
   }
 
+  public boolean isClosed(ProgramState ps, SymbolicValue val) {
+    return NullConstraint.CLOSED.equals(ps.getConstraint(val.wrappedValue()));
+  }
+
+  public boolean isOpened(ProgramState ps, SymbolicValue val) {
+    return NullConstraint.OPENED.equals(ps.getConstraint(val.wrappedValue()));
+  }
+
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
 
-    Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
-    SymbolicValue sv = unstack.b.get(0);
-    final List<ProgramState> falseConstraint = sv.setConstraint(unstack.a, BooleanConstraint.FALSE);
-    final List<ProgramState> trueConstraint = sv.setConstraint(unstack.a, BooleanConstraint.TRUE);
+    ProgramState.Pop unstack = programState.unstackValue(1);
+    SymbolicValue sv = unstack.values.get(0);
+    final List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
+    final List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
 
   public enum NullConstraint {
     NULL,
-    NOT_NULL;
+    NOT_NULL,
+    OPENED,
+    CLOSED;
     NullConstraint inverse() {
       if (NULL == this) {
         return NOT_NULL;
@@ -107,7 +124,21 @@ public class ConstraintManager {
     }
   }
 
+  public List<Tree> getOpenedResources(final ProgramState programState) {
+    final Set<SymbolicValue> valuesAssignedToFields = programState.getFieldValues();
+    final ArrayList<Tree> openedResources = new ArrayList<>();
+    programState.forEachConstraints(new PMap.Consumer<SymbolicValue, Object>() {
+      @Override
+      public void accept(SymbolicValue key, Object value) {
+        if (isOpened(programState, key) && !valuesAssignedToFields.contains(key.wrappedValue())) {
+          openedResources.add(key.syntaxNode());
+        }
+      }
+    });
+    return openedResources;
+  }
+
   public static class TypedConstraint {
-    //Empty class for now, but should store the resolved type for instanceof operator.
+    // Empty class for now, but should store the resolved type for instanceof operator.
   }
 }

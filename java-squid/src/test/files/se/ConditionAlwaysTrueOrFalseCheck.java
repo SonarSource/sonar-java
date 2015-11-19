@@ -1250,4 +1250,23 @@ class SuperClass {
     foo &= a;
     if(foo) {} //false negative: Should be fixed by SONARJAVA-1391
   }
+ 
+  public static void awaitUninterruptibly(CountDownLatch latch) {
+    boolean interrupted = false;
+    try {
+      while (true) {
+        try {
+          latch.await();
+          return;
+        } catch (InterruptedException e) {
+          interrupted = true;
+        }
+      }
+    } finally {
+      if (interrupted) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+
 }

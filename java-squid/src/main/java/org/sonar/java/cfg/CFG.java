@@ -91,7 +91,6 @@ public class CFG {
   private String pendingLabel = null;
   private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
   private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
-
   private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
     methodSymbol = symbol;
     exitBlock = createBlock();

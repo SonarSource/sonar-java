@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.java.se.CheckerContext;
+import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ProgramState;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,13 +36,19 @@ public abstract class SECheck implements JavaCheck {
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     return context.getState();
   }
-  public void checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    //Default transition
+
+  public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
+    // Default transition
     context.addTransition(context.getState());
+    return context.getState();
   }
 
   public void checkEndOfExecution(CheckerContext context) {
     // By default do nothing
   }
 
+  public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
+    // TODO Auto-generated method stub
+
+  }
 }
