@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -62,6 +63,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashSet;
@@ -565,10 +567,19 @@ public class CFG {
     // process body
     currentBlock = createBlock(switchSuccessor);
     breakTargets.addLast(switchSuccessor);
+    boolean hasDefaultCase = false;
     if (!switchStatementTree.cases().isEmpty()) {
       CaseGroupTree firstCase = switchStatementTree.cases().get(0);
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
+        if (!hasDefaultCase) {
+          for (CaseLabelTree caseLabel : caseGroupTree.labels()) {
+            if ("default".equals(caseLabel.caseOrDefaultKeyword().text())) {
+              hasDefaultCase = true;
+              break;
+            }
+          }
+        }
         switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
           // No block predecessing the first case group.
@@ -579,6 +590,9 @@ public class CFG {
     breakTargets.removeLast();
     // process condition
     currentBlock = switches.removeLast();
+    if (!hasDefaultCase) {
+      currentBlock.addSuccessor(switchSuccessor);
+    }
   }
 
   private void buildBreakStatement(BreakStatementTree tree) {

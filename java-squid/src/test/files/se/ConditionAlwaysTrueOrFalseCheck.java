@@ -963,7 +963,7 @@ public static class Class extends SuperClass {
       case 0:
         return;
     }
-    if (false) { // False negative (better support of switch)  Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     switch (condition) {
       case 0:
