@@ -27,6 +27,11 @@ import java.util.List;
 public class ConstraintManager {
 
   private int counter = ProgramState.EMPTY_STATE.constraintsSize();
+  private SymbolicValue wrappedValue;
+
+  public void setWrappedValue(SymbolicValue wrappedValue) {
+    this.wrappedValue = wrappedValue;
+  }
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
@@ -53,7 +58,7 @@ public class ConstraintManager {
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
       default:
-        result = new SymbolicValue(counter);
+        result = wrappedValue == null ? new SymbolicValue(counter, syntaxNode) : new SymbolicValue.ResourceWrapperSymbolicValue(counter, wrappedValue);
     }
     counter++;
     return result;
@@ -76,18 +81,24 @@ public class ConstraintManager {
     return NullConstraint.NULL.equals(ps.getConstraint(val));
   }
 
+  public boolean isClosed(ProgramState ps, SymbolicValue val) {
+    return NullConstraint.CLOSED.equals(ps.getConstraint(val.wrappedValue()));
+  }
+
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
 
-    Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
-    SymbolicValue sv = unstack.b.get(0);
-    final List<ProgramState> falseConstraint = sv.setConstraint(unstack.a, BooleanConstraint.FALSE);
-    final List<ProgramState> trueConstraint = sv.setConstraint(unstack.a, BooleanConstraint.TRUE);
+    ProgramState.Pop unstack = programState.unstackValue(1);
+    SymbolicValue sv = unstack.values.get(0);
+    final List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
+    final List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
 
   public enum NullConstraint {
     NULL,
-    NOT_NULL;
+    NOT_NULL,
+    OPENED,
+    CLOSED;
     NullConstraint inverse() {
       if (NULL == this) {
         return NOT_NULL;
@@ -107,7 +118,11 @@ public class ConstraintManager {
     }
   }
 
+  public List<Tree> getOpenedResources(final ProgramState programState) {
+    return programState.getConstrainedSyntaxNodes(NullConstraint.OPENED);
+  }
+
   public static class TypedConstraint {
-    //Empty class for now, but should store the resolved type for instanceof operator.
+    // Empty class for now, but should store the resolved type for instanceof operator.
   }
 }

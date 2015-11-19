@@ -50,10 +50,16 @@ public class ExplodedGraph {
     private int hashcode;
     final CFG.Block block;
     final int i;
+    final boolean skipSuccessors;
 
     public ProgramPoint(CFG.Block block, int i) {
+      this(block, i, false);
+    }
+
+    public ProgramPoint(CFG.Block block, int i, boolean skipSuccessors) {
       this.block = block;
       this.i = i;
+      this.skipSuccessors = skipSuccessors;
     }
 
     @Override

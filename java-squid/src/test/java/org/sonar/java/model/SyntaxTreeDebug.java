@@ -23,6 +23,7 @@ import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -40,6 +41,7 @@ import org.sonar.plugins.java.api.tree.ModifierTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -160,9 +162,25 @@ public class SyntaxTreeDebug {
         return expressionStatementString((ExpressionStatementTree) syntaxNode);
       case METHOD:
         return methodString((MethodTree) syntaxNode);
+      case BLOCK:
+        return blockString((BlockTree) syntaxNode);
       default:
         return syntaxNode.toString();
     }
+  }
+
+  private static String blockString(BlockTree syntaxNode) {
+    StringBuilder buffer = new StringBuilder();
+    boolean first = true;
+    for (StatementTree tree : syntaxNode.body()) {
+      if (first) {
+        first = false;
+      } else {
+        buffer.append(", ");
+      }
+      buffer.append(tree);
+    }
+    return buffer.toString();
   }
 
   private static String methodString(MethodTree syntaxNode) {

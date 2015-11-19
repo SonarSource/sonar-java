@@ -17,22 +17,30 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.se;
+package org.sonar.java.se.checks;
 
-import org.sonar.java.se.checks.SECheck;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.junit.Test;
+import org.sonar.java.se.JavaCheckVerifier;
 
-public interface CheckerContext {
+public class UnclosedResourcesCheckTest {
 
-  Object createSink();
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheck.java", new UnclosedResourcesCheck());
+  }
 
-  void reportIssue(Tree tree, SECheck check, String message);
+  @Test
+  public void nonReproducible() {
+    JavaCheckVerifier.verify("src/test/files/se/IrreproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
+  }
 
-  void addTransition(ProgramState state);
+  // Failing test @Test
+  public void reproducible() {
+    JavaCheckVerifier.verify("src/test/files/se/ReproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
+  }
 
-  ProgramState getState();
-
-  boolean isNull(SymbolicValue val);
-
-  ConstraintManager getConstraintManager();
+  // Failing test @Test
+  public void foreign() {
+    JavaCheckVerifier.verify("src/test/files/se/CloseResourceTestFile.java", new UnclosedResourcesCheck());
+  }
 }

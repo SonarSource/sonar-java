@@ -77,23 +77,26 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
         context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
         return null;
       }
-      // we dereferenced the symbolic value so we can assume it is not null
-      return currentVal.setSingleConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL);
+      if (context.getState().getConstraint(currentVal) == null) {
+        // we dereferenced the symbolic value so we can assume it is not null
+        return currentVal.setSingleConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL);
+      }
     }
     return context.getState();
   }
 
   @Override
-  public void checkPostStatement(CheckerContext context, Tree syntaxNode) {
+  public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
     if (context.isNull(context.getState().peekValue()) && syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
       context.createSink();
-      return;
+      return context.getState();
     }
     List<ProgramState> programStates = setNullConstraint(context, syntaxNode);
     for (ProgramState programState : programStates) {
       context.addTransition(programState);
     }
+    return context.getState();
   }
 
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {

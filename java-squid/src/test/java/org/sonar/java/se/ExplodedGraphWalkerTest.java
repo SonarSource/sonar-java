@@ -25,6 +25,7 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -65,6 +66,7 @@ import static org.fest.assertions.Fail.fail;
     public void scanFile(JavaFileScannerContext context) {
       reportIssuesFor(context, new NullDereferenceCheck());
       reportIssuesFor(context, new ConditionAlwaysTrueOrFalseCheck());
+      reportIssuesFor(context, new UnclosedResourcesCheck());
     }
 
     private void reportIssuesFor(JavaFileScannerContext context, JavaCheck check) {

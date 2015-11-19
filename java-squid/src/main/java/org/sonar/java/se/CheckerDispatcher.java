@@ -42,6 +42,7 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   public boolean executeCheckPreStatement(Tree syntaxNode) {
+    getConstraintManager().setWrappedValue(null);
     this.syntaxNode = syntaxNode;
     ProgramState ps;
     for (SECheck checker : checks) {
@@ -57,13 +58,21 @@ public class CheckerDispatcher implements CheckerContext {
 
   public void executeCheckPostStatement(Tree syntaxNode) {
     this.syntaxNode = syntaxNode;
-    executePost();
+    ProgramState ps;
+    for (SECheck checker : checks) {
+      ps = checker.checkPostStatement(this, syntaxNode);
+      if (ps == null) {
+        throw new IllegalStateException("Post statement processing is not allowed to generate a sink yet!");
+      }
+      explodedGraphWalker.programState = ps;
+    }
+    getConstraintManager().setWrappedValue(null);
   }
 
   private void executePost() {
     this.transition = false;
     if (currentCheckerIndex < checks.size()) {
-      checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
+      explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
     } else {
       if (explodedGraphWalker.programPosition.i< explodedGraphWalker.programPosition.block.elements().size()) {
         explodedGraphWalker.clearStack(explodedGraphWalker.programPosition.block.elements().get(explodedGraphWalker.programPosition.i));
@@ -119,9 +128,20 @@ public class CheckerDispatcher implements CheckerContext {
     }
   }
 
+  public void executeCheckEndOfExecutionPath(MethodTree tree, ConstraintManager constraintManager) {
+    for (SECheck checker : checks) {
+      checker.checkEndOfExecutionPath(this, constraintManager);
+    }
+  }
+
   public void init() {
     for (SECheck checker : checks) {
       checker.init();
     }
+  }
+
+  @Override
+  public ConstraintManager getConstraintManager() {
+    return explodedGraphWalker.constraintManager;
   }
 }

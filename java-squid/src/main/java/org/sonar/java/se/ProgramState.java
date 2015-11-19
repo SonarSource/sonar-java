@@ -20,10 +20,12 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.collections.AVLTree;
 import org.sonar.java.collections.PMap;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
@@ -31,11 +33,25 @@ import javax.annotation.CheckForNull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class ProgramState {
+
+  public static class Pop {
+
+    public final ProgramState state;
+    public final List<SymbolicValue> values;
+
+    public Pop(ProgramState programState, List<SymbolicValue> result) {
+      state = programState;
+      values = result;
+    }
+
+  }
 
   private int hashCode;
   private final int constraintSize;
@@ -86,12 +102,12 @@ public class ProgramState {
   }
 
   ProgramState clearStack() {
-    return unstackValue(stack.size()).a;
+    return unstackValue(stack.size()).state;
   }
 
-  Pair<ProgramState, List<SymbolicValue>> unstackValue(int nbElements) {
+  Pop unstackValue(int nbElements) {
     if (nbElements == 0) {
-      return new Pair<>(this, Collections.<SymbolicValue>emptyList());
+      return new Pop(this, Collections.<SymbolicValue>emptyList());
     }
     Preconditions.checkArgument(stack.size() >= nbElements, nbElements);
     Deque<SymbolicValue> newStack = new LinkedList<>(stack);
@@ -99,11 +115,18 @@ public class ProgramState {
     for (int i = 0; i < nbElements; i++) {
       result.add(newStack.pop());
     }
-    return new Pair<>(new ProgramState(this, newStack), result);
+    return new Pop(new ProgramState(this, newStack), result);
   }
 
   public SymbolicValue peekValue() {
     return stack.peek();
+  }
+
+  public List<SymbolicValue> peekValues(int n) {
+    if (n > stack.size()) {
+      throw new IllegalStateException("At least " + n + " values were expected on the stack!");
+    }
+    return ImmutableList.copyOf(stack).subList(0, n);
   }
 
   int numberOfTimeVisited(ExplodedGraph.ProgramPoint programPoint) {
@@ -213,5 +236,33 @@ public class ProgramState {
   @CheckForNull
   public SymbolicValue getValue(Symbol symbol) {
     return values.get(symbol);
+  }
+
+  public List<Tree> getConstrainedSyntaxNodes(final Object constraint) {
+    final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
+    final List<Tree> result = new ArrayList<>();
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+      @Override
+      public void accept(SymbolicValue key, Object value) {
+        final SymbolicValue wrappedValue = key.wrappedValue();
+        if (constraint.equals(getConstraint(wrappedValue)) && !valuesAssignedToFields.contains(wrappedValue)) {
+          result.add(key.syntaxNode());
+        }
+      }
+    });
+    return result;
+  }
+
+  public Set<SymbolicValue> getFieldValues() {
+    final Set<SymbolicValue> fieldValues = new HashSet<>();
+    values.forEach(new PMap.Consumer<Symbol, SymbolicValue>() {
+      @Override
+      public void accept(Symbol key, SymbolicValue value) {
+        if (isField(key)) {
+          fieldValues.add(value);
+        }
+      }
+    });
+    return fieldValues;
   }
 }
