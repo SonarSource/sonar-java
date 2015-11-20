@@ -83,8 +83,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
     TypeTree superClass = tree.superClass();
     if (superClass != null) {
       Type superClassType = superClass.symbolType();
-      // FIXME Workaround until SONARJAVA-901 is resolved
-      while (superClassType.symbol().type().isClass() && !superClassType.is("java.lang.Object")) {
+      while (superClassType.symbol().isTypeSymbol() && !superClassType.is("java.lang.Object")) {
         Symbol.TypeSymbol superClassSymbol = superClassType.symbol();
         if (hasNotFinalEqualsMethod(superClassSymbol)) {
           return true;
