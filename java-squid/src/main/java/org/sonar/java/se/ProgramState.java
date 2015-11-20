@@ -20,12 +20,11 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Multisets;
+import org.sonar.java.collections.AVLTree;
+import org.sonar.java.collections.PMap;
 import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.Collections;
@@ -45,18 +44,18 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE)
       .build(),
-    HashMultiset.<ExplodedGraph.ProgramPoint>create(),
+      AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
     Lists.<SymbolicValue>newLinkedList());
 
-  final Multiset<ExplodedGraph.ProgramPoint> visitedPoints;
+  final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
   final Deque<SymbolicValue> stack;
   Map<Symbol, SymbolicValue> values;
   Map<SymbolicValue, Object> constraints;
 
-  public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints, Multiset<ExplodedGraph.ProgramPoint> visitedPoints, Deque<SymbolicValue> stack) {
+  public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints, Deque<SymbolicValue> stack) {
     this.values = ImmutableMap.copyOf(values);
     this.constraints = ImmutableMap.copyOf(constraints);
-    this.visitedPoints = Multisets.unmodifiableMultiset(visitedPoints);
+    this.visitedPoints = visitedPoints;
     this.stack = stack;
   }
 
@@ -98,7 +97,8 @@ public class ProgramState {
   }
 
   int numberOfTimeVisited(ExplodedGraph.ProgramPoint programPoint) {
-    return visitedPoints.count(programPoint);
+    Integer count = visitedPoints.get(programPoint);
+    return count==null ? 0 : count;
   }
 
   @Override

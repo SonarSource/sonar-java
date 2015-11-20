@@ -22,12 +22,10 @@ package org.sonar.java.se;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -61,7 +59,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -498,9 +495,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
         + methodTree.simpleName().name() + "in class " + methodTree.symbol().owner().name());
     }
-    Multiset<ExplodedGraph.ProgramPoint> visitedPoints = HashMultiset.create(programState.visitedPoints);
-    visitedPoints.add(programPoint);
-    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, new ProgramState(programState.values, programState.constraints, visitedPoints, programState.stack));
+    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint,
+        new ProgramState(programState.values, programState.constraints, programState.visitedPoints.put(programPoint, nbOfExecution+1), programState.stack));
     if (!cachedNode.isNew) {
       // has been enqueued earlier
       return;
