@@ -108,13 +108,13 @@ public class CastArithmeticOperandCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkExpression(Type varType, @Nullable ExpressionTree expr) {
-    if (isVarTypeErrorProne(varType) && expressionIsOperationToInt(expr)) {
+    if (isVarTypeErrorProne(varType) && expr != null && expressionIsOperationToInt(expr)) {
       addIssue(expr, "Cast one of the operands of this " + OPERATION_BY_KIND.get(expr.kind()) + " operation to a \"" + varType.name() + "\".");
     }
   }
 
-  private static boolean expressionIsOperationToInt(@Nullable ExpressionTree expr) {
-    return expr != null && expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS)
+  private static boolean expressionIsOperationToInt(ExpressionTree expr) {
+    return expr.is(Tree.Kind.MULTIPLY, Tree.Kind.DIVIDE, Tree.Kind.PLUS, Tree.Kind.MINUS)
       && expr.symbolType().isPrimitive(org.sonar.plugins.java.api.semantic.Type.Primitives.INT);
   }
 

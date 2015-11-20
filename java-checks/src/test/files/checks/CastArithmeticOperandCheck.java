@@ -16,6 +16,8 @@ class A {
     floatMethod(1 + 2, 1 + 2);  // Noncompliant {{Cast one of the operands of this addition operation to a "float".}}
     floatMethod(1 + 2, 1 + 2f); // Compliant
     foo(); //Compliant
+    double tst = 1 | 2; // Compliant
+    unknownMethod(1 + 2); // Compliant
   }
 
 
