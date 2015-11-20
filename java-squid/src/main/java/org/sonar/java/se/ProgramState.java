@@ -36,6 +36,8 @@ import java.util.Objects;
 
 public class ProgramState {
 
+  private int hashCode;
+
   public static final ProgramState EMPTY_STATE = new ProgramState(
     Maps.<Symbol, SymbolicValue>newHashMap(),
     /* Empty state knows that null literal is null */
@@ -44,7 +46,7 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE)
       .build(),
-      AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
+    AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
     Lists.<SymbolicValue>newLinkedList());
 
   final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
@@ -52,7 +54,8 @@ public class ProgramState {
   Map<Symbol, SymbolicValue> values;
   Map<SymbolicValue, Object> constraints;
 
-  public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints, Deque<SymbolicValue> stack) {
+  public ProgramState(Map<Symbol, SymbolicValue> values, Map<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
+    Deque<SymbolicValue> stack) {
     this.values = ImmutableMap.copyOf(values);
     this.constraints = ImmutableMap.copyOf(constraints);
     this.visitedPoints = visitedPoints;
@@ -66,7 +69,7 @@ public class ProgramState {
   }
 
   static Pair<ProgramState, List<SymbolicValue>> unstack(ProgramState programState, int nbElements) {
-    if(nbElements == 0) {
+    if (nbElements == 0) {
       return new Pair<>(programState, Collections.<SymbolicValue>emptyList());
     }
     Preconditions.checkArgument(programState.stack.size() >= nbElements, nbElements);
@@ -98,7 +101,7 @@ public class ProgramState {
 
   int numberOfTimeVisited(ExplodedGraph.ProgramPoint programPoint) {
     Integer count = visitedPoints.get(programPoint);
-    return count==null ? 0 : count;
+    return count == null ? 0 : count;
   }
 
   @Override
@@ -117,7 +120,10 @@ public class ProgramState {
 
   @Override
   public int hashCode() {
-    return Objects.hash(values, constraints, peekValue());
+    if (hashCode == 0) {
+      hashCode = Objects.hash(values, constraints, peekValue());
+    }
+    return hashCode;
   }
 
   @Override
