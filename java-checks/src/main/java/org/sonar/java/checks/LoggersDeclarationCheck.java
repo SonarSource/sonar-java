@@ -34,7 +34,6 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -45,7 +44,6 @@ import java.util.regex.Pattern;
   name = "Loggers should be \"private static final\" and should share a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
-@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
 public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFileScanner {
