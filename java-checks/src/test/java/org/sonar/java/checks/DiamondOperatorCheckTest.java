@@ -31,7 +31,13 @@ public class DiamondOperatorCheckTest {
 
   @Test
   public void test_with_java_7() {
-    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck.java", new DiamondOperatorCheck(), 7);
+    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck_java_7.java", new DiamondOperatorCheck(), 7);
+  }
+
+  @Test
+  public void test_with_java_8() {
+    // take into account ternary operators
+    JavaCheckVerifier.verify("src/test/files/checks/DiamondOperatorCheck_java_8.java", new DiamondOperatorCheck(), 8);
   }
 
 }

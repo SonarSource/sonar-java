@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -39,6 +40,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -61,8 +63,20 @@ import java.util.List;
 @SqaleConstantRemediation("1min")
 public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
 
+  private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
+    Tree.Kind.VARIABLE,
+    Tree.Kind.TYPE_CAST,
+    Tree.Kind.RETURN_STATEMENT,
+    Tree.Kind.ASSIGNMENT};
+  private static final Tree.Kind[] JAVA_8_KINDS = (Tree.Kind[]) ArrayUtils.addAll(JAVA_7_KINDS, new Tree.Kind[] {
+    Tree.Kind.CONDITIONAL_EXPRESSION});
+  private Tree.Kind[] expressionKindsToCheck = JAVA_7_KINDS;
+
   @Override
   public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
+    if (JavaVersionHelper.java8Compatible(version)) {
+      expressionKindsToCheck = JAVA_8_KINDS;
+    }
     return JavaVersionHelper.java7Compatible(version);
   }
 
@@ -76,7 +90,7 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
     NewClassTree newClassTree = (NewClassTree) tree;
     TypeTree newTypeTree = newClassTree.identifier();
     if (newClassTree.classBody() == null && isParameterizedType(newTypeTree)) {
-      TypeTree type = getTypeFromExpression(tree.parent());
+      TypeTree type = getTypeFromExpression(tree.parent(), expressionKindsToCheck);
       if (type != null && isParameterizedType(type)) {
         reportIssue(
           ((ParameterizedTypeTree) newTypeTree).typeArguments(),
@@ -87,9 +101,9 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
   }
 
   @CheckForNull
-  private static TypeTree getTypeFromExpression(Tree expression) {
-    if (expression.is(Tree.Kind.VARIABLE, Tree.Kind.TYPE_CAST, Tree.Kind.RETURN_STATEMENT, Tree.Kind.ASSIGNMENT, Tree.Kind.CONDITIONAL_EXPRESSION)) {
-      TypeTreeLocator visitor = new TypeTreeLocator();
+  private static TypeTree getTypeFromExpression(Tree expression, Tree.Kind[] kinds) {
+    if (expression.is(kinds)) {
+      TypeTreeLocator visitor = new TypeTreeLocator(kinds);
       expression.accept(visitor);
       return visitor.type;
     }
@@ -105,7 +119,14 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
 
   private static class TypeTreeLocator extends BaseTreeVisitor {
 
+    private final Tree.Kind[] kinds;
+
+    @Nullable
     private TypeTree type = null;
+
+    public TypeTreeLocator(Kind[] kinds) {
+      this.kinds = kinds;
+    }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
@@ -121,7 +142,7 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       Tree assignedVariable = getAssignedVariable(tree.variable());
       if (assignedVariable != null) {
-        type = getTypeFromExpression(assignedVariable);
+        type = getTypeFromExpression(assignedVariable, kinds);
       }
     }
 
@@ -132,7 +153,7 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
 
     @Override
     public void visitConditionalExpression(ConditionalExpressionTree tree) {
-      type = getTypeFromExpression(tree.parent());
+      type = getTypeFromExpression(tree.parent(), kinds);
     }
 
     private static TypeTree getMethodReturnType(ReturnStatementTree returnStatementTree) {
