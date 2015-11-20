@@ -50,4 +50,15 @@ class A {
         || (charactersReader.getCurrentValue() == LF_END_OF_LINE && charactersReader.getPreviousValue() != CR_END_OF_LINE)
         || (charactersReader.getCurrentValue() == CharactersReader.END_OF_STREAM && charactersReader.getPreviousValue() != LF_END_OF_LINE);
   }
+
+  private void foo(boolean b) {
+    boolean plop = bar() || b;
+    printState();
+    if(plop) {
+      printState();
+
+    }
+    printState();
+
+  }
 }

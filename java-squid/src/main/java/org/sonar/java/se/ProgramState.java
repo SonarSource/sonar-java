@@ -111,12 +111,13 @@ public class ProgramState {
     }
     ProgramState that = (ProgramState) o;
     return Objects.equals(values, that.values) &&
-      Objects.equals(constraints, that.constraints);
+      Objects.equals(constraints, that.constraints) &&
+      Objects.equals(peekValue(), that.peekValue());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(values, constraints);
+    return Objects.hash(values, constraints, peekValue());
   }
 
   @Override
