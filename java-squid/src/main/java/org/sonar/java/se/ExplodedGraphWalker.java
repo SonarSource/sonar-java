@@ -485,7 +485,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
         + methodTree.simpleName().name() + "in class " + methodTree.symbol().owner().name());
     }
-    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitingPoint(programPoint));
+    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitedPoint(programPoint, nbOfExecution + 1));
     if (!cachedNode.isNew) {
       // has been enqueued earlier
       return;

@@ -197,8 +197,8 @@ public class ProgramState {
     return reachable[0];
   }
 
-  public ProgramState visitingPoint(ExplodedGraph.ProgramPoint programPoint) {
-    return new ProgramState(values, constraints, visitedPoints.put(programPoint, numberOfTimeVisited(programPoint) + 1), stack);
+  public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
+    return new ProgramState(values, constraints, visitedPoints.put(programPoint, nbOfVisit), stack);
   }
 
   @CheckForNull
