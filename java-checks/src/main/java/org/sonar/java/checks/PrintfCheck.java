@@ -167,7 +167,10 @@ public class PrintfCheck extends AbstractMethodDetection {
           return;
         }
         param = param.substring(param.indexOf("$") + 1);
-      } else if (!param.startsWith("<")) {
+      } else if (param.startsWith("<")) {
+        //refers to previous argument
+        argIndex = Math.max(0, argIndex - 1);
+      }else {
         index++;
       }
       ExpressionTree argExpressionTree = args.get(argIndex);

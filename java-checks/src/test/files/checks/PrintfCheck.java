@@ -78,5 +78,6 @@ class A {
     
     String.format("Dude's Birthday: %1$tm %<te,%<tY", c); // Compliant
     String.format("Dude's Birthday: %1$tm %1$te,%1$tY", c); // Compliant
+    String.format("log/protocol_%tY_%<tm_%<td_%<tH_%<tM_%<tS.zip", new java.util.Date());
   }
 }
