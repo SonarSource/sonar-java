@@ -47,6 +47,7 @@ public class ExplodedGraph {
   }
 
   public static class ProgramPoint {
+    private int hashcode;
     final CFG.Block block;
     final int i;
 
@@ -57,7 +58,10 @@ public class ExplodedGraph {
 
     @Override
     public int hashCode() {
-      return block.id() * 31 + i;
+      if(hashcode == 0) {
+        hashcode = block.id() * 31 + i;
+      }
+      return hashcode;
     }
 
     @Override

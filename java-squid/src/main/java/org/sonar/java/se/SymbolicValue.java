@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
@@ -76,12 +75,12 @@ public interface SymbolicValue {
         return false;
       }
       ObjectSymbolicValue that = (ObjectSymbolicValue) o;
-      return Objects.equal(id, that.id);
+      return id == that.id;
     }
 
     @Override
     public int hashCode() {
-      return Objects.hashCode(id);
+      return id;
     }
 
     @Override
