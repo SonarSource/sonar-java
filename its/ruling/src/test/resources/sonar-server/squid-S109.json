@@ -397,13 +397,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/es/SearchOptions.java':[
 105,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/es/request/ProxyBulkRequestBuilder.java':[
-156,
-157,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/exceptions/Message.java':[
-78,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/InternalRubyIssueService.java':[
 340,
 341,
@@ -414,8 +407,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/Result.java':[
 81,
 84,
-147,
-148,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/index/IssueAuthorizationDao.java':[
 179,
@@ -525,9 +516,6 @@
 208,
 208,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileName.java':[
-62,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleIndex.java':[
 128,
 ],
@@ -574,9 +562,6 @@
 52,
 64,
 77,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/OpeningHtmlTag.java':[
-54,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/index/SourceFileResultSetIterator.java':[
 106,

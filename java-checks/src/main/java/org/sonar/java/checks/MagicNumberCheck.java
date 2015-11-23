@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -122,6 +124,13 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
     boolean arrayNotInitialized = initializer != null && initializer.is(Kind.NEW_ARRAY) && ((NewArrayTree) initializer).initializers().isEmpty();
     if (arrayNotInitialized || !tree.symbol().isFinal()) {
       super.visitVariable(tree);
+    }
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    if (!((MethodTreeImpl) tree).isHashCodeMethod()) {
+      super.visitMethod(tree);
     }
   }
 }

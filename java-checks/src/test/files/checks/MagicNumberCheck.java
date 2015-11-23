@@ -78,6 +78,11 @@ final class A {
     }
   };
 
+  @Override
+  public int hashCode() {
+    return 42; // Compliant
+  }
+
   int nothing;
 }
 
