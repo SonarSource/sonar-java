@@ -80,3 +80,7 @@ final class A {
 
   int nothing;
 }
+
+interface I {
+  int VALUE = 42; // Compliant
+}

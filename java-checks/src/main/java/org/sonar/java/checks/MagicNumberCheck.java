@@ -23,7 +23,6 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -32,7 +31,6 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
-import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -122,7 +120,7 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
   public void visitVariable(VariableTree tree) {
     ExpressionTree initializer = tree.initializer();
     boolean arrayNotInitialized = initializer != null && initializer.is(Kind.NEW_ARRAY) && ((NewArrayTree) initializer).initializers().isEmpty();
-    if (arrayNotInitialized || !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.FINAL)) {
+    if (arrayNotInitialized || !tree.symbol().isFinal()) {
       super.visitVariable(tree);
     }
   }
