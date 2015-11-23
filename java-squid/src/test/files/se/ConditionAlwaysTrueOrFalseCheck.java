@@ -1242,4 +1242,13 @@ class SuperClass {
       handleProper(truncatedProduct);
     }
   }
+
+  private void orEqualAssignement(boolean a) {
+    boolean foo = false;
+    foo |= a;
+    if(foo) {}
+    foo = false;
+    foo &= a;
+    if(foo) {} //false negative: Should be fixed by SONARJAVA-1391
+  }
 }

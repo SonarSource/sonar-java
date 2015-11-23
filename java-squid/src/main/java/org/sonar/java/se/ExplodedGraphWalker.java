@@ -313,7 +313,19 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           programState = programState.stackValue(constraintManager.createSymbolicValue(typeCast.expression()));
         }
         break;
+
       case ASSIGNMENT:
+      case MULTIPLY_ASSIGNMENT:
+      case DIVIDE_ASSIGNMENT:
+      case REMAINDER_ASSIGNMENT:
+      case PLUS_ASSIGNMENT:
+      case MINUS_ASSIGNMENT:
+      case LEFT_SHIFT_ASSIGNMENT:
+      case RIGHT_SHIFT_ASSIGNMENT:
+      case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+      case AND_ASSIGNMENT:
+      case XOR_ASSIGNMENT:
+      case OR_ASSIGNMENT:
         ExpressionTree variable = ((AssignmentExpressionTree) tree).variable();
         if (variable.is(Tree.Kind.IDENTIFIER)) {
           // FIXME restricted to identifiers for now.
