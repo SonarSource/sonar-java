@@ -3,6 +3,9 @@ import java.lang.*;
 
 class Example<T> {
   List<String> list;
+  Example() {
+    this(null);
+  }
   Example(List<String> list) {
     this.list = list;
   }

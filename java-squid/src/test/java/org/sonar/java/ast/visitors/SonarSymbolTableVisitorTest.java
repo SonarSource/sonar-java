@@ -26,8 +26,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.source.Symbol;
 import org.sonar.api.source.Symbolizable;
-import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
@@ -64,28 +64,32 @@ public class SonarSymbolTableVisitorTest {
     // import List
     verify(symboltableBuilder).newSymbol(offset(1, 18), offset(1, 22));
     verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(5, 3)));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(6, 11)));
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(9, 11)));
     // Example class declaration
     verify(symboltableBuilder).newSymbol(offset(4, 7), offset(4, 14));
     verify(symboltableBuilder).newSymbol(offset(4, 15), offset(4, 16));
     // list field
     verify(symboltableBuilder).newSymbol(offset(5, 16), offset(5, 20));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 10)));
-    // Example constructor
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(10, 10)));
+    // Example empty constructor
     verify(symboltableBuilder).newSymbol(offset(6, 3), offset(6, 10));
+    // Do not reference constructor of class using this() and super() as long as SONAR-5894 is not fixed
+    //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 5)));
+    // Example list constructor
+    verify(symboltableBuilder).newSymbol(offset(9, 3), offset(9, 10));
     // list local var
-    verify(symboltableBuilder).newSymbol(offset(6, 24), offset(6, 28));
-    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(7, 17)));
+    verify(symboltableBuilder).newSymbol(offset(9, 24), offset(9, 28));
+    verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(10, 17)));
     // method
-    verify(symboltableBuilder).newSymbol(offset(9, 7), offset(9, 13));
+    verify(symboltableBuilder).newSymbol(offset(12, 7), offset(12, 13));
     //label
-    verify(symboltableBuilder).newSymbol(offset(10, 5), offset(10, 10));
+    verify(symboltableBuilder).newSymbol(offset(13, 5), offset(13, 10));
     //Enum
-    verify(symboltableBuilder).newSymbol(offset(13, 8), offset(13, 26));
-    verify(symboltableBuilder).newSymbol(offset(14, 5), offset(14, 12));
-    //Do not reference constructor of enum as it can leads to failure in analysis as long as SONAR-5894 is not fixed
+    verify(symboltableBuilder).newSymbol(offset(16, 8), offset(16, 26));
+    verify(symboltableBuilder).newSymbol(offset(17, 5), offset(17, 12));
+    // Do not reference constructor of enum as it can leads to failure in analysis as long as SONAR-5894 is not fixed
     //verify(symboltableBuilder).newReference(any(Symbol.class), eq(offset(14, 5)));
-    verify(symboltableBuilder).newSymbol(offset(15, 5), offset(15, 23));
+    verify(symboltableBuilder).newSymbol(offset(18, 5), offset(18, 23));
     verify(symboltableBuilder).build();
     verifyNoMoreInteractions(symboltableBuilder);
   }
