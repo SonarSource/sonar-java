@@ -21,13 +21,11 @@ package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 import org.sonar.java.se.ConstraintManager.NullConstraint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public interface SymbolicValue {
 
@@ -95,7 +93,7 @@ public interface SymbolicValue {
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint) {
-      Object data = programState.constraints.get(this);
+      Object data = programState.getConstraint(this);
       if (data instanceof NullConstraint) {
         NullConstraint nc = (NullConstraint) data;
         if (!nc.equals(nullConstraint)) {
@@ -104,16 +102,14 @@ public interface SymbolicValue {
         }
       }
       if (data == null || !data.equals(nullConstraint)) {
-        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-        temp.put(this, nullConstraint);
-        return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+        return ImmutableList.of(programState.addConstraint(this, nullConstraint));
       }
       return ImmutableList.of(programState);
     }
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      Object data = programState.constraints.get(this);
+      Object data = programState.getConstraint(this);
       // update program state only for a different constraint
       if (data instanceof BooleanConstraint) {
         BooleanConstraint bc = (BooleanConstraint) data;
@@ -122,11 +118,9 @@ public interface SymbolicValue {
           return ImmutableList.of();
         }
       }
-      if ((data == null || !data.equals(booleanConstraint)) && programState.values.containsValue(this)) {
+      if ((data == null || !data.equals(booleanConstraint)) && programState.canReach(this)) {
         // store constraint only if symbolic value can be reached by a symbol.
-        Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-        temp.put(this, booleanConstraint);
-        return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+        return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
       }
       return ImmutableList.of(programState);
     }
@@ -175,9 +169,7 @@ public interface SymbolicValue {
       for (ProgramState ps : copiedConstraints) {
         List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
         if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
-          Map<SymbolicValue, Object> newConstraints = Maps.newHashMap(programState.constraints);
-          newConstraints.put(this, booleanConstraint);
-          results.add(new ProgramState(programState.values, newConstraints, programState.visitedPoints, programState.stack));
+          results.add(programState.addConstraint(this, booleanConstraint));
         } else {
           results.addAll(copiedConstraintsRightToLeft);
         }
@@ -192,7 +184,7 @@ public interface SymbolicValue {
     }
 
     private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-      Object constraintLeft = programState.constraints.get(from);
+      Object constraintLeft = programState.getConstraint(from);
       if (constraintLeft instanceof BooleanConstraint) {
         BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
         return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
@@ -272,7 +264,7 @@ public interface SymbolicValue {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        if (NullConstraint.NULL.equals(programState.constraints.get(operand))) {
+        if (NullConstraint.NULL.equals(programState.getConstraint(operand))) {
           // irrealizable constraint : instance of true if operand is null
           return ImmutableList.of();
         }
@@ -281,9 +273,7 @@ public interface SymbolicValue {
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.
-          Map<SymbolicValue, Object> temp = Maps.newHashMap(programState.constraints);
-          temp.put(this, new ConstraintManager.TypedConstraint());
-          return ImmutableList.of(new ProgramState(programState.values, temp, programState.visitedPoints, programState.stack));
+          return ImmutableList.of(programState.addConstraint(this, new ConstraintManager.TypedConstraint()));
         }
         return ps;
       }

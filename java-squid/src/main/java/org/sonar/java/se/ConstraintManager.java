@@ -21,17 +21,15 @@ package org.sonar.java.se;
 
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
 
 public class ConstraintManager {
 
-  private int counter = ProgramState.EMPTY_STATE.constraints.size();
+  private int counter = ProgramState.EMPTY_STATE.constraintsSize();
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
     SymbolicValue result;
-    counter++;
     switch (syntaxNode.kind()) {
       case EQUAL_TO:
         result = new SymbolicValue.EqualToSymbolicValue(counter);
@@ -57,11 +55,8 @@ public class ConstraintManager {
       default:
         result = new SymbolicValue.ObjectSymbolicValue(counter);
     }
+    counter++;
     return result;
-  }
-
-  public SymbolicValue supersedeSymbolicValue(VariableTree variable) {
-    return createSymbolicValue(variable);
   }
 
   public SymbolicValue evalLiteral(LiteralTree syntaxNode) {
@@ -78,11 +73,12 @@ public class ConstraintManager {
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
-    return NullConstraint.NULL.equals(ps.constraints.get(val));
+    return NullConstraint.NULL.equals(ps.getConstraint(val));
   }
 
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
-    Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
+
+    Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
     SymbolicValue sv = unstack.b.get(0);
     final List<ProgramState> falseConstraint = sv.setConstraint(unstack.a, BooleanConstraint.FALSE);
     final List<ProgramState> trueConstraint = sv.setConstraint(unstack.a, BooleanConstraint.TRUE);

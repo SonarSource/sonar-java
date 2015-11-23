@@ -25,7 +25,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -59,11 +58,11 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
@@ -176,7 +175,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       startingStates = Iterables.transform(startingStates, new Function<ProgramState, ProgramState>() {
         @Override
         public ProgramState apply(ProgramState input) {
-          return ProgramState.put(input, variableTree.symbol(), sv);
+          return input.put(variableTree.symbol(), sv);
         }
       });
 
@@ -245,14 +244,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
     for (ProgramState state : pair.a) {
       // enqueue false-branch, if feasible
-      ProgramState ps = ProgramState.stackValue(state, SymbolicValue.FALSE_LITERAL);
+      ProgramState ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), ps);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
     }
     for (ProgramState state : pair.b) {
-      ProgramState ps = ProgramState.stackValue(state, SymbolicValue.TRUE_LITERAL);
+      ProgramState ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
       // enqueue true-branch, if feasible
       enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), ps);
       if (checkPath) {
@@ -272,9 +271,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         MethodInvocationTree mit = (MethodInvocationTree) tree;
         setSymbolicValueOnFields(mit);
         // unstack arguments and method identifier
-        programState = ProgramState.unstack(programState, mit.arguments().size() + 1).a;
+
+        programState = programState.unstackValue(mit.arguments().size() + 1).a;
         logState(mit);
-        programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(mit));
+        programState = programState.stackValue(constraintManager.createSymbolicValue(mit));
         break;
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
@@ -294,53 +294,59 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
             sv = SymbolicValue.NULL_LITERAL;
           }
           if (sv != null) {
-            programState = ProgramState.put(programState, variableTree.symbol(), sv);
+            programState = programState.put(variableTree.symbol(), sv);
           }
         } else {
-          Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
+
+          Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
           programState = unstack.a;
-          programState = ProgramState.put(programState, variableTree.symbol(), unstack.b.get(0));
+          programState = programState.put(variableTree.symbol(), unstack.b.get(0));
         }
         break;
       case TYPE_CAST:
         TypeCastTree typeCast = (TypeCastTree) tree;
         Type type = typeCast.type().symbolType();
         if (type.isPrimitive()) {
-          Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 1);
+
+          Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
           programState = unstack.a;
-          programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(typeCast.expression()));
+          programState = programState.stackValue(constraintManager.createSymbolicValue(typeCast.expression()));
         }
         break;
       case ASSIGNMENT:
         ExpressionTree variable = ((AssignmentExpressionTree) tree).variable();
         if (variable.is(Tree.Kind.IDENTIFIER)) {
           // FIXME restricted to identifiers for now.
-          Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 2);
+
+          Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(2);
           SymbolicValue value = unstack.b.get(1);
           programState = unstack.a;
-          programState = ProgramState.put(programState, ((IdentifierTree) variable).symbol(), value);
-          programState = ProgramState.stackValue(programState, value);
+          programState = programState.put(((IdentifierTree) variable).symbol(), value);
+          programState = programState.stackValue(value);
         }
         break;
       case ARRAY_ACCESS_EXPRESSION:
         ArrayAccessExpressionTree arrayAccessExpressionTree = (ArrayAccessExpressionTree) tree;
         // unstack expression and dimension
-        Pair<ProgramState, List<SymbolicValue>> unstack = ProgramState.unstack(programState, 2);
+
+        Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(2);
         programState = unstack.a;
-        programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(arrayAccessExpressionTree));
+        programState = programState.stackValue(constraintManager.createSymbolicValue(arrayAccessExpressionTree));
         break;
       case NEW_ARRAY:
         NewArrayTree newArrayTree = (NewArrayTree) tree;
-        programState = ProgramState.unstack(programState, newArrayTree.initializers().size()).a;
+
+        programState = programState.unstackValue(newArrayTree.initializers().size()).a;
         SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
-        programState = ProgramState.stackValue(programState, svNewArray);
+        programState = programState.stackValue(svNewArray);
         programState = svNewArray.setSingleConstraint(programState, NullConstraint.NOT_NULL);
         break;
       case NEW_CLASS:
         NewClassTree newClassTree = (NewClassTree) tree;
-        programState = ProgramState.unstack(programState, newClassTree.arguments().size()).a;
+
+        programState = programState.unstackValue(newClassTree.arguments().size()).a;
         SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
-        programState = ProgramState.stackValue(programState, svNewClass);
+        programState = programState.stackValue(svNewClass);
         programState = svNewClass.setSingleConstraint(programState, NullConstraint.NOT_NULL);
         break;
       case MULTIPLY:
@@ -361,11 +367,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case EQUAL_TO:
       case NOT_EQUAL_TO:
         // Consume two and produce one SV.
-        Pair<ProgramState, List<SymbolicValue>> unstackBinary = ProgramState.unstack(programState, 2);
+
+        Pair<ProgramState, List<SymbolicValue>> unstackBinary = programState.unstackValue(2);
         programState = unstackBinary.a;
         SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
         symbolicValue.computedFrom(unstackBinary.b);
-        programState = ProgramState.stackValue(programState, symbolicValue);
+        programState = programState.stackValue(symbolicValue);
         break;
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
@@ -377,29 +384,31 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case LOGICAL_COMPLEMENT:
       case INSTANCE_OF:
         // consume one and produce one
-        Pair<ProgramState, List<SymbolicValue>> unstackUnary = ProgramState.unstack(programState, 1);
+
+        Pair<ProgramState, List<SymbolicValue>> unstackUnary = programState.unstackValue(1);
         programState = unstackUnary.a;
         SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
         unarySymbolicValue.computedFrom(unstackUnary.b);
-        programState = ProgramState.stackValue(programState, unarySymbolicValue);
+        programState = programState.stackValue(unarySymbolicValue);
         break;
       case IDENTIFIER:
         Symbol symbol = ((IdentifierTree) tree).symbol();
-        SymbolicValue value = programState.values.get(symbol);
+        SymbolicValue value = programState.getValue(symbol);
         if (value == null) {
           value = constraintManager.createSymbolicValue(tree);
-          programState = ProgramState.put(programState, symbol, value);
+          programState = programState.put(symbol, value);
         }
-        programState = ProgramState.stackValue(programState, value);
+        programState = programState.stackValue(value);
         break;
       case MEMBER_SELECT:
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
         if (!"class".equals(mse.identifier().name())) {
-          Pair<ProgramState, List<SymbolicValue>> unstackMSE = ProgramState.unstack(programState, 1);
+
+          Pair<ProgramState, List<SymbolicValue>> unstackMSE = programState.unstackValue(1);
           programState = unstackMSE.a;
         }
         SymbolicValue mseValue = constraintManager.createSymbolicValue(tree);
-        programState = ProgramState.stackValue(programState, mseValue);
+        programState = programState.stackValue(mseValue);
         break;
       case INT_LITERAL:
       case LONG_LITERAL:
@@ -410,11 +419,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case STRING_LITERAL:
       case NULL_LITERAL:
         SymbolicValue val = constraintManager.evalLiteral((LiteralTree) tree);
-        programState = ProgramState.stackValue(programState, val);
+        programState = programState.stackValue(val);
         break;
       case LAMBDA_EXPRESSION:
       case METHOD_REFERENCE:
-        programState = ProgramState.stackValue(programState, constraintManager.createSymbolicValue(tree));
+        programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
         break;
       default:
     }
@@ -425,7 +434,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public void clearStack(Tree tree) {
     if (tree.parent().is(Tree.Kind.EXPRESSION_STATEMENT)) {
-      programState = ProgramState.unstack(programState, programState.stack.size()).a;
+      programState = programState.clearStack();
     }
   }
 
@@ -451,26 +460,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void resetFieldValues() {
-    boolean changed = false;
-    Map<Symbol, SymbolicValue> values = Maps.newHashMap(programState.values);
-    for (Map.Entry<Symbol, SymbolicValue> entry : values.entrySet()) {
-      Symbol symbol = entry.getKey();
-      if (isField(symbol)) {
-        VariableTree variable = ((Symbol.VariableSymbol) symbol).declaration();
-        if (variable != null) {
-          changed = true;
-          SymbolicValue nonNullValue = constraintManager.supersedeSymbolicValue(variable);
-          values.put(symbol, nonNullValue);
-        }
-      }
-    }
-    if (changed) {
-      programState = new ProgramState(values, programState.constraints, programState.visitedPoints, programState.stack);
-    }
-  }
-
-  private static boolean isField(Symbol symbol) {
-    return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
+    programState = programState.resetFieldValues(constraintManager);
   }
 
   private void logState(MethodInvocationTree mit) {
@@ -495,8 +485,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
         + methodTree.simpleName().name() + "in class " + methodTree.symbol().owner().name());
     }
-    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint,
-        new ProgramState(programState.values, programState.constraints, programState.visitedPoints.put(programPoint, nbOfExecution+1), programState.stack));
+    ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitingPoint(programPoint));
     if (!cachedNode.isNew) {
       // has been enqueued earlier
       return;
@@ -506,7 +495,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private boolean isExplodedGraphTooBig(ProgramState programState) {
     // Arbitrary formula to avoid out of memory errors.
-    return steps + workList.size() > MAX_STEPS / 2 && programState.constraints.size() > 75;
+    return steps + workList.size() > MAX_STEPS / 2 && programState.constraintsSize() > 75;
   }
 
 }

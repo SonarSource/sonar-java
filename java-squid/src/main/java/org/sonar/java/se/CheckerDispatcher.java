@@ -85,6 +85,9 @@ public class CheckerDispatcher implements CheckerContext {
 
   @Override
   public boolean isNull(SymbolicValue val) {
+    if(val == null) {
+      return false;
+    }
     return explodedGraphWalker.constraintManager.isNull(getState(), val);
   }
 
