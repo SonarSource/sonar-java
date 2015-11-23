@@ -95,7 +95,7 @@ public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner
         // noop case not encountered
       }
       if (checked != null && !isExcluded(checked)) {
-        context.addIssue(tree, this, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");
+        context.reportIssue(this, tree, "Assign this magic number " + tree.value() + " to a well-named constant, and use the constant instead.");
       }
     }
   }
