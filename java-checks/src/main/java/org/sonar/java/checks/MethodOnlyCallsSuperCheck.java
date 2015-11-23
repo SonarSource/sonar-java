@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -63,6 +64,9 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
     if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)
       && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalObjectMethod(methodTree)) {
@@ -92,7 +96,28 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     } else if (statementTree.is(Tree.Kind.RETURN_STATEMENT)) {
       callToSuper = ((ReturnStatementTree) statementTree).expression();
     }
-    return callToSuper != null && isCallToSuper(methodTree, callToSuper);
+    return callToSuper != null && isCallToSuper(methodTree, callToSuper) && sameVisibility(methodTree.symbol(), ((MethodInvocationTree) callToSuper).symbol());
+  }
+
+  private static boolean sameVisibility(Symbol.MethodSymbol method, Symbol parentMethod) {
+    if (parentMethod.isUnknown()) {
+      return true;
+    }
+    return bothPackage(method, parentMethod)
+      || bothProtected(method, parentMethod)
+      || bothPublic(method, parentMethod);
+  }
+
+  private static boolean bothPackage(Symbol.MethodSymbol method, Symbol parentMethod) {
+    return method.isPackageVisibility() && parentMethod.isPackageVisibility();
+  }
+
+  private static boolean bothProtected(Symbol.MethodSymbol method, Symbol parentMethod) {
+    return method.isProtected() && parentMethod.isProtected();
+  }
+
+  private static boolean bothPublic(Symbol.MethodSymbol method, Symbol parentMethod) {
+    return method.isPublic() && parentMethod.isPublic();
   }
 
   private static boolean isCallToSuper(MethodTree methodTree, Tree callToSuper) {

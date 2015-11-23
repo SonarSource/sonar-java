@@ -72,8 +72,4 @@
 87,
 91,
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/SettableFuture.java':[
-48,
-52,
-],
 }

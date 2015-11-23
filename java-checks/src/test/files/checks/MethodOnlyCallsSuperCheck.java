@@ -129,4 +129,53 @@ class A {
   public final String toString() {
     return super.toString();
   }
+
+  protected void bar1() {}
+
+  protected void bar2() {}
+
+  void bar3() {}
+
+  void bar4() {}
+
+  public void bar5() {}
+}
+
+class B extends A {
+  @Override
+  public void bar1() { // Compliant
+    super.bar1();
+  }
+
+  @Override
+  protected void bar2() { // Noncompliant
+    super.bar2();
+  }
+
+  @Override
+  public void bar3() { // Compliant
+    super.bar3();
+  }
+
+  @Override
+  void bar4() { // Noncompliant
+    super.bar4();
+  }
+}
+
+class C extends A {
+  @Override
+  void bar2() { // Compliant (but does not compile... can not reduce visibility [protected -> package])
+    super.bar2();
+  }
+
+  @Override
+  public void bar5() { // Noncompliant
+    super.bar5();
+  }
+
+  @Override
+  protected void bar4() {
+    super.bar4();
+  }
 }
