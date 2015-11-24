@@ -99,7 +99,8 @@ public class InternalVisitorsBridge {
   public void visitFile(@Nullable Tree parsedTree) {
     semanticModel = null;
     CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
-    if ((parsedTree != null) && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
+    boolean fileParsed = parsedTree != null;
+    if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
       tree = (CompilationUnitTree) parsedTree;
       if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
         try {
@@ -113,7 +114,7 @@ public class InternalVisitorsBridge {
         SemanticModel.handleMissingTypes(tree);
       }
     }
-    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, analyseAccessors, sonarComponents);
+    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, analyseAccessors, sonarComponents, fileParsed);
     // Symbolic execution checks
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
       new SymbolicExecutionVisitor().scanFile(javaFileScannerContext);
@@ -144,7 +145,8 @@ public class InternalVisitorsBridge {
     return true;
   }
 
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents) {
+  protected JavaFileScannerContext createScannerContext(
+    CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents, boolean fileParsed) {
     return new DefaultJavaFileScannerContext(
       tree,
       (SourceFile) getContext().peekSourceCode(),
@@ -152,7 +154,8 @@ public class InternalVisitorsBridge {
       semanticModel,
       analyseAccessors,
       sonarComponents,
-      javaVersion);
+      javaVersion,
+      fileParsed);
   }
 
   private boolean isNotJavaLangOrSerializable(String packageName) {

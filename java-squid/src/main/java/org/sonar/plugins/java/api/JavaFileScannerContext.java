@@ -57,6 +57,8 @@ public interface JavaFileScannerContext {
   @Nullable
   Integer getJavaVersion();
 
+  boolean fileParsed();
+
   /**
    * @deprecated As of release 3.6, replaced by {@link #getComplexityNodes(Tree)}
    */

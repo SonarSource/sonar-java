@@ -22,6 +22,7 @@ package org.sonar.java.model;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.sonar.sslr.api.RecognitionException;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
@@ -32,7 +33,10 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceProject;
+
+import javax.annotation.Nullable;
 
 import java.io.File;
 import java.util.Collections;
@@ -50,6 +54,7 @@ public class InternalVisitorsBridgeTest {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(context.getSemanticModel() == null).isTrue();
+        assertThat(context.fileParsed()).isTrue();
       }
     }), Lists.<File>newArrayList(), null);
     visitorsBridgeWithoutSemantic.setContext(context);
@@ -69,6 +74,7 @@ public class InternalVisitorsBridgeTest {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(context.getSemanticModel()).isNotNull();
+        assertThat(context.fileParsed()).isTrue();
         super.scanFile(context);
       }
 
@@ -86,6 +92,20 @@ public class InternalVisitorsBridgeTest {
     checkFile(contstructFileName("java", "lang", "annotation", "Foo.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithSemantic);
     checkFile(contstructFileName("java", "io", "File.java"), "package java.io; class A {}", visitorsBridgeWithSemantic);
     checkFile(contstructFileName("src", "foo", "bar", "java", "lang", "someFile.java"), "package foo.bar.java.lang; class A { void method() { ; } }", visitorsBridgeWithSemantic);
+
+    InternalVisitorsBridge visitorsBridgeWithParsingIssue = new InternalVisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
+      @Override
+      public void scanFile(JavaFileScannerContext context) {
+        assertThat(context.fileParsed()).isFalse();
+      }
+
+      @Override
+      public List<Kind> nodesToVisit() {
+        return ImmutableList.of(Tree.Kind.METHOD);
+      }
+    }), Lists.<File>newArrayList(), null);
+    visitorsBridgeWithParsingIssue.setContext(context);
+    checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
   }
 
   private void checkFile(String filename, String code, InternalVisitorsBridge visitorsBridge) {
@@ -101,8 +121,13 @@ public class InternalVisitorsBridgeTest {
     return result.substring(0, result.length() - 1);
   }
 
+  @Nullable
   private static CompilationUnitTree parse(String code) {
-    return (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(code);
+    try {
+      return (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(code);
+    } catch (RecognitionException e) {
+      return null;
+    }
   }
 
 }

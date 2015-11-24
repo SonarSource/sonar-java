@@ -72,9 +72,10 @@ public class VisitorsBridge extends InternalVisitorsBridge {
   }
 
   @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents) {
+  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents,
+    boolean failedParsing) {
     testContext = new TestJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors, sonarComponents,
-      getJavaVersion());
+      getJavaVersion(), failedParsing);
     return testContext;
   }
 
@@ -88,8 +89,8 @@ public class VisitorsBridge extends InternalVisitorsBridge {
 
     public TestJavaFileScannerContext(
       CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
-      @Nullable Integer javaVersion) {
-      super(tree, sourceFile, file, semanticModel, analyseAccessors, sonarComponents, javaVersion);
+      @Nullable Integer javaVersion, boolean failedParsing) {
+      super(tree, sourceFile, file, semanticModel, analyseAccessors, sonarComponents, javaVersion, failedParsing);
     }
 
     public Set<AnalyzerMessage> getIssues() {
