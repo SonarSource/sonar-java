@@ -34,4 +34,9 @@ public class EmptyFileCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/NonEmptyFile.java", new EmptyFileCheck());
   }
 
+  @Test
+  public void test_parsing_error_file() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ParsingError.java", new EmptyFileCheck());
+  }
+
 }

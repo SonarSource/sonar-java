@@ -34,4 +34,9 @@ public class DefaultPackageCheckTest {
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/DefaultPackageCheck/WithPackage.java", new DefaultPackageCheck());
   }
 
+  @Test
+  public void test_parsing_error_file() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ParsingError.java", new DefaultPackageCheck());
+  }
+
 }
