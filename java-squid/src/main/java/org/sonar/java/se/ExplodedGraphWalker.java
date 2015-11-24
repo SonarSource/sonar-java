@@ -210,8 +210,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           handleBranch(block, ((ConditionalExpressionTree) terminator).condition());
           return;
         case FOR_STATEMENT:
-          ForStatementTree forStatement = (ForStatementTree) terminator;
-          ExpressionTree condition = forStatement.condition();
+          ExpressionTree condition = ((ForStatementTree) terminator).condition();
           if (condition != null) {
             handleBranch(block, condition, false);
             return;
@@ -266,13 +265,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     switch (tree.kind()) {
       case METHOD_INVOCATION:
-        MethodInvocationTree mit = (MethodInvocationTree) tree;
-        setSymbolicValueOnFields(mit);
-        // unstack arguments and method identifier
-
-        programState = programState.unstackValue(mit.arguments().size() + 1).a;
-        logState(mit);
-        programState = programState.stackValue(constraintManager.createSymbolicValue(mit));
+        executeMethodInvocation((MethodInvocationTree) tree);
         break;
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:
@@ -280,38 +273,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case PARENTHESIZED_EXPRESSION:
         throw new IllegalStateException("Cannot appear in CFG: " + tree.kind().name());
       case VARIABLE:
-        VariableTree variableTree = (VariableTree) tree;
-        ExpressionTree initializer = variableTree.initializer();
-        if (initializer == null) {
-          SymbolicValue sv = null;
-          if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
-            sv = constraintManager.createSymbolicValue(variableTree);
-          } else if (variableTree.type().symbolType().is("boolean")) {
-            sv = SymbolicValue.FALSE_LITERAL;
-          } else if (!variableTree.type().symbolType().isPrimitive()) {
-            sv = SymbolicValue.NULL_LITERAL;
-          }
-          if (sv != null) {
-            programState = programState.put(variableTree.symbol(), sv);
-          }
-        } else {
-
-          Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
-          programState = unstack.a;
-          programState = programState.put(variableTree.symbol(), unstack.b.get(0));
-        }
+        executeVariable((VariableTree) tree, terminator);
         break;
       case TYPE_CAST:
-        TypeCastTree typeCast = (TypeCastTree) tree;
-        Type type = typeCast.type().symbolType();
-        if (type.isPrimitive()) {
-
-          Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
-          programState = unstack.a;
-          programState = programState.stackValue(constraintManager.createSymbolicValue(typeCast.expression()));
-        }
+        executeTypeCast((TypeCastTree) tree);
         break;
-
       case ASSIGNMENT:
       case MULTIPLY_ASSIGNMENT:
       case DIVIDE_ASSIGNMENT:
@@ -324,40 +290,16 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case AND_ASSIGNMENT:
       case XOR_ASSIGNMENT:
       case OR_ASSIGNMENT:
-        ExpressionTree variable = ((AssignmentExpressionTree) tree).variable();
-        if (variable.is(Tree.Kind.IDENTIFIER)) {
-          // FIXME restricted to identifiers for now.
-
-          Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(2);
-          SymbolicValue value = unstack.b.get(1);
-          programState = unstack.a;
-          programState = programState.put(((IdentifierTree) variable).symbol(), value);
-          programState = programState.stackValue(value);
-        }
+        executeAssignement((AssignmentExpressionTree) tree);
         break;
       case ARRAY_ACCESS_EXPRESSION:
-        ArrayAccessExpressionTree arrayAccessExpressionTree = (ArrayAccessExpressionTree) tree;
-        // unstack expression and dimension
-
-        Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(2);
-        programState = unstack.a;
-        programState = programState.stackValue(constraintManager.createSymbolicValue(arrayAccessExpressionTree));
+        executeArrayAccessExpression((ArrayAccessExpressionTree) tree);
         break;
       case NEW_ARRAY:
-        NewArrayTree newArrayTree = (NewArrayTree) tree;
-
-        programState = programState.unstackValue(newArrayTree.initializers().size()).a;
-        SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
-        programState = programState.stackValue(svNewArray);
-        programState = svNewArray.setSingleConstraint(programState, NullConstraint.NOT_NULL);
+        executeNewArray((NewArrayTree) tree);
         break;
       case NEW_CLASS:
-        NewClassTree newClassTree = (NewClassTree) tree;
-
-        programState = programState.unstackValue(newClassTree.arguments().size()).a;
-        SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
-        programState = programState.stackValue(svNewClass);
-        programState = svNewClass.setSingleConstraint(programState, NullConstraint.NOT_NULL);
+        executeNewClass((NewClassTree) tree);
         break;
       case MULTIPLY:
       case DIVIDE:
@@ -376,13 +318,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case LESS_THAN_OR_EQUAL_TO:
       case EQUAL_TO:
       case NOT_EQUAL_TO:
-        // Consume two and produce one SV.
-
-        Pair<ProgramState, List<SymbolicValue>> unstackBinary = programState.unstackValue(2);
-        programState = unstackBinary.a;
-        SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
-        symbolicValue.computedFrom(unstackBinary.b);
-        programState = programState.stackValue(symbolicValue);
+        executeBinaryExpression(tree);
         break;
       case POSTFIX_INCREMENT:
       case POSTFIX_DECREMENT:
@@ -393,32 +329,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case BITWISE_COMPLEMENT:
       case LOGICAL_COMPLEMENT:
       case INSTANCE_OF:
-        // consume one and produce one
-
-        Pair<ProgramState, List<SymbolicValue>> unstackUnary = programState.unstackValue(1);
-        programState = unstackUnary.a;
-        SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
-        unarySymbolicValue.computedFrom(unstackUnary.b);
-        programState = programState.stackValue(unarySymbolicValue);
+        executeUnaryExpression(tree);
         break;
       case IDENTIFIER:
-        Symbol symbol = ((IdentifierTree) tree).symbol();
-        SymbolicValue value = programState.getValue(symbol);
-        if (value == null) {
-          value = constraintManager.createSymbolicValue(tree);
-          programState = programState.put(symbol, value);
-        }
-        programState = programState.stackValue(value);
+        executeIdentifier((IdentifierTree) tree);
         break;
       case MEMBER_SELECT:
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
-        if (!"class".equals(mse.identifier().name())) {
-
-          Pair<ProgramState, List<SymbolicValue>> unstackMSE = programState.unstackValue(1);
-          programState = unstackMSE.a;
-        }
-        SymbolicValue mseValue = constraintManager.createSymbolicValue(tree);
-        programState = programState.stackValue(mseValue);
+        executeMemberSelect(((MemberSelectExpressionTree) tree));
         break;
       case INT_LITERAL:
       case LONG_LITERAL:
@@ -440,6 +357,116 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
     checkerDispatcher.executeCheckPostStatement(tree);
     clearStack(tree);
+  }
+
+  private void executeMethodInvocation(MethodInvocationTree mit) {
+    setSymbolicValueOnFields(mit);
+    // unstack arguments and method identifier
+    programState = programState.unstackValue(mit.arguments().size() + 1).a;
+    logState(mit);
+    programState = programState.stackValue(constraintManager.createSymbolicValue(mit));
+  }
+
+  private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {
+    ExpressionTree initializer = variableTree.initializer();
+    if (initializer == null) {
+      SymbolicValue sv = null;
+      if (terminator != null && terminator.is(Tree.Kind.FOR_EACH_STATEMENT)) {
+        sv = constraintManager.createSymbolicValue(variableTree);
+      } else if (variableTree.type().symbolType().is("boolean")) {
+        sv = SymbolicValue.FALSE_LITERAL;
+      } else if (!variableTree.type().symbolType().isPrimitive()) {
+        sv = SymbolicValue.NULL_LITERAL;
+      }
+      if (sv != null) {
+        programState = programState.put(variableTree.symbol(), sv);
+      }
+    } else {
+      Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
+      programState = unstack.a;
+      programState = programState.put(variableTree.symbol(), unstack.b.get(0));
+    }
+  }
+
+  private void executeTypeCast(TypeCastTree typeCast) {
+    Type type = typeCast.type().symbolType();
+    if (type.isPrimitive()) {
+      Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(1);
+      programState = unstack.a;
+      programState = programState.stackValue(constraintManager.createSymbolicValue(typeCast.expression()));
+    }
+  }
+
+  private void executeAssignement(AssignmentExpressionTree tree) {
+    ExpressionTree variable = tree.variable();
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      // FIXME restricted to identifiers for now.
+      Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(2);
+      SymbolicValue value = unstack.b.get(1);
+      programState = unstack.a;
+      programState = programState.put(((IdentifierTree) variable).symbol(), value);
+      programState = programState.stackValue(value);
+    }
+  }
+
+  private void executeArrayAccessExpression(ArrayAccessExpressionTree tree) {
+    // unstack expression and dimension
+    Pair<ProgramState, List<SymbolicValue>> unstack = programState.unstackValue(2);
+    programState = unstack.a;
+    programState = programState.stackValue(constraintManager.createSymbolicValue(tree));
+  }
+
+  private void executeNewArray(NewArrayTree newArrayTree) {
+    programState = programState.unstackValue(newArrayTree.initializers().size()).a;
+    SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
+    programState = programState.stackValue(svNewArray);
+    programState = svNewArray.setSingleConstraint(programState, NullConstraint.NOT_NULL);
+  }
+
+  private void executeNewClass(NewClassTree tree) {
+    NewClassTree newClassTree = tree;
+    programState = programState.unstackValue(newClassTree.arguments().size()).a;
+    SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
+    programState = programState.stackValue(svNewClass);
+    programState = svNewClass.setSingleConstraint(programState, NullConstraint.NOT_NULL);
+  }
+
+  private void executeBinaryExpression(Tree tree) {
+    // Consume two and produce one SV.
+    Pair<ProgramState, List<SymbolicValue>> unstackBinary = programState.unstackValue(2);
+    programState = unstackBinary.a;
+    SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
+    symbolicValue.computedFrom(unstackBinary.b);
+    programState = programState.stackValue(symbolicValue);
+  }
+
+  private void executeUnaryExpression(Tree tree) {
+    // consume one and produce one
+    Pair<ProgramState, List<SymbolicValue>> unstackUnary = programState.unstackValue(1);
+    programState = unstackUnary.a;
+    SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
+    unarySymbolicValue.computedFrom(unstackUnary.b);
+    programState = programState.stackValue(unarySymbolicValue);
+  }
+
+  private void executeIdentifier(IdentifierTree tree) {
+    Symbol symbol = tree.symbol();
+    SymbolicValue value = programState.getValue(symbol);
+    if (value == null) {
+      value = constraintManager.createSymbolicValue(tree);
+      programState = programState.put(symbol, value);
+    }
+    programState = programState.stackValue(value);
+  }
+
+  private void executeMemberSelect(MemberSelectExpressionTree mse) {
+    if (!"class".equals(mse.identifier().name())) {
+
+      Pair<ProgramState, List<SymbolicValue>> unstackMSE = programState.unstackValue(1);
+      programState = unstackMSE.a;
+    }
+    SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);
+    programState = programState.stackValue(mseValue);
   }
 
   public void clearStack(Tree tree) {
