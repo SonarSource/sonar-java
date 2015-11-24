@@ -53,7 +53,7 @@ public class ConstraintManager {
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
       default:
-        result = new SymbolicValue.ObjectSymbolicValue(counter);
+        result = new SymbolicValue(counter);
     }
     counter++;
     return result;

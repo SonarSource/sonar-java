@@ -27,115 +27,102 @@ import org.sonar.java.se.ConstraintManager.NullConstraint;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface SymbolicValue {
+public class SymbolicValue {
 
-  SymbolicValue NULL_LITERAL = new ObjectSymbolicValue(0) {
+  public static final SymbolicValue NULL_LITERAL = new SymbolicValue(0) {
     @Override
     public String toString() {
       return super.toString() + "_NULL";
     }
   };
-  SymbolicValue TRUE_LITERAL = new ObjectSymbolicValue(1) {
+
+  public static final SymbolicValue TRUE_LITERAL = new SymbolicValue(1) {
     @Override
     public String toString() {
       return super.toString() + "_TRUE";
     }
   };
-  SymbolicValue FALSE_LITERAL = new ObjectSymbolicValue(2) {
+
+  public static final SymbolicValue FALSE_LITERAL = new SymbolicValue(2) {
     @Override
     public String toString() {
       return super.toString() + "_FALSE";
     }
   };
 
-  void computedFrom(List<SymbolicValue> symbolicValues);
+  private final int id;
 
-  ProgramState setSingleConstraint(ProgramState state, NullConstraint notNull);
-
-  List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint);
-
-  List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint);
-
-  class ObjectSymbolicValue implements SymbolicValue {
-
-    private final int id;
-
-    public ObjectSymbolicValue(int id) {
-      this.id = id;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      ObjectSymbolicValue that = (ObjectSymbolicValue) o;
-      return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-      return id;
-    }
-
-    @Override
-    public String toString() {
-      return "SV#" + id;
-    }
-
-    @Override
-    public void computedFrom(List<SymbolicValue> symbolicValues) {
-      // no op in general case
-    }
-
-    @Override
-    public List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint) {
-      Object data = programState.getConstraint(this);
-      if (data instanceof NullConstraint) {
-        NullConstraint nc = (NullConstraint) data;
-        if (!nc.equals(nullConstraint)) {
-          // setting null where value is known to be non null or the contrary
-          return ImmutableList.of();
-        }
-      }
-      if (data == null || !data.equals(nullConstraint)) {
-        return ImmutableList.of(programState.addConstraint(this, nullConstraint));
-      }
-      return ImmutableList.of(programState);
-    }
-
-    @Override
-    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      Object data = programState.getConstraint(this);
-      // update program state only for a different constraint
-      if (data instanceof BooleanConstraint) {
-        BooleanConstraint bc = (BooleanConstraint) data;
-        if (!bc.equals(booleanConstraint)) {
-          // setting null where value is known to be non null or the contrary
-          return ImmutableList.of();
-        }
-      }
-      if ((data == null || !data.equals(booleanConstraint)) && programState.canReach(this)) {
-        // store constraint only if symbolic value can be reached by a symbol.
-        return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
-      }
-      return ImmutableList.of(programState);
-    }
-
-    @Override
-    public ProgramState setSingleConstraint(ProgramState programState, NullConstraint nullConstraint) {
-      final List<ProgramState> states = setConstraint(programState, nullConstraint);
-      if (states.size() != 1) {
-        throw new IllegalStateException("Only a single program state is expected at this location");
-      }
-      return states.get(0);
-    }
+  public SymbolicValue(int id) {
+    this.id = id;
   }
 
-  abstract class BinarySymbolicValue extends ObjectSymbolicValue {
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SymbolicValue that = (SymbolicValue) o;
+    return id == that.id;
+  }
+
+  @Override
+  public int hashCode() {
+    return id;
+  }
+
+  @Override
+  public String toString() {
+    return "SV#" + id;
+  }
+
+  public void computedFrom(List<SymbolicValue> symbolicValues) {
+    // no op in general case
+  }
+
+  public List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint) {
+    Object data = programState.getConstraint(this);
+    if (data instanceof NullConstraint) {
+      NullConstraint nc = (NullConstraint) data;
+      if (!nc.equals(nullConstraint)) {
+        // setting null where value is known to be non null or the contrary
+        return ImmutableList.of();
+      }
+    }
+    if (data == null || !data.equals(nullConstraint)) {
+      return ImmutableList.of(programState.addConstraint(this, nullConstraint));
+    }
+    return ImmutableList.of(programState);
+  }
+
+  public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+    Object data = programState.getConstraint(this);
+    // update program state only for a different constraint
+    if (data instanceof BooleanConstraint) {
+      BooleanConstraint bc = (BooleanConstraint) data;
+      if (!bc.equals(booleanConstraint)) {
+        // setting null where value is known to be non null or the contrary
+        return ImmutableList.of();
+      }
+    }
+    if ((data == null || !data.equals(booleanConstraint)) && programState.canReach(this)) {
+      // store constraint only if symbolic value can be reached by a symbol.
+      return ImmutableList.of(programState.addConstraint(this, booleanConstraint));
+    }
+    return ImmutableList.of(programState);
+  }
+
+  public ProgramState setSingleConstraint(ProgramState programState, NullConstraint nullConstraint) {
+    final List<ProgramState> states = setConstraint(programState, nullConstraint);
+    if (states.size() != 1) {
+      throw new IllegalStateException("Only a single program state is expected at this location");
+    }
+    return states.get(0);
+  }
+
+  abstract static class BinarySymbolicValue extends SymbolicValue {
 
     SymbolicValue leftOp;
     SymbolicValue rightOp;
@@ -200,7 +187,8 @@ public interface SymbolicValue {
     }
 
   }
-  class NotEqualToSymbolicValue extends BinarySymbolicValue {
+
+  static class NotEqualToSymbolicValue extends BinarySymbolicValue {
 
     public NotEqualToSymbolicValue(int id) {
       super(id);
@@ -216,7 +204,8 @@ public interface SymbolicValue {
       return BooleanConstraint.FALSE;
     }
   }
-  class EqualToSymbolicValue extends BinarySymbolicValue {
+
+  static class EqualToSymbolicValue extends BinarySymbolicValue {
 
     public EqualToSymbolicValue(int id) {
       super(id);
@@ -229,7 +218,7 @@ public interface SymbolicValue {
 
   }
 
-  abstract class UnarySymbolicValue extends ObjectSymbolicValue {
+  abstract static class UnarySymbolicValue extends SymbolicValue {
     protected SymbolicValue operand;
 
     public UnarySymbolicValue(int id) {
@@ -244,7 +233,7 @@ public interface SymbolicValue {
 
   }
 
-  class NotSymbolicValue extends UnarySymbolicValue {
+  static class NotSymbolicValue extends UnarySymbolicValue {
 
     public NotSymbolicValue(int id) {
       super(id);
@@ -256,7 +245,7 @@ public interface SymbolicValue {
     }
   }
 
-  class InstanceOfSymbolicValue extends UnarySymbolicValue {
+  static class InstanceOfSymbolicValue extends UnarySymbolicValue {
     public InstanceOfSymbolicValue(int id) {
       super(id);
     }
@@ -281,7 +270,7 @@ public interface SymbolicValue {
     }
   }
 
-  abstract class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
+  abstract static class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
 
     protected BooleanExpressionSymbolicValue(int id) {
       super(id);
@@ -293,7 +282,7 @@ public interface SymbolicValue {
     }
   }
 
-  class AndSymbolicValue extends BooleanExpressionSymbolicValue {
+  static class AndSymbolicValue extends BooleanExpressionSymbolicValue {
 
     public AndSymbolicValue(int id) {
       super(id);
@@ -327,7 +316,7 @@ public interface SymbolicValue {
     }
   }
 
-  class OrSymbolicValue extends BooleanExpressionSymbolicValue {
+  static class OrSymbolicValue extends BooleanExpressionSymbolicValue {
 
     public OrSymbolicValue(int id) {
       super(id);
@@ -361,7 +350,7 @@ public interface SymbolicValue {
     }
   }
 
-  class XorSymbolicValue extends BooleanExpressionSymbolicValue {
+  static class XorSymbolicValue extends BooleanExpressionSymbolicValue {
 
     public XorSymbolicValue(int id) {
       super(id);
