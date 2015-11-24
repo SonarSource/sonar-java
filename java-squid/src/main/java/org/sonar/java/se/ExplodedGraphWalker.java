@@ -335,7 +335,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         executeIdentifier((IdentifierTree) tree);
         break;
       case MEMBER_SELECT:
-        executeMemberSelect(((MemberSelectExpressionTree) tree));
+        executeMemberSelect((MemberSelectExpressionTree) tree);
         break;
       case INT_LITERAL:
       case LONG_LITERAL:
