@@ -91,6 +91,17 @@ public class CFG {
   private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
   private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
 
+  private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
+    methodSymbol = symbol;
+    exitBlock = createBlock();
+    currentBlock = createBlock(exitBlock);
+    for (StatementTree statementTree : Lists.reverse(tree.body())) {
+      build(statementTree);
+    }
+    prune();
+    computePredecessors(blocks);
+  }
+
   public Symbol.MethodSymbol methodSymbol() {
     return methodSymbol;
   }
@@ -108,13 +119,13 @@ public class CFG {
   }
 
   public static class Block {
-
     private int id;
     private final List<Tree> elements = new ArrayList<>();
     private final Set<Block> successors = new HashSet<>();
     private final Set<Block> predecessors = new HashSet<>();
     private Block trueBlock;
     private Block falseBlock;
+
     private Tree terminator;
 
     public Block(int id) {
@@ -184,7 +195,6 @@ public class CFG {
     public boolean isInactive() {
       return terminator == null && elements.isEmpty();
     }
-
     private void prune(Block inactiveBlock) {
       if (inactiveBlock.equals(trueBlock)) {
         if (inactiveBlock.successors.size() != 1) {
@@ -202,17 +212,7 @@ public class CFG {
         successors.addAll(inactiveBlock.successors);
       }
     }
-  }
 
-  private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
-    methodSymbol = symbol;
-    exitBlock = createBlock();
-    currentBlock = createBlock(exitBlock);
-    for (StatementTree statementTree : Lists.reverse(tree.body())) {
-      build(statementTree);
-    }
-    prune();
-    computePredecessors(blocks);
   }
 
   private static void computePredecessors(List<Block> blocks) {

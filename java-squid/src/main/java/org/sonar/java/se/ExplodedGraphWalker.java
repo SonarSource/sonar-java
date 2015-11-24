@@ -137,9 +137,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       // LIFO:
       node = workList.removeFirst();
       programPosition = node.programPoint;
-      if (/* last */programPosition.block.successors().isEmpty()) {
-        // not guaranteed that last block will be reached, e.g. "label: goto label;"
-        // TODO(Godin): notify clients before continuing with another position
+      if (programPosition.block.successors().isEmpty()) {
         continue;
       }
       programState = node.programState;
