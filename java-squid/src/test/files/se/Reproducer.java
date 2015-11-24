@@ -1,6 +1,8 @@
 package javax.annotation;
 import javax.annotation.CheckForNull;
 import java.lang.Object;
+import java.util.HashMap;
+import java.util.TreeSet;
 
 @interface CheckForNull {}
 
@@ -59,6 +61,15 @@ class A {
 
     }
     printState();
-
   }
+
+  public void continue_foreach(boolean a, boolean b, Map<String, String> map) {
+    for (String prop : map.keySet()) {
+      if (b) {
+        continue;
+      }
+      String.format("  - %s=%s", prop, a ? "******" : "");
+    }
+  }
+
 }

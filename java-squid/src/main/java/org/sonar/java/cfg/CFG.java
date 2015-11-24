@@ -661,15 +661,16 @@ public class CFG {
   private void buildForEachStatement(ForEachStatement tree) {
     // TODO(npe) One solution is to create a forstatement node depending on type of expression (iterable or array) and build CFG from it.
     Block afterLoop = currentBlock;
-    currentBlock = createBlock();
-    Block loopback = currentBlock;
+    Block statementBlock = createBlock();
+    Block loopback = createBranch(tree, statementBlock, afterLoop);
+    currentBlock = createBlock(loopback);
     addContinueTarget(loopback);
     breakTargets.addLast(afterLoop);
     build(tree.statement());
     breakTargets.removeLast();
     continueTargets.removeLast();
-    currentBlock = createBranch(tree, currentBlock, afterLoop);
-    loopback.addSuccessor(currentBlock);
+    statementBlock.addSuccessor(currentBlock);
+    currentBlock = loopback;
     build(tree.variable());
     build(tree.expression());
     currentBlock = createBlock(currentBlock);

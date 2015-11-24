@@ -670,6 +670,47 @@ public class CFGTest {
   }
 
   @Test
+  public void foreach_loop_continue() {
+    final CFG cfg = buildCFG("void fun(){ System.out.println('start'); for(String foo:list) {System.out.println(foo); if(foo.length()> 2) {continue;}  System.out.println('');} System.out.println('end'); }");
+    final CFGChecker cfgChecker = checker(
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "'start'"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+        block(
+            element(Tree.Kind.IDENTIFIER, "foo"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Kind.METHOD_INVOCATION),
+            element(Tree.Kind.IDENTIFIER, "foo"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Kind.METHOD_INVOCATION),
+            element(Kind.INT_LITERAL, 2),
+            element(Kind.GREATER_THAN)
+            ).terminator(Kind.IF_STATEMENT).successors(3, 4),
+        terminator(Kind.CONTINUE_STATEMENT).successors(2),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "''"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+        block(
+            element(Tree.Kind.IDENTIFIER, "list"),
+            element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 5),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "'end'"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
   public void foreach_loop() {
     final CFG cfg = buildCFG("void fun(){ System.out.println(''); for(String foo:list) {System.out.println(foo);} System.out.println(''); }");
     final CFGChecker cfgChecker = checker(
@@ -678,16 +719,16 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(3),
-      block(
-        element(Tree.Kind.IDENTIFIER, "list"),
-        element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 2),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(2),
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(3),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+      block(
+        element(Tree.Kind.IDENTIFIER, "list"),
+        element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 3),
       block(
         element(Tree.Kind.CHAR_LITERAL, "''"),
         element(Tree.Kind.IDENTIFIER, "System"),
