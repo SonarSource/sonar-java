@@ -96,7 +96,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     }
   }
 
-  private List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
+  private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.NULL_LITERAL)) {
       // invariant to check that value was correctly evaluated.
