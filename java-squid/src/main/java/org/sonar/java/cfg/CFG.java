@@ -573,12 +573,7 @@ public class CFG {
       for (CaseGroupTree caseGroupTree : Lists.reverse(switchStatementTree.cases())) {
         build(caseGroupTree.body());
         if (!hasDefaultCase) {
-          for (CaseLabelTree caseLabel : caseGroupTree.labels()) {
-            if ("default".equals(caseLabel.caseOrDefaultKeyword().text())) {
-              hasDefaultCase = true;
-              break;
-            }
-          }
+          hasDefaultCase = containsDefaultCase(caseGroupTree.labels());
         }
         switches.getLast().addSuccessor(currentBlock);
         if (!caseGroupTree.equals(firstCase)) {
@@ -593,6 +588,15 @@ public class CFG {
     if (!hasDefaultCase) {
       currentBlock.addSuccessor(switchSuccessor);
     }
+  }
+
+  private static boolean containsDefaultCase(List<CaseLabelTree> labels) {
+    for (CaseLabelTree caseLabel : labels) {
+      if ("default".equals(caseLabel.caseOrDefaultKeyword().text())) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void buildBreakStatement(BreakStatementTree tree) {
