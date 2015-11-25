@@ -28,6 +28,7 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -163,25 +164,33 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String name = getMethodName(mit);
+    Arguments arguments = mit.arguments();
     if ("set".equals(name)) {
       // Calendar method
-      ExpressionTree arg0 = mit.arguments().get(0);
-      ExpressionTree arg1 = mit.arguments().get(1);
+      ExpressionTree arg0 = arguments.get(0);
+      ExpressionTree arg1 = arguments.get(1);
       String referenceName = getReferencedCalendarName(arg0);
       if (referenceName != null) {
         checkArgument(arg1, referenceName, "\"{0}\" is not a valid value for setting \"{1}\".");
       }
+    } else if ("<init>".equals(mit.symbol().name())) {
+      // call to this() or super()
+      checkConstructorArguments(mit.arguments());
     } else {
-      ExpressionTree arg = mit.arguments().get(0);
-      checkArgument(arg, name, "\"{0}\" is not a valid value for \"{1}\" method.");
+      checkArgument(arguments.get(0), name, "\"{0}\" is not a valid value for \"{1}\" method.");
     }
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
+    Arguments arguments = newClassTree.arguments();
+    checkConstructorArguments(arguments);
+  }
+
+  private void checkConstructorArguments(Arguments arguments) {
     // Gregorian Calendar : ignore first argument: year.
-    for (int i = 1; i < newClassTree.arguments().size(); i++) {
-      checkArgument(newClassTree.arguments().get(i), GREGORIAN_PARAMETERS[i], "\"{0}\" is not a valid value for setting \"{1}\".");
+    for (int i = 1; i < arguments.size(); i++) {
+      checkArgument(arguments.get(i), GREGORIAN_PARAMETERS[i], "\"{0}\" is not a valid value for setting \"{1}\".");
     }
   }
 

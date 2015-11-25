@@ -71,3 +71,15 @@ class A {
     calendar.get(Calendar.DST_OFFSET) == 0;
   }
 }
+
+class RollingCalendar extends GregorianCalendar {
+
+  RollingCalendar() {
+    super(); // Compliant
+  }
+
+  RollingCalendar(String s) {
+    super(2015, 12, 31); // Noncompliant {{"12" is not a valid value for setting "month".}}
+  }
+
+}
