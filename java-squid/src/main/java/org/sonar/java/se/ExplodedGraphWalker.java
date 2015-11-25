@@ -54,6 +54,7 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
@@ -446,7 +447,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = unstackUnary.a;
     SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
     unarySymbolicValue.computedFrom(unstackUnary.b);
-    programState = programState.stackValue(unarySymbolicValue);
+    if(tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_DECREMENT)
+        && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
+      programState = programState.put(((IdentifierTree) ((UnaryExpressionTree) tree).expression()).symbol(), unarySymbolicValue);
+    }
+    if(tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
+      programState = programState.stackValue(unstackUnary.b.get(0));
+    } else {
+      programState = programState.stackValue(unarySymbolicValue);
+    }
   }
 
   private void executeIdentifier(IdentifierTree tree) {

@@ -72,4 +72,15 @@ class A {
     }
   }
 
+  private void increment(int index, int index2) {
+    int start = index;
+    index++;
+    if(start == index) {
+
+    }
+    start = index2;
+    if(start == index2++) { // Noncompliant
+    }
+  }
+
 }
