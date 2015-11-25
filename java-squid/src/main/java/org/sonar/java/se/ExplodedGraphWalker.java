@@ -132,7 +132,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
-        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name() + "in class " + tree.symbol().owner().name());
+        throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS + " steps for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name());
       }
       // LIFO:
       node = workList.removeFirst();
@@ -520,7 +520,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     if (isExplodedGraphTooBig(programState)) {
       throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
-        + methodTree.simpleName().name() + "in class " + methodTree.symbol().owner().name());
+        + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name());
     }
     ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitedPoint(programPoint, nbOfExecution + 1));
     if (!cachedNode.isNew) {
