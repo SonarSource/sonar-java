@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.BreakStatementTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
+import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
@@ -193,18 +194,19 @@ public class CFG {
     }
 
     public boolean isInactive() {
-      return terminator == null && elements.isEmpty();
+      return terminator == null && elements.isEmpty() && successors.size() == 1;
     }
+
     private void prune(Block inactiveBlock) {
       if (inactiveBlock.equals(trueBlock)) {
         if (inactiveBlock.successors.size() != 1) {
-          throw new IllegalStateException("True successor must be replaced by a uniuqe successor!");
+          throw new IllegalStateException("True successor must be replaced by a unique successor!");
         }
         trueBlock = inactiveBlock.successors.iterator().next();
       }
       if (inactiveBlock.equals(falseBlock)) {
         if (inactiveBlock.successors.size() != 1) {
-          throw new IllegalStateException("True successor must be replaced by a uniuqe successor!");
+          throw new IllegalStateException("False successor must be replaced by a unique successor!");
         }
         falseBlock = inactiveBlock.successors.iterator().next();
       }
@@ -723,12 +725,23 @@ public class CFG {
   private void buildTryStatement(TryStatementTree tryStatementTree) {
     // FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
     currentBlock = createBlock(currentBlock);
-    BlockTree finallyBlock = tryStatementTree.finallyBlock();
-    if (finallyBlock != null) {
-      build(finallyBlock);
+    BlockTree finallyBlockTree = tryStatementTree.finallyBlock();
+    if (finallyBlockTree != null) {
+      build(finallyBlockTree);
     }
-    currentBlock = createBlock(currentBlock);
+    Block finallyOrEndBlock = currentBlock;
+    Block beforeFinally = createBlock(currentBlock);
+    List<Block> catches = new ArrayList<>();
+    for (CatchTree catchTree : tryStatementTree.catches()) {
+      currentBlock = createBlock(finallyOrEndBlock);
+      build(catchTree.block());
+      catches.add(currentBlock);
+    }
+    currentBlock = beforeFinally;
     build(tryStatementTree.block());
+    for (Block catchBlock : catches) {
+      currentBlock.addSuccessor(catchBlock);
+    }
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);

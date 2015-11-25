@@ -1047,16 +1047,16 @@ public static class Class extends SuperClass {
       b = true;
       c = true;
     } catch (Exception e) {
-      if (a) { //false negative : evaluate catch blocks Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (b) { // Compliant
+      if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
       c = true;
       d = true;
     } catch (Exception e) {
-      if (a) { //false negative : evaluate catch blocks Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (c) { // Compliant
+      if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
       d = true;
     }
@@ -1066,8 +1066,7 @@ public static class Class extends SuperClass {
     }
     if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    //false positive !
-    if (d) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    if (d) {
     }
   }
 

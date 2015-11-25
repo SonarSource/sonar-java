@@ -114,6 +114,13 @@ public class CFGTest {
     private int ifTrue = -1;
     private int ifFalse = -1;
 
+    BlockChecker(final int... ids) {
+      if( ids.length <= 1) {
+        throw new IllegalArgumentException("creating a block with only one successors should not be possible!");
+      }
+      successors(ids);
+    }
+
     BlockChecker(final Tree.Kind kind, final int... ids) {
       successors(ids);
       terminator(kind);
@@ -956,26 +963,76 @@ public class CFGTest {
 
   @Test
   public void try_statement() {
-    final CFG cfg = buildCFG("void fun() {try {System.out.println('');} finally { System.out.println(''); }}");
-    final CFGChecker cfgChecker = checker(
-      block(
-        element(Tree.Kind.TRY_STATEMENT)
+    CFG cfg = buildCFG("void fun() {try {System.out.println('');} finally { System.out.println(''); }}");
+    CFGChecker cfgChecker = checker(
+        block(
+            element(Tree.Kind.TRY_STATEMENT)
         ).successors(2),
-      block(
-        element(Tree.Kind.CHAR_LITERAL, "''"),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "''"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)
         ).successors(1),
-      block(
-        element(Tree.Kind.CHAR_LITERAL, "''"),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "''"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
+    cfg = buildCFG("void fun() {try {System.out.println('');} catch(IllegalArgumentException e) { foo('iae');} catch(Exception e){foo('e');}" +
+        " finally { System.out.println('finally'); }}");
+    cfgChecker = checker(
+        block(
+            element(Tree.Kind.TRY_STATEMENT)
+        ).successors(2),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "'e'"),
+            element(Tree.Kind.IDENTIFIER, "foo"),
+            element(Tree.Kind.METHOD_INVOCATION)
+        ).successors(1),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "'iae'"),
+            element(Tree.Kind.IDENTIFIER, "foo"),
+            element(Tree.Kind.METHOD_INVOCATION)
+        ).successors(1),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "''"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)
+        ).successors(1, 3, 4),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "'finally'"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)
+        ).successors(0)
+    );
+    cfgChecker.check(cfg);
+    cfg = buildCFG(
+        "  private void f() {\n" +
+            "    try {\n" +
+            "    } catch (Exception e) {\n" +
+            "      if (e instanceof IOException) { \n" +
+            "      }\n}}");
+    cfgChecker = checker(
+        block(
+            element(Tree.Kind.TRY_STATEMENT)
+        ).successors(1),
+        block(
+            element(Tree.Kind.IDENTIFIER, "e"),
+            element(Tree.Kind.INSTANCE_OF)
+        ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0),
+        new BlockChecker(0, 2) // paritcular case of a block with multiple successors but no instructions.
+    );
+    cfgChecker.check(cfg);
+
   }
 
   @Test

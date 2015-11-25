@@ -2,15 +2,6 @@
 'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
 4053,
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-339,
-],
-'com.google.guava:guava:src/com/google/common/collect/Queues.java':[
-329,
-],
-'com.google.guava:guava:src/com/google/common/io/Closer.java':[
-224,
-],
 'com.google.guava:guava:src/com/google/common/reflect/TypeVisitor.java':[
 92,
 ],
@@ -23,9 +14,6 @@
 'com.google.guava:guava:src/com/google/common/util/concurrent/Monitor.java':[
 452,
 476,
-],
-'com.google.guava:guava:src/com/google/common/util/concurrent/MoreExecutors.java':[
-735,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/SerializingExecutor.java':[
 147,

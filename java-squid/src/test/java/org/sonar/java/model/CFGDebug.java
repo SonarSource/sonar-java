@@ -78,7 +78,8 @@ public class CFGDebug {
       buffer.append(successor.id());
       if (successor == block.trueBlock()) {
         buffer.append("(true)");
-      } else if (successor == block.falseBlock()) {
+      }
+      if (successor == block.falseBlock()) {
         buffer.append("(false)");
       }
     }
