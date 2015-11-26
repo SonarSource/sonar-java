@@ -19,7 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -28,6 +30,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -39,7 +42,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 
 @Rule(
   key = "S00112",
@@ -63,7 +66,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && !((MethodTreeImpl) tree).isMainMethod()) {
+    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && !isAllowed(tree)) {
       for (TypeTree throwClause : tree.throwsClauses()) {
         checkExceptionAndRaiseIssue(throwClause);
       }
@@ -71,7 +74,23 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
     super.visitMethod(tree);
   }
 
-  @Override
+  private boolean isAllowed(MethodTree tree) {
+      return ((MethodTreeImpl) tree).isMainMethod()
+             || containsAllowedAnnotation(tree.modifiers().annotations());
+  }
+
+  private boolean containsAllowedAnnotation(List<AnnotationTree> annotations) {
+      boolean containsAllowedAnnotation = false;
+      for (AnnotationTree annotationTree : annotations) {
+          if (annotationTree.symbolType().is("org.junit.Test")) {
+              containsAllowedAnnotation = true;
+              break;
+          }
+      }
+      return containsAllowedAnnotation;
+  }
+
+@Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
       checkExceptionAndRaiseIssue(((NewClassTree) tree.expression()).identifier());
