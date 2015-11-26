@@ -149,17 +149,6 @@ public class CFG {
       return falseBlock;
     }
 
-    Block branchingBlock() {
-      if (elements.isEmpty() && terminator != null) {
-        if (terminator.is(Tree.Kind.CONDITIONAL_AND)) {
-          return falseBlock;
-        } else if (terminator.is(Tree.Kind.CONDITIONAL_OR)) {
-          return trueBlock;
-        }
-      }
-      return this;
-    }
-
     void addSuccessor(Block successor) {
       successors.add(successor);
     }
@@ -529,26 +518,30 @@ public class CFG {
   }
 
   private void buildConditionalAnd(BinaryExpressionTree tree) {
-    // If the current block is itself a conditional expression, the false block should branch to the false block of it
-    final Block falseBlock = currentBlock;
-    // process RHS
+    Block falseBlock = currentBlock;
     currentBlock = createBlock(falseBlock);
+    // process RHS
     build(tree.rightOperand());
-    final Block trueBlock = currentBlock;
     // process LHS
-    currentBlock = createBranch(tree, trueBlock, falseBlock.branchingBlock());
-    build(tree.leftOperand());
+    buildConditionalBinaryLHS(tree, currentBlock, falseBlock);
   }
 
   private void buildConditionalOr(BinaryExpressionTree tree) {
-    // process RHS
     Block trueBlock = currentBlock;
     currentBlock = createBlock(trueBlock);
+    // process RHS
     build(tree.rightOperand());
-    Block falseBlock = currentBlock;
     // process LHS
-    currentBlock = createBranch(tree, trueBlock.branchingBlock(), falseBlock);
+    buildConditionalBinaryLHS(tree, trueBlock, currentBlock);
+  }
+
+  private void buildConditionalBinaryLHS(BinaryExpressionTree tree, Block trueBlock, Block falseBlock) {
+    currentBlock = createBlock();
+    Block toComplete = currentBlock;
     build(tree.leftOperand());
+    toComplete.terminator = tree;
+    toComplete.addFalseSuccessor(falseBlock);
+    toComplete.addTrueSuccessor(trueBlock);
   }
 
   private void buildLabeledStatement(LabeledStatementTree labeledStatement) {

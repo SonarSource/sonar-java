@@ -83,4 +83,8 @@ class A {
     }
   }
 
+  private boolean sizesDontMatch(boolean bool, boolean a, boolean b) {
+    return (!bool && a) || (bool && b);
+  }
+
 }

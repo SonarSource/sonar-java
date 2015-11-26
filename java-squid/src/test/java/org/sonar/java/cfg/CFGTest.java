@@ -256,6 +256,7 @@ public class CFGTest {
         case PLUS_ASSIGNMENT:
         case ASSIGNMENT:
         case ARRAY_ACCESS_EXPRESSION:
+        case LOGICAL_COMPLEMENT:
         case PLUS:
           break;
         default:
@@ -1141,7 +1142,7 @@ public class CFGTest {
     final CFG cfg = buildCFG(
       "void andAll(boolean a, boolean b, boolean c) { return a && b && c;}");
     final CFGChecker cfgChecker = checker(
-      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_AND).ifTrue(4).ifFalse(1),
+      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_AND).ifTrue(4).ifFalse(3),
       block(element(Kind.IDENTIFIER, "b")).successors(3),
       terminator(Kind.CONDITIONAL_AND).ifTrue(2).ifFalse(1),
       block(element(Kind.IDENTIFIER, "c")).successors(1),
@@ -1154,12 +1155,31 @@ public class CFGTest {
     final CFG cfg = buildCFG(
       "void orAll(boolean a, boolean b, boolean c) { return a || b || c;}");
     final CFGChecker cfgChecker = checker(
-      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(4),
+      block(element(Kind.IDENTIFIER, "a")).terminator(Kind.CONDITIONAL_OR).ifTrue(3).ifFalse(4),
       block(element(Kind.IDENTIFIER, "b")).successors(3),
       terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(2),
       block(element(Kind.IDENTIFIER, "c")).successors(1),
       terminator(Kind.RETURN_STATEMENT).successors(0));
     cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void complex_boolean_expression() throws Exception {
+    final CFG cfg = buildCFG(" private boolean fun(boolean bool, boolean a, boolean b) {\n" +
+        "    return (!bool && a) || (bool && b);\n" +
+        "  }");
+    final CFGChecker cfgChecker = checker(
+        block(
+            element(Kind.IDENTIFIER, "bool"),
+            element(Kind.LOGICAL_COMPLEMENT)
+        ).terminator(Kind.CONDITIONAL_AND).ifTrue(5).ifFalse(4),
+        block(element(Kind.IDENTIFIER, "a")).successors(4),
+        terminator(Kind.CONDITIONAL_OR).ifTrue(1).ifFalse(3),
+        block(element(Kind.IDENTIFIER, "bool")).terminator(Kind.CONDITIONAL_AND).ifTrue(2).ifFalse(1),
+        block(element(Kind.IDENTIFIER, "b")).successors(1),
+        terminator(Kind.RETURN_STATEMENT).successors(0));
+    cfgChecker.check(cfg);
+
   }
 
   @Test
