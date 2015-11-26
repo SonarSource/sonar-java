@@ -1,3 +1,5 @@
+import org.junit.Test;
+
 public class Example {
 
   public void throws_Throwable() throws Throwable { // Noncompliant
@@ -51,14 +53,19 @@ public class Example {
      }
 
   @Override
-  public void throws_Exception() throws Exception { //Compliant because of overrides
-
+  public void throws_Exception() throws Exception { // Compliant because of overrides
   }
 
   @Deprecated
   public void throws_Exception() throws Exception { // Noncompliant
   }
+  
+  @Test
+  public void test_throws_Exception() throws Exception { // Compliant because of @Test
+  }
+  
 }
+
 class SubClass extends Example {
 
   public void throws_Exception() throws Exception { //Compliant because overrides.
