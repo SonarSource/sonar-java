@@ -24,16 +24,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -54,8 +52,8 @@ public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor impl
   }
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -65,7 +63,7 @@ public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor impl
       VariableTree param = let.parameters().get(0);
       String ident = param.simpleName().name();
       if(param.type().is(Tree.Kind.INFERED_TYPE)) {
-        addIssue(param, "Remove the parentheses around the \"" + ident + "\" parameter" + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+        addIssue(param, "Remove the parentheses around the \"" + ident + "\" parameter" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
   }

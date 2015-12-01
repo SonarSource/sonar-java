@@ -25,8 +25,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -73,11 +73,11 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
   private Tree.Kind[] expressionKindsToCheck = JAVA_7_KINDS;
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    if (JavaVersionHelper.java8Compatible(version)) {
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    if (version.isJava8Compatible()) {
       expressionKindsToCheck = JAVA_8_KINDS;
     }
-    return JavaVersionHelper.java7Compatible(version);
+    return version.isJava7Compatible();
   }
 
   @Override
@@ -95,7 +95,7 @@ public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements Jav
         reportIssue(
           ((ParameterizedTypeTree) newTypeTree).typeArguments(),
           "Replace the type specification in this constructor call with the diamond operator (\"<>\")." +
-            JavaVersionHelper.java7CompatibilityMessage(context.getJavaVersion()));
+            context.getJavaVersion().java7CompatibilityMessage());
       }
     }
   }

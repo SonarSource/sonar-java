@@ -24,16 +24,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -48,8 +46,8 @@ import java.util.List;
 public class DateUtilsTruncateCheck extends AbstractMethodDetection implements JavaVersionAwareVisitor {
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -62,7 +60,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection implements J
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Use \"Instant.truncatedTo\" instead." + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+    addIssue(mit, "Use \"Instant.truncatedTo\" instead." + context.getJavaVersion().java8CompatibilityMessage());
   }
 
   private static MethodMatcher truncateMethodMatcher(String firstParameterType) {

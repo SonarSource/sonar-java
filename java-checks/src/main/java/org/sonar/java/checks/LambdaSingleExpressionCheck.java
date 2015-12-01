@@ -25,9 +25,9 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -35,8 +35,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -52,8 +50,8 @@ import java.util.List;
 public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -69,7 +67,7 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
       if (singleStatementIsReturn(lambdaExpressionTree)) {
         message += " and then remove useless return keyword";
       }
-      addIssue(lambdaExpressionTree.body(), message + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+      addIssue(lambdaExpressionTree.body(), message + context.getJavaVersion().java8CompatibilityMessage());
     }
   }
 

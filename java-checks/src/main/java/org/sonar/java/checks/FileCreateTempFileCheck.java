@@ -24,11 +24,11 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -78,8 +78,8 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
   private JavaFileScannerContext context;
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java7Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava7Compatible();
   }
 
   @Override
@@ -133,7 +133,7 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
         mit,
         this,
         "Use \"Files.createTempDirectory\" or a library function to create this directory instead." +
-          JavaVersionHelper.java7CompatibilityMessage(context.getJavaVersion()));
+          context.getJavaVersion().java7CompatibilityMessage());
     }
   }
 

@@ -23,10 +23,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -58,8 +58,8 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   private JavaFileScannerContext context;
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -71,7 +71,7 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isSingleMethodInvocationUsingLambdaParamAsArg(tree) || isBlockInvokingMethod(tree.body())) {
-      context.addIssue(tree, this, "Replace this lambda with a method reference." + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+      context.addIssue(tree, this, "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     }
     super.visitLambdaExpression(tree);
   }

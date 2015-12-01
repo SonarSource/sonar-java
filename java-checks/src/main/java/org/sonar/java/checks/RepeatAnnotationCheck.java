@@ -23,10 +23,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -37,8 +37,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -55,8 +53,8 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
   private JavaFileScannerContext context;
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -73,7 +71,7 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
         context.addIssue(
           annotationTree,
           this,
-          "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group" + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+          "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
     super.visitAnnotation(annotationTree);

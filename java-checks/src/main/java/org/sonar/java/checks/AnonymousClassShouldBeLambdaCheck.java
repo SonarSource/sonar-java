@@ -24,10 +24,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
@@ -39,8 +39,6 @@ import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -58,8 +56,8 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
   private List<IdentifierTree> enumConstants;
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -83,7 +81,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
       if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && hasOnlyOneMethod(classBody.members())) {
-        context.addIssue(identifier, this, "Make this anonymous inner class a lambda" + JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+        context.addIssue(identifier, this, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
   }

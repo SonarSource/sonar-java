@@ -27,10 +27,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.checks.helpers.JavaVersionHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -44,8 +44,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -72,8 +70,8 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
     build();
 
   @Override
-  public boolean isCompatibleWithJavaVersion(@Nullable Integer version) {
-    return JavaVersionHelper.java8Compatible(version);
+  public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+    return version.isJava8Compatible();
   }
 
   @Override
@@ -88,7 +86,7 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
       addIssue(
         tree,
         "Annotate the \"" + classTree.simpleName().name() + "\" interface with the @FunctionalInterface annotation" +
-          JavaVersionHelper.java8CompatibilityMessage(context.getJavaVersion()));
+          context.getJavaVersion().java8CompatibilityMessage());
     }
   }
 
