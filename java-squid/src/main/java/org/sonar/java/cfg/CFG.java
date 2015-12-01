@@ -66,6 +66,8 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -91,6 +93,8 @@ public class CFG {
   private String pendingLabel = null;
   private Map<String, Block> labelsBreakTarget = Maps.newHashMap();
   private Map<String, Block> labelsContinueTarget = Maps.newHashMap();
+  private final Deque<Block> finallyBlocks = new LinkedList<>();
+
   private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
     methodSymbol = symbol;
     exitBlock = createBlock();
@@ -176,6 +180,18 @@ public class CFG {
       return successors;
     }
 
+    public List<Block> finallySuccessors() {
+      final ArrayList<Block> result = new ArrayList<>(successors);
+      Collections.sort(result, new Comparator<Block>() {
+        @Override
+        public int compare(Block o1, Block o2) {
+          // block are sorted by decreasing id
+          return Integer.compare(o2.id, o1.id);
+        }
+      });
+      return result;
+    }
+
     @CheckForNull
     public Tree terminator() {
       return terminator;
@@ -201,6 +217,13 @@ public class CFG {
       if (successors.remove(inactiveBlock)) {
         successors.addAll(inactiveBlock.successors);
       }
+    }
+
+    public Block splitOnReturn(CFG cfg) {
+      Block newBlock = cfg.createBlock(this);
+      newBlock.elements.addAll(elements);
+      elements.clear();
+      return newBlock;
     }
 
   }
@@ -438,6 +461,11 @@ public class CFG {
     ExpressionTree expression = returnStatement.expression();
     if (expression != null) {
       build(expression);
+    }
+    for (Block block : finallyBlocks) {
+      if (block != null) {
+        currentBlock.addSuccessor(block);
+      }
     }
   }
 
@@ -718,8 +746,11 @@ public class CFG {
     // FIXME only path with no failure constructed for now, (not taking try with resources into consideration).
     currentBlock = createBlock(currentBlock);
     BlockTree finallyBlockTree = tryStatementTree.finallyBlock();
-    if (finallyBlockTree != null) {
+    if (finallyBlockTree == null) {
+      finallyBlocks.push(null);
+    } else {
       build(finallyBlockTree);
+      finallyBlocks.push(currentBlock);
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
@@ -732,11 +763,15 @@ public class CFG {
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
     for (Block catchBlock : catches) {
+      if (currentBlock.terminator != null && currentBlock.terminator.is(Tree.Kind.RETURN_STATEMENT)) {
+        currentBlock = currentBlock.splitOnReturn(this);
+      }
       currentBlock.addSuccessor(catchBlock);
     }
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);
+    finallyBlocks.pop();
   }
 
   private void buildThrowStatement(ThrowStatementTree throwStatementTree) {

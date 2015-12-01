@@ -240,4 +240,15 @@ public class A {
       closeJar(jar);
     }
   }
+  
+  public void correctHandlingOfJarFileWithReturn(String fileName) {
+    JarFile jar = null;
+    try {
+      jar = new JarFile(fileName);
+      jar.entries();
+      return;
+    } finally {
+      closeJar(jar);
+    }
+  }
 }

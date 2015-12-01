@@ -1268,5 +1268,25 @@ class SuperClass {
       }
     }
   }
+  
+  static <T> T invokeAnyImpl() {
+    ExecutionException ee = null;
+    for (;;) {
+      Future<T> f = futureQueue.poll();
+      if (f == null) {
+        break;
+      }
+      try {
+        return f.get();
+      } catch (RuntimeException rex) {
+        ee = new ExecutionException(rex);
+      }
+    }
+
+    if (ee == null) {
+      ee = new ExecutionException(null);
+    }
+    throw ee;
+  }
 
 }

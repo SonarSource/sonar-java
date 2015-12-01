@@ -21,9 +21,14 @@ package org.sonar.java.se;
 
 import com.google.common.collect.Maps;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.cfg.CFG.Block;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -46,38 +51,195 @@ public class ExplodedGraph {
     return result;
   }
 
-  public static class ProgramPoint {
-    private int hashcode;
-    final CFG.Block block;
-    final int i;
-    final boolean skipSuccessors;
+  public static interface ProgramPoint {
 
-    public ProgramPoint(CFG.Block block, int i) {
-      this(block, i, false);
+    Block block();
+
+    ProgramPoint next();
+
+    Tree terminator();
+
+    boolean atEnd();
+
+    Tree currentElement();
+
+    boolean hasBlock();
+
+    Collection<Block> successors();
+
+  }
+
+  public static class FinallyProgramPoint implements ProgramPoint {
+
+    private int hashcode;
+    private final List<CFG.Block> blocks;
+    private final int blockStep;
+    private final int step;
+
+    public FinallyProgramPoint(List<CFG.Block> blocks) {
+      this(blocks, 0, 0);
     }
 
-    public ProgramPoint(CFG.Block block, int i, boolean skipSuccessors) {
-      this.block = block;
-      this.i = i;
-      this.skipSuccessors = skipSuccessors;
+    private FinallyProgramPoint(List<CFG.Block> blocks, int blockStep, int step) {
+      this.blocks = new ArrayList<>(blocks);
+      this.step = step;
+      this.blockStep = adjustBlockIndex(blockStep);
+    }
+
+    private int adjustBlockIndex(int blockStep) {
+      int n = blockStep;
+      while (blocks.get(n).elements().isEmpty()) {
+        n += 1;
+        if (n == blocks.size()) {
+          break;
+        }
+      }
+      return n;
     }
 
     @Override
     public int hashCode() {
-      if(hashcode == 0) {
-        hashcode = block.id() * 31 + i;
+      if (hashcode == 0) {
+        long hash = step;
+        for (Block block : blocks) {
+          hash = block.id() * 31 + hash >> 16;
+        }
+        hashcode = (int) hash;
       }
       return hashcode;
     }
 
     @Override
     public boolean equals(Object obj) {
-      if (obj instanceof ProgramPoint) {
-        ProgramPoint other = (ProgramPoint) obj;
-        return this.block.id() == other.block.id()
-          && this.i == other.i;
+      if (obj instanceof FinallyProgramPoint) {
+        FinallyProgramPoint other = (FinallyProgramPoint) obj;
+        if (hasBlock() && other.hasBlock()) {
+          return this.blocks.get(blockStep).id() == other.blocks.get(other.blockStep).id()
+            && this.step == other.step;
+        }
+        return blockStep == other.blockStep;
       }
       return false;
+    }
+
+    @Override
+    public Block block() {
+      return blocks.get(blockStep);
+    }
+
+    @Override
+    public ProgramPoint next() {
+      int nextBlockStep = blockStep;
+      int nextStep = step + 1;
+      if (nextStep == block().elements().size()) {
+        nextBlockStep += 1;
+        nextStep = 0;
+      }
+      return new FinallyProgramPoint(blocks, nextBlockStep, nextStep);
+    }
+
+    @Override
+    public Tree terminator() {
+      return block().terminator();
+    }
+
+    @Override
+    public boolean atEnd() {
+      return blockStep == blocks.size();
+    }
+
+    @Override
+    public Tree currentElement() {
+      return block().elements().get(step);
+    }
+
+    @Override
+    public boolean hasBlock() {
+      return blockStep < blocks.size();
+    }
+
+    @Override
+    public Collection<Block> successors() {
+      return blocks.get(blocks.size() - 1).successors();
+    }
+
+    @Override
+    public String toString() {
+      return hasBlock() ? "F" + block().id() + "." + step : "F (empty)";
+    }
+  }
+
+  public static class BlockProgramPoint implements ProgramPoint {
+
+    private int hashcode;
+    private final CFG.Block block;
+    private final int step;
+
+    public BlockProgramPoint(CFG.Block block) {
+      this(block, 0);
+    }
+
+    private BlockProgramPoint(CFG.Block block, int step) {
+      this.block = block;
+      this.step = step;
+    }
+
+    @Override
+    public ProgramPoint next() {
+      return new BlockProgramPoint(block, step + 1);
+    }
+
+    @Override
+    public int hashCode() {
+      if(hashcode == 0) {
+        hashcode = block.id() * 31 + step;
+      }
+      return hashcode;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof BlockProgramPoint) {
+        BlockProgramPoint other = (BlockProgramPoint) obj;
+        return this.block.id() == other.block.id()
+          && this.step == other.step;
+      }
+      return false;
+    }
+
+    @Override
+    public CFG.Block block() {
+      return block;
+    }
+
+    @Override
+    public Tree terminator() {
+      return block.terminator();
+    }
+
+    @Override
+    public boolean hasBlock() {
+      return step < block.elements().size();
+    }
+
+    @Override
+    public Tree currentElement() {
+      return block.elements().get(step);
+    }
+
+    @Override
+    public boolean atEnd() {
+      return step == block.elements().size();
+    }
+
+    @Override
+    public Collection<Block> successors() {
+      return block.successors();
+    }
+
+    @Override
+    public String toString() {
+      return "B" + block.id() + "." + step;
     }
   }
 
@@ -113,7 +275,7 @@ public class ExplodedGraph {
 
     @Override
     public String toString() {
-      return "B" + programPoint.block.id() + "." + programPoint.i + ": " + programState;
+      return programPoint + ": " + programState;
     }
   }
 }

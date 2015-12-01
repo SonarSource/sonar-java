@@ -922,6 +922,34 @@ public class CFGTest {
   }
 
   @Test
+  public void try_return_catch_statement() {
+    final CFG cfg = buildCFG("int fun() {try {System.out.println(''); return sizeOf();} catch(Exception e) { e.printStack();} finally { System.out.println(''); }}");
+    final CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(4),
+      block(
+        element(Tree.Kind.CHAR_LITERAL, "''"),
+        element(Tree.Kind.IDENTIFIER, "System"),
+        element(Tree.Kind.MEMBER_SELECT),
+        element(Tree.Kind.MEMBER_SELECT),
+        element(Tree.Kind.METHOD_INVOCATION),
+        element(Tree.Kind.IDENTIFIER, "sizeOf"),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(2, 3),
+      terminator(Tree.Kind.RETURN_STATEMENT, 0, 1),
+      block(
+        element(Tree.Kind.IDENTIFIER, "e"),
+        element(Tree.Kind.MEMBER_SELECT),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(1),
+      block(
+        element(Tree.Kind.CHAR_LITERAL, "''"),
+        element(Tree.Kind.IDENTIFIER, "System"),
+        element(Tree.Kind.MEMBER_SELECT),
+        element(Tree.Kind.MEMBER_SELECT),
+        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+  }
+
+  @Test
   public void throw_statement() {
     final CFG cfg = buildCFG("void fun(Object a) {if(a==null) { throw new Exception();} System.out.println(''); }");
     final CFGChecker cfgChecker = checker(
