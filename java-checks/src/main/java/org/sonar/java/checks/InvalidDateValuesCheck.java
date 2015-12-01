@@ -188,8 +188,10 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
   }
 
   private void checkConstructorArguments(Arguments arguments) {
+    // Gregorian Calendar : simply ignore miliseconds, which could be a 7th parameter of the constructor
+    int numberArgsToCheck = Math.min(arguments.size(), GREGORIAN_PARAMETERS.length);
     // Gregorian Calendar : ignore first argument: year.
-    for (int i = 1; i < arguments.size(); i++) {
+    for (int i = 1; i < numberArgsToCheck; i++) {
       checkArgument(arguments.get(i), GREGORIAN_PARAMETERS[i], "\"{0}\" is not a valid value for setting \"{1}\".");
     }
   }

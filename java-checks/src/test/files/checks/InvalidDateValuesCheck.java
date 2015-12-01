@@ -1,14 +1,7 @@
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
-
+package java.util;
 
 class A {
   int foo() {
-
-
-
     Date d = new Date();
     d.setDate(25);
     d.setDate(32);// Noncompliant {{"32" is not a valid value for "setDate" method.}}
@@ -82,4 +75,7 @@ class RollingCalendar extends GregorianCalendar {
     super(2015, 12, 31); // Noncompliant {{"12" is not a valid value for setting "month".}}
   }
 
+  RollingCalendar(int i) {
+    super(2015, 11, 31, 1, 1, 1 , /* millis */ 1); // Compliant
+  }
 }
