@@ -37,12 +37,12 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-
-import javax.annotation.Nullable;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -92,7 +92,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   private String expectFileIssue;
   private Integer expectFileIssueOnline;
   private boolean providedJavaVersion = false;
-  private Integer javaVersion;
+  private JavaVersion javaVersion = new JavaVersionImpl();
 
   private static final Map<String, IssueAttribute> ATTRIBUTE_MAP = ImmutableMap.<String, IssueAttribute>builder()
     .put("message", IssueAttribute.MESSAGE)
@@ -141,12 +141,12 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
    *
    * @param filename The file to be analyzed
    * @param check The check to be used for the analysis
-   * @param javaVersion The version to consider for the analysis, null to force case of java version not detected
+   * @param javaVersion The version to consider for the analysis (6 for java 1.6, 7 for 1.7, etc.)
    */
-  public static void verify(String filename, JavaFileScanner check, @Nullable Integer javaVersion) {
+  public static void verify(String filename, JavaFileScanner check, int javaVersion) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.providedJavaVersion = true;
-    javaCheckVerifier.javaVersion = javaVersion;
+    javaCheckVerifier.javaVersion = new JavaVersionImpl(javaVersion);
     scanFile(filename, check, javaCheckVerifier);
   }
 
@@ -193,13 +193,13 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
    *
    * @param filename The file to be analyzed
    * @param check The check to be used for the analysis
-   * @param javaVersion The version to consider for the analysis, null to force case of java version not detected
+   * @param javaVersion The version to consider for the analysis (6 for java 1.6, 7 for 1.7, etc.)
    */
-  public static void verifyNoIssue(String filename, JavaFileScanner check, @Nullable Integer javaVersion) {
+  public static void verifyNoIssue(String filename, JavaFileScanner check, int javaVersion) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectNoIssues = true;
     javaCheckVerifier.providedJavaVersion = true;
-    javaCheckVerifier.javaVersion = javaVersion;
+    javaCheckVerifier.javaVersion = new JavaVersionImpl(javaVersion);
     scanFile(filename, check, javaCheckVerifier);
   }
 

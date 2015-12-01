@@ -54,8 +54,7 @@ public interface JavaFileScannerContext {
 
   File getFile();
 
-  @Nullable
-  Integer getJavaVersion();
+  JavaVersion getJavaVersion();
 
   boolean fileParsed();
 

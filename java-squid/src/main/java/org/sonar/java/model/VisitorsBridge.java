@@ -28,6 +28,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
@@ -89,7 +90,7 @@ public class VisitorsBridge extends InternalVisitorsBridge {
 
     public TestJavaFileScannerContext(
       CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
-      @Nullable Integer javaVersion, boolean failedParsing) {
+      JavaVersion javaVersion, boolean failedParsing) {
       super(tree, sourceFile, file, semanticModel, analyseAccessors, sonarComponents, javaVersion, failedParsing);
     }
 

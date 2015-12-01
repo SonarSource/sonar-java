@@ -24,9 +24,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
@@ -61,7 +63,7 @@ public class JavaVersionAwareVisitorTest {
   @Test
   public void all_check_executed_when_invalid_java_version() {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setJavaVersion(null);
+    conf.setJavaVersion(new JavaVersionImpl());
     checkIssues(conf);
     assertThat(messages).containsExactly("JavaVersionCheck_7", "JavaVersionCheck_8", "SimpleCheck", "ContextualCheck");
   }
@@ -69,11 +71,11 @@ public class JavaVersionAwareVisitorTest {
   @Test
   public void only_checks_with_adequate_java_version_higher_than_configuration_version_are_executed() {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setJavaVersion(7);
+    conf.setJavaVersion(new JavaVersionImpl(7));
     checkIssues(conf);
     assertThat(messages).containsExactly("JavaVersionCheck_7", "SimpleCheck", "ContextualCheck_7");
 
-    conf.setJavaVersion(8);
+    conf.setJavaVersion(new JavaVersionImpl(8));
     checkIssues(conf);
     assertThat(messages).containsExactly("JavaVersionCheck_7", "JavaVersionCheck_8", "SimpleCheck", "ContextualCheck_8");
   }
@@ -81,7 +83,7 @@ public class JavaVersionAwareVisitorTest {
   @Test
   public void no_java_version_matching() {
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
-    conf.setJavaVersion(6);
+    conf.setJavaVersion(new JavaVersionImpl(6));
     checkIssues(conf);
     assertThat(messages).containsExactly("SimpleCheck", "ContextualCheck_6");
   }
@@ -118,7 +120,7 @@ public class JavaVersionAwareVisitorTest {
 
   private static class ContextualCheck extends SimpleCheck {
 
-    private Integer javaVersion;
+    private JavaVersion javaVersion;
 
     public ContextualCheck(List<String> messages) {
       super(messages);
@@ -132,7 +134,7 @@ public class JavaVersionAwareVisitorTest {
 
     @Override
     public String getName() {
-      return super.getName() + (javaVersion == null ? "" : "_" + javaVersion);
+      return super.getName() + (javaVersion.isNotSet() ? "" : "_" + javaVersion);
     }
 
   }
@@ -147,8 +149,11 @@ public class JavaVersionAwareVisitorTest {
     }
 
     @Override
-    public boolean isCompatibleWithJavaVersion(Integer version) {
-      return version == null || target <= version;
+    public boolean isCompatibleWithJavaVersion(JavaVersion version) {
+      if (target == 7) {
+        return version.isJava7Compatible();
+      }
+      return version.isJava8Compatible();
     }
 
     @Override

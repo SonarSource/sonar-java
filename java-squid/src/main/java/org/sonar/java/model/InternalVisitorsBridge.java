@@ -33,6 +33,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -56,8 +57,7 @@ public class InternalVisitorsBridge {
   private List<File> projectClasspath;
   private boolean analyseAccessors;
   private VisitorContext context;
-  @Nullable
-  private Integer javaVersion;
+  private JavaVersion javaVersion;
 
   public InternalVisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this(visitors, projectClasspath, sonarComponents, true);
@@ -88,11 +88,11 @@ public class InternalVisitorsBridge {
     }
   }
 
-  public void setJavaVersion(@Nullable Integer javaVersion) {
+  public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
   }
 
-  public Integer getJavaVersion() {
+  public JavaVersion getJavaVersion() {
     return this.javaVersion;
   }
 

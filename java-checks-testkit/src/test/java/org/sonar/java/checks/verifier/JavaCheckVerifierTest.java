@@ -127,11 +127,6 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void verify_no_issue_with_no_java_version() {
-    JavaCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, NO_EFFECT_VISITOR, null);
-  }
-
-  @Test
   public void verify_with_provided_classes() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
 

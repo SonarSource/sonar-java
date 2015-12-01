@@ -17,25 +17,22 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java;
+package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import org.sonar.plugins.java.api.JavaVersion;
 
-/**
- * Implementing this interface allows a check to be executed - or not - during analysis, depending
- * of expected java version.
- * <br />
- * In order to be taken into account during analysis, the property <code>sonar.java.source</code> must be set.
- */
 @Beta
-public interface JavaVersionAwareVisitor {
-  /**
-   * Control if the check is compatible with the java version of the project being analyzed. The version used as parameter depends of the
-   * property <code>sonar.java.source</code> (6 or 1.6 for java 1.6, 7 or 1.7, etc.).
-   *
-   * @param version The java version of the sources
-   * @return true if the check is compatible with detected java version and should be executed on sources, false otherwise.
-   */
-  boolean isCompatibleWithJavaVersion(JavaVersion version);
+public interface JavaVersion {
+
+  boolean isJava7Compatible();
+
+  boolean isJava8Compatible();
+
+  int asInt();
+
+  boolean isNotSet();
+
+  String java7CompatibilityMessage();
+
+  String java8CompatibilityMessage();
 }

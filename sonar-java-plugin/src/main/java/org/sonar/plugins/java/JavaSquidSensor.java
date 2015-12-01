@@ -41,9 +41,9 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
+import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.bridges.DesignBridge;
-
-import javax.annotation.CheckForNull;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -124,24 +124,14 @@ public class JavaSquidSensor implements Sensor {
     Charset charset = fs.encoding();
     JavaConfiguration conf = new JavaConfiguration(charset);
     conf.setSeparateAccessorsFromMethods(analyzePropertyAccessors);
-    Integer javaVersion = getJavaVersion();
-    LOG.info("Configured Java source version: " + (javaVersion == null ? "none" : javaVersion));
+    JavaVersion javaVersion = getJavaVersion();
+    LOG.info("Configured Java source version (" + Java.SOURCE_VERSION + "): " + javaVersion);
     conf.setJavaVersion(javaVersion);
     return conf;
   }
 
-  @CheckForNull
-  private Integer getJavaVersion() {
-    String javaVersion = settings.getString(Java.SOURCE_VERSION);
-    if (javaVersion != null) {
-      try {
-        return Integer.parseInt(javaVersion.replaceAll("1.", ""));
-      } catch (NumberFormatException e) {
-        LOG.warn("Invalid Java version set for property \"sonar.java.source\" (got \"" + javaVersion + "\"). "
-          + "The property will be ignored. Accepted formats are \"1.X\", or simply \"X\" (for instance: \"1.5\" or \"5\", \"1.6\" or \"6\", \"1.7\" or \"7\", etc.)");
-      }
-    }
-    return null;
+  private JavaVersion getJavaVersion() {
+    return JavaVersionImpl.fromString(settings.getString(Java.SOURCE_VERSION));
   }
 
   @Override

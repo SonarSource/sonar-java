@@ -19,8 +19,8 @@
  */
 package org.sonar.java;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nullable;
+import org.sonar.java.model.JavaVersionImpl;
+import org.sonar.plugins.java.api.JavaVersion;
 
 import java.nio.charset.Charset;
 
@@ -28,11 +28,7 @@ public class JavaConfiguration {
 
   private final Charset charset;
   private boolean separateAccessorsFromMethods = true;
-  /**
-   * The sources java version, represented as integer (i.e: "7" for version "1.7")
-   */
-  @Nullable
-  private Integer javaVersion = null;
+  private JavaVersion javaVersion = new JavaVersionImpl();
 
   public JavaConfiguration(Charset charset) {
     this.charset = charset;
@@ -50,12 +46,11 @@ public class JavaConfiguration {
     this.separateAccessorsFromMethods = separateAccessorsFromMethods;
   }
 
-  @CheckForNull
-  public Integer javaVersion() {
+  public JavaVersion javaVersion() {
     return javaVersion;
   }
 
-  public void setJavaVersion(@Nullable Integer javaVersion) {
+  public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
   }
 

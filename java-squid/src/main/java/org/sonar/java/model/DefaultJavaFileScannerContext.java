@@ -32,6 +32,7 @@ import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -53,13 +54,13 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
   private final File file;
-  private final Integer javaVersion;
+  private final JavaVersion javaVersion;
   private final boolean fileParsed;
   private final Map<Class<? extends SECheck>, SetMultimap<Tree, String>> seIssues = new HashMap<>();
 
   public DefaultJavaFileScannerContext(
     CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
-    @Nullable Integer javaVersion, boolean fileParsed) {
+    JavaVersion javaVersion, boolean fileParsed) {
     this.tree = tree;
     this.sourceFile = sourceFile;
     this.file = file;
@@ -107,8 +108,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
-  @Nullable
-  public Integer getJavaVersion() {
+  public JavaVersion getJavaVersion() {
     return this.javaVersion;
   }
 

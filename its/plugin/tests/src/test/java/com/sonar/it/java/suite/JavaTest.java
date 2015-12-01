@@ -245,8 +245,7 @@ public class JavaTest {
     // build should not fail
     assertThat(buildResult.getStatus()).isEqualTo(0);
     // build logs should contains warning related to sources
-    assertThat(buildResult.getLogs()).contains(
-      "Invalid Java version set for property \"sonar.java.source\"");
+    assertThat(buildResult.getLogs()).contains("Invalid java version");
     assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(1);
 
     // upper version. got issue on java 7 code
