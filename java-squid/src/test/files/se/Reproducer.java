@@ -1,8 +1,4 @@
 package javax.annotation;
-import javax.annotation.CheckForNull;
-import java.lang.Object;
-import java.util.HashMap;
-import java.util.TreeSet;
 
 @interface CheckForNull {}
 
@@ -86,5 +82,14 @@ class A {
   private boolean sizesDontMatch(boolean bool, boolean a, boolean b) {
     return (!bool && a) || (bool && b);
   }
+
+  private static void zip(Object dir, String s) throws IOException {
+    for (String n : dir.list(foo() ? "**" : "")) {
+      if (s.isEmpty()) {
+        relativePath = n;
+      }
+    }
+  }
+
 
 }

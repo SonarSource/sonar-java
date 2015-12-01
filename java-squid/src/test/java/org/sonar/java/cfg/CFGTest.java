@@ -209,10 +209,11 @@ public class CFGTest {
         case VARIABLE:
         case IDENTIFIER:
         case CHAR_LITERAL:
+        case STRING_LITERAL:
         case METHOD_INVOCATION:
           break;
         default:
-          throw new IllegalArgumentException("Unsupported element kind!");
+          throw new IllegalArgumentException("Unsupported element kind! "+kind);
       }
     }
 
@@ -686,7 +687,9 @@ public class CFGTest {
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(6),
+        block(
+            element(Tree.Kind.IDENTIFIER, "list")).successors(2),
         block(
             element(Tree.Kind.IDENTIFIER, "foo"),
             element(Tree.Kind.IDENTIFIER, "System"),
@@ -698,7 +701,7 @@ public class CFGTest {
             element(Kind.METHOD_INVOCATION),
             element(Kind.INT_LITERAL, 2),
             element(Kind.GREATER_THAN)
-            ).terminator(Kind.IF_STATEMENT).successors(3, 4),
+        ).terminator(Kind.IF_STATEMENT).successors(3, 4),
         terminator(Kind.CONTINUE_STATEMENT).successors(2),
         block(
             element(Tree.Kind.CHAR_LITERAL, "''"),
@@ -707,7 +710,6 @@ public class CFGTest {
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(2),
         block(
-            element(Tree.Kind.IDENTIFIER, "list"),
             element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 5),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'end'"),
@@ -720,29 +722,56 @@ public class CFGTest {
 
   @Test
   public void foreach_loop() {
-    final CFG cfg = buildCFG("void fun(){ System.out.println(''); for(String foo:list) {System.out.println(foo);} System.out.println(''); }");
-    final CFGChecker cfgChecker = checker(
-      block(
-        element(Tree.Kind.CHAR_LITERAL, "''"),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(2),
-      block(
-        element(Tree.Kind.IDENTIFIER, "foo"),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(2),
-      block(
-        element(Tree.Kind.IDENTIFIER, "list"),
-        element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 3),
-      block(
-        element(Tree.Kind.CHAR_LITERAL, "''"),
-        element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+    CFG cfg = buildCFG("void fun(){ System.out.println(''); for(String foo:list) {System.out.println(foo);} System.out.println(''); }");
+    CFGChecker cfgChecker = checker(
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "''"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(4),
+        block(
+            element(Tree.Kind.IDENTIFIER, "list")).successors(2),
+        block(
+            element(Tree.Kind.IDENTIFIER, "foo"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(2),
+        block(
+            element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 3),
+        block(
+            element(Tree.Kind.CHAR_LITERAL, "''"),
+            element(Tree.Kind.IDENTIFIER, "System"),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.MEMBER_SELECT),
+            element(Tree.Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+    cfg = buildCFG("void fun(){ for (String n : dir.list(foo() ? \"**\" : \"\")) {\n" +
+        "      if (s.isEmpty()) {\n" +
+        "        relativePath = n;\n" +
+        "      }\n" +
+        "    }}");
+    cfgChecker = new CFGChecker(
+        block(
+            element(Kind.IDENTIFIER, "foo"),
+            element(Kind.METHOD_INVOCATION)).terminator(Kind.CONDITIONAL_EXPRESSION).ifTrue(6).ifFalse(5),
+        block(element(Kind.STRING_LITERAL, "**")).successors(4),
+        block(element(Kind.STRING_LITERAL, "")).successors(4),
+        block(
+            element(Kind.IDENTIFIER, "dir"),
+            element(Kind.MEMBER_SELECT),
+            element(Kind.METHOD_INVOCATION)).successors(1),
+        block(
+            element(Kind.IDENTIFIER, "s"),
+            element(Kind.MEMBER_SELECT),
+            element(Kind.METHOD_INVOCATION)).terminator(Kind.IF_STATEMENT).ifTrue(2).ifFalse(1),
+        block(
+            element(Kind.IDENTIFIER, "n"),
+            element(Kind.IDENTIFIER, "relativePath"),
+            element(Kind.ASSIGNMENT)).successors(1),
+        block(element(Kind.VARIABLE, "n")).terminator(Kind.FOR_EACH_STATEMENT).ifFalse(0).ifTrue(3)
+        );
     cfgChecker.check(cfg);
   }
 

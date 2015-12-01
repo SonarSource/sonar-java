@@ -671,6 +671,7 @@ public class CFG {
     statementBlock.addSuccessor(currentBlock);
     currentBlock = loopback;
     build(tree.variable());
+    currentBlock = createBlock(currentBlock);
     build(tree.expression());
     currentBlock = createBlock(currentBlock);
   }
