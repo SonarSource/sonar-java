@@ -81,10 +81,6 @@ public class ConstraintManager {
     return NullConstraint.NULL.equals(ps.getConstraint(val));
   }
 
-  public boolean isClosed(ProgramState ps, SymbolicValue val) {
-    return NullConstraint.CLOSED.equals(ps.getConstraint(val.wrappedValue()));
-  }
-
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
 
     ProgramState.Pop unstack = programState.unstackValue(1);
