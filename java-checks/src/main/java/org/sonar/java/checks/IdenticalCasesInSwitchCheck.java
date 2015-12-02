@@ -47,7 +47,7 @@ import java.util.Set;
   key = "S1871",
   name = "Two branches in the same conditional structure should not have exactly the same implementation",
   priority = Priority.MAJOR,
-  tags = {Tag.BUG})
+  tags = {Tag.DESIGN, Tag.SUSPICIOUS})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 public class IdenticalCasesInSwitchCheck extends SubscriptionBaseVisitor {

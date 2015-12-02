@@ -41,7 +41,7 @@ import java.util.Set;
   key = "RedundantThrowsDeclarationCheck",
   name = "Throws declarations should not be superfluous",
   priority = Priority.MINOR,
-  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
+  tags = {Tag.CLUMSY, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

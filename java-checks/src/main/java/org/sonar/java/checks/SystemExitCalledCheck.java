@@ -42,8 +42,8 @@ import java.util.List;
 @Rule(
   key = "S1147",
   name = "Exit methods should not be called",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE})
+  priority = Priority.MAJOR,
+  tags = {Tag.CWE, Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("30min")

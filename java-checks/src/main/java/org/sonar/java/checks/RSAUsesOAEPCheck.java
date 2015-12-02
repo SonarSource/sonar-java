@@ -37,7 +37,7 @@ import java.util.List;
   key = "S2277",
   name = "Cryptographic RSA algorithms should always incorporate OAEP (Optimal Asymmetric Encryption Padding)",
   priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SECURITY})
+  tags = {Tag.CWE, Tag.OWASP_A5, Tag.OWASP_A6, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")

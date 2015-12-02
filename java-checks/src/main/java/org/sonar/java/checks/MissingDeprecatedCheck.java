@@ -37,7 +37,7 @@ import java.util.LinkedList;
   key = "MissingDeprecatedCheck",
   name = "Deprecated elements should have both the annotation and the Javadoc tag",
   priority = Priority.MAJOR,
-  tags = {Tag.BAD_PRACTICE})
+  tags = {Tag.BAD_PRACTICE, Tag.OBSOLETE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

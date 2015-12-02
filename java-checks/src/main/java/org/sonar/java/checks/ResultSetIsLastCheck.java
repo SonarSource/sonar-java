@@ -36,7 +36,7 @@ import java.util.List;
 @Rule(
   key = "S2232",
   name = "\"ResultSet.isLast()\" should not be used",
-  priority = Priority.CRITICAL,
+  priority = Priority.MAJOR,
   tags = {Tag.PERFORMANCE, Tag.PITFALL, Tag.SQL})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)

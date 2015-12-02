@@ -36,7 +36,7 @@ import java.util.List;
   key = "S2276",
   name = "\"wait(...)\" should be used instead of \"Thread.sleep(...)\" when a lock is held",
   priority = Priority.CRITICAL,
-  tags = {Tag.MULTI_THREADING, Tag.PERFORMANCE})
+  tags = {Tag.MULTI_THREADING, Tag.PERFORMANCE, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("5min")

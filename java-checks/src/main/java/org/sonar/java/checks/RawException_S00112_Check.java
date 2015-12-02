@@ -44,7 +44,7 @@ import java.util.Set;
 @Rule(
   key = "S00112",
   name = "Generic exceptions should never be thrown",
-  priority = Priority.MAJOR,
+  priority = Priority.CRITICAL,
   tags = {Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)

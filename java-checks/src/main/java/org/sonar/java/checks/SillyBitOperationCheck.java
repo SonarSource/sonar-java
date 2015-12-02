@@ -40,7 +40,7 @@ import java.util.List;
   key = "S2437",
   name = "Silly bit operations should not be performed",
   priority = Priority.MAJOR,
-  tags = {Tag.BUG})
+  tags = {Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")

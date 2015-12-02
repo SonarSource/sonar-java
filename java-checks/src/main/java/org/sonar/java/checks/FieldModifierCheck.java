@@ -38,7 +38,7 @@ import java.util.List;
 @Rule(
   key = "S2039",
   name = "Member variable visibility should be specified",
-  priority = Priority.MAJOR,
+  priority = Priority.CRITICAL,
   tags = {Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

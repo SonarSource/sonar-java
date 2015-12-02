@@ -54,7 +54,7 @@ import java.util.List;
   key = "S1166",
   name = "Exception handlers should preserve the original exception",
   priority = Priority.CRITICAL,
-  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
+  tags = {Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")

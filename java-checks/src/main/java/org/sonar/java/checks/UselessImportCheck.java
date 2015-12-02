@@ -58,7 +58,7 @@ import java.util.Set;
   tags = {Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@SqaleConstantRemediation("2min")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Map<String, Integer> lineByImportReference = Maps.newHashMap();

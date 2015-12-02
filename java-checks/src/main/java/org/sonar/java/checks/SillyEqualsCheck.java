@@ -42,7 +42,7 @@ import java.util.List;
 @Rule(
   key = "S2159",
   name = "Silly equality checks should not be made",
-  priority = Priority.MAJOR,
+  priority = Priority.CRITICAL,
   tags = {Tag.BUG, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)

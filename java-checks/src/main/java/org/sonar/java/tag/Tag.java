@@ -34,6 +34,7 @@ public final class Tag {
   public static final String OBSOLETE = "obsolete";
   public static final String OWASP_A1 = "owasp-a1";
   public static final String OWASP_A2 = "owasp-a2";
+  public static final String OWASP_A5 = "owasp-a5";
   public static final String OWASP_A6 = "owasp-a6";
   public static final String OWASP_A9 = "owasp-a9";
   public static final String SECURITY = "security";
@@ -58,6 +59,8 @@ public final class Tag {
   public static final String HIBERNATE = "hibernate";
   public static final String LOCK_IN = "lock-in";
   public static final String SPRING = "spring";
+  public static final String TESTS = "tests";
+  public static final String STRUTS = "struts";
 
   private Tag() {
   }

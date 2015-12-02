@@ -40,8 +40,8 @@ import static org.sonar.plugins.java.api.tree.Tree.Kind.LABELED_STATEMENT;
 @Rule(
   key = "S1219",
   name = "\"switch\" statements should not contain non-case labels",
-  priority = Priority.CRITICAL,
-  tags = {Tag.MISRA, Tag.PITFALL})
+  priority = Priority.MAJOR,
+  tags = {Tag.MISRA, Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")

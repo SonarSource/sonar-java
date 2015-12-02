@@ -40,7 +40,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S1696",
   name = "\"NullPointerException\" should not be caught",
   priority = Priority.MAJOR,
-  tags = {Tag.CERT, Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
+  tags = {Tag.CERT, Tag.CWE, Tag.ERROR_HANDLING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")
 public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {

@@ -41,7 +41,7 @@ import java.util.List;
   name = "Classes and enums with private members should have a constructor",
   priority = Priority.MAJOR,
   tags = {Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.RESOURCE_RELIABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {
 

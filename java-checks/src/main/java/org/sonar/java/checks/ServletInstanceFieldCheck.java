@@ -39,9 +39,9 @@ import java.util.List;
 
 @Rule(
   key = "S2226",
-  name = "Servlets should never have mutable instance fields",
+  name = "Servlets should not have mutable instance fields",
   priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.CERT, Tag.MULTI_THREADING})
+  tags = {Tag.BUG, Tag.CERT, Tag.MULTI_THREADING, Tag.STRUTS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")

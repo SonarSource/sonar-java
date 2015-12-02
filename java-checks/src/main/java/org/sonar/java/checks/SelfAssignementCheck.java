@@ -35,7 +35,7 @@ import java.util.List;
 @Rule(
   key = "S1656",
   name = "Variables should not be self-assigned",
-  priority = Priority.MAJOR,
+  priority = Priority.CRITICAL,
   tags = {Tag.BUG, Tag.CERT})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("3min")

@@ -47,7 +47,7 @@ import java.util.Map;
 @Rule(
   key = "S2184",
   name = "Math operands should be cast before assignment",
-  priority = Priority.MAJOR,
+  priority = Priority.CRITICAL,
   tags = {Tag.BUG, Tag.CWE, Tag.SANS_TOP_25_RISKY, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)

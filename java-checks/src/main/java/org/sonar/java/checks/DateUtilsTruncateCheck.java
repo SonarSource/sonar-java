@@ -38,7 +38,7 @@ import java.util.List;
 @Rule(
   key = "S2718",
   name = "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
-  priority = Priority.CRITICAL,
+  priority = Priority.MAJOR,
   tags = {Tag.JAVA_8, Tag.PERFORMANCE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)

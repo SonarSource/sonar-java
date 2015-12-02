@@ -41,7 +41,7 @@ import java.util.List;
   key = "S1160",
   name = "Public methods should throw at most one checked exception",
   priority = Priority.MAJOR,
-  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
+  tags = {Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")

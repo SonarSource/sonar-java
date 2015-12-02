@@ -48,7 +48,7 @@ import java.util.List;
   key = "S2200",
   name = "\"compareTo\" results should not be checked for specific values",
   priority = Priority.MAJOR,
-  tags = {Tag.BUG})
+  tags = {Tag.UNPREDICTABLE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

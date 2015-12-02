@@ -41,8 +41,8 @@ import java.util.List;
 @Rule(
   key = "S1201",
   name = "Methods named \"equals\" should override Object.equals(Object)",
-  priority = Priority.CRITICAL,
-  tags = {Tag.PITFALL})
+  priority = Priority.MAJOR,
+  tags = {Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")

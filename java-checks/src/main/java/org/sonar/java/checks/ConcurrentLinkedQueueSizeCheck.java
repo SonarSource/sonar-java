@@ -37,7 +37,7 @@ import java.util.List;
   key = "S2250",
   name = "\"ConcurrentLinkedQueue.size()\" should not be used",
   priority = Priority.CRITICAL,
-  tags = {Tag.PERFORMANCE})
+  tags = {Tag.PERFORMANCE, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("15min")

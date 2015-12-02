@@ -36,8 +36,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @Rule(
   key = "S1163",
   name = "Exceptions should not be thrown in finally blocks",
-  priority = Priority.MAJOR,
-  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
+  priority = Priority.CRITICAL,
+  tags = {Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("30min")

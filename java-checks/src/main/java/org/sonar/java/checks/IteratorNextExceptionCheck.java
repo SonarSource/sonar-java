@@ -46,7 +46,7 @@ import java.util.List;
   key = "S2272",
   name = "\"Iterator.next()\" methods should throw \"NoSuchElementException\"",
   priority = Priority.MAJOR,
-  tags = {Tag.BUG})
+  tags = {Tag.UNPREDICTABLE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -39,7 +39,7 @@ import java.util.Map;
 @Rule(
   key = "S1940",
   name = "Boolean checks should not be inverted",
-  priority = Priority.MAJOR,
+  priority = Priority.MINOR,
   tags = {Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")

@@ -41,7 +41,7 @@ import java.util.List;
   key = "S2278",
   name = "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
   priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SECURITY})
+  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("20min")
 public class AvoidDESCheck extends AbstractMethodDetection {

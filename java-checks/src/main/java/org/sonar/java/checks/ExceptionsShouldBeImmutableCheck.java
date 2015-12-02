@@ -40,7 +40,7 @@ import java.util.List;
   key = "S1165",
   name = "Exception classes should be immutable",
   priority = Priority.MAJOR,
-  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
+  tags = {Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("15min")

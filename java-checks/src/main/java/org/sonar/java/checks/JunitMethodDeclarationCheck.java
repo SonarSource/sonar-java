@@ -41,7 +41,7 @@ import java.util.List;
   key = "S2391",
   name = "JUnit framework methods should be declared properly",
   priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.JUNIT})
+  tags = {Tag.BUG, Tag.TESTS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")

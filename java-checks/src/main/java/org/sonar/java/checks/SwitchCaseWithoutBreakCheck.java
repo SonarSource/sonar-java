@@ -42,8 +42,8 @@ import java.util.Deque;
 @Rule(
   key = "S128",
   name = "Switch cases should end with an unconditional \"break\" statement",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CERT, Tag.CWE, Tag.MISRA, Tag.PITFALL})
+  priority = Priority.MAJOR,
+  tags = {Tag.CERT, Tag.CWE, Tag.MISRA, Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
