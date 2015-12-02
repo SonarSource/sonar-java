@@ -233,9 +233,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           // do nothing by default.
       }
     }
-    if (programPosition.skipSuccessors) {
-      return;
-    }
     // unconditional jumps, for-statement, switch-statement, synchronized:
     for (CFG.Block successor : block.successors()) {
       enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState);
