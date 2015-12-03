@@ -17,36 +17,11 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se;
 
-import org.sonar.java.se.ProgramState;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.List;
+public interface SymbolicValueFactory {
 
-public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
-
-  protected ProgramState programState;
-
-  protected CheckerTreeNodeVisitor(ProgramState programState) {
-    this.programState = programState;
-  }
-
-  @Override
-  protected void scan(Tree tree) {
-    // Cut recursive processing
-  }
-
-  @Override
-  protected void scan(List<? extends Tree> trees) {
-    // Cut recursive processing
-  }
-
-  @Override
-  protected void scan(ListTree<? extends Tree> listTree) {
-    // Cut recursive processing
-  }
+  SymbolicValue createSymbolicValue(int id, Tree syntaxNode);
 }
-

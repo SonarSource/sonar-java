@@ -11,8 +11,8 @@ public class MyClass {
 
   public void acquireLock() {
     Lock local = new ReentrantLock();
-    local.lock();  // Noncompliant
-    l1.lock();  // Noncompliant
+    local.lock();  // Noncompliant  {{Unlock "local" along all executions paths of this method.}}
+    l1.lock();
   }
 
   public void acquireAndReleaseLock() {
@@ -31,6 +31,14 @@ public class MyClass {
   public void unrelatedMethod() {
     Lock lock = new ReentrantLock();
     lock.lock(); // Noncompliant
+    lock.toString();
+  }
+
+  public void lock_interruptibly() {
+    Lock lock = new ReentrantLock();
+    lock.lockInterruptibly();
+    lock.unlock();
+    lock.lockInterruptibly(); // Compliant
     lock.toString();
   }
 
@@ -62,7 +70,7 @@ public class MyClass {
 
   public void reassigned_lock() {
     Lock lock = new ReentrantLock();
-    lock.tryLock(); // Noncompliant {{Unlock "lock" along all executions paths of this method.}}
+    lock.tryLock(); // Noncompliant
     lock = new ReentrantLock();
     lock.lock();
     lock.unlock();
@@ -70,21 +78,36 @@ public class MyClass {
 
   public void if_statement() {
     Lock lock = new ReentrantLock();
-    boolean a;
-    lock.tryLock();
+    boolean a = lock.tryLock(); // Compliant
     if(a) {
       lock.unlock();
     } else {
-      lock.unlock();
+      System.out.println("Lock was not granted!");
     }
-    lock = new ReentrantLock();
-    lock.tryLock(); // Noncompliant
+  }
+
+  void if_try_lock() {
+    Lock lock = new ReentrantLock();
+    if(lock.tryLock()) { // Compliant
+      try {
+
+      } finally {
+        lock.unlock();
+      }
+    }
+  }
+
+  public void if_statement_missing() {
+    Lock lock = new ReentrantLock();
+    lock.lock(); // Noncompliant
     if(a) {
       //lock not unlocked.
     } else {
       lock.unlock();
     }
+  }
 
+  public void if_statement_overwrite() {
     Lock l1 = new ReentrantLock();
     l1.lock(); // Noncompliant
     if(a){
@@ -116,7 +139,7 @@ public class MyClass {
         lock.unlock();
     }
     lock = new ReentrantLock();
-    lock.tryLock(); // False negative Noncompliant
+    lock.tryLock(); // Noncompliant
     switch (foo) {
       case 0:
         System.out.println("");
@@ -157,7 +180,6 @@ public class MyClass {
     lock2.lock();
     try {
       System.out.println("");
-      return;
     } finally {
       lock2.unlock();
     }
@@ -210,15 +232,67 @@ public class MyClass {
     }
     lock.unlock();
   }
+  
+  private volatile ScheduledExecutorService executorService;
+  private final Runnable task = new Task();
 
-  void if_try_lock() {
-    Lock lock = new ReentrantLock();
-    //False positive
-    if(lock.tryLock()) { // Noncompliant
+  @Override protected final void doStart() {
+    executorService = MoreExecutors.renamingDecorator(executor(), new Supplier<String>() {
+      @Override public String get() {
+        return serviceName() + " " + state();
+      }
+    });
+    executorService.execute(new Runnable() {
+      @Override public void run() {
+        lock.lock();
+        try {
+          startUp();
+          runningTask = scheduler().schedule(delegate, executorService, task);
+          notifyStarted();
+        } catch (Throwable t) {
+          notifyFailed(t);
+          if (runningTask != null) {
+            // prevent the task from running if possible
+            runningTask.cancel(false);
+          }
+        } finally {
+          lock.unlock();
+        }
+      }
+    });
+  }
+  
+  private final AbstractService delegate = new AbstractService() {
+    private volatile Future<?> runningTask;
+    private volatile ScheduledExecutorService executorService;
+    private final ReentrantLock lock = new ReentrantLock();
+
+    private final Runnable task = new Task();
+
+    @Override protected final void doStartWithinDelegate() {
+      executorService = MoreExecutors.executor();
+      executorService.execute(new Runnable() {
+        @Override public void run() {
+          lock.lock();
+          try {
+            startUp();
+          } finally {
+            lock.unlock();
+          }
+        }
+      });
+    }
+  };
+
+  
+  private static class MyLock extends ReentrantLock {
+    
+    @Override
+    public void lock() {
       try {
-
+        super.lock();
       } finally {
-        lock.unlock();
+        logLocked();
       }
     }
   }

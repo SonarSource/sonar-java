@@ -17,17 +17,30 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java.checks;
+package org.sonar.java.se.checks;
 
 import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import org.sonar.java.se.JavaCheckVerifier;
 
-public class LocksNotUnlockedCheckTest {
-
-  private final LocksNotUnlockedCheck check = new LocksNotUnlockedCheck();
+public class UnclosedResourcesCheckTest {
 
   @Test
-  public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/LocksNotUnlockedCheck.java", check);
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheck.java", new UnclosedResourcesCheck());
+  }
+
+  @Test
+  public void nonReproducible() {
+    JavaCheckVerifier.verify("src/test/files/se/IrreproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
+  }
+
+  // Failing test @Test
+  public void reproducible() {
+    JavaCheckVerifier.verify("src/test/files/se/ReproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
+  }
+
+  // Failing test @Test
+  public void foreign() {
+    JavaCheckVerifier.verify("src/test/files/se/CloseResourceTestFile.java", new UnclosedResourcesCheck());
   }
 }

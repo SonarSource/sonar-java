@@ -28,38 +28,38 @@ public class ObjectConstraint {
 
   private final boolean isNull;
   private final Tree syntaxNode;
-  private final Object state;
+  private final Object status;
 
-  public ObjectConstraint(Tree syntaxNode, Object state) {
-    this(false, syntaxNode, state);
+  public ObjectConstraint(Tree syntaxNode, Object status) {
+    this(false, syntaxNode, status);
   }
 
-  private ObjectConstraint(boolean isNull, Tree syntaxNode, Object state) {
+  private ObjectConstraint(boolean isNull, Tree syntaxNode, Object status) {
     this.isNull = isNull;
     this.syntaxNode = syntaxNode;
-    this.state = state;
+    this.status = status;
   }
 
   public ObjectConstraint inverse() {
     if (isNull) {
-      return new ObjectConstraint(!isNull, syntaxNode, state);
+      return new ObjectConstraint(!isNull, syntaxNode, status);
     }
     return ObjectConstraint.NULL;
   }
 
-  public ObjectConstraint inState(Object newState) {
-    return new ObjectConstraint(isNull, syntaxNode, newState);
+  public ObjectConstraint withStatus(Object newStatus) {
+    return new ObjectConstraint(isNull, syntaxNode, newStatus);
   }
 
   public boolean isNull() {
     return isNull;
   }
 
-  public boolean hasState(Object aState) {
+  public boolean hasStatus(Object aState) {
     if (aState == null) {
-      return state == null;
+      return status == null;
     }
-    return aState.equals(state);
+    return aState.equals(status);
   }
 
   public Tree syntaxNode() {
@@ -70,9 +70,9 @@ public class ObjectConstraint {
   public String toString() {
     final StringBuilder buffer = new StringBuilder();
     buffer.append(isNull ? "NULL" : "NOT_NULL");
-    if (state != null) {
+    if (status != null) {
       buffer.append('(');
-      buffer.append(state);
+      buffer.append(status);
       buffer.append(')');
     }
     return buffer.toString();

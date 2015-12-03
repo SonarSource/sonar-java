@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -27,10 +28,11 @@ import java.util.List;
 public class ConstraintManager {
 
   private int counter = ProgramState.EMPTY_STATE.constraintsSize();
-  private SymbolicValue wrappedValue;
+  private SymbolicValueFactory symbolicValueFactory;
 
-  public void setWrappedValue(SymbolicValue wrappedValue) {
-    this.wrappedValue = wrappedValue;
+  public void setValueFactory(SymbolicValueFactory valueFactory) {
+    Preconditions.checkState(symbolicValueFactory == null, "The symbolic value factory has already been defined by another checker!");
+    symbolicValueFactory = valueFactory;
   }
 
   public SymbolicValue createSymbolicValue(Tree syntaxNode) {
@@ -58,7 +60,8 @@ public class ConstraintManager {
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
       default:
-        result = wrappedValue == null ? new SymbolicValue(counter) : new SymbolicValue.ResourceWrapperSymbolicValue(counter, wrappedValue);
+        result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
+        symbolicValueFactory = null;
     }
     counter++;
     return result;

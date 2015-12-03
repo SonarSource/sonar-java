@@ -46,7 +46,8 @@ public class CheckListTest {
   private static final List<String> SE_CHEKS = ImmutableList.of(
       "NullDereferenceCheck",
     "ConditionAlwaysTrueOrFalseCheck",
-    "UnclosedResourcesCheck"
+    "UnclosedResourcesCheck",
+    "LocksNotUnlockedCheck"
   );
 
   /**

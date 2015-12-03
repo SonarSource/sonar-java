@@ -389,19 +389,4 @@ public class SymbolicValue {
       return leftOp + " ^ " + rightOp;
     }
   }
-
-  public static class ResourceWrapperSymbolicValue extends SymbolicValue {
-
-    private final SymbolicValue dependent;
-
-    public ResourceWrapperSymbolicValue(int id, SymbolicValue dependent) {
-      super(id);
-      this.dependent = dependent;
-    }
-
-    @Override
-    public SymbolicValue wrappedValue() {
-      return dependent.wrappedValue();
-    }
-  }
 }

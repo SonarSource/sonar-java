@@ -42,7 +42,6 @@ public class CheckerDispatcher implements CheckerContext {
   }
 
   public boolean executeCheckPreStatement(Tree syntaxNode) {
-    getConstraintManager().setWrappedValue(null);
     this.syntaxNode = syntaxNode;
     ProgramState ps;
     for (SECheck checker : checks) {
@@ -66,7 +65,6 @@ public class CheckerDispatcher implements CheckerContext {
       }
       explodedGraphWalker.programState = ps;
     }
-    getConstraintManager().setWrappedValue(null);
   }
 
   private void executePost() {

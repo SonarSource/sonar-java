@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaCheck;

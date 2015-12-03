@@ -29,6 +29,7 @@ import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
+import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -60,7 +61,7 @@ import java.util.Map;
 @SqaleConstantRemediation("5min")
 public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
 
-  private static enum States {
+  private enum States {
     OPENED, CLOSED;
   }
 
@@ -118,10 +119,39 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
     public void visitNewClass(NewClassTree syntaxNode) {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
-        if (instanceValue.wrappedValue() == instanceValue) {
+        if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
           programState = programState.addConstraint(instanceValue, new ObjectConstraint(syntaxNode, States.OPENED));
         }
       }
+    }
+  }
+
+  public static class ResourceWrapperSymbolicValue extends SymbolicValue {
+
+    private final SymbolicValue dependent;
+
+    public ResourceWrapperSymbolicValue(int id, SymbolicValue dependent) {
+      super(id);
+      this.dependent = dependent;
+    }
+
+    @Override
+    public SymbolicValue wrappedValue() {
+      return dependent.wrappedValue();
+    }
+  }
+
+  static class WrappedValueFactory implements SymbolicValueFactory {
+
+    private final SymbolicValue value;
+
+    WrappedValueFactory(SymbolicValue value) {
+      this.value = value;
+    }
+
+    @Override
+    public SymbolicValue createSymbolicValue(int counter, Tree syntaxNode) {
+      return new ResourceWrapperSymbolicValue(counter, value);
     }
   }
 
@@ -148,7 +178,7 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
           final Type type = argument.symbolType();
           final SymbolicValue value = iterator.next();
           if (isCloseable(type)) {
-            constraintManager.setWrappedValue(value);
+            constraintManager.setValueFactory(new WrappedValueFactory(value));
             break;
           }
         }
@@ -213,7 +243,7 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
       if (target != null) {
         ObjectConstraint oConstraint = openedConstraint(programState, target);
         if (oConstraint != null) {
-          return programState.addConstraint(target.wrappedValue(), oConstraint.inState(States.CLOSED));
+          return programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(States.CLOSED));
         }
       }
       return programState;
@@ -223,15 +253,15 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
       final Object constraint = programState.getConstraint(value.wrappedValue());
       if (constraint instanceof ObjectConstraint) {
         ObjectConstraint oConstraint = (ObjectConstraint) constraint;
-        if (oConstraint.hasState(States.OPENED)) {
+        if (oConstraint.hasStatus(States.OPENED)) {
           return oConstraint;
         }
       }
       return null;
     }
 
-    private static boolean isClosingResource(Symbol constructor) {
-      return constructor.isMethodSymbol() && CLOSE_METHOD_NAME.equals(constructor.name());
+    private static boolean isClosingResource(Symbol methodInvocationSymbol) {
+      return methodInvocationSymbol.isMethodSymbol() && CLOSE_METHOD_NAME.equals(methodInvocationSymbol.name());
     }
   }
 
@@ -259,7 +289,7 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    final List<ObjectConstraint> constraints = context.getState().getConstraints(States.OPENED);
+    final List<ObjectConstraint> constraints = context.getState().getFieldConstraints(States.OPENED);
     for (ObjectConstraint constraint : constraints) {
       Tree syntaxNode = constraint.syntaxNode();
       if (syntaxNode instanceof NewClassTree) {

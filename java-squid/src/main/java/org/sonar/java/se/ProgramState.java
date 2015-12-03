@@ -202,7 +202,7 @@ public class ProgramState {
     return new ProgramState(newValues, constraints, visitedPoints, stack);
   }
 
-  private static boolean isField(Symbol symbol) {
+  public static boolean isField(Symbol symbol) {
     return symbol.isVariableSymbol() && !symbol.owner().isMethodSymbol();
   }
 
@@ -238,6 +238,22 @@ public class ProgramState {
   }
 
   public List<ObjectConstraint> getConstraints(final Object state) {
+    final List<ObjectConstraint> result = new ArrayList<>();
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+      @Override
+      public void accept(SymbolicValue value, Object valueConstraint) {
+        if (valueConstraint instanceof ObjectConstraint) {
+          ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
+          if (constraint.hasStatus(state)) {
+            result.add(constraint);
+          }
+        }
+      }
+    });
+    return result;
+  }
+
+  public List<ObjectConstraint> getFieldConstraints(final Object state) {
     final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
     final List<ObjectConstraint> result = new ArrayList<>();
     constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
@@ -245,7 +261,7 @@ public class ProgramState {
       public void accept(SymbolicValue value, Object valueConstraint) {
         if (valueConstraint instanceof ObjectConstraint && !valuesAssignedToFields.contains(value)) {
           ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
-          if (constraint.hasState(state)) {
+          if (constraint.hasStatus(state)) {
             result.add(constraint);
           }
         }

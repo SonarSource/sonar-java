@@ -23,6 +23,7 @@ import com.google.common.collect.Multimap;
 import org.junit.Test;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -67,6 +68,7 @@ import static org.fest.assertions.Fail.fail;
       reportIssuesFor(context, new NullDereferenceCheck());
       reportIssuesFor(context, new ConditionAlwaysTrueOrFalseCheck());
       reportIssuesFor(context, new UnclosedResourcesCheck());
+      reportIssuesFor(context, new LocksNotUnlockedCheck());
     }
 
     private void reportIssuesFor(JavaFileScannerContext context, JavaCheck check) {

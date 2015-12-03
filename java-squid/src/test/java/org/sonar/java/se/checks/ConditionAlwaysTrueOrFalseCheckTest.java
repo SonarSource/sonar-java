@@ -17,13 +17,16 @@
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02
  */
-package org.sonar.java;
+package org.sonar.java.se.checks;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.sonar.java.checks.LocksNotUnlockedCheckTest;
+import org.junit.Test;
+import org.sonar.java.se.JavaCheckVerifier;
 
-@RunWith(Suite.class)
-@Suite.SuiteClasses({LocksNotUnlockedCheckTest.class})
-public class SymExecChecks {
+public class ConditionAlwaysTrueOrFalseCheckTest {
+
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionAlwaysTrueOrFalseCheck());
+  }
+
 }
