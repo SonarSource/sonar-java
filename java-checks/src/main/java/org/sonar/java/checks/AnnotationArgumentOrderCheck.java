@@ -43,7 +43,7 @@ import java.util.List;
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1min")
+@SqaleConstantRemediation("2min")
 public class AnnotationArgumentOrderCheck extends SubscriptionBaseVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {

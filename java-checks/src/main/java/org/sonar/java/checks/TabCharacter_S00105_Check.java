@@ -28,7 +28,6 @@ import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -43,7 +42,6 @@ import java.util.List;
   name = "Tabulation characters should not be used",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
-@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
 public class TabCharacter_S00105_Check extends SubscriptionBaseVisitor implements CharsetAwareVisitor {

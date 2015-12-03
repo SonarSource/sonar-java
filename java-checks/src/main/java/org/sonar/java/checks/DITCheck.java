@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -38,6 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Inheritance tree of classes should not be too deep",
   priority = Priority.MAJOR,
   tags = {Tag.DESIGN})
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("4h")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {

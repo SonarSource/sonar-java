@@ -43,7 +43,7 @@ import java.util.List;
   key = "S2160",
   name = "Subclasses that add fields should override \"equals\"",
   priority = Priority.MAJOR,
-  tags = {Tag.BUG})
+  tags = {Tag.SUSPICIOUS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("30min")

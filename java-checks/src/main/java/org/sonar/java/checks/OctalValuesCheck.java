@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -37,7 +36,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Octal values should not be used",
   priority = Priority.MAJOR,
   tags = {Tag.CERT, Tag.MISRA, Tag.PITFALL})
-@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner {

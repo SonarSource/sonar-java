@@ -41,7 +41,7 @@ import java.util.List;
 @Rule(
   key = "S2674",
   name = "The value returned from a stream read should be checked",
-  priority = Priority.CRITICAL,
+  priority = Priority.BLOCKER,
   tags = {Tag.BUG})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)

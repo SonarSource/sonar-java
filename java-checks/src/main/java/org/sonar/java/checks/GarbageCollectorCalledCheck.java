@@ -37,8 +37,8 @@ import java.util.List;
 @Rule(
   key = "S1215",
   name = "Execution of the Garbage Collector should be triggered only by the JVM",
-  priority = Priority.CRITICAL,
-  tags = {Tag.UNPREDICTABLE})
+  priority = Priority.MAJOR,
+  tags = {Tag.UNPREDICTABLE, Tag.BAD_PRACTICE})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("30min")
