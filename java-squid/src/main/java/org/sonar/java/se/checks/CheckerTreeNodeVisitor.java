@@ -19,28 +19,33 @@
  */
 package org.sonar.java.se.checks;
 
-import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.ProgramState;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class UnclosedResourcesCheckTest {
+import java.util.List;
 
-  @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheck.java", new UnclosedResourcesCheck());
+public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
+
+  protected ProgramState programState;
+
+  protected CheckerTreeNodeVisitor(ProgramState programState) {
+    this.programState = programState;
   }
 
-  @Test
-  public void nonReproducible() {
-    JavaCheckVerifier.verify("src/test/files/se/IrreproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
+  @Override
+  protected void scan(Tree tree) {
+    // Cut recursive processing
   }
 
-  // Failing test @Test
-  public void reproducible() {
-    JavaCheckVerifier.verify("src/test/files/se/ReproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
+  @Override
+  protected void scan(List<? extends Tree> trees) {
+    // Cut recursive processing
   }
 
-  // Failing test @Test
-  public void foreign() {
-    JavaCheckVerifier.verify("src/test/files/se/CloseResourceTestFile.java", new UnclosedResourcesCheck());
+  @Override
+  protected void scan(ListTree<? extends Tree> listTree) {
+    // Cut recursive processing
   }
 }

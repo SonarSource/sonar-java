@@ -22,8 +22,6 @@ package org.sonar.java.se;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
-import org.sonar.java.se.ConstraintManager.NullConstraint;
-import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,15 +50,9 @@ public class SymbolicValue {
   };
 
   private final int id;
-  private final Tree syntaxNode;
 
   public SymbolicValue(int id) {
-    this(id, null);
-  }
-
-  public SymbolicValue(int id, Tree syntaxNode) {
     this.id = id;
-    this.syntaxNode = syntaxNode;
   }
 
   @Override
@@ -82,18 +74,18 @@ public class SymbolicValue {
 
   @Override
   public String toString() {
-    return "SV#" + id;
+    return "SV_" + id;
   }
 
   public void computedFrom(List<SymbolicValue> symbolicValues) {
     // no op in general case
   }
 
-  public List<ProgramState> setConstraint(ProgramState programState, NullConstraint nullConstraint) {
+  public List<ProgramState> setConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
     Object data = programState.getConstraint(this);
-    if (data instanceof NullConstraint) {
-      NullConstraint nc = (NullConstraint) data;
-      if (!nc.equals(nullConstraint)) {
+    if (data instanceof ObjectConstraint) {
+      ObjectConstraint nc = (ObjectConstraint) data;
+      if (nc.isNull() ^ nullConstraint.isNull()) {
         // setting null where value is known to be non null or the contrary
         return ImmutableList.of();
       }
@@ -121,16 +113,12 @@ public class SymbolicValue {
     return ImmutableList.of(programState);
   }
 
-  public ProgramState setSingleConstraint(ProgramState programState, NullConstraint nullConstraint) {
+  public ProgramState setSingleConstraint(ProgramState programState, ObjectConstraint nullConstraint) {
     final List<ProgramState> states = setConstraint(programState, nullConstraint);
     if (states.size() != 1) {
       throw new IllegalStateException("Only a single program state is expected at this location");
     }
     return states.get(0);
-  }
-
-  public Tree syntaxNode() {
-    return syntaxNode;
   }
 
   public SymbolicValue wrappedValue() {
@@ -190,9 +178,9 @@ public class SymbolicValue {
       if (constraintLeft instanceof BooleanConstraint) {
         BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
         return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
-      } else if (constraintLeft instanceof NullConstraint) {
-        NullConstraint nullConstraint = (NullConstraint) constraintLeft;
-        if (nullConstraint.equals(NullConstraint.NULL)) {
+      } else if (constraintLeft instanceof ObjectConstraint) {
+        ObjectConstraint nullConstraint = (ObjectConstraint) constraintLeft;
+        if (nullConstraint.equals(ObjectConstraint.NULL)) {
           return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
         } else if (shouldNotInverse().equals(booleanConstraint)) {
           return to.setConstraint(programState, nullConstraint);
@@ -268,12 +256,12 @@ public class SymbolicValue {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        if (NullConstraint.NULL.equals(programState.getConstraint(operand))) {
+        if (ObjectConstraint.NULL.equals(programState.getConstraint(operand))) {
           // irrealizable constraint : instance of true if operand is null
           return ImmutableList.of();
         }
         // if instanceof is true then we know for sure that expression is not null.
-        List<ProgramState> ps = operand.setConstraint(programState, NullConstraint.NOT_NULL);
+        List<ProgramState> ps = operand.setConstraint(programState, ObjectConstraint.NOT_NULL);
         if (ps.size() == 1 && ps.get(0).equals(programState)) {
           // FIXME we already know that operand is NOT NULL, so we add a different constraint to distinguish program state. Typed Constraint
           // should store the deduced type.
@@ -409,11 +397,6 @@ public class SymbolicValue {
     public ResourceWrapperSymbolicValue(int id, SymbolicValue dependent) {
       super(id);
       this.dependent = dependent;
-    }
-
-    @Override
-    public Tree syntaxNode() {
-      return dependent.syntaxNode();
     }
 
     @Override
