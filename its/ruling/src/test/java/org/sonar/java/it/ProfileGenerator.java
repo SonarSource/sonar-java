@@ -1,6 +1,6 @@
 /*
- * SonarSource :: Java :: ITs :: Ruling
- * Copyright (C) 2013 ${owner}
+ * SonarQube Java
+ * Copyright (C) 2013 SonarSource
  * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or

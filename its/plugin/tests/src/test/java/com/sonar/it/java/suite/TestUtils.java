@@ -1,7 +1,7 @@
 /*
- * Java :: IT :: Plugin :: Tests
+ * SonarQube Java
  * Copyright (C) 2013 SonarSource
- * dev@sonar.codehaus.org
+ * sonarqube@googlegroups.com
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,9 +19,12 @@
  */
 package com.sonar.it.java.suite;
 
+import com.google.common.collect.Iterables;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Arrays;
 
 public class TestUtils {
   private static final File home;
@@ -40,7 +43,12 @@ public class TestUtils {
   }
 
   public static File pluginJar(String artifactId) {
-    return new File(homeDir(), "plugins/" + artifactId + "/target/" + artifactId + "-1.0-SNAPSHOT.jar");
+    return Iterables.getOnlyElement(Arrays.asList(new File(homeDir(), "plugins/" + artifactId + "/target/").listFiles(new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.endsWith(".jar") && !name.endsWith("-sources.jar");
+      }
+    })));
   }
 
   public static File projectDir(String projectName) {

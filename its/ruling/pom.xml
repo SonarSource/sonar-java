@@ -3,42 +3,41 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.sonarsource.parent</groupId>
-    <artifactId>parent</artifactId>
-    <version>23</version>
+    <groupId>org.sonarsource.java</groupId>
+    <artifactId>java-its</artifactId>
+    <version>3.9-SNAPSHOT</version>
   </parent>
 
   <artifactId>it-java-ruling</artifactId>
 
-  <name>SonarSource :: Java :: ITs :: Ruling</name>
+  <name>SonarQube Java :: ITs :: Ruling</name>
   <inceptionYear>2013</inceptionYear>
 
   <properties>
     <surefire.argLine>-server</surefire.argLine>
+    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.codehaus.sonar</groupId>
       <artifactId>sonar-ws-client</artifactId>
-      <version>4.5.1</version>
+      <version>${sonar.version}</version>
     </dependency>
     <dependency>
       <groupId>org.sonarsource.orchestrator</groupId>
       <artifactId>sonar-orchestrator</artifactId>
-      <version>3.5</version>
+      <version>${orchestrator.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert</artifactId>
-      <version>1.4</version>
       <scope>test</scope>
     </dependency>
     <dependency>

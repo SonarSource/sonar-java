@@ -18,11 +18,16 @@
       <artifactId>java-squid</artifactId>
       <version>${project.version}</version>
     </dependency>
-  
+
     <dependency>
       <groupId>org.easytesting</groupId>
       <artifactId>fest-assert</artifactId>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

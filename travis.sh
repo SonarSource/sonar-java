@@ -17,16 +17,13 @@ CI)
 plugin|ruling)
   installTravisTools
 
-  mvn package -T2 -Dsource.skip=true -Denforcer.skip=true -Danimal.sniffer.skip=true -Dmaven.test.skip=true
-
   if [ "$SQ_VERSION" = "DEV" ] ; then
     build_snapshot "SonarSource/sonarqube"
   fi
 
-  cd its/$TEST
   EXTRA_PARAMS=
-  [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-Dtest=JavaRulingTest#$PROJECT"
-  mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false $EXTRA_PARAMS
+  [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
+  mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -Pit-$TEST $EXTRA_PARAMS
   ;;
 
 *)
