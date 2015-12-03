@@ -14,6 +14,10 @@
   <name>SonarQube Java :: ITs :: Performancing</name>
   <inceptionYear>2013</inceptionYear>
 
+  <properties>
+    <maven.test.redirectTestOutputToFile>false</maven.test.redirectTestOutputToFile>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>org.sonarsource.orchestrator</groupId>
