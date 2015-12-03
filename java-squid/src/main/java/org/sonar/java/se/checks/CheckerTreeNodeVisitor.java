@@ -19,14 +19,33 @@
  */
 package org.sonar.java.se.checks;
 
-import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.ProgramState;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
-public class ConditionAlwaysTrueOrFalseCheckTest {
+import java.util.List;
 
-  @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionAlwaysTrueOrFalseCheck());
+public abstract class CheckerTreeNodeVisitor extends BaseTreeVisitor {
+
+  protected ProgramState programState;
+
+  protected CheckerTreeNodeVisitor(ProgramState programState) {
+    this.programState = programState;
   }
 
+  @Override
+  protected void scan(Tree tree) {
+    // Cut recursive processing
+  }
+
+  @Override
+  protected void scan(List<? extends Tree> trees) {
+    // Cut recursive processing
+  }
+
+  @Override
+  protected void scan(ListTree<? extends Tree> listTree) {
+    // Cut recursive processing
+  }
 }

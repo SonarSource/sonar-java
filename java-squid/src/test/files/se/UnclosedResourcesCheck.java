@@ -3,7 +3,11 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +17,7 @@ import java.io.BufferedWriter;
 import java.util.Formatter;
 import java.util.jar.JarFile;
 import java.io.DataInputStream;
+import java.io.File;
 
 public class A {
   private final static int MAX_LOOP = 42;
@@ -238,6 +243,18 @@ public class A {
       jar.entries();
     } finally {
       closeJar(jar);
+    }
+  }
+
+  public void getDirectivesFromFile(File aFile) {
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new FileReader(aFile));
+      reader.read();
+//    } catch(IOException e) { // Causes a problem when decommented!
+//      throw new RuntimeException(e);
+    } finally {
+      IOUtils.closeQuietly(reader);
     }
   }
   

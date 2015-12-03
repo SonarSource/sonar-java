@@ -26,7 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ConstraintManager;
+import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -79,7 +79,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       }
       if (context.getState().getConstraint(currentVal) == null) {
         // we dereferenced the symbolic value so we can assume it is not null
-        return currentVal.setSingleConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL);
+        return currentVal.setSingleConstraint(context.getState(), ObjectConstraint.NOT_NULL);
       }
     }
     return context.getState();
@@ -106,8 +106,8 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       assert val != null && val.equals(SymbolicValue.NULL_LITERAL);
     } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       List<ProgramState> states = new ArrayList<>();
-      states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NULL));
-      states.addAll(val.setConstraint(context.getState(), ConstraintManager.NullConstraint.NOT_NULL));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
       return states;
     }
     return Lists.newArrayList(context.getState());

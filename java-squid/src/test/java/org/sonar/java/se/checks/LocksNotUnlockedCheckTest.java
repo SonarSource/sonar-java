@@ -22,25 +22,10 @@ package org.sonar.java.se.checks;
 import org.junit.Test;
 import org.sonar.java.se.JavaCheckVerifier;
 
-public class UnclosedResourcesCheckTest {
+public class LocksNotUnlockedCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/UnclosedResourcesCheck.java", new UnclosedResourcesCheck());
-  }
-
-  @Test
-  public void nonReproducible() {
-    JavaCheckVerifier.verify("src/test/files/se/IrreproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
-  }
-
-  // Failing test @Test
-  public void reproducible() {
-    JavaCheckVerifier.verify("src/test/files/se/ReproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
-  }
-
-  // Failing test @Test
-  public void foreign() {
-    JavaCheckVerifier.verify("src/test/files/se/CloseResourceTestFile.java", new UnclosedResourcesCheck());
+    JavaCheckVerifier.verify("src/test/files/se/LocksNotUnlockedCheck.java", new LocksNotUnlockedCheck());
   }
 }

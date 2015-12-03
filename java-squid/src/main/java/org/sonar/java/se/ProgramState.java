@@ -25,7 +25,6 @@ import com.google.common.collect.Lists;
 import org.sonar.java.collections.AVLTree;
 import org.sonar.java.collections.PMap;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
@@ -59,7 +58,7 @@ public class ProgramState {
   public static final ProgramState EMPTY_STATE = new ProgramState(
     AVLTree.<Symbol, SymbolicValue>create(),
     AVLTree.<SymbolicValue, Object>create()
-      .put(SymbolicValue.NULL_LITERAL, ConstraintManager.NullConstraint.NULL)
+      .put(SymbolicValue.NULL_LITERAL, ObjectConstraint.NULL)
       .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE),
     AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
@@ -238,15 +237,17 @@ public class ProgramState {
     return values.get(symbol);
   }
 
-  public List<Tree> getConstrainedSyntaxNodes(final Object constraint) {
+  public List<ObjectConstraint> getConstraints(final Object state) {
     final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
-    final List<Tree> result = new ArrayList<>();
+    final List<ObjectConstraint> result = new ArrayList<>();
     constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
       @Override
-      public void accept(SymbolicValue key, Object value) {
-        final SymbolicValue wrappedValue = key.wrappedValue();
-        if (constraint.equals(getConstraint(wrappedValue)) && !valuesAssignedToFields.contains(wrappedValue)) {
-          result.add(key.syntaxNode());
+      public void accept(SymbolicValue value, Object valueConstraint) {
+        if (valueConstraint instanceof ObjectConstraint && !valuesAssignedToFields.contains(value)) {
+          ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
+          if (constraint.hasState(state)) {
+            result.add(constraint);
+          }
         }
       }
     });
