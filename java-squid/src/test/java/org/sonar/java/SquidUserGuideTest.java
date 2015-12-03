@@ -37,7 +37,6 @@ import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.SourceCode;
 
 import java.io.File;
 import java.util.Collection;
@@ -177,17 +176,6 @@ public class SquidUserGuideTest {
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
     assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
-  }
-
-  @Test
-  public void getDependenciesBetweenPackages() {
-    initAndScan(true);
-    SourceCode collectionsPackage = squid.search("org/apache/commons/collections");
-    SourceCode bufferPackage = squid.search("org/apache/commons/collections/buffer");
-    SourceCode bidimapPackage = squid.search("org/apache/commons/collections/bidimap");
-    // assertThat(squid.getDependency(bidimapPackage, collectionsPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getUsage()).isEqualTo(SourceCodeEdgeUsage.USES);
-    // assertThat(squid.getDependency(collectionsPackage, bufferPackage).getRootEdges().size()).isEqualTo(7);
   }
 
 }
