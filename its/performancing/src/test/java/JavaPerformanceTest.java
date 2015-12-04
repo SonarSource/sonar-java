@@ -59,7 +59,7 @@ public class JavaPerformanceTest {
   public void perform() throws IOException {
     ORCHESTRATOR.getServer().provisionProject("project", "project");
     ORCHESTRATOR.getServer().associateProjectToQualityProfile("project", "java", "no-rules");
-    SonarRunner build = SonarRunner.create(ORCHESTRATOR.getFileLocationOfShared("sslr/oracle-jdk-1.6.0.31").getFile())
+    SonarRunner build = SonarRunner.create(FileLocation.of("../sources/sslr/oracle-jdk-1.6.0.31").getFile())
       .setEnvironmentVariable("SONAR_RUNNER_OPTS", "-Xmx1024m -server")
       .setProperty("sonar.importSources", "false")
       .setProperty("sonar.showProfiling", "true")
