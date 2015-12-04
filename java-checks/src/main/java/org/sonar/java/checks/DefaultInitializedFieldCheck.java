@@ -70,16 +70,17 @@ public class DefaultInitializedFieldCheck extends SubscriptionBaseVisitor {
     ExpressionTree initializer = member.initializer();
     if (initializer != null) {
       initializer = ExpressionsHelper.skipParentheses(initializer);
-      if (isDefault(initializer)) {
+      if (isDefault(initializer, member.type().symbolType().isPrimitive())) {
         addIssue(member, "Remove this initialization to \"" + ((LiteralTree) initializer).value() + "\", the compiler will do that for you.");
       }
     }
   }
 
-  private static boolean isDefault(ExpressionTree expression) {
+  private static boolean isDefault(ExpressionTree expression, boolean isPrimitive) {
+    if(!isPrimitive) {
+      return expression.is(Kind.NULL_LITERAL);
+    }
     switch (expression.kind()) {
-      case NULL_LITERAL:
-        return true;
       case CHAR_LITERAL:
         String charValue = ((LiteralTree) expression).value();
         return "'\\u0000'".equals(charValue) || "'\\0'".equals(charValue);
