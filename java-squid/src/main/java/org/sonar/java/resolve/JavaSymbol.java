@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -493,6 +494,9 @@ public class JavaSymbol implements Symbol {
 
     @CheckForNull
     public MethodJavaSymbol overriddenSymbol() {
+      if (isStatic()) {
+        return null;
+      }
       TypeJavaSymbol enclosingClass = enclosingClass();
       for (JavaType.ClassJavaType superType : enclosingClass.superTypes()) {
         MethodJavaSymbol overridden = overriddenSymbolFrom(superType);

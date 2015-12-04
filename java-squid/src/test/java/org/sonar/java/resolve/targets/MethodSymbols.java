@@ -101,4 +101,11 @@ public class MethodSymbols {
     @Override
     public boolean equals(Object obj);
   }
+
+  static class D {
+    static void foo() {}
+  }
+  static class D2 extends D {
+    static void foo() {}
+  }
 }
