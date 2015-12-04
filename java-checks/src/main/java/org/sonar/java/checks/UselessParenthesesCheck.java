@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -87,7 +88,9 @@ public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if(tree.is(Kind.PARENTHESIZED_EXPRESSION) && hasParentExpression((ParenthesizedTree) tree)) {
-      addIssue(tree, "Remove those useless parentheses.");
+      reportIssue(((ParenthesizedTree) tree).openParenToken(),
+          "Remove those useless parentheses.",
+          ImmutableList.of(new JavaFileScannerContext.Location("Original", ((ParenthesizedTree) tree).closeParenToken())), null);
     }
     parent.push(tree);
   }

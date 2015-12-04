@@ -1,9 +1,9 @@
 public class Class {
 
   @Annotation1(1 + 2 + 3) // Compliant
-  @Annotation2(1 & 2 | 3) // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+  @Annotation2(1 & 2 | 3) // Noncompliant [[sc=16;ec=21]] {{Add parentheses to make the operator precedence explicit.}}
   @Annotation3(key = 1 + 2 + 3) // Compliant
-  @Annotation4(key = 1 & 2 | 3) // Noncompliant {{Add parentheses to make the operator precedence explicit.}}
+  @Annotation4(key = 1 & 2 | 3) // Noncompliant [[sc=22;ec=27]] {{Add parentheses to make the operator precedence explicit.}}
   public void method(int[] array, int value) {
     int a;
     ;

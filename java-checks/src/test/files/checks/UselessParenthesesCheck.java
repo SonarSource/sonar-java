@@ -1,9 +1,9 @@
 class Foo {
   void foo() {
     return 3;             // Compliant
-    return (x);           // Noncompliant {{Remove those useless parentheses.}}
-    return (x + 1);       // Noncompliant
-    int x = (y / 2 + 1);  // Noncompliant
+    return (x);           // Noncompliant [[sc=12;ec=13;secondary=4]] {{Remove those useless parentheses.}}
+    return (x + 1);       // Noncompliant [[sc=12;ec=13;secondary=5]] {{Remove those useless parentheses.}}
+    int x = (y / 2 + 1);  // Noncompliant [[sc=13;ec=14;secondary=6]] {{Remove those useless parentheses.}}
     int y = (4+X) * y;    // Compliant
 
     if (0) {              // Compliant

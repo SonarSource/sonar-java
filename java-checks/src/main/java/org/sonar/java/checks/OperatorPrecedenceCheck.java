@@ -217,7 +217,7 @@ public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFile
 
   private void raiseIssue(int line, Tree tree) {
     if (reportedLines.add(line)) {
-      context.addIssue(tree, this, "Add parentheses to make the operator precedence explicit.");
+      context.reportIssue(this, tree, "Add parentheses to make the operator precedence explicit.");
     }
   }
 
