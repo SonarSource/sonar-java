@@ -53,6 +53,9 @@ public class JavaClasspath extends AbstractJavaClasspath {
         libraries = getFilesFromProperty("sonar.libraries");
       }
       elements = Lists.newArrayList(binaries);
+      if(libraries.isEmpty()) {
+        LOG.warn("Bytecode of dependencies was not provided for analysis of source files, you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property");
+      }
       elements.addAll(libraries);
       if (useDeprecatedProperties && !elements.isEmpty()) {
         LOG.warn("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");

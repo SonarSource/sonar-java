@@ -20,6 +20,8 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
@@ -31,6 +33,7 @@ import java.util.List;
 
 public class JavaTestClasspath extends AbstractJavaClasspath {
 
+  private static final Logger LOG = LoggerFactory.getLogger(JavaTestClasspath.class);
 
   public JavaTestClasspath(Project project, Settings settings, FileSystem fs) {
     super(project, settings, fs, InputFile.Type.TEST);
@@ -44,6 +47,9 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
       validateLibraries = project.getModules().isEmpty();
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
+      if(libraries.isEmpty()) {
+        LOG.warn("Bytecode of dependencies was not provided for analysis of test files, you might end up with less precise results. Bytecode can be provided using sonar.java.test.libraries property");
+      }
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
       profiler.stop();
