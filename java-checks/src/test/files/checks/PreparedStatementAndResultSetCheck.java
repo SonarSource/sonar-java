@@ -164,4 +164,27 @@ class A extends UnknownClassFromSamePackage {
   private String getQuery() {
     return null;
   }
+
+
+  public class Example
+  {
+
+    private final String REQUETE_SELECT_RESA_RESEAU = "SELECT COLUMN1 FROM TABLE";
+
+    private final String CLAUSE_ETAT = " WHERE COLUMN2 = ?";
+
+    public Example() {
+    }
+
+    public synchronized void method1() {
+
+      String req= REQUETE_SELECT_RESA_RESEAU;
+      req = req + CLAUSE_ETAT; //StackOverflowError
+      PreparedStatement pstmt= m_con.prepareStatement(req);
+      pstmt.setInt(1,10);
+      ResultSet rs=pstmt.executeQuery();
+
+    }
+
+  }
 }

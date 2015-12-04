@@ -94,11 +94,25 @@ public class ReassignmentFinder extends BaseTreeVisitor {
       SyntaxToken reassignmentFirstToken = FirstSyntaxTokenFinder.firstSyntaxToken(reassignment);
       int reassignmentLine = reassignmentFirstToken.line();
       int startLine = startToken.line();
-      if (startLine > reassignmentLine || (startLine == reassignmentLine && startToken.column() > reassignmentFirstToken.column())) {
+      if (startLine > reassignmentLine ||
+          (startLine == reassignmentLine &&
+              startToken.column() > reassignmentFirstToken.column() &&
+              !isInAssignedExpression(startToken, reassignment))) {
         result = reassignment;
       }
     }
     return result;
+  }
+
+  private static boolean isInAssignedExpression(SyntaxToken syntaxToken, Tree reassignement) {
+    Tree parent = syntaxToken.parent();
+    while (parent != null && !parent.is(Tree.Kind.EXPRESSION_STATEMENT)) {
+      if(parent == reassignement) {
+        return true;
+      }
+      parent = parent.parent();
+    }
+    return false;
   }
 
   @Override
