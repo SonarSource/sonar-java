@@ -69,14 +69,9 @@
 90,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/IssueQuery.java':[
-309,
 310,
 311,
 312,
-313,
-314,
-319,
-320,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/Result.java':[
 36,
