@@ -55,12 +55,11 @@ public class JaCoCoItSensor implements Sensor {
   @Override
   public boolean shouldExecuteOnProject(Project project) {
     File report = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
-    boolean foundReport = report.exists() && report.isFile();
-    boolean shouldExecute = configuration.shouldExecuteOnProject(foundReport);
-    if(!foundReport && shouldExecute) {
-      JaCoCoExtensions.LOG.info("JaCoCoItSensor: JaCoCo IT report not found.");
+    boolean foundReport = report.isFile();
+    if(!foundReport) {
+      JaCoCoExtensions.LOG.info("JaCoCoItSensor: JaCoCo IT report not found: "+report.getPath());
     }
-    return shouldExecute;
+    return configuration.shouldExecuteOnProject(foundReport);
   }
 
   @Override
