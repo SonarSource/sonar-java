@@ -26,7 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ConstraintManager;
-import org.sonar.java.se.ConstraintManager.NullConstraint;
+import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -34,10 +34,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -61,76 +59,55 @@ import java.util.Map;
 @SqaleConstantRemediation("5min")
 public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
 
-  abstract static class SingleTreeNodeVisitor extends BaseTreeVisitor {
-
-    private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
-    private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
-      "java.io.ByteArrayOutputStream",
-      "java.io.ByteArrayInputStream",
-      "java.io.StringReader",
-      "java.io.StringWriter",
-      "java.io.CharArrayReader",
-      "java.io.CharArrayWriter",
-      "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
-    };
-
-    ProgramState programState;
-
-    protected SingleTreeNodeVisitor(ProgramState programState) {
-      this.programState = programState;
-    }
-
-    @Override
-    protected void scan(Tree tree) {
-      // Cut recursive processing
-    }
-
-    @Override
-    protected void scan(List<? extends Tree> trees) {
-      // Cut recursive processing
-    }
-
-    @Override
-    protected void scan(ListTree<? extends Tree> listTree) {
-      // Cut recursive processing
-    }
-
-    protected static boolean needsClosing(Type type) {
-      for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
-        if (type.is(ignoredTypes)) {
-          return false;
-        }
-      }
-      return isCloseable(type);
-    }
-
-    protected static boolean isCloseable(Type type) {
-      return type.isSubtypeOf(JAVA_IO_CLOSEABLE);
-    }
-
-    protected static boolean isOpeningResource(NewClassTree syntaxNode) {
-      if (isWithinTryHeader(syntaxNode)) {
-        return false;
-      }
-      final Type type = syntaxNode.symbolType();
-      return needsClosing(type);
-    }
-
-    protected static boolean isWithinTryHeader(NewClassTree syntaxNode) {
-      final Tree parent = syntaxNode.parent();
-      if (parent != null) {
-        final Tree grandParent = parent.parent();
-        if (grandParent != null) {
-          final Tree greatGrandParent = grandParent.parent();
-          return greatGrandParent != null && greatGrandParent.is(Tree.Kind.TRY_STATEMENT);
-        }
-      }
-      return false;
-    }
-
+  private static enum States {
+    OPENED, CLOSED;
   }
 
-  private static class PostStatementVisitor extends SingleTreeNodeVisitor {
+  private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
+  private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
+    "java.io.ByteArrayOutputStream",
+    "java.io.ByteArrayInputStream",
+    "java.io.StringReader",
+    "java.io.StringWriter",
+    "java.io.CharArrayReader",
+    "java.io.CharArrayWriter",
+    "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
+  };
+
+  static boolean needsClosing(Type type) {
+    for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
+      if (type.is(ignoredTypes)) {
+        return false;
+      }
+    }
+    return isCloseable(type);
+  }
+
+  static boolean isCloseable(Type type) {
+    return type.isSubtypeOf(JAVA_IO_CLOSEABLE);
+  }
+
+  static boolean isOpeningResource(NewClassTree syntaxNode) {
+    if (isWithinTryHeader(syntaxNode)) {
+      return false;
+    }
+    final Type type = syntaxNode.symbolType();
+    return needsClosing(type);
+  }
+
+  static boolean isWithinTryHeader(NewClassTree syntaxNode) {
+    final Tree parent = syntaxNode.parent();
+    if (parent != null) {
+      final Tree grandParent = parent.parent();
+      if (grandParent != null) {
+        final Tree greatGrandParent = grandParent.parent();
+        return greatGrandParent != null && greatGrandParent.is(Tree.Kind.TRY_STATEMENT);
+      }
+    }
+    return false;
+  }
+
+  private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
 
     public PostStatementVisitor(CheckerContext context) {
       super(context.getState());
@@ -140,12 +117,14 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
     public void visitNewClass(NewClassTree syntaxNode) {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
-        programState = programState.addConstraint(instanceValue, NullConstraint.OPENED);
+        if (instanceValue.wrappedValue() == instanceValue) {
+          programState = programState.addConstraint(instanceValue, new ObjectConstraint(syntaxNode, States.OPENED));
+        }
       }
     }
   }
 
-  static class PreStatementVisitor extends SingleTreeNodeVisitor {
+  static class PreStatementVisitor extends CheckerTreeNodeVisitor {
 
     private static final String CLOSE_METHOD_NAME = "close";
 
@@ -198,9 +177,7 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
       if (variable.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
         List<SymbolicValue> stackedValues = programState.peekValues(2);
         SymbolicValue value = stackedValues.get(1);
-        if (isOpened(programState, value)) {
-          programState = closeResource(programState, value);
-        }
+        programState = closeResource(programState, value);
       }
     }
 
@@ -226,14 +203,24 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
     }
 
     private static ProgramState closeResource(ProgramState programState, final SymbolicValue target) {
-      if (target != null && isOpened(programState, target)) {
-        return programState.addConstraint(target.wrappedValue(), NullConstraint.CLOSED);
+      if (target != null) {
+        ObjectConstraint oConstraint = openedConstraint(programState, target);
+        if (oConstraint != null) {
+          return programState.addConstraint(target.wrappedValue(), oConstraint.inState(States.CLOSED));
+        }
       }
       return programState;
     }
 
-    private static boolean isOpened(ProgramState programState, SymbolicValue value) {
-      return NullConstraint.OPENED.equals(programState.getConstraint(value.wrappedValue()));
+    private static ObjectConstraint openedConstraint(ProgramState programState, SymbolicValue value) {
+      final Object constraint = programState.getConstraint(value.wrappedValue());
+      if (constraint instanceof ObjectConstraint) {
+        ObjectConstraint oConstraint = (ObjectConstraint) constraint;
+        if (oConstraint.hasState(States.OPENED)) {
+          return oConstraint;
+        }
+      }
+      return null;
     }
 
     private static boolean isClosingResource(Symbol constructor) {
@@ -251,7 +238,7 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
-    final SingleTreeNodeVisitor visitor = new PreStatementVisitor(context);
+    final PreStatementVisitor visitor = new PreStatementVisitor(context);
     syntaxNode.accept(visitor);
     return visitor.programState;
   }
@@ -265,8 +252,9 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    final List<Tree> openedResources = context.getState().getConstrainedSyntaxNodes(NullConstraint.OPENED);
-    for (Tree syntaxNode : openedResources) {
+    final List<ObjectConstraint> constraints = context.getState().getConstraints(States.OPENED);
+    for (ObjectConstraint constraint : constraints) {
+      Tree syntaxNode = constraint.syntaxNode();
       if (syntaxNode instanceof NewClassTree) {
         context.reportIssue(syntaxNode, this, "Close this \"" + ((NewClassTree) syntaxNode).identifier() + "\".");
       }

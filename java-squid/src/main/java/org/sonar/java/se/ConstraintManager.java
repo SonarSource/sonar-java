@@ -58,7 +58,7 @@ public class ConstraintManager {
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
       default:
-        result = wrappedValue == null ? new SymbolicValue(counter, syntaxNode) : new SymbolicValue.ResourceWrapperSymbolicValue(counter, wrappedValue);
+        result = wrappedValue == null ? new SymbolicValue(counter) : new SymbolicValue.ResourceWrapperSymbolicValue(counter, wrappedValue);
     }
     counter++;
     return result;
@@ -78,7 +78,7 @@ public class ConstraintManager {
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
-    return NullConstraint.NULL.equals(ps.getConstraint(val));
+    return ObjectConstraint.NULL.equals(ps.getConstraint(val));
   }
 
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
@@ -90,19 +90,6 @@ public class ConstraintManager {
     return new Pair<>(falseConstraint, trueConstraint);
   }
 
-  public enum NullConstraint {
-    NULL,
-    NOT_NULL,
-    OPENED,
-    CLOSED;
-    NullConstraint inverse() {
-      if (NULL == this) {
-        return NOT_NULL;
-      }
-      return NULL;
-    }
-  }
-
   public enum BooleanConstraint {
     TRUE,
     FALSE;
@@ -112,10 +99,6 @@ public class ConstraintManager {
       }
       return TRUE;
     }
-  }
-
-  public List<Tree> getOpenedResources(final ProgramState programState) {
-    return programState.getConstrainedSyntaxNodes(NullConstraint.OPENED);
   }
 
   public static class TypedConstraint {

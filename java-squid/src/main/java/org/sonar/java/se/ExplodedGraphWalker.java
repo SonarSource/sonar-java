@@ -29,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.model.JavaTree;
-import org.sonar.java.se.ConstraintManager.NullConstraint;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
@@ -106,7 +105,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   public ExplodedGraphWalker(JavaFileScannerContext context) {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
-    this.checkerDispatcher = new CheckerDispatcher(this, context, Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck()));
+    this.checkerDispatcher = new CheckerDispatcher(this, context,
+      Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck()));
   }
 
   @Override
@@ -189,8 +189,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           @Override
           public List<ProgramState> apply(ProgramState input) {
             List<ProgramState> states = new ArrayList<>();
-            states.addAll(sv.setConstraint(input, NullConstraint.NULL));
-            states.addAll(sv.setConstraint(input, NullConstraint.NOT_NULL));
+            states.addAll(sv.setConstraint(input, ObjectConstraint.NULL));
+            states.addAll(sv.setConstraint(input, ObjectConstraint.NOT_NULL));
             return states;
           }
         }));
@@ -427,7 +427,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = programState.unstackValue(newArrayTree.initializers().size()).state;
     SymbolicValue svNewArray = constraintManager.createSymbolicValue(newArrayTree);
     programState = programState.stackValue(svNewArray);
-    programState = svNewArray.setSingleConstraint(programState, NullConstraint.NOT_NULL);
+    programState = svNewArray.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
   }
 
   private void executeNewClass(NewClassTree tree) {
@@ -435,7 +435,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = programState.unstackValue(newClassTree.arguments().size()).state;
     SymbolicValue svNewClass = constraintManager.createSymbolicValue(newClassTree);
     programState = programState.stackValue(svNewClass);
-    programState = svNewClass.setSingleConstraint(programState, NullConstraint.NOT_NULL);
+    programState = svNewClass.setSingleConstraint(programState, ObjectConstraint.NOT_NULL);
   }
 
   private void executeBinaryExpression(Tree tree) {
