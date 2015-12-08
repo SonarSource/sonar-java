@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -172,6 +173,8 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
             break;
           }
         }
+      } else {
+        closeArguments(syntaxNode.arguments(), 0);
       }
     }
 
@@ -217,11 +220,15 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
           }
         }
       } else {
-        final List<SymbolicValue> values = programState.peekValues(syntaxNode.arguments().size() + 1);
-        final List<SymbolicValue> argumentValues = values.subList(1, values.size());
-        for (SymbolicValue target : argumentValues) {
-          programState = closeResource(programState, target);
-        }
+        closeArguments(syntaxNode.arguments(), 1);
+      }
+    }
+
+    private void closeArguments(final Arguments arguments, int stackOffset) {
+      final List<SymbolicValue> values = programState.peekValues(arguments.size() + stackOffset);
+      final List<SymbolicValue> argumentValues = values.subList(stackOffset, values.size());
+      for (SymbolicValue target : argumentValues) {
+        programState = closeResource(programState, target);
       }
     }
 

@@ -240,4 +240,18 @@ public class A {
       closeJar(jar);
     }
   }
+  
+  public InputStream getStreamAsNewInstanceArgument(@Nonnull String obj) throws IOException {
+    String key = getKey(Obj);
+    try {
+      lock();
+      Path path = getCacheCopy(key);
+      if (path == null) {
+        return ull;
+      }
+      return new DeleteFileOnCloseInputStream(new FileInputStream(path.toFile()), path);
+    } finally {
+      unlock();
+    }
+  }
 }
