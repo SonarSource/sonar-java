@@ -5,7 +5,7 @@ branches:
   - master
 
 cache:
-  - C:\Users\appveyor\.m2 -> **\pom.xml
+  # Note that we don't use cache for local Maven repository - see https://github.com/SonarSource/sonar-java/pull/525
   - C:\ProgramData\chocolatey\bin -> appveyor.yml
   - C:\ProgramData\chocolatey\lib -> appveyor.yml
   - C:\bin\apache-maven-3.2.5 -> appveyor.yml
