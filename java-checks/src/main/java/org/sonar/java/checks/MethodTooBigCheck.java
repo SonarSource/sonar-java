@@ -28,6 +28,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.squidbridge.annotations.RuleTemplate;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -37,7 +38,9 @@ import java.util.List;
   key = "S138",
   name = "Methods should not have too many lines",
   priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
+  tags = {Tag.BRAIN_OVERLOAD}
+)
+@RuleTemplate
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
 public class MethodTooBigCheck extends SubscriptionBaseVisitor {

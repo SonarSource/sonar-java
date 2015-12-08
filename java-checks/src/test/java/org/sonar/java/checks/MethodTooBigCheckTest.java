@@ -45,4 +45,13 @@ public class MethodTooBigCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom5.java", check);
   }
 
+  @Test
+  public void multipleInstances() {
+    MethodTooBigCheck checkLowerLimit = new MethodTooBigCheck();
+    checkLowerLimit.max = 4;
+    MethodTooBigCheck checkHigherLimit = new MethodTooBigCheck();
+    checkHigherLimit.max = 5;
+    JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom4.java", checkLowerLimit);
+    JavaCheckVerifier.verify("src/test/files/checks/MethodTooBigCheckCustom5.java", checkHigherLimit);
+  }
 }
