@@ -81,6 +81,23 @@
     <asm.version>5.0.3</asm.version>
   </properties>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+          <configuration>
+            <includes>
+              <include>org.sonar.*</include>
+            </includes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
