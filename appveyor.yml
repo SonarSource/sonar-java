@@ -6,14 +6,21 @@ branches:
 
 cache:
   # Note that we don't use cache for local Maven repository - see https://github.com/SonarSource/sonar-java/pull/525
-  - C:\ProgramData\chocolatey\bin -> appveyor.yml
-  - C:\ProgramData\chocolatey\lib -> appveyor.yml
-  - C:\bin\apache-maven-3.2.5 -> appveyor.yml
+  - C:\Users\appveyor\maven -> appveyor.yml
 
 install:
   - set MAVEN_VERSION=3.2.5
-  - choco install maven -version %MAVEN_VERSION%
-  - set PATH=%PATH%;C:\bin\apache-maven-%MAVEN_VERSION%\bin
+  # Note that indentation is important here:
+  - ps: |
+      Add-Type -AssemblyName System.IO.Compression.FileSystem
+      if (!(Test-Path -Path "C:\Users\appveyor\maven" )) {
+        (new-object System.Net.WebClient).DownloadFile(
+          "http://www.apache.org/dyn/closer.cgi?action=download&filename=maven/maven-3/$($env:MAVEN_VERSION)/binaries/apache-maven-$($env:MAVEN_VERSION)-bin.zip",
+          "C:\Users\appveyor\maven.zip"
+        )
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\Users\appveyor\maven.zip", "C:\Users\appveyor\maven")
+      }
+  - set PATH=%PATH%;C:\Users\appveyor\maven\apache-maven-%MAVEN_VERSION%\bin
   - echo %JAVA_HOME%
   - if "%RUN%" == "ruling" (git submodule update --init --recursive)
 
