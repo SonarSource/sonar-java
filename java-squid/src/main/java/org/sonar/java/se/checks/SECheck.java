@@ -30,9 +30,6 @@ public abstract class SECheck implements JavaCheck {
   public void init(){
   }
 
-  /**
-   * @return true if cfg instruction should be executed
-   */
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
     return context.getState();
   }
