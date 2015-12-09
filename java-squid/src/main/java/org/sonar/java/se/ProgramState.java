@@ -237,22 +237,6 @@ public class ProgramState {
     return values.get(symbol);
   }
 
-  public List<ObjectConstraint> getConstraints(final Object state) {
-    final List<ObjectConstraint> result = new ArrayList<>();
-    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
-      @Override
-      public void accept(SymbolicValue value, Object valueConstraint) {
-        if (valueConstraint instanceof ObjectConstraint) {
-          ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
-          if (constraint.hasStatus(state)) {
-            result.add(constraint);
-          }
-        }
-      }
-    });
-    return result;
-  }
-
   public List<ObjectConstraint> getFieldConstraints(final Object state) {
     final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
     final List<ObjectConstraint> result = new ArrayList<>();

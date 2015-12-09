@@ -35,8 +35,6 @@ public abstract class SECheck implements JavaCheck {
   }
 
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    // Default transition
-    context.addTransition(context.getState());
     return context.getState();
   }
 
