@@ -309,7 +309,7 @@ public class JavaCheckVerifierTest {
       }
     }
 
-    private Tree mockTree(final AnalyzerMessage analyzerMessage) {
+    private static Tree mockTree(final AnalyzerMessage analyzerMessage) {
       AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
       return new ReturnStatementTreeImpl(
         new InternalSyntaxToken(textSpan.startLine, textSpan.startCharacter - 1, "", Lists.<SyntaxTrivia>newArrayList(), 0, 0, false),
