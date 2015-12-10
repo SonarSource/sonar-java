@@ -60,7 +60,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -82,7 +81,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private MethodTree methodTree;
   private ExplodedGraph explodedGraph;
   private Deque<ExplodedGraph.Node> workList;
-  private ExplodedGraph.Node node;
+  ExplodedGraph.Node node;
   ExplodedGraph.ProgramPoint programPosition;
   ProgramState programState;
 
@@ -235,8 +234,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
     // unconditional jumps, for-statement, switch-statement, synchronized:
-    for (CFG.Block successor : block.successors()) {
-      enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState);
+    if(node.exitPath) {
+      enqueue(new ExplodedGraph.ProgramPoint(block.exitBlock(), 0), programState, true);
+    } else {
+      for (CFG.Block successor : block.successors()) {
+        if (!block.isFinallyBlock() || successor != block.exitBlock()) {
+          enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, successor == block.exitBlock());
+        }
+      }
     }
   }
 
@@ -529,6 +534,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState) {
+    enqueue(programPoint, programState, false);
+  }
+
+  public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       debugPrint(programState);
@@ -539,10 +548,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name());
     }
     ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitedPoint(programPoint, nbOfExecution + 1));
-    if (!cachedNode.isNew) {
+    if (!cachedNode.isNew && exitPath == cachedNode.exitPath) {
       // has been enqueued earlier
       return;
     }
+    cachedNode.exitPath = exitPath;
     workList.addFirst(cachedNode);
   }
 

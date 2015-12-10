@@ -75,7 +75,6 @@ import java.util.Set;
 
 public class CFG {
 
-  private final Block exitBlock;
   private final Symbol.MethodSymbol methodSymbol;
   private Block currentBlock;
 
@@ -86,6 +85,7 @@ public class CFG {
 
   private final Deque<Block> breakTargets = new LinkedList<>();
   private final Deque<Block> continueTargets = new LinkedList<>();
+  private final Deque<Block> exitBlocks = new LinkedList<>();
 
   private final Deque<Block> switches = new LinkedList<>();
   private String pendingLabel = null;
@@ -94,13 +94,17 @@ public class CFG {
 
   private CFG(BlockTree tree, Symbol.MethodSymbol symbol) {
     methodSymbol = symbol;
-    exitBlock = createBlock();
-    currentBlock = createBlock(exitBlock);
+    exitBlocks.add(createBlock());
+    currentBlock = createBlock(exitBlock());
     for (StatementTree statementTree : Lists.reverse(tree.body())) {
       build(statementTree);
     }
     prune();
     computePredecessors(blocks);
+  }
+
+  private Block exitBlock() {
+    return exitBlocks.peek();
   }
 
   public Symbol.MethodSymbol methodSymbol() {
@@ -126,8 +130,11 @@ public class CFG {
     private final Set<Block> predecessors = new HashSet<>();
     private Block trueBlock;
     private Block falseBlock;
+    private Block exitBlock;
 
     private Tree terminator;
+
+    private boolean isFinallyBlock;
 
     public Block(int id) {
       this.id = id;
@@ -149,6 +156,14 @@ public class CFG {
       return falseBlock;
     }
 
+    public Block exitBlock() {
+      return exitBlock;
+    }
+
+    public boolean isFinallyBlock() {
+      return isFinallyBlock;
+    }
+
     void addSuccessor(Block successor) {
       successors.add(successor);
     }
@@ -167,6 +182,11 @@ public class CFG {
       }
       successors.add(successor);
       falseBlock = successor;
+    }
+
+    public void addExitSuccessor(Block block) {
+      successors.add(block);
+      exitBlock = block;
     }
 
     public Set<Block> predecessors() {
@@ -203,7 +223,6 @@ public class CFG {
         successors.addAll(inactiveBlock.successors);
       }
     }
-
   }
 
   private static void computePredecessors(List<Block> blocks) {
@@ -405,9 +424,9 @@ public class CFG {
       case NEW_ARRAY:
         buildNewArray((NewArrayTree) tree);
         break;
-        // assert can be ignored by VM so skip them for now.
+      // assert can be ignored by VM so skip them for now.
       case ASSERT_STATEMENT:
-        //Ignore assert statement as they are disabled by default in JVM
+        // Ignore assert statement as they are disabled by default in JVM
         break;
       // store declarations as complete blocks.
       case EMPTY_STATEMENT:
@@ -435,7 +454,7 @@ public class CFG {
   }
 
   private void buildReturnStatement(ReturnStatementTree returnStatement) {
-    currentBlock = createUnconditionalJump(returnStatement, exitBlock);
+    currentBlock = createUnconditionalJump(returnStatement, exitBlock());
     ExpressionTree expression = returnStatement.expression();
     if (expression != null) {
       build(expression);
@@ -678,7 +697,7 @@ public class CFG {
 
   private void addContinueTarget(Block target) {
     continueTargets.addLast(target);
-    if(pendingLabel != null) {
+    if (pendingLabel != null) {
       labelsContinueTarget.put(pendingLabel, target);
       pendingLabel = null;
     }
@@ -721,7 +740,10 @@ public class CFG {
     currentBlock = createBlock(currentBlock);
     BlockTree finallyBlockTree = tryStatementTree.finallyBlock();
     if (finallyBlockTree != null) {
+      currentBlock.isFinallyBlock = true;
       build(finallyBlockTree);
+      currentBlock.addExitSuccessor(exitBlock());
+      exitBlocks.push(currentBlock);
     }
     Block finallyOrEndBlock = currentBlock;
     Block beforeFinally = createBlock(currentBlock);
@@ -739,11 +761,20 @@ public class CFG {
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);
+    if (finallyBlockTree != null) {
+      exitBlocks.pop();
+      if(catches.isEmpty()) {
+        currentBlock.addExitSuccessor(finallyOrEndBlock);
+      }
+    }
+    for (Block catchBlock : catches) {
+      currentBlock.addSuccessor(catchBlock);
+    }
   }
 
   private void buildThrowStatement(ThrowStatementTree throwStatementTree) {
     // FIXME this won't work if it is intended to be caught by a try statement.
-    currentBlock = createUnconditionalJump(throwStatementTree, exitBlock);
+    currentBlock = createUnconditionalJump(throwStatementTree, exitBlock());
     build(throwStatementTree.expression());
   }
 
@@ -803,7 +834,11 @@ public class CFG {
     Block result = createBlock();
     result.terminator = terminator;
     if (target != null) {
-      result.addSuccessor(target);
+      if (target == exitBlock()) {
+        result.addExitSuccessor(target);
+      } else {
+        result.addSuccessor(target);
+      }
     }
     return result;
   }
@@ -847,8 +882,8 @@ public class CFG {
   private Block createBranch(Tree terminator, Block trueBranch, Block falseBranch) {
     Block result = createBlock();
     result.terminator = terminator;
-    result.addTrueSuccessor(trueBranch);
     result.addFalseSuccessor(falseBranch);
+    result.addTrueSuccessor(trueBranch);
     return result;
   }
 

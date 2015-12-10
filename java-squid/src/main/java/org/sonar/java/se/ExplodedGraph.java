@@ -84,6 +84,7 @@ public class ExplodedGraph {
     final ProgramPoint programPoint;
     @Nullable
     final ProgramState programState;
+    public boolean exitPath = false;
 
     Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;

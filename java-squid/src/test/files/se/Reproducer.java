@@ -16,7 +16,6 @@ class A {
         break label;
       }
     } while ( remainingNanos >0);
-//    String x = a == b ? foo(a) : foo(b);
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;
@@ -91,5 +90,26 @@ class A {
     }
   }
 
+  private void try_finally() {
+    boolean success = false;
+    try {
+      foo();
+      success = true;
+    } finally {
+      if(success) {
+
+      }
+    }
+  }
+
+  void foo() {
+    Object object2;
+    try{
+      object2 = potentiallyRaiseException();
+    } finally {
+      System.out.println("foo");
+    }
+    object2.toString(); // not accessible with null value
+  }
 
 }

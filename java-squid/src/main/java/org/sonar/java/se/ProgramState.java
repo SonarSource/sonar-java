@@ -43,8 +43,8 @@ public class ProgramState {
   public static class Pop {
 
     public final ProgramState state;
-    public final List<SymbolicValue> values;
 
+    public final List<SymbolicValue> values;
     public Pop(ProgramState programState, List<SymbolicValue> result) {
       state = programState;
       values = result;
@@ -53,8 +53,8 @@ public class ProgramState {
   }
 
   private int hashCode;
-  private final int constraintSize;
 
+  private final int constraintSize;
   public static final ProgramState EMPTY_STATE = new ProgramState(
     AVLTree.<Symbol, SymbolicValue>create(),
     AVLTree.<SymbolicValue, Object>create()
@@ -65,10 +65,10 @@ public class ProgramState {
     Lists.<SymbolicValue>newLinkedList());
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
+
   private final Deque<SymbolicValue> stack;
   private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Object> constraints;
-
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
     Deque<SymbolicValue> stack) {
     this.values = values;

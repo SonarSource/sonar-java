@@ -242,10 +242,18 @@ class NullPointerTest {
     try {
       object = new Object();
     } catch (Exception e) {
-      object.hashCode(); // false negative : not explored in CFG
+      object.hashCode(); // Noncompliant
     } finally {
       object.hashCode();
     }
+    Object object2;
+    try{
+      object2 = potentiallyRaiseException();
+    } finally {
+      System.out.println("foo");
+    }
+    object2.toString(); // not accessible with null value
+
   }
 
   public void testLogicalAnd(String str, Object object) {

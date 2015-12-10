@@ -82,6 +82,10 @@ public class CFGDebug {
       if (successor == block.falseBlock()) {
         buffer.append("(false)");
       }
+      if (successor == block.exitBlock()) {
+        buffer.append("(exit)");
+      }
+
     }
     buffer.append('\n');
     buffer.append('\n');

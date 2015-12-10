@@ -113,6 +113,7 @@ public class CFGTest {
     private TerminatorChecker terminatorChecker;
     private int ifTrue = -1;
     private int ifFalse = -1;
+    private int exitId = -1;
 
     BlockChecker(final int... ids) {
       if( ids.length <= 1) {
@@ -180,6 +181,9 @@ public class CFGTest {
         if (ifFalse != -1) {
           assertThat(block.falseBlock().id()).as("Expected true successor block " + block.id()).isEqualTo(ifFalse);
         }
+        if(exitId != -1) {
+          assertThat(block.exitBlock().id()).as("Expected exit successor block " + block.id()).isEqualTo(exitId);
+        }
       } else {
         assertThat(block.successors()).as("Expected number of successors in block " + block.id()).hasSize(successorIDs.length);
         final int[] actualSuccessorIDs = new int[successorIDs.length];
@@ -193,6 +197,11 @@ public class CFGTest {
       if (terminatorChecker != null) {
         terminatorChecker.check(block.terminator());
       }
+    }
+
+    BlockChecker exit(final int id) {
+      exitId = id;
+      return this;
     }
   }
 
@@ -997,7 +1006,7 @@ public class CFGTest {
     CFGChecker cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(2),
+        ).successors(1, 2).exit(1),
         block(
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
@@ -1018,7 +1027,7 @@ public class CFGTest {
     cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(2),
+        ).successors(2, 3, 4),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'e'"),
             element(Tree.Kind.IDENTIFIER, "foo"),
@@ -1054,15 +1063,34 @@ public class CFGTest {
     cfgChecker = checker(
         block(
             element(Tree.Kind.TRY_STATEMENT)
-        ).successors(1),
+        ).successors(1, 2),
         block(
             element(Tree.Kind.IDENTIFIER, "e"),
             element(Tree.Kind.INSTANCE_OF)
         ).terminator(Tree.Kind.IF_STATEMENT).ifTrue(0).ifFalse(0),
-        new BlockChecker(0, 2) // paritcular case of a block with multiple successors but no instructions.
+        new BlockChecker(0, 2) // particular case of a block with multiple successors but no instructions.
     );
     cfgChecker.check(cfg);
-
+    cfg = buildCFG(
+        "  private void f() {\n" +
+            "    try {\n" +
+            "    return;" +
+            "} finally { foo();} bar(); }");
+    cfgChecker = checker(
+        block(
+            element(Tree.Kind.TRY_STATEMENT)
+        ).successors(2, 3).exit(2),
+        terminator(Kind.RETURN_STATEMENT).successors(2).exit(2),
+        block(
+            element(Tree.Kind.IDENTIFIER, "foo"),
+            element(Kind.METHOD_INVOCATION)
+        ).successors(0, 1).exit(0),
+        block(
+            element(Tree.Kind.IDENTIFIER, "bar"),
+            element(Kind.METHOD_INVOCATION)
+        ).successors(0)
+    );
+    cfgChecker.check(cfg);
   }
 
   @Test

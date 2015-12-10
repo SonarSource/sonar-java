@@ -1049,22 +1049,22 @@ public static class Class extends SuperClass {
     } catch (Exception e) {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (b) {
       }
       c = true;
       d = true;
     } catch (Exception e) {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (c) {
       }
       d = true;
     }
     if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (b) {
     }
-    if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (c) {
     }
     if (d) {
     }
@@ -1080,9 +1080,9 @@ public static class Class extends SuperClass {
     } finally {
       if (a) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (b) { // Noncompliant
+      if (b) {
       }
-      if (c) { // Noncompliant
+      if (c) {
       }
       b = true;
     }
@@ -1090,7 +1090,7 @@ public static class Class extends SuperClass {
     }
     if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (c) { // Noncompliant
+    if (c) {
     }
   }
 
