@@ -254,8 +254,6 @@ public class A {
     try {
       reader = new BufferedReader(new FileReader(aFile));
       reader.read();
-//    } catch(IOException e) { // Causes a problem when decommented!
-//      throw new RuntimeException(e);
     } finally {
       IOUtils.closeQuietly(reader);
     }
