@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
@@ -42,11 +43,22 @@ import java.util.Set;
 
 public class ProgramState {
 
+  public static class ConstrainedValue {
+
+    public final SymbolicValue value;
+    public final ObjectConstraint constraint;
+
+    ConstrainedValue(SymbolicValue value, ObjectConstraint constraint) {
+      this.value = value;
+      this.constraint = constraint;
+    }
+  }
+
   public static class Pop {
 
     public final ProgramState state;
-
     public final List<SymbolicValue> values;
+
     public Pop(ProgramState programState, List<SymbolicValue> result) {
       state = programState;
       values = result;
@@ -327,6 +339,38 @@ public class ProgramState {
   @CheckForNull
   public SymbolicValue getValue(Symbol symbol) {
     return values.get(symbol);
+  }
+
+  public List<ObjectConstraint> getConstraints(final Object state) {
+    final List<ObjectConstraint> result = new ArrayList<>();
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+      @Override
+      public void accept(SymbolicValue value, Object valueConstraint) {
+        if (valueConstraint instanceof ObjectConstraint) {
+          ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
+          if (constraint.hasStatus(state)) {
+            result.add(constraint);
+          }
+        }
+      }
+    });
+    return result;
+  }
+
+  public List<ConstrainedValue> getValuesWithConstraints(final Object state) {
+    final List<ConstrainedValue> result = new ArrayList<>();
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+      @Override
+      public void accept(SymbolicValue value, Object valueConstraint) {
+        if (valueConstraint instanceof ObjectConstraint) {
+          ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
+          if (constraint.hasStatus(state)) {
+            result.add(new ConstrainedValue(value, constraint));
+          }
+        }
+      }
+    });
+    return result;
   }
 
   public List<ObjectConstraint> getFieldConstraints(final Object state) {

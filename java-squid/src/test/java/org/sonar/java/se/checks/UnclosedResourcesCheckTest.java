@@ -43,4 +43,9 @@ public class UnclosedResourcesCheckTest {
   public void foreign() {
     JavaCheckVerifier.verify("src/test/files/se/CloseResourceTestFile.java", new UnclosedResourcesCheck());
   }
+
+  @Test
+  public void jdbcTests() {
+    JavaCheckVerifier.verify("src/test/files/se/JdbcResourcesTestFile.java", new UnclosedResourcesCheck());
+  }
 }
