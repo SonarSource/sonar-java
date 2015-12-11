@@ -25,7 +25,10 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaVersion;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -50,12 +53,25 @@ public class OverrideAnnotationCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if(isOverriding(methodTree) && !methodTree.isAnnotatedOverride()){
+    if(isOverriding(methodTree) && !methodTree.isAnnotatedOverride() && !isExcluded(context.getJavaVersion(), methodTree)){
       addIssue(tree, "Add the \"@Override\" annotation above this method signature");
     }
   }
 
-  public boolean isOverriding(MethodTreeImpl methodTree) {
+  private static boolean isOverriding(MethodTreeImpl methodTree) {
     return BooleanUtils.isTrue(methodTree.isOverriding());
   }
+
+  private static boolean isExcluded(JavaVersion javaVersion, MethodTreeImpl methodTree) {
+    if(javaVersion.isNotSet()) {
+      return false;
+    }
+    int javaIntVersion = javaVersion.asInt();
+    return javaIntVersion <= 4 || (javaIntVersion == 5 && (methodTree.symbol().owner().isInterface() || overrideFromInterface(methodTree))) ;
+  }
+
+  private static boolean overrideFromInterface(MethodTree methodTree) {
+    return ((JavaSymbol.MethodJavaSymbol) methodTree.symbol()).overriddenSymbol().owner().isInterface();
+  }
+
 }

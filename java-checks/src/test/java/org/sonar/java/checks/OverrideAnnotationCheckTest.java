@@ -24,8 +24,25 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class OverrideAnnotationCheckTest {
 
+
   @Test
-  public void test() {
+  public void test_java() {
     JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck());
   }
+
+  @Test
+  public void test_java_6() {
+    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck.java", new OverrideAnnotationCheck(), 6);
+  }
+
+  @Test
+  public void test_java_5() {
+    JavaCheckVerifier.verify("src/test/files/checks/OverrideAnnotationCheck_java5.java", new OverrideAnnotationCheck(), 5);
+  }
+
+  @Test
+  public void test_java_4() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/OverrideAnnotationCheck_java4.java", new OverrideAnnotationCheck(), 4);
+  }
+
 }
