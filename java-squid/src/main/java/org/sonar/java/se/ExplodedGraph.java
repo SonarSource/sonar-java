@@ -77,6 +77,7 @@ public class ExplodedGraph {
 
   public static class Node {
     boolean isNew;
+    boolean exitPath = false;
 
     /**
      * Execution location. Currently only pre-statement, but tomorrow we might add post-statement.
@@ -84,7 +85,6 @@ public class ExplodedGraph {
     final ProgramPoint programPoint;
     @Nullable
     final ProgramState programState;
-    public boolean exitPath = false;
 
     Node(ProgramPoint programPoint, @Nullable ProgramState programState) {
       this.programPoint = programPoint;
