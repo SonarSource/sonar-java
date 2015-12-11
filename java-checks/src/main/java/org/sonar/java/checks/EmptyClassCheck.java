@@ -62,6 +62,9 @@ public class EmptyClassCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isEmpty(ClassTree tree) {
+    if(!tree.modifiers().annotations().isEmpty()) {
+      return false;
+    }
     for (Tree member : tree.members()) {
       if (!member.is(Tree.Kind.EMPTY_STATEMENT)) {
         return false;

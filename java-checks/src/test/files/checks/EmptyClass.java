@@ -17,3 +17,8 @@ class K implements I {}
 class L { // Noncompliant {{Remove this empty class, write its code or make it an "interface".}}
   ;
 }
+
+@SpringAnnotation
+class markerType { // compliant because of annotation
+
+}

@@ -11,3 +11,14 @@ public class Nothing {  // Noncompliant
 public interface Nothing {
 }
 </pre>
+
+<h2>Exceptions</h2>
+
+<p>Empty classes can be used as marker types (for spring for instance), therefore annotated empty classes won't raise any issue.</p>
+<pre>
+@Configuration
+@EnableWebMvc
+public class ApplicationConfiguration {
+
+}
+</pre>
