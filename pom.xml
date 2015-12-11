@@ -41,6 +41,7 @@
   </developers>
 
   <modules>
+    <module>java-maven-model</module>
     <module>java-squid</module>
     <module>java-checks-testkit</module>
     <module>java-checks</module>
