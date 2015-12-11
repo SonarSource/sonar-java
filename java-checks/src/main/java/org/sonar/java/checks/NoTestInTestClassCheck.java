@@ -72,11 +72,13 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
     for (Tree typeTree : cut.types()) {
       if (typeTree.is(Kind.CLASS)) {
         ClassTree classTree = (ClassTree) typeTree;
-        if (classTree.symbol().metadata().isAnnotatedWith("org.testng.annotations.Test")) {
-          checkTestNGmembers(classTree);
-        } else if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
-          checkJunit3TestClass(classTree);
-          checkJunit4TestClass(classTree);
+        if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
+          if (classTree.symbol().metadata().isAnnotatedWith("org.testng.annotations.Test")) {
+            checkTestNGmembers(classTree);
+          } else {
+            checkJunit3TestClass(classTree);
+            checkJunit4TestClass(classTree);
+          }
         }
       }
     }
