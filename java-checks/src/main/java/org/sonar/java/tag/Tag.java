@@ -61,6 +61,7 @@ public final class Tag {
   public static final String SPRING = "spring";
   public static final String TESTS = "tests";
   public static final String STRUTS = "struts";
+  public static final String MAVEN = "maven";
 
   private Tag() {
   }
