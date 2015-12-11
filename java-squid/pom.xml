@@ -26,6 +26,11 @@
       <artifactId>sonar-compat</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>java-maven-model</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.ow2.asm</groupId>
