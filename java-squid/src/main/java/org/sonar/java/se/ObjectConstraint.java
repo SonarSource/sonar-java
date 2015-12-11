@@ -21,6 +21,8 @@ package org.sonar.java.se;
 
 import org.sonar.plugins.java.api.tree.Tree;
 
+import javax.annotation.Nullable;
+
 public class ObjectConstraint {
 
   public static final ObjectConstraint NULL = new ObjectConstraint(true, null, null);
@@ -28,13 +30,14 @@ public class ObjectConstraint {
 
   private final boolean isNull;
   private final Tree syntaxNode;
+  @Nullable
   private final Object status;
 
   public ObjectConstraint(Tree syntaxNode, Object status) {
     this(false, syntaxNode, status);
   }
 
-  private ObjectConstraint(boolean isNull, Tree syntaxNode, Object status) {
+  private ObjectConstraint(boolean isNull, @Nullable Tree syntaxNode, @Nullable Object status) {
     this.isNull = isNull;
     this.syntaxNode = syntaxNode;
     this.status = status;
@@ -55,7 +58,7 @@ public class ObjectConstraint {
     return isNull;
   }
 
-  public boolean hasStatus(Object aState) {
+  public boolean hasStatus(@Nullable Object aState) {
     if (aState == null) {
       return status == null;
     }

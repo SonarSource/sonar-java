@@ -54,7 +54,8 @@ public class JavaClasspath extends AbstractJavaClasspath {
       }
       elements = Lists.newArrayList(binaries);
       if(libraries.isEmpty()) {
-        LOG.warn("Bytecode of dependencies was not provided for analysis of source files, you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property");
+        LOG.warn("Bytecode of dependencies was not provided for analysis of source files, " +
+            "you might end up with less precise results. Bytecode can be provided using sonar.java.libraries property");
       }
       elements.addAll(libraries);
       if (useDeprecatedProperties && !elements.isEmpty()) {

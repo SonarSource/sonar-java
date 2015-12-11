@@ -62,6 +62,13 @@ public class JavaTestClasspathTest {
   }
 
   @Test
+  public void empty_libraries() throws Exception {
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "");
+    javaTestClasspath = createJavaClasspath();
+    assertThat(javaTestClasspath.getElements()).isEmpty();
+  }
+
+  @Test
   public void libraries_without_dir() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");

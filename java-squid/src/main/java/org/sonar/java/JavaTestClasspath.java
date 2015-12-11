@@ -48,7 +48,8 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
       if(libraries.isEmpty()) {
-        LOG.warn("Bytecode of dependencies was not provided for analysis of test files, you might end up with less precise results. Bytecode can be provided using sonar.java.test.libraries property");
+        LOG.warn("Bytecode of dependencies was not provided for analysis of test files, you might end up with less precise results. " +
+            "Bytecode can be provided using sonar.java.test.libraries property");
       }
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);

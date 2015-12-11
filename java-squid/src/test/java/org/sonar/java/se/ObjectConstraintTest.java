@@ -31,19 +31,30 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class ObjectConstraintTest {
 
-  private enum Statuses {
-    OPENED, CLOSED;
+  private enum TestStatus {
+    OPENED, CLOSED
   }
 
   @Test
-  public void testOpened() {
+  public void open_status() {
     final IdentifierTree tree = new IdentifierTreeImpl(new InternalSyntaxToken(1, 1, "id", Collections.<SyntaxTrivia>emptyList(), 0, 0, false));
-    ObjectConstraint constraint = new ObjectConstraint(tree, Statuses.OPENED);
+    ObjectConstraint constraint = new ObjectConstraint(tree, TestStatus.OPENED);
     assertThat(constraint.isNull()).as("Opened constraint is not null").isFalse();
     assertThat(constraint.inverse()).as("Inverse of opened constraint is NULL").isEqualTo(ObjectConstraint.NULL);
-    assertThat(constraint.hasStatus(Statuses.OPENED)).as("Opened constraint is 'opened'").isTrue();
-    assertThat(constraint.hasStatus(Statuses.CLOSED)).as("Opened constraint is not 'opened'").isFalse();
+    assertThat(constraint.hasStatus(TestStatus.OPENED)).as("Opened constraint is 'opened'").isTrue();
+    assertThat(constraint.hasStatus(TestStatus.CLOSED)).as("Opened constraint is not 'opened'").isFalse();
     assertThat(constraint.syntaxNode()).as("Constraint's syntax node").isSameAs(tree);
     assertThat(constraint.toString()).as("Constraint's string").isEqualTo("NOT_NULL(OPENED)");
+
+    constraint = constraint.withStatus(TestStatus.CLOSED);
+    assertThat(constraint.hasStatus(TestStatus.OPENED)).as("Opened constraint is 'opened'").isFalse();
+    assertThat(constraint.hasStatus(TestStatus.CLOSED)).as("Opened constraint is not 'opened'").isTrue();
+
+  }
+
+  @Test
+  public void null_constraint() throws Exception {
+    assertThat(ObjectConstraint.NULL.hasStatus(TestStatus.OPENED)).isFalse();
+    assertThat(ObjectConstraint.NULL.hasStatus(null)).isTrue();
   }
 }
