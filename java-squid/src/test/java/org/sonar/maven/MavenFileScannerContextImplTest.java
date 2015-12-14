@@ -23,13 +23,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
+import org.sonar.maven.MavenFileScannerContext.Location;
 import org.sonar.maven.model.LocatedTree;
 import org.sonar.maven.model.LocatedTreeImpl;
 import org.sonar.maven.model.XmlLocation;
 import org.sonar.maven.model.maven2.MavenProject;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -72,6 +75,22 @@ public class MavenFileScannerContextImplTest {
     assertThat(reportedMessage).isEqualTo("onFile:message");
   }
 
+  @Test
+  public void should_report_issue_on_no_locations() {
+    context.reportIssue(CHECK, LINE, "message", new ArrayList<Location>());
+    assertThat(reportedMessage).isEqualTo("analyzerMessage:message");
+  }
+
+  @Test
+  public void should_report_issue_on_lines_of_all_locations() {
+    ArrayList<Location> secondaries = new ArrayList<Location>();
+    secondaries.add(new Location("msg1", fakeLocatedTree(LINE, 42)));
+    // ignore unknown column
+    secondaries.add(new Location("msg2", fakeLocatedTreeWithUnknownColumn(LINE)));
+    context.reportIssue(CHECK, LINE, "message", secondaries);
+    assertThat(reportedMessage).isEqualTo("analyzerMessage:message;msg1;msg2");
+  }
+
   private static SonarComponents createSonarComponentsMock() {
     SonarComponents sonarComponents = mock(SonarComponents.class);
     doAnswer(new Answer<Void>() {
@@ -88,6 +107,17 @@ public class MavenFileScannerContextImplTest {
         return null;
       }
     }).when(sonarComponents).addIssue(any(File.class), eq(CHECK), eq(-1), anyString(), eq((Double) null));
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
+        reportedMessage = "analyzerMessage:" + analyzerMessage.getMessage();
+        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+          reportedMessage += ";" + secondary.getMessage();
+        }
+        return null;
+      }
+    }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
 
     return sonarComponents;
   }
@@ -96,6 +126,13 @@ public class MavenFileScannerContextImplTest {
     LocatedTreeImpl tree = new LocatedTreeImpl() {
     };
     tree.setStartLocation(new XmlLocation(line, 0));
+    return tree;
+  }
+
+  private static LocatedTree fakeLocatedTree(int line, int column) {
+    LocatedTreeImpl tree = new LocatedTreeImpl() {
+    };
+    tree.setStartLocation(new XmlLocation(line, column, 0));
     return tree;
   }
 }

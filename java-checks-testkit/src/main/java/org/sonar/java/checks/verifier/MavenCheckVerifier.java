@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 
 @Beta
 public class MavenCheckVerifier extends CheckVerifier {
@@ -126,6 +127,16 @@ public class MavenCheckVerifier extends CheckVerifier {
     @Override
     public void reportIssue(MavenCheck check, int line, String message) {
       messages.add(new AnalyzerMessage(check, file, line, message, 0));
+    }
+
+    @Override
+    public void reportIssue(MavenCheck check, int line, String message, List<Location> secondary) {
+      AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, file, line, message, 0);
+      for (Location location : secondary) {
+        AnalyzerMessage secondaryLocation = new AnalyzerMessage(check, file, location.tree.startLocation().line(), location.msg, 0);
+        analyzerMessage.secondaryLocations.add(secondaryLocation);
+      }
+      messages.add(analyzerMessage);
     }
   }
 }

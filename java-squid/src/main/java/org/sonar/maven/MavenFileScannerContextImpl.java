@@ -19,11 +19,16 @@
  */
 package org.sonar.maven;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
 import org.sonar.maven.model.LocatedTree;
+import org.sonar.maven.model.XmlLocation;
 import org.sonar.maven.model.maven2.MavenProject;
 
 import java.io.File;
+import java.util.List;
 
 public class MavenFileScannerContextImpl implements MavenFileScannerContext {
 
@@ -55,5 +60,28 @@ public class MavenFileScannerContextImpl implements MavenFileScannerContext {
   @Override
   public void reportIssue(MavenCheck check, int line, String message) {
     sonarComponents.addIssue(file, check, line, message, null);
+  }
+
+  @Override
+  public void reportIssue(MavenCheck check, int line, String message, List<Location> secondary) {
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, file, line, message, 0);
+    for (Location location : secondary) {
+      AnalyzerMessage secondaryLocation = getSecondaryAnalyzerMessage(check, location);
+      analyzerMessage.secondaryLocations.add(secondaryLocation);
+    }
+    sonarComponents.reportIssue(analyzerMessage);
+  }
+
+  @VisibleForTesting
+  AnalyzerMessage getSecondaryAnalyzerMessage(MavenCheck check, Location location) {
+    XmlLocation startLocation = location.tree.startLocation();
+    int startLine = startLocation.line();
+    int startColumn = startLocation.column();
+    if (startColumn == -1) {
+      // in case of unknown start column
+      startColumn = 0;
+    }
+    TextSpan ts = new TextSpan(startLine, startColumn, startLine, startColumn);
+    return new AnalyzerMessage(check, file, ts, location.msg, 0);
   }
 }
