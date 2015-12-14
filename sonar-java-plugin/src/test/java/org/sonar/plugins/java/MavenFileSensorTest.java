@@ -22,6 +22,8 @@ package org.sonar.plugins.java;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
@@ -30,6 +32,7 @@ import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.resources.Project;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.BadMethodName_S00100_Check;
 import org.sonar.java.checks.maven.PomElementOrderCheck;
@@ -42,7 +45,6 @@ import java.io.File;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -82,7 +84,7 @@ public class MavenFileSensorTest {
   @Test
   public void test_issues_creation() throws Exception {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    File file = new File("src/test/files/maven/pom.xml");
+    final File file = new File("src/test/files/maven/pom.xml");
     fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage(Java.KEY));
     CodeVisitor mavenCheck = new PomElementOrderCheck();
     CodeVisitor javaCheck = new BadMethodName_S00100_Check();
@@ -94,7 +96,12 @@ public class MavenFileSensorTest {
 
     mps.analyse(mock(Project.class), context);
 
-    verify(sonarComponents, times(1)).addIssue(eq(file.getAbsoluteFile()), any(MavenCheck.class), any(Integer.class), anyString(), isNull(Double.class));
+    verify(sonarComponents, times(1)).reportIssue(Mockito.argThat(new ArgumentMatcher<AnalyzerMessage>() {
+      @Override
+      public boolean matches(Object argument) {
+        return file.getAbsolutePath().equals(((AnalyzerMessage) argument).getFile().getAbsolutePath());
+      }
+    }));
   }
 
   @Test
