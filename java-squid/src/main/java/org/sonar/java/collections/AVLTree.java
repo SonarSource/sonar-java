@@ -20,10 +20,16 @@
 package org.sonar.java.collections;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Iterators;
 
 import javax.annotation.Nullable;
-
+import java.util.AbstractMap;
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -98,8 +104,8 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     if (t.isEmpty()) {
       return;
     }
-    action.accept((K) t.key());
     forEach(t.left(), action);
+    action.accept((K) t.key());
     forEach(t.right(), action);
   }
 
@@ -113,9 +119,51 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
     if (t.isEmpty()) {
       return;
     }
-    action.accept((K) t.key(), (V) t.value());
     forEach(t.left(), action);
+    action.accept((K) t.key(), (V) t.value());
     forEach(t.right(), action);
+  }
+
+  @Override
+  public Iterator<Map.Entry<K, V>> entriesIterator() {
+    return new NodeIterator(this);
+  }
+
+  private class NodeIterator implements Iterator<Map.Entry<K, V>> {
+    private Deque<AVLTree> stack = new ArrayDeque<>();
+
+    public NodeIterator(AVLTree<K, V> node) {
+      descendLeft(node);
+    }
+
+    @Override
+    public boolean hasNext() {
+      return !stack.isEmpty();
+    }
+
+    private void descendLeft(AVLTree node) {
+      if (node != EMPTY) {
+        stack.addLast(node);
+        descendLeft(node.left());
+      }
+    }
+
+    @Override
+    public Map.Entry<K, V> next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      AVLTree node = stack.removeLast();
+      if (node.right() != EMPTY) {
+        descendLeft(node.right());
+      }
+      return new AbstractMap.SimpleImmutableEntry<>((K) node.key(), (V) node.value());
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
   }
 
   public interface Visitor<K, V> {
@@ -291,14 +339,22 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
       return false;
     }
 
+    private static class Hasher implements PMap.Consumer<Object, Object> {
+      int result = 0;
+
+      @Override
+      public void accept(Object key, Object value) {
+        // the key is multiplied by 31 to avoid K ^ V == 0 when K and V are the same element
+        result += (31 * key.hashCode()) ^ value.hashCode();
+      }
+    }
+
     @Override
     public int hashCode() {
       if (hashCode == 0) {
-        int result = key.hashCode();
-        result = result * 31 + left.hashCode();
-        result = result * 31 + right.hashCode();
-        result = result * 31 + value.hashCode();
-        hashCode = result;
+        Hasher hasher = new Hasher();
+        forEach(hasher);
+        hashCode = hasher.result;
       }
       return hashCode;
     }
@@ -310,17 +366,23 @@ public abstract class AVLTree<K, V> implements PMap<K, V>, PSet<K> {
       }
       if (obj instanceof Node) {
         Node other = (Node) obj;
-        return Objects.equals(this.key, other.key)
-          && Objects.equals(this.value, other.value)
-          && Objects.equals(this.left, other.left)
-          && Objects.equals(this.right, other.right);
+        int c = 0;
+        for (Iterator<Map.Entry> iter = entriesIterator(); iter.hasNext();) {
+          Map.Entry next = iter.next();
+          Object otherValue = other.get(next.getKey());
+          if (otherValue == null || !Objects.equals(next.getValue(), otherValue)) {
+            return false;
+          }
+          c++;
+        }
+        return c == Iterators.size(other.entriesIterator());
       }
       return false;
     }
 
     @Override
     public String toString() {
-      return " " + key + "->" + value + left.toString() + right.toString();
+      return left.toString() + " " + key + "->" + value + right.toString();
     }
   }
 

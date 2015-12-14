@@ -20,6 +20,8 @@
 package org.sonar.java.collections;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Persistent (functional) Map.
@@ -50,6 +52,11 @@ public interface PMap<K, V> {
    * Performs the given action for each entry in this map until all entries have been processed or the action throws an exception.
    */
   void forEach(Consumer<K, V> action);
+
+  /**
+   * Iterates over all elements.
+   */
+  Iterator<Map.Entry<K, V>> entriesIterator();
 
   /**
    * @return true if this map contains no elements

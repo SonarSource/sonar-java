@@ -19,13 +19,19 @@
  */
 package org.sonar.java.collections;
 
+import com.google.common.collect.Iterators;
 import org.junit.Test;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public class AVLTreeTest {
 
@@ -98,9 +104,17 @@ public class AVLTreeTest {
     }
     assertThat(Counter.countSet(t)).isEqualTo(100);
     assertThat(Counter.countMap(t)).isEqualTo(100);
+    assertThat(t.entriesIterator()).hasSize(100);
     assertThat(t.height())
       .isGreaterThanOrEqualTo(8)
       .isLessThanOrEqualTo(10);
+    AVLTree<Integer, Object> t1 = t;
+    t = t.remove(45);
+    t = t.remove(21);
+    t = t.add(21);
+    t = t.add(45);
+    assertThat(t).isEqualTo(t1);
+    assertThat(t.hashCode()).isEqualTo(t1.hashCode());
 
     for (Integer key : keys) {
       assertThat(t.contains(key)).isTrue();
@@ -109,6 +123,66 @@ public class AVLTreeTest {
     }
     assertThat(Counter.countSet(t)).isEqualTo(0);
     assertThat(Counter.countMap(t)).isEqualTo(0);
+  }
+
+  @Test
+  public void hashCode_equals_test() {
+    AVLTree<Integer, Object> t = AVLTree.create();
+    t = t.add(1);
+    t = t.add(2);
+    AVLTree<Integer, Object> t2 = AVLTree.create();
+    t2 = t2.add(2);
+    t2 = t2.add(1);
+    assertThat(t).isEqualTo(t2);
+    assertThat(t.hashCode()).isEqualTo(t2.hashCode());
+    assertThat(t.entriesIterator()).hasSize(2);
+    assertTrue(Iterators.elementsEqual(t.entriesIterator(), t2.entriesIterator()));
+    assertThat(t.entriesIterator()).containsOnly(new AbstractMap.SimpleImmutableEntry(1, 1), new AbstractMap.SimpleImmutableEntry(2, 2));
+    t2 = t2.add(3);
+    assertThat(t.hashCode()).isNotEqualTo(t2.hashCode());
+    assertThat(t).isNotEqualTo(t2);
+    assertThat(t2.entriesIterator()).hasSize(3);
+    t = t.put(3, 33);
+    assertThat(t).isNotEqualTo(t2);
+    t = t.add(3);
+    assertThat(t).isEqualTo(t2);
+    t = t.add(4);
+    assertThat(t).isNotEqualTo(t2);
+    assertThat(t.entriesIterator()).hasSize(4);
+    assertThat(t).isEqualTo(t);
+    assertThat(t).isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void test_to_string() {
+    AVLTree<Integer, Object> t = AVLTree.create();
+    t = t.add(1);
+    t = t.add(2);
+    assertThat(t.toString()).isEqualTo(" 1->1 2->2");
+  }
+
+  @Test
+  public void test_empty_iterator() {
+    AVLTree<Integer, Object> t = AVLTree.create();
+    Iterator<Map.Entry<Integer, Object>> iterator = t.entriesIterator();
+    assertThat(iterator).isEmpty();
+  }
+
+  @Test(expected = NoSuchElementException.class)
+  public void iterator_no_such_element_exception() {
+    AVLTree<Integer, Object> t = AVLTree.create();
+    t = t.add(1);
+    Iterator<Map.Entry<Integer, Object>> iterator = t.entriesIterator();
+    iterator.next();
+    iterator.next();
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void iterator_unsupported_remove() {
+    AVLTree<Integer, Object> t = AVLTree.create();
+    t = t.add(1);
+    Iterator<Map.Entry<Integer, Object>> iterator = t.entriesIterator();
+    iterator.remove();
   }
 
   private static class Counter<K, V> implements PMap.Consumer<K, V>, PSet.Consumer<K> {
