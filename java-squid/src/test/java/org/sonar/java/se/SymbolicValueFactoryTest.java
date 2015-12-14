@@ -57,6 +57,7 @@ public class SymbolicValueFactoryTest {
     manager.setValueFactory(new TestSymbolicValueFactory());
     symbolicValue = manager.createSymbolicValue(tree);
     assertThat(symbolicValue.getClass()).as("Created with factory").isSameAs(TestSymbolicValue.class);
+    assertThat(symbolicValue.references(symbolicValue)).isFalse();
     manager.setValueFactory(new TestSymbolicValueFactory());
     try {
       manager.setValueFactory(new TestSymbolicValueFactory());
@@ -70,4 +71,3 @@ public class SymbolicValueFactoryTest {
     assertThat(symbolicValue.getClass()).as("Created after factory usage").isSameAs(SymbolicValue.class);
   }
 }
-

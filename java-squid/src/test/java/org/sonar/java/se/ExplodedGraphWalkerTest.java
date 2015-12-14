@@ -34,14 +34,39 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Map;
 
+import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
 
-  public class ExplodedGraphWalkerTest {
+public class ExplodedGraphWalkerTest {
 
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/se/SeEngineTest.java", new IssueVisitor());
   }
+
+  @Test
+  public void test_cleanup_state() {
+    final int[] steps = new int[2];
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor() {
+      @Override
+      public void visitNode(Tree tree) {
+          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(context, false);
+          tree.accept(explodedGraphWalker);
+        steps[0] += explodedGraphWalker.steps;
+      }
+    });
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor() {
+      @Override
+      public void visitNode(Tree tree) {
+        ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(context);
+        tree.accept(explodedGraphWalker);
+        steps[1] += explodedGraphWalker.steps;
+      }
+    });
+    assertThat(steps[0]).isPositive();
+    assertThat(steps[0]).isGreaterThan(steps[1]);
+  }
+
   @Test
   public void reproducer() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/Reproducer.java", new IssueVisitor());
@@ -54,13 +79,14 @@ import static org.fest.assertions.Fail.fail;
       public void visitNode(Tree tree) {
         try {
           tree.accept(new ExplodedGraphWalker(context));
-        }catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+        } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
           fail("loop execution should be limited");
         }
 
       }
     });
   }
+
   class IssueVisitor implements JavaFileScanner {
 
     @Override

@@ -49,10 +49,24 @@ public class SymbolicValue {
     }
   };
 
+  public static final List<SymbolicValue> PROTECTED_SYMBOLIC_VALUES = ImmutableList.of(
+    NULL_LITERAL,
+    TRUE_LITERAL,
+    FALSE_LITERAL
+  );
+
+  public static boolean isDisposable(SymbolicValue symbolicValue) {
+    return !PROTECTED_SYMBOLIC_VALUES.contains(symbolicValue);
+  }
+
   private final int id;
 
   public SymbolicValue(int id) {
     this.id = id;
+  }
+
+  public boolean references(SymbolicValue other) {
+    return false;
   }
 
   @Override
@@ -135,6 +149,11 @@ public class SymbolicValue {
     }
 
     abstract BooleanConstraint shouldNotInverse();
+
+    @Override
+    public boolean references(SymbolicValue other) {
+      return leftOp.equals(other) || rightOp.equals(other) || leftOp.references(other) || rightOp.references(other);
+    }
 
     @Override
     public void computedFrom(List<SymbolicValue> symbolicValues) {
@@ -226,6 +245,11 @@ public class SymbolicValue {
 
     public UnarySymbolicValue(int id) {
       super(id);
+    }
+
+    @Override
+    public boolean references(SymbolicValue other) {
+      return operand.equals(other) || operand.references(other);
     }
 
     @Override

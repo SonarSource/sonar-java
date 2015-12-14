@@ -73,9 +73,14 @@ public class LocksNotUnlockedCheck extends SECheck implements JavaFileScanner {
     }
 
     @Override
+    public boolean references(SymbolicValue other) {
+      return operand.equals(other) || operand.references(other);
+    }
+
+    @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(syntaxNode, Status.LOCKED)));
+        return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(false, false, syntaxNode, Status.LOCKED)));
       } else {
         return ImmutableList.of(programState.addConstraint(operand, new ObjectConstraint(syntaxNode, Status.UNLOCKED)));
       }
@@ -132,10 +137,10 @@ public class LocksNotUnlockedCheck extends SECheck implements JavaFileScanner {
       if (!isMemberSelectActingOnField(target)) {
         final SymbolicValue symbolicValue = programState.getValue(target.symbol());
         if (LOCK_METHOD_NAME.equals(methodName)) {
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(target, Status.LOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, target, Status.LOCKED));
         } else if (TRY_LOCK_METHOD_NAME.equals(methodName)) {
           constraintManager.setValueFactory(new TryLockSymbolicValueFactory(symbolicValue));
-          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(target, Status.LOCKED));
+          programState = programState.addConstraint(symbolicValue, new ObjectConstraint(false, false, target, Status.LOCKED));
         } else if (UNLOCK_METHOD_NAME.equals(methodName)) {
           programState = programState.addConstraint(symbolicValue, new ObjectConstraint(target, Status.UNLOCKED));
         }

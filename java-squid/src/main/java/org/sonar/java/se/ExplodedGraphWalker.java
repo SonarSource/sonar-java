@@ -29,6 +29,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
+import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -86,12 +87,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   ExplodedGraph.Node node;
   ExplodedGraph.ProgramPoint programPosition;
   ProgramState programState;
+  private LiveVariables liveVariables;
 
   private CheckerDispatcher checkerDispatcher;
 
   @VisibleForTesting
   int steps;
   ConstraintManager constraintManager;
+  private boolean cleanup = true;
 
   public static class ExplodedGraphTooBigException extends RuntimeException {
     public ExplodedGraphTooBigException(String s) {
@@ -111,6 +114,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(), new LocksNotUnlockedCheck()));
   }
 
+  @VisibleForTesting
+  ExplodedGraphWalker(JavaFileScannerContext context, boolean cleanup) {
+    this(context);
+    this.cleanup = cleanup;
+  }
+
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
@@ -123,16 +132,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private void execute(MethodTree tree) {
     checkerDispatcher.init();
     CFG cfg = CFG.build(tree);
+    liveVariables = LiveVariables.analyze(cfg);
     explodedGraph = new ExplodedGraph();
     methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
     LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
     programState = ProgramState.EMPTY_STATE;
+    steps = 0;
     for (ProgramState startingState : startingStates(tree, programState)) {
       enqueue(new ExplodedGraph.ProgramPoint(cfg.entry(), 0), startingState);
     }
-    steps = 0;
     while (!workList.isEmpty()) {
       steps++;
       if (steps > MAX_STEPS) {
@@ -202,9 +212,17 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     return startingStates;
   }
 
+  private void cleanUpProgramState(CFG.Block block) {
+    if (cleanup) {
+      programState = programState.cleanupDeadSymbols(liveVariables.getOut(block));
+      programState = programState.cleanupConstraints();
+    }
+  }
+
   private void handleBlockExit(ExplodedGraph.ProgramPoint programPosition) {
     CFG.Block block = programPosition.block;
     Tree terminator = block.terminator();
+    cleanUpProgramState(block);
     if (terminator != null) {
       switch (terminator.kind()) {
         case IF_STATEMENT:

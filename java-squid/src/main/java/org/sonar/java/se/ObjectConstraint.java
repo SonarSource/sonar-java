@@ -25,37 +25,43 @@ import javax.annotation.Nullable;
 
 public class ObjectConstraint {
 
-  public static final ObjectConstraint NULL = new ObjectConstraint(true, null, null);
-  public static final ObjectConstraint NOT_NULL = NULL.inverse();
+  public static final ObjectConstraint NULL = new ObjectConstraint(true, false, null, null);
+  public static final ObjectConstraint NOT_NULL = new ObjectConstraint(false, true, null, null);
 
   private final boolean isNull;
+  private final boolean disposable;
   private final Tree syntaxNode;
   @Nullable
   private final Object status;
 
   public ObjectConstraint(Tree syntaxNode, Object status) {
-    this(false, syntaxNode, status);
+    this(false, true, syntaxNode, status);
   }
 
-  private ObjectConstraint(boolean isNull, @Nullable Tree syntaxNode, @Nullable Object status) {
+  public ObjectConstraint(boolean isNull, boolean disposable, @Nullable Tree syntaxNode, @Nullable Object status) {
     this.isNull = isNull;
+    this.disposable = disposable;
     this.syntaxNode = syntaxNode;
     this.status = status;
   }
 
   public ObjectConstraint inverse() {
     if (isNull) {
-      return new ObjectConstraint(!isNull, syntaxNode, status);
+      return new ObjectConstraint(!isNull, disposable, syntaxNode, status);
     }
     return ObjectConstraint.NULL;
   }
 
   public ObjectConstraint withStatus(Object newStatus) {
-    return new ObjectConstraint(isNull, syntaxNode, newStatus);
+    return new ObjectConstraint(isNull, disposable, syntaxNode, newStatus);
   }
 
   public boolean isNull() {
     return isNull;
+  }
+
+  public boolean isDisposable() {
+    return disposable;
   }
 
   public boolean hasStatus(@Nullable Object aState) {

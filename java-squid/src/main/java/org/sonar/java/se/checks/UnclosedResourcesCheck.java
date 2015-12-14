@@ -120,7 +120,7 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
       if (isOpeningResource(syntaxNode)) {
         final SymbolicValue instanceValue = programState.peekValue();
         if (!(instanceValue instanceof ResourceWrapperSymbolicValue)) {
-          programState = programState.addConstraint(instanceValue, new ObjectConstraint(syntaxNode, States.OPENED));
+          programState = programState.addConstraint(instanceValue, new ObjectConstraint(false, false, syntaxNode, States.OPENED));
         }
       }
     }
@@ -133,6 +133,11 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
     public ResourceWrapperSymbolicValue(int id, SymbolicValue dependent) {
       super(id);
       this.dependent = dependent;
+    }
+
+    @Override
+    public boolean references(SymbolicValue other) {
+      return dependent.equals(other) || dependent.references(other);
     }
 
     @Override
