@@ -38,6 +38,7 @@ import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
 import org.sonar.java.model.InternalVisitorsBridge;
+import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.sonar.squidbridge.api.Query;
@@ -91,7 +92,8 @@ public class JavaSquid implements SourceCodeSearchEngine {
 
     //AstScanner for main files
     astScanner = new JavaAstScanner(JavaParser.createParser(conf.getCharset()));
-    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents, true));
+    boolean enableSymbolicExecution = hasASymbolicExecutionCheck(visitors);
+    astScanner.setVisitorBridge(createVisitorBridge(codeVisitors, classpath, conf, sonarComponents, enableSymbolicExecution));
 
     //AstScanner for test files
     astScannerForTests = new JavaAstScanner(astScanner);
@@ -107,6 +109,15 @@ public class JavaSquid implements SourceCodeSearchEngine {
     }
 
     squidIndex = (SquidIndex) astScanner.getIndex();
+  }
+
+  private static boolean hasASymbolicExecutionCheck(CodeVisitor[] visitors) {
+    for (CodeVisitor visitor : visitors) {
+      if(visitor instanceof SECheck) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static InternalVisitorsBridge createVisitorBridge(

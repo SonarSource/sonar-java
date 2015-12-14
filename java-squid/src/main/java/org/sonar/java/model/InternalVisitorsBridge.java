@@ -19,6 +19,7 @@
  */
 package org.sonar.java.model;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
@@ -59,7 +60,8 @@ public class InternalVisitorsBridge {
   private VisitorContext context;
   private JavaVersion javaVersion;
 
-  public InternalVisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
+  @VisibleForTesting
+  InternalVisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
     this(visitors, projectClasspath, sonarComponents, true);
   }
 
