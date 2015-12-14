@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.checks.maven.PomElementOrderCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -36,7 +37,7 @@ public final class CheckList {
   }
 
   public static List<Class> getChecks() {
-    return ImmutableList.<Class>builder().addAll(getJavaChecks()).addAll(getJavaTestChecks()).build();
+    return ImmutableList.<Class>builder().addAll(getJavaChecks()).addAll(getJavaTestChecks()).addAll(getMavenChecks()).build();
   }
 
   public static List<Class<? extends JavaCheck>> getJavaChecks() {
@@ -380,5 +381,11 @@ public final class CheckList {
         .add(ThreadSleepInTestsCheck.class)
         .add(UnusedTestRuleCheck.class)
         .build();
+  }
+
+  public static List<Class<? extends JavaCheck>> getMavenChecks() {
+    return ImmutableList.<Class<? extends JavaCheck>>builder()
+      .add(PomElementOrderCheck.class)
+      .build();
   }
 }

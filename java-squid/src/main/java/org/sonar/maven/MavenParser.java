@@ -49,7 +49,7 @@ public class MavenParser {
   @CheckForNull
   public static MavenProject parseXML(File file) {
     try (FileInputStream is = new FileInputStream(file)) {
-      JAXBContext context = JAXBContext.newInstance("org.sonar.maven.model.maven2");
+      JAXBContext context = JAXBContext.newInstance(org.sonar.maven.model.maven2.ObjectFactory.class);
       XMLInputFactory factory = XMLInputFactory.newInstance();
       XMLStreamReader reader = factory.createXMLStreamReader(is);
       StreamListener streamListener = new StreamListener(reader);

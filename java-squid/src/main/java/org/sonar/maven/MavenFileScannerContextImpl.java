@@ -19,13 +19,9 @@
  */
 package org.sonar.maven;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.sonar.java.SonarComponents;
 import org.sonar.maven.model.LocatedTree;
 import org.sonar.maven.model.maven2.MavenProject;
-import org.sonar.squidbridge.api.SourceFile;
-
-import javax.annotation.Nullable;
 
 import java.io.File;
 
@@ -33,13 +29,10 @@ public class MavenFileScannerContextImpl implements MavenFileScannerContext {
 
   private final MavenProject project;
   private final File file;
-  @VisibleForTesting
-  public final SourceFile sourceFile;
   private final SonarComponents sonarComponents;
 
-  public MavenFileScannerContextImpl(MavenProject project, SourceFile sourceFile, File file, @Nullable SonarComponents sonarComponents) {
+  public MavenFileScannerContextImpl(MavenProject project, File file, SonarComponents sonarComponents) {
     this.project = project;
-    this.sourceFile = sourceFile;
     this.file = file;
     this.sonarComponents = sonarComponents;
   }
@@ -51,22 +44,16 @@ public class MavenFileScannerContextImpl implements MavenFileScannerContext {
 
   @Override
   public void reportIssueOnFile(MavenCheck check, String message) {
-    if (sonarComponents != null) {
-      sonarComponents.addIssue(file, check, -1, message, null);
-    }
+    sonarComponents.addIssue(file, check, -1, message, null);
   }
 
   @Override
   public void reportIssue(MavenCheck check, LocatedTree tree, String message) {
-    if (sonarComponents != null) {
-      sonarComponents.addIssue(file, check, tree.startLocation().line(), message, null);
-    }
+    sonarComponents.addIssue(file, check, tree.startLocation().line(), message, null);
   }
 
   @Override
   public void reportIssue(MavenCheck check, int line, String message) {
-    if (sonarComponents != null) {
-      sonarComponents.addIssue(file, check, line, message, null);
-    }
+    sonarComponents.addIssue(file, check, line, message, null);
   }
 }
