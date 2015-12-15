@@ -79,6 +79,7 @@
     <jacoco.previous.version>0.7.4.201502262128</jacoco.previous.version>
     <jacoco.version>0.7.5.201505241946</jacoco.version>
     <asm.version>5.0.3</asm.version>
+    <argLine>-Xmx512m</argLine>
   </properties>
 
   <build>
@@ -93,6 +94,11 @@
               <include>org.sonar.*</include>
             </includes>
           </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration/>
         </plugin>
       </plugins>
     </pluginManagement>
