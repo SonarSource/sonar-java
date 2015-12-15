@@ -48,12 +48,15 @@ public class ConstraintManager {
         result = new SymbolicValue.NotSymbolicValue(counter);
         break;
       case AND:
+      case AND_ASSIGNMENT:
         result = new SymbolicValue.AndSymbolicValue(counter);
         break;
       case OR:
+      case OR_ASSIGNMENT:
         result = new SymbolicValue.OrSymbolicValue(counter);
         break;
       case XOR:
+      case XOR_ASSIGNMENT:
         result = new SymbolicValue.XorSymbolicValue(counter);
         break;
       case INSTANCE_OF:

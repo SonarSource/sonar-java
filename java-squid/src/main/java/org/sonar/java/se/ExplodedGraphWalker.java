@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -60,6 +61,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -299,10 +301,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case LEFT_SHIFT_ASSIGNMENT:
       case RIGHT_SHIFT_ASSIGNMENT:
       case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+        executeAssignement((AssignmentExpressionTree) tree);
+        break;
       case AND_ASSIGNMENT:
       case XOR_ASSIGNMENT:
       case OR_ASSIGNMENT:
-        executeAssignement((AssignmentExpressionTree) tree);
+        executeLogicalAssignement((AssignmentExpressionTree) tree);
         break;
       case ARRAY_ACCESS_EXPRESSION:
         executeArrayAccessExpression((ArrayAccessExpressionTree) tree);
@@ -419,6 +423,19 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       programState = unstack.state;
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
       programState = programState.stackValue(value);
+    }
+  }
+
+  private void executeLogicalAssignement(AssignmentExpressionTree tree) {
+    ExpressionTree variable = tree.variable();
+    if (variable.is(Tree.Kind.IDENTIFIER)) {
+      ProgramState.Pop unstack = programState.unstackValue(2);
+      SymbolicValue value = unstack.values.get(1);
+      programState = unstack.state;
+      SymbolicValue symbolicValue = constraintManager.createSymbolicValue(tree);
+      symbolicValue.computedFrom(ImmutableList.of(programState.getValue(((IdentifierTree) variable).symbol()), value));
+      programState = programState.put(((IdentifierTree) variable).symbol(), symbolicValue);
+      programState = programState.stackValue(symbolicValue);
     }
   }
 

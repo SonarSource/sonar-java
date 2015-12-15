@@ -1248,6 +1248,19 @@ class SuperClass {
     if(foo) {}
     foo = false;
     foo &= a;
-    if(foo) {} //false negative: Should be fixed by SONARJAVA-1391
+    if(foo) {} // Noncompliant
+  }
+  
+  public void sonarJava_1391(boolean b1, boolean b2) {
+    b1 &= !b2;
+    if (b1) {
+      log("b1 true");
+    } else {
+      if (b2) {  // Compliant (fixed false positive)
+        log("b2 true");
+      } else {
+        log("b2 false");
+      }
+    }
   }
 }

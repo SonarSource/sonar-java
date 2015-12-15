@@ -246,6 +246,11 @@ public class SymbolicValue {
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       return operand.setConstraint(programState, booleanConstraint.inverse());
     }
+
+    @Override
+    public String toString() {
+      return "!" + operand;
+    }
   }
 
   static class InstanceOfSymbolicValue extends UnarySymbolicValue {
