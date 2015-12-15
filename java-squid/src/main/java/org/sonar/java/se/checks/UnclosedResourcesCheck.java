@@ -229,6 +229,8 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
             final IdentifierTree identifier = (IdentifierTree) targetExpression;
             final SymbolicValue target = programState.getValue(identifier.symbol());
             programState = closeResource(programState, target);
+          } else {
+            programState = closeResource(programState, programState.peekValue());
           }
         }
       } else {

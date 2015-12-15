@@ -463,7 +463,12 @@ public class CFG {
 
   private void buildMethodInvocation(MethodInvocationTree mit) {
     currentBlock.elements.add(mit);
-    build(mit.methodSelect());
+    if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) mit.methodSelect();
+      build(memberSelect.expression());
+    } else {
+      build(mit.methodSelect());
+    }
     for (ExpressionTree arg : Lists.reverse(mit.arguments())) {
       build(arg);
     }

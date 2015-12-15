@@ -495,7 +495,6 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "b")).successors(1),
       block(
         element(Tree.Kind.IDENTIFIER, "a"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
@@ -509,20 +508,17 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(3),
       block(
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
       block(
         element(Tree.Kind.IDENTIFIER, "baz"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(0),
@@ -542,18 +538,15 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(3),
       block(
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(0),
       block(
         element(Tree.Kind.IDENTIFIER, "baz"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0),
       block(
@@ -571,12 +564,10 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(3),
       block(
         element(Tree.Kind.IDENTIFIER, "qix"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).terminator(Tree.Kind.BREAK_STATEMENT).successors(1),
       block(
@@ -585,7 +576,6 @@ public class CFGTest {
       block(
         element(Tree.Kind.IDENTIFIER, "foo"),
         element(Tree.Kind.IDENTIFIER, "Integer"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
@@ -611,7 +601,6 @@ public class CFGTest {
         element(Tree.Kind.CHAR_LITERAL, "''"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION),
         element(Tree.Kind.INT_LITERAL, 0),
         element(Tree.Kind.VARIABLE, "i")
@@ -624,7 +613,6 @@ public class CFGTest {
       block(
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(1),
@@ -695,7 +683,6 @@ public class CFGTest {
             element(Tree.Kind.CHAR_LITERAL, "'start'"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(6),
         block(
             element(Tree.Kind.IDENTIFIER, "list")).successors(2),
@@ -703,10 +690,8 @@ public class CFGTest {
             element(Tree.Kind.IDENTIFIER, "foo"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Kind.METHOD_INVOCATION),
             element(Tree.Kind.IDENTIFIER, "foo"),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Kind.METHOD_INVOCATION),
             element(Kind.INT_LITERAL, 2),
             element(Kind.GREATER_THAN)
@@ -716,14 +701,12 @@ public class CFGTest {
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(2),
         block(
             element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 5),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'end'"),
             element(Tree.Kind.IDENTIFIER, "System"),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
@@ -737,7 +720,6 @@ public class CFGTest {
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(4),
         block(
             element(Tree.Kind.IDENTIFIER, "list")).successors(2),
@@ -745,14 +727,12 @@ public class CFGTest {
             element(Tree.Kind.IDENTIFIER, "foo"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(2),
         block(
             element(Tree.Kind.VARIABLE, "foo")).terminator(Tree.Kind.FOR_EACH_STATEMENT).successors(1, 3),
         block(
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
@@ -769,11 +749,9 @@ public class CFGTest {
         block(element(Kind.STRING_LITERAL, "")).successors(4),
         block(
             element(Kind.IDENTIFIER, "dir"),
-            element(Kind.MEMBER_SELECT),
             element(Kind.METHOD_INVOCATION)).successors(1),
         block(
             element(Kind.IDENTIFIER, "s"),
-            element(Kind.MEMBER_SELECT),
             element(Kind.METHOD_INVOCATION)).terminator(Kind.IF_STATEMENT).ifTrue(2).ifFalse(1),
         block(
             element(Kind.IDENTIFIER, "n"),
@@ -802,7 +780,6 @@ public class CFGTest {
         element(Tree.Kind.POSTFIX_INCREMENT),
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(2));
@@ -870,7 +847,6 @@ public class CFGTest {
         element(Tree.Kind.POSTFIX_INCREMENT),
         element(Tree.Kind.IDENTIFIER, "i"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)
         ).successors(1),
@@ -1011,13 +987,11 @@ public class CFGTest {
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)
         ).successors(1),
         block(
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)
         ).successors(0));
@@ -1042,13 +1016,11 @@ public class CFGTest {
             element(Tree.Kind.CHAR_LITERAL, "''"),
             element(Tree.Kind.IDENTIFIER, "System"),
             element(Tree.Kind.MEMBER_SELECT),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)
         ).successors(1, 3, 4),
         block(
             element(Tree.Kind.CHAR_LITERAL, "'finally'"),
             element(Tree.Kind.IDENTIFIER, "System"),
-            element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.MEMBER_SELECT),
             element(Tree.Kind.METHOD_INVOCATION)
         ).successors(0)
@@ -1108,7 +1080,6 @@ public class CFGTest {
         element(Tree.Kind.CHAR_LITERAL, "''"),
         element(Tree.Kind.IDENTIFIER, "System"),
         element(Tree.Kind.MEMBER_SELECT),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
   }
@@ -1131,7 +1102,6 @@ public class CFGTest {
       block(
         element(Tree.Kind.CHAR_LITERAL, "''"),
         element(Tree.Kind.IDENTIFIER, "System"),
-        element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.MEMBER_SELECT),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);

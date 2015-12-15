@@ -65,19 +65,30 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       return context.getState();
     }
     if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      if ("class".equals(((MemberSelectExpressionTree) syntaxNode).identifier().name())) {
-        // expression ClassName.class won't raise NPE.
-        return context.getState();
+      return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, currentVal);
+    }
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree methodInvocation = (MethodInvocationTree) syntaxNode;
+      if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        return checkMemberSelect(context, (MemberSelectExpressionTree) methodInvocation.methodSelect(), currentVal);
       }
+    }
+    return context.getState();
+  }
 
-      if (context.isNull(currentVal)) {
+  private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree syntaxNode, SymbolicValue currentVal) {
+    if ("class".equals(syntaxNode.identifier().name())) {
+      // expression ClassName.class won't raise NPE.
+      return context.getState();
+    }
+
+    if (context.isNull(currentVal)) {
         context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
-        return null;
-      }
-      if (context.getState().getConstraint(currentVal) == null) {
-        // we dereferenced the symbolic value so we can assume it is not null
-        return currentVal.setSingleConstraint(context.getState(), ObjectConstraint.NOT_NULL);
-      }
+      return null;
+    }
+    if (context.getState().getConstraint(currentVal) == null) {
+      // we dereferenced the symbolic value so we can assume it is not null
+      return currentVal.setSingleConstraint(context.getState(), ObjectConstraint.NOT_NULL);
     }
     return context.getState();
   }

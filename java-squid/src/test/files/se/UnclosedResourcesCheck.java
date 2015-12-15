@@ -272,4 +272,8 @@ public class A {
       unlock();
     }
   }
+
+  public void checkPath(String fileName) throws IOException {
+    new FileInputStream(fileName).close(); // Compliant, but unlikely; check correct retrieval of value passed to method invocation.
+  }
 }
