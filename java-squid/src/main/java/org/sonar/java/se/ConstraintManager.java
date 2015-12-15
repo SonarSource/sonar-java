@@ -20,7 +20,10 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
+import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -62,11 +65,31 @@ public class ConstraintManager {
       case INSTANCE_OF:
         result = new SymbolicValue.InstanceOfSymbolicValue(counter);
         break;
+      case MEMBER_SELECT:
+        result = createIdentifierSymbolicValue(((MemberSelectExpressionTree) syntaxNode).identifier());
+        break;
+      case IDENTIFIER:
+        result = createIdentifierSymbolicValue((IdentifierTree) syntaxNode);
+        break;
       default:
-        result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
-        symbolicValueFactory = null;
+        result = createDefaultSymbolicValue(syntaxNode);
     }
     counter++;
+    return result;
+  }
+
+  private SymbolicValue createIdentifierSymbolicValue(IdentifierTree identifier) {
+    final Type type = identifier.symbol().type();
+    if (type != null && type.is("java.lang.Boolean")) {
+      return "TRUE".equals(identifier.name()) ? SymbolicValue.TRUE_LITERAL : SymbolicValue.FALSE_LITERAL;
+    }
+    return createDefaultSymbolicValue(identifier);
+  }
+
+  private SymbolicValue createDefaultSymbolicValue(Tree syntaxNode) {
+    SymbolicValue result;
+    result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
+    symbolicValueFactory = null;
     return result;
   }
 

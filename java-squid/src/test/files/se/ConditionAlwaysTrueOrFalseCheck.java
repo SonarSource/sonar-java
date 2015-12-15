@@ -1,4 +1,7 @@
 package javax.annotation;
+
+import static java.lang.Boolean.TRUE;
+
 @interface CheckForNull {}
 
 public static class Class extends SuperClass {
@@ -1261,6 +1264,20 @@ class SuperClass {
       } else {
         log("b2 false");
       }
+    }
+  }
+  
+  public void booleanObjectAssignment() {
+    boolean b = Boolean.FALSE;
+    if (b) {   // Noncompliant
+      log("B true");
+    }
+  }
+  
+  public void staticBooleanObjectAssignment() {
+    boolean b = TRUE;
+    if (b) {   // Noncompliant
+      log("B true");
     }
   }
 }
