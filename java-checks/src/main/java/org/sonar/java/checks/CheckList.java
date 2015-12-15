@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.checks.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.maven.PomElementOrderCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -386,6 +387,7 @@ public final class CheckList {
   public static List<Class<? extends JavaCheck>> getMavenChecks() {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
       .add(PomElementOrderCheck.class)
+      .add(DependencyWithSystemScopeCheck.class)
       .build();
   }
 }
