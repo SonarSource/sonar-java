@@ -531,6 +531,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (getType(tree.type()) == null) {
       resolveAs(tree.type(), JavaSymbol.TYP);
     }
+    scan(tree.annotations());
     registerType(tree, new JavaType.ArrayJavaType(getType(tree.type()), symbols.arrayClass));
   }
 

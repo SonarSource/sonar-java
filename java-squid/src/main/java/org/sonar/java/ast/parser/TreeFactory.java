@@ -1896,6 +1896,8 @@ public class TreeFactory {
       ((MemberSelectExpressionTreeImpl) type).complete(typeAnnotations);
     } else if (type.is(Tree.Kind.PARAMETERIZED_TYPE)) {
       ((ParameterizedTypeTreeImpl) type).complete(typeAnnotations);
+    } else if (type.is(Kind.ARRAY_TYPE)) {
+      ((ArrayTypeTreeImpl) type).complete(typeAnnotations);
     } else {
       ((PrimitiveTypeTreeImpl) type).complete(typeAnnotations);
     }

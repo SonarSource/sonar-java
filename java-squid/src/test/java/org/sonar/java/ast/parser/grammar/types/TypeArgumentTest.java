@@ -36,7 +36,9 @@ public class TypeArgumentTest {
       .matches("@Foo referenceType")
       .matches("@Foo ?")
       .matches("@Foo ? extends @Foo referenceType")
-      .matches("@Foo ? super @Foo referenceType");
+      .matches("@Foo ? super @Foo referenceType")
+      .matches("referenceType[]")
+      .matches("@Foo referenceType[]");
   }
 
 }

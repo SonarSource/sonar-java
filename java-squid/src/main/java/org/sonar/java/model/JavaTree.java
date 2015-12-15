@@ -550,7 +550,7 @@ public abstract class JavaTree implements Tree {
 
   public static class ArrayTypeTreeImpl extends AbstractTypedTree implements ArrayTypeTree {
     private TypeTree type;
-    private final List<AnnotationTree> annotations;
+    private List<AnnotationTree> annotations;
     private final InternalSyntaxToken openBracketToken;
     private final InternalSyntaxToken closeBracketToken;
     private final InternalSyntaxToken ellipsisToken;
@@ -635,6 +635,10 @@ public abstract class JavaTree implements Tree {
         annotationBuilder.add(annotation);
       }
       return annotationBuilder.build();
+    }
+
+    public void complete(List<AnnotationTree> typeAnnotations) {
+      this.annotations = typeAnnotations;
     }
   }
 }
