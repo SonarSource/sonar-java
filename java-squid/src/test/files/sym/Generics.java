@@ -64,3 +64,14 @@ class A<T, S extends CharSequence> {
 
 }
 
+
+public class MyClass implements MyInterface<MyClass.B<Object>> {
+  public static class B<T> extends C<T> {
+  }
+}
+
+interface MyInterface<T> {
+}
+
+class C<T> {
+}

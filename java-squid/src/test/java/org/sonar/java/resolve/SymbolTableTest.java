@@ -90,6 +90,9 @@ public class SymbolTableTest {
     VariableTree variableTree = (VariableTree) methodTree.block().body().get(0);
     assertThat(variableTree.type().symbolType().isUnknown()).isTrue();
 
+    //Inner class referenced as type parameter in super class/interface
+    assertThat(result.reference(68,53)).isSameAs(result.symbol("B", 69));
+
   }
 
   @Test

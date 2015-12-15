@@ -65,6 +65,7 @@ public class JavaSymbol implements Symbol {
 
   JavaType type;
 
+  boolean completing = false;
   private List<IdentifierTree> usages;
 
   public JavaSymbol(int kind, int flags, @Nullable String name, @Nullable JavaSymbol owner) {
@@ -102,7 +103,9 @@ public class JavaSymbol implements Symbol {
     if (completer != null) {
       Completer c = completer;
       completer = null;
+      completing = true;
       c.complete(this);
+      completing = false;
     }
   }
 

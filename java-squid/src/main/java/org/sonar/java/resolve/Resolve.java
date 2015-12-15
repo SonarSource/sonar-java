@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -201,10 +202,17 @@ public class Resolve {
         bestSoFar = symbol;
       }
     }
-    for (JavaType interfaceType : c.getInterfaces()) {
-      JavaSymbol symbol = findMemberType(env, site, name, interfaceType.symbol);
-      if (symbol.kind < bestSoFar.kind) {
-        bestSoFar = symbol;
+    if (c.getInterfaces() == null) {
+      // Invariant to check that interfaces are not set only when we are looking into the symbol we are currently completing.
+      // required for generics
+      Preconditions.checkState(c.completing, "interfaces of a symbol not currently completing are not set.");
+      Preconditions.checkState(c == site);
+    } else {
+      for (JavaType interfaceType : c.getInterfaces()) {
+        JavaSymbol symbol = findMemberType(env, site, name, interfaceType.symbol);
+        if (symbol.kind < bestSoFar.kind) {
+          bestSoFar = symbol;
+        }
       }
     }
     return bestSoFar;
