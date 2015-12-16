@@ -126,6 +126,7 @@ public class JavaRulingTest {
     orchestrator.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
     MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
       .setProperty("sonar.cpd.skip", "true")
+      .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.analysis.mode", "preview")
       .setProperty("sonar.issuesReport.html.enable", "true")
