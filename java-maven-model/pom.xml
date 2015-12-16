@@ -19,6 +19,8 @@
     <bindingFile>src/main/resources/bindings.xml</bindingFile>
     <javaPackageName>org.sonar.maven.model.maven2</javaPackageName>
     <targetDir>${project.build.directory}/generated-sources</targetDir>
+    <!-- exclude generated sources from analysis -->
+    <sonar.exclusions>target/generated-sources/**</sonar.exclusions>
   </properties>
 
   <dependencies>
@@ -78,7 +80,7 @@
               <tasks>
                 <mkdir dir="${targetDir}" />
                 <exec executable="xjc">
-                  <arg line="-extension -b ${bindingFile} -p ${javaPackageName} -d ${targetDir} ${xsdPath}" />
+                  <arg line="-extension -b ${bindingFile} -p ${javaPackageName} -d ${targetDir} -encoding UTF-8 ${xsdPath}" />
                 </exec>
               </tasks>
             </configuration>
