@@ -52,6 +52,7 @@ public class InternalVisitorsBridge {
   private static final Logger LOG = LoggerFactory.getLogger(InternalVisitorsBridge.class);
 
   private final List<JavaFileScanner> scanners;
+  private List<JavaFileScanner> executableScanners;
   private final SonarComponents sonarComponents;
   private final boolean symbolicExecutionEnabled;
   private SemanticModel semanticModel;
@@ -73,6 +74,7 @@ public class InternalVisitorsBridge {
       }
     }
     this.scanners = scannersBuilder.build();
+    this.executableScanners = scanners;
     this.sonarComponents = sonarComponents;
     this.projectClasspath = projectClasspath;
     this.symbolicExecutionEnabled = symbolicExecutionEnabled;
@@ -92,6 +94,7 @@ public class InternalVisitorsBridge {
 
   public void setJavaVersion(JavaVersion javaVersion) {
     this.javaVersion = javaVersion;
+    this.executableScanners = executableScanners(scanners, javaVersion);
   }
 
   public JavaVersion getJavaVersion() {
@@ -121,7 +124,7 @@ public class InternalVisitorsBridge {
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
       new SymbolicExecutionVisitor().scanFile(javaFileScannerContext);
     }
-    for (JavaFileScanner scanner : executableScanners(scanners)) {
+    for (JavaFileScanner scanner : executableScanners) {
       scanner.scanFile(javaFileScannerContext);
     }
     if (semanticModel != null) {
@@ -130,21 +133,14 @@ public class InternalVisitorsBridge {
     }
   }
 
-  private List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners) {
+  private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
     ImmutableList.Builder<JavaFileScanner> results = ImmutableList.builder();
     for (JavaFileScanner scanner : scanners) {
-      if (shouldBeExecuted(scanner)) {
+      if (!(scanner instanceof JavaVersionAwareVisitor) || ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion)) {
         results.add(scanner);
       }
     }
     return results.build();
-  }
-
-  private boolean shouldBeExecuted(JavaFileScanner scanner) {
-    if (scanner instanceof JavaVersionAwareVisitor) {
-      return ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion);
-    }
-    return true;
   }
 
   protected JavaFileScannerContext createScannerContext(
