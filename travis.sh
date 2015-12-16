@@ -69,6 +69,7 @@ plugin|ruling)
     build_snapshot "SonarSource/sonarqube"
   fi
 
+  [ "$TEST" = "ruling" ] && git submodule update --init --recursive
   EXTRA_PARAMS=
   [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
   mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -Pit-$TEST $EXTRA_PARAMS

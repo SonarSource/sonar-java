@@ -33,7 +33,7 @@ function FetchAndUnzip
 
 function InstallAppveyorTools
 {
-	$travisUtilsVersion = "16"
+	$travisUtilsVersion = "21"
 	$localPath = "$env:USERPROFILE\.local"
 	$travisUtilsPath = "$localPath\travis-utils-$travisUtilsVersion"
 	if (Test-Path $travisUtilsPath)
