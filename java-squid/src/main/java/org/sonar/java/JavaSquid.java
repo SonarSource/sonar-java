@@ -41,10 +41,6 @@ import org.sonar.java.model.InternalVisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
-import org.sonar.squidbridge.api.Query;
-import org.sonar.squidbridge.api.SourceCode;
-import org.sonar.squidbridge.api.SourceCodeSearchEngine;
-import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -53,11 +49,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class JavaSquid implements SourceCodeSearchEngine {
+public class JavaSquid {
 
   private static final Logger LOG = LoggerFactory.getLogger(JavaSquid.class);
 
-  private final SquidIndex squidIndex;
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
   private final BytecodeScanner bytecodeScanner;
@@ -108,7 +103,6 @@ public class JavaSquid implements SourceCodeSearchEngine {
       bytecodeScanner.accept(visitor);
     }
 
-    squidIndex = (SquidIndex) astScanner.getIndex();
   }
 
   private static boolean hasASymbolicExecutionCheck(CodeVisitor[] visitors) {
@@ -179,22 +173,8 @@ public class JavaSquid implements SourceCodeSearchEngine {
     return bytecodeScanned;
   }
 
-  public SquidIndex getIndex() {
-    return squidIndex;
-  }
 
   public DirectedGraph<Resource, Dependency> getGraph() {
     return graph;
   }
-
-  @Override
-  public SourceCode search(String key) {
-    return squidIndex.search(key);
-  }
-
-  @Override
-  public Collection<SourceCode> search(Query... query) {
-    return squidIndex.search(query);
-  }
-
 }
