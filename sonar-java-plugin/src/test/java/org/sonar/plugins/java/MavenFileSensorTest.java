@@ -34,9 +34,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.api.rules.RuleAnnotationUtils;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.checks.BadMethodName_S00100_Check;
 import org.sonar.java.checks.maven.PomElementOrderCheck;
-import org.sonar.maven.MavenCheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -44,10 +42,7 @@ import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -86,9 +81,7 @@ public class MavenFileSensorTest {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     final File file = new File("src/test/files/maven/pom.xml");
     fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage(Java.KEY));
-    CodeVisitor mavenCheck = new PomElementOrderCheck();
-    CodeVisitor javaCheck = new BadMethodName_S00100_Check();
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, mavenCheck, javaCheck);
+    SonarComponents sonarComponents = createSonarComponentsMock(fs);
     MavenFileSensor mps = new MavenFileSensor(sonarComponents, fs);
 
     SensorContext context = mock(SensorContext.class);
@@ -104,54 +97,9 @@ public class MavenFileSensorTest {
     }));
   }
 
-  @Test
-  public void no_analysis_when_no_pom_provided() throws Exception {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    CodeVisitor mavenCheck = new PomElementOrderCheck();
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, mavenCheck);
-    MavenFileSensor mps = new MavenFileSensor(sonarComponents, fs);
-
-    SensorContext context = mock(SensorContext.class);
-
-    mps.analyse(mock(Project.class), context);
-
-    verify(sonarComponents, never()).addIssue(any(File.class), any(MavenCheck.class), any(Integer.class), anyString(), isNull(Double.class));
-  }
-
-  @Test
-  public void no_analysis_when_no_pom_nor_pom_scanner_provided() {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    CodeVisitor javaCheck = new BadMethodName_S00100_Check();
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, javaCheck);
-    MavenFileSensor mps = new MavenFileSensor(sonarComponents, fs);
-
-    SensorContext context = mock(SensorContext.class);
-
-    mps.analyse(mock(Project.class), context);
-
-    verify(sonarComponents, never()).addIssue(any(File.class), any(MavenCheck.class), any(Integer.class), anyString(), isNull(Double.class));
-  }
-
-  @Test
-  public void no_analysis_when_no_pom_scanner_provided() throws Exception {
-    DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    File file = new File("src/test/files/maven/pom.xml");
-    fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage(Java.KEY));
-    CodeVisitor javaCheck = new BadMethodName_S00100_Check();
-    SonarComponents sonarComponents = createSonarComponentsMock(fs, javaCheck);
-    MavenFileSensor mps = new MavenFileSensor(sonarComponents, fs);
-
-    SensorContext context = mock(SensorContext.class);
-    when(context.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create("src/test/files/maven/pom.xml"));
-
-    mps.analyse(mock(Project.class), context);
-
-    verify(sonarComponents, never()).addIssue(any(File.class), any(MavenCheck.class), any(Integer.class), anyString(), isNull(Double.class));
-  }
-
-  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs, CodeVisitor... codeVisitor) {
+  private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    when(sonarComponents.checkClasses()).thenReturn(codeVisitor);
+    when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[] {new PomElementOrderCheck()});
 
     when(sonarComponents.getFileSystem()).thenReturn(fs);
 
