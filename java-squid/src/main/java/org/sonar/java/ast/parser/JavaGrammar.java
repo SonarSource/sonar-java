@@ -1044,13 +1044,19 @@ public class JavaGrammar {
           METHOD_REFERENCE(),
           // TODO Extract postfix expressions somewhere else
           f.newPostfixExpression(
-            f.applySelectors1(PRIMARY(), b.zeroOrMore(SELECTOR())),
+            PRIMARY_WITH_SELECTOR(),
             b.optional(
               b.firstOf(
                 b.token(JavaPunctuator.INC),
                 b.token(JavaPunctuator.DEC)))),
           f.newTildaExpression(b.token(JavaPunctuator.TILDA), UNARY_EXPRESSION()),
           f.newBangExpression(b.token(JavaPunctuator.BANG), UNARY_EXPRESSION())));
+  }
+
+  public ExpressionTree PRIMARY_WITH_SELECTOR() {
+    return b.<ExpressionTree>nonterminal().is(
+      f.applySelectors1(PRIMARY(), b.zeroOrMore(SELECTOR()))
+    );
   }
 
   public ExpressionTree CAST_EXPRESSION() {
@@ -1075,9 +1081,7 @@ public class JavaGrammar {
             f.newSuperMethodReference(b.token(JavaKeyword.SUPER), b.token(JavaPunctuator.DBLECOLON)),
             f.newTypeMethodReference(TYPE(), b.token(JavaPunctuator.DBLECOLON)),
             // TODO This is a postfix expression followed by a double colon
-            f.newPrimaryMethodReference(
-              f.applySelectors2(PRIMARY(), b.zeroOrMore(SELECTOR())),
-              b.token(JavaPunctuator.DBLECOLON))),
+            f.newPrimaryMethodReference(PRIMARY_WITH_SELECTOR(), b.token(JavaPunctuator.DBLECOLON))),
           b.optional(TYPE_ARGUMENTS()),
           b.firstOf(
             b.token(JavaKeyword.NEW),

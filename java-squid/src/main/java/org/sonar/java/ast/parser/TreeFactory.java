@@ -1693,10 +1693,6 @@ public class TreeFactory {
     return applySelectors(primary, selectors);
   }
 
-  public ExpressionTree applySelectors2(ExpressionTree primary, Optional<List<Tuple<Optional<InternalSyntaxToken>, ExpressionTree>>> selectors) {
-    return applySelectors(primary, selectors);
-  }
-
   // End of expressions
 
   // Helpers
