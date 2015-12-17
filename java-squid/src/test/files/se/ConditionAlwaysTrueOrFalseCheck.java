@@ -16,6 +16,7 @@ public static class Class extends SuperClass {
 
   private Object instanceVariable;
   private boolean field, field1, field2;
+  private Boolean preAssignedBoolean = true;
 
   public void assign(boolean parameter) {
     parameter = false;
@@ -1157,7 +1158,29 @@ public static class Class extends SuperClass {
     value = (b1 ^ b2) ? 1 : 2; // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     value = (b1 ^ !b2) ? 1 : 2; // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
   }
-
+  
+  public void handlePreAssignedBoolean() {
+    if (preAssignedBoolean) { // Compliant because it is a field
+      System.out.print("Was true");
+    }
+    System.out.println();
+  }
+  
+  public void handlePreAssignedBoolean() {
+    Boolean preAssignedBoolean = true;
+    if (preAssignedBoolean) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      System.out.print("Was true");
+    }
+    System.out.println();
+  }
+  
+  public void handlePreAssignedBoolean() {
+    Boolean preAssignedBoolean = Boolean.TRUE;
+    if (preAssignedBoolean) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      System.out.print("Was true");
+    }
+    System.out.println();
+  }
 }
 
 class SuperClass {

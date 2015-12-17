@@ -81,7 +81,11 @@ public class ConstraintManager {
   private SymbolicValue createIdentifierSymbolicValue(IdentifierTree identifier) {
     final Type type = identifier.symbol().type();
     if (type != null && type.is("java.lang.Boolean")) {
-      return "TRUE".equals(identifier.name()) ? SymbolicValue.TRUE_LITERAL : SymbolicValue.FALSE_LITERAL;
+      if ("TRUE".equals(identifier.name())) {
+        return SymbolicValue.TRUE_LITERAL;
+      } else if ("FALSE".equals(identifier.name())) {
+        return SymbolicValue.FALSE_LITERAL;
+      }
     }
     return createDefaultSymbolicValue(identifier);
   }
