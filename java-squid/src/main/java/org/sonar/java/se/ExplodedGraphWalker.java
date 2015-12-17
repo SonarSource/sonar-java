@@ -38,6 +38,7 @@ import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -71,6 +72,7 @@ import java.util.Set;
 
 public class ExplodedGraphWalker extends BaseTreeVisitor {
 
+  private static final String EQUALS_METHOD_NAME = "equals";
   /**
    * Arbitrary number to limit symbolic execution.
    */
@@ -185,6 +187,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private Iterable<ProgramState> startingStates(MethodTree tree, ProgramState ps) {
     Iterable<ProgramState> startingStates = Lists.newArrayList(ps);
+    boolean isEqualsMethod = EQUALS_METHOD_NAME.equals(tree.simpleName().name()) && tree.parameters().size() == 1;
     for (final VariableTree variableTree : tree.parameters()) {
       // create
       final SymbolicValue sv = constraintManager.createSymbolicValue(variableTree);
@@ -195,8 +198,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         }
       });
 
-      if (variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull")
-        || variableTree.symbol().metadata().isAnnotatedWith("javax.annotation.Nullable")) {
+      if (isEqualsMethod || parameterCanBeNull(variableTree)) {
         startingStates = Iterables.concat(Iterables.transform(startingStates, new Function<ProgramState, List<ProgramState>>() {
           @Override
           public List<ProgramState> apply(ProgramState input) {
@@ -210,6 +212,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
     return startingStates;
+  }
+
+  private static boolean parameterCanBeNull(final VariableTree variableTree) {
+    final SymbolMetadata metadata = variableTree.symbol().metadata();
+    return metadata.isAnnotatedWith("javax.annotation.CheckForNull") || metadata.isAnnotatedWith("javax.annotation.Nullable");
   }
 
   private void cleanUpProgramState(CFG.Block block) {

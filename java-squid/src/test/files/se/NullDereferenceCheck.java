@@ -603,4 +603,9 @@ class NullPointerTest {
       currentParent = null;
     }
   }
+
+  @Override
+  public boolean equals(Object obj) {
+    return getValue() == ((MyClass) obj).getValue(); // Noncompliant {{NullPointerException might be thrown as 'obj' is nullable here}}
+  }
 }
