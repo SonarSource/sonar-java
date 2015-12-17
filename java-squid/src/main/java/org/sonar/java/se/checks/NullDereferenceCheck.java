@@ -31,11 +31,8 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -74,7 +71,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       }
 
       if (context.isNull(currentVal)) {
-        context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
+        context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
         return null;
       }
       if (context.getState().getConstraint(currentVal) == null) {
@@ -88,7 +85,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
     if (context.isNull(context.getState().peekValue()) && syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
-      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + getName(syntaxNode) + "' is nullable here");
+      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
       context.createSink();
       return context.getState();
     }
@@ -117,21 +114,4 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     return syntaxNode.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull");
   }
 
-  private static String getName(Tree syntaxNode) {
-    String name = "";
-    ExpressionTree expressionTree = null;
-    if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      expressionTree = ((MemberSelectExpressionTree) syntaxNode).expression();
-    } else if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT)) {
-      expressionTree = ((SwitchStatementTree) syntaxNode).expression();
-    }
-    if (expressionTree != null) {
-      if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-        name = ((IdentifierTree) expressionTree).name();
-      } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-        name = ((MethodInvocationTree) expressionTree).symbol().name();
-      }
-    }
-    return name;
-  }
 }
