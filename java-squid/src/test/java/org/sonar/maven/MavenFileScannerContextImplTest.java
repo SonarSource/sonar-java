@@ -58,6 +58,11 @@ public class MavenFileScannerContextImplTest {
   }
 
   @Test
+  public void getMavenProject() {
+    assertThat(context.getMavenProject()).isNotNull();
+  }
+
+  @Test
   public void should_report_issue_on_line() {
     context.reportIssue(CHECK, LINE, "message");
     assertThat(reportedMessage).isEqualTo("onLine:message");
