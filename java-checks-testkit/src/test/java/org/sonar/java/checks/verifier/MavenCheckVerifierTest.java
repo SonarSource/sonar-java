@@ -19,21 +19,25 @@
  */
 package org.sonar.java.checks.verifier;
 
+import com.google.common.collect.Lists;
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.maven.MavenFileScanner;
 import org.sonar.maven.MavenFileScannerContext;
+import org.sonar.maven.model.maven2.Dependency;
+import org.sonar.maven.model.maven2.MavenProject;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class MavenCheckVerifierTest {
-  private static final String FILENAME_ISSUES = "src/test/files/MavenCheckVerifier.xml";
-  private static final String FILENAME_NO_ISSUE = "src/test/files/MavenCheckVerifierNoIssue.xml";
-  private static final String FILENAME_PARSE_ISSUE = "src/test/files/MavenCheckVerifierParseIssue.xml";
+  private static final String POM_WITH_ISSUES = "src/test/files/MavenCheckVerifier.xml";
+  private static final String POM_WITH_ISSUES_AND_SECONDARIES = "src/test/files/MavenCheckVerifierWithSecondary.xml";
+  private static final String POM_WITH_NO_ISSUE = "src/test/files/MavenCheckVerifierNoIssue.xml";
+  private static final String POM_PARSE_ISSUE = "src/test/files/MavenCheckVerifierParseIssue.xml";
 
   @Test
-  public void should_detect_issues() throws Exception {
-    MavenCheckVerifier.verify(FILENAME_ISSUES, new MavenFileScanner() {
+  public void should_detect_issues() {
+    MavenCheckVerifier.verify(POM_WITH_ISSUES, new MavenFileScanner() {
       @Override
       public void scanFile(MavenFileScannerContext context) {
         context.reportIssue(this, 7, "Message1");
@@ -44,8 +48,45 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_detect_issue_on_file() throws Exception {
-    MavenCheckVerifier.verifyIssueOnFile(FILENAME_NO_ISSUE, "Message", new MavenFileScanner() {
+  public void should_detect_issues_using_trees() {
+    MavenCheckVerifier.verify(POM_WITH_ISSUES, new MavenFileScanner() {
+      @Override
+      public void scanFile(MavenFileScannerContext context) {
+        MavenProject mavenProject = context.getMavenProject();
+        context.reportIssue(this, mavenProject.getVersion(), "Message1");
+        context.reportIssue(this, mavenProject.getDependencies().getDependencies().get(0).getArtifactId(), "Message2");
+        context.reportIssue(this, mavenProject.getDependencies().getDependencies().get(2), "Message3");
+      }
+    });
+  }
+
+  @Test
+  public void should_detect_issues_using_secondaries() {
+    MavenCheckVerifier.verify(POM_WITH_ISSUES_AND_SECONDARIES, new MavenFileScanner() {
+      @Override
+      public void scanFile(MavenFileScannerContext context) {
+        Dependency dependency = context.getMavenProject().getDependencies().getDependencies().get(0);
+        context.reportIssue(this,
+          dependency.startLocation().line(),
+          "Message1",
+          Lists.newArrayList(new MavenFileScannerContext.Location("", dependency.getVersion())));
+      }
+    });
+  }
+
+  @Test
+  public void should_get_MavenProject() {
+    MavenCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new MavenFileScanner() {
+      @Override
+      public void scanFile(MavenFileScannerContext context) {
+        assertThat(context.getMavenProject()).isNotNull();
+      }
+    });
+  }
+
+  @Test
+  public void should_detect_issue_on_file() {
+    MavenCheckVerifier.verifyIssueOnFile(POM_WITH_NO_ISSUE, "Message", new MavenFileScanner() {
       @Override
       public void scanFile(MavenFileScannerContext context) {
         context.reportIssueOnFile(this, "Message");
@@ -54,9 +95,9 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_fail_when_cannot_parse() throws Exception {
+  public void should_fail_when_cannot_parse() {
     try {
-      MavenCheckVerifier.verify(FILENAME_PARSE_ISSUE, new MavenFileScanner() {
+      MavenCheckVerifier.verify(POM_PARSE_ISSUE, new MavenFileScanner() {
         @Override
         public void scanFile(MavenFileScannerContext context) {
         }
@@ -67,9 +108,22 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_fail_if_detect_issues_but_not_in_file() throws Exception {
+  public void should_fail_when_file_does_not_exist() {
     try {
-      MavenCheckVerifier.verify(FILENAME_NO_ISSUE, new MavenFileScanner() {
+      MavenCheckVerifier.verify("", new MavenFileScanner() {
+        @Override
+        public void scanFile(MavenFileScannerContext context) {
+        }
+      });
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("The test file can not be parsed");
+    }
+  }
+
+  @Test
+  public void should_fail_if_detect_issues_but_not_in_file() {
+    try {
+      MavenCheckVerifier.verify(POM_WITH_NO_ISSUE, new MavenFileScanner() {
         @Override
         public void scanFile(MavenFileScannerContext context) {
           context.reportIssue(this, 7, "Message1");
@@ -83,9 +137,9 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_fail_if_check_raise_no_issue_when_issues_are_expected() throws Exception {
+  public void should_fail_if_check_raise_no_issue_when_issues_are_expected() {
     try {
-      MavenCheckVerifier.verify(FILENAME_ISSUES, new MavenFileScanner() {
+      MavenCheckVerifier.verify(POM_WITH_ISSUES, new MavenFileScanner() {
         @Override
         public void scanFile(MavenFileScannerContext context) {
           // do nothing
@@ -98,9 +152,9 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_fail_if_check_raise_more_issues_than_expected() throws Exception {
+  public void should_fail_if_check_raise_more_issues_than_expected() {
     try {
-      MavenCheckVerifier.verify(FILENAME_ISSUES, new MavenFileScanner() {
+      MavenCheckVerifier.verify(POM_WITH_ISSUES, new MavenFileScanner() {
         @Override
         public void scanFile(MavenFileScannerContext context) {
           context.reportIssue(this, 7, "Message1");
@@ -116,8 +170,8 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_not_detect_issue() throws Exception {
-    MavenCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, new MavenFileScanner() {
+  public void should_not_detect_issue() {
+    MavenCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new MavenFileScanner() {
       @Override
       public void scanFile(MavenFileScannerContext context) {
         // do nothing
@@ -126,9 +180,9 @@ public class MavenCheckVerifierTest {
   }
 
   @Test
-  public void should_fail_if_issue_reported_when_checking_for_no_issue() throws Exception {
+  public void should_fail_if_issue_reported_when_checking_for_no_issue() {
     try {
-      MavenCheckVerifier.verifyNoIssue(FILENAME_NO_ISSUE, new MavenFileScanner() {
+      MavenCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new MavenFileScanner() {
         @Override
         public void scanFile(MavenFileScannerContext context) {
           context.reportIssue(this, 2, "Message");

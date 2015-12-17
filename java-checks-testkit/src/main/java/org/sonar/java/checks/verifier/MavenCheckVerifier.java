@@ -71,9 +71,9 @@ public class MavenCheckVerifier extends CheckVerifier {
     File pom = new File(filename);
     MavenProject project = MavenParser.parseXML(pom);
     if (project != null) {
+      retrieveExpectedIssuesFromFile(pom, mavenCheckVerifier);
       FakeMavenFileScannerContext context = new FakeMavenFileScannerContext(pom, project);
       check.scanFile(context);
-      retrieveExpectedIssuesFromFile(pom, mavenCheckVerifier);
       mavenCheckVerifier.checkIssues(context.messages, false);
     } else {
       Fail.fail("The test file can not be parsed");
