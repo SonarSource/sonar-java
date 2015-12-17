@@ -26,6 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
+import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -33,7 +35,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -68,60 +69,74 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    CompilationUnitTree cut = (CompilationUnitTree) tree;
-    for (Tree typeTree : cut.types()) {
-      if (typeTree.is(Kind.CLASS)) {
-        ClassTree classTree = (ClassTree) typeTree;
-        if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
-          if (classTree.symbol().metadata().isAnnotatedWith("org.testng.annotations.Test")) {
-            checkTestNGmembers(classTree);
-          } else {
-            checkJunit3TestClass(classTree);
-            checkJunit4TestClass(classTree);
-          }
+    if (hasSemantic()) {
+      CompilationUnitTree cut = (CompilationUnitTree) tree;
+      for (Tree typeTree : cut.types()) {
+        if (typeTree.is(Kind.CLASS)) {
+          checkClass((ClassTree) typeTree);
         }
       }
     }
   }
 
-  private void checkTestNGmembers(ClassTree classTree) {
-    for (Tree member : classTree.members()) {
-      if (member.is(Kind.METHOD)) {
-        Symbol.MethodSymbol symbol = ((MethodTree) member).symbol();
-        if (symbol.isPublic() && !symbol.isStatic()) {
-          return;
-        }
+  private void checkClass(ClassTree classTree) {
+    if (!ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)) {
+      JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classTree.symbol();
+      Iterable<Symbol> members = getAllMembers(symbol);
+      IdentifierTree simpleName = classTree.simpleName();
+      if (classTree.symbol().metadata().isAnnotatedWith("org.testng.annotations.Test")) {
+        checkTestNGmembers(simpleName, members);
+      } else {
+        checkJunit3TestClass(simpleName, symbol, members);
+        checkJunit4TestClass(simpleName, symbol, members);
       }
     }
-    reportIssue(classTree.simpleName(), "Add some tests to this class.");
   }
 
-  private void checkJunit3TestClass(ClassTree tree) {
-    if (tree.symbol().type().isSubtypeOf("junit.framework.TestCase")) {
-      checkMethods(tree, false);
-    }
-  }
-
-  private void checkJunit4TestClass(ClassTree tree) {
-    IdentifierTree name = tree.simpleName();
-    if (name != null && name.name().endsWith("Test")) {
-      checkMethods(tree, true);
-    }
-  }
-
-  private void checkMethods(ClassTree classTree, boolean forJunit4) {
-    for (Tree member : classTree.members()) {
-      if (member.is(Kind.METHOD) && isTestMethod(forJunit4, (MethodTree) member)) {
+  private void checkTestNGmembers(IdentifierTree className, Iterable<Symbol> members) {
+    for (Symbol member : members) {
+      if (member.isMethodSymbol() && member.isPublic() && !member.isStatic()) {
         return;
       }
     }
-    reportIssue(classTree.simpleName(), "Add some tests to this class.");
+    reportIssue(className, "Add some tests to this class.");
   }
 
-  private static boolean isTestMethod(boolean forJunit4, MethodTree member) {
-    if (forJunit4) {
-      return Iterables.any(member.symbol().metadata().annotations(), PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
+  private void checkJunit3TestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
+    if (symbol.type().isSubtypeOf("junit.framework.TestCase")) {
+      checkMethods(className, members, false);
     }
-    return member.simpleName().name().startsWith("test");
+  }
+
+  private void checkJunit4TestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
+    if (symbol.name().endsWith("Test")) {
+      checkMethods(className, members, true);
+    }
+  }
+
+  private void checkMethods(IdentifierTree simpleName, Iterable<Symbol> members, boolean forJunit4) {
+    for (Symbol member : members) {
+      if (member.isMethodSymbol() && isTestMethod(forJunit4, member)) {
+        return;
+      }
+    }
+    reportIssue(simpleName, "Add some tests to this class.");
+  }
+
+  private static boolean isTestMethod(boolean forJunit4, Symbol member) {
+    if (forJunit4) {
+      return Iterables.any(member.metadata().annotations(), PREDICATE_ANNOTATION_TEST_OR_UNKNOWN);
+    }
+    return member.name().startsWith("test");
+  }
+
+  private static Iterable<Symbol> getAllMembers(JavaSymbol.TypeJavaSymbol symbol) {
+    Iterable<Symbol> members = symbol.memberSymbols();
+    JavaType superclass = symbol.getSuperclass();
+    while (superclass != null && !"java.lang.Object".equals(superclass.fullyQualifiedName())) {
+      members = Iterables.concat(members, superclass.symbol().memberSymbols());
+      superclass = superclass.getSymbol().getSuperclass();
+    }
+    return members;
   }
 }

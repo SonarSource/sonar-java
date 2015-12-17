@@ -57,3 +57,21 @@ public class TestNGClassTest { // Noncompliant
 @org.testng.annotations.Test(groups ="integration")
 public abstract class AbstractIntegrationTest2{
 }
+
+class BaseTest {
+  @Test
+  public void test() {
+  }
+}
+
+class InterTest extends BaseTest {
+}
+
+class ImplTest extends BaseTest {
+}
+
+class OtherTest extends BaseTest {
+  @Test
+  public void test2() {
+  }
+}
