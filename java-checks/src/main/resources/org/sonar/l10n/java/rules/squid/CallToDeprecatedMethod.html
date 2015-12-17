@@ -1,8 +1,27 @@
-<p>Once deprecated, a method should no longer be used as it means that the method might be removed sooner or later.</p>
+<p>
+  Once deprecated, classes, and interfaces, and their members should be avoided, rather than used, inherited or extended.
+  Deprecation is a warning that the class or interface has been superseded, and will eventually be removed.
+  The deprecation period allows you to make a smooth transition away from the aging, soon-to-be-retired technology.
+</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+/**
+ * @deprecated  As of release 1.3, replaced by {@link #Fee}
+ */@Deprecated
+class Fum { ... }
+
+public class Bar extends Fum {  // Noncompliant; Fum is deprecated
+
+  public void myMethod() {
+    Foo foo = new Foo();  // okay; the class isn't deprecated
+    foo.doTheThing();  // Noncompliant
+  }
+}
+</pre>
+
 <h2>See</h2>
-
 <ul>
-<li> <a href="http://cwe.mitre.org/data/definitions/477.html">MITRE, CWE-477</a> - Use of Obsolete Functions</li>
-<li> <a href="https://www.owasp.org/index.php/Top_10_2013-A9-Using_Components_with_Known_Vulnerabilities">OWASP Top Ten 2013 Category A9</a> - Using Components with Known Vulnerabilities</li>
+<li><a href="http://cwe.mitre.org/data/definitions/477.html">MITRE, CWE-477</a> - Use of Obsolete Functions</li>
+<li><a href="https://www.owasp.org/index.php/Top_10_2013-A9-Using_Components_with_Known_Vulnerabilities">OWASP Top Ten 2013 Category A9</a> - Using Components with Known Vulnerabilities</li>
 </ul>
-

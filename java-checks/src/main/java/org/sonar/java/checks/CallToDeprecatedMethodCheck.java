@@ -23,11 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -36,7 +34,7 @@ import java.util.List;
 
 @Rule(
   key = "CallToDeprecatedMethod",
-  name = "Deprecated methods should not be used",
+  name = "\"@Deprecated\" code should not be used",
   priority = Priority.MINOR,
   tags = {Tag.CWE, Tag.OBSOLETE, Tag.OWASP_A9, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
@@ -45,32 +43,20 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS);
+    return ImmutableList.of(Tree.Kind.IDENTIFIER);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    Symbol symbol;
-    if (tree.is(Tree.Kind.NEW_CLASS)) {
-      symbol = ((NewClassTree) tree).constructorSymbol();
-    } else {
-      symbol = ((MethodInvocationTree) tree).symbol();
-    }
+    Symbol symbol = ((IdentifierTree) tree).symbol();
     if (symbol.metadata().isAnnotatedWith("java.lang.Deprecated")) {
-      String name = symbol.name();
-      String message;
-      if ("<init>".equals(name)) {
-        message = "Constructor '" + symbol.owner().name() + "(...)' is deprecated.";
+      String name;
+      if (symbol.isMethodSymbol() && "<init>".equals(symbol.name())) {
+        name = symbol.owner().name();
       } else {
-        message = "Method '" + symbol.owner().name() + "." + name + "(...)' is deprecated.";
+        name = symbol.name();
       }
-      Tree reported;
-      if (tree.is(Tree.Kind.NEW_CLASS)) {
-        reported = ((NewClassTree) tree).identifier();
-      } else {
-        reported = MethodsHelper.methodName((MethodInvocationTree) tree);
-      }
-      reportIssue(reported, message);
+      reportIssue(tree, "Remove this use of \"" + name + "\"; it is deprecated.");
     }
   }
 }
