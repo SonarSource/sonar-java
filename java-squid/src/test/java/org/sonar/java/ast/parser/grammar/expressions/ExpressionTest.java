@@ -19,6 +19,7 @@
  */
 package org.sonar.java.ast.parser.grammar.expressions;
 
+import com.google.common.base.Strings;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaLexer;
 
@@ -94,6 +95,13 @@ public class ExpressionTest {
       .matches("(Comparator<Map.Entry<K, V>>[] & Serializable) foo")
       .matches("(a & b) - c");
 
+  }
+
+  @Test
+  public void test_SONARJAVA_793() {
+    String bigInput = Strings.repeat("(", 64) + "1" + Strings.repeat(")", 64);
+    assertThat(JavaLexer.EXPRESSION)
+      .matches(bigInput);
   }
 
 }
