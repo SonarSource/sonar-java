@@ -26,10 +26,13 @@ CI)
     jdk_switcher use oraclejdk8
 
     # integration of jacoco report is quite memory-consuming
+    #scm.forceReloadAll: force scm reload to fix blame issue on some files (should be removed at some point)
     export MAVEN_OPTS="-Xmx1G -Xms128m"
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify -Pcoverage-per-test sonar:sonar -B -e -V \
        -Dsonar.host.url=$SONAR_HOST_URL \
-       -Dsonar.login=$SONAR_TOKEN
+       -Dsonar.login=$SONAR_TOKEN \
+       -Dsonar.scm.forceReloadAll=true
+
 
   elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN-}" ]; then
     # For security reasons environment variables are not available on the pull requests
