@@ -1,3 +1,5 @@
+import java.util.stream.IntStream;
+
 class Foo {
   int a;                          // Compliant
    int b;                         // Noncompliant {{Make this line start at column 3.}}
@@ -34,6 +36,20 @@ if (0) {                          // Compliant - already reported
 
   int b;                          // Noncompliant
 
+  }
+
+  void foo() {
+    IntStream
+      .range(1, 5)
+      .map(a -> {
+        return a + 1; // should be a valid position
+      });
+    IntStream
+      .range(1, 5)
+      .map(a -> {
+         a += 1; // Noncompliant {{Make this line start at column 9.}}
+        return a + 1;
+      });
   }
 }
 

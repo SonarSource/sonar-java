@@ -19,7 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -38,7 +38,9 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Collections;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -50,7 +52,7 @@ import java.util.List;
 @SqaleConstantRemediation("1min")
 public class IndentationCheck extends SubscriptionBaseVisitor {
 
-  private static final Kind[] BLOCK_TYPES = new Kind[] {
+  private static final List<Kind> BLOCK_TYPES = ImmutableList.of(
     Kind.CLASS,
     Kind.INTERFACE,
     Kind.ENUM,
@@ -61,7 +63,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     Kind.INITIALIZER,
     Kind.SWITCH_STATEMENT,
     Kind.CASE_GROUP
-  };
+  );
 
   private static final int DEFAULT_INDENTATION_LEVEL = 2;
 
@@ -74,11 +76,11 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
   private int expectedLevel;
   private boolean isBlockAlreadyReported;
   private int lastCheckedLine;
-  private Deque<Boolean> isInAnonymousClass = Lists.newLinkedList();
+  private Deque<Boolean> isInAnonymousClass = new LinkedList<>();
 
   @Override
   public List<Kind> nodesToVisit() {
-    return Lists.newArrayList(BLOCK_TYPES);
+    return BLOCK_TYPES;
   }
 
   @Override
@@ -97,7 +99,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
       // Exclude anonymous classes
       isInAnonymousClass.push(classTree.simpleName() == null);
       if (!isInAnonymousClass.peek()) {
-        checkIndentation(Lists.newArrayList(classTree));
+        checkIndentation(Collections.singletonList(classTree));
       }
     }
     expectedLevel += indentationLevel;
@@ -122,7 +124,13 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
       checkIndentation(((CaseGroupTree) tree).body());
     }
     if (tree.is(Kind.BLOCK)) {
+      if (tree.parent().is(Kind.LAMBDA_EXPRESSION)) {
+        expectedLevel += indentationLevel;
+      }
       checkIndentation(((BlockTree) tree).body());
+      if (tree.parent().is(Kind.LAMBDA_EXPRESSION)) {
+        expectedLevel -= indentationLevel;
+      }
     }
   }
 
