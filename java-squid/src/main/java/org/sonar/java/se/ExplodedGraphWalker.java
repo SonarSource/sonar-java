@@ -523,15 +523,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void executeMemberSelect(MemberSelectExpressionTree mse) {
-    if (!mse.parent().is(Tree.Kind.METHOD_INVOCATION)) {
-      if (!"class".equals(mse.identifier().name())) {
+    if (!"class".equals(mse.identifier().name())) {
 
-        ProgramState.Pop unstackMSE = programState.unstackValue(1);
-        programState = unstackMSE.state;
-      }
-      SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);
-      programState = programState.stackValue(mseValue);
+      ProgramState.Pop unstackMSE = programState.unstackValue(1);
+      programState = unstackMSE.state;
     }
+    SymbolicValue mseValue = constraintManager.createSymbolicValue(mse);
+    programState = programState.stackValue(mseValue);
   }
 
   public void clearStack(Tree tree) {

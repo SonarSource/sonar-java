@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -42,17 +43,6 @@ import java.util.Objects;
 import java.util.Set;
 
 public class ProgramState {
-
-  public static class ConstrainedValue {
-
-    public final SymbolicValue value;
-    public final ObjectConstraint constraint;
-
-    ConstrainedValue(SymbolicValue value, ObjectConstraint constraint) {
-      this.value = value;
-      this.constraint = constraint;
-    }
-  }
 
   public static class Pop {
 
@@ -341,31 +331,15 @@ public class ProgramState {
     return values.get(symbol);
   }
 
-  public List<ObjectConstraint> getConstraints(final Object state) {
-    final List<ObjectConstraint> result = new ArrayList<>();
+  public Map<SymbolicValue, ObjectConstraint> getValuesWithConstraints(final Object state) {
+    final Map<SymbolicValue, ObjectConstraint> result = new HashMap<>();
     constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
       @Override
       public void accept(SymbolicValue value, Object valueConstraint) {
         if (valueConstraint instanceof ObjectConstraint) {
           ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
           if (constraint.hasStatus(state)) {
-            result.add(constraint);
-          }
-        }
-      }
-    });
-    return result;
-  }
-
-  public List<ConstrainedValue> getValuesWithConstraints(final Object state) {
-    final List<ConstrainedValue> result = new ArrayList<>();
-    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
-      @Override
-      public void accept(SymbolicValue value, Object valueConstraint) {
-        if (valueConstraint instanceof ObjectConstraint) {
-          ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
-          if (constraint.hasStatus(state)) {
-            result.add(new ConstrainedValue(value, constraint));
+            result.put(value, constraint);
           }
         }
       }
