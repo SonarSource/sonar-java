@@ -83,7 +83,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     }
 
     if (context.isNull(currentVal)) {
-        context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
+      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
       return null;
     }
     if (context.getState().getConstraint(currentVal) == null) {
