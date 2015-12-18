@@ -112,4 +112,8 @@ class A {
     object2.toString(); // not accessible with null value
   }
 
+  void assignUnknownSymbol() {
+    unknown |= false;
+  }
+
 }
