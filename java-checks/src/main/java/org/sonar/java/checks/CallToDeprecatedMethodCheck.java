@@ -24,8 +24,11 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -41,22 +44,54 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
 
+  private int nestedDeprecationLevel = 0;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    super.scanFile(context);
+    nestedDeprecationLevel = 0;
+  }
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.IDENTIFIER);
+    return ImmutableList.of(Tree.Kind.IDENTIFIER, Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    Symbol symbol = ((IdentifierTree) tree).symbol();
-    if (symbol.metadata().isAnnotatedWith("java.lang.Deprecated")) {
-      String name;
-      if (symbol.isMethodSymbol() && "<init>".equals(symbol.name())) {
-        name = symbol.owner().name();
-      } else {
-        name = symbol.name();
+    if (tree.is(Tree.Kind.IDENTIFIER)) {
+      Symbol symbol = ((IdentifierTree) tree).symbol();
+      if (symbol.isDeprecated() && nestedDeprecationLevel == 0) {
+        String name;
+        if (isConstructor(symbol)) {
+          name = symbol.owner().name();
+        } else {
+          name = symbol.name();
+        }
+        reportIssue(tree, "Remove this use of \"" + name + "\"; it is deprecated.");
       }
-      reportIssue(tree, "Remove this use of \"" + name + "\"; it is deprecated.");
+    } else if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
+      nestedDeprecationLevel++;
     }
+
+  }
+
+  private boolean isConstructor(Symbol symbol) {
+    return symbol.isMethodSymbol() && "<init>".equals(symbol.name());
+  }
+
+  @Override
+  public void leaveNode(Tree tree) {
+    if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
+      nestedDeprecationLevel--;
+    }
+  }
+
+  private boolean isDeprecatedClassTree(Tree tree) {
+    return tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && ((MethodTree) tree).symbol().isDeprecated();
+  }
+
+  private boolean isDeprecatedMethod(Tree tree) {
+    return tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && ((ClassTree) tree).symbol().isDeprecated();
   }
 }

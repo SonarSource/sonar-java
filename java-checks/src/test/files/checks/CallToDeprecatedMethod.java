@@ -1,3 +1,5 @@
+import java.lang.Deprecated;
+
 public class CallToDeprecatedMethodCheck {
 
   public CallToDeprecatedMethodCheck() {
@@ -20,7 +22,22 @@ public class CallToDeprecatedMethodCheck {
   private static class DeprecatedConstructor {
     @Deprecated
     public DeprecatedConstructor() {
+      string.getBytes(1, 1, new byte[3], 7);
     }
+    Object a  = "".getBytes(1, 1, new byte[3], 7); // Noncompliant
+  }
+
+  @Deprecated
+  class A {
+    Object a = new DeprecatedConstructor();
+  }
+
+  class B {
+    @Deprecated
+    void foo() {
+      Object a = new DeprecatedConstructor();
+      string.getBytes(1, 1, new byte[3], 7);
+     }
   }
 
 }
