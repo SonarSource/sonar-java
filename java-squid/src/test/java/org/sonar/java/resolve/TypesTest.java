@@ -21,8 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -31,7 +29,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Arrays;
@@ -249,21 +246,15 @@ public class TypesTest {
 
   @Test
   public void lub_ignores_generics() {
-    List<Type> typesFromInput = typesOfVariables(
-      "import java.util.List;",
-      "class A {",
-      "  List<String> a;",
-      "  List<String> b;",
-      "}");
+    List<Type> typesFromInput = declaredTypes(
+      "class A extends Exception {}",
+      "class B extends Exception implements I1<Exception> {}",
+      "interface I1<T> {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    try {
-      types.leastUpperBound(Lists.newArrayList(a, b));
-      Fail.fail("should have failed");
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-      assertThat(e.getMessage()).isEqualTo("Generics are not handled");
-    }
+
+    Type lub = types.leastUpperBound(Lists.newArrayList(a, b));
+    assertThat(lub.isUnknown()).isTrue();
   }
 
   private static List<Type> declaredTypes(String... lines) {
@@ -271,24 +262,6 @@ public class TypesTest {
     List<Type> results = Lists.newLinkedList();
     for (Tree classTree : tree.types()) {
       Type type = ((TypeJavaSymbol) ((ClassTree) classTree).symbol()).type();
-      results.add(type);
-    }
-    return results;
-  }
-
-  private static List<Type> typesOfVariables(String... lines) {
-    CompilationUnitTree tree = treeOf(lines);
-    List<Tree> members = ((ClassTree) tree.types().get(0)).members();
-    CollectionUtils.filter(members, new Predicate() {
-      @Override
-      public boolean evaluate(Object object) {
-        Tree tree = (Tree) object;
-        return tree.is(Tree.Kind.VARIABLE);
-      }
-    });
-    List<Type> results = Lists.newLinkedList();
-    for (Tree member : members) {
-      Type type = ((VariableTree) member).type().symbolType();
       results.add(type);
     }
     return results;

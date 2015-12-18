@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -131,27 +132,34 @@ public class Types {
   }
 
   private static List<Set<Type>> supertypes(Iterable<Type> types) {
-    List<Set<Type>> results = new LinkedList<>();
-    for (Type type : types) {
-      checkParametrizedType(type);
-      Set<Type> supertypes = new LinkedHashSet<>();
-      supertypes.add(type);
-      for (Type supertype : ((JavaType) type).symbol.superTypes()) {
-        checkParametrizedType(supertype);
-        supertypes.add(supertype);
+    try {
+      List<Set<Type>> results = new LinkedList<>();
+      for (Type type : types) {
+        checkParametrizedType(type);
+        Set<Type> supertypes = new LinkedHashSet<>();
+        supertypes.add(type);
+        for (Type supertype : ((JavaType) type).symbol.superTypes()) {
+          checkParametrizedType(supertype);
+          supertypes.add(supertype);
+        }
+        results.add(supertypes);
       }
-      results.add(supertypes);
+      return results;
+    } catch (UnsupportedOperationException e) {
+      return Collections.emptyList();
     }
-    return results;
   }
 
   private static void checkParametrizedType(Type type) {
     if (type instanceof ParametrizedTypeJavaType) {
-      throw new IllegalArgumentException("Generics are not handled");
+      throw new UnsupportedOperationException("Generics are not handled");
     }
   }
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {
+    if (supertypes.isEmpty()) {
+      return Collections.emptyList();
+    }
     List<Type> results = new LinkedList<>(supertypes.get(0));
     for (int i = 1; i < supertypes.size(); i++) {
       results.retainAll(supertypes.get(i));
