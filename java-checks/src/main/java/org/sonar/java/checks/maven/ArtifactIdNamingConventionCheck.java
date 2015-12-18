@@ -24,23 +24,20 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.tag.Tag;
-import org.sonar.maven.MavenFileScanner;
-import org.sonar.maven.MavenFileScannerContext;
-import org.sonar.maven.model.LocatedAttribute;
+import org.sonar.maven.model.maven2.MavenProject;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.regex.Pattern;
-
 @Rule(
-  key = "S3420",
+  key = ArtifactIdNamingConventionCheck.KEY,
   name = "Artifact ids should follow a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION, Tag.MAVEN})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class ArtifactIdNamingConventionCheck implements MavenFileScanner {
+public class ArtifactIdNamingConventionCheck extends AbstractNamingConvention {
 
+  public static final String KEY = "S3420";
   private static final String DEFAULT_REGEX = "[a-z][a-z-0-9]+";
 
   @RuleProperty(
@@ -49,21 +46,19 @@ public class ArtifactIdNamingConventionCheck implements MavenFileScanner {
     defaultValue = "" + DEFAULT_REGEX)
   public String regex = DEFAULT_REGEX;
 
-  private Pattern pattern = null;
+  @Override
+  protected String getRegex() {
+    return regex;
+  }
 
   @Override
-  public void scanFile(MavenFileScannerContext context) {
-    if (pattern == null) {
-      try {
-        pattern = Pattern.compile(regex, Pattern.DOTALL);
-      } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException("[S3420] Unable to compile the regular expression: " + regex, e);
-      }
-    }
-    LocatedAttribute artifactId = context.getMavenProject().getArtifactId();
-    if (artifactId != null && !pattern.matcher(artifactId.getValue()).matches()) {
-      context.reportIssue(this, artifactId, "Update this \"artifactId\" to match the provided regular expression: '" + regex + "'");
-    }
+  protected String getRuleKey() {
+    return KEY;
+  }
+
+  @Override
+  protected NamedLocatedAttribute getTargetedLocatedAttribute(MavenProject mavenProject) {
+    return new NamedLocatedAttribute("artifactId", mavenProject.getArtifactId());
   }
 
 }
