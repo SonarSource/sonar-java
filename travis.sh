@@ -28,6 +28,7 @@ CI)
     # integration of jacoco report is quite memory-consuming
     #scm.forceReloadAll: force scm reload to fix blame issue on some files (should be removed at some point)
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
+    git fetch --unshallow
     mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify -Pcoverage-per-test sonar:sonar -B -e -V \
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.login=$SONAR_TOKEN \
