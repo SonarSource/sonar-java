@@ -76,7 +76,7 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
 
   }
 
-  private boolean isConstructor(Symbol symbol) {
+  private static boolean isConstructor(Symbol symbol) {
     return symbol.isMethodSymbol() && "<init>".equals(symbol.name());
   }
 
@@ -87,11 +87,11 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
     }
   }
 
-  private boolean isDeprecatedClassTree(Tree tree) {
+  private static boolean isDeprecatedMethod(Tree tree) {
     return tree.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && ((MethodTree) tree).symbol().isDeprecated();
   }
 
-  private boolean isDeprecatedMethod(Tree tree) {
+  private static boolean isDeprecatedClassTree(Tree tree) {
     return tree.is(Tree.Kind.CLASS, Tree.Kind.ENUM, Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE) && ((ClassTree) tree).symbol().isDeprecated();
   }
 }
