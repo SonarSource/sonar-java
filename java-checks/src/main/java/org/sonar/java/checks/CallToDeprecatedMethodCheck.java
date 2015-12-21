@@ -61,7 +61,7 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.IDENTIFIER)) {
       Symbol symbol = ((IdentifierTree) tree).symbol();
-      if (symbol.isDeprecated() && nestedDeprecationLevel == 0) {
+      if (isDeprecated(symbol) && nestedDeprecationLevel == 0) {
         String name;
         if (isConstructor(symbol)) {
           name = symbol.owner().name();
@@ -74,6 +74,10 @@ public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
       nestedDeprecationLevel++;
     }
 
+  }
+
+  private static boolean isDeprecated(Symbol symbol) {
+    return symbol.isDeprecated() || (isConstructor(symbol) && symbol.owner().isDeprecated());
   }
 
   private static boolean isConstructor(Symbol symbol) {
