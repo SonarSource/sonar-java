@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -32,6 +33,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -104,57 +106,93 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     }
     expectedLevel += indentationLevel;
     isBlockAlreadyReported = false;
-    checkCaseGroup(tree);
-    checkClassTree(tree);
-    checkBlock(tree);
-  }
 
-  private void checkCaseGroup(Tree tree) {
-    if (tree.is(Kind.CASE_GROUP)) {
-      List<CaseLabelTree> labels = ((CaseGroupTree) tree).labels();
-      if (labels.size() >= 2) {
-        CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
-        lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(previousCaseLabelTree).line();
-      }
-      checkIndentation(((CaseGroupTree) tree).body());
+    switch (tree.kind()) {
+      case CLASS:
+      case ENUM:
+      case INTERFACE:
+      case ANNOTATION_TYPE:
+        checkClass((ClassTree) tree);
+        break;
+      case CASE_GROUP:
+        checkCaseGroup((CaseGroupTree) tree);
+        break;
+      case BLOCK:
+        checkBlock((BlockTree) tree);
+        break;
+      default:
+        break;
     }
   }
 
-  private void checkClassTree(Tree tree) {
-    if (isClassTree(tree)) {
-      ClassTree classTree = (ClassTree) tree;
-      // Exclude anonymous classes
-      if (classTree.simpleName() != null) {
-        checkIndentation(classTree.members());
-      }
+  private void checkClass(ClassTree classTree) {
+    // Exclude anonymous classes
+    if (classTree.simpleName() != null) {
+      checkIndentation(classTree.members());
     }
   }
 
-  private void checkBlock(Tree tree) {
-    if (tree.is(Kind.BLOCK)) {
-      if (tree.parent().is(Kind.LAMBDA_EXPRESSION)) {
-        expectedLevel += indentationLevel;
-      }
-      checkIndentation(((BlockTree) tree).body());
-      if (tree.parent().is(Kind.LAMBDA_EXPRESSION)) {
-        expectedLevel -= indentationLevel;
-      }
+  private void checkBlock(BlockTree blockTree) {
+    adjustBlockForExceptionalParents(blockTree.parent());
+    checkIndentation(blockTree.body());
+  }
+
+  private void checkCaseGroup(CaseGroupTree tree) {
+    List<CaseLabelTree> labels = tree.labels();
+    if (labels.size() >= 2) {
+      CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
+      lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(previousCaseLabelTree).line();
+    }
+    List<StatementTree> body = tree.body();
+    List<StatementTree> newBody = body;
+    int bodySize = body.size();
+    if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
+      expectedLevel -= indentationLevel;
+      checkIndentation(body.get(0), Iterables.getLast(labels).colonToken().column() + 2);
+      newBody = body.subList(1, bodySize);
+    }
+    checkIndentation(newBody);
+    if (bodySize > 0 && body.get(0).is(Kind.BLOCK)) {
+      expectedLevel += indentationLevel;
+    }
+  }
+
+  private void adjustBlockForExceptionalParents(Tree parent) {
+    if (parent.is(Kind.CASE_GROUP)) {
+      expectedLevel -= indentationLevel;
+    } else if (parent.is(Kind.LAMBDA_EXPRESSION)) {
+      expectedLevel += indentationLevel;
+    }
+  }
+
+  private void restoreBlockForExceptionalParents(Tree parent) {
+    if (parent.is(Kind.CASE_GROUP)) {
+      expectedLevel += indentationLevel;
+    } else if (parent.is(Kind.LAMBDA_EXPRESSION)) {
+      expectedLevel -= indentationLevel;
     }
   }
 
   private void checkIndentation(List<? extends Tree> trees) {
     for (Tree tree : trees) {
-      SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
-      if (firstSyntaxToken.column() != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
-        addIssue(tree, "Make this line start at column " + (expectedLevel + 1) + ".");
-        isBlockAlreadyReported = true;
-      }
-      lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
+      checkIndentation(tree, expectedLevel);
     }
+  }
+
+  private void checkIndentation(Tree tree, int expectedLevel) {
+    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
+    if (firstSyntaxToken.column() != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
+      addIssue(tree, "Make this line start at column " + (expectedLevel + 1) + ".");
+      isBlockAlreadyReported = true;
+    }
+    lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
   }
 
   @Override
   public void leaveNode(Tree tree) {
+    if (tree.is(Kind.BLOCK)) {
+      restoreBlockForExceptionalParents(tree.parent());
+    }
     expectedLevel -= indentationLevel;
     isBlockAlreadyReported = false;
     lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();

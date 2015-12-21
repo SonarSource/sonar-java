@@ -47,6 +47,9 @@ if (0) {                          // Compliant - already reported
     IntStream
       .range(1, 5)
       .map(a -> {
+        if (a == 5) {
+          a--;
+        }
          a += 1; // Noncompliant {{Make this line start at column 9.}}
         return a + 1;
       });
@@ -106,12 +109,30 @@ static class Baz {
     switch (foo) { // Compliant
     }
 
-    switch (foo) { // Compliant
+    switch (foo) {
       case 0:
       case 1:
-      case 2:
-      case 3:
+      case 2: {
+        new Object().toString();
+         new Object().toString(); // Noncompliant {{Make this line start at column 9.}}
         break;
+      }
+      case 3: {
+        new Object().toString();
+      }
+      new Object().toString();
+      break;
+      case 4:
+      { // Noncompliant {{Make this line start at column 15.}}
+        new Object().toString();
+        break;
+      }
+      case 5:
+        if (abs(x - z) == 0.5) {
+          return x + copySign(0.5, x);
+        } else {
+          return z;
+        }
     }
 
     switch (foo) {
