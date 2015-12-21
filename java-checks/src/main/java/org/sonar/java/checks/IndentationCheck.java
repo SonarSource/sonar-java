@@ -104,15 +104,23 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     }
     expectedLevel += indentationLevel;
     isBlockAlreadyReported = false;
+    checkCaseGroup(tree);
+    checkClassTree(tree);
+    checkBlock(tree);
+  }
 
+  private void checkCaseGroup(Tree tree) {
     if (tree.is(Kind.CASE_GROUP)) {
       List<CaseLabelTree> labels = ((CaseGroupTree) tree).labels();
       if (labels.size() >= 2) {
         CaseLabelTree previousCaseLabelTree = labels.get(labels.size() - 2);
         lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(previousCaseLabelTree).line();
       }
+      checkIndentation(((CaseGroupTree) tree).body());
     }
+  }
 
+  private void checkClassTree(Tree tree) {
     if (isClassTree(tree)) {
       ClassTree classTree = (ClassTree) tree;
       // Exclude anonymous classes
@@ -120,9 +128,9 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
         checkIndentation(classTree.members());
       }
     }
-    if (tree.is(Kind.CASE_GROUP)) {
-      checkIndentation(((CaseGroupTree) tree).body());
-    }
+  }
+
+  private void checkBlock(Tree tree) {
     if (tree.is(Kind.BLOCK)) {
       if (tree.parent().is(Kind.LAMBDA_EXPRESSION)) {
         expectedLevel += indentationLevel;
