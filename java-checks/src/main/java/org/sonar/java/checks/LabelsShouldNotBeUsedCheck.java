@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -48,7 +49,7 @@ public class LabelsShouldNotBeUsedCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    addIssue(tree, "Refactor the code to remove this label and the need for it.");
+    reportIssue(((LabeledStatementTree) tree).label(), "Refactor the code to remove this label and the need for it.");
   }
 
 }

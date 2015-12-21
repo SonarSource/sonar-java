@@ -112,7 +112,7 @@ public class ParameterReassignedToCheck extends BaseTreeVisitor implements JavaF
       IdentifierTree identifier = (IdentifierTree) tree;
       Symbol reference = identifier.symbol();
       if (reference.isVariableSymbol() && variables.contains(reference)) {
-        context.addIssue(identifier, this, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
+        context.reportIssue(this, identifier, "Introduce a new variable instead of reusing the parameter \"" + identifier.name() + "\".");
       }
     }
   }

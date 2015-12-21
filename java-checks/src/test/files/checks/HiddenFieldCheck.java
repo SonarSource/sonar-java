@@ -4,7 +4,7 @@ public class HiddenFieldCheck extends MyBaseClass {
   public int bar;
 
   {
-    int foo = this.foo; // Noncompliant {{Rename "foo" which hides the field declared at line 3.}}
+    int foo = this.foo; // Noncompliant [[sc=9;ec=12]] {{Rename "foo" which hides the field declared at line 3.}}
     int ok = 0; // Compliant
     System.out.println(foo + ok);
   }

@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -53,15 +54,20 @@ public class MethodNameSameAsClassCheck extends BaseTreeVisitor implements JavaF
 
   @Override
   public void visitClass(ClassTree tree) {
+    super.visitClass(tree);
+    IdentifierTree classSimpleName = tree.simpleName();
+    if (classSimpleName == null) {
+      return;
+    }
+    String className = classSimpleName.name();
     for (Tree member : tree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
-        MethodTree method = (MethodTree) member;
-        if (tree.simpleName()!=null && method.simpleName().name().equals(tree.simpleName().name())) {
-          context.addIssue(method, this, "Rename this method to prevent any misunderstanding or make it a constructor.");
+        IdentifierTree simpleName = ((MethodTree) member).simpleName();
+        if (className.equals(simpleName.name())) {
+          context.reportIssue(this, simpleName, "Rename this method to prevent any misunderstanding or make it a constructor.");
         }
       }
     }
-    super.visitClass(tree);
   }
 
 }

@@ -43,16 +43,18 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
 
-
+  private static final String MESSAGE = "Either remove or fill this block of code.";
   private boolean isMethodBlock;
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR,
-        Tree.Kind.BLOCK,
-        Tree.Kind.INITIALIZER,
-        Tree.Kind.STATIC_INITIALIZER,
-        Tree.Kind.SWITCH_STATEMENT);
+    return ImmutableList.of(
+      Tree.Kind.METHOD,
+      Tree.Kind.CONSTRUCTOR,
+      Tree.Kind.BLOCK,
+      Tree.Kind.INITIALIZER,
+      Tree.Kind.STATIC_INITIALIZER,
+      Tree.Kind.SWITCH_STATEMENT);
   }
 
   @Override
@@ -60,7 +62,7 @@ public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
     if (tree.is(Tree.Kind.SWITCH_STATEMENT)) {
       SwitchStatementTree switchStatementTree = (SwitchStatementTree) tree;
       if (switchStatementTree.cases().isEmpty()) {
-        addIssue(switchStatementTree, "Either remove or fill this block of code.");
+        reportIssue(switchStatementTree.openBraceToken(), MESSAGE);
       }
     } else if (tree.is(Tree.Kind.METHOD) || tree.is(Tree.Kind.CONSTRUCTOR)) {
       isMethodBlock = true;
@@ -68,7 +70,7 @@ public class EmptyBlock_S00108_Check extends SubscriptionBaseVisitor {
       if (isMethodBlock) {
         isMethodBlock = false;
       } else if (!hasStatements((BlockTree) tree) && !hasCommentInside((BlockTree) tree)) {
-        addIssue(tree, "Either remove or fill this block of code.");
+        reportIssue(((BlockTree) tree).openBraceToken(), MESSAGE);
       }
     }
   }

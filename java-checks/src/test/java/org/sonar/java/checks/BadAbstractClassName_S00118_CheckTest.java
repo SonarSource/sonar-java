@@ -26,7 +26,9 @@ public class BadAbstractClassName_S00118_CheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BadAbstractClassName.java", new BadAbstractClassName_S00118_Check());
+    BadAbstractClassName_S00118_Check check = new BadAbstractClassName_S00118_Check();
+    JavaCheckVerifier.verify("src/test/files/checks/BadAbstractClassName.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/BadAbstractClassName.java", check);
   }
 
 }

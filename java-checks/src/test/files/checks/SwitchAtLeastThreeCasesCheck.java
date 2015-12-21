@@ -1,6 +1,6 @@
 class A {
   public void f() {
-    switch (variable) { // Noncompliant {{Replace this "switch" statement by "if" statements to increase readability.}}
+    switch (variable) { // Noncompliant [[sc=5;ec=11]] {{Replace this "switch" statement by "if" statements to increase readability.}}
       case 0:
         doSomething();
         break;

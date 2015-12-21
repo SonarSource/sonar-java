@@ -52,27 +52,27 @@ public class BooleanLiteralCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    String literal;
+    LiteralTree literal;
     if(tree.is(Kind.LOGICAL_COMPLEMENT)) {
       literal = getBooleanLiteral(((UnaryExpressionTree)tree).expression());
     } else {
       literal = getBooleanLiteralOperands((BinaryExpressionTree)tree);
     }
     if(literal != null) {
-      addIssue(tree, "Remove the literal \"" + literal + "\" boolean value.");
+      reportIssue(literal, "Remove the literal \"" + literal.value() + "\" boolean value.");
     }
   }
 
-  private static String getBooleanLiteral(Tree tree) {
-    String result = null;
+  private static LiteralTree getBooleanLiteral(Tree tree) {
+    LiteralTree result = null;
     if (tree.is(Kind.BOOLEAN_LITERAL)) {
-      result = ((LiteralTree) tree).value();
+      result = (LiteralTree) tree;
     }
     return result;
   }
 
-  private static String getBooleanLiteralOperands(BinaryExpressionTree tree) {
-    String result = getBooleanLiteral(tree.leftOperand());
+  private static LiteralTree getBooleanLiteralOperands(BinaryExpressionTree tree) {
+    LiteralTree result = getBooleanLiteral(tree.leftOperand());
     if (result == null) {
       result = getBooleanLiteral(tree.rightOperand());
     }

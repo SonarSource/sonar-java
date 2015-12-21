@@ -5,7 +5,7 @@ class A {
     Closer closer = Closer.create();
     try {
     } catch (RuntimeException e) {    // Compliant
-    } catch (Throwable e) {           // Noncompliant {{Catch Exception instead of Throwable.}}
+    } catch (Throwable e) {           // Noncompliant [[sc=14;ec=23]] {{Catch Exception instead of Throwable.}}
     } catch (Error e) {               // Noncompliant {{Catch Exception instead of Error.}}
     } catch (StackOverflowError e) {  // Compliant
     } catch (Foo |

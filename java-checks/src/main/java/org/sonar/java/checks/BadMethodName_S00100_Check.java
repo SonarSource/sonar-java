@@ -75,7 +75,7 @@ public class BadMethodName_S00100_Check extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (isNotOverriden(methodTree) && !pattern.matcher(methodTree.simpleName().name()).matches()) {
-      addIssue(tree, "Rename this method name to match the regular expression '" + format + "'.");
+      reportIssue(methodTree.simpleName(), "Rename this method name to match the regular expression '" + format + "'.");
     }
   }
 

@@ -1,5 +1,5 @@
 class A {
-  private final int f1 = 0;                             // Noncompliant {{Make this final field static too.}}
+  private final int f1 = 0;                             // Noncompliant [[sc=21;ec=23]] {{Make this final field static too.}}
   private final static int f2 = 0;                      // Compliant
   private static final int f3 = 0;                      // Compliant
   public final int f4 = MyEnumOrInterface.MY_CONSTANT;  // Noncompliant

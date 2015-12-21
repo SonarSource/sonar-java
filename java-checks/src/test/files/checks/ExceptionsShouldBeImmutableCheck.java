@@ -1,5 +1,5 @@
 class FooException extends RuntimeException {
-  int foo; // Noncompliant {{Make this "foo" field final.}}
+  int foo; // Noncompliant [[sc=7;ec=10]] {{Make this "foo" field final.}}
   public final int bar;
 
   int a = 42, // Noncompliant

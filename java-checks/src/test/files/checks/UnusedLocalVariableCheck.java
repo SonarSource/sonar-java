@@ -3,7 +3,7 @@ class Foo {
   int unusedField;
 
   public void f(int unusedParameter) {
-    int unusedLocalVariable; // Noncompliant {{Remove this unused "unusedLocalVariable" local variable.}}
+    int unusedLocalVariable; // Noncompliant [[sc=9;=ec=28]] {{Remove this unused "unusedLocalVariable" local variable.}}
 
     int usedLocalVariable = 42;
     System.out.println(usedLocalVariable);

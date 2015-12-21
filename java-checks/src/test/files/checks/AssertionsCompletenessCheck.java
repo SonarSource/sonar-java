@@ -15,7 +15,7 @@ class AssertionsCompleteness {
   @Test
   public void noncompliant() {
     // Fest
-    org.fest.assertions.Assertions.assertThat(false).as("foo"); // Noncompliant {{Complete the assertion.}}
+    org.fest.assertions.Assertions.assertThat(false).as("foo"); // Noncompliant [[sc=5;ec=46]] {{Complete the assertion.}}
     org.fest.assertions.Assertions.assertThat(false); // Noncompliant
     Assertions.assertThat(false); // Noncompliant
 

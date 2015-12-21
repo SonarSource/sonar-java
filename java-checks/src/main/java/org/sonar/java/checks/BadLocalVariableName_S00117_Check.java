@@ -93,7 +93,7 @@ public class BadLocalVariableName_S00117_Check  extends BaseTreeVisitor implemen
   @Override
   public void visitVariable(VariableTree tree) {
     if (!pattern.matcher(tree.simpleName().name()).matches()) {
-      context.addIssue(tree, this, "Rename this local variable name to match the regular expression '" + format + "'.");
+      context.reportIssue(this, tree.simpleName(), "Rename this local variable name to match the regular expression '" + format + "'.");
     }
     super.visitVariable(tree);
   }

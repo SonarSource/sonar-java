@@ -1,5 +1,5 @@
 class A implements Foo,
-                   Enumeration, // Noncompliant {{Implement Iterator rather than Enumeration.}}
+                   Enumeration, // Noncompliant [[sc=20;ec=31]] {{Implement Iterator rather than Enumeration.}}
                    Iterable {
 }
 

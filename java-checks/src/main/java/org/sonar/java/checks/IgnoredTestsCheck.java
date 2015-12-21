@@ -48,8 +48,8 @@ public class IgnoredTestsCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if(methodTree.symbol().metadata().isAnnotatedWith("org.junit.Ignore")) {
-      addIssue(tree, "Fix or remove this skipped unit test");
+    if (methodTree.symbol().metadata().isAnnotatedWith("org.junit.Ignore")) {
+      reportIssue(methodTree.simpleName(), "Fix or remove this skipped unit test");
     }
   }
 }

@@ -63,7 +63,7 @@ public class HardcodedIpCheck extends BaseTreeVisitor implements JavaFileScanner
       if (IP.matches()) {
         String ip = IP.group(1);
         if (areAllBelow256(Splitter.on('.').split(ip))) {
-          context.addIssue(tree, this, "Make this IP \"" + ip + "\" address configurable.");
+          context.reportIssue(this, tree, "Make this IP \"" + ip + "\" address configurable.");
         }
       }
     }

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -50,8 +51,9 @@ public class CloneOverrideCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (methodTree.parameters().isEmpty() && "clone".equals(methodTree.simpleName().name())) {
-      addIssue(tree, "Remove this \"clone\" implementation; use a copy constructor or copy factory instead.");
+    IdentifierTree identifierTree = methodTree.simpleName();
+    if (methodTree.parameters().isEmpty() && "clone".equals(identifierTree.name())) {
+      reportIssue(identifierTree, "Remove this \"clone\" implementation; use a copy constructor or copy factory instead.");
     }
   }
 }

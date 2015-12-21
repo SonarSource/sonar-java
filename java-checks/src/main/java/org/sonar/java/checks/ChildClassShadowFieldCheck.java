@@ -64,25 +64,26 @@ public class ChildClassShadowFieldCheck extends SubscriptionBaseVisitor {
       Symbol.TypeSymbol superclassSymbol = classTree.superClass().symbolType().symbol();
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.VARIABLE)) {
-          String fieldName = ((VariableTree) member).simpleName().name();
+          VariableTree variableTree = (VariableTree) member;
+          String fieldName = variableTree.simpleName().name();
           if (!IGNORED_FIELDS.contains(fieldName)) {
-            checkForIssue(superclassSymbol, member, fieldName);
+            checkForIssue(superclassSymbol, variableTree, fieldName);
           }
         }
       }
     }
   }
 
-  private void checkForIssue(Symbol.TypeSymbol classSymbol, Tree memberTree, String fieldName) {
+  private void checkForIssue(Symbol.TypeSymbol classSymbol, VariableTree variableTree, String fieldName) {
     for (Symbol.TypeSymbol symbol = classSymbol; symbol != null; symbol = getSuperclass(symbol)) {
       for (Symbol member : symbol.memberSymbols()) {
         if (member.isVariableSymbol() && !member.isPrivate()) {
           if (member.name().equals(fieldName)) {
-            addIssue(memberTree, String.format("\"%s\" is the name of a field in \"%s\".", fieldName, symbol.name()));
+            reportIssue(variableTree.simpleName(), String.format("\"%s\" is the name of a field in \"%s\".", fieldName, symbol.name()));
             return;
           }
           if (member.name().equalsIgnoreCase(fieldName)) {
-            addIssue(memberTree, String.format("\"%s\" differs only by case from \"%s\" in \"%s\".", fieldName, member.name(), symbol.name()));
+            reportIssue(variableTree.simpleName(), String.format("\"%s\" differs only by case from \"%s\" in \"%s\".", fieldName, member.name(), symbol.name()));
             return;
           }
         }

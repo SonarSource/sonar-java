@@ -68,7 +68,7 @@ public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFi
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null && !pattern.matcher(tree.simpleName().name()).matches()) {
-      context.addIssue(tree, this, "Rename this class name to match the regular expression '" + format + "'.");
+      context.reportIssue(this, tree.simpleName(), "Rename this class name to match the regular expression '" + format + "'.");
     }
 
     super.visitClass(tree);

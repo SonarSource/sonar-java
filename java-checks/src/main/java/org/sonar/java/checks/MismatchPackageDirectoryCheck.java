@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -56,13 +56,14 @@ public class MismatchPackageDirectoryCheck extends BaseTreeVisitor implements Ja
 
   @Override
   public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageDeclaration() != null) {
-      ExpressionTree packageNameExpression = tree.packageDeclaration().packageName();
-      String packageName = PackageUtils.packageName(tree.packageDeclaration(), File.separator);
+    PackageDeclarationTree packageDeclaration = tree.packageDeclaration();
+    if (packageDeclaration != null) {
+      String packageName = PackageUtils.packageName(packageDeclaration, File.separator);
       File javaFile = context.getFile();
       String dir = javaFile.getParent();
       if (!dir.endsWith(packageName)) {
-        context.addIssue(packageNameExpression, this, "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
+        context.reportIssue(
+          this, packageDeclaration.packageName(), "This file \"" + javaFile.getName() + "\" should be located in \"" + packageName + "\" directory, not in \"" + dir + "\".");
       }
     }
   }

@@ -1,6 +1,6 @@
 class A {
   public void f() {
-    var == false;       // Noncompliant {{Remove the literal "false" boolean value.}}
+    var == false;       // Noncompliant [[sc=12;ec=17]] {{Remove the literal "false" boolean value.}}
     var == true;        // Noncompliant {{Remove the literal "true" boolean value.}}
     var != false;       // Noncompliant {{Remove the literal "false" boolean value.}}
     var != true;        // Noncompliant {{Remove the literal "true" boolean value.}}

@@ -66,7 +66,7 @@ public class CallSuperInTestCaseCheck extends SubscriptionBaseVisitor {
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     boolean isMethodInJunit3 = isWithinJunit3TestCase(methodSymbol) && isSetUpOrTearDown(methodSymbol);
     if (isMethodInJunit3 && requiresSuperCall(methodSymbol) && !callSuperOnOverride(methodTree.block(), methodSymbol)) {
-      addIssue(tree, String.format("Add a \"super.%s()\" call to this method.", methodSymbol.name()));
+      reportIssue(methodTree.simpleName(), String.format("Add a \"super.%s()\" call to this method.", methodSymbol.name()));
     }
   }
 

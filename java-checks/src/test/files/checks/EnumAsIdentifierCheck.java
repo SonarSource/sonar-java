@@ -1,6 +1,6 @@
 class A {
   int foo = 0;
-  int enum = 0; // Noncompliant {{Use a different name than "enum".}}
+  int enum = 0; // Noncompliant [[sc=7;ec=11]] {{Use a different name than "enum".}}
 
   enum mynum {RED, GREEN, YELLOW};
 

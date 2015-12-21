@@ -52,8 +52,9 @@ public class ExceptionsShouldBeImmutableCheck extends SubscriptionBaseVisitor {
     ClassTree classTree = (ClassTree) tree;
     if (isException(classTree)) {
       for (Tree member : classTree.members()) {
-        if(member.is(Tree.Kind.VARIABLE) && !isFinal((VariableTree) member)){
-          addIssue(member, "Make this \"" + ((VariableTree) member).simpleName().name()+ "\" field final.");
+        if (member.is(Tree.Kind.VARIABLE) && !isFinal((VariableTree) member)) {
+          IdentifierTree simpleName = ((VariableTree) member).simpleName();
+          reportIssue(simpleName, "Make this \"" + simpleName.name() + "\" field final.");
         }
       }
     }

@@ -62,7 +62,7 @@ public class ImplementsEnumerationCheck extends SubscriptionBaseVisitor {
         identifierTree = (IdentifierTree) ((ParameterizedTypeTree) superInterface).type();
       }
       if (isEnumeration(identifierTree)) {
-        addIssue(superInterface, "Implement Iterator rather than Enumeration.");
+        reportIssue(superInterface, "Implement Iterator rather than Enumeration.");
       }
     }
   }

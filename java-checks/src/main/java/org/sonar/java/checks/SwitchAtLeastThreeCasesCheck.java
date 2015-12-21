@@ -57,7 +57,7 @@ public class SwitchAtLeastThreeCasesCheck extends BaseTreeVisitor implements Jav
       count += caseGroup.labels().size();
     }
     if (count < 3) {
-      context.addIssue(tree, this, "Replace this \"switch\" statement by \"if\" statements to increase readability.");
+      context.reportIssue(this, tree.switchKeyword(), "Replace this \"switch\" statement by \"if\" statements to increase readability.");
     }
 
     super.visitSwitchStatement(tree);

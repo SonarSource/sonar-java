@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -53,8 +54,9 @@ public class FieldModifierCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
-      if(member.is(Tree.Kind.VARIABLE) && hasNoVisibilityModifier((VariableTree) member)) {
-        addIssue(member, "Explicitly declare the visibility for \""+((VariableTree) member).simpleName().name()+"\".");
+      if (member.is(Tree.Kind.VARIABLE) && hasNoVisibilityModifier((VariableTree) member)) {
+        IdentifierTree simpleName = ((VariableTree) member).simpleName();
+        reportIssue(simpleName, "Explicitly declare the visibility for \"" + simpleName.name() + "\".");
       }
     }
   }

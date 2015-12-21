@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
@@ -68,9 +69,9 @@ public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    String name = ((TypeParameterTree) tree).identifier().name();
-    if (!pattern.matcher(name).matches()) {
-      addIssue(tree, "Rename this generic name to match the regular expression '" + format + "'.");
+    IdentifierTree identifier = ((TypeParameterTree) tree).identifier();
+    if (!pattern.matcher(identifier.name()).matches()) {
+      reportIssue(identifier, "Rename this generic name to match the regular expression '" + format + "'.");
     }
   }
 }

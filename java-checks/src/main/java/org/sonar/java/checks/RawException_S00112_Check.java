@@ -81,7 +81,7 @@ public class RawException_S00112_Check extends BaseTreeVisitor implements JavaFi
 
   private void checkExceptionAndRaiseIssue(Tree tree) {
     if (isRawException(tree)) {
-      context.addIssue(tree, this, "Define and throw a dedicated exception instead of using a generic one.");
+      context.reportIssue(this, tree, "Define and throw a dedicated exception instead of using a generic one.");
     }
   }
 

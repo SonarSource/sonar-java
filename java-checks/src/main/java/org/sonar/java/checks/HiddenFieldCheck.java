@@ -119,7 +119,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       VariableTree hiddenVariable = variables.get(identifier);
       if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
         int line = FirstSyntaxTokenFinder.firstSyntaxToken(hiddenVariable).line();
-        addIssue(variableTree, "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
+        reportIssue(variableTree.simpleName(), "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }
     }

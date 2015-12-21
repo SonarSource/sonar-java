@@ -72,7 +72,7 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
       if (member.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) member;
         if (staticNonFinal(variableTree) && hasConstantInitializer(variableTree) && !isObjectInInnerClass(variableTree)) {
-          addIssue(variableTree, "Make this final field static too.");
+          reportIssue(variableTree.simpleName(), "Make this final field static too.");
         }
       }
     }

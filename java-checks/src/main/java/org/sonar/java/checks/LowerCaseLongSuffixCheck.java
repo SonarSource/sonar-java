@@ -40,7 +40,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class LowerCaseLongSuffixCheck extends SubscriptionBaseVisitor{
+public class LowerCaseLongSuffixCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -50,8 +50,8 @@ public class LowerCaseLongSuffixCheck extends SubscriptionBaseVisitor{
   @Override
   public void visitNode(Tree tree) {
     LiteralTree literalTree = (LiteralTree) tree;
-    if(literalTree.value().endsWith("l")){
-      addIssue(tree, "Replace this lower case \"l\" long suffix by an upper case \"L\".");
+    if (literalTree.value().endsWith("l")) {
+      reportIssue(tree, "Replace this lower case \"l\" long suffix by an upper case \"L\".");
     }
   }
 }

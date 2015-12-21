@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -67,14 +68,15 @@ public class BadAbstractClassName_S00118_Check extends BaseTreeVisitor implement
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
-      if (pattern.matcher(tree.simpleName().name()).matches()) {
+    IdentifierTree simpleName = tree.simpleName();
+    if (tree.is(Tree.Kind.CLASS) && simpleName != null) {
+      if (pattern.matcher(simpleName.name()).matches()) {
         if (!isAbstract(tree)) {
-          context.addIssue(tree, this, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.");
+          context.reportIssue(this, simpleName, "Make this class abstract or rename it, since it matches the regular expression '" + format + "'.");
         }
       } else {
         if (isAbstract(tree)) {
-          context.addIssue(tree, this, "Rename this abstract class name to match the regular expression '" + format + "'.");
+          context.reportIssue(this, simpleName, "Rename this abstract class name to match the regular expression '" + format + "'.");
         }
       }
     }

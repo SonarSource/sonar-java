@@ -5,7 +5,7 @@ class B {
     } catch (Exception e) {
       return; // Compliant
     } finally {
-      return; // Noncompliant {{Remove this return statement from this finally block.}}
+      return; // Noncompliant [[sc=7;ec=13]] {{Remove this return statement from this finally block.}}
     }
 
     try {

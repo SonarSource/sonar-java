@@ -66,7 +66,7 @@ public class CatchIllegalMonitorStateExceptionCheck extends SubscriptionBaseVisi
 
   private void checkExceptionType(TypeTree exceptionTypeTree) {
     if (exceptionTypeTree.symbolType().is("java.lang.IllegalMonitorStateException")) {
-      addIssue(exceptionTypeTree, "Refactor this piece of code to not catch IllegalMonitorStateException");
+      reportIssue(exceptionTypeTree, "Refactor this piece of code to not catch IllegalMonitorStateException");
     }
   }
 

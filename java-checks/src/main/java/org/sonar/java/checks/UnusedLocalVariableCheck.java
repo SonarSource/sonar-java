@@ -130,7 +130,8 @@ public class UnusedLocalVariableCheck extends SubscriptionBaseVisitor {
     for (VariableTree variableTree : variables) {
       Symbol symbol = variableTree.symbol();
       if (symbol.usages().size() == assignments.get(symbol).size()) {
-        addIssue(variableTree, "Remove this unused \"" + variableTree.simpleName() + "\" local variable.");
+        IdentifierTree simpleName = variableTree.simpleName();
+        reportIssue(simpleName, "Remove this unused \"" + simpleName + "\" local variable.");
       }
     }
   }

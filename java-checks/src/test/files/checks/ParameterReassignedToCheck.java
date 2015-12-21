@@ -3,7 +3,7 @@ class A {
   }
 
   public void f(int a) {
-    a = 0; // Noncompliant {{Introduce a new variable instead of reusing the parameter "a".}}
+    a = 0; // Noncompliant [[sc=5;ec=6]] {{Introduce a new variable instead of reusing the parameter "a".}}
     a += 1; // Noncompliant {{Introduce a new variable instead of reusing the parameter "a".}}
     int b = a;
 

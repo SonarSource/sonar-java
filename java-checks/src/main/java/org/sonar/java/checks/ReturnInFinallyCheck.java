@@ -44,7 +44,7 @@ import java.util.LinkedList;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("30min")
-public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner{
+public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Deque<Boolean> isInFinally = new LinkedList<>();
   private JavaFileScannerContext context;
@@ -61,7 +61,7 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
     scan(tree.resources());
     scan(tree.block());
     scan(tree.catches());
-    if(tree.finallyBlock()!=null) {
+    if (tree.finallyBlock() != null) {
       isInFinally.push(true);
       scan(tree.finallyBlock());
       isInFinally.pop();
@@ -77,8 +77,8 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
-    if(isInFinally()) {
-      context.addIssue(tree, this, "Remove this return statement from this finally block.");
+    if (isInFinally()) {
+      context.reportIssue(this, tree.returnKeyword(), "Remove this return statement from this finally block.");
     }
     super.visitReturnStatement(tree);
   }

@@ -13,7 +13,7 @@ class Base {
 }
 
 class Derived11 extends Base {
-  boolean baseField; // Noncompliant {{"baseField" is the name of a field in "Base".}}
+  boolean baseField; // Noncompliant [[sc=11;ec=20]] {{"baseField" is the name of a field in "Base".}}
 
   int BaseField; // Noncompliant {{"BaseField" differs only by case from "baseField" in "Base".}}
 

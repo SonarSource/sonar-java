@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import arg.goo;  // Compliant
-import arg.foo;; // Noncompliant {{Remove this empty statement.}}
+import arg.foo;; // Noncompliant [[sc=16;ec=17]] {{Remove this empty statement.}}
 ; // Noncompliant {{Remove this empty statement.}} 
 
 abstract class Foo {

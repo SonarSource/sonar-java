@@ -50,7 +50,7 @@ public class UnusedLabelCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic() && ((LabeledStatementTree) tree).symbol().usages().isEmpty()) {
-      addIssue(tree, "Remove this unused label.");
+      reportIssue(((LabeledStatementTree) tree).label(), "Remove this unused label.");
     }
   }
 }

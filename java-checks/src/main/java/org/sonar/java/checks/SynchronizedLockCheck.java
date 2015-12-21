@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -51,9 +51,9 @@ public class SynchronizedLockCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Type syncArgumentType = ((SynchronizedStatementTree) tree).expression().symbolType();
-    if (syncArgumentType.isSubtypeOf("java.util.concurrent.locks.Lock")) {
-      addIssue(tree, "Synchronize on this \"Lock\" object using \"acquire/release\".");
+    ExpressionTree expression = ((SynchronizedStatementTree) tree).expression();
+    if (expression.symbolType().isSubtypeOf("java.util.concurrent.locks.Lock")) {
+      reportIssue(expression, "Synchronize on this \"Lock\" object using \"acquire/release\".");
     }
   }
 

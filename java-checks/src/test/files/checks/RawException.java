@@ -1,11 +1,11 @@
 public class Example {
 
-  public void throws_Throwable() throws Throwable { // Noncompliant
+  public void throws_Throwable() throws Throwable { // Noncompliant [[sc=41;ec=50]]
     throw new Throwable(); // Noncompliant
   }
 
   public void throws_Error() {
-    throw new Error(); // Noncompliant
+    throw new Error(); // Noncompliant [[sc=15;ec=20]]
   }
 
   public void throws_Exception() throws Exception { // Noncompliant {{Define and throw a dedicated exception instead of using a generic one.}}

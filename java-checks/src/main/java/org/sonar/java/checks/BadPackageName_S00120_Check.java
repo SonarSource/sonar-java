@@ -70,7 +70,7 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
     if (tree.packageDeclaration() != null) {
       String name = PackageUtils.packageName(tree.packageDeclaration(), ".");
       if (!pattern.matcher(name).matches()) {
-        context.addIssue(tree, this, "Rename this package name to match the regular expression '" + format + "'.");
+        context.reportIssue(this, tree.packageDeclaration().packageName(), "Rename this package name to match the regular expression '" + format + "'.");
       }
     }
   }

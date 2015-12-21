@@ -51,7 +51,7 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
   @Override
   public void visitLiteral(LiteralTree tree) {
     if (tree.is(Tree.Kind.INT_LITERAL) && isOctal(tree.value())) {
-      context.addIssue(tree, this, "Use decimal values instead of octal ones.");
+      context.reportIssue(this, tree, "Use decimal values instead of octal ones.");
     }
   }
 

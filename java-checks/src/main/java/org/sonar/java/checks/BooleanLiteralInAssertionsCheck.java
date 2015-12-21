@@ -62,13 +62,10 @@ public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
     for (int i = 0; i < arity; i++) {
       ExpressionTree booleanArg = mit.arguments().get(i);
       if (booleanArg.is(Tree.Kind.BOOLEAN_LITERAL)) {
-        raiseIssue(booleanArg);
+        reportIssue(booleanArg, "Remove or correct this assertion.");
         break;
       }
     }
   }
 
-  private void raiseIssue(ExpressionTree expressionTree) {
-    addIssue(expressionTree, "Remove or correct this assertion.");
-  }
 }

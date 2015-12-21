@@ -89,21 +89,21 @@ public class CustomSerializationMethodCheck extends SubscriptionBaseVisitor {
   private void checkNotStatic(MethodTree methodTree) {
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (methodSymbol.isStatic()) {
-      addIssue(methodTree, "The \"static\" modifier should not be applied to \"" + methodSymbol.name() + "\".");
+      reportIssue(methodTree.simpleName(), "The \"static\" modifier should not be applied to \"" + methodSymbol.name() + "\".");
     }
   }
 
   private void checkPrivate(MethodTree methodTree) {
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (!methodSymbol.isPrivate()) {
-      addIssue(methodTree, "Make \"" + methodSymbol.name() + "\" \"private\".");
+      reportIssue(methodTree.simpleName(), "Make \"" + methodSymbol.name() + "\" \"private\".");
     }
   }
 
   private void checkReturnType(MethodTree methodTree, String requiredReturnType) {
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     if (!methodSymbol.returnType().type().is(requiredReturnType)) {
-      addIssue(methodTree, "\"" + methodSymbol.name() + "\" should return \"" + requiredReturnType + "\".");
+      reportIssue(methodTree.simpleName(), "\"" + methodSymbol.name() + "\" should return \"" + requiredReturnType + "\".");
     }
   }
 

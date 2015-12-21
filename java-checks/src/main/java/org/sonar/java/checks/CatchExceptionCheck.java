@@ -62,7 +62,7 @@ public class CatchExceptionCheck extends SubscriptionBaseVisitor {
     for (CatchTree catchTree : tryStatement.catches()) {
       TypeTree catchType = catchTree.parameter().type();
       if (catchesException(catchType, tryStatement.block())) {
-        addIssue(catchType, "Catch a list of specific exception subtypes instead.");
+        reportIssue(catchType, "Catch a list of specific exception subtypes instead.");
       }
     }
   }

@@ -113,7 +113,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private boolean incompleteAssertion(MethodInvocationTree mit) {
     if (((FEST_LIKE_ASSERT_THAT.anyMatch(mit) && (mit.arguments().size() == 1)) || MOCKITO_VERIFY.matches(mit)) && !Boolean.TRUE.equals(chainedToAnyMethodButFestExclusions)) {
-      context.addIssue(mit, this, "Complete the assertion.");
+      context.reportIssue(this, mit.methodSelect(), "Complete the assertion.");
       return true;
     }
     return false;

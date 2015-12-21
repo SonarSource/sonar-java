@@ -46,6 +46,6 @@ public class EmptyStatementUsageCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    addIssue(tree, "Remove this empty statement.");
+    reportIssue(tree, "Remove this empty statement.");
   }
 }

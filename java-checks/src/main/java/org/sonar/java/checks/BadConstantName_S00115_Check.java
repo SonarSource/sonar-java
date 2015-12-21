@@ -94,7 +94,7 @@ public class BadConstantName_S00115_Check extends SubscriptionBaseVisitor {
 
   private void checkName(VariableTree variableTree) {
     if (!SerializableContract.SERIAL_VERSION_UID_FIELD.equals(variableTree.simpleName().name()) && !pattern.matcher(variableTree.simpleName().name()).matches()) {
-      addIssue(variableTree, "Rename this constant name to match the regular expression '" + format + "'.");
+      reportIssue(variableTree.simpleName(), "Rename this constant name to match the regular expression '" + format + "'.");
     }
   }
 

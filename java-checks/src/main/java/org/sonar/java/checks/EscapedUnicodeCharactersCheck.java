@@ -72,7 +72,7 @@ public class EscapedUnicodeCharactersCheck extends SubscriptionBaseVisitor {
     if (!matches.isEmpty()) {
       boolean notOnlyUnicodeEscaped = !matcher.replaceAll("").isEmpty();
       if (notOnlyUnicodeEscaped && Iterables.any(matches, IS_PRINTABLE_ESCAPED_UNICODE)) {
-        addIssue(node, "Remove this Unicode escape sequence and use the character instead.");
+        reportIssue(node, "Remove this Unicode escape sequence and use the character instead.");
       }
     }
   }

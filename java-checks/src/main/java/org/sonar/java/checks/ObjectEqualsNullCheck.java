@@ -57,7 +57,7 @@ public class ObjectEqualsNullCheck extends BaseTreeVisitor implements JavaFileSc
     if (isCallToEquals(tree.methodSelect()) &&
       tree.arguments().size() == 1 &&
       isNull(tree.arguments().get(0))) {
-      context.addIssue(tree, this, "Use \"object == null\" instead of \"object.equals(null)\" to test for nullity to prevent null pointer exceptions.");
+      context.reportIssue(this, tree, "Use \"object == null\" instead of \"object.equals(null)\" to test for nullity to prevent null pointer exceptions.");
     }
   }
 

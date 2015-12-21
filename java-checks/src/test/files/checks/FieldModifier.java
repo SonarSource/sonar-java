@@ -1,5 +1,5 @@
 class A {
-  int member; // Noncompliant {{Explicitly declare the visibility for "member".}}
+  int member; // Noncompliant [[sc=7;ec=13]] {{Explicitly declare the visibility for "member".}}
   public int member2;
   private int member3;
 }

@@ -71,9 +71,9 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private void checkType(Tree tree) {
     if (tree.is(Kind.IDENTIFIER)) {
-      String name = ((IdentifierTree) tree).name();
-      if (isNPE(name)) {
-        addIssue(tree);
+      IdentifierTree identifier = (IdentifierTree) tree;
+      if (isNPE(identifier.name())) {
+        addIssue(identifier);
       }
     } else if (tree.is(Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree memberSelectTree = (MemberSelectExpressionTree) tree;
@@ -87,7 +87,7 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
           if ("lang".equals(memberSelectTree2.identifier().name()) &&
               memberSelectTree2.expression().is(Kind.IDENTIFIER) &&
               "java".equals(((IdentifierTree) memberSelectTree2.expression()).name())) {
-            addIssue(tree);
+            addIssue(memberSelectTree.identifier());
           }
         }
       }
@@ -98,8 +98,8 @@ public class CatchNPECheck extends BaseTreeVisitor implements JavaFileScanner {
     return "NullPointerException".equals(name);
   }
 
-  private void addIssue(Tree tree) {
-    context.addIssue(tree, this, "Avoid catching NullPointerException.");
+  private void addIssue(IdentifierTree tree) {
+    context.reportIssue(this, tree, "Avoid catching NullPointerException.");
   }
 
 }

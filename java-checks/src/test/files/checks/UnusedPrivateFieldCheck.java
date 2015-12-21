@@ -1,6 +1,6 @@
 class FooClass {
 
-  private int unusedField; // Noncompliant {{Remove this unused "unusedField" private field.}}
+  private int unusedField; // Noncompliant [[sc=15;ec=26]] {{Remove this unused "unusedField" private field.}}
 
   @UsedBySomeFramework
   private int foo;

@@ -57,7 +57,7 @@ public class ClassNamedLikeExceptionCheck extends SubscriptionBaseVisitor {
       String className = symbol.name();
       if (className.toLowerCase().endsWith("exception") && !symbol.type().isSubtypeOf("java.lang.Exception")) {
         String suffix = className.substring(className.length() - "exception".length());
-        addIssue(classTree, "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
+        reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
       }
     }
   }

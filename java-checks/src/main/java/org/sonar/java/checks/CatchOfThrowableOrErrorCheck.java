@@ -95,7 +95,7 @@ public class CatchOfThrowableOrErrorCheck extends SubscriptionBaseVisitor {
   }
 
   private void insertIssue(TypeTree typeTree, Type type) {
-    addIssue(typeTree, "Catch Exception instead of " + type.name() + ".");
+    reportIssue(typeTree, "Catch Exception instead of " + type.name() + ".");
   }
 
   private static class GuavaCloserRethrowVisitor extends BaseTreeVisitor {
