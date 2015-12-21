@@ -19,4 +19,13 @@ class ConstructorDeclaration {
   }
 
   ConstructorDeclaration cd = new ConstructorDeclaration(null);
+
+  ParameterType pt = new ParameterType();
+
+  abstract class Foo {}
+  class Bar extends Foo {
+    Bar(int i) {
+      super();
+    }
+  }
 }

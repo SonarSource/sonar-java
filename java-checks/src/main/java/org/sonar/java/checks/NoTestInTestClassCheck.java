@@ -95,7 +95,7 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
 
   private void checkTestNGmembers(IdentifierTree className, Iterable<Symbol> members) {
     for (Symbol member : members) {
-      if (member.isMethodSymbol() && member.isPublic() && !member.isStatic()) {
+      if (member.isMethodSymbol() && member.isPublic() && !member.isStatic() && ((Symbol.MethodSymbol) member).returnType() != null) {
         return;
       }
     }

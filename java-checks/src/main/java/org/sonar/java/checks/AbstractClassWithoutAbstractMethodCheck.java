@@ -54,17 +54,32 @@ public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptio
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol typeSymbol = classTree.symbol();
     if (typeSymbol.isAbstract()) {
-      Collection<Symbol> symbols = typeSymbol.memberSymbols();
-      int abstractMethod = countAbstractMethods(symbols);
-      if (isExtendingObject(classTree) && abstractMethod == symbols.size() - 2) {
+      Collection<Symbol> members = typeSymbol.memberSymbols();
+      int nbAbstractMethod = countAbstractMethods(members);
+      // don't count this and super as members
+      int nbOfMembers = members.size() - 2;
+      if (hasDefaultConstructor(members)) {
+        //remove default constructor from members
+        nbOfMembers -=1;
+      }
+      if (isExtendingObject(classTree) && nbAbstractMethod == nbOfMembers) {
         // emtpy abstract class or only abstract method
         context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to an interface");
       }
-      if (symbols.size() > 2 && abstractMethod == 0 && !isPartialImplementation(classTree)) {
+      if (nbOfMembers > 0 && nbAbstractMethod == 0 && !isPartialImplementation(classTree)) {
         // Not empty abstract class with no abstract method
         context.addIssue(tree, this, "Convert this \"" + typeSymbol + "\" class to a concrete class with a private constructor");
       }
     }
+  }
+
+  private boolean hasDefaultConstructor(Collection<Symbol> members) {
+    for (Symbol member : members) {
+      if ("<init>".equals(member.name()) && member.declaration() == null) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean isExtendingObject(ClassTree tree) {

@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -255,6 +256,13 @@ public class FirstPass extends BaseTreeVisitor {
     scan(tree.superClass());
     scan(tree.superInterfaces());
     scan(tree.members());
+    //Register default constructor
+    if(tree.is(Tree.Kind.CLASS) && classEnv.scope.lookup("<init>").isEmpty()) {
+      JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, "<init>", symbol);
+      JavaType.MethodJavaType defaultConstructorType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), symbol);
+      defaultConstructor.setMethodType(defaultConstructorType);
+      classEnv.scope.enter(defaultConstructor);
+    }
     restoreEnvironment(tree);
     restoreEnvironment(tree);
   }

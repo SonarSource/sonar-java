@@ -404,16 +404,22 @@ public class SymbolTableTest {
   public void ConstructorDeclaration() {
     Result result = Result.createFor("declarations/ConstructorDeclaration");
 
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("<init>");
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("<init>", 18);
     assertThat(methodSymbol.owner()).isSameAs(result.symbol("ConstructorDeclaration"));
     assertThat(methodSymbol.flags()).isEqualTo(0);
-    assertThat(methodSymbol.getReturnType()).isNull(); // TODO should it be result.symbol("ConstructorDeclaration")?
+    assertThat(methodSymbol.getReturnType()).isNull();
     assertThat(methodSymbol.parameterTypes()).hasSize(1);
     assertThat(methodSymbol.thrownTypes()).containsExactly(
       result.symbol("FirstExceptionType").type(),
       result.symbol("SecondExceptionType").type());
-
     assertThat(result.reference(21, 35)).isEqualTo(methodSymbol);
+    assertThat(((JavaSymbol.TypeJavaSymbol) methodSymbol.owner()).lookupSymbols("<init>")).as("Constructor with a declared constructor should not have a default one").hasSize(1);
+    //Default constructor
+    JavaSymbol defaultConstructor = result.reference(23, 26);
+    assertThat(defaultConstructor.owner).isSameAs(result.symbol("ParameterType"));
+    defaultConstructor = result.reference(28, 7);
+    assertThat(defaultConstructor.isAbstract()).isFalse();
+
   }
 
   @Test
