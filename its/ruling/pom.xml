@@ -40,12 +40,6 @@
       <artifactId>fest-assert</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.googlecode.java-diff-utils</groupId>
-      <artifactId>diffutils</artifactId>
-      <version>1.3.0</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 
 </project>
