@@ -73,7 +73,7 @@ public class AbstractClassWithoutAbstractMethodCheck extends IssuableSubscriptio
     }
   }
 
-  private boolean hasDefaultConstructor(Collection<Symbol> members) {
+  private static boolean hasDefaultConstructor(Collection<Symbol> members) {
     for (Symbol member : members) {
       if ("<init>".equals(member.name()) && member.declaration() == null) {
         return true;

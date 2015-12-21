@@ -56,6 +56,7 @@ import java.util.List;
  */
 public class FirstPass extends BaseTreeVisitor {
 
+  private static final String CONSTRUCTOR_NAME = "<init>";
   private final SemanticModel semanticModel;
 
   private final List<JavaSymbol> uncompleted = Lists.newArrayList();
@@ -257,8 +258,8 @@ public class FirstPass extends BaseTreeVisitor {
     scan(tree.superInterfaces());
     scan(tree.members());
     //Register default constructor
-    if(tree.is(Tree.Kind.CLASS) && classEnv.scope.lookup("<init>").isEmpty()) {
-      JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, "<init>", symbol);
+    if(tree.is(Tree.Kind.CLASS) && classEnv.scope.lookup(CONSTRUCTOR_NAME).isEmpty()) {
+      JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
       JavaType.MethodJavaType defaultConstructorType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
       classEnv.scope.enter(defaultConstructor);
@@ -281,7 +282,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    String name = tree.returnType() == null ? "<init>" : tree.simpleName().name();
+    String name = tree.returnType() == null ? CONSTRUCTOR_NAME : tree.simpleName().name();
     JavaSymbol.MethodJavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(computeFlags(tree.modifiers(), tree), name, env.scope.owner);
     symbol.declaration = tree;
     if((env.scope.owner.flags & Flags.ENUM) !=0 && tree.returnType()==null ) {
