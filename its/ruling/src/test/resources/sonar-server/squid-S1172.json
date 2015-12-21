@@ -2,13 +2,13 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/batch/ProjectRepositoryLoader.java':[
 313,
 321,
-336,
+337,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/BaseDao.java':[
 346,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DatabaseMigrator.java':[
-50,
+51,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/ws/SearchAction.java':[
 598,

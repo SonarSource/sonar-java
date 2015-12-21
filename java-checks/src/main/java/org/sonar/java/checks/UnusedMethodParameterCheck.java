@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.BooleanUtils;
@@ -29,7 +28,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,6 +39,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(
@@ -59,14 +61,19 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (hasSemantic() && methodTree.block() != null && !isExcluded(methodTree)) {
-      List<String> unused = Lists.newArrayList();
+      List<IdentifierTree> unused = Lists.newArrayList();
       for (VariableTree var : methodTree.parameters()) {
         if (var.symbol().usages().isEmpty()) {
-          unused.add(var.simpleName().name());
+          unused.add(var.simpleName());
         }
       }
       if (!unused.isEmpty()) {
-        addIssue(methodTree, "Remove the unused method parameter(s) \"" + Joiner.on(",").join(unused) + "\".");
+        List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+        for (IdentifierTree identifier : unused.subList(1, unused.size())) {
+          locations.add(new JavaFileScannerContext.Location("Remove this unused method parameter "+identifier.name()+"\".", identifier));
+        }
+        IdentifierTree firstUnused = unused.get(0);
+        reportIssue(firstUnused, "Remove this unused method parameter \"" + firstUnused.name() + "\".", locations, null);
       }
     }
   }

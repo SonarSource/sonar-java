@@ -1,5 +1,5 @@
 class A extends B{
-  void doSomething(int a, int b) { // Noncompliant {{Remove the unused method parameter(s) "b".}}
+  void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
     compute(a);
   }
 
@@ -34,7 +34,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant
+  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=37]]
     System.out.println("");
   }
 }
@@ -87,6 +87,11 @@ class OpenForExtension {
 
   private baz(int arg) { // Noncompliant
     //no-op
+  }
+
+  // Noncompliant@+1
+  private qiz(int arg1, int arg2) {
+
   }
 
   public Supplier<String> parameterNotUsed(final Object o) {
