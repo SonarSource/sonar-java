@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -34,7 +35,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Rule(
@@ -53,9 +53,12 @@ public class AnnotationArgumentOrderCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     AnnotationTree annotationTree = (AnnotationTree) tree;
-    Collection<Symbol> symbols = annotationTree.symbolType().symbol().memberSymbols();
+    TypeSymbol annotationSymbol = annotationTree.symbolType().symbol();
+    if (annotationSymbol.isUnknown()) {
+      return;
+    }
     List<String> declarationNames = new ArrayList<>();
-    for (Symbol symbol : symbols) {
+    for (Symbol symbol : annotationSymbol.memberSymbols()) {
       declarationNames.add(symbol.name());
     }
     List<String> annotationArguments = new ArrayList<>();

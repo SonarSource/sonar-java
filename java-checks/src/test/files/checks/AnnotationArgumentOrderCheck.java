@@ -1,4 +1,5 @@
 import org.sonar.java.checks.targets.CustomAnnotation;
+import org.sonar.java.MyUnknownAnnotation;
 
 @interface MyAnnotation {
   String myName();
@@ -23,3 +24,6 @@ class MyClass {
   List<@MyAnnotation(myInteger=2, myName="XXX") Object[]> field;// Noncompliant
   List<@MyAnnotation(myName="XXX", aaaLast = "") Object[]> field;
 }
+
+@MyUnknownAnnotation(name = "XXX") // Compliant
+class MySecondClass {}
