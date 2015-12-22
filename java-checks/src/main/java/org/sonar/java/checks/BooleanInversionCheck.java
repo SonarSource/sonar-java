@@ -66,7 +66,7 @@ public class BooleanInversionCheck extends SubscriptionBaseVisitor {
         Tree.Kind.EQUAL_TO, Tree.Kind.NOT_EQUAL_TO,
         Tree.Kind.LESS_THAN, Tree.Kind.GREATER_THAN,
         Tree.Kind.LESS_THAN_OR_EQUAL_TO, Tree.Kind.GREATER_THAN_OR_EQUAL_TO)) {
-      context.addIssue(tree, this, "Use the opposite operator (\"" + OPERATORS.get(((BinaryExpressionTree) expression).operatorToken().text()) + "\") instead.");
+      context.reportIssue(this, tree, "Use the opposite operator (\"" + OPERATORS.get(((BinaryExpressionTree) expression).operatorToken().text()) + "\") instead.");
     }
   }
 

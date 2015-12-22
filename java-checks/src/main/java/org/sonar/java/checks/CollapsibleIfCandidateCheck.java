@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks;
 
+import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -48,24 +49,26 @@ import java.util.Deque;
 public class CollapsibleIfCandidateCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private Deque<Boolean> outerIf = new ArrayDeque<>();
+  private Deque<IfStatementTree> outerIf = new ArrayDeque<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     scan(context.getTree());
+    outerIf.clear();
   }
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
 
     if (!outerIf.isEmpty() && !hasElseClause(tree)) {
-      context.addIssue(tree, this, "Merge this if statement with the enclosing one.");
+      context.reportIssue(this, tree.ifKeyword(), "Merge this if statement with the enclosing one.",
+          Lists.newArrayList(new JavaFileScannerContext.Location("", outerIf.peek().ifKeyword())), null);
     }
 
     if (!hasElseClause(tree) && hasBodySingleIfStatement(tree.thenStatement())) {
       // children of this if statement are eligible for issues
-      outerIf.push(Boolean.TRUE);
+      outerIf.push(tree);
       // recurse into sub-tree
       super.visitIfStatement(tree);
       if (!outerIf.isEmpty()) {

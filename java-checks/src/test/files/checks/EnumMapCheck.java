@@ -9,14 +9,14 @@ class MyClass {
   }
 
   public void noncompliant() {
-    Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant
+    Map<COLOR, String> moodMap = new HashMap<COLOR, String>(); // Noncompliant [[sc=34;ec=62]]
     new HashMap<COLOR, String>(); // Noncompliant
     Map<COLOR, String> moodMap2 = new HashMap<>(); // Noncompliant
     Map<MyClass.COLOR, String> moodMap3 = new HashMap(); // Noncompliant
     Map moodMap4 = (new HashMap<COLOR, String>()); // Noncompliant
     
     Map<COLOR, String> map;
-    map = new HashMap<>(); // Noncompliant
+    map = new HashMap<>(); // Noncompliant [[sc=11;ec=26]]
   }
 
   public void compliant() {

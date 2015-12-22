@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -55,16 +56,17 @@ public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFile
 
   @Override
   public void visitClass(ClassTree tree) {
-    if (tree.is(Tree.Kind.CLASS) && tree.superClass() != null) {
-      if (tree.superClass().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree idt = (IdentifierTree) tree.superClass();
+    TypeTree superClass = tree.superClass();
+    if (tree.is(Tree.Kind.CLASS) && superClass != null) {
+      if (superClass.is(Tree.Kind.IDENTIFIER)) {
+        IdentifierTree idt = (IdentifierTree) superClass;
         if ("Error".equals(idt.name())) {
-          context.addIssue(tree, this, "Extend \"java.lang.Exception\" or one of its subclasses.");
+          context.reportIssue(this, superClass, "Extend \"java.lang.Exception\" or one of its subclasses.");
         }
-      } else if (tree.superClass().is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree.superClass();
+      } else if (superClass.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) superClass;
         if ("Error".equals(mse.identifier().name()) && isJavaLang(mse.expression())) {
-          context.addIssue(tree, this, "Extend \"java.lang.Exception\" or one of its subclasses.");
+          context.reportIssue(this, superClass, "Extend \"java.lang.Exception\" or one of its subclasses.");
         }
       }
     }

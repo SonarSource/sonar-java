@@ -74,7 +74,7 @@ public class CollectionIsEmptyCheck extends BaseTreeVisitor implements JavaFileS
     super.visitBinaryExpression(tree);
 
     if (hasCallToSizeMethod(tree) && isEmptyComparison(tree)) {
-      context.addIssue(tree, this, "Use isEmpty() to check whether the collection is empty or not.");
+      context.reportIssue(this, tree, "Use isEmpty() to check whether the collection is empty or not.");
     }
   }
 

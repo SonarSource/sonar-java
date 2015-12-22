@@ -1,19 +1,19 @@
 public class EmployeesTopLevel {
-  public HashSet<Employee> employees = new HashSet<Employee>();  // Noncompliant {{The type of the "employees" object should be an interface such as "Set" rather than the implementation "HashSet".}}
+  public HashSet<Employee> employees = new HashSet<Employee>();  // Noncompliant {{The type of the "employees" object should be an interface such as "Set" rather than the implementation "HashSet".}} [[sc=10;ec=27]]
   private HashSet<Employee> employees2 = new HashSet<Employee>();
 
   public HashSet<Employee> getEmployees() {                       // Noncompliant {{The return type of this method should be an interface such as "Set" rather than the implementation "HashSet".}}
     return employees;
   }
 
-  public LinkedList<Employee> foo() {                             // Noncompliant {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}}
+  public LinkedList<Employee> foo() {                             // Noncompliant {{The return type of this method should be an interface such as "List" rather than the implementation "LinkedList".}} [[sc=10;ec=30]]
   }
   private LinkedList<Employee> foo() { }
 
   public java.util.HashSet<Employee> foo() {                      // Compliant - limitation
   }
 
-  public HashMap foo() {                                          // Noncompliant {{The return type of this method should be an interface such as "Map" rather than the implementation "HashMap".}}
+  public HashMap foo() {                                          // Noncompliant {{The return type of this method should be an interface such as "Map" rather than the implementation "HashMap".}} [[sc=10;ec=17]]
   }
 
   public Employees() {

@@ -7,7 +7,7 @@ class Foo {
   
   private static final int MY_CONST;
   static
-  {                                    // Noncompliant {{Move this left curly brace to the end of previous line of code.}}
+  {                                    // Noncompliant {{Move this left curly brace to the end of previous line of code.}} [[sc=3;ec=4]]
     MY_CONST = 0;
   }
   

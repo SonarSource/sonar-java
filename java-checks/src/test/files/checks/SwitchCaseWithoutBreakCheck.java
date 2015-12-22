@@ -3,7 +3,7 @@ class A {
     int myVariable = 0;
     switch (myVariable) {
       case 0:
-      case 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}}
+      case 1: // Noncompliant {{End this switch case with an unconditional break, return or throw statement.}} [[sc=7;ec=14]]
         System.out.println();
       case 2: // Compliant
         break;

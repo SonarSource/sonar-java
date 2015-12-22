@@ -76,7 +76,7 @@ public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements Java
     super.visitCaseGroup(tree);
 
     if (invalidCaseGroups.remove(tree)) {
-      context.addIssue(Iterables.getLast(tree.labels()), this, "End this switch case with an unconditional break, return or throw statement.");
+      context.reportIssue(this, Iterables.getLast(tree.labels()), "End this switch case with an unconditional break, return or throw statement.");
     }
     currentTree = invalidCaseGroups.peek();
   }

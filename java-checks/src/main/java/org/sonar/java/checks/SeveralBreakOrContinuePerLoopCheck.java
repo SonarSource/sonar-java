@@ -39,7 +39,9 @@ import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.List;
 
 @Rule(
   key = "S135",
@@ -51,7 +53,7 @@ import java.util.Deque;
 @SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "per extra \"break\" or \"continue\" statement")
 public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private final Deque<Integer> breakAndContinueCounter = new ArrayDeque<>();
+  private final Deque<List<Tree>> breakAndContinueCounter = new ArrayDeque<>();
   private final Deque<Boolean> currentScopeIsSwitch = new ArrayDeque<>();
   private int loopCount;
 
@@ -68,34 +70,34 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
   public void visitForStatement(ForStatementTree tree) {
     enterLoop();
     super.visitForStatement(tree);
-    leaveLoop(tree);
+    leaveLoop(tree.forKeyword());
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
     enterLoop();
     super.visitForEachStatement(tree);
-    leaveLoop(tree);
+    leaveLoop(tree.forKeyword());
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
     enterLoop();
     super.visitWhileStatement(tree);
-    leaveLoop(tree);
+    leaveLoop(tree.whileKeyword());
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
     enterLoop();
     super.visitDoWhileStatement(tree);
-    leaveLoop(tree);
+    leaveLoop(tree.doKeyword());
   }
 
   @Override
   public void visitBreakStatement(BreakStatementTree tree) {
     if (isInLoop() && !isInSwitch()) {
-      incrementBreakCounter();
+      incrementBreakCounter(tree);
     }
     super.visitBreakStatement(tree);
   }
@@ -103,7 +105,7 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
     if (isInLoop()) {
-      incrementBreakCounter();
+      incrementBreakCounter(tree);
     }
     super.visitContinueStatement(tree);
   }
@@ -116,12 +118,10 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
     return currentScopeIsSwitch.peek();
   }
 
-  private void incrementBreakCounter() {
-    int increment = 1;
+  private void incrementBreakCounter(Tree tree) {
     if (!breakAndContinueCounter.isEmpty()) {
-      increment += breakAndContinueCounter.pop();
+      breakAndContinueCounter.peek().add(tree);
     }
-    breakAndContinueCounter.push(increment);
   }
 
   @Override
@@ -133,18 +133,22 @@ public class SeveralBreakOrContinuePerLoopCheck extends BaseTreeVisitor implemen
 
   private void enterLoop() {
     loopCount++;
-    breakAndContinueCounter.push(0);
+    breakAndContinueCounter.push(new ArrayList<Tree>());
     currentScopeIsSwitch.push(false);
   }
 
-  private void leaveLoop(Tree tree) {
-    int count = 0;
+  private void leaveLoop(Tree primaryLocationTree) {
+    List<Tree> breakAndContinues = new ArrayList<>();
     if (!breakAndContinueCounter.isEmpty()) {
-      count = breakAndContinueCounter.pop();
+      breakAndContinues = breakAndContinueCounter.pop();
     }
-    if (count > 1) {
-      double effortToFix = count - 1.0;
-      context.addIssue(tree, this, "Reduce the total number of break and continue statements in this loop to use at most one.", effortToFix);
+    if (breakAndContinues.size() > 1) {
+      int effortToFix = breakAndContinues.size() - 1;
+      List<JavaFileScannerContext.Location> locations = new ArrayList<>();
+      for (Tree breakAndContinue : breakAndContinues) {
+        locations.add(new JavaFileScannerContext.Location("", breakAndContinue));
+      }
+      context.reportIssue(this, primaryLocationTree, "Reduce the total number of break and continue statements in this loop to use at most one.", locations, effortToFix);
     }
     loopCount--;
     currentScopeIsSwitch.pop();

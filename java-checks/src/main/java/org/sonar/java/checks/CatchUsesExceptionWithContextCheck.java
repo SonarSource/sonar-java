@@ -101,7 +101,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
       super.visitCatch(tree);
       Collection<IdentifierTree> usages = validUsagesStack.pop();
       if (usages.isEmpty()) {
-        context.addIssue(tree, this, "Either log or rethrow this exception.");
+        context.reportIssue(this, tree.parameter(), "Either log or rethrow this exception.");
       }
     }
   }

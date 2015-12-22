@@ -5,7 +5,7 @@ public abstract class Animal { // Noncompliant {{Convert this "Animal" class to 
 
 }
 
-public abstract class AbstractColor { // Noncompliant {{Convert this "AbstractColor" class to a concrete class with a private constructor}}
+public abstract class AbstractColor { // Noncompliant {{Convert this "AbstractColor" class to a concrete class with a private constructor}} [[sc=23;ec=36]]
   private int red = 0;
   private int green = 0;
   private int blue = 0;
@@ -53,7 +53,7 @@ public abstract class Lamp {
   }
 }
 
-public abstract class Empty { // Noncompliant {{Convert this "Empty" class to an interface}}
+public abstract class Empty { // Noncompliant {{Convert this "Empty" class to an interface}} [[sc=23;ec=28]]
 
 }
 abstract class A { // Noncompliant {{Convert this "A" class to an interface}}

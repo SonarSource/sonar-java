@@ -5,7 +5,7 @@ import a.b.c.Bar;
 import a.b.c.Baz;
 import a.b.c.Qux;
 import a.b.c.ReferencedFromJavadoc;
-import a.b.c.NonCompliant; // Noncompliant
+import a.b.c.NonCompliant; // Noncompliant [[sc=1;ec=27]]
 import NonCompliant2;               // Noncompliant
 import static a.b.c.Foo.d;
 import a.b.c.*;

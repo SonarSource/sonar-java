@@ -1,4 +1,4 @@
-class Foo {    // Noncompliant {{Move this left curly brace to the beginning of next line of code.}}
+class Foo {    // Noncompliant {{Move this left curly brace to the beginning of next line of code.}} [[sc=11;ec=12]]
 }
 
 class Gul

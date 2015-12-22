@@ -134,10 +134,7 @@ public class CollectionImplementationReferencedCheck extends BaseTreeVisitor imp
     String collectionInterface = MAPPING.get(collectionImplementation);
 
     if (collectionInterface != null) {
-      context.addIssue(
-        tree,
-        this,
-        messagePrefix + messageRemainder(collectionImplementation, collectionInterface));
+      context.reportIssue(this, tree, messagePrefix + messageRemainder(collectionImplementation, collectionInterface));
     }
   }
 

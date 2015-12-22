@@ -7,7 +7,7 @@ class A {
       break;
     }
 
-    for (int i = 0; i < 42; i++) { // Noncompliant {{Reduce the total number of break and continue statements in this loop to use at most one.}}
+    for (int i = 0; i < 42; i++) { // Noncompliant {{Reduce the total number of break and continue statements in this loop to use at most one.}} [[sc=5;ec=8;secondary=11,12]]
       break;
       break;
     }
@@ -17,7 +17,7 @@ class A {
       continue;
     }
 
-    while (true) { // Noncompliant
+    while (true) { // Noncompliant [[sc=5;ec=10;secondary=21,22]]
       continue;
       continue;
     }
@@ -33,7 +33,7 @@ class A {
       break;
     }
 
-    do { // Noncompliant
+    do { // Noncompliant [[sc=5;ec=7;secondary=37,40,41]]
       break;
       switch (foo) {
         case 0:

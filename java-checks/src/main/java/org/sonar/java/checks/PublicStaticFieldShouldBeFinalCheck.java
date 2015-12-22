@@ -58,7 +58,7 @@ public class PublicStaticFieldShouldBeFinalCheck extends BaseTreeVisitor impleme
     if (tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.ENUM)) {
       for (Tree member : tree.members()) {
         if (member.is(Tree.Kind.VARIABLE) && isPublicStaticNotFinal((VariableTree) member)) {
-          context.addIssue(member, this, "Make this \"public static " + ((VariableTree) member).simpleName() + "\" field final");
+          context.reportIssue(this, ((VariableTree) member).simpleName(), "Make this \"public static " + ((VariableTree) member).simpleName() + "\" field final");
         }
       }
     }

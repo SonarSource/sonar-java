@@ -1,7 +1,7 @@
 class A {
   private void f() {
     try {
-    } catch (Exception e) {                     // Noncompliant {{Either log or rethrow this exception.}}
+    } catch (Exception e) {                     // Noncompliant {{Either log or rethrow this exception.}} [[sc=14;ec=25]]
     } catch (Exception e) {                     // Compliant
       System.out.println(e);
     } catch (Exception e) {                     // Noncompliant
@@ -126,7 +126,7 @@ class A {
     } catch (java.net.MalformedURLException e) {  // Compliant
     } catch (java.text.ParseException e) {        // Compliant
     } catch (java.text.foo e) {                   // Noncompliant
-    } catch (java.foo.ParseException e) {         // Noncompliant
+    } catch (java.foo.ParseException e) {         // Noncompliant [[sc=14;ec=39]]
     } catch (foo.text.ParseException e) {         // Noncompliant
     } catch (text.ParseException e) {             // Noncompliant
     } catch (foo.java.text.ParseException e) {    // Noncompliant

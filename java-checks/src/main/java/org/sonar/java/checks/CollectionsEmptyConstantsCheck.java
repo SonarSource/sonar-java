@@ -67,7 +67,7 @@ public class CollectionsEmptyConstantsCheck extends BaseTreeVisitor implements J
     boolean isCollectionsCall = tree.expression().is(Kind.IDENTIFIER) && "Collections".equals(((IdentifierTree) tree.expression()).name());
     boolean callEmptyConstant = identifier.startsWith("EMPTY_");
     if (isCollectionsCall && callEmptyConstant) {
-      context.addIssue(tree, this, "Replace \"Collections."+identifier+"\" by \"Collections."+ IDENTIFIER_REPLACEMENT.get(identifier)+"\".");
+      context.reportIssue(this, tree, "Replace \"Collections." + identifier + "\" by \"Collections." + IDENTIFIER_REPLACEMENT.get(identifier) + "\".");
     }
   }
 

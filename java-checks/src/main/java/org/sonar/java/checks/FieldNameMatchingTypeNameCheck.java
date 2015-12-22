@@ -92,7 +92,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
   public void visitVariable(VariableTree tree) {
     String name = tree.simpleName().name();
     if (fields.contains(tree) && currentClassName.equalsIgnoreCase(name)) {
-      context.addIssue(tree, this, "Rename field \"" + name + "\"");
+      context.reportIssue(this, tree.simpleName(), "Rename field \"" + name + "\"");
     }
     super.visitVariable(tree);
   }

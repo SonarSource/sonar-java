@@ -7,7 +7,7 @@ class A {
     } catch (Exception e) {
       throw new IllegalAccessError();
     } finally {
-      throw new IllegalAccessError(); // Noncompliant {{Refactor this code to not throw exceptions in finally blocks.}}
+      throw new IllegalAccessError(); // Noncompliant {{Refactor this code to not throw exceptions in finally blocks.}} [[sc=7;ec=38]]
 
       if (false) {
         throw new IllegalAccessError(); // Noncompliant

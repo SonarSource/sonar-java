@@ -63,7 +63,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     if (tree.type().symbolType().isSubtypeOf("java.util.Map")) {
       ExpressionTree initializer = tree.initializer();
       if (initializer != null) {
-        checkNewMap(tree, initializer, hasEnumKey(tree.type().symbolType()));
+        checkNewMap(initializer, hasEnumKey(tree.type().symbolType()));
       }
     } else {
       super.visitVariable(tree);
@@ -73,7 +73,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     if (tree.variable().symbolType().isSubtypeOf("java.util.Map")) {
-      checkNewMap(tree, tree.expression(), hasEnumKey(tree.variable().symbolType()));
+      checkNewMap(tree.expression(), hasEnumKey(tree.variable().symbolType()));
     } else {
       super.visitAssignmentExpression(tree);
     }
@@ -88,12 +88,12 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
     }
   }
 
-  private void checkNewMap(Tree tree, ExpressionTree given, boolean useEnumKey) {
+  private void checkNewMap(ExpressionTree given, boolean useEnumKey) {
     ExpressionTree expression = ExpressionsHelper.skipParentheses(given);
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTree newClassTree = (NewClassTree) expression;
       if (newClassTree.symbolType().isSubtypeOf("java.util.HashMap") && (useEnumKey || hasEnumKey(newClassTree.identifier().symbolType()))) {
-        addIssue(tree);
+        addIssue(newClassTree);
       }
     }
   }
@@ -110,7 +110,7 @@ public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   }
 
   private void addIssue(Tree typeTree) {
-    context.addIssue(typeTree, this, "Convert this Map to an EnumMap.");
+    context.reportIssue(this, typeTree, "Convert this Map to an EnumMap.");
   }
 
 }

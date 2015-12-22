@@ -67,7 +67,7 @@ public class ThrowsFromFinallyCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if(isInFinally() && !isInMethodWithinFinally){
-      context.addIssue(tree, this, "Refactor this code to not throw exceptions in finally blocks.");
+      context.reportIssue(this, tree, "Refactor this code to not throw exceptions in finally blocks.");
     }
     super.visitThrowStatement(tree);
   }

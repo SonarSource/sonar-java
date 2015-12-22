@@ -63,7 +63,7 @@ public abstract class LeftCurlyBraceBaseTreeVisitor extends BaseTreeVisitor impl
   }
 
   protected void addIssue(SyntaxToken openBraceToken, JavaCheck check, String message) {
-    this.context.addIssue(openBraceToken, check, message);
+    this.context.reportIssue( check, openBraceToken, message);
   }
 
   protected abstract void checkTokens(SyntaxToken lastToken, SyntaxToken openBraceToken);

@@ -9,12 +9,12 @@ class A {
     boolean b;
     int i;
     
-    b = myCollection.size() == 0; // Noncompliant {{Use isEmpty() to check whether the collection is empty or not.}}
+    b = myCollection.size() == 0; // Noncompliant {{Use isEmpty() to check whether the collection is empty or not.}} [[sc=9;ec=33]]
     b = myCollection.size() != 0; // Noncompliant
     b = myCollection.size() > 0; // Noncompliant
     b = myCollection.size() >= 1; // Noncompliant
     b = myCollection.size() < 1; // Noncompliant
-    b = myCollection.size() <= 0; // Noncompliant
+    b = myCollection.size() <= 0; // Noncompliant [[sc=9;ec=33]]
 
     b = 0 == myCollection.size(); // Noncompliant
     b = 0 != myCollection.size(); // Noncompliant

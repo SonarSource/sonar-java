@@ -66,7 +66,7 @@ public class IncrementDecrementInSubExpressionCheck extends BaseTreeVisitor impl
   public void visitUnaryExpression(UnaryExpressionTree tree) {
     super.visitUnaryExpression(tree);
     if (isIncrementOrDecrement(tree)) {
-      context.addIssue(tree, this, "Extract this increment or decrement operator into a dedicated statement.");
+      context.reportIssue(this, tree, "Extract this increment or decrement operator into a dedicated statement.");
     }
   }
 
