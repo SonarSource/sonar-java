@@ -20,7 +20,6 @@
 package org.sonar.java.checks.maven.helpers;
 
 import com.google.common.base.Preconditions;
-import org.sonar.java.checks.maven.AbstractNamingConvention;
 import org.sonar.maven.model.LocatedAttribute;
 import org.sonar.maven.model.maven2.Dependency;
 
@@ -33,14 +32,6 @@ import java.util.regex.Pattern;
  * Matchers targeting versions of dependencies.
  */
 public abstract class MavenDependencyVersionMatcher extends MavenDependencyAbstractMatcher {
-
-  /**
-   * Provide a version matcher matching any given version
-   * @return a new instance of {@link AlwaysMatchingVersionMatcher}
-   */
-  protected static MavenDependencyVersionMatcher alwaysMatchingVersionMatcher() {
-    return new AlwaysMatchingVersionMatcher();
-  }
 
   /**
    * Provide a dependency version matcher for a given check.
@@ -60,23 +51,19 @@ public abstract class MavenDependencyVersionMatcher extends MavenDependencyAbstr
    * </ul>
    *
    * @param version the version expected for the dependency
-   * @param callingCheckKey the check requiring the matcher
    * @return
    */
-  public static MavenDependencyVersionMatcher fromString(String version, String callingCheckKey) {
+  public static MavenDependencyVersionMatcher fromString(String version) {
     if (version.isEmpty() || isWildCard(version)) {
       return new AlwaysMatchingVersionMatcher();
     }
     if (version.contains("-")) {
       String[] bounds = version.split("-");
-      return new RangedVersionMatcher(bounds[0], bounds[1], callingCheckKey);
+      return new RangedVersionMatcher(bounds[0], bounds[1]);
     }
-    return new PatternVersionMatcher(version, callingCheckKey);
+    return new PatternVersionMatcher(version);
   }
 
-  /**
-   * Matcher which always match a dependency, whatever its version is.
-   */
   private static class AlwaysMatchingVersionMatcher extends MavenDependencyVersionMatcher {
     @Override
     public boolean matches(Dependency dependency) {
@@ -84,15 +71,12 @@ public abstract class MavenDependencyVersionMatcher extends MavenDependencyAbstr
     }
   }
 
-  /**
-   * Matcher which requires the dependency version to match a provided given pattern
-   */
   private static class PatternVersionMatcher extends MavenDependencyVersionMatcher {
 
     private Pattern pattern = null;
 
-    public PatternVersionMatcher(String version, String callingCheckKey) {
-      pattern = AbstractNamingConvention.compileRegex(version, callingCheckKey);
+    public PatternVersionMatcher(String version) {
+      pattern = compileRegex(version);
     }
 
     @Override
@@ -101,18 +85,15 @@ public abstract class MavenDependencyVersionMatcher extends MavenDependencyAbstr
     }
   }
 
-  /**
-   * Matcher which requires a range of version defining a lower bound and an upper bound.
-   */
   private static class RangedVersionMatcher extends MavenDependencyVersionMatcher {
     @Nullable
     private final ArtifactVersion lowerBound;
     @Nullable
     private final ArtifactVersion upperBound;
 
-    public RangedVersionMatcher(String lowerBound, String upperBound, String callingCheckKey) {
-      this.lowerBound = isWildCard(lowerBound) ? null : getVersion(lowerBound, callingCheckKey);
-      this.upperBound = isWildCard(upperBound) ? null : getVersion(upperBound, callingCheckKey);
+    public RangedVersionMatcher(String lowerBound, String upperBound) {
+      this.lowerBound = isWildCard(lowerBound) ? null : getVersion(lowerBound);
+      this.upperBound = isWildCard(upperBound) ? null : getVersion(upperBound);
       // check that we are not bypassing both bounds
       Preconditions.checkArgument(!(this.lowerBound == null && this.upperBound == null));
     }
@@ -155,11 +136,11 @@ public abstract class MavenDependencyVersionMatcher extends MavenDependencyAbstr
      * @param callingCheckKey the check requiring the matcher
      * @return the {@link ArtifactVersion} corresponding to the provided version as string
      */
-    private static ArtifactVersion getVersion(String version, String callingCheckKey) {
+    private static ArtifactVersion getVersion(String version) {
       try {
         return ArtifactVersion.parseString(version);
       } catch (NumberFormatException e) {
-        throw new IllegalArgumentException("[" + callingCheckKey + "] Provided version does not match expected pattern:"
+        throw new IllegalArgumentException("Provided version does not match expected pattern:"
           + " <major version>.<minor version>.<incremental version> (recieved: " + version + ")", e);
       }
     }

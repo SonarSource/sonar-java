@@ -36,19 +36,8 @@ public class MavenDependencyVersionMatcherTest {
   }
 
   @Test
-  public void no_effect_matcher_should_always_match() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.alwaysMatchingVersionMatcher();
-
-    this.dependency.setVersion(null);
-    assertThat(matcher.matches(dependency)).isTrue();
-
-    setDependencyVersion("1234");
-    assertThat(matcher.matches(dependency)).isTrue();
-  }
-
-  @Test
   public void no_version() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("");
 
     this.dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isTrue();
@@ -62,7 +51,7 @@ public class MavenDependencyVersionMatcherTest {
 
   @Test
   public void wildcard() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("*", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("*");
 
     this.dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isTrue();
@@ -76,7 +65,7 @@ public class MavenDependencyVersionMatcherTest {
 
   @Test
   public void fixed_version() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1");
 
     this.dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isFalse();
@@ -87,13 +76,13 @@ public class MavenDependencyVersionMatcherTest {
     setDependencyVersion("1.2.3-SNAPSHOT");
     assertThat(matcher.matches(dependency)).isFalse();
 
-    matcher = MavenDependencyVersionMatcher.fromString("(1.2.3).*", "myCheck");
+    matcher = MavenDependencyVersionMatcher.fromString("(1.2.3).*");
     assertThat(matcher.matches(dependency)).isTrue();
   }
 
   @Test
   public void fixed_version_with_pattern() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("(1.2).*", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("(1.2).*");
 
     this.dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isFalse();
@@ -110,22 +99,22 @@ public class MavenDependencyVersionMatcherTest {
 
   @Test(expected=IllegalArgumentException.class)
   public void should_fail_to_create_ranged_version_because_of_upper_bound()  {
-    MavenDependencyVersionMatcher.fromString("1.2-1.invalid", "myCheck");
+    MavenDependencyVersionMatcher.fromString("1.2-1.invalid");
   }
 
   @Test(expected=IllegalArgumentException.class)
   public void should_fail_to_create_ranged_version_because_of_lower_bound()  {
-    MavenDependencyVersionMatcher.fromString("1.invalid-2.0", "myCheck");
+    MavenDependencyVersionMatcher.fromString("1.invalid-2.0");
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void should_fail_to_create_ranged_version_because_of_invalid_wildcard() {
-    MavenDependencyVersionMatcher.fromString("*-*", "myCheck");
+    MavenDependencyVersionMatcher.fromString("*-*");
   }
 
   @Test
   public void ranged_version_is_after() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.2-1.5.6", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.2-1.5.6");
 
     dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isFalse();
@@ -151,14 +140,14 @@ public class MavenDependencyVersionMatcherTest {
     setDependencyVersion("1.invalid");
     assertThat(matcher.matches(dependency)).isFalse();
 
-    matcher = MavenDependencyVersionMatcher.fromString("1.2.3-1.5", "myCheck");
+    matcher = MavenDependencyVersionMatcher.fromString("1.2.3-1.5");
     setDependencyVersion("1.3");
     assertThat(matcher.matches(dependency)).isTrue();
   }
 
   @Test
   public void ranged_version_with_wildcard_for_lower_bound() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("*-1.5.6", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("*-1.5.6");
 
     dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isFalse();
@@ -190,7 +179,7 @@ public class MavenDependencyVersionMatcherTest {
 
   @Test
   public void ranged_version_with_wildcard_for_upper_bound() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.5.6-*", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.5.6-*");
 
     dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isFalse();
@@ -222,7 +211,7 @@ public class MavenDependencyVersionMatcherTest {
 
   @Test
   public void ranged_version_is_before() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.2-1.5.6", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.2-1.5.6");
 
     dependency.setVersion(null);
     assertThat(matcher.matches(dependency)).isFalse();
@@ -254,7 +243,7 @@ public class MavenDependencyVersionMatcherTest {
 
   @Test
   public void ranged_version_is_in_range() {
-    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.2-1.5.6", "myCheck");
+    MavenDependencyVersionMatcher matcher = MavenDependencyVersionMatcher.fromString("1.2-1.5.6");
 
     setDependencyVersion("1.2");
     assertThat(matcher.matches(dependency)).isTrue();

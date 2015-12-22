@@ -19,29 +19,55 @@
  */
 package org.sonar.java.checks.maven.helpers;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.junit.Test;
+import org.sonar.maven.model.LocatedAttribute;
+import org.sonar.maven.model.maven2.Dependency;
 
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-import org.sonar.maven.model.LocatedAttribute;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class MavenDependencyAbstractMatcherTest {
-  
+
   @Test
-  public void wildcard() throws Exception {
+  public void wildcard() {
     assertThat(MavenDependencyAbstractMatcher.isWildCard("")).isTrue();
     assertThat(MavenDependencyAbstractMatcher.isWildCard("*")).isTrue();
     assertThat(MavenDependencyAbstractMatcher.isWildCard("?")).isFalse();
   }
-  
+
   @Test
-  public void matchPattern() throws Exception {
+  public void matchPattern() {
     assertThat(MavenDependencyAbstractMatcher.attributeMatchesPattern(null, null)).isFalse();
     assertThat(MavenDependencyAbstractMatcher.attributeMatchesPattern(new LocatedAttribute("test"), null)).isTrue();
     assertThat(MavenDependencyAbstractMatcher.attributeMatchesPattern(null, Pattern.compile(""))).isFalse();
     assertThat(MavenDependencyAbstractMatcher.attributeMatchesPattern(new LocatedAttribute("test"), Pattern.compile("[a-z]*"))).isTrue();
     assertThat(MavenDependencyAbstractMatcher.attributeMatchesPattern(new LocatedAttribute("0123"), Pattern.compile("[a-z]*"))).isFalse();
+  }
+
+  @Test
+  public void no_effect_matcher_should_always_match() {
+    MavenDependencyAbstractMatcher matcher = MavenDependencyAbstractMatcher.alwaysMatchingMatcher();
+
+    Dependency dependency = new Dependency();
+    dependency.setVersion(null);
+    assertThat(matcher.matches(dependency)).isTrue();
+
+    dependency.setVersion(new LocatedAttribute(""));
+    assertThat(matcher.matches(dependency)).isTrue();
+
+    dependency.setVersion(new LocatedAttribute("1234"));
+    assertThat(matcher.matches(dependency)).isTrue();
+  }
+
+  @Test
+  public void should_compile_valid_regex() {
+    assertThat(MavenDependencyAbstractMatcher.compileRegex(".*")).isNotNull();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void should_fail_on_invalid_regex() {
+    MavenDependencyAbstractMatcher.compileRegex("*");
   }
 
 }

@@ -23,8 +23,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.maven.helpers.MavenDependencyCollector;
-import org.sonar.java.checks.maven.helpers.MavenDependencyNameMatcher;
-import org.sonar.java.checks.maven.helpers.MavenDependencyVersionMatcher;
+import org.sonar.java.checks.maven.helpers.MavenDependencyMatcher;
 import org.sonar.maven.MavenFileScanner;
 import org.sonar.maven.MavenFileScannerContext;
 import org.sonar.maven.model.maven2.Dependency;
@@ -45,32 +44,28 @@ public class DisallowedDependenciesCheck implements MavenFileScanner {
 
   @RuleProperty(
     key = "dependencyName",
-    description = "Comma-delimited list of patterns describing forbidden dependencies. E.G. '*:.log4j', 'X.Y:*'")
+    description = "Comma-delimited list of patterns describing forbidden dependencies.")
   private String dependencyName = "";
-
-  @RuleProperty(
-    key = "version",
-    description = "Dependency version pattern or comma-delimited range. Leave blank for all versions. E.G. 1.0,3.1")
-  private String version = "";
 
   @Override
   public void scanFile(MavenFileScannerContext context) {
-    List<Dependency> dependencies = MavenDependencyCollector
+
+    List<MavenDependencyMatcher> matchers;
+    try {
+      matchers = MavenDependencyMatcher.fromString(dependencyName);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("[" + KEY + "] Unable to build matchers from provided dependency names: " + dependencyName, e);
+    }
+    MavenDependencyCollector collector = MavenDependencyCollector
       .forMavenProject(context.getMavenProject())
-      .withName(MavenDependencyNameMatcher.fromString(dependencyName, KEY))
-      .withVersion(MavenDependencyVersionMatcher.fromString(version, KEY))
-      .getDependencies();
-    for (Dependency dependency : dependencies) {
+      .withMatchers(matchers);
+    for (Dependency dependency : collector.getDependencies()) {
       context.reportIssue(this, dependency, "Remove this forbidden dependency.");
     }
   }
 
   public void setDependencyName(String dependencyName) {
     this.dependencyName = dependencyName;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
   }
 
 }

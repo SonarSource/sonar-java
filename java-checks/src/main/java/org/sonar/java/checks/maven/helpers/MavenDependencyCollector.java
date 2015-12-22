@@ -41,8 +41,7 @@ import java.util.List;
 public class MavenDependencyCollector {
 
   private List<Dependency> dependencies;
-  private List<MavenDependencyNameMatcher> nameMatchers = Collections.emptyList();
-  private MavenDependencyVersionMatcher versionMatcher = MavenDependencyVersionMatcher.alwaysMatchingVersionMatcher();
+  private List<? extends MavenDependencyAbstractMatcher> matchers = Collections.emptyList();
   private final MavenProject mavenProject;
 
   private MavenDependencyCollector(MavenProject mavenProject) {
@@ -59,22 +58,12 @@ public class MavenDependencyCollector {
   }
 
   /**
-   * Define the name matchers to be used when collecting dependencies. Optional.
+   * Define the matchers to be used when collecting dependencies. Optional.
    * @param matchers The list of matchers to be used
    * @return the current instance of {@link MavenDependencyCollector} configured to used provided matchers.
    */
-  public MavenDependencyCollector withName(List<MavenDependencyNameMatcher> matchers) {
-    this.nameMatchers = matchers;
-    return this;
-  }
-
-  /**
-   * Define the version matcher to be used when collecting dependencies. Optional.
-   * @param matcher The version matcher to be used
-   * @return the current instance of {@link MavenDependencyCollector} configured to used provided matchers.
-   */
-  public MavenDependencyCollector withVersion(MavenDependencyVersionMatcher matcher) {
-    this.versionMatcher = matcher;
+  public MavenDependencyCollector withMatchers(List<? extends MavenDependencyAbstractMatcher> matchers) {
+    this.matchers = matchers;
     return this;
   }
 
@@ -83,22 +72,18 @@ public class MavenDependencyCollector {
    * @return the list of matching dependencies
    */
   public List<Dependency> getDependencies() {
-    return collectDependencies();
-  }
-
-  private List<Dependency> collectDependencies() {
     this.dependencies = allDependencies(mavenProject);
-    if (nameMatchers.isEmpty()) {
+    if (matchers.isEmpty()) {
       return dependencies;
     }
-    return filterWithMatchers(dependencies, nameMatchers, versionMatcher);
+    return filterWithMatchers(dependencies, matchers);
   }
 
-  private static List<Dependency> filterWithMatchers(List<Dependency> dependencies, List<MavenDependencyNameMatcher> nameMatchers, MavenDependencyVersionMatcher versionMatcher) {
+  private static List<Dependency> filterWithMatchers(List<Dependency> dependencies, List<? extends MavenDependencyAbstractMatcher> matchers) {
     List<Dependency> result = new LinkedList<>();
     for (Dependency dependency : dependencies) {
-      for (MavenDependencyNameMatcher namePattern : nameMatchers) {
-        if (namePattern.matches(dependency) && versionMatcher.matches(dependency)) {
+      for (MavenDependencyAbstractMatcher matcher : matchers) {
+        if (matcher.matches(dependency)) {
           result.add(dependency);
           break;
         }

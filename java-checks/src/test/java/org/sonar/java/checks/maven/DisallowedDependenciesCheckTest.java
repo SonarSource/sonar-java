@@ -40,15 +40,13 @@ public class DisallowedDependenciesCheckTest {
 
   @Test
   public void simple_dependency_with_simple_version() {
-    check.setDependencyName("*:log4j");
-    check.setVersion("1.2.*");
+    check.setDependencyName("*:log4j:1.2.*");
     MavenCheckVerifier.verify("src/test/files/checks/maven/disallowedDependenciesCheck/simpleDependencyProvidedVersion-pom.xml", check);
   }
 
   @Test
   public void simple_dependency_with_range_version() {
-    check.setDependencyName("*:log4j");
-    check.setVersion("1.1.0-1.2.15");
+    check.setDependencyName("*:log4j:1.1.0-1.2.15");
     MavenCheckVerifier.verify("src/test/files/checks/maven/disallowedDependenciesCheck/simpleDependencyRangeVersion-pom.xml", check);
   }
 
@@ -60,15 +58,13 @@ public class DisallowedDependenciesCheckTest {
 
   @Test
   public void multiple_dependency_with_simple_version() {
-    check.setDependencyName("org.sonar.*:*,*:log4j");
-    check.setVersion("1.2.*");
+    check.setDependencyName("org.sonar.*:*:1.2.*,*:log4j:1.2.*");
     MavenCheckVerifier.verify("src/test/files/checks/maven/disallowedDependenciesCheck/multipleDependencyProvidedVersion-pom.xml", check);
   }
 
   @Test
   public void multiple_dependency_with_range_version() {
-    check.setDependencyName("org.sonar.*:*,*:log4j");
-    check.setVersion("1.1.0-1.2.15");
+    check.setDependencyName("org.sonar.*:*,*:log4j:1.2-1.3");
     MavenCheckVerifier.verify("src/test/files/checks/maven/disallowedDependenciesCheck/multipleDependencyRangeVersion-pom.xml", check);
   }
 
@@ -80,8 +76,7 @@ public class DisallowedDependenciesCheckTest {
 
   @Test(expected = IllegalArgumentException.class)
   public void should_fail_with_invalid_version_provided() {
-    check.setDependencyName("org.sonar.*:*");
-    check.setVersion("version-0");
+    check.setDependencyName("org.sonar.*:*:version-0");
     MavenCheckVerifier.verify("src/test/files/checks/maven/disallowedDependenciesCheck/simpleDependencyNoVersion-pom.xml", check);
   }
 

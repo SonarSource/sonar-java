@@ -40,8 +40,6 @@ import static org.mockito.Mockito.when;
 
 public class MavenDependencyCollectorTest {
 
-  private static final String CHECK_KEY = "test";
-
   @Test
   public void no_dependency() throws Exception {
     assertThat(MavenDependencyCollector.forMavenProject(parse("noDependency")).getDependencies()).isEmpty();
@@ -83,17 +81,17 @@ public class MavenDependencyCollectorTest {
     MavenDependencyCollector collector = MavenDependencyCollector.forMavenProject(mockProject);
     assertThat(collector.getDependencies()).hasSize(4);
 
-    List<MavenDependencyNameMatcher> matchers = Collections.<MavenDependencyNameMatcher>emptyList();
-    assertThat(collector.withName(matchers).getDependencies()).hasSize(4);
+    List<MavenDependencyMatcher> matchers = Collections.<MavenDependencyMatcher>emptyList();
+    assertThat(collector.withMatchers(matchers).getDependencies()).hasSize(4);
 
-    matchers = MavenDependencyNameMatcher.fromString("*:e", CHECK_KEY);
-    assertThat(collector.withName(matchers).getDependencies()).hasSize(1);
+    matchers = MavenDependencyMatcher.fromString("*:e");
+    assertThat(collector.withMatchers(matchers).getDependencies()).hasSize(1);
 
-    matchers = MavenDependencyNameMatcher.fromString("*:e,log:*", CHECK_KEY);
-    assertThat(collector.withName(matchers).getDependencies()).hasSize(2);
+    matchers = MavenDependencyMatcher.fromString("*:e,log:*");
+    assertThat(collector.withMatchers(matchers).getDependencies()).hasSize(2);
 
-    matchers = MavenDependencyNameMatcher.fromString("a.b.c:e", CHECK_KEY);
-    assertThat(collector.withName(matchers).getDependencies()).hasSize(1);
+    matchers = MavenDependencyMatcher.fromString("a.b.c:e");
+    assertThat(collector.withMatchers(matchers).getDependencies()).hasSize(1);
   }
 
   @Test
@@ -105,14 +103,13 @@ public class MavenDependencyCollectorTest {
       createDependency("a.b.c", "g", "4.5"),
       createDependency("log", "log", "4.5.6"));
 
-    List<MavenDependencyNameMatcher> nameMatchers = MavenDependencyNameMatcher.fromString("*:*", CHECK_KEY);
-    MavenDependencyCollector collector = MavenDependencyCollector.forMavenProject(mockProject).withName(nameMatchers);
+    List<MavenDependencyMatcher> matchers = MavenDependencyMatcher.fromString("*:*");
+    MavenDependencyCollector collector = MavenDependencyCollector.forMavenProject(mockProject);
 
-    MavenDependencyVersionMatcher versionMatcher = MavenDependencyVersionMatcher.fromString("", CHECK_KEY);
-    assertThat(collector.withVersion(versionMatcher).getDependencies()).hasSize(5);
+    assertThat(collector.withMatchers(matchers).getDependencies()).hasSize(5);
 
-    versionMatcher = MavenDependencyVersionMatcher.fromString("4.5.*", CHECK_KEY);
-    assertThat(collector.withVersion(versionMatcher).getDependencies()).hasSize(2);
+    matchers = MavenDependencyMatcher.fromString("*:*:4.5.*");
+    assertThat(collector.withMatchers(matchers).getDependencies()).hasSize(2);
   }
 
   private static MavenProject parse(String testCase) {

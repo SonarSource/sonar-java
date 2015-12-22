@@ -26,9 +26,6 @@ import javax.annotation.Nullable;
 
 import java.util.regex.Pattern;
 
-/**
- * Abstract matcher class providing signature of methods required for any dependency matcher as well as utility methods.
- */
 public abstract class MavenDependencyAbstractMatcher {
 
   /**
@@ -62,4 +59,22 @@ public abstract class MavenDependencyAbstractMatcher {
     }
     return pattern.matcher(attribute.getValue()).matches();
   }
+
+  public static MavenDependencyAbstractMatcher alwaysMatchingMatcher() {
+    return new MavenDependencyAbstractMatcher() {
+      @Override
+      public boolean matches(Dependency dependency) {
+        return true;
+      }
+    };
+  }
+
+  public static Pattern compileRegex(String regex) {
+    try {
+      return Pattern.compile(regex, Pattern.DOTALL);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Unable to compile the regular expression: " + regex, e);
+    }
+  }
+
 }

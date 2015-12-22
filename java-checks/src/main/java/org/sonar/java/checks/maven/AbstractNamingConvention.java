@@ -36,19 +36,15 @@ public abstract class AbstractNamingConvention implements MavenFileScanner {
   public void scanFile(MavenFileScannerContext context) {
     String regex = getRegex();
     if (pattern == null) {
-      pattern = compileRegex(regex, getRuleKey());
+      try {
+        pattern = Pattern.compile(regex, Pattern.DOTALL);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException("[" + getRuleKey() + "] Unable to compile the regular expression: " + regex, e);
+      }
     }
     NamedLocatedAttribute namedAttribute = getTargetedLocatedAttribute(context.getMavenProject());
     if (namedAttribute.attribute != null && !pattern.matcher(namedAttribute.attribute.getValue()).matches()) {
       context.reportIssue(this, namedAttribute.attribute, "Update this \"" + namedAttribute.name + "\" to match the provided regular expression: '" + regex + "'");
-    }
-  }
-
-  public static Pattern compileRegex(String regex, String callingRuleKey) {
-    try {
-      return Pattern.compile(regex, Pattern.DOTALL);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("[" + callingRuleKey + "] Unable to compile the regular expression: " + regex, e);
     }
   }
 
