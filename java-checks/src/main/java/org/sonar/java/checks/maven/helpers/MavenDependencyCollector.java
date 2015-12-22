@@ -35,19 +35,64 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Class to be used to collect and filter dependencies from a Maven project pom.xml file
+ */
 public class MavenDependencyCollector {
 
-  private final List<Dependency> dependencies;
+  private List<Dependency> dependencies;
+  private List<? extends MavenDependencyAbstractMatcher> matchers = Collections.emptyList();
+  private final MavenProject mavenProject;
 
-  public MavenDependencyCollector(MavenProject mavenProject) {
-    dependencies = collectAllDependencies(mavenProject);
+  private MavenDependencyCollector(MavenProject mavenProject) {
+    this.mavenProject = mavenProject;
   }
 
-  public List<Dependency> allDependencies() {
-    return dependencies;
+  /**
+   * Create a default {@link MavenDependencyCollector} for a given {@link MavenProject}. Only manner to get a Collector.
+   * @param mavenProject The maven project to inspect
+   * @return a new instance of {@link MavenDependencyCollector}
+   */
+  public static MavenDependencyCollector forMavenProject(MavenProject mavenProject) {
+    return new MavenDependencyCollector(mavenProject);
   }
 
-  private static List<Dependency> collectAllDependencies(MavenProject mavenProject) {
+  /**
+   * Define the matchers to be used when collecting dependencies. Optional.
+   * @param matchers The list of matchers to be used
+   * @return the current instance of {@link MavenDependencyCollector} configured to used provided matchers.
+   */
+  public MavenDependencyCollector withMatchers(List<? extends MavenDependencyAbstractMatcher> matchers) {
+    this.matchers = matchers;
+    return this;
+  }
+
+  /**
+   * Retrieve the dependencies matching the current {@link MavenDependencyCollector} configuration.
+   * @return the list of matching dependencies
+   */
+  public List<Dependency> getDependencies() {
+    this.dependencies = allDependencies(mavenProject);
+    if (matchers.isEmpty()) {
+      return dependencies;
+    }
+    return filterWithMatchers(dependencies, matchers);
+  }
+
+  private static List<Dependency> filterWithMatchers(List<Dependency> dependencies, List<? extends MavenDependencyAbstractMatcher> matchers) {
+    List<Dependency> result = new LinkedList<>();
+    for (Dependency dependency : dependencies) {
+      for (MavenDependencyAbstractMatcher matcher : matchers) {
+        if (matcher.matches(dependency)) {
+          result.add(dependency);
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  private static List<Dependency> allDependencies(MavenProject mavenProject) {
     List<Dependency> results = new LinkedList<>();
     results.addAll(fromDependencyManagement(mavenProject.getDependencyManagement()));
     results.addAll(mavenProject.getDependencies() != null ? mavenProject.getDependencies().getDependencies() : Collections.<Dependency>emptyList());
