@@ -47,7 +47,7 @@ public class DependencyWithSystemScopeCheck implements MavenFileScanner {
 
   @Override
   public void scanFile(MavenFileScannerContext context) {
-    List<Dependency> dependencies = new MavenDependencyCollector(context.getMavenProject()).allDependencies();
+    List<Dependency> dependencies = MavenDependencyCollector.forMavenProject(context.getMavenProject()).getDependencies();
     for (Dependency dependency : dependencies) {
       LocatedAttribute scope = dependency.getScope();
       if (scope != null && "system".equalsIgnoreCase(scope.getValue())) {

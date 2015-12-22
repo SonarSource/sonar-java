@@ -35,19 +35,79 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Class to be used to collect and filter dependencies from a Maven project pom.xml file
+ */
 public class MavenDependencyCollector {
 
-  private final List<Dependency> dependencies;
+  private List<Dependency> dependencies;
+  private List<MavenDependencyNameMatcher> nameMatchers = Collections.emptyList();
+  private MavenDependencyVersionMatcher versionMatcher = MavenDependencyVersionMatcher.alwaysMatchingVersionMatcher();
+  private final MavenProject mavenProject;
 
-  public MavenDependencyCollector(MavenProject mavenProject) {
-    dependencies = collectAllDependencies(mavenProject);
+  private MavenDependencyCollector(MavenProject mavenProject) {
+    this.mavenProject = mavenProject;
   }
 
-  public List<Dependency> allDependencies() {
-    return dependencies;
+  /**
+   * Create a default {@link MavenDependencyCollector} for a given {@link MavenProject}. Only manner to get a Collector.
+   * @param mavenProject The maven project to inspect
+   * @return a new instance of {@link MavenDependencyCollector}
+   */
+  public static MavenDependencyCollector forMavenProject(MavenProject mavenProject) {
+    return new MavenDependencyCollector(mavenProject);
   }
 
-  private static List<Dependency> collectAllDependencies(MavenProject mavenProject) {
+  /**
+   * Define the name matchers to be used when collecting dependencies. Optional.
+   * @param matchers The list of matchers to be used
+   * @return the current instance of {@link MavenDependencyCollector} configured to used provided matchers.
+   */
+  public MavenDependencyCollector withName(List<MavenDependencyNameMatcher> matchers) {
+    this.nameMatchers = matchers;
+    return this;
+  }
+
+  /**
+   * Define the version matcher to be used when collecting dependencies. Optional.
+   * @param matcher The version matcher to be used
+   * @return the current instance of {@link MavenDependencyCollector} configured to used provided matchers.
+   */
+  public MavenDependencyCollector withVersion(MavenDependencyVersionMatcher matcher) {
+    this.versionMatcher = matcher;
+    return this;
+  }
+
+  /**
+   * Retrieve the dependencies matching the current {@link MavenDependencyCollector} configuration.
+   * @return the list of matching dependencies
+   */
+  public List<Dependency> getDependencies() {
+    return collectDependencies();
+  }
+
+  private List<Dependency> collectDependencies() {
+    this.dependencies = allDependencies(mavenProject);
+    if (nameMatchers.isEmpty()) {
+      return dependencies;
+    }
+    return filterWithMatchers(dependencies, nameMatchers, versionMatcher);
+  }
+
+  private static List<Dependency> filterWithMatchers(List<Dependency> dependencies, List<MavenDependencyNameMatcher> nameMatchers, MavenDependencyVersionMatcher versionMatcher) {
+    List<Dependency> result = new LinkedList<>();
+    for (Dependency dependency : dependencies) {
+      for (MavenDependencyNameMatcher namePattern : nameMatchers) {
+        if (namePattern.matches(dependency) && versionMatcher.matches(dependency)) {
+          result.add(dependency);
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  private static List<Dependency> allDependencies(MavenProject mavenProject) {
     List<Dependency> results = new LinkedList<>();
     results.addAll(fromDependencyManagement(mavenProject.getDependencyManagement()));
     results.addAll(mavenProject.getDependencies() != null ? mavenProject.getDependencies().getDependencies() : Collections.<Dependency>emptyList());
