@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.checks.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.maven.DependencyWithSystemScopeCheck;
+import org.sonar.java.checks.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.maven.PomElementOrderCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -392,6 +393,7 @@ public final class CheckList {
       .add(DependencyWithSystemScopeCheck.class)
       .add(GroupIdNamingConventionCheck.class)
       .add(ArtifactIdNamingConventionCheck.class)
+      .add(DisallowedDependenciesCheck.class)
       .build();
   }
 }
