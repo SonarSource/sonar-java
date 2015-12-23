@@ -50,7 +50,7 @@ public class SelfAssignementCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     AssignmentExpressionTree node = (AssignmentExpressionTree) tree;
     if (SyntacticEquivalence.areEquivalent(node.expression(), node.variable())) {
-      addIssue(tree, "Remove or correct this useless self-assignment.");
+      reportIssue(node.operatorToken(), "Remove or correct this useless self-assignment.");
     }
   }
 

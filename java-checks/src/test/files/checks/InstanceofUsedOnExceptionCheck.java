@@ -4,7 +4,7 @@ class A {
   private void f() {
     try {
     } catch (Exception e) {
-      if (e instanceof IOException) { // Noncompliant {{Replace the usage of the "instanceof" operator by a catch block.}}
+      if (e instanceof IOException) { // Noncompliant [[sc=13;ec=23]] {{Replace the usage of the "instanceof" operator by a catch block.}}
       }
 
       if (foo instanceof IOException) {

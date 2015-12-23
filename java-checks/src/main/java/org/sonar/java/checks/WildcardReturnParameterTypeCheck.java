@@ -84,7 +84,7 @@ public class WildcardReturnParameterTypeCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitWildcard(WildcardTree tree) {
       if (!classType) {
-        addIssue(tree, "Remove usage of generic wildcard type.");
+        reportIssue(tree.queryToken(), "Remove usage of generic wildcard type.");
       }
     }
   }

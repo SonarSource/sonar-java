@@ -31,6 +31,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -67,7 +68,7 @@ public class MainInServletCheck extends SubscriptionBaseVisitor {
     if (isServletOrEjb(symbol)) {
       for (Tree member : node.members()) {
         if (member.is(Tree.Kind.METHOD) && ((MethodTreeImpl) member).isMainMethod()) {
-          addIssue(member, "Remove this unwanted \"main\" method.");
+          reportIssue(((MethodTree) member).simpleName(), "Remove this unwanted \"main\" method.");
         }
       }
     }

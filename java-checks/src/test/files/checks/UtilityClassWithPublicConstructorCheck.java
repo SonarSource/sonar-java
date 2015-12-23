@@ -1,3 +1,5 @@
+import java.lang.Object;
+
 class Foo1 {
 }
 
@@ -6,7 +8,7 @@ class Foo2 {
   }
 }
 
-class Foo3 { // Noncompliant {{Add a private constructor to hide the implicit public one.}}
+class Foo3 { // Noncompliant [[sc=7;ec=11]] {{Add a private constructor to hide the implicit public one.}}
   public static void foo() {
   }
 }
@@ -94,4 +96,9 @@ class Foo13 {
   }
   
   ;
+}
+
+class Foo14 { // Noncompliant [[sc=7;ec=12]] {{Add a private constructor to hide the implicit public one.}}
+  static {
+  }
 }

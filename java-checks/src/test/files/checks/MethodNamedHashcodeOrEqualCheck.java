@@ -17,7 +17,7 @@ class A {
     return 0;
   }
 
-  void equal() { // Noncompliant {{Either override Object.equals(Object obj), or totally rename the method to prevent any confusion.}}
+  void equal() { // Noncompliant [[sc=8;ec=13]] {{Either override Object.equals(Object obj), or totally rename the method to prevent any confusion.}}
   }
 
   int equal(Object obj) { // Noncompliant

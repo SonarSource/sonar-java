@@ -71,7 +71,7 @@ public class DefaultInitializedFieldCheck extends SubscriptionBaseVisitor {
     if (initializer != null) {
       initializer = ExpressionsHelper.skipParentheses(initializer);
       if (isDefault(initializer, member.type().symbolType().isPrimitive())) {
-        addIssue(member, "Remove this initialization to \"" + ((LiteralTree) initializer).value() + "\", the compiler will do that for you.");
+        reportIssue(initializer, "Remove this initialization to \"" + ((LiteralTree) initializer).value() + "\", the compiler will do that for you.");
       }
     }
   }

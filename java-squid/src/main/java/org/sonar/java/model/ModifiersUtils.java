@@ -23,7 +23,9 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 
-public class ModifiersUtils {
+import javax.annotation.CheckForNull;
+
+public final class ModifiersUtils {
 
   private ModifiersUtils() {
     // This class only contains static methods
@@ -36,5 +38,15 @@ public class ModifiersUtils {
       }
     }
     return false;
+  }
+
+  @CheckForNull
+  public static ModifierKeywordTree getModifier(ModifiersTree modifiers, Modifier modifier) {
+    for (ModifierKeywordTree modifierKeywordTree : modifiers.modifiers()) {
+      if (modifier.equals(modifierKeywordTree.modifier())) {
+        return modifierKeywordTree;
+      }
+    }
+    return null;
   }
 }

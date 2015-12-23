@@ -20,9 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,11 +57,6 @@ public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean hasConstant(ClassTree tree) {
-    for (Tree member : tree.members()) {
-      if (member.is(Tree.Kind.VARIABLE)) {
-        return true;
-      }
-    }
-    return false;
+    return Iterables.any(tree.members(), SyntaxNodePredicates.kind(Tree.Kind.VARIABLE));
   }
 }

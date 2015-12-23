@@ -29,6 +29,7 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -65,18 +66,19 @@ public class ProtectedMemberInFinalClassCheck extends SubscriptionBaseVisitor {
   private void checkMember(Tree member) {
     if (member.is(Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) member;
-      checkMemberModifier(variableTree.modifiers(), variableTree);
+      checkMemberModifier(variableTree.modifiers());
     } else if (member.is(Kind.METHOD)) {
       MethodTreeImpl methodTree = (MethodTreeImpl) member;
       if (BooleanUtils.isFalse(methodTree.isOverriding())) {
-        checkMemberModifier(methodTree.modifiers(), methodTree.simpleName());
+        checkMemberModifier(methodTree.modifiers());
       }
     }
   }
 
-  private void checkMemberModifier(ModifiersTree modifiers, Tree reportingTree) {
-    if (ModifiersUtils.hasModifier(modifiers, Modifier.PROTECTED)) {
-      addIssue(reportingTree, "Remove this \"protected\" modifier.");
+  private void checkMemberModifier(ModifiersTree modifiers) {
+    ModifierKeywordTree modifier = ModifiersUtils.getModifier(modifiers, Modifier.PROTECTED);
+    if (modifier != null) {
+      reportIssue(modifier.keyword(), "Remove this \"protected\" modifier.");
     }
   }
 

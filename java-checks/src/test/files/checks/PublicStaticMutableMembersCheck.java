@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.EnumSet;
 
 public class A {
-  public static String [] strings1 = {"first","second"};  // Noncompliant {{Make this member "protected".}}
+  public static String [] strings1 = {"first","second"};  // Noncompliant [[sc=27;ec=35]] {{Make this member "protected".}}
   public static String [] strings2 = {"first","second"};  // Noncompliant
 
   protected static final String [] strings3 = {"first","second"};

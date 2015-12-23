@@ -10,7 +10,7 @@ public class MyServlet extends HttpServlet {
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
   }
 
-  public static void main(String[] args) { // Noncompliant
+  public static void main(String[] args) { // Noncompliant [[sc=22;ec=26]] {{Remove this unwanted "main" method.}}
   }
 }
 

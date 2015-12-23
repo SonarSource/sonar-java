@@ -4,7 +4,7 @@ class A {
   int foo() {
     Date d = new Date();
     d.setDate(25);
-    d.setDate(32);// Noncompliant {{"32" is not a valid value for "setDate" method.}}
+    d.setDate(32);// Noncompliant [[sc=15;ec=17]] {{"32" is not a valid value for "setDate" method.}}
     d.setYear(2014);
     d.setMonth(11);
     d.setMonth(12); // Noncompliant {{"12" is not a valid value for "setMonth" method.}}
@@ -40,7 +40,7 @@ class A {
     gc = new GregorianCalendar(2015, 11, 31);
     gc = new GregorianCalendar(2015, 11, 32); // Noncompliant {{"32" is not a valid value for setting "dayOfMonth".}}
     gc = new GregorianCalendar(2015, 11, 31, 23, 59);
-    gc = new GregorianCalendar(2015, 11, 31, 24, 60); // Noncompliant {{"24" is not a valid value for setting "hourOfDay".}}
+    gc = new GregorianCalendar(2015, 11, 31, 24, 60); // Noncompliant [[sc=46;ec=48]] {{"24" is not a valid value for setting "hourOfDay".}}
     gc = new GregorianCalendar(2015, 11, 31, 23, 59);
     gc = new GregorianCalendar(2015, 11, 31, 23, 61); // Noncompliant {{"61" is not a valid value for setting "minute".}}
     gc = new GregorianCalendar(2015, 11, 31, 23, 59, 61);

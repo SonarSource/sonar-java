@@ -84,7 +84,7 @@ public class FinalizeFieldsSetCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
       if (isFieldAssignment(tree) && isNullAssignment(tree)) {
-        addIssue(tree, "Remove this nullification of \"" + getFieldName(tree) + "\".");
+        reportIssue(tree.expression(), "Remove this nullification of \"" + getFieldName(tree) + "\".");
       }
     }
 

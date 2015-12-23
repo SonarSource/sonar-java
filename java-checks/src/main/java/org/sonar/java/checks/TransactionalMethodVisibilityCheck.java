@@ -57,7 +57,7 @@ public class TransactionalMethodVisibilityCheck extends SubscriptionBaseVisitor 
       isPublic = method.symbol().isPublic();
     }
     if (!isPublic && hasTransactionalAnnotation(method)) {
-      addIssue(method, "Make this method \"public\" or remove the \"@Transactional\" annotation");
+      reportIssue(method.simpleName(), "Make this method \"public\" or remove the \"@Transactional\" annotation");
     }
   }
 

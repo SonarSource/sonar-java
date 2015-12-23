@@ -5,7 +5,7 @@ class A {
 
   @Override
   protected void finalize() {
-    myString = null; // Noncompliant {{Remove this nullification of "myString".}}
+    myString = null; // Noncompliant [[sc=16;ec=20]] {{Remove this nullification of "myString".}}
     myInteger = null; // Noncompliant
     myObject = null; // Noncompliant
 

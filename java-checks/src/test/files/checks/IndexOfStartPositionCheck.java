@@ -7,7 +7,7 @@ class A {
   void nonCompliant() {
     String name = "ismael";
 
-    if (name.indexOf(ae()) > 2) { // Noncompliant {{Use ".indexOf(xxx,n) > -1" instead.}}
+    if (name.indexOf(ae()) > 2) { // Noncompliant [[sc=14;ec=21]] {{Use ".indexOf(xxx,n) > -1" instead.}}
       // ...
     }
     if (name.indexOf("ae") > 1) { // Noncompliant {{Use ".indexOf("ae",n) > -1" instead.}}

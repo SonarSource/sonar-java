@@ -1,4 +1,4 @@
-class A<T, S> { // Noncompliant {{S is not used in the class.}}
+class A<T, S> { // Noncompliant [[sc=12;ec=13]] {{S is not used in the class.}}
   T field;
   <W,X> void fun(X x) {} // Noncompliant {{W is not used in the method.}}
 }

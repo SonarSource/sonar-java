@@ -210,7 +210,7 @@ public class InvalidDateValuesCheck extends AbstractMethodDetection {
     if (literal != null) {
       int argValue = Integer.parseInt(literal.value()) * sign;
       if (argValue > Threshold.getThreshold(name) || argValue < 0) {
-        addIssue(arg, MessageFormat.format(message, argValue, name));
+        reportIssue(arg, MessageFormat.format(message, argValue, name));
       }
     }
   }

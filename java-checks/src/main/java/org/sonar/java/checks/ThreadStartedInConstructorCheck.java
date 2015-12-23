@@ -24,6 +24,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -65,7 +66,7 @@ public class ThreadStartedInConstructorCheck extends SubscriptionBaseVisitor {
       } else if (tree.is(Tree.Kind.METHOD, Tree.Kind.STATIC_INITIALIZER)) {
         inMethodOrStaticInitializerOrFinalClass.push(Boolean.TRUE);
       } else if (BooleanUtils.isFalse(inMethodOrStaticInitializerOrFinalClass.peek()) && THREAD_START.matches((MethodInvocationTree) tree)) {
-        addIssue(tree, "Move this \"start\" call to another method.");
+        reportIssue(MethodsHelper.methodName((MethodInvocationTree) tree), "Move this \"start\" call to another method.");
       }
     }
   }

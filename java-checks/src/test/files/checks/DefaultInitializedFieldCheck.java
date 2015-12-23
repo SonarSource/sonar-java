@@ -24,7 +24,7 @@ class a {
   double d2;
   double d3 = 0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001; // Compliant, not 0
   char c = 0; // Noncompliant {{Remove this initialization to "0", the compiler will do that for you.}}
-  char c1 = '\u0000'; // Noncompliant {{Remove this initialization to "'\u0000'", the compiler will do that for you.}}
+  char c1 = '\u0000'; // Noncompliant [[sc=13;ec=21]] {{Remove this initialization to "'\u0000'", the compiler will do that for you.}}
   char c2 = '0';
   char c3;
   char ch4 = '\0'; // Noncompliant {{Remove this initialization to "'\0'", the compiler will do that for you.}}

@@ -1,5 +1,5 @@
 class A {
-  private void equals() { // Noncompliant {{Either override Object.equals(Object), or totally rename the method to prevent any confusion.}}
+  private void equals() { // Noncompliant [[sc=16;ec=22]] {{Either override Object.equals(Object), or totally rename the method to prevent any confusion.}}
   }
 
   private void equals(Object o) { // Compliant - methods cannot differ only by return type

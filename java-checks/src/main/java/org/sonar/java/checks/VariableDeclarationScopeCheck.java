@@ -77,7 +77,7 @@ public class VariableDeclarationScopeCheck extends SubscriptionBaseVisitor {
       if (referenceVisitor.referenceSymbol) {
         return;
       } else if (referenceVisitor.hasBreakingStatement) {
-        addIssue(variable, "Move the declaration of \"" + symbol.name() + "\" closer to the code that uses it.");
+        reportIssue(variable.simpleName(), "Move the declaration of \"" + symbol.name() + "\" closer to the code that uses it.");
         return;
       }
     }

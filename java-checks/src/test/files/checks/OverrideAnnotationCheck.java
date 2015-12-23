@@ -2,7 +2,7 @@ class A {
   void foo(){} // Compliant
 }
 interface I {
-  public void finalize(); // Noncompliant {{Add the "@Override" annotation above this method signature}}
+  public void finalize(); // Noncompliant [[sc=15;ec=23]] {{Add the "@Override" annotation above this method signature}}
   void bar(); // Compliant
 }
 interface J extends I {

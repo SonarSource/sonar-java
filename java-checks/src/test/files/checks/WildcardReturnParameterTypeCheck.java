@@ -13,7 +13,7 @@ class Animal {
   }
 
   class InnerCat {
-    public List<? extends Cat> getCats() {            // Noncompliant
+    public List<? extends Cat> getCats() {            // Noncompliant [[sc=17;ec=18]]
     }
   }
 

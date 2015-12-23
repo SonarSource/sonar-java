@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.tag.Tag;
@@ -85,7 +86,7 @@ public class IndexOfStartPositionCheck extends SubscriptionBaseVisitor {
       }
       Long otherValue = LiteralUtils.longLiteralValue(other);
       if (otherValue != null && otherValue != -1 && otherValue != 0) {
-        addIssue(mit, "Use \".indexOf(" + replaceMessage + ",n) > -1\" instead.");
+        reportIssue(MethodsHelper.methodName(mit), "Use \".indexOf(" + replaceMessage + ",n) > -1\" instead.");
       }
     }
   }

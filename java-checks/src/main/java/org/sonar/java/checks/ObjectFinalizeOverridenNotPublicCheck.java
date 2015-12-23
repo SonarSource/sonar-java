@@ -54,7 +54,7 @@ public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisit
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (isFinalize(methodTree) && isPublic(methodTree)) {
-      addIssue(methodTree.simpleName(), "Make this finalize() method protected.");
+      reportIssue(methodTree.simpleName(), "Make this finalize() method protected.");
     }
   }
 
@@ -63,11 +63,11 @@ public class ObjectFinalizeOverridenNotPublicCheck extends SubscriptionBaseVisit
   }
 
   private static boolean isFinalize(MethodTree methodTree) {
-    if("finalize".equals(methodTree.simpleName().name()) ) {
+    if ("finalize".equals(methodTree.simpleName().name())) {
       Tree returnType = methodTree.returnType();
-      if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
+      if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
         return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
-     }
+      }
     }
     return false;
   }

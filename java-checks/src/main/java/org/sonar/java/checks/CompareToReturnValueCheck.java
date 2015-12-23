@@ -87,7 +87,7 @@ public class CompareToReturnValueCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       if (returnsIntegerMinValue(tree.expression())) {
-        addIssue(tree, "Simply return -1");
+        reportIssue(tree.expression(), "Simply return -1");
       }
     }
 

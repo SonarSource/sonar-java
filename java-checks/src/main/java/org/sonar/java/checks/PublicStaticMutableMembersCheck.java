@@ -50,7 +50,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -96,7 +95,7 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
     "com.google.common.collect.ImmutableMap",
     "com.google.common.collect.ImmutableCollection"
   );
-  
+
   private static final Set<String> ACCEPTED_NEW_TYPES = ImmutableSet.of(
     "org.apache.commons.collections4.list.UnmodifiableList"
   );
@@ -137,7 +136,7 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
         if (owner.is(Tree.Kind.INTERFACE)) {
           message = MessageFormat.format("Move \"{0}\" to a class and lower its visibility", variableTree.simpleName().name());
         }
-        addIssue(variableTree, message);
+        reportIssue(variableTree.simpleName(), message);
       } else {
         IMMUTABLE_CANDIDATES.add(symbol);
         CLASS_IMMUTABLE_CANDIDATES.put(owner, symbol);
@@ -151,9 +150,10 @@ public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
       variable = ((MemberSelectExpressionTree) variable).identifier();
     }
     if (variable.is(Tree.Kind.IDENTIFIER)) {
-      Symbol symbol = ((IdentifierTree) variable).symbol();
+      IdentifierTree identifierTree = (IdentifierTree) variable;
+      Symbol symbol = identifierTree.symbol();
       if (IMMUTABLE_CANDIDATES.contains(symbol) && isMutable(node.expression(), symbol.type())) {
-        addIssue(variable, "Make member \"" + symbol.name() + "\" \"protected\".");
+        reportIssue(identifierTree, "Make member \"" + symbol.name() + "\" \"protected\".");
         IMMUTABLE_CANDIDATES.remove(symbol);
       }
     }

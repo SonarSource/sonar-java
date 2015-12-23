@@ -5,7 +5,7 @@ class A {
     Thread.sleep(12, 13);
     synchronized(monitor) {
       while(notReady()){
-        Thread.sleep(200);    // Noncompliant {{Replace the call to "Thread.sleep(...)" with a call to "wait(...)".}}
+        Thread.sleep(200);    // Noncompliant [[sc=16;ec=21]] {{Replace the call to "Thread.sleep(...)" with a call to "wait(...)".}}
         Thread.sleep(200, 12); // Noncompliant
       }
       process();

@@ -57,14 +57,14 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
     ClassTree classTree = (ClassTree) tree;
     if (!extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
       boolean hasImplicitPublicConstructor = true;
-      for (Tree explicitConstructor : getExplicitConstructors(classTree)) {
+      for (MethodTree explicitConstructor : getExplicitConstructors(classTree)) {
         hasImplicitPublicConstructor = false;
         if (isPublicConstructor(explicitConstructor)) {
-          addIssue(explicitConstructor, "Hide this public constructor.");
+          reportIssue(explicitConstructor.simpleName(), "Hide this public constructor.");
         }
       }
       if (hasImplicitPublicConstructor) {
-        addIssue(classTree, "Add a private constructor to hide the implicit public one.");
+        reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
       }
     }
   }
@@ -109,11 +109,11 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
     return ModifiersUtils.hasModifier(modifiers, Modifier.STATIC);
   }
 
-  private static List<Tree> getExplicitConstructors(ClassTree classTree) {
-    ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+  private static List<MethodTree> getExplicitConstructors(ClassTree classTree) {
+    ImmutableList.Builder<MethodTree> builder = ImmutableList.builder();
     for (Tree member : classTree.members()) {
       if (isConstructor(member)) {
-        builder.add(member);
+        builder.add((MethodTree) member);
       }
     }
     return builder.build();

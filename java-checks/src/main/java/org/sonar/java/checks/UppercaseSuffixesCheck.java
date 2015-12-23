@@ -54,7 +54,7 @@ public class UppercaseSuffixesCheck extends SubscriptionBaseVisitor {
     String value = ((LiteralTree) tree).value();
     char suffix = value.charAt(value.length() - 1);
     if (LITERAL_SUFFIXES.contains(suffix)) {
-      addIssue(tree, "Upper-case this literal \"" + suffix + "\" suffix.");
+      reportIssue(tree, "Upper-case this literal \"" + suffix + "\" suffix.");
     }
   }
 }

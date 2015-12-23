@@ -59,7 +59,7 @@ public class MethodTooBigCheck extends SubscriptionBaseVisitor {
     if (block != null) {
       int lines = getLines(block);
       if (lines > max) {
-        addIssue(block.openBraceToken(), "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");
+        reportIssue(methodTree.simpleName(), "This method has " + lines + " lines, which is greater than the " + max + " lines authorized. Split it into smaller methods.");
       }
     }
   }

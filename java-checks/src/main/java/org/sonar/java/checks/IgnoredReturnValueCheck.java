@@ -28,6 +28,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -68,7 +69,8 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
       MethodInvocationTree mit = (MethodInvocationTree) est.expression();
       Type methodType = mit.symbolType();
       if (!returnsVoid(methodType) && isCheckedType(mit)) {
-        addIssue(tree, "The return value of \"" + methodName(mit) + "\" must be used.");
+        IdentifierTree methodName = MethodsHelper.methodName(mit);
+        reportIssue(methodName, "The return value of \"" + methodName.name() + "\" must be used.");
       }
     }
   }
@@ -87,7 +89,4 @@ public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
     return methodType.isVoid() || methodType.isUnknown();
   }
 
-  private static String methodName(MethodInvocationTree mit) {
-    return MethodsHelper.methodName(mit).name();
-  }
 }

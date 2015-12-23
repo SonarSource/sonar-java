@@ -1,7 +1,7 @@
 class A implements Comparable<A> {
   @Override
   public int compareTo(A a) {
-    return Integer.MIN_VALUE; // Noncompliant {{Simply return -1}}
+    return Integer.MIN_VALUE; // Noncompliant [[sc=12;ec=29]] {{Simply return -1}}
   }
   
   public int compareTo() {

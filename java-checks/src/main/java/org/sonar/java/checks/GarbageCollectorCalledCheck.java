@@ -44,7 +44,6 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class GarbageCollectorCalledCheck extends SubscriptionBaseVisitor {
 
-
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
@@ -56,7 +55,7 @@ public class GarbageCollectorCalledCheck extends SubscriptionBaseVisitor {
     if (mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) mit.methodSelect();
       if (isGarbageCollectorCall(mset)) {
-        addIssue(tree, "Don't try to be smarter than the JVM, remove this call to run the garbage collector.");
+        reportIssue(mset.identifier(), "Don't try to be smarter than the JVM, remove this call to run the garbage collector.");
       }
     }
   }
@@ -68,12 +67,12 @@ public class GarbageCollectorCalledCheck extends SubscriptionBaseVisitor {
         return "System".equals(((IdentifierTree) mset.expression()).name());
       } else if (mset.expression().is(Tree.Kind.METHOD_INVOCATION)) {
         MethodInvocationTree mit = (MethodInvocationTree) mset.expression();
-        if(mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        if (mit.arguments().isEmpty() && mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
           MemberSelectExpressionTree subMset = (MemberSelectExpressionTree) mit.methodSelect();
           //detect call to Runtime.getRuntime().gc()
           return "getRuntime".equals(subMset.identifier().name())
-              && subMset.expression().is(Tree.Kind.IDENTIFIER)
-              && "Runtime".equals(((IdentifierTree) subMset.expression()).name());
+            && subMset.expression().is(Tree.Kind.IDENTIFIER)
+            && "Runtime".equals(((IdentifierTree) subMset.expression()).name());
         }
       }
     }

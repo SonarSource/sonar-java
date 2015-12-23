@@ -62,7 +62,7 @@ public class UnusedTypeParameterCheck extends SubscriptionBaseVisitor {
       } else {
         typeParameters = ((ClassTree) tree).typeParameters();
         messageEnd = "class.";
-        if(tree.is(Tree.Kind.INTERFACE)) {
+        if (tree.is(Tree.Kind.INTERFACE)) {
           messageEnd = "interface.";
         }
       }
@@ -70,9 +70,9 @@ public class UnusedTypeParameterCheck extends SubscriptionBaseVisitor {
         Symbol symbol = getSemanticModel().getSymbol(typeParameter);
         if (symbol.usages().isEmpty()) {
           String message = new StringBuilder(typeParameter.identifier().name())
-              .append(" is not used in the ")
-              .append(messageEnd).toString();
-          addIssue(typeParameter, message);
+            .append(" is not used in the ")
+            .append(messageEnd).toString();
+          reportIssue(typeParameter.identifier(), message);
         }
       }
     }

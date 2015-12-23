@@ -27,16 +27,32 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isPrivate;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ModifiersUtilsTest {
+
+  @Test
+  public void private_constructor() throws Exception {
+    assertThat(isFinal(ModifiersUtils.class.getModifiers())).isTrue();
+    Constructor constructor = ModifiersUtils.class.getDeclaredConstructor();
+    assertThat(isPrivate(constructor.getModifiers())).isTrue();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
+
   @Test
   public void test_int_and_long_value() throws Exception {
     File file = new File("src/test/files/model/ModifiersUtilsTest.java");
     CompilationUnitTree tree = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(file);
     ClassTree classTree = (ClassTree) tree.types().get(0);
     assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.PUBLIC)).isTrue();
+    assertThat(ModifiersUtils.getModifier(classTree.modifiers(), Modifier.PUBLIC).keyword().text()).isEqualTo("public");
     assertThat(ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.ABSTRACT)).isFalse();
+    assertThat(ModifiersUtils.getModifier(classTree.modifiers(), Modifier.ABSTRACT)).isNull();
   }
 }

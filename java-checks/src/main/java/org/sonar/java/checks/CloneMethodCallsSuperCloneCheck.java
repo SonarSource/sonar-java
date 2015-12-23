@@ -66,7 +66,7 @@ public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
   @Override
   public void leaveNode(Tree tree) {
     if (isCloneMethod(tree) && !foundSuperClone) {
-      addIssue(tree, "Use super.clone() to create and seed the cloned instance to be returned.");
+      reportIssue(((MethodTree) tree).simpleName(), "Use super.clone() to create and seed the cloned instance to be returned.");
     }
   }
 
@@ -86,14 +86,14 @@ public class CloneMethodCallsSuperCloneCheck extends SubscriptionBaseVisitor {
     MethodInvocationTree mit = (MethodInvocationTree) tree;
 
     return mit.arguments().isEmpty() &&
-        mit.methodSelect().is(Kind.MEMBER_SELECT) &&
-        isSuperClone((MemberSelectExpressionTree) mit.methodSelect());
+      mit.methodSelect().is(Kind.MEMBER_SELECT) &&
+      isSuperClone((MemberSelectExpressionTree) mit.methodSelect());
   }
 
   private static boolean isSuperClone(MemberSelectExpressionTree tree) {
     return "clone".equals(tree.identifier().name()) &&
-        tree.expression().is(Kind.IDENTIFIER) &&
-        "super".equals(((IdentifierTree) tree.expression()).name());
+      tree.expression().is(Kind.IDENTIFIER) &&
+      "super".equals(((IdentifierTree) tree.expression()).name());
   }
 
 }

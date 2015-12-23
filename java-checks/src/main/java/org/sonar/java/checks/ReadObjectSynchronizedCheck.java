@@ -28,6 +28,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -52,24 +53,30 @@ public class ReadObjectSynchronizedCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic()) {
-      ClassTree classTree = (ClassTree) tree;
-      if (implementsSerializable(classTree)) {
-        for (Tree member : classTree.members()) {
-          if (member.is(Tree.Kind.METHOD) && isSynchronized((MethodTree) member) && isReadObject((MethodTree) member)) {
-            addIssue(member, "Remove the \"synchronized\" keyword from this method.");
-          }
+    if (!hasSemantic()) {
+      return;
+    }
+    ClassTree classTree = (ClassTree) tree;
+    if (implementsSerializable(classTree)) {
+      for (Tree member : classTree.members()) {
+        if (member.is(Tree.Kind.METHOD)) {
+          checkMember((MethodTree) member);
         }
+      }
+    }
+  }
+
+  private void checkMember(MethodTree member) {
+    if (isReadObject(member)) {
+      ModifierKeywordTree modifier = ModifiersUtils.getModifier(member.modifiers(), Modifier.SYNCHRONIZED);
+      if (modifier != null) {
+        reportIssue(modifier.keyword(), "Remove the \"synchronized\" keyword from this method.");
       }
     }
   }
 
   private static boolean implementsSerializable(ClassTree classTree) {
     return classTree.symbol().type().isSubtypeOf("java.io.Serializable");
-  }
-
-  private static boolean isSynchronized(MethodTree methodTree) {
-    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.SYNCHRONIZED);
   }
 
   private static boolean isReadObject(MethodTree methodTree) {

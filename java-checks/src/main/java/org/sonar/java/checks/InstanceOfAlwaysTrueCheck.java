@@ -53,7 +53,7 @@ public class InstanceOfAlwaysTrueCheck extends SubscriptionBaseVisitor {
     Type expressionType = instanceOfTree.expression().symbolType();
     Type instanceOf = instanceOfTree.type().symbolType();
     if (expressionType.isSubtypeOf(instanceOf)) {
-      addIssue(tree, "Remove this useless \"instanceof\" operator; it will always return \"true\". ");
+      reportIssue(instanceOfTree.instanceofKeyword(), "Remove this useless \"instanceof\" operator; it will always return \"true\". ");
     }
   }
 }

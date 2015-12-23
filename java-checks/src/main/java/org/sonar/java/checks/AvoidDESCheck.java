@@ -55,19 +55,18 @@ public class AvoidDESCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     ExpressionTree firstArg = mit.arguments().get(0);
     ExpressionTree defaultPropertyValue = JavaPropertiesHelper.retrievedPropertyDefaultValue(firstArg);
-    if (defaultPropertyValue != null) {
-      firstArg = defaultPropertyValue;
+    if (defaultPropertyValue == null) {
+      defaultPropertyValue = firstArg;
     }
-    if (firstArg != null && firstArg.is(Tree.Kind.STRING_LITERAL)) {
-      String algo = LiteralUtils.trimQuotes(((LiteralTree) firstArg).value());
-      checkIssue(mit, algo);
+    if (defaultPropertyValue != null && defaultPropertyValue.is(Tree.Kind.STRING_LITERAL)) {
+      checkIssue(firstArg, (LiteralTree) defaultPropertyValue);
     }
   }
 
-  private void checkIssue(Tree tree, String algorithm) {
-    String[] transformationElements = algorithm.split("/");
+  private void checkIssue(ExpressionTree argumentForReport, LiteralTree argument) {
+    String[] transformationElements = LiteralUtils.trimQuotes(argument.value()).split("/");
     if (transformationElements.length > 0 && isExcludedAlgorithm(transformationElements[0])) {
-      addIssue(tree, "Use the recommended AES (Advanced Encryption Standard) instead.");
+      reportIssue(argumentForReport, "Use the recommended AES (Advanced Encryption Standard) instead.");
     }
   }
 

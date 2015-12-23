@@ -66,7 +66,7 @@ public class InstanceofUsedOnExceptionCheck extends SubscriptionBaseVisitor {
       CatchTree catchTree = (CatchTree) tree;
       caughtVariables.add(catchTree.parameter().simpleName().name());
     } else if (isLeftOperandAnException((InstanceOfTree) tree)) {
-      addIssue(((InstanceOfTree) tree).instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.");
+      reportIssue(((InstanceOfTree) tree).instanceofKeyword(), "Replace the usage of the \"instanceof\" operator by a catch block.");
     }
   }
 

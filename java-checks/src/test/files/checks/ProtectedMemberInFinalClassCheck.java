@@ -4,11 +4,14 @@ final class A {
   private int x;
   protected int y; // Noncompliant
   public int z;
+
+  static {
+  }
   
   void method1() {}
   private void method2() {}
-  protected void
-      method3() {} // Noncompliant {{Remove this "protected" modifier.}}
+  protected void // Noncompliant [[sc=3;ec=12]] {{Remove this "protected" modifier.}}
+      method3() {}
   public void method4() {}
 }
 

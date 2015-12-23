@@ -53,8 +53,8 @@ public class OverrideAnnotationCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
-    if(isOverriding(methodTree) && !methodTree.isAnnotatedOverride() && !isExcluded(context.getJavaVersion(), methodTree)){
-      addIssue(tree, "Add the \"@Override\" annotation above this method signature");
+    if (isOverriding(methodTree) && !methodTree.isAnnotatedOverride() && !isExcluded(context.getJavaVersion(), methodTree)) {
+      reportIssue(methodTree.simpleName(), "Add the \"@Override\" annotation above this method signature");
     }
   }
 
@@ -63,11 +63,11 @@ public class OverrideAnnotationCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isExcluded(JavaVersion javaVersion, MethodTreeImpl methodTree) {
-    if(javaVersion.isNotSet()) {
+    if (javaVersion.isNotSet()) {
       return false;
     }
     int javaIntVersion = javaVersion.asInt();
-    return javaIntVersion <= 4 || (javaIntVersion == 5 && (methodTree.symbol().owner().isInterface() || overrideFromInterface(methodTree))) ;
+    return javaIntVersion <= 4 || (javaIntVersion == 5 && (methodTree.symbol().owner().isInterface() || overrideFromInterface(methodTree)));
   }
 
   private static boolean overrideFromInterface(MethodTree methodTree) {

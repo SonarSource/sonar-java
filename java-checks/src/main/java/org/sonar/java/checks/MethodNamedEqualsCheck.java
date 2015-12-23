@@ -57,7 +57,7 @@ public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if ("equals".equalsIgnoreCase(methodTree.simpleName().name()) && !hasSingleObjectParameter(methodTree)) {
-      addIssue(tree, "Either override Object.equals(Object), or totally rename the method to prevent any confusion.");
+      reportIssue(methodTree.simpleName(), "Either override Object.equals(Object), or totally rename the method to prevent any confusion.");
     }
   }
 

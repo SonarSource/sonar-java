@@ -57,7 +57,7 @@ public class MethodNamedHashcodeOrEqualCheck extends SubscriptionBaseVisitor {
       if ("equal".equals(methodName)) {
         substitute = "equals(Object obj)";
       }
-      addIssue(methodIdentifier, "Either override Object." + substitute + ", or totally rename the method to prevent any confusion.");
+      reportIssue(methodIdentifier, "Either override Object." + substitute + ", or totally rename the method to prevent any confusion.");
     }
   }
 

@@ -22,7 +22,7 @@ class TestClass1 {
 
   TestClass1() {
     toString(); // Compliant
-    new Thread(null).start(); // Noncompliant {{Move this "start" call to another method.}}
+    new Thread(null).start(); // Noncompliant [[sc=22;ec=27]] {{Move this "start" call to another method.}}
     new ExtendsThread(null).start(); // Noncompliant {{Move this "start" call to another method.}}
   }
 
