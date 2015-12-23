@@ -25,12 +25,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.java.JavaClasspath;
@@ -72,7 +73,7 @@ public class JaCoCoItSensorTest {
   public void setUp() {
     configuration = mock(JacocoConfiguration.class);
     ResourcePerspectives perspectives = mock(ResourcePerspectives.class);
-    ModuleFileSystem fileSystem = mock(ModuleFileSystem.class);
+    FileSystem fileSystem = new DefaultFileSystem(null);
     pathResolver = mock(PathResolver.class);
     sensor = new JaCoCoItSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
   }

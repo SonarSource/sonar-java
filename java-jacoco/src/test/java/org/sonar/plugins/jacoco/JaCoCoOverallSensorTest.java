@@ -24,11 +24,11 @@ import com.google.common.io.Files;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.java.JavaClasspath;
@@ -51,7 +51,7 @@ public class JaCoCoOverallSensorTest {
 
   private JacocoConfiguration configuration;
   private SensorContext context;
-  private ModuleFileSystem fileSystem;
+  private DefaultFileSystem fileSystem;
   private PathResolver pathResolver;
   private Project project;
   private ResourcePerspectives perspectives;
@@ -65,7 +65,8 @@ public class JaCoCoOverallSensorTest {
     when(configuration.shouldExecuteOnProject(true)).thenReturn(true);
     when(configuration.shouldExecuteOnProject(false)).thenReturn(false);
     context = mock(SensorContext.class);
-    fileSystem = mock(ModuleFileSystem.class);
+    fileSystem = new DefaultFileSystem(null);
+    fileSystem.setWorkDir(new File("target/sonar"));
     pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
     perspectives = mock(ResourcePerspectives.class);
@@ -170,7 +171,6 @@ public class JaCoCoOverallSensorTest {
     when(pathResolver.relativeFile(any(File.class), eq(utReport))).thenReturn(new File(outputDir, utReport));
     when(pathResolver.relativeFile(any(File.class), eq(itReport))).thenReturn(new File(outputDir, itReport));
     when(pathResolver.relativeFile(any(File.class), eq(new File("target/sonar/jacoco-overall.exec").getAbsolutePath()))).thenReturn(new File("target/sonar/jacoco-overall.exec"));
-    when(fileSystem.workingDir()).thenReturn(new File("target/sonar"));
 
     sensor.analyse(project, context);
     return resource;

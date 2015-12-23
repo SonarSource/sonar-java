@@ -29,13 +29,13 @@ import org.jacoco.core.analysis.ISourceFileCoverage;
 import org.jacoco.core.data.ExecutionData;
 import org.jacoco.core.data.ExecutionDataStore;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoverageMeasuresBuilder;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.ResourceUtils;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.MutableTestCase;
 import org.sonar.api.test.MutableTestPlan;
@@ -54,7 +54,7 @@ import static com.google.common.collect.Lists.newArrayList;
 public abstract class AbstractAnalyzer {
 
   private final ResourcePerspectives perspectives;
-  private final ModuleFileSystem fileSystem;
+  private final FileSystem fileSystem;
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
   private final boolean readCoveragePerTests;
@@ -63,12 +63,12 @@ public abstract class AbstractAnalyzer {
   private JavaClasspath javaClasspath;
   private JacocoReportReader jacocoReportReader;
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
+  public AbstractAnalyzer(ResourcePerspectives perspectives, FileSystem fileSystem, PathResolver pathResolver,
     JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this(perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath, true);
   }
 
-  public AbstractAnalyzer(ResourcePerspectives perspectives, ModuleFileSystem fileSystem,
+  public AbstractAnalyzer(ResourcePerspectives perspectives, FileSystem fileSystem,
     PathResolver pathResolver, JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath, boolean readCoveragePerTests) {
     this.perspectives = perspectives;
     this.fileSystem = fileSystem;

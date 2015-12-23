@@ -34,7 +34,6 @@ import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.api.test.IsMeasure;
 import org.sonar.api.test.MutableTestCase;
@@ -82,14 +81,13 @@ public class JaCoCoSensorTest {
     Files.copy(TestUtils.getResource("Hello.class.toCopy"), new File(jacocoExecutionData.getParentFile(), "Hello.class"));
 
     context = mock(SensorContext.class);
-    ModuleFileSystem fileSystem = mock(ModuleFileSystem.class);
     pathResolver = mock(PathResolver.class);
     project = mock(Project.class);
 
     configuration = mock(JacocoConfiguration.class);
     perspectives = mock(ResourcePerspectives.class);
     javaClasspath = mock(JavaClasspath.class);
-    sensor = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
+    sensor = new JaCoCoSensor(configuration, perspectives, new DefaultFileSystem(new File("")), pathResolver, javaResourceLocator, javaClasspath);
   }
 
   @Test
@@ -210,12 +208,11 @@ public class JaCoCoSensorTest {
 
   @Test
   public void force_coverage_to_zero_when_no_report() {
-    ModuleFileSystem fs = mock(ModuleFileSystem.class);
     Map<String, String> props = ImmutableMap.of(JacocoConfiguration.REPORT_MISSING_FORCE_ZERO, "true", JacocoConfiguration.REPORT_PATH_PROPERTY, "foo");
     DefaultFileSystem fileSystem = new DefaultFileSystem(null);
     fileSystem.add(new DefaultInputFile("foo").setLanguage("java"));
     JacocoConfiguration configuration = new JacocoConfiguration(new Settings().addProperties(props), fileSystem);
-    JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fs, pathResolver, javaResourceLocator, javaClasspath);
+    JaCoCoSensor sensor_force_coverage = new JaCoCoSensor(configuration, perspectives, fileSystem, pathResolver, javaResourceLocator, javaClasspath);
     outputDir = TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCoSensorTest/");
     org.sonar.api.resources.File resource = mock(org.sonar.api.resources.File.class);
     when(context.getResource(any(Resource.class))).thenReturn(resource);

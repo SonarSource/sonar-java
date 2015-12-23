@@ -22,11 +22,11 @@ package org.sonar.plugins.jacoco;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -38,12 +38,12 @@ public class JaCoCoSensor implements Sensor {
 
   private final JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
-  private final ModuleFileSystem fileSystem;
+  private final FileSystem fileSystem;
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
 
-  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
+  public JaCoCoSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, FileSystem fileSystem, PathResolver pathResolver,
                       JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this.configuration = configuration;
     this.perspectives = perspectives;

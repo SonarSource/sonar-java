@@ -21,12 +21,12 @@ package org.sonar.plugins.jacoco;
 
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Measure;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.scan.filesystem.ModuleFileSystem;
 import org.sonar.api.scan.filesystem.PathResolver;
 import org.sonar.java.JavaClasspath;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -40,12 +40,12 @@ public class JaCoCoOverallSensor implements Sensor {
 
   private final JacocoConfiguration configuration;
   private final ResourcePerspectives perspectives;
-  private final ModuleFileSystem fileSystem;
+  private final FileSystem fileSystem;
   private final PathResolver pathResolver;
   private final JavaResourceLocator javaResourceLocator;
   private final JavaClasspath javaClasspath;
 
-  public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, ModuleFileSystem fileSystem, PathResolver pathResolver,
+  public JaCoCoOverallSensor(JacocoConfiguration configuration, ResourcePerspectives perspectives, FileSystem fileSystem, PathResolver pathResolver,
                              JavaResourceLocator javaResourceLocator, JavaClasspath javaClasspath) {
     this.configuration = configuration;
     this.perspectives = perspectives;
@@ -72,7 +72,7 @@ public class JaCoCoOverallSensor implements Sensor {
     File reportUTs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getReportPath());
     File reportITs = pathResolver.relativeFile(fileSystem.baseDir(), configuration.getItReportPath());
 
-    File reportOverall = new File(fileSystem.workingDir(), JACOCO_OVERALL);
+    File reportOverall = new File(fileSystem.workDir(), JACOCO_OVERALL);
     reportOverall.getParentFile().mkdirs();
 
     JaCoCoReportMerger.mergeReports(reportOverall, reportUTs, reportITs);
