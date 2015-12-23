@@ -66,18 +66,6 @@ public interface JavaFileScannerContext {
 
   boolean fileParsed();
 
-  /**
-   * @deprecated As of release 3.6, replaced by {@link #getComplexityNodes(Tree)}
-   */
-  @Deprecated
-  int getComplexity(Tree tree);
-
-  /**
-   * @deprecated As of release 3.6, replaced by {@link #getMethodComplexityNodes(ClassTree, MethodTree)}
-   */
-  @Deprecated
-  int getMethodComplexity(ClassTree enclosingClass, MethodTree methodTree);
-
   List<Tree> getComplexityNodes(Tree tree);
 
   List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree);

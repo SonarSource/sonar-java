@@ -29,15 +29,12 @@ import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.api.SourceProject;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
@@ -63,35 +60,6 @@ public class InternalVisitorsBridgeTest {
     checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
-    InternalVisitorsBridge visitorsBridgeWithSemantic = new InternalVisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
-      public ClassTree enclosingClass;
-
-      @Override
-      public List<Tree.Kind> nodesToVisit() {
-        return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.METHOD);
-      }
-
-      @Override
-      public void scanFile(JavaFileScannerContext context) {
-        assertThat(context.getSemanticModel()).isNotNull();
-        assertThat(context.fileParsed()).isTrue();
-        super.scanFile(context);
-      }
-
-      @Override
-      public void visitNode(Tree tree) {
-        if (tree.is(Tree.Kind.CLASS)) {
-          enclosingClass = (ClassTree) tree;
-          assertThat(context.getComplexityNodes(enclosingClass).size()).isEqualTo(context.getComplexity(enclosingClass));
-        } else {
-          assertThat(context.getMethodComplexityNodes(enclosingClass, ((MethodTree) tree)).size()).isEqualTo(context.getMethodComplexity(enclosingClass, ((MethodTree) tree)));
-        }
-      }
-    }), Lists.<File>newArrayList(), null);
-    visitorsBridgeWithSemantic.setContext(context);
-    checkFile(contstructFileName("java", "lang", "annotation", "Foo.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithSemantic);
-    checkFile(contstructFileName("java", "io", "File.java"), "package java.io; class A {}", visitorsBridgeWithSemantic);
-    checkFile(contstructFileName("src", "foo", "bar", "java", "lang", "someFile.java"), "package foo.bar.java.lang; class A { void method() { ; } }", visitorsBridgeWithSemantic);
 
     InternalVisitorsBridge visitorsBridgeWithParsingIssue = new InternalVisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
       @Override
