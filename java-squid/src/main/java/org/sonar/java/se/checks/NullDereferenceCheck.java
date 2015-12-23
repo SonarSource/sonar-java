@@ -64,14 +64,13 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       // stack is empty, nothing to do.
       return context.getState();
     }
-    if (syntaxNode.is(Tree.Kind.MEMBER_SELECT)) {
-      return checkMemberSelect(context, (MemberSelectExpressionTree) syntaxNode, currentVal);
-    }
+    Tree toCheck = syntaxNode;
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) syntaxNode;
-      if (methodInvocation.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        return checkMemberSelect(context, (MemberSelectExpressionTree) methodInvocation.methodSelect(), currentVal);
-      }
+      toCheck = methodInvocation.methodSelect();
+    }
+    if (toCheck.is(Tree.Kind.MEMBER_SELECT)) {
+      return checkMemberSelect(context, (MemberSelectExpressionTree) toCheck, currentVal);
     }
     return context.getState();
   }
@@ -85,10 +84,6 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     if (context.isNull(currentVal)) {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
       return null;
-    }
-    if (context.getState().getConstraint(currentVal) == null) {
-      // we dereferenced the symbolic value so we can assume it is not null
-      return currentVal.setSingleConstraint(context.getState(), ObjectConstraint.NOT_NULL);
     }
     return context.getState();
   }
@@ -109,10 +104,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
 
   private static List<ProgramState> setNullConstraint(CheckerContext context, Tree syntaxNode) {
     SymbolicValue val = context.getState().peekValue();
-    if (syntaxNode.is(Tree.Kind.NULL_LITERAL)) {
-      // invariant to check that value was correctly evaluated.
-      assert val != null && val.equals(SymbolicValue.NULL_LITERAL);
-    } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
+    if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       List<ProgramState> states = new ArrayList<>();
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));

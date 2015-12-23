@@ -291,6 +291,7 @@ public class JavaSymbol implements Symbol {
    */
   public static class TypeJavaSymbol extends JavaSymbol implements TypeSymbol {
 
+    private String fullyQualifiedName;
     Scope members;
     Scope typeParameters;
     List<JavaType.TypeVariableJavaType> typeVariableTypes;
@@ -348,19 +349,22 @@ public class JavaSymbol implements Symbol {
     }
 
     public String getFullyQualifiedName() {
-      String newQualification = "";
-      if (owner.isPackageSymbol()) {
-        if (!owner.name.isEmpty()) {
-          newQualification = owner.name + ".";
+      if(fullyQualifiedName == null) {
+        String newQualification = "";
+        if (owner.isPackageSymbol()) {
+          if (!owner.name.isEmpty()) {
+            newQualification = owner.name + ".";
+          }
+        } else if (owner.isTypeSymbol()) {
+          newQualification = owner.type.fullyQualifiedName() + "$";
+        } else if (owner.isMethodSymbol()) {
+          newQualification = owner.owner.type().fullyQualifiedName() + "$";
+        } else {
+          throw new IllegalStateException("" + owner);
         }
-      } else if (owner.isTypeSymbol()) {
-        newQualification = owner.type.fullyQualifiedName() + "$";
-      } else if (owner.isMethodSymbol()) {
-        newQualification = owner.owner.type().fullyQualifiedName() + "$";
-      } else {
-        throw new IllegalStateException("" + owner);
+        fullyQualifiedName = newQualification + getInternalName();
       }
-      return newQualification + getInternalName();
+      return fullyQualifiedName;
     }
 
     /**

@@ -170,8 +170,10 @@ public class SyntaxHighlighterVisitor extends SubscriptionVisitor {
       throw Throwables.propagate(e);
     }
     startLines.add(0);
-    for (int i = 0; i < content.length(); i++) {
-      if (content.charAt(i) == '\n' || (content.charAt(i) == '\r' && i + 1 < content.length() && content.charAt(i + 1) != '\n')) {
+    int contentLength = content.length();
+    for (int i = 0; i < contentLength; i++) {
+      char currentChar = content.charAt(i);
+      if (currentChar == '\n' || (currentChar == '\r' && i + 1 < contentLength && content.charAt(i + 1) != '\n')) {
         startLines.add(i + 1);
       }
     }
