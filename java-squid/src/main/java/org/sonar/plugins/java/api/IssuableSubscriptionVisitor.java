@@ -27,10 +27,18 @@ import java.util.List;
 
 public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
 
+  /**
+   * @deprecated use reportIssue instead to benefit from precise issue location.
+   */
+  @Deprecated
   public void addIssue(Tree tree, String message) {
     context.addIssue(tree, this, message);
   }
 
+  /**
+   * @deprecated use reportIssue instead to benefit from precise issue location.
+   */
+  @Deprecated
   public void addIssue(Tree tree, String message, double effortToFix) {
     context.addIssue(tree, this, message, effortToFix);
   }
