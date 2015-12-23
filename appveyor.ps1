@@ -31,34 +31,6 @@ function FetchAndUnzip
 	[System.IO.Compression.ZipFile]::ExtractToDirectory($tmp, $Out)
 }
 
-function InstallAppveyorTools
-{
-	$travisUtilsVersion = "21"
-	$localPath = "$env:USERPROFILE\.local"
-	$travisUtilsPath = "$localPath\travis-utils-$travisUtilsVersion"
-	if (Test-Path $travisUtilsPath)
-	{
-		echo "Reusing the Travis Utils version $travisUtilsVersion already downloaded under $travisUtilsPath"
-	}
-	else
-	{
-		$url = "https://github.com/SonarSource/travis-utils/archive/v$travisUtilsVersion.zip"
-		echo "Downloading Travis Utils version $travisUtilsVersion from $url into $localPath"
-		FetchAndUnzip $url $localPath
-	}
-
-	$mavenLocalRepository = "$env:USERPROFILE\.m2\repository"
-	if (-not(Test-Path $mavenLocalRepository))
-	{
-		mkdir $mavenLocalRepository | Out-Null
-	}
-	echo "Installating Travis Utils closed source Maven projects into $mavenLocalRepository"
-	Copy-Item "$travisUtilsPath\m2repo\*" $mavenLocalRepository -Force -Recurse
-
-	$env:ORCHESTRATOR_CONFIG_URL = ""
-	$env:TRAVIS = "ORCH-332"
-}
-
 function Build
 {
 	param ([string]$Project, [string]$Sha1)
@@ -117,16 +89,12 @@ switch ($env:RUN)
 {
 	"ci"
 	{
-		InstallAppveyorTools
-
 		mvn verify "--batch-mode" "-B" "-e" "-V"
 		CheckLastExitCode
 	}
 
 	{($_ -eq "plugin") -or ($_ -eq "ruling")}
 	{
-		InstallAppveyorTools
-
 		if ($env:SQ_VERSION -eq "DEV")
 		{
 			BuildSnapshot "SonarSource/sonarqube"
