@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -242,7 +243,7 @@ public class JavaTypeTest {
     File bytecodeDir = new File("target/test-classes");
     ClassFullQualifiedNameVerifierVisitor visitor = new ClassFullQualifiedNameVerifierVisitor(bytecodeDir);
     JavaAstScanner.scanSingleFileForTests(
-      new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(visitor, Lists.newArrayList(bytecodeDir)));
+      new File("src/test/java/org/sonar/java/resolve/targets/FullyQualifiedName.java"), new VisitorsBridge(Collections.singletonList(visitor), Lists.newArrayList(bytecodeDir), null));
   }
 
   private static class ClassFullQualifiedNameVerifierVisitor extends SubscriptionVisitor {

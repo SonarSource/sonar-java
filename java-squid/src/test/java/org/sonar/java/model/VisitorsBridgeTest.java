@@ -41,13 +41,13 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class InternalVisitorsBridgeTest {
+public class VisitorsBridgeTest {
 
   private final VisitorContext context = new VisitorContext(new SourceProject("Java project"));
 
   @Test
   public void test_semantic_exclusions() {
-    InternalVisitorsBridge visitorsBridgeWithoutSemantic = new InternalVisitorsBridge(Collections.singletonList(new JavaFileScanner() {
+    VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList(new JavaFileScanner() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(context.getSemanticModel() == null).isTrue();
@@ -61,7 +61,7 @@ public class InternalVisitorsBridgeTest {
     checkFile(contstructFileName("java", "io", "Serializable.java"), "package java.io; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("java", "lang", "annotation", "Annotation.java"), "package java.lang.annotation; class Annotation {}", visitorsBridgeWithoutSemantic);
 
-    InternalVisitorsBridge visitorsBridgeWithParsingIssue = new InternalVisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
+    VisitorsBridge visitorsBridgeWithParsingIssue = new VisitorsBridge(Collections.singletonList(new IssuableSubscriptionVisitor() {
       @Override
       public void scanFile(JavaFileScannerContext context) {
         assertThat(context.fileParsed()).isFalse();
@@ -76,7 +76,7 @@ public class InternalVisitorsBridgeTest {
     checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
   }
 
-  private void checkFile(String filename, String code, InternalVisitorsBridge visitorsBridge) {
+  private void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
     context.setFile(new File(filename));
     visitorsBridge.visitFile(parse(code));
   }

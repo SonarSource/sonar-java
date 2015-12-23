@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.squidbridge.api.CodeVisitor;
 
@@ -159,7 +159,7 @@ public class CheckListTest {
     for (Class check : CheckList.getChecks()) {
       CodeVisitor visitor = (CodeVisitor) check.newInstance();
       if (visitor instanceof JavaFileScanner) {
-        JavaAstScanner.scanSingleFileForTests(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridge((JavaFileScanner) visitor));
+        JavaAstScanner.scanSingleFileForTests(new File("src/test/files/CheckListParseErrorTest.java"), new VisitorsBridgeForTests((JavaFileScanner) visitor));
       }
     }
   }

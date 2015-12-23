@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public class MethodJavaSymbolTest {
   @Test
   public void test() {
     File bytecodeDir = new File("target/test-classes");
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"), new VisitorsBridge(new MethodVisitor(), Lists.newArrayList(bytecodeDir)));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"), new VisitorsBridge(Collections.singletonList(new MethodVisitor()), Lists.newArrayList(bytecodeDir), null));
   }
 
   private static class MethodVisitor extends SubscriptionVisitor {

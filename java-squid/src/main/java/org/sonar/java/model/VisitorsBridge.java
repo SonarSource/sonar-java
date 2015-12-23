@@ -20,122 +20,188 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.api.utils.AnnotationUtils;
-import org.sonar.java.AnalyzerMessage;
+import com.sonar.sslr.api.RecognitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.ast.visitors.SonarSymbolTableVisitor;
+import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.java.se.SymbolicExecutionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
-import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
-import org.sonar.squidbridge.api.CheckMessage;
+import org.sonar.squidbridge.AstScannerExceptionHandler;
 import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-/**
- * Original VisitorsBridge renamed to InternalVisitorsBridge because VisitorsBridge
- * is the recommended way for custom rules.
- * We need to customize VisitorsBridge to keep compatibility with CheckMessageVerifier.
- * InternalVisitorsBridge can be refactored once CheckMessageVerifier support will be dropped.
- */
-public class VisitorsBridge extends InternalVisitorsBridge {
+public class VisitorsBridge {
 
-  private TestJavaFileScannerContext testContext;
+  private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
+
+  private final List<JavaFileScanner> scanners;
+  private List<JavaFileScanner> executableScanners;
+  private final SonarComponents sonarComponents;
+  private final boolean symbolicExecutionEnabled;
+  private SemanticModel semanticModel;
+  private List<File> projectClasspath;
+  private boolean analyseAccessors;
+  private VisitorContext context;
+  private JavaVersion javaVersion;
 
   @VisibleForTesting
   public VisitorsBridge(JavaFileScanner visitor) {
-    this(Arrays.asList(visitor), Lists.<File>newArrayList(), null);
+    this(Collections.singletonList(visitor), Lists.<File>newArrayList(), null);
   }
 
   @VisibleForTesting
-  public VisitorsBridge(JavaFileScanner visitor, List<File> projectClasspath) {
-    this(Arrays.asList(visitor), projectClasspath, null, false);
-  }
-
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
-    super(visitors, projectClasspath, sonarComponents, true);
+    this(visitors, projectClasspath, sonarComponents, true);
   }
 
   public VisitorsBridge(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents, boolean symbolicExecutionEnabled) {
-    super(visitors, projectClasspath, sonarComponents, symbolicExecutionEnabled);
-  }
-
-  @Override
-  protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents,
-    boolean failedParsing) {
-    testContext = new TestJavaFileScannerContext(tree, (SourceFile) getContext().peekSourceCode(), getContext().getFile(), semanticModel, analyseAccessors, sonarComponents,
-      getJavaVersion(), failedParsing);
-    return testContext;
-  }
-
-  public TestJavaFileScannerContext lastCreatedTestContext() {
-    return testContext;
-  }
-
-  public static class TestJavaFileScannerContext extends DefaultJavaFileScannerContext {
-
-    private final Set<AnalyzerMessage> issues = new HashSet<>();
-
-    public TestJavaFileScannerContext(
-      CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
-      JavaVersion javaVersion, boolean failedParsing) {
-      super(tree, sourceFile, file, semanticModel, analyseAccessors, sonarComponents, javaVersion, failedParsing);
-    }
-
-    public Set<AnalyzerMessage> getIssues() {
-      return issues;
-    }
-
-    @Override
-    public void addIssue(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
-      issues.add(new AnalyzerMessage(javaCheck, getFile(), line, message, cost != null ? cost.intValue() : 0));
-      addIssueForCheckMessageVerifier(line, javaCheck, message, cost);
-    }
-
-    /**
-     * @deprecated should be removed once CheckMessageVerifier support is dropped
-     */
-    @Deprecated
-    private void addIssueForCheckMessageVerifier(int line, JavaCheck javaCheck, String message, @Nullable Double cost) {
-      // compatibility with CheckMessageVerifier
-      CheckMessage checkMessage = new CheckMessage(javaCheck, message);
-      if (line > 0) {
-        checkMessage.setLine(line);
+    ImmutableList.Builder<JavaFileScanner> scannersBuilder = ImmutableList.builder();
+    for (Object visitor : visitors) {
+      if (visitor instanceof JavaFileScanner) {
+        scannersBuilder.add((JavaFileScanner) visitor);
       }
-      if (cost == null) {
-        Annotation linear = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearRemediation.class);
-        Annotation linearWithOffset = AnnotationUtils.getAnnotation(javaCheck, SqaleLinearWithOffsetRemediation.class);
-        if ((linear != null) || (linearWithOffset != null)) {
-          throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
+    }
+    this.scanners = scannersBuilder.build();
+    this.executableScanners = scanners;
+    this.sonarComponents = sonarComponents;
+    this.projectClasspath = projectClasspath;
+    this.symbolicExecutionEnabled = symbolicExecutionEnabled;
+  }
+
+  public void setAnalyseAccessors(boolean analyseAccessors) {
+    this.analyseAccessors = analyseAccessors;
+  }
+
+  public void setCharset(Charset charset) {
+    for (JavaFileScanner scanner : scanners) {
+      if (scanner instanceof CharsetAwareVisitor) {
+        ((CharsetAwareVisitor) scanner).setCharset(charset);
+      }
+    }
+  }
+
+  public void setJavaVersion(JavaVersion javaVersion) {
+    this.javaVersion = javaVersion;
+    this.executableScanners = executableScanners(scanners, javaVersion);
+  }
+
+  public JavaVersion getJavaVersion() {
+    return this.javaVersion;
+  }
+
+  public void visitFile(@Nullable Tree parsedTree) {
+    semanticModel = null;
+    CompilationUnitTree tree = new JavaTree.CompilationUnitTreeImpl(null, Lists.<ImportClauseTree>newArrayList(), Lists.<Tree>newArrayList(), null);
+    boolean fileParsed = parsedTree != null;
+    if (fileParsed && parsedTree.is(Tree.Kind.COMPILATION_UNIT)) {
+      tree = (CompilationUnitTree) parsedTree;
+      if (isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
+        try {
+          semanticModel = SemanticModel.createFor(tree, getProjectClasspath());
+        } catch (Exception e) {
+          LOG.error("Unable to create symbol table for : " + getContext().getFile().getAbsolutePath(), e);
+          return;
         }
+        createSonarSymbolTable(tree);
       } else {
-        checkMessage.setCost(cost);
+        SemanticModel.handleMissingTypes(tree);
       }
-      sourceFile.log(checkMessage);
     }
+    JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, analyseAccessors, sonarComponents, fileParsed);
+    // Symbolic execution checks
+    if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
+      new SymbolicExecutionVisitor().scanFile(javaFileScannerContext);
+    }
+    for (JavaFileScanner scanner : executableScanners) {
+      scanner.scanFile(javaFileScannerContext);
+    }
+    if (semanticModel != null) {
+      // Close class loader after all the checks.
+      semanticModel.done();
+    }
+  }
 
-    @Override
-    public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-      File file = getFile();
-      AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(syntaxNode), message, cost != null ? cost : 0);
-      for (Location location : secondary) {
-        AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
-        analyzerMessage.secondaryLocations.add(secondaryLocation);
+  private static List<JavaFileScanner> executableScanners(List<JavaFileScanner> scanners, JavaVersion javaVersion) {
+    ImmutableList.Builder<JavaFileScanner> results = ImmutableList.builder();
+    for (JavaFileScanner scanner : scanners) {
+      if (!(scanner instanceof JavaVersionAwareVisitor) || ((JavaVersionAwareVisitor) scanner).isCompatibleWithJavaVersion(javaVersion)) {
+        results.add(scanner);
       }
-      issues.add(analyzerMessage);
-      addIssueForCheckMessageVerifier(analyzerMessage.getLine(), javaCheck, message, (double) (cost != null ? cost : 0));
     }
+    return results.build();
+  }
+
+  protected JavaFileScannerContext createScannerContext(
+    CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors, SonarComponents sonarComponents, boolean fileParsed) {
+    return new DefaultJavaFileScannerContext(
+      tree,
+      (SourceFile) getContext().peekSourceCode(),
+      getContext().getFile(),
+      semanticModel,
+      analyseAccessors,
+      sonarComponents,
+      javaVersion,
+      fileParsed);
+  }
+
+  private boolean isNotJavaLangOrSerializable(String packageName) {
+    String name = getContext().getFile().getName();
+    return !(inJavaLang(packageName) || isAnnotation(packageName, name) || isSerializable(packageName, name));
+  }
+
+  private static boolean isSerializable(String packageName, String name) {
+    return "java/io".equals(packageName) && "Serializable.java".equals(name);
+  }
+
+  private static boolean isAnnotation(String packageName, String name) {
+    return "java/lang/annotation".equals(packageName) && "Annotation.java".equals(name);
+  }
+
+  private static boolean inJavaLang(String packageName) {
+    return "java/lang".equals(packageName);
+  }
+
+  private List<File> getProjectClasspath() {
+    return projectClasspath;
+  }
+
+  private void createSonarSymbolTable(CompilationUnitTree tree) {
+    if (sonarComponents != null) {
+      SonarSymbolTableVisitor symVisitor = new SonarSymbolTableVisitor(sonarComponents.symbolizableFor(getContext().getFile()), semanticModel);
+      symVisitor.visitCompilationUnit(tree);
+    }
+  }
+
+  public void processRecognitionException(RecognitionException e) {
+    for (JavaFileScanner scanner : scanners) {
+      if (scanner instanceof AstScannerExceptionHandler) {
+        ((AstScannerExceptionHandler) scanner).processRecognitionException(e);
+      }
+    }
+  }
+
+  public VisitorContext getContext() {
+    return context;
+  }
+
+  public void setContext(VisitorContext context) {
+    this.context = context;
   }
 }

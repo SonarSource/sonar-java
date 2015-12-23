@@ -28,7 +28,7 @@ import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaVersionImpl;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -192,11 +192,11 @@ public class JavaCheckVerifier extends CheckVerifier {
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
     JavaFileScanner expectedIssueCollector = new ExpectedIssueCollector(javaCheckVerifier);
-    VisitorsBridge visitorsBridge = new VisitorsBridge(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), null);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), null);
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
     conf.setJavaVersion(javaCheckVerifier.javaVersion);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, conf);
-    VisitorsBridge.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     javaCheckVerifier.checkIssues(testJavaFileScannerContext.getIssues(), javaCheckVerifier.providedJavaVersion);
   }
 

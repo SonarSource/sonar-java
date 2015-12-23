@@ -37,7 +37,7 @@ import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
-import org.sonar.java.model.InternalVisitorsBridge;
+import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -114,9 +114,9 @@ public class JavaSquid {
     return false;
   }
 
-  private static InternalVisitorsBridge createVisitorBridge(
+  private static VisitorsBridge createVisitorBridge(
       Iterable<CodeVisitor> codeVisitors, List<File> classpath, JavaConfiguration conf, @Nullable SonarComponents sonarComponents, boolean enableSymbolicExecution) {
-    InternalVisitorsBridge visitorsBridge = new InternalVisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
+    VisitorsBridge visitorsBridge = new VisitorsBridge(codeVisitors, classpath, sonarComponents, enableSymbolicExecution);
     visitorsBridge.setCharset(conf.getCharset());
     visitorsBridge.setAnalyseAccessors(conf.separatesAccessorsFromMethods());
     visitorsBridge.setJavaVersion(conf.javaVersion());

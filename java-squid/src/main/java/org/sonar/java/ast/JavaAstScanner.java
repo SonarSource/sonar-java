@@ -29,9 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.ast.visitors.VisitorContext;
-import org.sonar.java.model.InternalVisitorsBridge;
 import org.sonar.java.model.VisitorsBridge;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -43,7 +41,6 @@ import org.sonar.squidbridge.indexer.QueryByType;
 import org.sonar.squidbridge.indexer.SquidIndex;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.io.InterruptedIOException;
 import java.nio.charset.Charset;
@@ -57,7 +54,7 @@ public class JavaAstScanner {
 
   private final SquidIndex index;
   private final ActionParser<Tree> parser;
-  private InternalVisitorsBridge visitor;
+  private VisitorsBridge visitor;
 
   public JavaAstScanner(ActionParser<Tree> parser) {
     this.parser = parser;
@@ -148,34 +145,12 @@ public class JavaAstScanner {
     return "SonarQube is unable to analyze file : '" + file.getAbsolutePath() + "'";
   }
 
-  public void setVisitorBridge(InternalVisitorsBridge visitor) {
+  public void setVisitorBridge(VisitorsBridge visitor) {
     this.visitor = visitor;
   }
 
   public SourceCodeSearchEngine getIndex() {
     return index;
-  }
-
-  /**
-   * Helper method for testing checks without having to deploy them on a Sonar instance.
-   * Can be dropped when support for CheckMessageVerifier will be dropped.
-   *
-   * @deprecated As of release 3.6, should use {@link org.sonar.java.checks.verifier.JavaCheckVerifier#verify(String filename, JavaFileScanner check)} for rules unit tests.
-   */
-  @VisibleForTesting
-  @Deprecated
-  public static SourceFile scanSingleFile(File file, VisitorsBridge visitorsBridge) {
-    if (!file.isFile()) {
-      throw new IllegalArgumentException("File '" + file + "' not found.");
-    }
-    JavaAstScanner scanner = create(new JavaConfiguration(Charset.forName("UTF-8")), visitorsBridge);
-
-    scanner.scan(Collections.singleton(file));
-    Collection<SourceCode> sources = scanner.getIndex().search(new QueryByType(SourceFile.class));
-    if (sources.size() != 1) {
-      throw new IllegalStateException("Only one SourceFile was expected whereas " + sources.size() + " has been returned.");
-    }
-    return (SourceFile) sources.iterator().next();
   }
 
   @VisibleForTesting

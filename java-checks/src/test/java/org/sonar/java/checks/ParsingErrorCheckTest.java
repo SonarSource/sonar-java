@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.model.VisitorsBridge;
+import org.sonar.java.model.VisitorsBridgeForTests;
 
 import java.io.File;
 import java.util.Set;
@@ -33,7 +33,7 @@ public class ParsingErrorCheckTest {
 
   @Test
   public void test() {
-    VisitorsBridge visitorsBridge = new VisitorsBridge(new ParsingErrorCheck());
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(new ParsingErrorCheck());
     JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/ParsingError.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
     assertThat(issues).hasSize(1);
