@@ -74,8 +74,8 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
 
   private void visit(Tree tree) {
     boolean isSubscribed = isSubscribed(tree);
-    boolean isSyntaxToken = tree.is(Tree.Kind.TOKEN);
-    if (isSyntaxToken) {
+    boolean shouldVisitSyntaxToken = (visitToken || visitTrivia) && tree.is(Tree.Kind.TOKEN);
+    if (shouldVisitSyntaxToken) {
       SyntaxToken syntaxToken = (SyntaxToken) tree;
       if (visitToken) {
         visitToken(syntaxToken);
@@ -89,7 +89,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
       visitNode(tree);
     }
     visitChildren(tree);
-    if (!isSyntaxToken && isSubscribed) {
+    if (!shouldVisitSyntaxToken && isSubscribed) {
       leaveNode(tree);
     }
   }

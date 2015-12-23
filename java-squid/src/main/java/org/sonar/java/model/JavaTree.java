@@ -48,7 +48,6 @@ import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
 import javax.annotation.Nullable;
-
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
@@ -75,11 +74,10 @@ public abstract class JavaTree implements Tree {
 
   @Override
   public final boolean is(Kind... kind) {
-    if (kind() != null) {
-      for (Kind kindIter : kind) {
-        if (kind() == kindIter) {
-          return true;
-        }
+    Kind treeKind = kind();
+    for (Kind kindIter : kind) {
+      if (treeKind == kindIter) {
+        return true;
       }
     }
     return false;
