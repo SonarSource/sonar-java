@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -64,7 +65,8 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
     Kind.STATIC_INITIALIZER,
     Kind.INITIALIZER,
     Kind.SWITCH_STATEMENT,
-    Kind.CASE_GROUP
+    Kind.CASE_GROUP,
+    Kind.METHOD_INVOCATION
   );
 
   private static final int DEFAULT_INDENTATION_LEVEL = 2;
@@ -103,6 +105,9 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
       if (!isInAnonymousClass.peek()) {
         checkIndentation(Collections.singletonList(classTree));
       }
+    } else if (tree.is(Kind.METHOD_INVOCATION)) {
+      adjustMethodInvocation((MethodInvocationTree) tree);
+      return;
     }
     expectedLevel += indentationLevel;
     isBlockAlreadyReported = false;
@@ -122,6 +127,22 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
         break;
       default:
         break;
+    }
+  }
+
+  private void adjustMethodInvocation(MethodInvocationTree tree) {
+    int startLine = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
+    int parenthesisLine = tree.arguments().openParenToken().line();
+    if (startLine != parenthesisLine) {
+      expectedLevel += indentationLevel;
+    }
+  }
+
+  private void restoreMethodInvocation(MethodInvocationTree tree) {
+    int startLine = FirstSyntaxTokenFinder.firstSyntaxToken(tree).line();
+    int parenthesisLine = tree.arguments().openParenToken().line();
+    if (startLine != parenthesisLine) {
+      expectedLevel -= indentationLevel;
     }
   }
 
@@ -160,16 +181,12 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
   private void adjustBlockForExceptionalParents(Tree parent) {
     if (parent.is(Kind.CASE_GROUP)) {
       expectedLevel -= indentationLevel;
-    } else if (parent.is(Kind.LAMBDA_EXPRESSION)) {
-      expectedLevel += indentationLevel;
     }
   }
 
   private void restoreBlockForExceptionalParents(Tree parent) {
     if (parent.is(Kind.CASE_GROUP)) {
       expectedLevel += indentationLevel;
-    } else if (parent.is(Kind.LAMBDA_EXPRESSION)) {
-      expectedLevel -= indentationLevel;
     }
   }
 
@@ -190,7 +207,10 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Kind.BLOCK)) {
+    if (tree.is(Kind.METHOD_INVOCATION)) {
+      restoreMethodInvocation((MethodInvocationTree) tree);
+      return;
+    } else if (tree.is(Kind.BLOCK)) {
       restoreBlockForExceptionalParents(tree.parent());
     }
     expectedLevel -= indentationLevel;

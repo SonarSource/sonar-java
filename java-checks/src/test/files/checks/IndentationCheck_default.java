@@ -41,9 +41,9 @@ if (0) {                          // Compliant - already reported
   void foo() {
     IntStream
       .range(1, 5)
-      .map(a -> {
-        return a + 1; // should be a valid position
-      });
+      .map((a -> {
+        return a + 1;
+      }));
     IntStream
       .range(1, 5)
       .map(a -> {
@@ -53,6 +53,9 @@ if (0) {                          // Compliant - already reported
          a += 1; // Noncompliant {{Make this line start at column 9.}}
         return a + 1;
       });
+    IntStream.range(1, 5).map(a -> {
+      return a + 1;
+    });
   }
 }
 
@@ -156,4 +159,36 @@ public @interface Example {
   public static class Inner {
     public static final String FOO = "foo";
   }
+}
+
+class IndentFoo {
+  public static boolean showJobDifferences(final String name, final JobsDifference.JobDifference diff, boolean onlyOkButton) {
+    FutureTask<Boolean> task = new FutureTask<>(() -> {
+      Optional<ButtonType> result = new DifferenceDialog(name, diff, onlyOkButton).showAndWait();
+      if (result.isPresent() && (result.get() == DifferenceDialog.ACTION_YES_ALL || result.get() == DifferenceDialog.ACTION_OK_ALL)) {
+        skipDialog = true;
+      }
+      return result.get() == DifferenceDialog.ACTION_YES || result.get() == DifferenceDialog.ACTION_YES_ALL;
+    });
+  }
+
+  @Override
+  protected void append(final ILoggingEvent event) {
+    synchronized (lock) {
+      Platform.runLater(() -> {
+        Text text = new Text();
+        text.setText(patternLayout.doLayout(event));
+        switch (event.getLevel().levelInt) {
+          case Level.DEBUG_INT:
+            text.setFill(Color.BLACK);
+            break;
+          default:
+            text.setFill(Color.BLACK);
+            break;
+        }
+        listView.getItems().add(text);
+      });
+    }
+  }
+
 }
