@@ -69,7 +69,7 @@ public class ModifiersOrderCheck extends SubscriptionBaseVisitor {
       alreadyReported.add(tree);
       ModifierTree badlyOrderedModifier = getFirstBadlyOrdered((ModifiersTree) tree);
       if (badlyOrderedModifier != null) {
-        addIssue(badlyOrderedModifier, "Reorder the modifiers to comply with the Java Language Specification.");
+        reportIssue(badlyOrderedModifier, "Reorder the modifiers to comply with the Java Language Specification.");
       }
     }
   }

@@ -28,6 +28,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -59,28 +60,28 @@ public class SillyBitOperationCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    Long identityElement = getBitwiseOperationIdentityElement(tree);
-    Long evaluatedExpression = LiteralUtils.longLiteralValue(getExpression(tree));
-    if (evaluatedExpression != null && identityElement.equals(evaluatedExpression)) {
-      addIssue(tree, "Remove this silly bit operation.");
+    ExpressionTree expression;
+    SyntaxToken operatorToken;
+    if (tree.is(Kind.OR, Kind.XOR, Kind.AND)) {
+      BinaryExpressionTree binary = (BinaryExpressionTree) tree;
+      expression = binary.rightOperand();
+      operatorToken = binary.operatorToken();
+    } else {
+      AssignmentExpressionTree assignment = (AssignmentExpressionTree) tree;
+      expression = assignment.expression();
+      operatorToken = assignment.operatorToken();
+    }
+    Long evaluatedExpression = LiteralUtils.longLiteralValue(expression);
+    if (evaluatedExpression != null && getBitwiseOperationIdentityElement(tree).equals(evaluatedExpression)) {
+      reportIssue(operatorToken, "Remove this silly bit operation.");
     }
   }
 
   private static Long getBitwiseOperationIdentityElement(Tree tree) {
-    Long identityElement = 0L;
     if (tree.is(Kind.AND, Kind.AND_ASSIGNMENT)) {
-      identityElement = -1L;
+      return  -1L;
     }
-    return identityElement;
+    return 0L;
   }
 
-  private static ExpressionTree getExpression(Tree tree) {
-    ExpressionTree expression;
-    if (tree.is(Kind.OR, Kind.XOR, Kind.AND)) {
-      expression = ((BinaryExpressionTree) tree).rightOperand();
-    } else {
-      expression = ((AssignmentExpressionTree) tree).expression();
-    }
-    return expression;
-  }
 }

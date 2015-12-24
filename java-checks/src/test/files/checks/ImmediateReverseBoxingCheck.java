@@ -4,8 +4,8 @@ abstract class A {
   public void processInteger(String s, Integer... a) {}
   
   void intBoxingAndUnboxing(int int1, Integer integer1, String string) {
-    new Integer(int1).intValue(); // Noncompliant {{Remove the boxing of "int1".}}
-    new Integer(1 + 2).intValue(); // Noncompliant {{Remove the boxing to "Integer".}}
+    new Integer(int1).intValue(); // Noncompliant [[sc=5;ec=22]] {{Remove the boxing of "int1".}}
+    new Integer(1 + 2).intValue(); // Noncompliant [[sc=5;ec=23]] {{Remove the boxing to "Integer".}}
     Integer.valueOf(int1).intValue(); // Noncompliant
     Integer.valueOf(1 + 2).intValue(); // Noncompliant
     processInt(string, new Integer(int1)); // Noncompliant

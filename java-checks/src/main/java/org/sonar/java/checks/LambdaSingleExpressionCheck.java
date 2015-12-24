@@ -62,12 +62,13 @@ public class LambdaSingleExpressionCheck extends IssuableSubscriptionVisitor imp
   @Override
   public void visitNode(Tree tree) {
     LambdaExpressionTree lambdaExpressionTree = (LambdaExpressionTree) tree;
-    if (isBlockWithOneStatement(lambdaExpressionTree.body())) {
+    Tree lambdaBody = lambdaExpressionTree.body();
+    if (isBlockWithOneStatement(lambdaBody)) {
       String message = "Remove useless curly braces around statement";
       if (singleStatementIsReturn(lambdaExpressionTree)) {
         message += " and then remove useless return keyword";
       }
-      addIssue(lambdaExpressionTree.body(), message + context.getJavaVersion().java8CompatibilityMessage());
+      reportIssue(((BlockTree) lambdaBody).openBraceToken(), message + context.getJavaVersion().java8CompatibilityMessage());
     }
   }
 

@@ -51,7 +51,7 @@ public class ForLoopFalseConditionCheck extends AbstractForLoopRule {
   public void visitForStatement(ForStatementTree forStatement) {
     ExpressionTree condition = forStatement.condition();
     if (condition != null && (isAlwaysFalseCondition(condition) || isConditionFalseAtInitialization(forStatement))) {
-      addIssue(condition, "This loop will never execute.");
+      reportIssue(condition, "This loop will never execute.");
     }
   }
 

@@ -71,7 +71,7 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
       JavaType cast = (JavaType) typeCastTree.type().symbolType();
       JavaType expressionType = (JavaType) typeCastTree.expression().symbolType();
       if (!isExcluded(cast) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType))) {
-        addIssue(tree, "Remove this unnecessary cast to \"" + cast + "\".");
+        reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
       }
     }
   }

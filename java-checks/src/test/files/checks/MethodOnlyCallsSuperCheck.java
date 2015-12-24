@@ -8,7 +8,7 @@ class A {
     return 0;
   }
 
-  private void f() { // Noncompliant {{Remove this method to simply inherit it.}}
+  private void f() { // Noncompliant [[sc=16;ec=17]] {{Remove this method to simply inherit it.}}
     super.f();
   }
 

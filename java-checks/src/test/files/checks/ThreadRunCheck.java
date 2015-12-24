@@ -5,7 +5,7 @@ class A {
     Runnable runnable = null;
 
     Thread myThread = new Thread(runnable);
-    myThread.run(); // Noncompliant {{Call the method Thread.start() to execute the content of the run() method in a dedicated thread.}}
+    myThread.run(); // Noncompliant [[sc=14;ec=17]] {{Call the method Thread.start() to execute the content of the run() method in a dedicated thread.}}
 
     Thread myThread2 = new Thread(runnable);
     myThread2.start();

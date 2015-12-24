@@ -59,7 +59,7 @@ public class ArrayDesignatorAfterTypeCheck extends SubscriptionBaseVisitor {
       ArrayTypeTree arrayTypeTree = (ArrayTypeTree) returnType;
       SyntaxToken openBracketToken = arrayTypeTree.openBracketToken();
       if (isInvalidPosition(openBracketToken, identifierToken)) {
-        addIssue(openBracketToken, "Move the array designators \"[]\" to the end of the return type.");
+        reportIssue(openBracketToken, "Move the array designators \"[]\" to the end of the return type.");
         break;
       }
       returnType = arrayTypeTree.type();

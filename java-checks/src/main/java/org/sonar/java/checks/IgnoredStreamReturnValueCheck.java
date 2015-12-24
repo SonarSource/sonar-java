@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -67,7 +68,7 @@ public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
     if (statement.is(Kind.METHOD_INVOCATION)) {
       MethodInvocationTree mit = (MethodInvocationTree) statement;
       if (MATCHERS.anyMatch(mit)) {
-        addIssue(mit, "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");
+        reportIssue(MethodsHelper.methodName(mit), "Check the return value of the \"" + mit.symbol().name() + "\" call to see how many bytes were read.");
       }
     }
   }

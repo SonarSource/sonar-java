@@ -55,10 +55,10 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
-    if (hasSemantic() && isPublic(methodTree) && !((MethodTreeImpl)methodTree).isMainMethod()) {
+    if (hasSemantic() && isPublic(methodTree) && !((MethodTreeImpl) methodTree).isMainMethod()) {
       List<String> thrownCheckedExceptions = getThrownCheckedExceptions(methodTree);
       if (thrownCheckedExceptions.size() > 1 && isNotOverriden(methodTree)) {
-        addIssue(methodTree, "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
+        reportIssue(methodTree.simpleName(), "Refactor this method to throw at most one checked exception instead of: " + Joiner.on(", ").join(thrownCheckedExceptions));
       }
     }
   }

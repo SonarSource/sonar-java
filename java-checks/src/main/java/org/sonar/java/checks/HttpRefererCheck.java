@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -47,9 +48,9 @@ public class HttpRefererCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
-        .typeDefinition("javax.servlet.http.HttpServletRequest")
-        .name("getHeader")
-        .addParameter("java.lang.String"));
+      .typeDefinition("javax.servlet.http.HttpServletRequest")
+      .name("getHeader")
+      .addParameter("java.lang.String"));
   }
 
   @Override
@@ -58,7 +59,7 @@ public class HttpRefererCheck extends AbstractMethodDetection {
     if (arg.is(Tree.Kind.STRING_LITERAL)) {
       LiteralTree lt = (LiteralTree) arg;
       if ("\"referer\"".equals(lt.value())) {
-        addIssue(mit, "\"referer\" header should not be relied on");
+        reportIssue(MethodsHelper.methodName(mit), "\"referer\" header should not be relied on");
       }
     }
   }

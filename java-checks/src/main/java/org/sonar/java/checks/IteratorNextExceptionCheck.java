@@ -69,7 +69,7 @@ public class IteratorNextExceptionCheck extends SubscriptionBaseVisitor {
       NextMethodBodyVisitor visitor = new NextMethodBodyVisitor();
       tree.accept(visitor);
       if (!visitor.foundThrow) {
-        addIssue(tree, "Add a \"NoSuchElementException\" for iteration beyond the end of the collection.");
+        reportIssue(methodTree.simpleName(), "Add a \"NoSuchElementException\" for iteration beyond the end of the collection.");
       }
     }
   }

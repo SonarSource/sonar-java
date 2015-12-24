@@ -52,6 +52,7 @@ public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS);
   }
+
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
@@ -70,9 +71,9 @@ public class EqualsOverridenWithHashCodeCheck extends SubscriptionBaseVisitor {
       }
 
       if (equalsMethod != null && hashCodeMethod == null) {
-        addIssue(equalsMethod, getMessage(EQUALS, HASHCODE));
+        reportIssue(equalsMethod.simpleName(), getMessage(EQUALS, HASHCODE));
       } else if (hashCodeMethod != null && equalsMethod == null) {
-        addIssue(hashCodeMethod, getMessage(HASHCODE, EQUALS));
+        reportIssue(hashCodeMethod.simpleName(), getMessage(HASHCODE, EQUALS));
       }
     }
   }

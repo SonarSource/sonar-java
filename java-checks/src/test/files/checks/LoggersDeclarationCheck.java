@@ -13,7 +13,7 @@ class A {
   private static final Log LOG; // Compliant
   private static final Log LOGGER; // Compliant
 
-  private static final Log foo; // Noncompliant {{Rename the "foo" logger to comply with the format "LOG(?:GER)?".}}
+  private static final Log foo; // Noncompliant [[sc=28;ec=31]] {{Rename the "foo" logger to comply with the format "LOG(?:GER)?".}}
 
   private static final Foo foo; // Compliant
 

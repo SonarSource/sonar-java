@@ -175,6 +175,10 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
+  public SyntaxToken throwsToken() {
+    return throwsToken;
+  }
+  @Override
   public ListTree<TypeTree> throwsClauses() {
     return throwsClauses;
   }

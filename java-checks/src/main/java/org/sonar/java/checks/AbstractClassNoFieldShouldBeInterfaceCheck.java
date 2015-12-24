@@ -29,6 +29,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -62,9 +63,10 @@ public class AbstractClassNoFieldShouldBeInterfaceCheck extends IssuableSubscrip
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (classTree.superClass() == null && classIsAbstract(classTree) && classHasNoFieldAndProtectedMethod(classTree)) {
-      addIssue(
-        classTree,
-        "Convert the abstract class \"" + classTree.simpleName().name() + "\" into an interface." + context.getJavaVersion().java8CompatibilityMessage());
+      IdentifierTree simpleName = classTree.simpleName();
+      reportIssue(
+        simpleName,
+        "Convert the abstract class \"" + simpleName.name() + "\" into an interface." + context.getJavaVersion().java8CompatibilityMessage());
     }
   }
 

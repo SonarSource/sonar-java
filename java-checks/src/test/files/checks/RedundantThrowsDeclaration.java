@@ -12,7 +12,7 @@ public class RedundantThrowsDeclarationCheck {
   public void foo4() throws MyException {
   }
 
-  public void foo5() throws RuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.RuntimeException' which is a runtime exception.}}
+  public void foo5() throws RuntimeException { // Noncompliant [[sc=29;ec=45]] {{Remove the declaration of thrown exception 'java.lang.RuntimeException' which is a runtime exception.}}
   }
 
   public void foo6() throws IllegalArgumentException { // Noncompliant {{Remove the declaration of thrown exception 'java.lang.IllegalArgumentException' which is a runtime exception.}}
@@ -36,7 +36,7 @@ public class RedundantThrowsDeclarationCheck {
   public void foo13() throws MyRuntimeException, MyRuntimeException { // Noncompliant {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyRuntimeException' which is a runtime exception.}}
   }
 
-  public void foo14() throws MyRuntimeException, Throwable { // Noncompliant {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of 'java.lang.Throwable'.}}
+  public void foo14() throws MyRuntimeException, Throwable { // Noncompliant [[sc=30;ec=48]] {{Remove the declaration of thrown exception 'RedundantThrowsDeclarationCheck$MyRuntimeException' which is a subclass of 'java.lang.Throwable'.}}
   }
 
   public void foo15() throws Exception, Error {

@@ -28,6 +28,8 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -75,10 +77,16 @@ public class MethodWithExcessiveReturnsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (tree.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION)) {
+    Tree reportTree = null;
+    if (tree.is(Tree.Kind.METHOD)) {
+      reportTree = ((MethodTree) tree).simpleName();
+    } else if (tree.is(Tree.Kind.LAMBDA_EXPRESSION)) {
+      reportTree = ((LambdaExpressionTree) tree).arrowToken();
+    }
+    if (reportTree != null) {
       int count = returnStatementCounter.count(tree);
       if (count > max) {
-        addIssue(tree, "Reduce the number of returns of this method " + count + ", down to the maximum allowed " + max + ".");
+        reportIssue(reportTree, "Reduce the number of returns of this method " + count + ", down to the maximum allowed " + max + ".");
       }
       methods.pop();
     }

@@ -31,6 +31,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -78,7 +79,7 @@ public class FieldMatchMethodNameCheck extends SubscriptionBaseVisitor {
         if (entry.getCount() > 1) {
           Tree field = indexSymbol.get(entry.getElement()).declaration();
           if (field != null) {
-            addIssue(field, "Rename the \"" + fieldsOriginal.get(entry.getElement()) + "\" member.");
+            reportIssue(((VariableTree) field).simpleName(), "Rename the \"" + fieldsOriginal.get(entry.getElement()) + "\" member.");
           }
         }
       }

@@ -40,33 +40,3 @@ public class TooManyMethodsCheckTest {
   }
 
 }
-
-class A { // Noncompliant {{Class "A" has 5  methods, which is greater than the 4 authorized. Split it into smaller classes.}}
-  void method1() {}
-  public void method2() {}
-  void method3() {}
-  public void method4() {}
-  void method5() {}
-}
-
-enum B {
-  A;
-  void method1() {}
-  public void method2() {}
-  void method3() {}
-  public void method4() {}
-}
-
-interface C {
-  void method1();
-  public void method2();
-  void method3();
-  public void method4();
-}
-
-@interface D {
-  String method1();
-  public String method2();
-  String method3();
-  public String method4();
-}

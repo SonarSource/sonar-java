@@ -1,4 +1,4 @@
-interface notAnnotated { // Noncompliant {{Annotate the "notAnnotated" interface with the @FunctionalInterface annotation}}
+interface notAnnotated { // Noncompliant [[sc=11;ec=23]] {{Annotate the "notAnnotated" interface with the @FunctionalInterface annotation}}
   public int transform(int a);
 }
 interface notAnnotatedWithTwoMethods {

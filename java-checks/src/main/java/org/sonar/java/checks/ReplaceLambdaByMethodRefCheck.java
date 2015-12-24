@@ -71,7 +71,7 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     if (isSingleMethodInvocationUsingLambdaParamAsArg(tree) || isBlockInvokingMethod(tree.body())) {
-      context.addIssue(tree, this, "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
+      context.reportIssue(this, tree.arrowToken(), "Replace this lambda with a method reference." + context.getJavaVersion().java8CompatibilityMessage());
     }
     super.visitLambdaExpression(tree);
   }

@@ -17,7 +17,7 @@ class A {
     notifyAll();
   }
   void bar() {
-    obj.wait();    // Noncompliant {{Make this call to "wait()" only inside a synchronized block to be sure to hold the monitor on "String" object.}}
+    obj.wait();    // Noncompliant [[sc=9;ec=13]] {{Make this call to "wait()" only inside a synchronized block to be sure to hold the monitor on "String" object.}}
     wait(1, 2); // Noncompliant {{Make this call to "wait()" only inside a synchronized block to be sure to hold the monitor on "this" object.}}
     wait(1);   // Noncompliant
     notify();  // Noncompliant

@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -59,8 +60,9 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     ClassTree classTree = (ClassTree) tree;
     if (hasSemantic() && isNotSerializable(classTree.symbol())) {
       for (Tree member : classTree.members()) {
-        if (isTransient(member)) {
-          addIssue(member, "Remove the \"transient\" modifier from this field.");
+        ModifierKeywordTree transientModifier = isTransient(member);
+        if (transientModifier != null) {
+          reportIssue(transientModifier, "Remove the \"transient\" modifier from this field.");
         }
       }
     }
@@ -75,12 +77,12 @@ public class TransientFieldInNonSerializableCheck extends SubscriptionBaseVisito
     return !symbol.type().isSubtypeOf("java.io.Serializable");
   }
 
-  private static boolean isTransient(Tree tree) {
+  private static ModifierKeywordTree isTransient(Tree tree) {
     if (tree.is(Tree.Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
-      return ModifiersUtils.hasModifier(variable.modifiers(), Modifier.TRANSIENT);
+      return ModifiersUtils.getModifier(variable.modifiers(), Modifier.TRANSIENT);
     }
-    return false;
+    return null;
   }
 
 }

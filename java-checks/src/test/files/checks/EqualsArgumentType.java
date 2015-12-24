@@ -10,7 +10,7 @@ public class TestClassInstanceof1 {
 
 public class TestClassInstanceof2 {
   @Override
-  public boolean equals(Object that) { // Noncompliant {{Add a type test to this method.}}
+  public boolean equals(Object that) { // Noncompliant [[sc=18;ec=24]] {{Add a type test to this method.}}
     if (this instanceof Object) {
       return ((Object) that) == null;
     }

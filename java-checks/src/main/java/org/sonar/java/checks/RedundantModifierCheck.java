@@ -28,6 +28,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -79,8 +80,9 @@ public class RedundantModifierCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkRedundantModifier(ModifiersTree modifiersTree, Modifier modifier) {
-    if (ModifiersUtils.hasModifier(modifiersTree, modifier)) {
-      addIssue(modifiersTree, "\"" + modifier.toString().toLowerCase() + "\" is redundant in this context.");
+    ModifierKeywordTree foundModifier = ModifiersUtils.getModifier(modifiersTree, modifier);
+    if (foundModifier != null) {
+      reportIssue(foundModifier, "\"" + modifier.toString().toLowerCase() + "\" is redundant in this context.");
     }
   }
 

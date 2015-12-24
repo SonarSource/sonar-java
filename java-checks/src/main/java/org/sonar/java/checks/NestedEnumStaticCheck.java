@@ -51,8 +51,9 @@ public class NestedEnumStaticCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (isStatic((ClassTree) tree)) {
-      addIssue(tree, "Remove this redundant \"static\" qualifier.");
+    ClassTree classTree = (ClassTree) tree;
+    if (isStatic(classTree)) {
+      reportIssue(classTree.declarationKeyword(), "Remove this redundant \"static\" qualifier.");
     }
   }
 

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -115,7 +116,7 @@ public class ServletMethodsExceptionsThrownCheck extends SubscriptionBaseVisitor
     if (symbol.isMethodSymbol()) {
       List<Type> types = ((Symbol.MethodSymbol) symbol).thrownTypes();
       if (!types.isEmpty()) {
-        addIssueIfNotCatched(types, node, "Add a \"try/catch\" block for \"" + symbol.name() + "\".");
+        addIssueIfNotCatched(types, MethodsHelper.methodName(node), "Add a \"try/catch\" block for \"" + symbol.name() + "\".");
       }
     }
   }
@@ -123,7 +124,7 @@ public class ServletMethodsExceptionsThrownCheck extends SubscriptionBaseVisitor
   private void addIssueIfNotCatched(Iterable<Type> thrown, Tree node, String message) {
     for (Type type : thrown) {
       if (isNotcatched(type)) {
-        addIssue(node, message);
+        reportIssue(node, message);
       }
     }
   }

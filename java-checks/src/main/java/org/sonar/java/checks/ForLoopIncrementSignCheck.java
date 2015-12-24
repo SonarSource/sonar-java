@@ -39,7 +39,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class  ForLoopIncrementSignCheck extends AbstractForLoopRule {
+public class ForLoopIncrementSignCheck extends AbstractForLoopRule {
 
   @Override
   public void visitForStatement(ForStatementTree forStatement) {
@@ -71,16 +71,15 @@ public class  ForLoopIncrementSignCheck extends AbstractForLoopRule {
 
   private void checkPositiveIncrement(Tree tree, ForLoopIncrement loopIncrement) {
     if (loopIncrement.value() < 0) {
-      addIssue(tree, String.format("\"%s\" is decremented and will never reach \"stop condition\".", loopIncrement.identifier().name()));
+      reportIssue(tree, String.format("\"%s\" is decremented and will never reach \"stop condition\".", loopIncrement.identifier().name()));
     }
   }
 
   private void checkNegativeIncrement(Tree tree, ForLoopIncrement loopIncrement) {
     if (loopIncrement.value() > 0) {
-      addIssue(tree, String.format("\"%s\" is incremented and will never reach \"stop condition\".", loopIncrement.identifier().name()));
+      reportIssue(tree, String.format("\"%s\" is incremented and will never reach \"stop condition\".", loopIncrement.identifier().name()));
     }
   }
-
 
 
 }

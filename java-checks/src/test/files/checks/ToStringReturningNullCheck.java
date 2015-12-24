@@ -15,3 +15,9 @@ class B {
     return null; // Noncompliant {{Return empty string instead.}}
   }  
 }
+
+class C {
+  public String toString() {
+    return (null); // Noncompliant [[sc=13;ec=17]]
+  }
+}

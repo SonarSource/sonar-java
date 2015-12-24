@@ -48,6 +48,7 @@ import java.util.List;
 public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
   private ClassGetNameDetector classGetNameDetector = new ClassGetNameDetector();
+  private MethodInvocationTree reportTree;
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -56,6 +57,7 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    reportTree = mit;
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       ((MemberSelectExpressionTree) mit.methodSelect()).expression().accept(classGetNameDetector);
     }
@@ -71,7 +73,7 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (methodMatchers.anyMatch(tree)) {
-        addIssue(tree, "Use an \"instanceof\" comparison instead.");
+        reportIssue(reportTree, "Use an \"instanceof\" comparison instead.");
       }
       scan(tree.methodSelect());
     }

@@ -62,11 +62,11 @@ public class RedundantThrowsDeclarationCheck extends SubscriptionBaseVisitor {
       if (!reported.contains(fullyQualifiedName)) {
         String superTypeName = isSubclassOfAny(symbolType, thrownList);
         if (superTypeName != null) {
-          addIssue(typeTree, "Remove the declaration of thrown exception '" + fullyQualifiedName + "' which is a subclass of '" + superTypeName + "'.");
+          reportIssue(typeTree, "Remove the declaration of thrown exception '" + fullyQualifiedName + "' which is a subclass of '" + superTypeName + "'.");
         } else if (symbolType.isSubtypeOf("java.lang.RuntimeException")) {
-          addIssue(typeTree, "Remove the declaration of thrown exception '" + fullyQualifiedName + "' which is a runtime exception.");
+          reportIssue(typeTree, "Remove the declaration of thrown exception '" + fullyQualifiedName + "' which is a runtime exception.");
         } else if (declaredMoreThanOnce(fullyQualifiedName, thrownList)) {
-          addIssue(typeTree, "Remove the redundant '" + fullyQualifiedName + "' thrown exception declaration(s).");
+          reportIssue(typeTree, "Remove the redundant '" + fullyQualifiedName + "' thrown exception declaration(s).");
         }
         reported.add(fullyQualifiedName);
       }

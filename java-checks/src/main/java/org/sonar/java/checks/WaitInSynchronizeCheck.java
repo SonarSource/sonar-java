@@ -48,27 +48,27 @@ public class WaitInSynchronizeCheck extends AbstractInSynchronizeChecker {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (!isInSyncBlock()) {
-      String methodName;
+      IdentifierTree methodName;
       String lockName;
       if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-        methodName = mse.identifier().name();
+        methodName = mse.identifier();
         lockName = mse.expression().symbolType().name();
       } else {
-        methodName = ((IdentifierTree) mit.methodSelect()).name();
+        methodName = (IdentifierTree) mit.methodSelect();
         lockName = "this";
       }
-      addIssue(mit, "Make this call to \"" + methodName + "()\" only inside a synchronized block to be sure to hold the monitor on \"" + lockName + "\" object.");
+      reportIssue(methodName, "Make this call to \"" + methodName + "()\" only inside a synchronized block to be sure to hold the monitor on \"" + lockName + "\" object.");
     }
   }
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.<MethodMatcher>builder()
-        .add(MethodMatcher.create().name("wait"))
-        .add(MethodMatcher.create().name("wait").addParameter("long"))
-        .add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"))
-        .add(MethodMatcher.create().name("notify"))
-        .add(MethodMatcher.create().name("notifyAll")).build();
+      .add(MethodMatcher.create().name("wait"))
+      .add(MethodMatcher.create().name("wait").addParameter("long"))
+      .add(MethodMatcher.create().name("wait").addParameter("long").addParameter("int"))
+      .add(MethodMatcher.create().name("notify"))
+      .add(MethodMatcher.create().name("notifyAll")).build();
   }
 }

@@ -87,7 +87,7 @@ public class ArchitectureCheck extends SubscriptionBaseVisitor {
         String fullyQualifiedName = type.fullyQualifiedName();
         Set<String> currentIssues = issues.peekFirst();
         if (!currentIssues.contains(fullyQualifiedName) && WildcardPattern.match(getToPatterns(), fullyQualifiedName)) {
-          addIssue(tree, shouldCheckId + " must not use " + fullyQualifiedName);
+          reportIssue(tree, shouldCheckId + " must not use " + fullyQualifiedName);
           currentIssues.add(fullyQualifiedName);
         }
       }

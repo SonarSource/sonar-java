@@ -1,7 +1,7 @@
 import java.lang.Class;
 import java.lang.Object;
 
-class A { // Noncompliant {{"class" "A" has 6 methods, which is greater than the 4 authorized. Split it into smaller classes.}}
+class A { // Noncompliant [[sc=7;ec=8;secondary=5,6,7,8,9,10]] {{"class" "A" has 6 methods, which is greater than the 4 authorized. Split it into smaller classes.}}
   A () {}
   void method1() {}
   public void method2() {}

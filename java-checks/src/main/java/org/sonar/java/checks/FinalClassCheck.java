@@ -54,16 +54,16 @@ public class FinalClassCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (hasOnlyPrivateConstructors(classTree) && !ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
-      addIssue(classTree, "Make this class \"final\" or add a public constructor.");
+      reportIssue(classTree.simpleName(), "Make this class \"final\" or add a public constructor.");
     }
   }
 
   private static boolean hasOnlyPrivateConstructors(ClassTree classTree) {
     boolean hasConstructor = false;
     for (Tree member : classTree.members()) {
-      if(member.is(Kind.CONSTRUCTOR)) {
+      if (member.is(Kind.CONSTRUCTOR)) {
         hasConstructor = true;
-        if(!ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE)) {
+        if (!ModifiersUtils.hasModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE)) {
           // has a constructor not private.
           return false;
         }

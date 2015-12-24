@@ -33,12 +33,18 @@ import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 @Rule(
   key = "S134",
@@ -58,77 +64,89 @@ public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFile
   public int max = DEFAULT_MAX;
 
   private JavaFileScannerContext context;
-  private int nestingLevel;
+  private Deque<Tree> nestingLevel;
 
   @Override
   public void scanFile(final JavaFileScannerContext context) {
     this.context = context;
-    this.nestingLevel = 0;
+    this.nestingLevel = new ArrayDeque<>();
     scan(context.getTree());
   }
 
   @Override
   public void visitIfStatement(IfStatementTree tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken ifKeyword = tree.ifKeyword();
+    checkNesting(ifKeyword);
+    nestingLevel.push(ifKeyword);
     visit(tree);
-    nestingLevel--;
+    nestingLevel.pop();
   }
 
   @Override
   public void visitForStatement(ForStatementTree tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken forKeyword = tree.forKeyword();
+    checkNesting(forKeyword);
+    nestingLevel.push(forKeyword);
     super.visitForStatement(tree);
-    nestingLevel--;
+    nestingLevel.pop();
   }
 
   @Override
   public void visitForEachStatement(ForEachStatement tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken forKeyword = tree.forKeyword();
+    checkNesting(forKeyword);
+    nestingLevel.push(forKeyword);
     super.visitForEachStatement(tree);
-    nestingLevel--;
+    nestingLevel.pop();
   }
 
   @Override
   public void visitWhileStatement(WhileStatementTree tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken whileKeyword = tree.whileKeyword();
+    checkNesting(whileKeyword);
+    nestingLevel.push(whileKeyword);
     super.visitWhileStatement(tree);
-    nestingLevel--;
+    nestingLevel.pop();
   }
 
   @Override
   public void visitDoWhileStatement(DoWhileStatementTree tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken doKeyword = tree.doKeyword();
+    checkNesting(doKeyword);
+    nestingLevel.push(doKeyword);
     super.visitDoWhileStatement(tree);
-    nestingLevel--;
+    nestingLevel.pop();
   }
 
   @Override
   public void visitSwitchStatement(SwitchStatementTree tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken switchKeyword = tree.switchKeyword();
+    checkNesting(switchKeyword);
+    nestingLevel.push(switchKeyword);
     super.visitSwitchStatement(tree);
-    nestingLevel--;
+    nestingLevel.pop();
   }
 
   @Override
   public void visitTryStatement(TryStatementTree tree) {
-    nestingLevel++;
-    checkNesting(tree);
+    SyntaxToken tryKeyword = tree.tryKeyword();
+    checkNesting(tryKeyword);
+    nestingLevel.push(tryKeyword);
     scan(tree.block());
-    nestingLevel--;
+    nestingLevel.pop();
     scan(tree.resources());
     scan(tree.catches());
     scan(tree.finallyBlock());
   }
 
   private void checkNesting(Tree tree) {
-    if (nestingLevel == max + 1) {
-      context.addIssue(tree, this, "Refactor this code to not nest more than " + max + " if/for/while/switch/try statements.");
+    int size = nestingLevel.size();
+    if (size == max) {
+      List<JavaFileScannerContext.Location> secondary = new ArrayList<>(size);
+      for (Tree element : nestingLevel) {
+        secondary.add(new JavaFileScannerContext.Location("Nesting + 1", element));
+      }
+      context.reportIssue(this, tree, "Refactor this code to not nest more than " + max + " if/for/while/switch/try statements.", secondary, null);
     }
   }
 

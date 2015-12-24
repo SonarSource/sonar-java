@@ -58,7 +58,7 @@ public class StaticMultithreadedUnsafeFieldsCheck extends SubscriptionBaseVisito
     VariableTree variableTree = (VariableTree) tree;
     if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(variableTree.type().symbolType())) {
       IdentifierTree identifierTree = variableTree.simpleName();
-      addIssue(identifierTree, String.format("Make \"%s\" an instance variable.", identifierTree.name()));
+      reportIssue(identifierTree, String.format("Make \"%s\" an instance variable.", identifierTree.name()));
     }
   }
 

@@ -1,6 +1,6 @@
 class A {
   private void f() {
-    boolean result = foo.toLowerCase().equals(bar);             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
+    boolean result = foo.toLowerCase().equals(bar);             // Noncompliant [[sc=22;ec=51]] {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     boolean result = foo.toUpperCase().equals(bar);             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     boolean result = "foo".toUpperCase().equals(bar);           // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}
     boolean result = foo.equals(bar.toLowerCase());             // Noncompliant {{Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.}}

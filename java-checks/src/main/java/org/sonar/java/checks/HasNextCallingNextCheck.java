@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -78,7 +79,7 @@ public class HasNextCallingNextCheck extends SubscriptionBaseVisitor {
     public void visitMethodInvocation(MethodInvocationTree tree) {
       Symbol method = tree.symbol();
       if ("next".equals(method.name()) && tree.arguments().isEmpty() && isIteratorMethod(method)) {
-        addIssue(tree, "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
+        reportIssue(MethodsHelper.methodName(tree), "Refactor the implementation of this \"Iterator.hasNext()\" method to not call \"Iterator.next()\".");
       }
       super.visitMethodInvocation(tree);
     }

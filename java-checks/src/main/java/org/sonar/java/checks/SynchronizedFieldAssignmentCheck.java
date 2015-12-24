@@ -38,8 +38,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
-import java.text.MessageFormat;
 import java.util.List;
 
 @Rule(
@@ -58,14 +56,12 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-    SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
-    ExpressionTree synchronizedExpression = sst.expression();
-    Symbol field = getField(synchronizedExpression);
-    if (field != null) {
-      sst.block().accept(new AssignmentVisitor(field, tree));
+    if (hasSemantic()) {
+      SynchronizedStatementTree sst = (SynchronizedStatementTree) tree;
+      Symbol field = getField(sst.expression());
+      if (field != null) {
+        sst.block().accept(new AssignmentVisitor(field, sst.expression()));
+      }
     }
   }
 
@@ -122,19 +118,15 @@ public class SynchronizedFieldAssignmentCheck extends SubscriptionBaseVisitor {
 
     private void checkSymbolAssignment(Tree variable) {
       if (variable.is(Kind.IDENTIFIER)) {
-        Symbol variableSymbol = ((IdentifierTree) variable).symbol();
-        if (field.equals(variableSymbol)) {
-          addIssue(synchronizedStatement, getMessage(variable));
+        if (field.equals(((IdentifierTree) variable).symbol())) {
+          reportIssue(
+            synchronizedStatement,
+            String.format("Don't synchronize on \"%s\" or remove its reassignment on line %d.", field.name(), FirstSyntaxTokenFinder.firstSyntaxToken(variable).line()));
         }
       } else if (variable.is(Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) variable;
-        checkSymbolAssignment(mse.identifier());
+        checkSymbolAssignment(((MemberSelectExpressionTree) variable).identifier());
       }
     }
 
-    private String getMessage(Tree variable) {
-      int line = FirstSyntaxTokenFinder.firstSyntaxToken(variable).line();
-      return MessageFormat.format("Don''t synchronize on \"{0}\" or remove its reassignment on line {1}.", field.name(), line);
-    }
   }
 }

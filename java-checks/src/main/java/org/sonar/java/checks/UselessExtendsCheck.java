@@ -62,7 +62,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     ClassTree classTree = (ClassTree) tree;
     TypeTree superClassTree = classTree.superClass();
     if (superClassTree != null && superClassTree.symbolType().is("java.lang.Object")) {
-      addIssue(superClassTree, "\"Object\" should not be explicitly extended.");
+      reportIssue(superClassTree, "\"Object\" should not be explicitly extended.");
     }
     Set<Type> interfaces = new HashSet<>();
     for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
@@ -70,7 +70,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
       if (interfaceType.isClass()) {
         String interfaceName = interfaceType.fullyQualifiedName();
         if (interfaces.contains(interfaceType)) {
-          addIssue(superInterfaceTree, String.format(ERROR_MESSAGE, interfaceName));
+          reportIssue(superInterfaceTree, String.format(ERROR_MESSAGE, interfaceName));
         } else {
           checkExtending(classTree, interfaceType, interfaceName);
         }
@@ -83,10 +83,10 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
 
   private void checkExtending(ClassTree classTree, Type currentInterfaceType, String currentInterfaceName) {
     for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
-      if (!currentInterfaceType.equals(superInterfaceTree.symbolType()) && currentInterfaceType.isSubtypeOf(superInterfaceTree.symbolType())) {
-        String interfaceName = superInterfaceTree.symbolType().fullyQualifiedName();
-        addIssue(superInterfaceTree, String.format("\"%s\" is a \"%s\" so \"%s\" can be removed from the extension list.",
-          currentInterfaceName, interfaceName, interfaceName));
+      Type symbolType = superInterfaceTree.symbolType();
+      if (!currentInterfaceType.equals(symbolType) && currentInterfaceType.isSubtypeOf(symbolType)) {
+        String interfaceName = symbolType.fullyQualifiedName();
+        reportIssue(superInterfaceTree, String.format("\"%s\" is a \"%s\" so \"%s\" can be removed from the extension list.", currentInterfaceName, interfaceName, interfaceName));
       }
     }
   }
@@ -94,7 +94,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
   private void checkExtending(ClassTree classTree, TypeTree currentInterfaceTree) {
     for (TypeTree superInterfaceTree : classTree.superInterfaces()) {
       if (!currentInterfaceTree.equals(superInterfaceTree) && SyntacticEquivalence.areEquivalent(currentInterfaceTree, superInterfaceTree)) {
-        addIssue(superInterfaceTree, String.format(ERROR_MESSAGE, extractInterfaceName(currentInterfaceTree)));
+        reportIssue(superInterfaceTree, String.format(ERROR_MESSAGE, extractInterfaceName(currentInterfaceTree)));
       }
     }
   }

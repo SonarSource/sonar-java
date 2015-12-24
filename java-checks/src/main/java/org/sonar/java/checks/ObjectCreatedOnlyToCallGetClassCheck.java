@@ -41,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(
@@ -75,9 +74,9 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   @CheckForNull
   private static ExpressionTree getInitializer(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
-    if(symbol.isVariableSymbol()) {
+    if (symbol.isVariableSymbol()) {
       VariableTree declaration = ((Symbol.VariableSymbol) symbol).declaration();
-      if(declaration != null) {
+      if (declaration != null) {
         return declaration.initializer();
       }
     }
@@ -98,8 +97,8 @@ public class ObjectCreatedOnlyToCallGetClassCheck extends AbstractMethodDetectio
   }
 
   private void reportIssue(@Nullable ExpressionTree expressionTree) {
-    if(expressionTree != null) {
-      addIssue(expressionTree, "Remove this object instantiation and use \"" + getTypeName(expressionTree) + ".class\" instead.");
+    if (expressionTree != null) {
+      reportIssue(expressionTree, "Remove this object instantiation and use \"" + getTypeName(expressionTree) + ".class\" instead.");
     }
   }
 

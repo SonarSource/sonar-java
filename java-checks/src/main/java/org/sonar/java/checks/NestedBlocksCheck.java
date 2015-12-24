@@ -69,7 +69,7 @@ public class NestedBlocksCheck extends BaseTreeVisitor implements JavaFileScanne
   private void checkStatements(List<StatementTree> statements) {
     for (StatementTree statement : statements) {
       if (statement.is(Tree.Kind.BLOCK)) {
-        context.addIssue(statement, this, "Extract this nested code block into a method.");
+        context.reportIssue(this, ((BlockTree) statement).openBraceToken(), "Extract this nested code block into a method.");
       }
     }
   }

@@ -16,7 +16,7 @@ class A {
     
     ProcessBuilder pb = new ProcessBuilder(
       command, // Noncompliant {{Make sure "command" is properly sanitized before use in this OS command.}}
-      argument); // Noncompliant {{Make sure "argument" is properly sanitized before use in this OS command.}}
+      argument); // Noncompliant [[sc=7;ec=15]] {{Make sure "argument" is properly sanitized before use in this OS command.}}
 
     pb = new ProcessBuilder(
       command, // Noncompliant

@@ -57,7 +57,7 @@ public class UselessObjectCreationCheck extends SubscriptionBaseVisitor {
     if (expression.is(Tree.Kind.NEW_CLASS)) {
       NewClassTreeImpl newClassTree = (NewClassTreeImpl) expression;
       String className = newClassTree.getConstructorIdentifier().name();
-      addIssue(tree, "Either remove this useless object instantiation of class \"" + className + "\" or use it");
+      reportIssue(newClassTree.identifier(), "Either remove this useless object instantiation of class \"" + className + "\" or use it");
     }
   }
 

@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ReturnOfBooleanExpressionsCheckTest {
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ReturnOfBooleanExpressionsCheck.java", new ReturnOfBooleanExpressionsCheck());
   }
 }

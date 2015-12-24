@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -48,6 +49,6 @@ public class NotifyCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "\"notify\" may not wake up the appropriate thread.");
+    reportIssue(MethodsHelper.methodName(mit), "\"notify\" may not wake up the appropriate thread.");
   }
 }

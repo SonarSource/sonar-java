@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class ObjectFinalizeOverridenCheckTest {
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ObjectFinalizeOverridenCheck.java", new ObjectFinalizeOverridenCheck());
   }
 }

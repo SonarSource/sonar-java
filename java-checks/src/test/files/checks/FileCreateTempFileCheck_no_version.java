@@ -21,7 +21,7 @@ class A {
     File tempDir;
     tempDir = (File.createTempFile("", "."));
     tempDir.delete();
-    tempDir.mkdir();  // Noncompliant {{Use "Files.createTempDirectory" or a library function to create this directory instead. (sonar.java.source not set. Assuming 7 or greater.)}}
+    tempDir.mkdir();  // Noncompliant [[sc=13;ec=18]] {{Use "Files.createTempDirectory" or a library function to create this directory instead. (sonar.java.source not set. Assuming 7 or greater.)}}
     File tempDir2 = File.createTempFile("", ".");
     tempDir2.delete();
     tempDir2.mkdir(); // Noncompliant

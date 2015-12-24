@@ -7,7 +7,7 @@ public class TestClass implements Comparable<TestClass> {
     intmethod(0); // Compliant
     Math.abs(0); // Compliant
     Math.abs(intmethod(0)); // Compliant
-    Math.abs(hashCode()); // Noncompliant {{Use the original value instead.}}
+    Math.abs(hashCode()); // Noncompliant [[sc=14;ec=24]] {{Use the original value instead.}}
     Math.abs(((int) super.hashCode())); // Noncompliant {{Use the original value instead.}}
     Math.abs(this.hashCode()); // Noncompliant {{Use the original value instead.}}
     Math.abs(new java.util.Random().nextInt()); // Noncompliant {{Use the original value instead.}}
@@ -22,7 +22,7 @@ public class TestClass implements Comparable<TestClass> {
     -((int)0); // Compliant
     -intmethod(0); // Compliant
     -this.compareTo(this); // Noncompliant {{Use the original value instead.}}
-    -Integer.MIN_VALUE; // Noncompliant {{Use the original value instead.}}
+    -Integer.MIN_VALUE; // Noncompliant [[sc=6;ec=23]] {{Use the original value instead.}}
     -Long.MIN_VALUE; // Noncompliant {{Use the original value instead.}}
     -TestClass.MIN_VALUE; // Compliant
     -TestClass.SOME_VALUE; // Compliant

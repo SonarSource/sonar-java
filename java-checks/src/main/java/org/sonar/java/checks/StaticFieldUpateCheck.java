@@ -55,7 +55,7 @@ import java.util.List;
 @SqaleConstantRemediation("20min")
 public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
 
-  private static final Kind[] ASSIGNMENT_EXPRESSIONS = new Kind[] {
+  private static final Kind[] ASSIGNMENT_EXPRESSIONS = new Kind[]{
     Kind.AND_ASSIGNMENT,
     Kind.ASSIGNMENT,
     Kind.DIVIDE_ASSIGNMENT,
@@ -68,7 +68,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
     Kind.UNSIGNED_RIGHT_SHIFT_ASSIGNMENT,
     Kind.XOR_ASSIGNMENT};
 
-  private static final Kind[] UNARY_EXPRESSIONS = new Kind[] {
+  private static final Kind[] UNARY_EXPRESSIONS = new Kind[]{
     Kind.POSTFIX_DECREMENT,
     Kind.POSTFIX_INCREMENT,
     Kind.PREFIX_DECREMENT,
@@ -139,7 +139,7 @@ public class StaticFieldUpateCheck extends AbstractInSynchronizeChecker {
   private void checkFieldModification(IdentifierTree identifier) {
     Symbol variable = identifier.symbol();
     if (isStaticField(variable)) {
-      addIssue(identifier, "Make the enclosing method \"static\" or remove this set.");
+      reportIssue(identifier, "Make the enclosing method \"static\" or remove this set.");
     }
   }
 

@@ -7,7 +7,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 class ProjectDefinitionTest {
 
   @Rule
-  public TestName testNameUnused = new TestName(); // Noncompliant {{Remove this unused "TestName".}}
+  public TestName testNameUnused = new TestName(); // Noncompliant [[sc=19;ec=33]] {{Remove this unused "TestName".}}
 
   public TestName testNameObj = new TestName();
 

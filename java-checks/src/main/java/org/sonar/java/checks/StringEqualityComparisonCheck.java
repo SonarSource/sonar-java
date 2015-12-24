@@ -49,7 +49,7 @@ public class StringEqualityComparisonCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     BinaryExpressionTree bet = (BinaryExpressionTree) tree;
     if (bet.leftOperand().is(Tree.Kind.STRING_LITERAL) || bet.rightOperand().is(Tree.Kind.STRING_LITERAL)) {
-      addIssue(tree, "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.");
+      reportIssue(bet.operatorToken(), "Replace \"==\" and \"!=\" by \"equals()\" and \"!equals()\" respectively to compare these strings.");
     }
   }
 }

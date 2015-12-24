@@ -13,7 +13,7 @@ class A {
     cookie.setSecure(true);
   }
   void baz() {
-    Cookie cookie = new Cookie("name", "value"); // Noncompliant {{Add the "secure" attribute to this cookie}}
+    Cookie cookie = new Cookie("name", "value"); // Noncompliant [[sc=12;ec=18]] {{Add the "secure" attribute to this cookie}}
   }
   void qix() {
     Cookie cookie = new Cookie("name", "value"); // Noncompliant {{Add the "secure" attribute to this cookie}}

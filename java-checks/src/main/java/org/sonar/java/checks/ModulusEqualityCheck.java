@@ -89,7 +89,7 @@ public class ModulusEqualityCheck extends SubscriptionBaseVisitor {
       boolean usesSize = isSizeAccessor(leftOperand) || isSizeAccessor(rightOperand);
       if (intValue != null && intValue != 0 && usesMethodParam && !usesSize) {
         String sign = intValue > 0 ? "positive" : "negative";
-        addIssue(operand1, "The results of this modulus operation may not be " + sign + ".");
+        reportIssue(modulusExp.operatorToken(), "The results of this modulus operation may not be " + sign + ".");
       }
     }
   }

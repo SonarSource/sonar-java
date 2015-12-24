@@ -63,7 +63,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpression = (BinaryExpressionTree) tree;
     if (isInvalidTest(binaryExpression.leftOperand(), binaryExpression.rightOperand())) {
-      addIssue(tree, "Only the sign of the result should be examined.");
+      reportIssue(binaryExpression.operatorToken(), "Only the sign of the result should be examined.");
     }
   }
 
@@ -116,7 +116,7 @@ public class CompareToResultTestCheck extends SubscriptionBaseVisitor {
   private static boolean isNonZeroIntLiteral(ExpressionTree expression) {
     return expression.is(Tree.Kind.INT_LITERAL) && !"0".equals(((LiteralTree) expression).value());
   }
-  
+
   private static boolean isReassigned(Symbol variableSymbol, Tree method) {
     Collection<IdentifierTree> usages = variableSymbol.usages();
     ReAssignmentFinder reAssignmentFinder = new ReAssignmentFinder(usages);

@@ -25,8 +25,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -59,15 +59,15 @@ public class NonShortCircuitLogicCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
-    if (isBoolean(binaryExpressionTree.leftOperand())) {
+    if (isBoolean(binaryExpressionTree.leftOperand().symbolType())) {
       String operator = binaryExpressionTree.operatorToken().text();
       String replacement = REPLACEMENTS.get(operator);
-      addIssue(tree, "Correct this \"" + operator + "\" to \"" + replacement + "\".");
+      reportIssue(binaryExpressionTree.operatorToken(), "Correct this \"" + operator + "\" to \"" + replacement + "\".");
     }
   }
 
-  private static boolean isBoolean(ExpressionTree expression) {
-    return expression.symbolType().is("boolean") || expression.symbolType().is("java.lang.Boolean");
+  private static boolean isBoolean(Type type) {
+    return type.is("boolean") || type.is("java.lang.Boolean");
   }
 
 }

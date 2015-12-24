@@ -52,14 +52,14 @@ public class ObjectFinalizeOverridenCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (isFinalize(methodTree)) {
-      addIssue(methodTree.simpleName(), "Do not override the Object.finalize() method.");
+      reportIssue(methodTree.simpleName(), "Do not override the Object.finalize() method.");
     }
   }
 
   private static boolean isFinalize(MethodTree methodTree) {
-    if("finalize".equals(methodTree.simpleName().name()) ) {
+    if ("finalize".equals(methodTree.simpleName().name())) {
       Tree returnType = methodTree.returnType();
-      if(returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
+      if (returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE)) {
         return "void".equals(((PrimitiveTypeTree) returnType).keyword().text());
       }
     }

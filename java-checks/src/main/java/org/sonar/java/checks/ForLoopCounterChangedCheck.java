@@ -102,7 +102,7 @@ public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaF
 
   private void checkIdentifier(IdentifierTree identifierTree) {
     if (loopCounters.contains(identifierTree.name())) {
-      context.addIssue(identifierTree, this, "Refactor the code in order to not assign to this loop counter from within the loop body.");
+      context.reportIssue(this, identifierTree, "Refactor the code in order to not assign to this loop counter from within the loop body.");
     }
   }
 

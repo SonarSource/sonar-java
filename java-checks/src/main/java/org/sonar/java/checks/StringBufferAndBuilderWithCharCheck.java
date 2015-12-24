@@ -65,7 +65,7 @@ public class StringBufferAndBuilderWithCharCheck extends BaseTreeVisitor impleme
 
       if (argument.is(Tree.Kind.CHAR_LITERAL)) {
         String character = ((LiteralTree) argument).value();
-        context.addIssue(tree, this, "Replace the constructor character parameter " + character + " with string parameter " + character.replace("'", "\"") + ".");
+        context.reportIssue(this, argument, "Replace the constructor character parameter " + character + " with string parameter " + character.replace("'", "\"") + ".");
       }
     }
   }

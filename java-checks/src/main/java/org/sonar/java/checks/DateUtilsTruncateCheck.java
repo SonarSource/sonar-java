@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -60,7 +61,7 @@ public class DateUtilsTruncateCheck extends AbstractMethodDetection implements J
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Use \"Instant.truncatedTo\" instead." + context.getJavaVersion().java8CompatibilityMessage());
+    reportIssue(MethodsHelper.methodName(mit), "Use \"Instant.truncatedTo\" instead." + context.getJavaVersion().java8CompatibilityMessage());
   }
 
   private static MethodMatcher truncateMethodMatcher(String firstParameterType) {

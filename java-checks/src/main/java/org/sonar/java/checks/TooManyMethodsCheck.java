@@ -25,12 +25,14 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(
@@ -65,18 +67,24 @@ public class TooManyMethodsCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    int count = 0;
+    List<Tree> count = new ArrayList<>();
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR) && (countNonPublic || ((MethodTree) member).symbol().isPublic())) {
-        count++;
+        count.add(member);
       }
     }
-    if (count > maximumMethodThreshold) {
-      addIssue(
-        tree,
+    if (count.size() > maximumMethodThreshold) {
+      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
+      for (Tree element : count) {
+        secondary.add(new JavaFileScannerContext.Location("Method + 1", element));
+      }
+      reportIssue(
+        classTree.simpleName(),
         String.format("\"%s\" \"%s\" has %d%s methods, which is greater than the %d authorized. Split it into smaller classes.",
-          classTree.declarationKeyword().text(), classTree.simpleName(), count, countNonPublic ? "" : " public", maximumMethodThreshold));
+          classTree.declarationKeyword().text(), classTree.simpleName(), count.size(), countNonPublic ? "" : " public", maximumMethodThreshold),
+        secondary,
+        null);
     }
   }
 

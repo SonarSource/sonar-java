@@ -2,7 +2,7 @@ class A {
   
   void foo() {
     int i,j,k,l = 0; A a = new A();
-    for (i = 0; i< 10; j++) { // Noncompliant {{This loop's stop condition tests "i" but the incrementer updates "j".}}
+    for (i = 0; i< 10; j++) { // Noncompliant [[sc=5;ec=8]] {{This loop's stop condition tests "i" but the incrementer updates "j".}}
     }
 
     for (i = 0; i< 10; i++) { // Compliant

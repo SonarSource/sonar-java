@@ -62,7 +62,7 @@ public class ArrayDesignatorOnVariableCheck extends SubscriptionBaseVisitor {
         arrayDesignatorToken = arrayTypeTree.openBracketToken();
       }
       if (isInvalidPosition(arrayDesignatorToken, identifierToken)) {
-        addIssue(arrayDesignatorToken, "Move the array designator from the variable to the type.");
+        reportIssue(arrayDesignatorToken, "Move the array designator from the variable to the type.");
         break;
       }
       type = arrayTypeTree.type();

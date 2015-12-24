@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -86,7 +87,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
       Symbol symbol = tree.symbol();
       if (tree.methodSelect().is(Tree.Kind.IDENTIFIER) && isCallToSuperclassMethod(symbol)) {
         String methodName = ((IdentifierTree) tree.methodSelect()).name();
-        addIssue(tree, "Prefix this call to \"" + methodName + "\" with \"super.\".");
+        reportIssue(MethodsHelper.methodName(tree), "Prefix this call to \"" + methodName + "\" with \"super.\".");
       }
       super.visitMethodInvocation(tree);
     }
@@ -103,7 +104,7 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean outerClassHasMethodWithSameName(Symbol symbol) {
-      return !((Symbol.TypeSymbol)classSymbol.owner()).lookupSymbols(symbol.name()).isEmpty();
+      return !((Symbol.TypeSymbol) classSymbol.owner()).lookupSymbols(symbol.name()).isEmpty();
     }
 
   }

@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class RSAUsesOAEPCheckTest {
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/RSAUsesOAEPCheck.java", new RSAUsesOAEPCheck());
   }
 }

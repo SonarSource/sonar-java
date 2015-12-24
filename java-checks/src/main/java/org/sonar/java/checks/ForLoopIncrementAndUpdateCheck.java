@@ -67,8 +67,8 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
         ConditionVisitor conditionVisitor = new ConditionVisitor(updateSymbols);
         forStatementTree.accept(conditionVisitor);
         if (conditionVisitor.shouldRaiseIssue) {
-          addIssue(tree, "This loop's stop condition tests \"" + Joiner.on(", ").join(conditionVisitor.conditionNames)
-              + "\" but the incrementer updates \"" + getSymbols(updateSymbols) + "\".");
+          reportIssue(forStatementTree.forKeyword(), "This loop's stop condition tests \"" + Joiner.on(", ").join(conditionVisitor.conditionNames)
+            + "\" but the incrementer updates \"" + getSymbols(updateSymbols) + "\".");
         }
       }
     }
@@ -143,7 +143,7 @@ public class ForLoopIncrementAndUpdateCheck extends SubscriptionBaseVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if(tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) tree.methodSelect();
         ExpressionTree expression = mset.expression();
         if (expression.is(Tree.Kind.IDENTIFIER)) {

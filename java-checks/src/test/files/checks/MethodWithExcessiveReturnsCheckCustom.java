@@ -54,7 +54,7 @@ class A {
       return o2;
       return o1;
     });
-    bar.sort((o1, o2)-> { // Noncompliant {{Reduce the number of returns of this method 6, down to the maximum allowed 4.}}
+    bar.sort((o1, o2)-> { // Noncompliant [[sc=22;ec=24]] {{Reduce the number of returns of this method 6, down to the maximum allowed 4.}}
       return o2;
       return o1;
       return o2;

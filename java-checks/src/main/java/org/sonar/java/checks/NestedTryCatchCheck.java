@@ -26,10 +26,16 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
 
 @Rule(
   key = "S1141",
@@ -42,12 +48,12 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;
-  private int nestingLevel;
+  private Deque<Tree> nestingLevel = new ArrayDeque<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    nestingLevel = 0;
+    nestingLevel.clear();
     scan(context.getTree());
   }
 
@@ -55,14 +61,19 @@ public class NestedTryCatchCheck extends BaseTreeVisitor implements JavaFileScan
   public void visitTryStatement(TryStatementTree tree) {
     scan(tree.resources());
     if (!tree.catches().isEmpty()) {
-      nestingLevel++;
-      if (nestingLevel > 1) {
-        context.addIssue(tree.block(), this, "Extract this nested try block into a separate method.");
+      int size = nestingLevel.size();
+      if (size > 0) {
+        List<JavaFileScannerContext.Location> secondary = new ArrayList<>(size);
+        for (Tree element : nestingLevel) {
+          secondary.add(new JavaFileScannerContext.Location("Nesting + 1", element));
+        }
+        context.reportIssue(this, tree.tryKeyword(), "Extract this nested try block into a separate method.", secondary, null);
       }
+      nestingLevel.push(tree.tryKeyword());
     }
     scan(tree.block());
     if (!tree.catches().isEmpty()) {
-      nestingLevel--;
+      nestingLevel.pop();
     }
     scan(tree.catches());
     scan(tree.finallyBlock());

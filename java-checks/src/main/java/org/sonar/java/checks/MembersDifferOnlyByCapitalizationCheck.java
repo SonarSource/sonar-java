@@ -32,6 +32,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -66,14 +67,16 @@ public class MembersDifferOnlyByCapitalizationCheck extends SubscriptionBaseVisi
     Multimap<String, Symbol> membersByName = sortByName(allMembers);
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.METHOD)) {
-        checkForIssue(((MethodTree) member).symbol(), membersByName);
+        MethodTree methodTree = (MethodTree) member;
+        checkForIssue(methodTree.symbol(), methodTree.simpleName(), membersByName);
       } else if (member.is(Tree.Kind.VARIABLE)) {
-        checkForIssue(((VariableTree) member).symbol(), membersByName);
+        VariableTree variableTree = (VariableTree) member;
+        checkForIssue(variableTree.symbol(), variableTree.simpleName(), membersByName);
       }
     }
   }
 
-  private void checkForIssue(Symbol symbol, Multimap<String, Symbol> membersByName) {
+  private void checkForIssue(Symbol symbol, IdentifierTree reportTree, Multimap<String, Symbol> membersByName) {
     String name = symbol.name();
     for (String knownMemberName : membersByName.keySet()) {
       if (name.equalsIgnoreCase(knownMemberName)) {
@@ -81,7 +84,7 @@ public class MembersDifferOnlyByCapitalizationCheck extends SubscriptionBaseVisi
           if (!symbol.equals(knownMemberSymbol)
             && isValidIssueLocation(symbol, knownMemberSymbol)
             && isInvalidMember(symbol, knownMemberSymbol)) {
-            addIssue(symbol.declaration(),
+            reportIssue(reportTree,
               "Rename "
                 + getSymbolTypeName(symbol) + " \"" + name + "\" "
                 + "to prevent any misunderstanding/clash with "

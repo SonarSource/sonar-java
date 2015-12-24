@@ -4,7 +4,7 @@ class MyThread extends Thread{
   public void run(){
     synchronized(this){
       // ...
-      notify();  // Noncompliant {{"notify" may not wake up the appropriate thread.}}
+      notify();  // Noncompliant [[sc=7;ec=13]] {{"notify" may not wake up the appropriate thread.}}
       notifyAll();
     }
   }

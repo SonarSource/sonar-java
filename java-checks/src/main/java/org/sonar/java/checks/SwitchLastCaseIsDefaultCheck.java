@@ -56,9 +56,9 @@ public class SwitchLastCaseIsDefaultCheck extends SubscriptionBaseVisitor {
     CaseLabelTree defaultLabel = getDefaultLabel(switchStatementTree);
     CaseLabelTree lastLabel = getLastLabel(switchStatementTree);
     if (defaultLabel == null) {
-      addIssue(tree, "Add a default case to this switch.");
+      reportIssue(switchStatementTree.switchKeyword(), "Add a default case to this switch.");
     } else if (!defaultLabel.equals(lastLabel)) {
-      addIssue(defaultLabel, "Move this default to the end of the switch.");
+      reportIssue(defaultLabel, "Move this default to the end of the switch.");
     }
   }
 

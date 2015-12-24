@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -61,19 +62,20 @@ public class StringToStringCheck extends AbstractMethodDetection {
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
     ExpressionTree expressionTree = extractBaseExpression(((MemberSelectExpressionTree) tree.methodSelect()).expression());
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
-      addIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.",
+      reportIssue(expressionTree, String.format("\"%s\" is already a string, there's no need to call \"toString()\" on it.",
         ((IdentifierTree) expressionTree).identifierToken().text()));
     } else if (expressionTree.is(Tree.Kind.STRING_LITERAL)) {
-      addIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
+      reportIssue(expressionTree, "there's no need to call \"toString()\" on a string literal.");
     } else if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      addIssue(expressionTree, String.format("\"%s\" returns a string, there's no need to call \"toString()\".",
-        extractName(((MethodInvocationTree) expressionTree).methodSelect())));
+      IdentifierTree methodName = MethodsHelper.methodName((MethodInvocationTree) expressionTree);
+      reportIssue(methodName, "\"" + methodName + "\" returns a string, there's no need to call \"toString()\".");
     } else if (expressionTree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
-      String name = extractName(((ArrayAccessExpressionTree) expressionTree).expression());
-      if(name.isEmpty()) {
-        addIssue(expressionTree, "There's no need to call \"toString()\" on an array of String.");
+      ArrayAccessExpressionTree arrayAccess = (ArrayAccessExpressionTree) expressionTree;
+      IdentifierTree name = extractName(arrayAccess.expression());
+      if (name == null) {
+        reportIssue(arrayAccess.expression(), "There's no need to call \"toString()\" on an array of String.");
       } else {
-        addIssue(expressionTree, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".", name));
+        reportIssue(name, String.format("\"%s\" is an array of strings, there's no need to call \"toString()\".", name.identifierToken().text()));
       }
     }
   }
@@ -93,12 +95,12 @@ public class StringToStringCheck extends AbstractMethodDetection {
     }
   }
 
-  private static String extractName(ExpressionTree tree) {
+  private static IdentifierTree extractName(ExpressionTree tree) {
     ExpressionTree expressionTree = extractBaseExpression(tree);
-    if(expressionTree.is(Tree.Kind.IDENTIFIER)) {
-      return ((IdentifierTree) expressionTree).identifierToken().text();
+    if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
+      return (IdentifierTree) expressionTree;
     }
-    return "";
+    return null;
   }
 
 }

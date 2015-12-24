@@ -16,11 +16,11 @@ class A extends HttpServlet {
 
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
     String ip = request.getRemoteAddr();
-    InetAddress addr = InetAddress.getByName(ip); // Noncompliant {{Add a "try/catch" block for "getByName".}}
+    InetAddress addr = InetAddress.getByName(ip); // Noncompliant [[sc=36;ec=45]] {{Add a "try/catch" block for "getByName".}}
     try {
       InetAddress addr = InetAddress.getByName(ip);
     } catch (IllegalArgumentException e) {
-      throw e; // Noncompliant {{Add a "try/catch" block.}}
+      throw e; // Noncompliant [[sc=7;ec=15]] {{Add a "try/catch" block.}}
     } catch (Exception e) {
       throw e; // Noncompliant {{Add a "try/catch" block.}}
     }

@@ -52,7 +52,7 @@ public class RSAUsesOAEPCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     LiteralTree lt = (LiteralTree) tree;
     if (isRSA(LiteralUtils.trimQuotes(lt.value()))) {
-      addIssue(lt, "Use an RSA algorithm with an OAEP (Optimal Asymmetric Encryption Padding).");
+      reportIssue(lt, "Use an RSA algorithm with an OAEP (Optimal Asymmetric Encryption Padding).");
     }
   }
 

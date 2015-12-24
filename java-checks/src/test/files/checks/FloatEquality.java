@@ -3,7 +3,7 @@ class A {
     float f1 = 0.1f;
     float f2 = 0.1f;
     int i = 1;
-    if(f1 == f2) {} // Noncompliant {{Equality tests should not be made with floating point values.}}
+    if(f1 == f2) {} // Noncompliant [[sc=11;ec=13]] {{Equality tests should not be made with floating point values.}}
     if( f1 != f2 ){}// Noncompliant {{Equality tests should not be made with floating point values.}}
     if( f1 == i ){}// Noncompliant {{Equality tests should not be made with floating point values.}}
     if( i == f1 ){}// Noncompliant

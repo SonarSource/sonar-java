@@ -27,6 +27,7 @@ import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -59,11 +60,12 @@ public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor impl
   @Override
   public void visitNode(Tree tree) {
     LambdaExpressionTree let = (LambdaExpressionTree) tree;
-    if(let.openParenToken() != null && let.parameters().size() == 1) {
+    SyntaxToken openParenToken = let.openParenToken();
+    if (openParenToken != null && let.parameters().size() == 1) {
       VariableTree param = let.parameters().get(0);
-      String ident = param.simpleName().name();
-      if(param.type().is(Tree.Kind.INFERED_TYPE)) {
-        addIssue(param, "Remove the parentheses around the \"" + ident + "\" parameter" + context.getJavaVersion().java8CompatibilityMessage());
+      String identifier = param.simpleName().name();
+      if (param.type().is(Tree.Kind.INFERED_TYPE)) {
+        reportIssue(openParenToken, "Remove the parentheses around the \"" + identifier + "\" parameter" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
   }

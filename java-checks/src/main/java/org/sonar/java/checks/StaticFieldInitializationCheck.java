@@ -67,7 +67,7 @@ public class StaticFieldInitializationCheck extends AbstractInSynchronizeChecker
       if (aet.variable().is(Tree.Kind.IDENTIFIER) && !isInSyncBlock() && !withinStaticInitializer.peek()) {
         IdentifierTree variable = (IdentifierTree) aet.variable();
         if (isStaticNotVolatileObject(variable)) {
-          addIssue(variable, "Synchronize this lazy initialization of '" + variable.name() + "'");
+          reportIssue(variable, "Synchronize this lazy initialization of '" + variable.name() + "'");
         }
       }
     }

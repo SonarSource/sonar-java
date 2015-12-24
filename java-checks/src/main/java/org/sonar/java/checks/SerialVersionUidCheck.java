@@ -33,9 +33,11 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -64,20 +66,17 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
 
   private void visitClassTree(ClassTree classTree) {
     Symbol.TypeSymbol symbol = classTree.symbol();
-    if (!isAnonymous(classTree) && isSerializable(symbol.type())) {
+    IdentifierTree simpleName = classTree.simpleName();
+    if (simpleName != null && isSerializable(symbol.type())) {
       Symbol.VariableSymbol serialVersionUidSymbol = findSerialVersionUid(symbol);
       if (serialVersionUidSymbol == null) {
         if (!isExclusion(symbol)) {
-          addIssue(classTree, "Add a \"static final long serialVersionUID\" field to this class.");
+          reportIssue(simpleName, "Add a \"static final long serialVersionUID\" field to this class.");
         }
       } else {
         checkModifiers(serialVersionUidSymbol);
       }
     }
-  }
-
-  private static boolean isAnonymous(ClassTree classTree) {
-    return classTree.simpleName() == null;
   }
 
   private void checkModifiers(Symbol.VariableSymbol serialVersionUidSymbol) {
@@ -91,9 +90,9 @@ public class SerialVersionUidCheck extends SubscriptionBaseVisitor {
     if (!serialVersionUidSymbol.type().is("long")) {
       missingModifiers.add("long");
     }
-    Tree tree = serialVersionUidSymbol.declaration();
-    if (tree != null && !missingModifiers.isEmpty()) {
-      addIssue(tree, "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
+    VariableTree variableTree = serialVersionUidSymbol.declaration();
+    if (variableTree != null && !missingModifiers.isEmpty()) {
+      reportIssue(variableTree.simpleName(), "Make this \"serialVersionUID\" field \"" + Joiner.on(' ').join(missingModifiers) + "\".");
     }
   }
 

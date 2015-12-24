@@ -2,7 +2,7 @@ class A implements MyInterface {
   private static final long var1 = -9215047833775013803L; // Compliant
   public long var2 = 0L;
   
-  public static void equAls(Object obj) {} // Noncompliant {{Rename method "equAls" to prevent any misunderstanding/clash with method "equals" defined in superclass "java.lang.Object".}}
+  public static void equAls(Object obj) {} // Noncompliant [[sc=22;ec=28]] {{Rename method "equAls" to prevent any misunderstanding/clash with method "equals" defined in superclass "java.lang.Object".}}
   protected void finaliZe() {} // Noncompliant {{Rename method "finaliZe" to prevent any misunderstanding/clash with method "finalize" defined in superclass "java.lang.Object".}}
   
   public void myMethod() {}

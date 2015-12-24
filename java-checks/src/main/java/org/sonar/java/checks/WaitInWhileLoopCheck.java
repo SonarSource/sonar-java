@@ -24,13 +24,13 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -68,9 +68,9 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       super.visitNode(tree);
-    } else if(tree.is(Tree.Kind.FOR_STATEMENT)) {
+    } else if (tree.is(Tree.Kind.FOR_STATEMENT)) {
       ForStatementTree fst = (ForStatementTree) tree;
-      inWhileLoop.push(fst.initializer().isEmpty() && fst.condition()==null && fst.update().isEmpty());
+      inWhileLoop.push(fst.initializer().isEmpty() && fst.condition() == null && fst.update().isEmpty());
     } else {
       inWhileLoop.push(true);
     }
@@ -86,24 +86,18 @@ public class WaitInWhileLoopCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     if (!inWhileLoop.peek()) {
-      String methodName;
-      if(mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        MemberSelectExpressionTree mse = (MemberSelectExpressionTree) mit.methodSelect();
-        methodName = mse.identifier().name();
-      } else {
-        methodName = ((IdentifierTree)mit.methodSelect()).name();
-      }
-      addIssue(mit, "Remove this call to \""+methodName+"\" or move it into a \"while\" loop.");
+      IdentifierTree identifierTree = MethodsHelper.methodName(mit);
+      reportIssue(identifierTree, "Remove this call to \"" + identifierTree.name() + "\" or move it into a \"while\" loop.");
     }
   }
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodMatcher.create().name("wait"),
-        MethodMatcher.create().name("wait").addParameter("long"),
-        MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),
-        MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Condition").name("await").withNoParameterConstraint()
+      MethodMatcher.create().name("wait"),
+      MethodMatcher.create().name("wait").addParameter("long"),
+      MethodMatcher.create().name("wait").addParameter("long").addParameter("int"),
+      MethodMatcher.create().typeDefinition("java.util.concurrent.locks.Condition").name("await").withNoParameterConstraint()
     );
   }
 }

@@ -65,7 +65,7 @@ public class SynchronizationOnStringOrBoxedCheck extends SubscriptionBaseVisitor
     SynchronizedStatementTree syncStatement = (SynchronizedStatementTree) tree;
     Type expressionType = syncStatement.expression().symbolType();
     if (expressionType.isPrimitive() || isForbiddenType(expressionType)) {
-      addIssue(syncStatement, "Synchronize on a new \"Object\" instead.");
+      reportIssue(syncStatement.expression(), "Synchronize on a new \"Object\" instead.");
     }
   }
 

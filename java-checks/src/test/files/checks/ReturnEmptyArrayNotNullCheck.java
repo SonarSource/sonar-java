@@ -26,7 +26,7 @@ class A {
   }
 
   public int[] f2() {
-    return null;        // Noncompliant {{Return an empty array instead of null.}}
+    return null;        // Noncompliant [[sc=12;ec=16]] {{Return an empty array instead of null.}}
     return a;           
   }
 

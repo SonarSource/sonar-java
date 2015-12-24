@@ -1,6 +1,6 @@
 class Foo {
   void foo() {
-    "foo" == variable;       // Noncompliant {{Replace "==" and "!=" by "equals()" and "!equals()" respectively to compare these strings.}}
+    "foo" == variable;       // Noncompliant [[sc=11;ec=13]] {{Replace "==" and "!=" by "equals()" and "!equals()" respectively to compare these strings.}}
     variable == "foo";       // Noncompliant {{Replace "==" and "!=" by "equals()" and "!equals()" respectively to compare these strings.}}
     "foo" != variable;       // Noncompliant {{Replace "==" and "!=" by "equals()" and "!equals()" respectively to compare these strings.}}
     variable != "foo";       // Noncompliant {{Replace "==" and "!=" by "equals()" and "!equals()" respectively to compare these strings.}}

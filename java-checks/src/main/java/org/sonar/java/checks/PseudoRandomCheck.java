@@ -23,10 +23,11 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -42,7 +43,8 @@ import java.util.List;
 @SqaleConstantRemediation("10min")
 public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
-  private MethodMatcher methodInvocationMatcher = MethodMatcher.create().typeDefinition("java.lang.Math").name("random");
+  private static final String MESSAGE = "Use a cryptographically strong random number generator (RNG) like \"java.security.SecureRandom\" in place of this PRNG";
+  private static final MethodMatcher MATH_RANDOM_MATCHER = MethodMatcher.create().typeDefinition("java.lang.Math").name("random");
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -51,16 +53,17 @@ public class PseudoRandomCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (isMathRandom(tree) || isJavaUtilRandom((ExpressionTree) tree)) {
-      addIssue(tree, "Use a cryptographically strong random number generator (RNG) like \"java.security.SecureRandom\" in place of this PRNG");
+    if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
+      MethodInvocationTree mit = (MethodInvocationTree) tree;
+      if (MATH_RANDOM_MATCHER.matches(mit)) {
+        reportIssue(MethodsHelper.methodName(mit), MESSAGE);
+      }
+    } else {
+      NewClassTree newClass = (NewClassTree) tree;
+      if (newClass.symbolType().is("java.util.Random")) {
+        reportIssue(newClass.identifier(), MESSAGE);
+      }
     }
   }
 
-  private boolean isMathRandom(Tree tree) {
-    return tree.is(Tree.Kind.METHOD_INVOCATION) && hasSemantic() && methodInvocationMatcher.matches((MethodInvocationTree) tree);
-  }
-
-  private static boolean isJavaUtilRandom(ExpressionTree tree) {
-    return tree.is(Tree.Kind.NEW_CLASS) && tree.symbolType().is("java.util.Random");
-  }
 }

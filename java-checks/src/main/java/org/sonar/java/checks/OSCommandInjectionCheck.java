@@ -85,7 +85,7 @@ public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private void checkForIssue(Tree tree, ExpressionTree arg) {
     if (isDynamicArray(arg, tree) && !arg.symbolType().isSubtypeOf("java.util.List")) {
-      addIssue(arg, "Make sure \"" + parameterName + "\" is properly sanitized before use in this OS command.");
+      reportIssue(arg, "Make sure \"" + parameterName + "\" is properly sanitized before use in this OS command.");
     }
   }
 

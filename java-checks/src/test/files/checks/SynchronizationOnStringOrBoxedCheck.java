@@ -7,7 +7,7 @@ class A {
   
   void method1() {
     
-    synchronized(bLock) {  // Noncompliant {{Synchronize on a new "Object" instead.}}
+    synchronized(bLock) {  // Noncompliant [[sc=18;ec=23]] {{Synchronize on a new "Object" instead.}}
       // ...
     }
     synchronized(iLock) {  // Noncompliant

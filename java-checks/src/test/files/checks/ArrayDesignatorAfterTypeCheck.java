@@ -1,5 +1,5 @@
 class A {
-  public int getVector()[] { /* ... */ }    // Noncompliant {{Move the array designators "[]" to the end of the return type.}}
+  public int getVector()[] { /* ... */ }    // Noncompliant [[sc=25;ec=26]] {{Move the array designators "[]" to the end of the return type.}}
 
   public int[] getVector() { /* ... */ }    // Compliant
 

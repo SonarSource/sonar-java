@@ -35,4 +35,25 @@ class A{
     return toto;
   }
 
+  long foo() {
+    long duration = computeDurationInMilliseconds();
+    return computeDurationInMilliseconds();
+  }
+
+  long bar() {
+    long start = computeDurationInMilliseconds();
+    long duration = computeDurationInMilliseconds();
+    return start;
+  }
+
+  void voidMethod() {
+    long duration = computeDurationInMilliseconds();
+    return;
+  }
+
+  void voidMethod() {
+    long duration = computeDurationInMilliseconds();
+    long duration2 = computeDurationInMilliseconds();
+  }
+
 }

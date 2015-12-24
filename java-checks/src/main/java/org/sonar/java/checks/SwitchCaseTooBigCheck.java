@@ -91,8 +91,8 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
       List<SyntaxTrivia> trivias = FirstSyntaxTokenFinder.firstSyntaxToken(firstStatement).trivias();
       if (!trivias.isEmpty()) {
         int firstLineTrivia = firstLineTrivia(trivias);
-        if(firstLineTrivia == lastLabelLine) {
-          firstLineTrivia = firstLineTrivia+1;
+        if (firstLineTrivia == lastLabelLine) {
+          firstLineTrivia = firstLineTrivia + 1;
         }
         return Math.min(firstLineTrivia, firstStatementLine);
       }
@@ -109,7 +109,7 @@ public class SwitchCaseTooBigCheck extends SubscriptionBaseVisitor {
     int lines = Math.max(nextCaseStartLine - caseStartLine, 1);
 
     if (lines > max) {
-      addIssue(caseLabelTree, "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");
+      reportIssue(caseLabelTree, "Reduce this switch case number of lines from " + lines + " to at most " + max + ", for example by extracting code into methods.");
     }
   }
 

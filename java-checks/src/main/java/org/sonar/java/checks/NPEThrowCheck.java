@@ -67,7 +67,7 @@ public class NPEThrowCheck extends SubscriptionBaseVisitor {
 
   private void raiseIssueOnNpe(Tree tree, Type type) {
     if (type.is("java.lang.NullPointerException")) {
-      addIssue(treeAtFault(tree), "Throw some other exception here, such as \"IllegalArgumentException\".");
+      reportIssue(treeAtFault(tree), "Throw some other exception here, such as \"IllegalArgumentException\".");
     }
   }
 

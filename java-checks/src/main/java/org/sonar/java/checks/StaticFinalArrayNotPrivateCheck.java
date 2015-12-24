@@ -53,8 +53,8 @@ public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
-    if(variableTree.type().is(Kind.ARRAY_TYPE) && isStaticFinalNotPrivate(variableTree)) {
-      addIssue(tree, "Make this array \"private\".");
+    if (variableTree.type().is(Kind.ARRAY_TYPE) && isStaticFinalNotPrivate(variableTree)) {
+      reportIssue(variableTree.simpleName(), "Make this array \"private\".");
     }
   }
 

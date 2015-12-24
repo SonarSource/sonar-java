@@ -2,7 +2,7 @@ import java.lang.reflect.InvocationTargetException;
 
 class A {
   private void f(Throwable e) {
-    e.printStackTrace(); // Noncompliant {{Use a logger to log this exception.}}
+    e.printStackTrace(); // Noncompliant [[sc=7;ec=22]] {{Use a logger to log this exception.}}
     e.printStackTrace(System.out); // Noncompliant {{Use a logger to log this exception.}}
     e.getMessage(); // Compliant
     new java.lang.Throwable().printStackTrace(); // Noncompliant

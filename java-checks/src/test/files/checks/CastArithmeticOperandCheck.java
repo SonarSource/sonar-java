@@ -1,13 +1,13 @@
 class A {
   void foo() {
-    long l1 = 1000 * 3600 * 24 * 365; // Noncompliant {{Cast one of the operands of this multiplication operation to a "long".}}
+    long l1 = 1000 * 3600 * 24 * 365; // Noncompliant [[sc=32;ec=33]] {{Cast one of the operands of this multiplication operation to a "long".}}
     long l2 = 1000L * 3600 * 24 * 365;
     float f1 = 2 / 3; // Noncompliant {{Cast one of the operands of this division operation to a "float".}}
     float f2 = 2f / 3;
     l2 = 1000 * 3600 * 24 * 365; // Noncompliant {{Cast one of the operands of this multiplication operation to a "long".}}
     l2 = 1000L * 3600 * 24 * 365; // compliant
     double d = 2 / 3; // Noncompliant {{Cast one of the operands of this division operation to a "double".}}
-    long l3 = 2 + Integer.MAX_VALUE; // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
+    long l3 = 2 + Integer.MAX_VALUE; // Noncompliant [[sc=17;ec=18]] {{Cast one of the operands of this addition operation to a "long".}}
     l3 = 2 - Integer.MIN_VALUE; // Noncompliant {{Cast one of the operands of this substraction operation to a "long".}}
     longMethod(1 + 2, 1 + 2);   // Noncompliant {{Cast one of the operands of this addition operation to a "long".}}
     longMethod(1 + 2, 1 + 2l);  // Compliant

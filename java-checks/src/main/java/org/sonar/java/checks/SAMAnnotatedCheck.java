@@ -57,17 +57,17 @@ import java.util.List;
 @SqaleConstantRemediation("2min")
 public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
-  private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>().
-    put("equals", ImmutableList.of("Object")).
-    put("getClass", ImmutableList.<String>of()).
-    put("hashcode", ImmutableList.<String>of()).
-    put("notify", ImmutableList.<String>of()).
-    put("notifyAll", ImmutableList.<String>of()).
-    put("toString", ImmutableList.<String>of()).
-    put("wait", ImmutableList.<String>of()).
-    put("wait", ImmutableList.of("long")).
-    put("wait", ImmutableList.of("long", "int")).
-    build();
+  private static final ImmutableMultimap<String, List<String>> OBJECT_METHODS = new ImmutableMultimap.Builder<String, List<String>>()
+    .put("equals", ImmutableList.of("Object"))
+    .put("getClass", ImmutableList.<String>of())
+    .put("hashcode", ImmutableList.<String>of())
+    .put("notify", ImmutableList.<String>of())
+    .put("notifyAll", ImmutableList.<String>of())
+    .put("toString", ImmutableList.<String>of())
+    .put("wait", ImmutableList.<String>of())
+    .put("wait", ImmutableList.of("long"))
+    .put("wait", ImmutableList.of("long", "int"))
+    .build();
 
   @Override
   public boolean isCompatibleWithJavaVersion(JavaVersion version) {
@@ -83,10 +83,10 @@ public class SAMAnnotatedCheck extends IssuableSubscriptionVisitor implements Ja
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (hasOneAbstractMethod(classTree) && !isAnnotated(classTree)) {
-      addIssue(
-        tree,
-        "Annotate the \"" + classTree.simpleName().name() + "\" interface with the @FunctionalInterface annotation" +
-          context.getJavaVersion().java8CompatibilityMessage());
+      IdentifierTree simpleName = classTree.simpleName();
+      reportIssue(
+        simpleName,
+        "Annotate the \"" + simpleName.name() + "\" interface with the @FunctionalInterface annotation" + context.getJavaVersion().java8CompatibilityMessage());
     }
   }
 

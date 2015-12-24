@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -42,7 +42,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -64,7 +63,7 @@ public class AbsOnNegativeCheck extends SubscriptionBaseVisitor implements JavaF
       .typeDefinition("java.lang.Math")
       .name("abs")
       .addParameter("long")
-    );
+  );
 
   private static final MethodInvocationMatcherCollection NEGATIVE_METHODS = MethodInvocationMatcherCollection.create(
     MethodMatcher.create()
@@ -79,7 +78,7 @@ public class AbsOnNegativeCheck extends SubscriptionBaseVisitor implements JavaF
       .typeDefinition(TypeCriteria.subtypeOf("java.lang.Comparable"))
       .name("compareTo")
       .addParameter(TypeCriteria.anyType())
-    );
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -105,12 +104,12 @@ public class AbsOnNegativeCheck extends SubscriptionBaseVisitor implements JavaF
       Symbol identifierSymbol = ((MemberSelectExpressionTree) tree).identifier().symbol();
       Type ownerType = identifierSymbol.owner().type();
       if ("MIN_VALUE".equals(identifierSymbol.name()) && (ownerType.is("java.lang.Integer") || ownerType.is("java.lang.Long"))) {
-        addIssue(tree, "Use the original value instead.");
+        reportIssue(tree, "Use the original value instead.");
       }
     } else {
       MethodInvocationTree nestedTree = extractMethodInvocation(tree);
       if (nestedTree != null && NEGATIVE_METHODS.anyMatch(nestedTree)) {
-        addIssue(nestedTree, "Use the original value instead.");
+        reportIssue(nestedTree, "Use the original value instead.");
       }
     }
   }

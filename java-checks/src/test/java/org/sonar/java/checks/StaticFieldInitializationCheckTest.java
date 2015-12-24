@@ -24,7 +24,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class StaticFieldInitializationCheckTest {
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/StaticFieldInitializationCheck.java", new StaticFieldInitializationCheck());
   }
 }

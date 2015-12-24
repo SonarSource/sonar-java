@@ -113,7 +113,7 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
   }
 
   private void createIssue(Tree reportingTree, String wrapperName) {
-    context.addIssue(reportingTree, this, "Use \"" + wrapperName + ".toString\" instead.");
+    context.reportIssue(this, reportingTree, "Use \"" + wrapperName + ".toString\" instead.");
   }
 
   @Override

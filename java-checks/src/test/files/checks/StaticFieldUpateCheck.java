@@ -5,7 +5,7 @@ class A {
   private static int[] staticArray;
 
   public void nonCompliantAssignments() {
-    staticValue = value + 1; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
+    staticValue = value + 1; // Noncompliant [[sc=5;ec=16]] {{Make the enclosing method "static" or remove this set.}}
     staticValue += value; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     staticValue++; // Noncompliant {{Make the enclosing method "static" or remove this set.}}
     ++staticValue; // Noncompliant {{Make the enclosing method "static" or remove this set.}}

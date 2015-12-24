@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class CastArithmeticOperandCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/CastArithmeticOperandCheck.java", new CastArithmeticOperandCheck());
   }
 }

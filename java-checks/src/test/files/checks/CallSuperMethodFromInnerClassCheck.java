@@ -20,7 +20,7 @@ public class Outer {
   }
   public interface I extends I2{
     default void toto() {
-      plop();// Noncompliant {{Prefix this call to "plop" with "super.".}}
+      plop();// Noncompliant [[sc=7;ec=11]] {{Prefix this call to "plop" with "super.".}}
     }
   }
   public interface I2  {

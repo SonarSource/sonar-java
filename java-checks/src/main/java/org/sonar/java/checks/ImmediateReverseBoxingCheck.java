@@ -167,9 +167,9 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
   private void addBoxingIssue(Tree tree, Symbol classSymbol, Tree boxingArg) {
     if (boxingArg.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) boxingArg;
-      addIssue(tree, "Remove the boxing of \"" + identifier.name() + "\".");
+      reportIssue(tree, "Remove the boxing of \"" + identifier.name() + "\".");
     } else {
-      addIssue(tree, "Remove the boxing to \"" + classSymbol.name() + "\".");
+      reportIssue(tree, "Remove the boxing to \"" + classSymbol.name() + "\".");
     }
   }
 
@@ -194,10 +194,10 @@ public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
   private void addUnboxingIssue(ExpressionTree expressionTree, ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifier = (IdentifierTree) expression;
-      addIssue(expressionTree, "Remove the unboxing of \"" + identifier.name() + "\".");
+      reportIssue(expressionTree, "Remove the unboxing of \"" + identifier.name() + "\".");
     } else {
       String name = expression.symbolType().name();
-      addIssue(expressionTree, "Remove the unboxing from \"" + name + "\".");
+      reportIssue(expressionTree, "Remove the unboxing from \"" + name + "\".");
     }
   }
 

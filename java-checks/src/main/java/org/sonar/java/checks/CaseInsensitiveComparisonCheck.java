@@ -59,7 +59,7 @@ public class CaseInsensitiveComparisonCheck extends BaseTreeVisitor implements J
       boolean issue = ("equals".equals(memberSelect.identifier().name()))
         && (isToUpperCaseOrToLowerCase(memberSelect.expression()) || (tree.arguments().size() == 1 && isToUpperCaseOrToLowerCase(tree.arguments().get(0))));
       if (issue) {
-        context.addIssue(tree, this, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.");
+        context.reportIssue(this, tree, "Replace these toUpperCase()/toLowerCase() and equals() calls with a single equalsIgnoreCase() call.");
       }
     }
 

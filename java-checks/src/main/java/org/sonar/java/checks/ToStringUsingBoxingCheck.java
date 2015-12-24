@@ -36,7 +36,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 import java.util.Set;
 
@@ -72,9 +71,9 @@ public class ToStringUsingBoxingCheck extends SubscriptionBaseVisitor {
     if (callingToStringOrCompareTo != null) {
       String newlyCreatedClassName = getNewlyCreatedClassName(mit);
       if (PRIMITIVE_WRAPPERS.contains(newlyCreatedClassName)) {
-        addIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(),
+        reportIssue(((MemberSelectExpressionTree) mit.methodSelect()).expression(),
           "Call the static method " + newlyCreatedClassName + "." + callingToStringOrCompareTo +
-          "(...) instead of instantiating a temporary object to perform this to string conversion.");
+            "(...) instead of instantiating a temporary object to perform this to string conversion.");
       }
     }
   }

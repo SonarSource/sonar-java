@@ -51,7 +51,7 @@ public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {
     ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
     Type symbolType = throwStatementTree.expression().symbolType();
     if (symbolType.isSubtypeOf("java.lang.Exception") && !symbolType.isSubtypeOf("java.lang.RuntimeException")) {
-      addIssue(tree, "Remove the usage of the checked exception '" + symbolType.name() + "'.");
+      reportIssue(throwStatementTree.expression(), "Remove the usage of the checked exception '" + symbolType.name() + "'.");
     }
   }
 

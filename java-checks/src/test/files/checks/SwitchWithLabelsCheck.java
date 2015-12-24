@@ -5,7 +5,7 @@ class A {
         break;
       case 1:
         break;
-      foo: // Noncompliant {{Remove this misleading "foo" label.}}
+      foo: // Noncompliant [[sc=7;ec=10]] {{Remove this misleading "foo" label.}}
         break;
       bar: // Noncompliant
         break;

@@ -64,14 +64,14 @@ public class AnnotationArgumentOrderCheck extends SubscriptionBaseVisitor {
     List<String> annotationArguments = new ArrayList<>();
     for (ExpressionTree argument : annotationTree.arguments()) {
       if (argument.is(Tree.Kind.ASSIGNMENT)) {
-        AssignmentExpressionTree assigmentTree = (AssignmentExpressionTree) argument;
-        IdentifierTree nameTree = (IdentifierTree) assigmentTree.variable();
+        AssignmentExpressionTree assignmentTree = (AssignmentExpressionTree) argument;
+        IdentifierTree nameTree = (IdentifierTree) assignmentTree.variable();
         annotationArguments.add(nameTree.name());
       }
     }
     declarationNames.retainAll(annotationArguments);
     if (!declarationNames.equals(annotationArguments)) {
-      addIssue(tree, "Reorder annotation arguments to match the order of declaration.");
+      reportIssue(annotationTree.annotationType(), "Reorder annotation arguments to match the order of declaration.");
     }
   }
 

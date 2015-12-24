@@ -94,14 +94,16 @@ public class LoggersDeclarationCheck extends BaseTreeVisitor implements JavaFile
     }
     if (isLoggerType(tree.type())) {
       boolean isPrivateStaticFinal = isPrivateStaticFinal(tree.modifiers());
-      boolean hasValidLoggerName = isValidLoggerName(tree.simpleName().name());
+      IdentifierTree variableIdentifier = tree.simpleName();
+      String name = variableIdentifier.name();
+      boolean hasValidLoggerName = isValidLoggerName(name);
 
       if (!isPrivateStaticFinal && !hasValidLoggerName) {
-        context.addIssue(tree, this, getPrivateStaticFinalMessage(tree.simpleName().name()) + " and rename it to comply with the format \"" + format + "\".");
+        context.reportIssue(this, variableIdentifier, getPrivateStaticFinalMessage(name) + " and rename it to comply with the format \"" + format + "\".");
       } else if (!isPrivateStaticFinal) {
-        context.addIssue(tree, this, getPrivateStaticFinalMessage(tree.simpleName().name()) + ".");
+        context.reportIssue(this, variableIdentifier, getPrivateStaticFinalMessage(name) + ".");
       } else if (!hasValidLoggerName) {
-        context.addIssue(tree, this, "Rename the \"" + tree.simpleName() + "\" logger to comply with the format \"" + format + "\".");
+        context.reportIssue(this, variableIdentifier, "Rename the \"" + variableIdentifier + "\" logger to comply with the format \"" + format + "\".");
       }
     }
   }

@@ -68,9 +68,9 @@ public class RepeatAnnotationCheck extends BaseTreeVisitor implements JavaFileSc
     if (isArrayInitialized(annotationTree)) {
       NewArrayTree arrayTree = (NewArrayTree) annotationTree.arguments().get(0);
       if (isAllSameAnnotation(arrayTree.initializers()) && isAnnotationRepeatable(arrayTree.initializers().get(0))) {
-        context.addIssue(
-          annotationTree,
+        context.reportIssue(
           this,
+          annotationTree.annotationType(),
           "Remove the '" + getAnnotationName(annotationTree) + "' wrapper from this annotation group" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }

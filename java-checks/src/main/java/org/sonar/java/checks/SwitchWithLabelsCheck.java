@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -57,8 +58,8 @@ public class SwitchWithLabelsCheck extends SubscriptionBaseVisitor {
     CaseGroupTree cgt = (CaseGroupTree) tree;
     for (StatementTree statementTree : cgt.body()) {
       if (statementTree.is(LABELED_STATEMENT)) {
-        LabeledStatementTree lst = (LabeledStatementTree) statementTree;
-        addIssue(lst, "Remove this misleading \"" + lst.label().name() + "\" label.");
+        IdentifierTree label = ((LabeledStatementTree) statementTree).label();
+        reportIssue(label, "Remove this misleading \"" + label.name() + "\" label.");
       }
     }
   }

@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -47,15 +48,15 @@ public class LongBitsToDoubleOnIntCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.<MethodMatcher>builder()
-        .add(MethodMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"))
-        .build();
+      .add(MethodMatcher.create().typeDefinition("java.lang.Double").name("longBitsToDouble").addParameter("long"))
+      .build();
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     Type symbolType = mit.arguments().get(0).symbolType();
     if (!(symbolType.is("long") || symbolType.is("java.lang.Long"))) {
-      addIssue(mit, "Remove this \"Double.longBitsToDouble\" call.");
+      reportIssue(MethodsHelper.methodName(mit), "Remove this \"Double.longBitsToDouble\" call.");
     }
   }
 }

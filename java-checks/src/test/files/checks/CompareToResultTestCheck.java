@@ -7,7 +7,7 @@ class MyComparable implements Comparable<MyComparable> {
   }
   
   public void aMethod(MyComparable other, NotComparable notComparable) {
-    if (compareTo(other) == -1) {} // Noncompliant {{Only the sign of the result should be examined.}}
+    if (compareTo(other) == -1) {} // Noncompliant [[sc=26;ec=28]] {{Only the sign of the result should be examined.}}
     if (compareTo(other) == -5) {} // Noncompliant
     if (compareTo(other) == 0) {}
     if (compareTo(other) == 1) {} // Noncompliant

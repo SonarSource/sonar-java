@@ -1,7 +1,7 @@
 class A {
 
     String foo(String s) {
-      A.class.getSimpleName().equals("A"); // Noncompliant {{Use an "instanceof" comparison instead.}}
+      A.class.getSimpleName().equals("A"); // Noncompliant [[sc=7;ec=42]] {{Use an "instanceof" comparison instead.}}
       new A().getClass().getSimpleName().equals("A"); // Noncompliant {{Use an "instanceof" comparison instead.}}
       new A().getClass().getName().equals("A"); // Noncompliant {{Use an "instanceof" comparison instead.}}
       String name = new A().getClass().getName();

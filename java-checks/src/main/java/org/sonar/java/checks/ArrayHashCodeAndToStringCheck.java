@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -63,7 +64,7 @@ public class ArrayHashCodeAndToStringCheck extends AbstractMethodDetection {
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
     String methodName = mit.symbol().name();
-    addIssue(mit, "Use \"Arrays." + methodName + "(array)\" instead.");
+    reportIssue(MethodsHelper.methodName(mit), "Use \"Arrays." + methodName + "(array)\" instead.");
   }
 
   private static class IsArrayCriteria extends TypeCriteria {

@@ -49,7 +49,7 @@ public class MainMethodThrowsExceptionCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     if (methodTree.isMainMethod() && !methodTree.throwsClauses().isEmpty()) {
-      addIssue(tree, "Remove this throws clause.");
+      reportIssue(methodTree.throwsToken(), "Remove this throws clause.");
     }
   }
 }

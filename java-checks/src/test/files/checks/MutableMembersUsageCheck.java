@@ -19,11 +19,11 @@ class A {
   }
 
   public String [] getStrings() {
-    return strings; // Noncompliant {{Return a copy of "strings".}}
+    return strings; // Noncompliant [[sc=12;ec=19]] {{Return a copy of "strings".}}
   }
 
   public void other(String[] given) {
-    String[] doSomething = given; // Noncompliant {{Store a copy of "given".}}
+    String[] doSomething = given; // Noncompliant [[sc=28;ec=33]] {{Store a copy of "given".}}
     return;
   }
 

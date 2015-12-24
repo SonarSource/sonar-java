@@ -72,7 +72,7 @@ public class PrintStackTraceCalledWithoutArgumentCheck extends BaseTreeVisitor i
     if (tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
       IdentifierTree identifierTree = ((MemberSelectExpressionTree) tree.methodSelect()).identifier();
       if (!enclosingClassExtendsThrowable() && "printStackTrace".equals(identifierTree.name()) && calledOnTypeInheritedFromThrowable(tree)) {
-        context.addIssue(identifierTree, this, "Use a logger to log this exception.");
+        context.reportIssue(this, identifierTree, "Use a logger to log this exception.");
       }
     }
   }

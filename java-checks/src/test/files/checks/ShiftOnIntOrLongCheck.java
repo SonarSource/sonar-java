@@ -4,7 +4,7 @@ class Shifts {
     b = a <<  31;
     b = a >> -31;
     b = a <<  32; // Noncompliant {{Remove this useless shift}}
-    b = a >> -32; // Noncompliant {{Remove this useless shift}}
+    b = a >> -32; // Noncompliant [[sc=11;ec=13]] {{Remove this useless shift}}
     b = a <<  33; // Noncompliant {{Either make "a" a "long" or correct this shift to 1}}
     b = a >> -33; // Noncompliant {{Either make "a" a "long" or correct this shift to -1}}
 
@@ -31,7 +31,7 @@ class Shifts {
     a >>=  64; // Noncompliant
     a <<= -64; // Noncompliant
     a >>=  65; // Noncompliant
-    a <<= -65; // Noncompliant
+    a <<= -65; // Noncompliant [[sc=7;ec=10]]
     return b >> +96; // Noncompliant
   }
 

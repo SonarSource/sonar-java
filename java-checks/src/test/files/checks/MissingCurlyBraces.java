@@ -1,10 +1,10 @@
 class MissingCurlyBraces {
 
   void method() {
-    if (condition) doSomething(); // Noncompliant {{Missing curly brace.}}
+    if (condition) doSomething(); // Noncompliant [[sc=5;ec=7]] {{Missing curly brace.}}
 
     if (condition) doSomething(); // Noncompliant
-    else doSomethingElse(); // Noncompliant
+    else doSomethingElse(); // Noncompliant [[sc=5;ec=9]]
 
     if (condition) {
     } else doSomething(); // Noncompliant
@@ -20,7 +20,7 @@ class MissingCurlyBraces {
     } else if (condition) {
     }
 
-    for (int i = 0; i < 10; i++) doSomething(); // Noncompliant
+    for (int i = 0; i < 10; i++) doSomething(); // Noncompliant [[sc=5;ec=8]]
 
     for (int i = 0; i < 10; i++) {
     }

@@ -66,6 +66,8 @@ public interface MethodTree extends Tree {
 
   SyntaxToken closeParenToken();
 
+  SyntaxToken throwsToken();
+
   ListTree<TypeTree> throwsClauses();
 
   @Nullable

@@ -27,6 +27,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -54,8 +55,9 @@ public class SerializableComparatorCheck extends SubscriptionBaseVisitor {
       ClassTree classTree = (ClassTree) tree;
       Symbol.TypeSymbol symbol = classTree.symbol();
       Type type = symbol.type();
-      if (classTree.simpleName() != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
-        addIssue(classTree, "Make this class \"Serializable\".");
+      IdentifierTree simpleName = classTree.simpleName();
+      if (simpleName != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
+        reportIssue(simpleName, "Make this class \"Serializable\".");
       }
     }
   }

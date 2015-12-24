@@ -72,7 +72,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     if (!loopLevel.isEmpty() && isStringConcatenation(tree) && isNotLoopLocalVar(tree)) {
-      context.addIssue(tree, this, "Use a StringBuilder instead.");
+      context.reportIssue(this, tree.variable(), "Use a StringBuilder instead.");
     }
     super.visitAssignmentExpression(tree);
   }
@@ -81,7 +81,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     IdentifierTree idTree = getIdentifierTree(tree.variable());
     Tree envTree = semanticModel.getTree(semanticModel.getEnv(idTree.symbol()));
     Tree loopTree = loopLevel.peek();
-    if(envTree!= null && (envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)))) {
+    if (envTree != null && (envTree.equals(loopTree) || envTree.equals(loopStatement(loopTree)))) {
       return false;
     }
     return true;
@@ -89,26 +89,26 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
 
   private static IdentifierTree getIdentifierTree(ExpressionTree tree) {
     IdentifierTree idTree;
-    if(tree.is(Tree.Kind.MEMBER_SELECT)) {
+    if (tree.is(Tree.Kind.MEMBER_SELECT)) {
       idTree = getIdentifierTree(((MemberSelectExpressionTree) tree).expression());
-    } else if(tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)){
-      idTree = getIdentifierTree(((ArrayAccessExpressionTree)tree).expression());
-    } else if(tree.is(Tree.Kind.METHOD_INVOCATION)){
+    } else if (tree.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      idTree = getIdentifierTree(((ArrayAccessExpressionTree) tree).expression());
+    } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
       idTree = getIdentifierTree(((MethodInvocationTree) tree).methodSelect());
     } else {
-      idTree = (IdentifierTree)tree;
+      idTree = (IdentifierTree) tree;
     }
     return idTree;
   }
 
   private static Tree loopStatement(Tree loopTree) {
-    if(loopTree.is(Tree.Kind.FOR_STATEMENT)) {
+    if (loopTree.is(Tree.Kind.FOR_STATEMENT)) {
       return ((ForStatementTree) loopTree).statement();
-    } else if(loopTree.is(Tree.Kind.DO_STATEMENT)) {
+    } else if (loopTree.is(Tree.Kind.DO_STATEMENT)) {
       return ((DoWhileStatementTree) loopTree).statement();
-    } else if(loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
+    } else if (loopTree.is(Tree.Kind.WHILE_STATEMENT)) {
       return ((WhileStatementTree) loopTree).statement();
-    } else if(loopTree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
+    } else if (loopTree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
       return ((ForEachStatement) loopTree).statement();
     }
     return null;
@@ -131,7 +131,7 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
   }
 
   private static boolean concatenateVariable(ExpressionTree variable, ExpressionTree operand) {
-    if(operand.is(Tree.Kind.PLUS)) {
+    if (operand.is(Tree.Kind.PLUS)) {
       return concatenateVariable(variable, (BinaryExpressionTree) operand);
     }
     return SyntacticEquivalence.areEquivalent(variable, operand);
@@ -164,6 +164,5 @@ public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements J
     super.visitDoWhileStatement(tree);
     loopLevel.pop();
   }
-
 
 }

@@ -58,7 +58,7 @@ public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
     ExpressionTree argument = mit.arguments().get(1);
     Type type = argument.symbolType();
     if (!type.isPrimitive() && !type.isSubtypeOf("java.io.Serializable")) {
-      addIssue(argument, "Make \"" + type + "\" serializable or don't store it in the session.");
+      reportIssue(argument, "Make \"" + type + "\" serializable or don't store it in the session.");
     }
   }
 }

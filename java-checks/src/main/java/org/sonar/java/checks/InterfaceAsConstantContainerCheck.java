@@ -51,8 +51,9 @@ public class InterfaceAsConstantContainerCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasConstant((ClassTree) tree)) {
-      addIssue(tree, "Move constants to a class or enum.");
+    ClassTree classTree = (ClassTree) tree;
+    if (hasConstant(classTree)) {
+      reportIssue(classTree.simpleName(), "Move constants to a class or enum.");
     }
   }
 

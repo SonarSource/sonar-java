@@ -47,7 +47,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(
@@ -73,7 +72,8 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    Integer methodFirstArgumentAsInteger = LiteralUtils.intLiteralValue(mit.arguments().get(0));
+    ExpressionTree firstArgument = mit.arguments().get(0);
+    Integer methodFirstArgumentAsInteger = LiteralUtils.intLiteralValue(firstArgument);
     if (methodFirstArgumentAsInteger == null) {
       // nothing to say if first argument can not be evaluated
       return;
@@ -83,15 +83,15 @@ public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection 
     int methodFirstArgumentValue = methodFirstArgumentAsInteger.intValue();
 
     if (isMethodFromJavaSqlResultSet && methodFirstArgumentValue == 0) {
-      addIssue(mit, "ResultSet indices start at 1.");
+      reportIssue(firstArgument, "ResultSet indices start at 1.");
     } else if (!isMethodFromJavaSqlResultSet) {
       if (methodFirstArgumentValue == 0) {
-        addIssue(mit, "PreparedStatement indices start at 1.");
+        reportIssue(firstArgument, "PreparedStatement indices start at 1.");
       } else {
         ExpressionTree preparedStatementReference = getPreparedStatementReference(mit);
         Integer numberParameters = getPreparedStatementNumberOfParameters(preparedStatementReference);
         if (numberParameters != null && methodFirstArgumentValue > numberParameters) {
-          addIssue(mit, "This \"PreparedStatement\" " + (numberParameters == 0 ? "has no" : ("only has " + numberParameters)) + " parameters.");
+          reportIssue(firstArgument, "This \"PreparedStatement\" " + (numberParameters == 0 ? "has no" : ("only has " + numberParameters)) + " parameters.");
         }
       }
     }

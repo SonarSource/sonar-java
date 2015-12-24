@@ -63,8 +63,8 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
         IdentifierVisitor visitor = new IdentifierVisitor(identifierTree);
         tree.rightOperand().accept(visitor);
         if (visitor.raiseIssue) {
-          context.addIssue(tree, this, "Either reverse the equality operator in the \"" +
-              identifierTree.name() + "\" null test, or reverse the logical operator that follows it.");
+          context.reportIssue(this, tree, "Either reverse the equality operator in the \"" +
+            identifierTree.name() + "\" null test, or reverse the logical operator that follows it.");
         }
       }
     }
@@ -105,7 +105,7 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
 
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree tree) {
-      //Ignore assignement to the identifier
+      //Ignore assignment to the identifier
       if (!isIdentifierWithSameName(tree.variable())) {
         scan(tree.variable());
       }
@@ -152,12 +152,11 @@ public class NullDereferenceInConditionalCheck extends BaseTreeVisitor implement
 
   private static boolean isNullComparison(ExpressionTree expressionTree, Tree.Kind comparatorKind) {
     ExpressionTree tree = ExpressionsHelper.skipParentheses(expressionTree);
-    boolean result = false;
     if (tree.is(comparatorKind)) {
       BinaryExpressionTree binary = (BinaryExpressionTree) tree;
-      result = binary.leftOperand().is(Tree.Kind.NULL_LITERAL) || binary.rightOperand().is(Tree.Kind.NULL_LITERAL);
+      return binary.leftOperand().is(Tree.Kind.NULL_LITERAL) || binary.rightOperand().is(Tree.Kind.NULL_LITERAL);
     }
-    return result;
+    return false;
   }
 
   private static ExpressionTree getNonNullOperand(ExpressionTree expressionTree) {

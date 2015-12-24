@@ -13,7 +13,7 @@ class TestClass {
     if ("".indexOf("") > -1) { // Compliant
     }
 
-    if ("".indexOf(' ') > 0) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
+    if ("".indexOf(' ') > 0) { // Noncompliant [[sc=9;ec=28]] {{0 is a valid index, but is ignored by this check.}}
     }
     if ("".indexOf(" ") > 0) { // Noncompliant {{0 is a valid index, but is ignored by this check.}}
     }

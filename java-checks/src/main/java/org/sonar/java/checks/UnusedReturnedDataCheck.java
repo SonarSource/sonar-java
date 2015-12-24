@@ -24,13 +24,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
-import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -38,7 +39,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -68,33 +68,35 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
       for (MethodMatcher matcher : CHECKED_METHODS) {
-        Symbol symbol = isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher);
-        if (symbol != null) {
-          raiseIssue(tree, symbol.name());
+        MethodInvocationTree mit = isTreeMethodInvocation(((ExpressionStatementTree) tree).expression(), matcher);
+        if (mit != null) {
+          raiseIssue(MethodsHelper.methodName(mit));
         }
       }
     } else {
       BinaryExpressionTree expressionTree = (BinaryExpressionTree) tree;
+      ExpressionTree leftOperand = expressionTree.leftOperand();
+      ExpressionTree rightOperand = expressionTree.rightOperand();
       for (MethodMatcher matcher : CHECKED_METHODS) {
-        Symbol leftSymbol = isTreeMethodInvocation(expressionTree.leftOperand(), matcher);
-        if (leftSymbol != null && isTreeLiteralNull(expressionTree.rightOperand())) {
-          raiseIssue(tree, leftSymbol.name());
+        MethodInvocationTree leftMit = isTreeMethodInvocation(leftOperand, matcher);
+        if (leftMit != null && isTreeLiteralNull(rightOperand)) {
+          raiseIssue(MethodsHelper.methodName(leftMit));
         }
-        Symbol rightSymbol = isTreeMethodInvocation(expressionTree.rightOperand(), matcher);
-        if (rightSymbol != null && isTreeLiteralNull(expressionTree.leftOperand())) {
-          raiseIssue(tree, rightSymbol.name());
+        MethodInvocationTree rightMit = isTreeMethodInvocation(rightOperand, matcher);
+        if (rightMit != null && isTreeLiteralNull(leftOperand)) {
+          raiseIssue(MethodsHelper.methodName(rightMit));
         }
       }
     }
   }
 
   @CheckForNull
-  private static Symbol isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
+  private static MethodInvocationTree isTreeMethodInvocation(ExpressionTree tree, MethodMatcher matcher) {
     Tree expression = ExpressionsHelper.skipParentheses(tree);
     if (expression.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) expression;
       if (matcher.matches(methodInvocation)) {
-        return methodInvocation.symbol();
+        return methodInvocation;
       }
     }
     return null;
@@ -104,8 +106,8 @@ public class UnusedReturnedDataCheck extends SubscriptionBaseVisitor {
     return ExpressionsHelper.skipParentheses(tree).is(Tree.Kind.NULL_LITERAL);
   }
 
-  private void raiseIssue(Tree tree, String methodName) {
-    addIssue(tree, String.format("Use or store the value returned from \"%s\" instead of throwing it away.", methodName));
+  private void raiseIssue(IdentifierTree identifierTree) {
+    reportIssue(identifierTree, String.format("Use or store the value returned from \"%s\" instead of throwing it away.", identifierTree.identifierToken().text()));
   }
 
 }

@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class ArrayDesignatorAfterTypeCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ArrayDesignatorAfterTypeCheck.java", new ArrayDesignatorAfterTypeCheck());
   }
 

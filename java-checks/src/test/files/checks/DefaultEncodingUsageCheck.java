@@ -17,7 +17,7 @@ class A {
     "".getBytes(0, 0, bytes, 0); // Noncompliant {{Remove this use of "getBytes"}}
     new java.io.ByteArrayOutputStream().toString(); // Noncompliant
     new FileReader("fileName"); // Noncompliant
-    new FileReader(file); // Noncompliant
+    new FileReader(file); // Noncompliant [[sc=9;ec=19]]
     new FileReader(new java.io.FileDescriptor()); // Noncompliant
     new FileWriter(file); // Noncompliant
     new FileWriter(file, true); // Noncompliant
@@ -41,7 +41,7 @@ class A {
     new java.util.Scanner(new java.io.FileInputStream("")); // Noncompliant
     FileReader reader = null; // Noncompliant
     FileReader reader = new FileReader(""); // Noncompliant
-    java.io.Reader reader2 = fileReader(); // Noncompliant
+    java.io.Reader reader2 = fileReader(); // Noncompliant [[sc=30;ec=40]]
     FileWriter writer = null; // Noncompliant
     java.io.Writer writer2 = fileWriter(); // Noncompliant
 

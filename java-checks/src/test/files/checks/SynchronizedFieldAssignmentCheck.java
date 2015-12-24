@@ -6,7 +6,7 @@ class A {
 
 
   private void doSomething() {
-    synchronized (color) { // Noncompliant {{Don't synchronize on "color" or remove its reassignment on line 10.}}
+    synchronized (color) { // Noncompliant [[sc=19;ec=24]] {{Don't synchronize on "color" or remove its reassignment on line 10.}}
       color = "green";
     }
 

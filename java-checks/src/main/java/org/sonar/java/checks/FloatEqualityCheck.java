@@ -57,13 +57,13 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
       binaryExpressionTree = (BinaryExpressionTree) binaryExpressionTree.leftOperand();
     }
     if ((hasFloatingType(binaryExpressionTree.leftOperand()) || hasFloatingType(binaryExpressionTree.rightOperand())) && !isNanTest(binaryExpressionTree)) {
-      addIssue(binaryExpressionTree, "Equality tests should not be made with floating point values.");
+      reportIssue(binaryExpressionTree.operatorToken(), "Equality tests should not be made with floating point values.");
     }
   }
 
   private static boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree) {
     return isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_AND, Tree.Kind.GREATER_THAN_OR_EQUAL_TO, Tree.Kind.LESS_THAN_OR_EQUAL_TO)
-        || isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_OR, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
+      || isIndirectEquality(binaryExpressionTree, Tree.Kind.CONDITIONAL_OR, Tree.Kind.GREATER_THAN, Tree.Kind.LESS_THAN);
   }
 
   private static boolean isIndirectEquality(BinaryExpressionTree binaryExpressionTree, Tree.Kind indirectOperator, Tree.Kind comparator1, Tree.Kind comparator2) {
@@ -74,11 +74,11 @@ public class FloatEqualityCheck extends SubscriptionBaseVisitor {
         if (leftOp.kind().equals(rightOp.kind())) {
           //same operator
           return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.rightOperand())
-              && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
+            && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.leftOperand());
         } else {
           //different operator
           return SyntacticEquivalence.areEquivalent(leftOp.leftOperand(), rightOp.leftOperand())
-              && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
+            && SyntacticEquivalence.areEquivalent(leftOp.rightOperand(), rightOp.rightOperand());
         }
       }
     }

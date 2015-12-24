@@ -40,6 +40,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 import java.util.Map;
 
@@ -53,7 +54,10 @@ import java.util.Map;
 @SqaleConstantRemediation("2min")
 public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Map<Kind, String> MESSAGE_KEYS = ImmutableMap.of(Kind.THROW_STATEMENT, "throw", Kind.RETURN_STATEMENT, "return");
+  private static final Map<Kind, String> MESSAGE_KEYS = ImmutableMap.of(
+    Kind.THROW_STATEMENT, "throw",
+    Kind.RETURN_STATEMENT, "return"
+  );
 
   private JavaFileScannerContext context;
   private String lastTypeForMessage;
@@ -68,45 +72,40 @@ public class ImmediatelyReturnedVariableCheck extends BaseTreeVisitor implements
   public void visitBlock(BlockTree tree) {
     super.visitBlock(tree);
     List<StatementTree> statements = tree.body();
-    if (statements.size() > 1) {
-      StatementTree lastSatement = statements.get(statements.size() - 1);
-      String lastStatementIdentifier = getReturnOrThrowIdentifier(lastSatement);
-      if (StringUtils.isNotEmpty(lastStatementIdentifier)) {
-
-        StatementTree butLastSatement = statements.get(statements.size() - 2);
-        String identifier = getVariableDeclarationIdentifier(butLastSatement);
-
+    int size = statements.size();
+    if (size < 2) {
+      return;
+    }
+    StatementTree butLastStatement = statements.get(size - 2);
+    if (butLastStatement.is(Kind.VARIABLE)) {
+      VariableTree variableTree = (VariableTree) butLastStatement;
+      StatementTree lastStatement = statements.get(size - 1);
+      String lastStatementIdentifier = getReturnOrThrowIdentifier(lastStatement);
+      if (lastStatementIdentifier != null) {
+        String identifier = variableTree.simpleName().name();
         if (StringUtils.equals(lastStatementIdentifier, identifier)) {
-          context.addIssue(butLastSatement, this, "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier
-            + "\".");
+          context.reportIssue(
+            this, variableTree.initializer(), "Immediately " + lastTypeForMessage + " this expression instead of assigning it to the temporary variable \"" + identifier + "\".");
         }
       }
     }
 
   }
 
-  private String getReturnOrThrowIdentifier(StatementTree lastSatementOfBlock) {
-    String result = null;
+  @CheckForNull
+  private String getReturnOrThrowIdentifier(StatementTree lastStatementOfBlock) {
     lastTypeForMessage = null;
     ExpressionTree expr = null;
-    if (lastSatementOfBlock.is(Kind.THROW_STATEMENT)) {
+    if (lastStatementOfBlock.is(Kind.THROW_STATEMENT)) {
       lastTypeForMessage = MESSAGE_KEYS.get(Kind.THROW_STATEMENT);
-      expr = ((ThrowStatementTree) lastSatementOfBlock).expression();
-    } else if (lastSatementOfBlock.is(Kind.RETURN_STATEMENT)) {
+      expr = ((ThrowStatementTree) lastStatementOfBlock).expression();
+    } else if (lastStatementOfBlock.is(Kind.RETURN_STATEMENT)) {
       lastTypeForMessage = MESSAGE_KEYS.get(Kind.RETURN_STATEMENT);
-      expr = ((ReturnStatementTree) lastSatementOfBlock).expression();
+      expr = ((ReturnStatementTree) lastStatementOfBlock).expression();
     }
     if (expr != null && expr.is(Kind.IDENTIFIER)) {
-      result = ((IdentifierTree) expr).name();
+      return ((IdentifierTree) expr).name();
     }
-    return result;
-  }
-
-  private static String getVariableDeclarationIdentifier(StatementTree butLastSatement) {
-    String result = null;
-    if (butLastSatement.is(Kind.VARIABLE)) {
-      result = ((VariableTree) butLastSatement).simpleName().name();
-    }
-    return result;
+    return null;
   }
 }

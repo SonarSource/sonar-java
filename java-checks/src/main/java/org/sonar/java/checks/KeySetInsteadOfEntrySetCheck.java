@@ -41,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -123,7 +122,7 @@ public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
       this.mapSymbol = mapSymbol;
       scan(forEachTree.statement());
       if (result) {
-        addIssue(forEachTree, "Iterate over the \"entrySet\" instead of the \"keySet\".");
+        reportIssue(forEachTree.forKeyword(), "Iterate over the \"entrySet\" instead of the \"keySet\".");
       }
     }
 

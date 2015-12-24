@@ -23,7 +23,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -38,6 +37,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S1309",
@@ -68,7 +69,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
 
     if (isJavaLangSuppressWarnings(annotationTree)) {
       if (ruleWarnings.isEmpty()) {
-        addIssue(annotationTree, "Suppressing warnings is not allowed");
+        reportIssue(annotationTree.annotationType(), "Suppressing warnings is not allowed");
       } else {
         List<String> suppressedWarnings = getSuppressedWarnings(annotationTree.arguments().get(0));
         List<String> issues = Lists.newArrayList();
@@ -80,7 +81,7 @@ public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
         if (!issues.isEmpty()) {
           StringBuilder sb = new StringBuilder("Suppressing the '").append(Joiner.on(", ").join(issues))
             .append("' warning").append(issues.size() > 1 ? "s" : "").append(" is not allowed");
-          addIssue(annotationTree, sb.toString());
+          reportIssue(annotationTree.annotationType(), sb.toString());
         }
       }
     }

@@ -70,7 +70,7 @@ public class MethodOnlyCallsSuperCheck extends SubscriptionBaseVisitor {
     MethodTree methodTree = (MethodTree) tree;
     if (isSingleStatementMethod(methodTree) && isUselessSuperCall(methodTree)
       && !hasAnnotationDifferentFromOverride(methodTree.modifiers().annotations()) && !isFinalObjectMethod(methodTree)) {
-      addIssue(methodTree, "Remove this method to simply inherit it.");
+      reportIssue(methodTree.simpleName(), "Remove this method to simply inherit it.");
     }
   }
 

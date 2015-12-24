@@ -6,7 +6,7 @@ import java.util.Queue;
 class A {
 
   void myMethod(int x, int y, Integer z) {
-     x % 2 == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
+     x % 2 == 1; // Noncompliant [[sc=8;ec=9]] {{The results of this modulus operation may not be positive.}}
      x % 2 == -1; // Noncompliant {{The results of this modulus operation may not be negative.}}
      2 % x == 1; // Noncompliant {{The results of this modulus operation may not be positive.}}
      1 == x % 2; // Noncompliant {{The results of this modulus operation may not be positive.}}

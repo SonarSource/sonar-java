@@ -1,6 +1,6 @@
 class A{
   void method(){
-    if(str == null && str.length() == 0){ // Noncompliant {{Either reverse the equality operator in the "str" null test, or reverse the logical operator that follows it.}}
+    if(str == null && str.length() == 0){ // Noncompliant [[sc=8;ec=40]] {{Either reverse the equality operator in the "str" null test, or reverse the logical operator that follows it.}}
     }else if(str != null || str.length() > 0){ // Noncompliant
     }
     if(str == null || str.length() == 0){

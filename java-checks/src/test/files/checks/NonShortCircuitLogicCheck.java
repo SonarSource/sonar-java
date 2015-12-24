@@ -3,7 +3,7 @@ class A {
   void method1() {
     getTrue() || getFalse();
     getTrue() && getFalse();
-    getTrue() | getFalse(); // Noncompliant {{Correct this "|" to "||".}}
+    getTrue() | getFalse(); // Noncompliant [[sc=15;ec=16]] {{Correct this "|" to "||".}}
     getTrue() & getFalse(); // Noncompliant {{Correct this "&" to "&&".}}
     Boolean.TRUE | Boolean.FALSE; // Noncompliant
     Boolean.TRUE & Boolean.FALSE; // Noncompliant

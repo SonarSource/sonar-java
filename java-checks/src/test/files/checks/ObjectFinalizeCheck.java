@@ -1,7 +1,7 @@
 class Foo {
   void foo() {
     Foo foo = new Foo();
-    foo.finalize();       // Noncompliant {{Remove this call to finalize().}}
+    foo.finalize();       // Noncompliant [[sc=9;ec=17]] {{Remove this call to finalize().}}
     foo.finalize[0];      // Compliant
     foo.finalize(0);      // Compliant
     foo.toString();       // Compliant

@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class AssertionInThreadRunCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionInThreadRunCheck.java", new AssertionInThreadRunCheck());
   }
 }

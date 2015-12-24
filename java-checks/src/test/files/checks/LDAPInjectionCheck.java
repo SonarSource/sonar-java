@@ -11,12 +11,12 @@ class A {
     DirContext dctx = new InitialDirContext(env);
     String[] requestedAttrsLocal = new String[12];
     SearchControls sc = new SearchControls();
-    sc.setReturningAttributes(requestedAttrs);  // Noncompliant {{Make sure that "requestedAttrs" is sanitized before use in this LDAP request.}}
+    sc.setReturningAttributes(requestedAttrs);  // Noncompliant [[sc=31;ec=45]] {{Make sure that "requestedAttrs" is sanitized before use in this LDAP request.}}
     sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
     String filter = "(&(objectClass=user)(sAMAccountName=" + username + "))";
 
-    NamingEnumeration results = dctx.search(base,  // Noncompliant {{Make sure that "base" is sanitized before use in this LDAP request.}}
+    NamingEnumeration results = dctx.search(base,  // Noncompliant [[sc=45;ec=49]] {{Make sure that "base" is sanitized before use in this LDAP request.}}
         // parameter concatenated directly into string
         filter,  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
         sc);

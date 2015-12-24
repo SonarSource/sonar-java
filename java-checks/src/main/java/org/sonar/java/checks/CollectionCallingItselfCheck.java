@@ -79,14 +79,14 @@ public class CollectionCallingItselfCheck extends SubscriptionBaseVisitor {
       if (arg.is(Tree.Kind.IDENTIFIER)) {
         Symbol reference = ((IdentifierTree) arg).symbol();
         if (reference == symbolReference) {
-          addIssue(methodInvocationTree, "Remove or correct this \"" + reportedName + "\" call.");
+          reportIssue(methodInvocationTree, "Remove or correct this \"" + reportedName + "\" call.");
         }
       }
     }
   }
 
   private static boolean isMethodFromCollection(Symbol methodSymbol) {
-    if(!methodSymbol.isMethodSymbol()) {
+    if (!methodSymbol.isMethodSymbol()) {
       return false;
     }
     Type ownerType = methodSymbol.owner().type();

@@ -14,7 +14,7 @@ class A {
       Connection conn = DriverManager.getConnection("url", "user1", "password");
       Statement stmt = conn.createStatement();
       ResultSet rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = 2001");
-      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant {{"param" is provided externally to the method and not sanitized before use.}}
+      rs = stmt.executeQuery("SELECT Lname FROM Customers WHERE Snum = "+param); // Noncompliant [[sc=17;ec=29]] {{"param" is provided externally to the method and not sanitized before use.}}
       String query = "SELECT Lname FROM Customers WHERE Snum = "+param;
       rs = stmt.executeQuery(query); // Noncompliant
 

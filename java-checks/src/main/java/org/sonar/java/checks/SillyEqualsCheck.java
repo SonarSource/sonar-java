@@ -24,12 +24,14 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -68,33 +70,34 @@ public class SillyEqualsCheck extends AbstractMethodDetection {
       argumentType = ((JavaType) argumentType).primitiveWrapperType();
     }
     Type ownerType = getMethodOwnerType(tree).erasure();
+    IdentifierTree methodInvocationName = MethodsHelper.methodName(tree);
     if (isLiteralNull(firstArgument)) {
-      addIssue(tree, "Remove this call to \"equals\"; comparisons against null always return false; consider using '== null' to check for nullity.");
+      reportIssue(methodInvocationName, "Remove this call to \"equals\"; comparisons against null always return false; consider using '== null' to check for nullity.");
     } else if (ownerType.isArray()) {
-      checkWhenOwnerIsArray(tree, (Type.ArrayType) ownerType, argumentType);
+      checkWhenOwnerIsArray(methodInvocationName, (Type.ArrayType) ownerType, argumentType);
     } else {
-      checkWhenOwnerIsNotArray(tree, ownerType, argumentType);
+      checkWhenOwnerIsNotArray(methodInvocationName, ownerType, argumentType);
     }
   }
 
-  private void checkWhenOwnerIsArray(Tree tree, Type.ArrayType ownerType, Type argumentType) {
+  private void checkWhenOwnerIsArray(IdentifierTree methodInvocationName, Type.ArrayType ownerType, Type argumentType) {
     if (argumentType.isArray()) {
       if (areNotRelated(ownerType.elementType(), ((Type.ArrayType) argumentType).elementType())) {
-        addIssue(tree, "Remove this call to \"equals\"; comparisons between unrelated arrays always return false.");
+        reportIssue(methodInvocationName, "Remove this call to \"equals\"; comparisons between unrelated arrays always return false.");
       } else {
-        addIssue(tree, "Use \"Arrays.equals(array1, array2)\" or the \"==\" operator instead of using the \"Object.equals(Object obj)\" method.");
+        reportIssue(methodInvocationName, "Use \"Arrays.equals(array1, array2)\" or the \"==\" operator instead of using the \"Object.equals(Object obj)\" method.");
       }
     } else if (!argumentType.is(JAVA_LANG_OBJECT)) {
-      addIssue(tree, "Remove this call to \"equals\"; comparisons between an array and a type always return false.");
+      reportIssue(methodInvocationName, "Remove this call to \"equals\"; comparisons between an array and a type always return false.");
     }
   }
 
-  private void checkWhenOwnerIsNotArray(Tree tree, Type ownerType, Type argumentType) {
+  private void checkWhenOwnerIsNotArray(IdentifierTree methodInvocationName, Type ownerType, Type argumentType) {
     if (argumentType.isArray() && !ownerType.is(JAVA_LANG_OBJECT)) {
-      addIssue(tree, "Remove this call to \"equals\"; comparisons between a type and an array always return false.");
+      reportIssue(methodInvocationName, "Remove this call to \"equals\"; comparisons between a type and an array always return false.");
     } else if (argumentType.isClass() && areNotRelated(ownerType, argumentType)
       && (areTypesFinalClassAndInterface(ownerType, argumentType) || areNeitherInterfaces(ownerType, argumentType))) {
-      addIssue(tree, MESSAGE);
+      reportIssue(methodInvocationName, MESSAGE);
     }
   }
 

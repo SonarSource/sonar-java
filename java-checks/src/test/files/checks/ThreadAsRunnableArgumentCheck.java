@@ -6,9 +6,9 @@ class A {
   public void foo() {
     Thread t = new Thread() {
     };
-    new Thread(t).start(); // Noncompliant {{}"t" is a "Thread".}
+    new Thread(t).start(); // Noncompliant [[sc=16;ec=17]] {{"t" is a "Thread".}}
 
-    new Thread(bar()).start(); // Noncompliant
+    new Thread(bar()).start(); // Noncompliant [[sc=16;ec=21]]
 
     MyThread myThread = new MyThread();
     new Thread(myThread).start(); // Noncompliant

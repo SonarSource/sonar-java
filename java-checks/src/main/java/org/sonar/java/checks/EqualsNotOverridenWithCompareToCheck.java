@@ -56,7 +56,7 @@ public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisito
     ClassTree classTree = (ClassTree) tree;
     if (isComparable(classTree)) {
       boolean hasEquals = false;
-      Tree compare = null;
+      MethodTree compare = null;
 
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.METHOD)) {
@@ -65,13 +65,13 @@ public class EqualsNotOverridenWithCompareToCheck extends SubscriptionBaseVisito
           if (isEqualsMethod(method)) {
             hasEquals = true;
           } else if (isCompareToMethod(method)) {
-            compare = member;
+            compare = method;
           }
         }
       }
 
       if (compare != null && !hasEquals) {
-        addIssue(compare, "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
+        reportIssue(compare.simpleName(), "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
       }
     }
   }

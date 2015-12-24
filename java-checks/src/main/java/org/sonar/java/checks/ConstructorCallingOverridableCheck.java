@@ -57,11 +57,9 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      MethodTree methodTree = (MethodTree) tree;
       TypeJavaSymbol constructorType = (TypeJavaSymbol) getSemanticModel().getEnclosingClass(tree);
       if (!constructorType.isFinal()) {
-        ConstructorBodyVisitor constructorBodyVisitor = new ConstructorBodyVisitor(constructorType);
-        methodTree.block().accept(constructorBodyVisitor);
+        ((MethodTree) tree).block().accept(new ConstructorBodyVisitor(constructorType));
       }
     }
   }
@@ -90,7 +88,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
         if (isOverridableMethod(symbol) && isMethodDefinedOnConstructedType(symbol)) {
-          addIssue(tree, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
+          reportIssue(methodIdentifier, "Remove this call from a constructor to the overridable \"" + methodIdentifier.name() + "\" method.");
         }
       }
       super.visitMethodInvocation(tree);
@@ -115,10 +113,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
     }
 
     private boolean isOverridableMethod(Symbol symbol) {
-      if (symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic()) {
-        return true;
-      }
-      return false;
+      return symbol.isMethodSymbol() && !symbol.isPrivate() && !symbol.isFinal() && !symbol.isStatic();
     }
 
   }

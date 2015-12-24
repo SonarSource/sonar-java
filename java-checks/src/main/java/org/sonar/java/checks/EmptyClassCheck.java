@@ -20,11 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -48,13 +51,11 @@ public class EmptyClassCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (isEmptyClass((ClassTree) tree)) {
-      addIssue(tree, "Remove this empty class, write its code or make it an \"interface\".");
+    ClassTree classTree = (ClassTree) tree;
+    IdentifierTree simpleName = classTree.simpleName();
+    if (simpleName != null && isNotExtending(classTree) && isEmpty(classTree)) {
+      reportIssue(simpleName, "Remove this empty class, write its code or make it an \"interface\".");
     }
-  }
-
-  private static boolean isEmptyClass(ClassTree tree) {
-    return tree.simpleName() != null && isNotExtending(tree) && isEmpty(tree);
   }
 
   private static boolean isNotExtending(ClassTree tree) {
@@ -62,14 +63,6 @@ public class EmptyClassCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isEmpty(ClassTree tree) {
-    if(!tree.modifiers().annotations().isEmpty()) {
-      return false;
-    }
-    for (Tree member : tree.members()) {
-      if (!member.is(Tree.Kind.EMPTY_STATEMENT)) {
-        return false;
-      }
-    }
-    return true;
+    return tree.modifiers().annotations().isEmpty() && Iterables.all(tree.members(), SyntaxNodePredicates.kind(Tree.Kind.EMPTY_STATEMENT));
   }
 }

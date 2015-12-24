@@ -1,5 +1,5 @@
 class A {
-  void foo() throws NullPointerException { // Noncompliant {{Throw some other exception here, such as "IllegalArgumentException".}}
+  void foo() throws NullPointerException { // Noncompliant [[sc=21;ec=41]] {{Throw some other exception here, such as "IllegalArgumentException".}}
   }
   void bar() {
     throw new
@@ -7,7 +7,7 @@ class A {
     ();
   }
   void baz() {
-    throw new java.lang.NullPointerException();// Noncompliant {{Throw some other exception here, such as "IllegalArgumentException".}}
+    throw new java.lang.NullPointerException();// Noncompliant [[sc=15;ec=45]] {{Throw some other exception here, such as "IllegalArgumentException".}}
   }
   void qix() throws IllegalArgumentException {
     throw new IllegalArgumentException();

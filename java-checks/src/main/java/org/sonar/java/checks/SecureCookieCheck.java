@@ -63,7 +63,7 @@ public class SecureCookieCheck extends SubscriptionBaseVisitor {
     unsecuredCookies.clear();
     super.scanFile(context);
     for (Symbol.VariableSymbol unsecuredCookie : unsecuredCookies) {
-      addIssue(unsecuredCookie.declaration(), "Add the \"secure\" attribute to this cookie");
+      reportIssue(unsecuredCookie.declaration().simpleName(), "Add the \"secure\" attribute to this cookie");
     }
   }
 

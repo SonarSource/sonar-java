@@ -53,7 +53,7 @@ public class BigDecimalDoubleConstructorCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       NewClassTree nct = (NewClassTree) tree;
       if (nct.symbolType().is("java.math.BigDecimal") && isDoubleConstructor(nct)) {
-        addIssue(tree, "Use \"BigDecimal.valueOf\" instead.");
+        reportIssue(tree, "Use \"BigDecimal.valueOf\" instead.");
       }
     }
   }

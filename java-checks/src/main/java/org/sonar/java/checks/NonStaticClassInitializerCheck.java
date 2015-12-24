@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -39,7 +40,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("30min")
-public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor{
+public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -48,6 +49,6 @@ public class NonStaticClassInitializerCheck extends SubscriptionBaseVisitor{
 
   @Override
   public void visitNode(Tree tree) {
-    addIssue(tree, "Move the contents of this initializer to a standard constructor or to field initializers.");
+    reportIssue(((BlockTree) tree).openBraceToken(), "Move the contents of this initializer to a standard constructor or to field initializers.");
   }
 }

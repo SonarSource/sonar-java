@@ -23,7 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -55,8 +57,11 @@ public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD)) {
       insideToString = isToStringDeclaration((MethodTree) tree);
-    } else if (insideToString && isReturnNull((ReturnStatementTree) tree)) {
-      addIssue(tree, "Return empty string instead.");
+    } else if (insideToString) {
+      ExpressionTree returnExpression = ExpressionsHelper.skipParentheses(((ReturnStatementTree) tree).expression());
+      if (returnExpression.is(Kind.NULL_LITERAL)) {
+        reportIssue(returnExpression, "Return empty string instead.");
+      }
     }
   }
 
@@ -69,10 +74,6 @@ public class ToStringReturningNullCheck extends SubscriptionBaseVisitor {
 
   private static boolean isToStringDeclaration(MethodTree method) {
     return "toString".equals(method.simpleName().name()) && method.parameters().isEmpty();
-  }
-
-  private static boolean isReturnNull(ReturnStatementTree returnStatement) {
-    return returnStatement.expression().is(Tree.Kind.NULL_LITERAL);
   }
 
 }

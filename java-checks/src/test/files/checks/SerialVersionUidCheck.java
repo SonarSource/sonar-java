@@ -4,13 +4,13 @@ class A implements Cloneable {}
 class B implements Serializable {
   private static final long serialVersionUID = 1L;
 }
-class C implements Serializable {} // Noncompliant {{Add a "static final long serialVersionUID" field to this class.}}
+class C implements Serializable {} // Noncompliant [[sc=7;ec=8]] {{Add a "static final long serialVersionUID" field to this class.}}
 class D extends C {} // Noncompliant {{Add a "static final long serialVersionUID" field to this class.}}
 class E implements Serializable {
   private final long serialVersionUID = 1L; // Noncompliant {{Make this "serialVersionUID" field "static".}}
 }
 class F implements Serializable {
-  private static long serialVersionUID = 1L; // Noncompliant {{Make this "serialVersionUID" field "final".}}
+  private static long serialVersionUID = 1L; // Noncompliant [[sc=23;ec=39]] {{Make this "serialVersionUID" field "final".}}
 }
 class G implements Serializable {
   private static int serialVersionUID = 1; // Noncompliant {{Make this "serialVersionUID" field "final long".}}

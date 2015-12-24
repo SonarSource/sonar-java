@@ -14,14 +14,14 @@ class MyClass {
 
   }
 
-  @CustomAnnotation(field1="", field3="", field2="")// Noncompliant
+  @CustomAnnotation(field1="", field3="", field2="") // Noncompliant {{Reorder annotation arguments to match the order of declaration.}}
   @MyAnnotation(myInteger=2, myName="XXX") // Noncompliant
   @MyAnnotation(myName="XXX", aaaLast = "")
   void wrongMethod() {
 
   }
 
-  List<@MyAnnotation(myInteger=2, myName="XXX") Object[]> field;// Noncompliant
+  List<@MyAnnotation(myInteger=2, myName="XXX") Object[]> field; // Noncompliant [[sc=9;ec=21]]
   List<@MyAnnotation(myName="XXX", aaaLast = "") Object[]> field;
 }
 

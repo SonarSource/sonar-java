@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -39,7 +40,7 @@ import java.util.List;
   tags = {Tag.PERFORMANCE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("30min")
-public class  CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
+public class CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
@@ -48,6 +49,6 @@ public class  CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection 
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove this call to \"deleteOnExit\".");
+    reportIssue(MethodsHelper.methodName(mit), "Remove this call to \"deleteOnExit\".");
   }
 }

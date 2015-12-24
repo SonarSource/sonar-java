@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -48,14 +49,14 @@ public class WaitOnConditionCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     TypeCriteria conditionSubType = TypeCriteria.subtypeOf("java.util.concurrent.locks.Condition");
     return ImmutableList.<MethodMatcher>builder()
-        .add(MethodMatcher.create().callSite(conditionSubType).name("wait"))
-        .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"))
-        .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"))
-        .build();
+      .add(MethodMatcher.create().callSite(conditionSubType).name("wait"))
+      .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long"))
+      .add(MethodMatcher.create().callSite(conditionSubType).name("wait").addParameter("long").addParameter("int"))
+      .build();
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
+    reportIssue(MethodsHelper.methodName(mit), "The \"Condition.await(...)\" method should be used instead of \"Object.wait(...)\"");
   }
 }

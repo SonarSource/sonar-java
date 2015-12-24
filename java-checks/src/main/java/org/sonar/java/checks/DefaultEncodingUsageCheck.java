@@ -25,17 +25,16 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -91,33 +90,25 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
       super.visitNode(tree);
       if (tree.is(Tree.Kind.VARIABLE)) {
         VariableTree variableTree = (VariableTree) tree;
-        boolean foundIssue = checkForbiddenTypes(tree, variableTree.type());
+        boolean foundIssue = checkForbiddenTypes(variableTree.simpleName(), variableTree.type().symbolType());
         if (foundIssue) {
           excluded.add(variableTree.initializer());
         }
       } else if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
-        checkForbiddenTypes(tree, (MethodInvocationTree) tree);
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
+        checkForbiddenTypes(MethodsHelper.methodName(mit), mit.symbolType());
       }
     }
   }
 
-  private boolean checkForbiddenTypes(Tree tree, TypeTree typedTree) {
-    return checkForbiddenTypes(tree, typedTree.symbolType());
-  }
-
-  private boolean checkForbiddenTypes(Tree tree, ExpressionTree typedTree) {
-    return checkForbiddenTypes(tree, typedTree.symbolType());
-  }
-
-  private boolean checkForbiddenTypes(Tree tree, Type symbolType) {
-    boolean foundIssue = false;
+  private boolean checkForbiddenTypes(Tree reportTree, Type symbolType) {
     for (String forbiddenType : FORBIDDEN_TYPES) {
       if (symbolType.is(forbiddenType)) {
-        addIssue(tree, "Remove this use of \"" + forbiddenType + "\"");
-        foundIssue = true;
+        reportIssue(reportTree, "Remove this use of \"" + forbiddenType + "\"");
+        return true;
       }
     }
-    return foundIssue;
+    return false;
   }
 
   @Override
@@ -162,16 +153,16 @@ public class DefaultEncodingUsageCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove this use of \"" + mit.symbol().name() + "\"");
+    reportIssue(MethodsHelper.methodName(mit), "Remove this use of \"" + mit.symbol().name() + "\"");
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
     Symbol symbol = newClassTree.constructorSymbol();
-    if(symbol.isMethodSymbol()) {
+    if (symbol.isMethodSymbol()) {
       Symbol.MethodSymbol constructor = (Symbol.MethodSymbol) symbol;
       String signature = constructor.owner().name() + "(" + Joiner.on(',').join(constructor.parameterTypes()) + ")";
-      addIssue(newClassTree, "Remove this use of constructor \"" + signature + "\"");
+      reportIssue(newClassTree.identifier(), "Remove this use of constructor \"" + signature + "\"");
     }
   }
 

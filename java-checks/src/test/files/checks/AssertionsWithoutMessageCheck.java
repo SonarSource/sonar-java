@@ -4,7 +4,7 @@ import java.lang.Integer;
 
 class A {
   void foo() {
-    org.junit.Assert.assertTrue(true); // Noncompliant {{Add a message to this assertion.}}
+    org.junit.Assert.assertTrue(true); // Noncompliant [[sc=5;ec=38]] {{Add a message to this assertion.}}
     org.junit.Assert.assertTrue("message", true);
     org.junit.Assert.assertTrue(1 > 2); // Noncompliant {{Add a message to this assertion.}}
     org.junit.Assert.assertFalse(false); // Noncompliant

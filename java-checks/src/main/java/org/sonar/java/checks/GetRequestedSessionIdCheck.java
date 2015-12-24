@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -46,12 +47,12 @@ public class GetRequestedSessionIdCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
-        .typeDefinition("javax.servlet.http.HttpServletRequest")
-        .name("getRequestedSessionId"));
+      .typeDefinition("javax.servlet.http.HttpServletRequest")
+      .name("getRequestedSessionId"));
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove use of this unsecured \"getRequestedSessionId()\" method");
+    reportIssue(MethodsHelper.methodName(mit), "Remove use of this unsecured \"getRequestedSessionId()\" method");
   }
 }

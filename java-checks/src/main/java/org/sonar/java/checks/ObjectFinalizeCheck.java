@@ -23,9 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
@@ -59,14 +59,9 @@ public class ObjectFinalizeCheck extends SubscriptionBaseVisitor {
       isInFinalizeMethod = isFinalizeMethodMember((MethodTree) tree);
     } else {
       MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
-      String name = "";
-      if (methodInvocationTree.methodSelect().is(Tree.Kind.IDENTIFIER)) {
-        name = ((IdentifierTree) methodInvocationTree.methodSelect()).name();
-      } else if (methodInvocationTree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        name = ((MemberSelectExpressionTree) methodInvocationTree.methodSelect()).identifier().name();
-      }
-      if (!isInFinalizeMethod && "finalize".equals(name) && methodInvocationTree.arguments().isEmpty()) {
-        addIssue(tree, "Remove this call to finalize().");
+      IdentifierTree methodName = MethodsHelper.methodName(methodInvocationTree);
+      if (!isInFinalizeMethod && "finalize".equals(methodName.name()) && methodInvocationTree.arguments().isEmpty()) {
+        reportIssue(methodName, "Remove this call to finalize().");
       }
     }
 

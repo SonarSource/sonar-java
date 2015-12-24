@@ -96,7 +96,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     if (variable.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) variable;
       leftSymbol = identifierTree.symbol();
-    } else if(variable.is(Tree.Kind.MEMBER_SELECT)) {
+    } else if (variable.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mit = (MemberSelectExpressionTree) variable;
       leftSymbol = mit.identifier().symbol();
     }
@@ -119,7 +119,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     if (expression.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expression;
       if (!parametersStack.isEmpty() && parametersStack.peek().contains(identifierTree.symbol())) {
-        context.addIssue(expression, this, "Store a copy of \"" + identifierTree.name() + "\".");
+        context.reportIssue(this, identifierTree, "Store a copy of \"" + identifierTree.name() + "\".");
       }
     }
   }
@@ -134,7 +134,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expressionTree;
       if (identifierTree.symbol().isPrivate()) {
-        context.addIssue(expressionTree, this, "Return a copy of \"" + identifierTree.name() + "\".");
+        context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
   }

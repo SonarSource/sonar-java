@@ -35,7 +35,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(
@@ -58,7 +57,7 @@ public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     IfStatementTree ifStatementTree = (IfStatementTree) tree;
     if (hasOneReturnBoolean(ifStatementTree.elseStatement()) && hasOneReturnBoolean(ifStatementTree.thenStatement())) {
-      addIssue(tree, "Replace this if-then-else statement by a single return statement.");
+      reportIssue(ifStatementTree.ifKeyword(), "Replace this if-then-else statement by a single return statement.");
     }
   }
 
@@ -74,7 +73,7 @@ public class ReturnOfBooleanExpressionsCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isReturnBooleanLiteral(StatementTree statementTree) {
-    if(statementTree.is(Kind.RETURN_STATEMENT)) {
+    if (statementTree.is(Kind.RETURN_STATEMENT)) {
       ReturnStatementTree returnStatement = (ReturnStatementTree) statementTree;
       return returnStatement.expression() != null && returnStatement.expression().is(Kind.BOOLEAN_LITERAL);
     }

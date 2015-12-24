@@ -15,7 +15,7 @@ class Foo implements Comparable<Foo> {
 class Foo2 implements Comparable<Foo2> {
 
   @Override
-  public int compareTo(Foo2 o) { // Noncompliant {{Override "equals(Object obj)" to comply with the contract of the "compareTo(T o)" method.}}
+  public int compareTo(Foo2 o) { // Noncompliant [[sc=14;ec=23]] {{Override "equals(Object obj)" to comply with the contract of the "compareTo(T o)" method.}}
     return 0;
   }
 

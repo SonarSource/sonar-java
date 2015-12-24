@@ -5,7 +5,7 @@ class A {
   void fun() {
     List<String> strings = new ArrayList<String>();
     strings.add("Hello");
-    strings.add(strings); // Noncompliant {{Remove or correct this "add" call.}}
+    strings.add(strings); // Noncompliant [[sc=5;ec=25]] {{Remove or correct this "add" call.}}
     strings.addAll(strings); // Noncompliant {{Remove or correct this "addAll" call.}}
     strings.containsAll(strings); // Noncompliant {{Remove or correct this "containsAll" call.}}
     strings.removeAll(strings); // Noncompliant {{Remove or correct this "removeAll" call.}}

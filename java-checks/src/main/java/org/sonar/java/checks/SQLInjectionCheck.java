@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -76,7 +77,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
         if (isHibernateCall) {
           message = "Use Hibernate's parameter binding instead of concatenation.";
         }
-        addIssue(methodTree, message);
+        reportIssue(MethodsHelper.methodName(methodTree), message);
       }
     }
   }

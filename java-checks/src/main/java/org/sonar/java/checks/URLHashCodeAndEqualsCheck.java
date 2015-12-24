@@ -36,7 +36,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -67,13 +66,11 @@ public class URLHashCodeAndEqualsCheck extends SubscriptionBaseVisitor {
       if (variableTree.initializer() != null) {
         Type variableType = variableTree.type().symbolType();
         if (isSubTypeOfSetOrMap(variableType) && usesURLAsTypeParameter(variableType)) {
-          insertIssue(tree);
+          reportIssue(variableTree.type(), "Use the URI class instead.");
         }
       }
-    } else {
-      if (hasSemantic() && URL_MATCHERS.anyMatch((MethodInvocationTree) tree)) {
-        insertIssue(tree);
-      }
+    } else if (hasSemantic() && URL_MATCHERS.anyMatch((MethodInvocationTree) tree)) {
+      reportIssue(tree, "Use the URI class instead.");
     }
   }
 
@@ -95,10 +92,6 @@ public class URLHashCodeAndEqualsCheck extends SubscriptionBaseVisitor {
       }
     }
     return null;
-  }
-
-  private void insertIssue(Tree tree) {
-    addIssue(tree, "Use the URI class instead.");
   }
 
 }

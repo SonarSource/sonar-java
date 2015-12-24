@@ -20,17 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
-import java.util.List;
-
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import java.util.List;
 
 @Rule(
   key = "S1145",
@@ -49,8 +49,9 @@ public class IfConditionAlwaysTrueOrFalseCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (((IfStatementTree) tree).condition().is(Tree.Kind.BOOLEAN_LITERAL)) {
-      addIssue(tree, "Remove this if statement.");
+    ExpressionTree condition = ((IfStatementTree) tree).condition();
+    if (condition.is(Tree.Kind.BOOLEAN_LITERAL)) {
+      reportIssue(condition, "Remove this if statement.");
     }
   }
 

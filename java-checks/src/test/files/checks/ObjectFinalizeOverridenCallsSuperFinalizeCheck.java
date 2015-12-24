@@ -7,12 +7,12 @@ class MyClass extends Class3 {
 
   @Override
   protected void finalize() throws Throwable {
-    super.finalize();                           // Noncompliant {{Move this super.finalize() call to the end of this Object.finalize() implementation.}}
+    super.finalize();                           // Noncompliant [[sc=5;ec=21]] {{Move this super.finalize() call to the end of this Object.finalize() implementation.}}
     System.out.println("foo");
   }
 
   @Override
-  protected void finalize() throws Throwable {  // Noncompliant {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
+  protected void finalize() throws Throwable {  // Noncompliant [[sc=18;ec=26]] {{Add a call to super.finalize() at the end of this Object.finalize() implementation.}}
     new Object().finalize();
     System.out.println("foo");
   }

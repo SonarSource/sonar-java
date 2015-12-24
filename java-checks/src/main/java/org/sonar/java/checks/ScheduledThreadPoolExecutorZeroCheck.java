@@ -48,30 +48,30 @@ import java.util.List;
 @SqaleConstantRemediation("20min")
 public class ScheduledThreadPoolExecutorZeroCheck extends AbstractMethodDetection {
 
+  private static final String MESSAGE = "Increase the \"corePoolSize\".";
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-        MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.ThreadPoolExecutor")).name("setCorePoolSize").addParameter("int"),
-        MethodMatcher.create().typeDefinition("java.util.concurrent.ScheduledThreadPoolExecutor").name("<init>").addParameter("int")
+      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.concurrent.ThreadPoolExecutor")).name("setCorePoolSize").addParameter("int"),
+      MethodMatcher.create().typeDefinition("java.util.concurrent.ScheduledThreadPoolExecutor").name("<init>").addParameter("int")
     );
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    if(isZeroIntLiteral(mit.arguments().get(0))) {
-      reportIssue(mit);
+    ExpressionTree arg = mit.arguments().get(0);
+    if (isZeroIntLiteral(arg)) {
+      reportIssue(arg, MESSAGE);
     }
   }
 
   @Override
   protected void onConstructorFound(NewClassTree newClassTree) {
-    if(isZeroIntLiteral(newClassTree.arguments().get(0))) {
-      reportIssue(newClassTree);
+    ExpressionTree arg = newClassTree.arguments().get(0);
+    if (isZeroIntLiteral(arg)) {
+      reportIssue(arg, MESSAGE);
     }
-  }
-
-  private void reportIssue(Tree tree) {
-    addIssue(tree, "Increase the \"corePoolSize\".");
   }
 
   private static boolean isZeroIntLiteral(ExpressionTree arg) {

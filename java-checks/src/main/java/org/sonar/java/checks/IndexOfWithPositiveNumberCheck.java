@@ -84,7 +84,7 @@ public class IndexOfWithPositiveNumberCheck extends SubscriptionBaseVisitor {
 
   private void checkForIssue(Tree tree, ExpressionTree operand, @Nullable Long constant) {
     if (constant != null && constant == 0 && isIndexOfOnArrayOrString(operand)) {
-      addIssue(tree, "0 is a valid index, but is ignored by this check.");
+      reportIssue(tree, "0 is a valid index, but is ignored by this check.");
     }
   }
 

@@ -82,40 +82,22 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
 
     if (flagIssue) {
       for (ExpressionTree valueOfTree : valueOfTrees) {
-        addIssue(valueOfTree);
+        context.reportIssue(this, valueOfTree, "Directly append the argument of String.valueOf().");
       }
     }
     scan(current);
   }
 
-  private void addIssue(ExpressionTree tree) {
-    context.addIssue(tree, this, "Directly append the argument of String.valueOf().");
-  }
-
   private static boolean isStringValueOf(ExpressionTree tree) {
-    if (!tree.is(Kind.METHOD_INVOCATION)) {
-      return false;
-    }
-
-    return isStringValueOf((MethodInvocationTree) tree);
+    return tree.is(Kind.METHOD_INVOCATION) && isStringValueOf((MethodInvocationTree) tree);
   }
 
   private static boolean isStringValueOf(MethodInvocationTree tree) {
-    if (!tree.methodSelect().is(Kind.MEMBER_SELECT)) {
-      return false;
-    }
-
-    return tree.arguments().size() == 1 &&
-        isStringValueOf((MemberSelectExpressionTree) tree.methodSelect());
+    return tree.methodSelect().is(Kind.MEMBER_SELECT) && tree.arguments().size() == 1 && isStringValueOf((MemberSelectExpressionTree) tree.methodSelect());
   }
 
   private static boolean isStringValueOf(MemberSelectExpressionTree tree) {
-    if (!tree.expression().is(Kind.IDENTIFIER)) {
-      return false;
-    }
-
-    return "valueOf".equals(tree.identifier().name()) &&
-        "String".equals(((IdentifierTree) tree.expression()).name());
+    return tree.expression().is(Kind.IDENTIFIER) && "valueOf".equals(tree.identifier().name()) && "String".equals(((IdentifierTree) tree.expression()).name());
   }
 
 }

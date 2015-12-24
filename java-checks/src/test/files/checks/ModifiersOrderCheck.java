@@ -7,7 +7,7 @@ class Foo {
 
   public int a;
 
-  // Noncompliant@+3 {{Reorder the modifiers to comply with the Java Language Specification.}}
+  // Noncompliant@+3 [[sc=3;ec=16]] {{Reorder the modifiers to comply with the Java Language Specification.}}
   @RequestMapping(value = "/restComTool", method = RequestMethod.GET)
   public
   @ResponseBody
@@ -18,7 +18,7 @@ class Foo {
   abstract
   public class A{}
 
-  private final static int CREATE = 0, FIND = 1, NEW = 2, RELEASE = 3, N_NAMES = 4; // Noncompliant
+  private final static int CREATE = 0, FIND = 1, NEW = 2, RELEASE = 3, N_NAMES = 4; // Noncompliant [[sc=17;ec=23]]
 }
 
 interface Bar{

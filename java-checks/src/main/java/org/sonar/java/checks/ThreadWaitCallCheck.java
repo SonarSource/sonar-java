@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -46,17 +47,17 @@ public class ThreadWaitCallCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Refactor the synchronisation mechanism to not use a Thread instance as a monitor");
+    reportIssue(MethodsHelper.methodName(mit), "Refactor the synchronisation mechanism to not use a Thread instance as a monitor");
   }
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     TypeCriteria subtypeOfThread = TypeCriteria.subtypeOf("java.lang.Thread");
     return ImmutableList.<MethodMatcher>builder()
-        .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait"))
-        .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"))
-        .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"))
-        .add(MethodMatcher.create().callSite(subtypeOfThread).name("notify"))
-        .add(MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll")).build();
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait"))
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long"))
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("wait").addParameter("long").addParameter("int"))
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notify"))
+      .add(MethodMatcher.create().callSite(subtypeOfThread).name("notifyAll")).build();
   }
 }

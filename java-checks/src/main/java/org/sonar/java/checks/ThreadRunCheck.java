@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -52,7 +53,7 @@ public class ThreadRunCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
+    reportIssue(MethodsHelper.methodName(mit), "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
   }
 
 }

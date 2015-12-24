@@ -29,6 +29,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -40,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.List;
 import java.util.Set;
@@ -103,6 +103,7 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
 
   private enum Returns {
     ARRAY, COLLECTION, OTHERS;
+
     public static Returns getReturnType(@Nullable Tree tree) {
       if (tree != null) {
         Tree returnType = tree;
@@ -155,9 +156,9 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
       ReturnStatementTree returnStatement = (ReturnStatementTree) tree;
       if (isReturningNull(returnStatement)) {
         if (returnType.peek().equals(Returns.ARRAY)) {
-          addIssue(returnStatement, "Return an empty array instead of null.");
+          reportIssue(returnStatement.expression(), "Return an empty array instead of null.");
         } else if (returnType.peek().equals(Returns.COLLECTION)) {
-          addIssue(tree, "Return an empty collection instead of null.");
+          reportIssue(returnStatement.expression(), "Return an empty collection instead of null.");
         }
       }
     }
@@ -171,7 +172,8 @@ public class ReturnEmptyArrayNotNullCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isReturningNull(ReturnStatementTree tree) {
-    return tree.expression() != null && tree.expression().is(Tree.Kind.NULL_LITERAL);
+    ExpressionTree expression = tree.expression();
+    return expression != null && expression.is(Tree.Kind.NULL_LITERAL);
   }
 
   private static boolean isAllowingNull(MethodTree methodTree) {

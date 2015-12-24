@@ -6,7 +6,7 @@ class A {
   void foo() {
     Method m;
     Class<T> c;
-    m.isAnnotationPresent(Override.class); // Noncompliant {{"@Override" is not available at runtime and cannot be seen with reflection.}}
+    m.isAnnotationPresent(Override.class); // Noncompliant [[sc=27;ec=41]] {{"@Override" is not available at runtime and cannot be seen with reflection.}}
     c.isAnnotationPresent(Override.class); // Noncompliant {{"@Override" is not available at runtime and cannot be seen with reflection.}}
     m.isAnnotationPresent(Deprecated.class); //Compliant, runtime retention
     m.isAnnotationPresent(bar()); //Compliant, we can't know what the bar method is returning.

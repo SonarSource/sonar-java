@@ -1,6 +1,6 @@
 class A {
   private void f() {
-    new Byte("").toString(); // Noncompliant {{Call the static method Byte.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
+    new Byte("").toString(); // Noncompliant [[sc=5;ec=17]] {{Call the static method Byte.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
     new Short(0).toString(); // Noncompliant {{Call the static method Short.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
     new Integer(0).toString(); // Noncompliant {{Call the static method Integer.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}
     new Long(0).toString(); // Noncompliant {{Call the static method Long.toString(...) instead of instantiating a temporary object to perform this to string conversion.}}

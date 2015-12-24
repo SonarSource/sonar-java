@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
@@ -46,12 +47,12 @@ public class ConcurrentLinkedQueueSizeCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create()
-        .typeDefinition("java.util.concurrent.ConcurrentLinkedQueue")
-        .name("size"));
+      .typeDefinition("java.util.concurrent.ConcurrentLinkedQueue")
+      .name("size"));
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove this call to \"ConcurrentLinkedQueue.size()\"");
+    reportIssue(MethodsHelper.methodName(mit), "Remove this call to \"ConcurrentLinkedQueue.size()\"");
   }
 }

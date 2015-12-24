@@ -70,7 +70,7 @@ public class BooleanMethodReturnCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitReturnStatement(ReturnStatementTree tree) {
       if (tree.expression().is(Kind.NULL_LITERAL)) {
-        addIssue(tree, "Null is returned but a \"Boolean\" is expected.");
+        reportIssue(tree.expression(), "Null is returned but a \"Boolean\" is expected.");
       }
     }
 

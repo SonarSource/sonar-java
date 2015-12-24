@@ -48,8 +48,9 @@ public class NullCipherCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (((NewClassTree) tree).symbolType().is("javax.crypto.NullCipher")) {
-      addIssue(tree, "Remove this use of the \"NullCipher\" class.");
+    NewClassTree newClassTree = (NewClassTree) tree;
+    if (newClassTree.symbolType().is("javax.crypto.NullCipher")) {
+      reportIssue(newClassTree.identifier(), "Remove this use of the \"NullCipher\" class.");
     }
   }
 

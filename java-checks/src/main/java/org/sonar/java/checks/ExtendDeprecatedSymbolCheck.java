@@ -32,7 +32,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(
@@ -64,7 +63,7 @@ public class ExtendDeprecatedSymbolCheck extends AbstractDeprecatedChecker {
     if (superTypeTree != null) {
       Type symbolType = superTypeTree.symbolType();
       if (symbolType.isClass() && symbolType.symbol().isDeprecated()) {
-        addIssue(superTypeTree, "\"" + symbolType.symbol().name() + "\"" + " is deprecated, "
+        reportIssue(superTypeTree, "\"" + symbolType.symbol().name() + "\"" + " is deprecated, "
           + (isInterface ? "implement" : "extend") + " the suggested replacement instead.");
       }
     }

@@ -24,6 +24,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -44,7 +45,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -129,9 +129,9 @@ public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFile
     if (FILE_DELETE.matches(mit)) {
       checkAndAdvanceState(mit, State.CREATE_TMP_FILE, State.DELETE);
     } else if (FILE_MKDIR.matches(mit) && State.MKDIR.equals(checkAndAdvanceState(mit, State.DELETE, State.MKDIR))) {
-      context.addIssue(
-        mit,
+      context.reportIssue(
         this,
+        MethodsHelper.methodName(mit),
         "Use \"Files.createTempDirectory\" or a library function to create this directory instead." +
           context.getJavaVersion().java7CompatibilityMessage());
     }

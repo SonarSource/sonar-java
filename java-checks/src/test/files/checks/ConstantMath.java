@@ -1,12 +1,12 @@
 public class TestClass {
 
   public void method(int a) {
-    byte b = a % 1; // Noncompliant {{Remove this computation of % 1, which always evaluates to zero.}}
+    byte b = a % 1; // Noncompliant [[sc=16;ec=17]] {{Remove this computation of % 1, which always evaluates to zero.}}
     int c = a % 2; // Compliant
     int d = a % a; // Compliant, currently not covered by this rule
     short s;
 
-    Math.abs((double)' '); // Noncompliant {{Remove this silly call to "Math.abs"}}
+    Math.abs((double)' '); // Noncompliant [[sc=5;ec=13]] {{Remove this silly call to "Math.abs"}}
     Math.abs((float) 0); // Noncompliant {{Remove this silly call to "Math.abs"}}
     Math.abs(0); // Noncompliant {{Remove this silly call to "Math.abs"}}
     Math.abs(0L); // Noncompliant {{Remove this silly call to "Math.abs"}}

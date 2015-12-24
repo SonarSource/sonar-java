@@ -93,15 +93,15 @@ public class JunitMethodDeclarationCheck extends SubscriptionBaseVisitor {
   private void checkSuiteSignature(MethodTree methodTree) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
     if (!symbol.isPublic()) {
-      addIssue(methodTree, "Make this method \"public\".");
+      reportIssue(methodTree, "Make this method \"public\".");
     } else if (!symbol.isStatic()) {
-      addIssue(methodTree, "Make this method \"static\".");
+      reportIssue(methodTree, "Make this method \"static\".");
     } else if (!methodTree.parameters().isEmpty()) {
-      addIssue(methodTree, "This method does not accept parameters.");
+      reportIssue(methodTree, "This method does not accept parameters.");
     } else {
       TypeTree returnType = methodTree.returnType();
       if (returnType != null && !returnType.symbolType().isSubtypeOf("junit.framework.Test")) {
-        addIssue(methodTree, "This method should return either a \"junit.framework.Test\" or a \"junit.framework.TestSuite\".");
+        reportIssue(methodTree, "This method should return either a \"junit.framework.Test\" or a \"junit.framework.TestSuite\".");
       }
     }
   }
@@ -109,19 +109,23 @@ public class JunitMethodDeclarationCheck extends SubscriptionBaseVisitor {
   private void checkSetupTearDownSignature(MethodTree methodTree) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
     if (!symbol.isPublic()) {
-      addIssue(methodTree, "Make this method \"public\".");
+      reportIssue(methodTree, "Make this method \"public\".");
     } else if (!methodTree.parameters().isEmpty()) {
-      addIssue(methodTree, "This method does not accept parameters.");
+      reportIssue(methodTree, "This method does not accept parameters.");
     } else {
       TypeTree returnType = methodTree.returnType();
       if (returnType != null && !returnType.symbolType().isVoid()) {
-        addIssue(methodTree, "Make this method return \"void\".");
+        reportIssue(methodTree, "Make this method return \"void\".");
       }
     }
   }
 
   private void addIssueForMethodBadName(MethodTree methodTree, String expected, String actual) {
-    addIssue(methodTree, "This method should be named \"" + expected + "\" not \"" + actual + "\".");
+    reportIssue(methodTree, "This method should be named \"" + expected + "\" not \"" + actual + "\".");
+  }
+
+  private void reportIssue(MethodTree methodTree, String message) {
+    reportIssue(methodTree.simpleName(), message);
   }
 
   private static boolean isJunit3Class(ClassTree classTree) {

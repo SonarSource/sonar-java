@@ -8,7 +8,7 @@ class A { void foo() {
     getClass(); // Compliant
 
     new C().getClass(); // Noncompliant {{Remove this object instantiation and use "C.class" instead.}}
-    A a2 = new C(); // Noncompliant {{Remove this object instantiation and use "C.class" instead.}}
+    A a2 = new C(); // Noncompliant [[sc=12;ec=19]] {{Remove this object instantiation and use "C.class" instead.}}
     a2.getClass();
 
     A a3 = new A(); // Compliant

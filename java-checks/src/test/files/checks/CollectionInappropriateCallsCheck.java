@@ -22,7 +22,7 @@ class A {
     String[] myArrayString = new String[] {"myString"};
     Integer[] myArrayInteger = new Integer[] {Integer.valueOf(1)};
 
-    myList.contains(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer"}}
+    myList.contains(myInteger); // Noncompliant [[sc=12;ec=20]] {{A "List<String>" cannot contain a "Integer"}}
     myList.remove(myInteger); // Noncompliant {{A "List<String>" cannot contain a "Integer"}}
     myList.contains(myString); // Compliant
     myBList.contains(myInteger); // Noncompliant {{A "ArrayList<B>" cannot contain a "Integer"}}

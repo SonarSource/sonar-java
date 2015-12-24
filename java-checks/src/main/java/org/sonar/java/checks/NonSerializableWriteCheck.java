@@ -99,7 +99,7 @@ public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
     if (WRITE_OBJECT_MATCHER.matches(methodInvocation)) {
       ExpressionTree argument = methodInvocation.arguments().get(0);
       if (!isAcceptableType(argument.symbolType()) && !isTestedSymbol(argument)) {
-        addIssue(methodInvocation, "Make the \"" + argument.symbolType().fullyQualifiedName() + "\" class \"Serializable\" or don't write it.");
+        reportIssue(argument, "Make the \"" + argument.symbolType().fullyQualifiedName() + "\" class \"Serializable\" or don't write it.");
       }
     }
   }

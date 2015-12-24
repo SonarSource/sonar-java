@@ -80,7 +80,7 @@ public class EqualsArgumentTypeCheck extends SubscriptionBaseVisitor {
         CastVisitor castVisitor = new CastVisitor(parameterSymbol);
         methodTree.accept(castVisitor);
         if (castVisitor.hasUncheckedCast) {
-          addIssue(tree, "Add a type test to this method.");
+          reportIssue(methodTree.simpleName(), "Add a type test to this method.");
         }
       }
     }

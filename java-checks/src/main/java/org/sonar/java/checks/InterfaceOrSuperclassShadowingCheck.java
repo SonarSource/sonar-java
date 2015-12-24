@@ -65,7 +65,7 @@ public class InterfaceOrSuperclassShadowingCheck extends SubscriptionBaseVisitor
   private void checkSuperType(ClassTree tree, Type superType) {
     if (superType != null && superType.symbol().name().equals(tree.symbol().name())) {
       String classOrInterface = tree.is(Tree.Kind.CLASS) ? "class" : "interface";
-      addIssue(tree, "Rename this " + classOrInterface + ".");
+      reportIssue(tree.simpleName(), "Rename this " + classOrInterface + ".");
     }
   }
 

@@ -17,7 +17,7 @@ class A {
       out.writeObject(myNonSerializable2);
     }
     if (x.toString() instanceof Serializable) {
-      out.writeObject(new MyNonSerializable()); // Noncompliant {{Make the "MyNonSerializable" class "Serializable" or don't write it.}}
+      out.writeObject(new MyNonSerializable()); // Noncompliant [[sc=23;ec=46]] {{Make the "MyNonSerializable" class "Serializable" or don't write it.}}
     }
     out.writeObject(array);
   }

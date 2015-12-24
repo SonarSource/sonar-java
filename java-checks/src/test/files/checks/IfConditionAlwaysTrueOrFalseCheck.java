@@ -2,7 +2,7 @@ class A {
   private static final boolean FALSE = false;
 
   void f() {
-    if (true) { // Noncompliant {{Remove this if statement.}}
+    if (true) { // Noncompliant [[sc=9;ec=13]] {{Remove this if statement.}}
     } else if (false) { // Noncompliant
     }
 

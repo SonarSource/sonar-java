@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
@@ -61,8 +62,7 @@ public class EqualsOnAtomicClassCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Use \".get()\" to retrieve the value and compare it instead.");
-    super.onMethodInvocationFound(mit);
+    reportIssue(MethodsHelper.methodName(mit), "Use \".get()\" to retrieve the value and compare it instead.");
   }
 
 }

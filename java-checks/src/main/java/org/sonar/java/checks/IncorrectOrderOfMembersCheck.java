@@ -27,7 +27,10 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -58,17 +61,21 @@ public class IncorrectOrderOfMembersCheck extends BaseTreeVisitor implements Jav
     for (int i = 0; i < tree.members().size(); i++) {
       final Tree member = tree.members().get(i);
       final int priority;
+      IdentifierTree identifier;
       if (member.is(Tree.Kind.VARIABLE)) {
         priority = 0;
+        identifier = ((VariableTree) member).simpleName();
       } else if (member.is(Tree.Kind.CONSTRUCTOR)) {
         priority = 1;
+        identifier = ((MethodTree) member).simpleName();
       } else if (member.is(Tree.Kind.METHOD)) {
         priority = 2;
+        identifier = ((MethodTree) member).simpleName();
       } else {
         continue;
       }
       if (priority < prev) {
-        context.addIssue(member, this, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
+        context.reportIssue(this, identifier, "Move this " + NAMES[priority] + " to comply with Java Code Conventions.");
       } else {
         prev = priority;
       }

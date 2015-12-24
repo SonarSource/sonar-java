@@ -46,8 +46,7 @@ public class StaticMembersAccessCheck extends SubscriptionBaseVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(
-      Tree.Kind.MEMBER_SELECT);
+    return ImmutableList.of(Tree.Kind.MEMBER_SELECT);
   }
 
   @Override
@@ -59,9 +58,8 @@ public class StaticMembersAccessCheck extends SubscriptionBaseVisitor {
         memberSelectExpression = ((MemberSelectExpressionTree) memberSelectExpression).identifier();
       }
       if (!memberSelectExpression.is(Tree.Kind.IDENTIFIER) || ((IdentifierTree) memberSelectExpression).symbol().isVariableSymbol()) {
-        context.addIssue(tree, this, "Change this instance-reference to a static reference.");
+        context.reportIssue(this, memberSelect, "Change this instance-reference to a static reference.");
       }
     }
   }
-
 }

@@ -56,7 +56,7 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     VariableTree variable = (VariableTree) tree;
     if (hasSemantic() && isOwnedByAServlet(variable) && !isStaticOrFinal(variable)) {
-      addIssue(tree, "Remove this misleading mutable servlet instance fields or make it \"static\" and/or \"final\"");
+      reportIssue(variable.simpleName(), "Remove this misleading mutable servlet instance fields or make it \"static\" and/or \"final\"");
     }
   }
 

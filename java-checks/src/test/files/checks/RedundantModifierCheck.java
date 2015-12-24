@@ -5,7 +5,7 @@ import java.lang.annotation.Target;
 
 interface MyInterface {
   void method1();
-  public void method2(); // Noncompliant {{"public" is redundant in this context.}}
+  public void method2(); // Noncompliant [[sc=3;ec=9]] {{"public" is redundant in this context.}}
   abstract void method3(); // Noncompliant {{"abstract" is redundant in this context.}}
   int field1 = 1;
   public int field2 = 1; // Noncompliant

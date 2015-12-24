@@ -30,6 +30,7 @@ import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -38,7 +39,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -61,6 +61,7 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     String identifier;
     ExpressionTree shift;
+    SyntaxToken operatorToken;
 
     if (tree.is(Kind.LEFT_SHIFT, Kind.RIGHT_SHIFT)) {
       BinaryExpressionTree binaryExpressionTree = (BinaryExpressionTree) tree;
@@ -70,23 +71,24 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
       }
       identifier = getIdentifierName(binaryExpressionTree.leftOperand());
       shift = binaryExpressionTree.rightOperand();
+      operatorToken = binaryExpressionTree.operatorToken();
     } else {
       AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;
       identifier = getIdentifierName(assignmentExpressionTree.variable());
       shift = assignmentExpressionTree.expression();
+      operatorToken = assignmentExpressionTree.operatorToken();
     }
 
-    checkShift((ExpressionTree) tree, shift, identifier);
+    checkShift((ExpressionTree) tree, shift, identifier, operatorToken);
   }
 
-  private void checkShift(ExpressionTree tree, ExpressionTree shift, @Nullable String identifier) {
+  private void checkShift(ExpressionTree tree, ExpressionTree shift, @Nullable String identifier, SyntaxToken operatorToken) {
     Long literalValue = LiteralUtils.longLiteralValue(shift);
     if (literalValue != null) {
       int numericalBase = getNumericalBase(tree);
-      long numberBits = literalValue.longValue();
-      long reducedNumberBits = numberBits % numericalBase;
-      if (isInvalidShift(reducedNumberBits, numberBits, numericalBase)) {
-        addIssue(tree, getMessage(reducedNumberBits, reducedNumberBits, numericalBase, identifier));
+      long reducedNumberBits = literalValue % numericalBase;
+      if (isInvalidShift(reducedNumberBits, literalValue, numericalBase)) {
+        reportIssue(operatorToken, getMessage(reducedNumberBits, numericalBase, identifier));
       }
     }
   }
@@ -101,10 +103,10 @@ public class ShiftOnIntOrLongCheck extends SubscriptionBaseVisitor {
 
   private static boolean isLiteralValue(ExpressionTree tree, long value) {
     Long evaluatedValue = LiteralUtils.longLiteralValue(tree);
-    return evaluatedValue != null && evaluatedValue.longValue() == value;
+    return evaluatedValue != null && evaluatedValue == value;
   }
 
-  private static String getMessage(long numberBits, long reducedNumberBits, int base, @Nullable String identifier) {
+  private static String getMessage(long reducedNumberBits, int base, @Nullable String identifier) {
     if (reducedNumberBits == 0L) {
       return "Remove this useless shift";
     } else if (base == 32) {

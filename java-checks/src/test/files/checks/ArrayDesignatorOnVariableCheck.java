@@ -5,7 +5,7 @@ class A {
         d[], // Noncompliant {{Move the array designator from the variable to the type.}}
         e,
         f
-        []; // Noncompliant {{Move the array designator from the variable to the type.}}
+        []; // Noncompliant [[sc=9;ec=10]] {{Move the array designator from the variable to the type.}}
 }
 
 interface B {

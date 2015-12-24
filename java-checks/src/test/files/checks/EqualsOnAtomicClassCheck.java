@@ -9,7 +9,7 @@ class A {
     
     AtomicBoolean abool1 = new AtomicBoolean(true);
     AtomicBoolean abool2 = new AtomicBoolean(true);
-    isEqual = abool1.equals(abool2); // Noncompliant {{Use ".get()" to retrieve the value and compare it instead.}}
+    isEqual = abool1.equals(abool2); // Noncompliant [[sc=22;ec=28]] {{Use ".get()" to retrieve the value and compare it instead.}}
     
     AtomicInteger aInt1 = new AtomicInteger(0);
     AtomicInteger aInt2 = new AtomicInteger(0);

@@ -100,15 +100,17 @@ public class MethodTreeImplTest {
 
   @Test
   public void has_all_syntax_token() {
-    MethodTreeImpl method = getUniqueMethod("class A { public void foo(int arg){} }");
+    MethodTreeImpl method = getUniqueMethod("class A { public void foo(int arg) throws Exception {} }");
     assertThat(method.openParenToken()).isNotNull();
     assertThat(method.closeParenToken()).isNotNull();
     assertThat(method.semicolonToken()).isNull();
+    assertThat(method.throwsToken()).isNotNull();
 
     method = getUniqueMethod("abstract class A { public abstract void foo(int arg); }");
     assertThat(method.openParenToken()).isNotNull();
     assertThat(method.closeParenToken()).isNotNull();
     assertThat(method.semicolonToken()).isNotNull();
+    assertThat(method.throwsToken()).isNull();
   }
 
   @Test

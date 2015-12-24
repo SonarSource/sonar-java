@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -51,11 +52,11 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    if(StringUtils.isEmpty(methodName)) {
+    if (StringUtils.isEmpty(methodName)) {
       return ImmutableList.of();
     }
     MethodMatcher invocationMatcher = MethodMatcher.create().name(methodName);
-    if(StringUtils.isNotEmpty(className)) {
+    if (StringUtils.isNotEmpty(className)) {
       invocationMatcher.typeDefinition(className);
     }
     String[] args = StringUtils.split(argumentTypes, ",");
@@ -67,7 +68,7 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    addIssue(mit, "Remove this forbidden call");
+    reportIssue(MethodsHelper.methodName(mit), "Remove this forbidden call");
   }
 
   public void setClassName(String className) {

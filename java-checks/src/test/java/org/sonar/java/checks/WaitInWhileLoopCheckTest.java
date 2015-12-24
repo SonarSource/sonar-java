@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class WaitInWhileLoopCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/WaitInWhileLoopCheck.java", new WaitInWhileLoopCheck());
   }
 }

@@ -27,6 +27,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -53,10 +54,10 @@ public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     ClassTree node = (ClassTree) tree;
-    if (node.simpleName() != null && !ModifiersUtils.hasModifier(((ClassTree) tree).modifiers(), Modifier.ABSTRACT)) {
-      List<Tree> members = node.members();
+    IdentifierTree simpleName = node.simpleName();
+    if (simpleName != null && !ModifiersUtils.hasModifier(((ClassTree) tree).modifiers(), Modifier.ABSTRACT)) {
       boolean hasPrivateMember = false;
-      for (Tree member : members) {
+      for (Tree member : node.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
           return;
         } else if (member.is(Kind.VARIABLE)) {
@@ -66,7 +67,7 @@ public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {
         }
       }
       if (hasPrivateMember) {
-        addIssue(tree, "Add a constructor to the " + node.declarationKeyword().text() + ".");
+        reportIssue(simpleName, "Add a constructor to the " + node.declarationKeyword().text() + ".");
       }
     }
   }

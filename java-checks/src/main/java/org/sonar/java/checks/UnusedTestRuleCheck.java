@@ -61,9 +61,10 @@ public class UnusedTestRuleCheck extends SubscriptionBaseVisitor {
     ClassTree classTree = (ClassTree) tree;
     for (Tree member : classTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
-        Symbol symbol = ((VariableTree) member).symbol();
+        VariableTree variableTree = (VariableTree) member;
+        Symbol symbol = variableTree.symbol();
         if (isTestNameOrTemporaryFolderRule(symbol) && symbol.usages().isEmpty()) {
-          addIssue(member, "Remove this unused \"" + symbol.type() + "\".");
+          reportIssue(variableTree.simpleName(), "Remove this unused \"" + symbol.type() + "\".");
         }
       }
     }

@@ -1,6 +1,6 @@
 class A {
   private void f() {
-    System.out.println("" + String.valueOf(0)); // Noncompliant {{Directly append the argument of String.valueOf().}}
+    System.out.println("" + String.valueOf(0)); // Noncompliant [[sc=29;ec=46]] {{Directly append the argument of String.valueOf().}}
     System.out.println("" + String.valueOf(null, 0, 0)); // Compliant
     System.out.println(String.valueOf(0)); // Compliant
     System.out.println("" + ""); // Compliant

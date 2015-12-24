@@ -49,9 +49,9 @@ public class ForLoopUsedAsWhileLoopCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    ForStatementTree methodTree = (ForStatementTree) tree;
-    if (methodTree.initializer().isEmpty() && methodTree.update().isEmpty() && methodTree.condition() != null) {
-      context.addIssue(tree, this, "Replace this \"for\" loop with a \"while\" loop.");
+    ForStatementTree forStatementTree = (ForStatementTree) tree;
+    if (forStatementTree.initializer().isEmpty() && forStatementTree.update().isEmpty() && forStatementTree.condition() != null) {
+      context.reportIssue(this, forStatementTree.forKeyword(), "Replace this \"for\" loop with a \"while\" loop.");
     }
   }
 }

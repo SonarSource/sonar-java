@@ -1,6 +1,6 @@
 import java.lang.Object;
 
-class A { // Noncompliant {{Add a constructor to the class.}}
+class A { // Noncompliant [[sc=7;ec=8]] {{Add a constructor to the class.}}
   private int field;
 }
 

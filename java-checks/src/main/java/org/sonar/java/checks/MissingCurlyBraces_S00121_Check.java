@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IfStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -54,20 +55,23 @@ public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     switch (tree.kind()) {
       case WHILE_STATEMENT:
-        checkStatement(((WhileStatementTree) tree).statement(), tree);
+        WhileStatementTree whileStatementTree = (WhileStatementTree) tree;
+        checkStatement(whileStatementTree.whileKeyword(), whileStatementTree.statement());
         break;
       case DO_STATEMENT:
-        checkStatement(((DoWhileStatementTree) tree).statement(), tree);
+        DoWhileStatementTree doWhileStatementTree = (DoWhileStatementTree) tree;
+        checkStatement(doWhileStatementTree.doKeyword(), doWhileStatementTree.statement());
         break;
       case FOR_STATEMENT:
-        checkStatement(((ForStatementTree) tree).statement(), tree);
+        ForStatementTree forStatementTree = (ForStatementTree) tree;
+        checkStatement(forStatementTree.forKeyword(), forStatementTree.statement());
         break;
       case FOR_EACH_STATEMENT:
-        checkStatement(((ForEachStatement) tree).statement(), tree);
+        ForEachStatement forEachStatement = (ForEachStatement) tree;
+        checkStatement(forEachStatement.forKeyword(), forEachStatement.statement());
         break;
       case IF_STATEMENT:
-        IfStatementTree ifStmt = (IfStatementTree) tree;
-        checkIfStatement(ifStmt);
+        checkIfStatement((IfStatementTree) tree);
         break;
       default:
         break;
@@ -75,16 +79,16 @@ public class MissingCurlyBraces_S00121_Check extends SubscriptionBaseVisitor {
   }
 
   private void checkIfStatement(IfStatementTree ifStmt) {
-    checkStatement(ifStmt.thenStatement(), ifStmt);
+    checkStatement(ifStmt.ifKeyword(), ifStmt.thenStatement());
     StatementTree elseStmt = ifStmt.elseStatement();
     if (elseStmt != null && !elseStmt.is(Tree.Kind.IF_STATEMENT)) {
-      checkStatement(elseStmt, ifStmt.elseKeyword());
+      checkStatement(ifStmt.elseKeyword(), elseStmt);
     }
   }
 
-  private void checkStatement(StatementTree statement, Tree tree) {
+  private void checkStatement(SyntaxToken reportToken, StatementTree statement) {
     if (!statement.is(Tree.Kind.BLOCK)) {
-      addIssue(tree, "Missing curly brace.");
+      reportIssue(reportToken, "Missing curly brace.");
     }
   }
 }

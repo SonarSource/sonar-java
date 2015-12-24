@@ -20,15 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
-import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -39,7 +40,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -58,7 +58,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     return ImmutableList.of(
       collectionMethodInvocation("remove"),
       collectionMethodInvocation("contains")
-      );
+    );
   }
 
   private static MethodMatcher collectionMethodInvocation(String methodName) {
@@ -76,7 +76,7 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     Type collectionParameterType = getTypeParameter(collectionType);
 
     if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isArgumentCompatible(argumentType, collectionParameterType)) {
-      addIssue(tree, MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
+      reportIssue(MethodsHelper.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
   }
 
@@ -90,23 +90,19 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   @Nullable
   private static Type getTypeParameter(Type collectionType) {
     if (collectionType instanceof ParametrizedTypeJavaType) {
-      return getFirstTypeParameter((ParametrizedTypeJavaType) collectionType);
-    }
-    return null;
-  }
-
-  @Nullable
-  private static Type getFirstTypeParameter(ParametrizedTypeJavaType parametrizedTypeType) {
-    for (TypeVariableJavaType variableType : parametrizedTypeType.typeParameters()) {
-      return parametrizedTypeType.substitution(variableType);
+      ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
+      JavaType.TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
+      if (first != null) {
+        return parametrizedType.substitution(first);
+      }
     }
     return null;
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
     return isSubtypeOf(argumentType.erasure(), collectionParameterType.erasure())
-        || isSubtypeOf(collectionParameterType.erasure(), argumentType.erasure())
-        || autoboxing(argumentType, collectionParameterType);
+      || isSubtypeOf(collectionParameterType.erasure(), argumentType.erasure())
+      || autoboxing(argumentType, collectionParameterType);
   }
 
   private static boolean isSubtypeOf(Type type, Type superType) {
@@ -116,6 +112,6 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   private static boolean autoboxing(Type argumentType, Type collectionParameterType) {
     return argumentType.isPrimitive()
       && ((JavaType) collectionParameterType).isPrimitiveWrapper()
-      && isSubtypeOf(((JavaType)argumentType).primitiveWrapperType(), collectionParameterType);
+      && isSubtypeOf(((JavaType) argumentType).primitiveWrapperType(), collectionParameterType);
   }
 }

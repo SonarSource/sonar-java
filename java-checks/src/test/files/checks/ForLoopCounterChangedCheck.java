@@ -7,7 +7,7 @@ class Foo {
     }
 
     for (int b = 0; b < 42; b++) {
-      b = 0;                                // Noncompliant {{Refactor the code in order to not assign to this loop counter from within the loop body.}}
+      b = 0;                                // Noncompliant [[sc=7;ec=8]] {{Refactor the code in order to not assign to this loop counter from within the loop body.}}
     }
 
     for (String c: "aaaa".split("a")) {

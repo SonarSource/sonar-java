@@ -41,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
 @Rule(
@@ -67,7 +66,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(FLOAT),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("int"),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("long")
-    );
+  );
 
   private static final MethodInvocationMatcherCollection TRUNCATION_METHODS = MethodInvocationMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(DOUBLE),
@@ -77,7 +76,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("rint").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(FLOAT)
-    );
+  );
 
   private static final MethodInvocationMatcherCollection CONSTANT_WITH_ZERO_METHODS = MethodInvocationMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan2").addParameter(DOUBLE).addParameter(DOUBLE),
@@ -89,7 +88,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("tan").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("tanh").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toRadians").addParameter(DOUBLE)
-    );
+  );
 
   private static final MethodInvocationMatcherCollection CONSTANT_WITH_ZERO_OR_ONE_METHODS = MethodInvocationMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("acos").addParameter(DOUBLE),
@@ -102,7 +101,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("sqrt").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toDegrees").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("exp").addParameter(DOUBLE)
-    );
+  );
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -115,12 +114,12 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
       if (tree.is(Tree.Kind.REMAINDER)) {
         BinaryExpressionTree remainderTree = (BinaryExpressionTree) tree;
         if (isIntegralOne(remainderTree.rightOperand())) {
-          addIssue(tree, "Remove this computation of % 1, which always evaluates to zero.");
+          reportIssue(remainderTree.operatorToken(), "Remove this computation of % 1, which always evaluates to zero.");
         }
       } else {
-        MethodInvocationTree methodTree = (MethodInvocationTree) tree;
-        if (isConstantWithLiteral(methodTree) || isTruncation(methodTree) || isConstantWithZero(methodTree) || isConstantWithZeroOrOne(methodTree)) {
-          addIssue(tree, String.format("Remove this silly call to \"Math.%s\"", methodTree.symbol().name()));
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
+        if (isConstantWithLiteral(mit) || isTruncation(mit) || isConstantWithZero(mit) || isConstantWithZeroOrOne(mit)) {
+          reportIssue(mit.methodSelect(), String.format("Remove this silly call to \"Math.%s\"", mit.symbol().name()));
         }
       }
     }

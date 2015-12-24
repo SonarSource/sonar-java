@@ -56,7 +56,7 @@ public class PrimitiveWrappersInTernaryOperatorCheck extends SubscriptionBaseVis
     Type trueExpressionType = cet.trueExpression().symbolType();
     Type falseExpressionType = cet.falseExpression().symbolType();
     if (dissimilarPrimitiveTypeWrappers(trueExpressionType, falseExpressionType)) {
-      addIssue(tree, "Add an explicit cast to match types of operands.");
+      reportIssue(cet.questionToken(), "Add an explicit cast to match types of operands.");
     }
   }
 

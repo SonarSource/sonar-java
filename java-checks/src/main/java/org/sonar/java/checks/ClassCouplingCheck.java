@@ -49,7 +49,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,9 +66,9 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
   private static final int DEFAULT_MAX = 20;
 
   @RuleProperty(
-      key = "max",
-      description = "Maximum number of classes a single class is allowed to depend upon",
-      defaultValue = "" + DEFAULT_MAX)
+    key = "max",
+    description = "Maximum number of classes a single class is allowed to depend upon",
+    defaultValue = "" + DEFAULT_MAX)
   public int max = DEFAULT_MAX;
 
   private final Deque<Set<String>> nesting = new LinkedList<>();
@@ -93,11 +92,11 @@ public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScann
     super.visitClass(tree);
     if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null) {
       if (types.size() > max) {
-        context.addIssue(
-            tree,
-            this,
-            "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
-                types.size() + " to the maximum authorized " + max + " or less.");
+        context.reportIssue(
+          this,
+          tree.simpleName(),
+          "Split this class into smaller and more specialized ones to reduce its dependencies on other classes from " +
+            types.size() + " to the maximum authorized " + max + " or less.");
       }
       types = nesting.pop();
     }

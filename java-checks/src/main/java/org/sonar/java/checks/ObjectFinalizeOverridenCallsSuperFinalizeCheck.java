@@ -87,9 +87,9 @@ public class ObjectFinalizeOverridenCallsSuperFinalizeCheck extends Subscription
       MethodTree methodTree = (MethodTree) tree;
       if (isFinalize(methodTree.symbol()) && doesOverrideFinalize(methodTree.symbol().owner())) {
         if (lastStatementTree == null) {
-          addIssue(methodTree.simpleName(), "Add a call to super.finalize() at the end of this Object.finalize() implementation.");
+          reportIssue(methodTree.simpleName(), "Add a call to super.finalize() at the end of this Object.finalize() implementation.");
         } else if (!isLastStatement(methodTree, lastStatementTree)) {
-          addIssue(lastStatementTree, "Move this super.finalize() call to the end of this Object.finalize() implementation.");
+          reportIssue(lastStatementTree, "Move this super.finalize() call to the end of this Object.finalize() implementation.");
         }
       }
     }

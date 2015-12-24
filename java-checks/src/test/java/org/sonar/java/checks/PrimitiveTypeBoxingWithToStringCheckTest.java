@@ -25,7 +25,7 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 public class PrimitiveTypeBoxingWithToStringCheckTest {
 
   @Test
-  public void detected() {
+  public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/PrimitiveTypeBoxingWithToStringCheck.java", new PrimitiveTypeBoxingWithToStringCheck());
   }
 

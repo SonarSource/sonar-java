@@ -9,7 +9,7 @@ class A {
     byte[] buffer = new byte[1000];
     long skipValue = 12L;
 
-    is.read(buffer); // Noncompliant {{Check the return value of the "read" call to see how many bytes were read.}}
+    is.read(buffer); // Noncompliant [[sc=8;ec=12]] {{Check the return value of the "read" call to see how many bytes were read.}}
     is.skip(skipValue); // Noncompliant
     getInputStream().read(buffer); // Noncompliant
     getInputStream().skip(skipValue); // Noncompliant

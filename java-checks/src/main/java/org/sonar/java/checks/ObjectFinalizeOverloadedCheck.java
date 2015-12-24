@@ -51,7 +51,7 @@ public class ObjectFinalizeOverloadedCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     MethodTree methodTree = (MethodTree) tree;
     if (isFinalizeOverload(methodTree)) {
-      addIssue(methodTree.simpleName(), "Rename this method to avoid any possible confusion with Object.finalize().");
+      reportIssue(methodTree.simpleName(), "Rename this method to avoid any possible confusion with Object.finalize().");
     }
   }
 

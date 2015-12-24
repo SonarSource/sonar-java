@@ -1,6 +1,6 @@
 class A {
   void foo() {
-    if (something) { // Noncompliant {{Replace this if-then-else statement by a single return statement.}}
+    if (something) { // Noncompliant [[sc=5;ec=7]] {{Replace this if-then-else statement by a single return statement.}}
       return true;
     } else {
       return false;

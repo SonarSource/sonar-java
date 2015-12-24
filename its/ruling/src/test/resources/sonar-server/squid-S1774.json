@@ -15,7 +15,7 @@
 266,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/BarChart.java':[
-115,
+116,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/SparkLinesChart.java':[
 134,
@@ -385,7 +385,7 @@
 59,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/IndexField.java':[
-87,
+88,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/QueryContext.java':[
 126,

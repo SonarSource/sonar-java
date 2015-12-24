@@ -43,7 +43,7 @@ class A {
 
       try {             // Noncompliant
       } catch (Exception e) {
-        try {           // Noncompliant
+        try {           // Noncompliant [[sc=9;ec=12;secondary=39]]
 
         } catch (Exception e) {
         }

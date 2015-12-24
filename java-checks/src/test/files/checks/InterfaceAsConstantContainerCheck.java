@@ -4,7 +4,7 @@ interface A {
 interface B {
 }
 
-interface C { // Noncompliant {{Move constants to a class or enum.}}
+interface C { // Noncompliant [[sc=11;ec=12]] {{Move constants to a class or enum.}}
   int a = 0;
   int b = 0;
 }
