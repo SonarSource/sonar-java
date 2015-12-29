@@ -36,9 +36,24 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.lang.reflect.Constructor;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class FirstSyntaxTokenFinderTest {
+
+  @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = FirstSyntaxTokenFinder.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
+
+  @Test
+  public void nullTree() {
+    assertThat(FirstSyntaxTokenFinder.firstSyntaxToken(null)).isNull();
+  }
 
   @Test
   public void compilationUnit() {
