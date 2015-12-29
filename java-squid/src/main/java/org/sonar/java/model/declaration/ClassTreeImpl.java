@@ -20,7 +20,7 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.ast.parser.QualifiedIdentifierListTreeImpl;
 import org.sonar.java.ast.parser.TypeParameterListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -40,8 +40,7 @@ import org.sonar.plugins.java.api.tree.TypeParameters;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class ClassTreeImpl extends JavaTree implements ClassTree {
@@ -213,28 +212,28 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.singletonIterator(modifiers),
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(modifiers),
       addIfNotNull(atToken),
       addIfNotNull(declarationKeyowrd),
       addIfNotNull(simpleName),
-      Iterators.singletonIterator(typeParameters),
+      Collections.singletonList(typeParameters),
       addIfNotNull(extendsKeyword),
       addIfNotNull(superClass),
       addIfNotNull(implementsKeyowrd),
-      Iterators.singletonIterator(superInterfaces),
+      Collections.singletonList(superInterfaces),
       addIfNotNull(openBraceToken),
-      members.iterator(),
+      members,
       addIfNotNull(closeBraceToken)
-      );
+    );
   }
 
-  private static Iterator<Tree> addIfNotNull(@Nullable Tree tree) {
+  private static Iterable<Tree> addIfNotNull(@Nullable Tree tree) {
     if (tree == null) {
-      return Iterators.emptyIterator();
+      return Collections.emptyList();
     }
-    return Iterators.singletonIterator(tree);
+    return Collections.singletonList(tree);
   }
 
 }

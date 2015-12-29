@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -28,8 +28,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implements Arguments {
@@ -80,10 +79,10 @@ public class ArgumentListTreeImpl extends ListTreeImpl<ExpressionTree> implement
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      openParenToken != null ? Iterators.singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
-      super.childrenIterator(),
-      closeParenToken != null ? Iterators.singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator());
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      openParenToken != null ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
+      super.children(),
+      closeParenToken != null ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList());
   }
 }

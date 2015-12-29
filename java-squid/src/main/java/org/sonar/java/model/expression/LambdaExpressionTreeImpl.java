@@ -19,7 +19,8 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -30,8 +31,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class LambdaExpressionTreeImpl extends AbstractTypedTree implements LambdaExpressionTree {
@@ -92,14 +92,14 @@ public class LambdaExpressionTreeImpl extends AbstractTypedTree implements Lambd
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     boolean hasParentheses = openParenToken != null;
-    return Iterators.concat(
-      hasParentheses ? Iterators.<Tree>singletonIterator(openParenToken) : Iterators.<Tree>emptyIterator(),
-      parameters.iterator(),
-      hasParentheses ? Iterators.<Tree>singletonIterator(closeParenToken) : Iterators.<Tree>emptyIterator(),
-      Iterators.forArray(arrowToken, body)
-      );
+    return Iterables.concat(
+      hasParentheses ? Collections.singletonList(openParenToken) : Collections.<Tree>emptyList(),
+      parameters,
+      hasParentheses ? Collections.singletonList(closeParenToken) : Collections.<Tree>emptyList(),
+      Lists.newArrayList(arrowToken, body)
+    );
   }
 
 }

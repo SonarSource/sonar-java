@@ -21,7 +21,8 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
@@ -31,7 +32,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatementTree {
@@ -102,11 +103,11 @@ public class SwitchStatementTreeImpl extends JavaTree implements SwitchStatement
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.forArray(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
-      cases.iterator(),
-      Iterators.singletonIterator(closeBraceToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Lists.newArrayList(switchKeyword, openParenToken, expression, closeParenToken, openBraceToken),
+      cases,
+      Collections.singletonList(closeBraceToken));
   }
 
 }

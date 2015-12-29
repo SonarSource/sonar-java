@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.declaration.ClassTreeImpl;
@@ -38,8 +38,6 @@ import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
 
 public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree {
 
@@ -122,16 +120,13 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    Iterator<Tree> result = Iterators.<Tree>emptyIterator();
-    result = addIfNotNull(result, enclosingExpression, dotToken, newKeyword, typeArguments);
-    result = add(result, identifier, arguments);
-    result = addIfNotNull(result, classBody);
-    return result;
-  }
-
-  private static Iterator<Tree> add(Iterator<Tree> iterator, Tree... trees) {
-    return Iterators.concat(iterator, Iterators.forArray(trees));
+  public Iterable<Tree> children() {
+    ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+    addIfNotNull(builder, enclosingExpression, dotToken, newKeyword, typeArguments);
+    builder.add(identifier);
+    builder.add(arguments);
+    addIfNotNull(builder, classBody);
+    return builder.build();
   }
 
   public IdentifierTree getConstructorIdentifier() {
@@ -173,13 +168,11 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return this.getConstructorIdentifier().symbol();
   }
 
-  private static Iterator<Tree> addIfNotNull(Iterator<Tree> iterator, Tree... trees) {
-    Iterator<Tree> result = iterator;
+  private static void addIfNotNull(ImmutableList.Builder<Tree> builder, Tree... trees) {
     for (Tree tree : trees) {
       if (tree != null) {
-        result = Iterators.concat(result, Iterators.singletonIterator(tree));
+        builder.add(tree);
       }
     }
-    return result;
   }
 }

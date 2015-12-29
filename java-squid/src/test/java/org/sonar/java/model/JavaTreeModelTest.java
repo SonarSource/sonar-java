@@ -2731,7 +2731,7 @@ public class JavaTreeModelTest {
   }
 
   private static void assertThatChildrenIteratorHasSize(Tree tree, int size) {
-    List<Tree> children = ImmutableList.<Tree>builder().addAll(((JavaTree) tree).childrenIterator()).build();
+    List<Tree> children = ImmutableList.<Tree>builder().addAll(((JavaTree) tree).children()).build();
     assertThat(children).hasSize(size);
   }
 

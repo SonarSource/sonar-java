@@ -19,7 +19,8 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -31,8 +32,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class MethodReferenceTreeImpl extends AbstractTypedTree implements MethodReferenceTree {
 
@@ -63,10 +63,10 @@ public class MethodReferenceTreeImpl extends AbstractTypedTree implements Method
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      typeArgument != null ? Iterators.<Tree>singletonIterator(typeArgument) : Iterators.<Tree>emptyIterator(),
-      Iterators.forArray(expression, doubleColon, method));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      typeArgument != null ? Collections.singletonList(typeArgument) : Collections.<Tree>emptyList(),
+      Lists.newArrayList(expression, doubleColon, method));
   }
 
   @Override

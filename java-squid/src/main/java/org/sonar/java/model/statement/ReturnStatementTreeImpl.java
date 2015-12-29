@@ -30,8 +30,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
 
-import java.util.Iterator;
-
 public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatementTree {
   private final InternalSyntaxToken returnKeyword;
   @Nullable
@@ -72,13 +70,13 @@ public class ReturnStatementTreeImpl extends JavaTree implements ReturnStatement
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.<Tree>builder().add(returnKeyword);
     if (expression != null) {
       iteratorBuilder.add(expression);
     }
     iteratorBuilder.add(semicolonToken);
-    return iteratorBuilder.build().iterator();
+    return iteratorBuilder.build();
   }
 
 }

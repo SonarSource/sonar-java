@@ -28,7 +28,6 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 public abstract class SubscriptionVisitor implements JavaFileScanner {
@@ -109,8 +108,7 @@ public abstract class SubscriptionVisitor implements JavaFileScanner {
   private void visitChildren(Tree tree) {
     JavaTree javaTree = (JavaTree) tree;
     if (!javaTree.isLeaf()) {
-      for (Iterator<Tree> iter = javaTree.childrenIterator(); iter.hasNext(); ) {
-        Tree next = iter.next();
+      for (Tree next : javaTree.children()) {
         if (next != null) {
           visit(next);
         }

@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -30,8 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTree {
   private final InternalSyntaxToken breakToken;
@@ -73,11 +72,11 @@ public class BreakStatementTreeImpl extends JavaTree implements BreakStatementTr
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>singletonIterator(breakToken),
-      label != null ? Iterators.<Tree>singletonIterator(label) : Iterators.<Tree>emptyIterator(),
-      Iterators.<Tree>singletonIterator(semicolonToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(breakToken),
+      label != null ? Collections.singletonList(label) : Collections.<Tree>emptyList(),
+      Collections.<Tree>singletonList(semicolonToken));
   }
 
 }

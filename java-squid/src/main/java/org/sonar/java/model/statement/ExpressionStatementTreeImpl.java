@@ -20,7 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -30,8 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionStatementTree {
 
@@ -67,10 +66,10 @@ public class ExpressionStatementTreeImpl extends JavaTree implements ExpressionS
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>singletonIterator(expression),
-      semicolonToken != null ? Iterators.<Tree>singletonIterator(semicolonToken) : Iterators.<Tree>emptyIterator());
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(expression),
+      semicolonToken != null ? Collections.singletonList(semicolonToken) : Collections.<Tree>emptyList());
   }
 
 }

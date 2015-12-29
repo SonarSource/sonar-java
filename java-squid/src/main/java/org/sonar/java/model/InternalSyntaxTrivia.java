@@ -23,8 +23,6 @@ import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
-
 public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
 
   private final String comment;
@@ -59,7 +57,7 @@ public class InternalSyntaxTrivia extends JavaTree implements SyntaxTrivia {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     throw new UnsupportedOperationException();
   }
 

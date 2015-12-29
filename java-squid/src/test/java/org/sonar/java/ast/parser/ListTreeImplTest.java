@@ -27,7 +27,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Iterator;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -45,12 +44,8 @@ public class ListTreeImplTest {
     SyntaxToken token2 = createToken("token2");
     List<SyntaxToken> separators = Lists.newArrayList(token1, token2);
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
-    Iterator<Tree> childrenIterator = listTree.childrenIterator();
-    List result = Lists.newArrayList();
-    while (childrenIterator.hasNext()) {
-      result.add(childrenIterator.next());
-    }
-    assertThat(result).containsExactly(tree1, token1, tree2, token2, tree3);
+    Iterable<Tree> result = listTree.children();
+    assertThat(result).containsOnly(tree1, token1, tree2, token2, tree3);
   }
 
   @Test
@@ -59,12 +54,8 @@ public class ListTreeImplTest {
     List<Tree> trees = Lists.newArrayList(tree1);
     List<SyntaxToken> separators = Lists.newArrayList();
     ListTreeImpl<Tree> listTree = new MyList(trees, separators);
-    Iterator<Tree> childrenIterator = listTree.childrenIterator();
-    List result = Lists.newArrayList();
-    while (childrenIterator.hasNext()) {
-      result.add(childrenIterator.next());
-    }
-    assertThat(result).containsExactly(tree1);
+    Iterable<Tree> result = listTree.children();
+    assertThat(result).containsOnly(tree1);
   }
 
   private static class MyList extends ListTreeImpl<Tree> {

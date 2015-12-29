@@ -20,7 +20,8 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.ArgumentListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.resolve.Symbols;
@@ -33,8 +34,7 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class MethodInvocationTreeImpl extends AbstractTypedTree implements MethodInvocationTree {
 
@@ -83,10 +83,10 @@ public class MethodInvocationTreeImpl extends AbstractTypedTree implements Metho
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      typeArguments != null ? Iterators.<Tree>singletonIterator(typeArguments) : Iterators.<Tree>emptyIterator(),
-      Iterators.<Tree>forArray(methodSelect, arguments));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      typeArguments != null ? Collections.singletonList(typeArguments) : Collections.<Tree>emptyList(),
+      Lists.newArrayList(methodSelect, arguments));
   }
 
   public void setSymbol(Symbol symbol) {

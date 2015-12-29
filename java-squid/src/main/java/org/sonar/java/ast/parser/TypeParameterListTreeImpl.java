@@ -20,7 +20,7 @@
 package org.sonar.java.ast.parser;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -29,8 +29,7 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeParameters;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> implements TypeParameters {
@@ -72,11 +71,11 @@ public class TypeParameterListTreeImpl extends ListTreeImpl<TypeParameterTree> i
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      Iterators.singletonIterator(openBracketToken),
-      super.childrenIterator(),
-      Iterators.singletonIterator(closeBracketToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(openBracketToken),
+      super.children(),
+      Collections.singletonList(closeBracketToken));
   }
 
   @Override

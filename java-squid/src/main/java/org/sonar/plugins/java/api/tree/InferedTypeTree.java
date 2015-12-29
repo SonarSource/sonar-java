@@ -22,7 +22,6 @@ package org.sonar.plugins.java.api.tree;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.model.AbstractTypedTree;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
@@ -42,7 +41,7 @@ public class InferedTypeTree extends AbstractTypedTree implements TypeTree{
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     throw new UnsupportedOperationException();
   }
 

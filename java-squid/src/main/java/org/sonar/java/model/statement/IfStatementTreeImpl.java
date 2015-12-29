@@ -20,7 +20,8 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -31,8 +32,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
 
@@ -125,9 +125,9 @@ public class IfStatementTreeImpl extends JavaTree implements IfStatementTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>forArray(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
-      elseKeyword != null ? Iterators.<Tree>forArray(elseKeyword, elseStatement) : Iterators.<Tree>emptyIterator());
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Lists.newArrayList(ifKeyword, openParenToken, condition, closeParenToken, thenStatement),
+      elseKeyword != null ? Lists.newArrayList(elseKeyword, elseStatement) : Collections.<Tree>emptyList());
   }
 }

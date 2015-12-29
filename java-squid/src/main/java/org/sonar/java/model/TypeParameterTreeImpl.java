@@ -20,7 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -31,8 +31,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
 
 public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree {
 
@@ -87,11 +85,13 @@ public class TypeParameterTreeImpl extends JavaTree implements TypeParameterTree
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    Iterator<Tree> boundsIterator = Iterators.emptyIterator();
+  public Iterable<Tree> children() {
+    ImmutableList.Builder<Tree> builder = ImmutableList.<Tree>builder()
+      .add(identifier);
     if (extendsToken != null) {
-      boundsIterator = Iterators.concat(Iterators.<Tree>singletonIterator(extendsToken), Iterators.singletonIterator(bounds));
+      builder.add(extendsToken);
+      builder.add(bounds);
     }
-    return Iterators.concat(Iterators.singletonIterator(identifier), boundsIterator);
+    return builder.build();
   }
 }

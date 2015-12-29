@@ -20,7 +20,8 @@
 package org.sonar.java.model.declaration;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -37,8 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class VariableTreeImpl extends JavaTree implements VariableTree {
   private ModifiersTree modifiers;
@@ -194,14 +194,12 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    Iterator<Tree> initializerIterator = initializer != null ? Iterators.forArray(equalToken, initializer) : Iterators.<Tree>emptyIterator();
-    Iterator<Tree> endTokenIterator = endToken != null ? Iterators.<Tree>singletonIterator(endToken) : Iterators.<Tree>emptyIterator();
-    return Iterators.concat(
-      Iterators.forArray(modifiers, type, simpleName),
-      initializerIterator,
-      endTokenIterator
-      );
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Lists.newArrayList(modifiers, type, simpleName),
+      initializer != null ? Lists.newArrayList(equalToken, initializer) : Collections.<Tree>emptyList(),
+      endToken != null ? Collections.singletonList(endToken) : Collections.<Tree>emptyList()
+    );
   }
 
   @CheckForNull

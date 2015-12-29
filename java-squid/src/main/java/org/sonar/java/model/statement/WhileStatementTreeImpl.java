@@ -20,7 +20,7 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -29,8 +29,6 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-
-import java.util.Iterator;
 
 public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTree {
   private final ExpressionTree condition;
@@ -85,8 +83,8 @@ public class WhileStatementTreeImpl extends JavaTree implements WhileStatementTr
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.forArray(
+  public Iterable<Tree> children() {
+    return Lists.newArrayList(
       whileKeyword,
       openParenToken,
       condition,

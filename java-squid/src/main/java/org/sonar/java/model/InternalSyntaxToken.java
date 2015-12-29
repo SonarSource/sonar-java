@@ -25,7 +25,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
@@ -109,7 +108,7 @@ public class InternalSyntaxToken extends JavaTree implements SyntaxToken {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     throw new UnsupportedOperationException();
   }
 

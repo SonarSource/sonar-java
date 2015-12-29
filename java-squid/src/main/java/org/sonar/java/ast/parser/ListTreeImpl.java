@@ -35,7 +35,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
+public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements ListTree<T> {
 
   private final List<T> list;
   private final List<SyntaxToken> separators;
@@ -45,6 +45,7 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
     this.list = list;
     this.separators = Lists.newArrayList();
   }
+
   public ListTreeImpl(GrammarRuleKey grammarRuleKey, List<T> list, List<SyntaxToken> separators) {
     super(grammarRuleKey);
     this.list = list;
@@ -56,11 +57,10 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
     return separators;
   }
 
-
   @Override
   public void accept(TreeVisitor visitor) {
     for (T t : list) {
-      ((Tree) t).accept(visitor);
+      t.accept(visitor);
     }
   }
 
@@ -70,10 +70,25 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return new InterleaveIterator<>(ImmutableList.of(((Iterable<? extends Tree>) list).iterator(), separators.iterator()));
+  public Iterable<Tree> children() {
+    return new InterleaveIterable(list, separators);
   }
-  private static class InterleaveIterator<E> extends AbstractIterator<E>{
+
+  private class InterleaveIterable implements Iterable<Tree> {
+
+    private final ImmutableList<Iterator<? extends Tree>> iterators;
+
+    public InterleaveIterable(List<T> list, List<SyntaxToken> separators) {
+      iterators = ImmutableList.of(((Iterable<? extends Tree>) list).iterator(), separators.iterator());
+    }
+
+    @Override
+    public Iterator<Tree> iterator() {
+      return new InterleaveIterator<>(iterators);
+    }
+  }
+
+  private static class InterleaveIterator<E> extends AbstractIterator<E> {
 
     private final LinkedList<Iterator<? extends E>> iterables;
 
@@ -84,9 +99,9 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
 
     @Override
     protected E computeNext() {
-      while(!iterables.isEmpty()) {
+      while (!iterables.isEmpty()) {
         Iterator<? extends E> topIter = iterables.poll();
-        if(topIter.hasNext()) {
+        if (topIter.hasNext()) {
           E result = topIter.next();
           iterables.offer(topIter);
           return result;
@@ -95,6 +110,7 @@ public abstract class ListTreeImpl<T> extends JavaTree implements ListTree<T> {
       return endOfData();
     }
   }
+
   @Override
   public int size() {
     return list.size();

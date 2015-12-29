@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
@@ -30,8 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class ContinueStatementTreeImpl extends JavaTree implements ContinueStatementTree {
   
@@ -74,11 +73,11 @@ public class ContinueStatementTreeImpl extends JavaTree implements ContinueState
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>singletonIterator(continueKeyword),
-      label != null ? Iterators.<Tree>singletonIterator(continueKeyword) : Iterators.<Tree>emptyIterator(),
-      Iterators.<Tree>singletonIterator(semicolonToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(continueKeyword),
+      label != null ? Collections.singletonList(continueKeyword) : Collections.<Tree>emptyList(),
+      Collections.singletonList(semicolonToken));
   }
 
 }

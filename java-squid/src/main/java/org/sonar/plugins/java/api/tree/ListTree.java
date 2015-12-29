@@ -21,7 +21,7 @@ package org.sonar.plugins.java.api.tree;
 
 import java.util.List;
 
-public interface ListTree<T> extends Tree, List<T> {
+public interface ListTree<T extends Tree> extends Tree, List<T> {
 
   List<SyntaxToken> separators();
 }

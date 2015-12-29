@@ -33,8 +33,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
 
-import java.util.Iterator;
-
 public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   private final InternalSyntaxToken forKeyword;
   private final InternalSyntaxToken openParenToken;
@@ -119,7 +117,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     iteratorBuilder.add(forKeyword, openParenToken);
     iteratorBuilder.add(initializer);
@@ -131,7 +129,7 @@ public class ForStatementTreeImpl extends JavaTree implements ForStatementTree {
     iteratorBuilder.add(update);
     iteratorBuilder.add(closeParenToken, statement);
 
-    return iteratorBuilder.build().iterator();
+    return iteratorBuilder.build();
   }
 
 }

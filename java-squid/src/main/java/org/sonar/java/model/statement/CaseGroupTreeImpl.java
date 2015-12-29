@@ -21,7 +21,7 @@ package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.ast.parser.BlockStatementListTreeImpl;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.JavaTree;
@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
@@ -65,10 +64,10 @@ public class CaseGroupTreeImpl extends JavaTree implements CaseGroupTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-      labels.iterator(),
-      body.iterator());
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      labels,
+      body);
   }
 
 }

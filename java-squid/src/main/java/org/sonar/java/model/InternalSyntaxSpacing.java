@@ -22,8 +22,6 @@ package org.sonar.java.model;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
-
 public class InternalSyntaxSpacing extends JavaTree {
 
   private final int start;
@@ -47,7 +45,7 @@ public class InternalSyntaxSpacing extends JavaTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     throw new UnsupportedOperationException();
   }
 

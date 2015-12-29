@@ -38,7 +38,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 @Rule(
@@ -116,10 +115,8 @@ public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
       return true;
     }
     if (!tree.isLeaf()) {
-      Iterator<Tree> treeIterator = tree.childrenIterator();
-      while (treeIterator.hasNext()) {
-        JavaTree javaTree = (JavaTree) treeIterator.next();
-        if (javaTree != null && containsChildrenOfKind(javaTree, kinds)) {
+      for (Tree javaTree : tree.children()) {
+        if (javaTree != null && containsChildrenOfKind((JavaTree) javaTree, kinds)) {
           return true;
         }
       }

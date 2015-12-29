@@ -19,7 +19,6 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterators;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.EmptyStatementTree;
@@ -27,7 +26,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
+import java.util.Collections;
 
 public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTree {
   private final InternalSyntaxToken semicolonToken;
@@ -53,8 +52,8 @@ public class EmptyStatementTreeImpl extends JavaTree implements EmptyStatementTr
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>singletonIterator(semicolonToken);
+  public Iterable<Tree> children() {
+    return Collections.<Tree>singletonList(semicolonToken);
   }
 
 }

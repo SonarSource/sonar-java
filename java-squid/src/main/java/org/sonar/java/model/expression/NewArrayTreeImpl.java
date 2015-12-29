@@ -34,8 +34,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
 import java.util.List;
 
 public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree {
@@ -126,7 +124,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     addIfNotNull(iteratorBuilder, newKeyword);
     addIfNotNull(iteratorBuilder, type);
@@ -134,7 +132,7 @@ public class NewArrayTreeImpl extends AbstractTypedTree implements NewArrayTree 
     addIfNotNull(iteratorBuilder, openCurlyBraceToken);
     iteratorBuilder.add(initializers);
     addIfNotNull(iteratorBuilder, closeCurlyBraceToken);
-    return iteratorBuilder.build().iterator();
+    return iteratorBuilder.build();
   }
 
   @Override

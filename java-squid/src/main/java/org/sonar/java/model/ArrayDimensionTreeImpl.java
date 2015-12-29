@@ -29,7 +29,6 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
 import java.util.List;
 
 public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTree {
@@ -90,7 +89,7 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     iteratorBuilder.addAll(annotations);
     iteratorBuilder.add(openBracketToken);
@@ -98,6 +97,6 @@ public class ArrayDimensionTreeImpl extends JavaTree implements ArrayDimensionTr
       iteratorBuilder.add(expression);
     }
     iteratorBuilder.add(closeBracketToken);
-    return iteratorBuilder.build().iterator();
+    return iteratorBuilder.build();
   }
 }

@@ -33,8 +33,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
@@ -173,20 +172,21 @@ public class TryStatementTreeImpl extends JavaTree implements TryStatementTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-    iteratorBuilder.add(tryToken);
+  public Iterable<Tree> children() {
+    List<Tree> list = new LinkedList<>();
+    list.add(tryToken);
     if (openParenToken != null) {
-      iteratorBuilder.add(openParenToken);
-      iteratorBuilder.add(resources);
-      iteratorBuilder.add(closeParenToken);
+      list.add(openParenToken);
+      list.add(resources);
+      list.add(closeParenToken);
     }
-    iteratorBuilder.add(block);
-    iteratorBuilder.addAll(catches);
+    list.add(block);
+    list.addAll(catches);
     if (finallyKeyword != null) {
-      iteratorBuilder.add(finallyKeyword, finallyBlock);
+      list.add(finallyKeyword);
+      list.add(finallyBlock);
     }
-    return iteratorBuilder.build().iterator();
+    return list;
   }
 
   private static List<CatchTree> getCatches(List<CatchTreeImpl> catches) {

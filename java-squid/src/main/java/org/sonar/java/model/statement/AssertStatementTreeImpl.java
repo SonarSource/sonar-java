@@ -20,7 +20,8 @@
 package org.sonar.java.model.statement;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
 import org.sonar.plugins.java.api.tree.AssertStatementTree;
@@ -30,8 +31,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class AssertStatementTreeImpl extends JavaTree implements AssertStatementTree {
 
@@ -104,12 +104,11 @@ public class AssertStatementTreeImpl extends JavaTree implements AssertStatement
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    Iterator<Tree> detailIterator = colonToken != null ? Iterators.<Tree>forArray(colonToken, detail) : Iterators.<Tree>emptyIterator();
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>forArray(assertToken, condition),
-      detailIterator,
-      Iterators.<Tree>singletonIterator(semicolonToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Lists.newArrayList(assertToken, condition),
+      colonToken != null ? Lists.newArrayList(colonToken, detail) : Collections.<Tree>emptyList(),
+      Collections.singletonList(semicolonToken));
   }
 
 }

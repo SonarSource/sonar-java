@@ -21,7 +21,8 @@ package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.TypeUnionListTreeImpl;
 import org.sonar.java.model.declaration.AnnotationTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -50,7 +51,6 @@ import org.sonar.sslr.grammar.GrammarRuleKey;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -93,12 +93,12 @@ public abstract class JavaTree implements Tree {
   }
 
   /**
-   * Creates iterator for children of this node.
-   * Note that iterator may contain {@code null} elements.
+   * Creates iterable for children of this node.
+   * Note that iterable may contain {@code null} elements.
    *
    * @throws java.lang.UnsupportedOperationException if {@link #isLeaf()} returns {@code true}
    */
-  public abstract Iterator<Tree> childrenIterator();
+  public abstract Iterable<Tree> children();
 
   public boolean isLeaf() {
     return false;
@@ -144,15 +144,15 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
-      Iterator<Tree> packageIterator = packageDeclaration == null ?
-        Iterators.<Tree>emptyIterator() :
-        Iterators.<Tree>singletonIterator(packageDeclaration);
-      return Iterators.concat(
+    public Iterable<Tree> children() {
+      Iterable<Tree> packageIterator = packageDeclaration == null ?
+        Collections.<Tree>emptyList() :
+        Collections.<Tree>singletonList(packageDeclaration);
+      return Iterables.concat(
         packageIterator,
-        imports.iterator(),
-        types.iterator(),
-        Iterators.singletonIterator(eofToken));
+        imports,
+        types,
+        Collections.<Tree>singletonList(eofToken));
     }
 
     @Nullable
@@ -215,10 +215,10 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
-      return Iterators.concat(
-        annotations.iterator(),
-        Iterators.forArray(packageKeyword, packageName, semicolonToken)
+    public Iterable<Tree> children() {
+      return Iterables.concat(
+        annotations,
+        Lists.newArrayList(packageKeyword, packageName, semicolonToken)
         );
     }
 
@@ -301,12 +301,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
+    public Iterable<Tree> children() {
 
-      return Iterators.concat(
-        Iterators.singletonIterator(importToken),
-        isStatic ? Iterators.singletonIterator(staticToken) : Iterators.<Tree>emptyIterator(),
-        Iterators.forArray(qualifiedIdentifier, semicolonToken));
+      return Iterables.concat(
+        Collections.singletonList(importToken),
+        isStatic ? Collections.singletonList(staticToken) : Collections.<Tree>emptyList(),
+        Lists.newArrayList(qualifiedIdentifier, semicolonToken));
     }
   }
 
@@ -382,15 +382,15 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
-      ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
-      iteratorBuilder.addAll(annotations);
-      iteratorBuilder.add(queryToken);
+    public Iterable<Tree> children() {
+      ImmutableList.Builder<Tree> builder = ImmutableList.builder();
+      builder.addAll(annotations);
+      builder.add(queryToken);
       if (bound != null) {
-        iteratorBuilder.add(extendsOrSuperToken);
-        iteratorBuilder.add(bound);
+        builder.add(extendsOrSuperToken);
+        builder.add(bound);
       }
-      return iteratorBuilder.build().iterator();
+      return builder.build();
     }
   }
 
@@ -418,8 +418,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
-      return ImmutableList.<Tree>builder().add(typeAlternatives).build().iterator();
+    public Iterable<Tree> children() {
+      return ImmutableList.<Tree>builder().add(typeAlternatives).build();
     }
 
     @Override
@@ -450,7 +450,7 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
+    public Iterable<Tree> children() {
       throw new UnsupportedOperationException();
     }
   }
@@ -487,8 +487,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
-      return Iterators.concat(annotations.iterator(), Iterators.singletonIterator(token));
+    public Iterable<Tree> children() {
+      return Iterables.concat(annotations, Collections.singletonList(token));
     }
 
     @Override
@@ -541,8 +541,8 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
-      return Iterators.concat(annotations.iterator(), Iterators.forArray(type, typeArguments));
+    public Iterable<Tree> children() {
+      return Iterables.concat(annotations, Lists.newArrayList(type, typeArguments));
     }
   }
 
@@ -599,12 +599,12 @@ public abstract class JavaTree implements Tree {
     }
 
     @Override
-    public Iterator<Tree> childrenIterator() {
+    public Iterable<Tree> children() {
       boolean hasBrackets = ellipsisToken == null;
-      return Iterators.concat(
-        Iterators.singletonIterator(type),
-        annotations.iterator(),
-        hasBrackets ? Iterators.forArray(openBracketToken, closeBracketToken) : Iterators.singletonIterator(ellipsisToken));
+      return Iterables.concat(
+        Collections.singletonList(type),
+        annotations,
+        hasBrackets ? Lists.newArrayList(openBracketToken, closeBracketToken) : Collections.singletonList(ellipsisToken));
     }
 
     @Override

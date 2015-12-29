@@ -21,7 +21,7 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.resolve.Symbols;
@@ -32,7 +32,7 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierTree {
@@ -87,8 +87,8 @@ public class IdentifierTreeImpl extends AbstractTypedTree implements IdentifierT
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(annotations.iterator(), Iterators.singletonIterator(nameToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(annotations, Collections.singletonList(nameToken));
   }
 
   @Override

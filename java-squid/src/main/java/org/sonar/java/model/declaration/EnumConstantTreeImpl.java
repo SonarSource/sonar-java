@@ -34,8 +34,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import java.util.Iterator;
-
 public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConstantTree {
 
   public EnumConstantTreeImpl(ModifiersTree modifiers, IdentifierTree simpleName, NewClassTreeImpl initializer,
@@ -63,7 +61,7 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     // the identifierTree simpleName is also present in initializer
     iteratorBuilder.add(modifiers(), initializer());
@@ -71,7 +69,7 @@ public class EnumConstantTreeImpl extends VariableTreeImpl implements EnumConsta
     if (endToken != null) {
       iteratorBuilder.add(endToken);
     }
-    return iteratorBuilder.build().iterator();
+    return iteratorBuilder.build();
   }
 
   @Nullable

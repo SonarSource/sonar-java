@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.statement;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.JavaTree;
@@ -30,8 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
+import java.util.Collections;
 
 public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   private final InternalSyntaxToken caseOrDefaultKeyword;
@@ -73,11 +72,11 @@ public class CaseLabelTreeImpl extends JavaTree implements CaseLabelTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.<Tree>concat(
-      Iterators.<Tree>singletonIterator(caseOrDefaultKeyword),
-      expression != null ? Iterators.<Tree>singletonIterator(expression) : Iterators.<Tree>emptyIterator(),
-      Iterators.<Tree>singletonIterator(colonToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(caseOrDefaultKeyword),
+      expression != null ? Collections.singletonList(expression) : Collections.<Tree>emptyList(),
+      Collections.singletonList(colonToken));
   }
 
 }

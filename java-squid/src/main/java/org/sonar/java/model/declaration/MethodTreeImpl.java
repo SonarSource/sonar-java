@@ -47,8 +47,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
 import java.util.List;
 
 public class MethodTreeImpl extends JavaTree implements MethodTree {
@@ -226,7 +224,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
+  public Iterable<Tree> children() {
     ImmutableList.Builder<Tree> iteratorBuilder = ImmutableList.builder();
     iteratorBuilder.add(modifiers, typeParameters);
     if (returnType != null) {
@@ -247,7 +245,7 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
     } else {
       iteratorBuilder.add(semicolonToken);
     }
-    return iteratorBuilder.build().iterator();
+    return iteratorBuilder.build();
   }
 
   /**

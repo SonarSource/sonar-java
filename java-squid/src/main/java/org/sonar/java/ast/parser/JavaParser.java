@@ -26,7 +26,6 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
 public class JavaParser extends ActionParser<Tree> {
 
@@ -57,8 +56,8 @@ public class JavaParser extends ActionParser<Tree> {
 
   private static Tree createParentLink(JavaTree parent) {
     if (!parent.isLeaf()) {
-      for (Iterator<Tree> iter = parent.childrenIterator(); iter.hasNext();) {
-        JavaTree next = (JavaTree) iter.next();
+      for (Tree nextTree : parent.children()) {
+        JavaTree next = (JavaTree) nextTree;
         if (next != null) {
           next.setParent(parent);
           createParentLink(next);

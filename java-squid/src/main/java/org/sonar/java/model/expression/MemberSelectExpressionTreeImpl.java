@@ -21,7 +21,8 @@ package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -34,8 +35,6 @@ import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
-
-import java.util.Iterator;
 import java.util.List;
 
 public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements MemberSelectExpressionTree {
@@ -117,11 +116,10 @@ public class MemberSelectExpressionTreeImpl extends AbstractTypedTree implements
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-
-    return Iterators.<Tree>concat(
-      annotations.iterator(),
-      Iterators.<Tree>forArray(
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      annotations,
+      Lists.newArrayList(
         expression,
         dotToken,
         identifier));

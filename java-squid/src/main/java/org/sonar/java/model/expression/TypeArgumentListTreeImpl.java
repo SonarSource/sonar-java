@@ -19,7 +19,7 @@
  */
 package org.sonar.java.model.expression;
 
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
 import org.sonar.java.ast.parser.JavaLexer;
 import org.sonar.java.ast.parser.ListTreeImpl;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -28,7 +28,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TreeVisitor;
 import org.sonar.plugins.java.api.tree.TypeArguments;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements TypeArguments {
@@ -59,11 +59,11 @@ public class TypeArgumentListTreeImpl extends ListTreeImpl<Tree> implements Type
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    return Iterators.concat(
-        Iterators.singletonIterator(openBracketToken),
-        super.childrenIterator(),
-        Iterators.singletonIterator(closeBracketToken));
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Collections.singletonList(openBracketToken),
+      super.children(),
+      Collections.singletonList(closeBracketToken));
   }
 
   @Override

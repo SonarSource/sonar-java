@@ -20,7 +20,8 @@
 package org.sonar.java.model.expression;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.sonar.java.ast.parser.BoundListTreeImpl;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -33,7 +34,7 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
-import java.util.Iterator;
+import java.util.Collections;
 
 public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements TypeCastTree {
 
@@ -112,14 +113,12 @@ public class TypeCastExpressionTreeImpl extends AbstractTypedTree implements Typ
   }
 
   @Override
-  public Iterator<Tree> childrenIterator() {
-    Iterator<Tree> andTokenIterator = andToken == null ? Iterators.<Tree>emptyIterator() : Iterators.<Tree>singletonIterator(andToken());
-    return Iterators.concat(
-      Iterators.forArray(openParenToken, type),
-      andTokenIterator,
-      Iterators.singletonIterator(bounds),
-      Iterators.forArray(closeParenToken, expression)
-      );
+  public Iterable<Tree> children() {
+    return Iterables.concat(
+      Lists.newArrayList(openParenToken, type),
+      andToken == null ? Collections.<Tree>emptyList() : Collections.singletonList(andToken()),
+      Lists.newArrayList(bounds, closeParenToken, expression)
+    );
   }
 
 }

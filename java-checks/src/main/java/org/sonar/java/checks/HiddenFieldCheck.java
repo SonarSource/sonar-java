@@ -41,9 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
-import java.util.Iterator;
 import java.util.List;
 
 @Rule(
@@ -177,8 +175,7 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
     private void visitChildren(Tree tree) {
       JavaTree javaTree = (JavaTree) tree;
       if (!javaTree.isLeaf()) {
-        for (Iterator<Tree> iter = javaTree.childrenIterator(); iter.hasNext(); ) {
-          Tree next = iter.next();
+        for (Tree next : javaTree.children()) {
           if (next != null && !isExcluded(next)) {
             visit(next);
           }
