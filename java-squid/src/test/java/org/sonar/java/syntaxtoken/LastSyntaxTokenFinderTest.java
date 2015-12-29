@@ -27,6 +27,7 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.InferedTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
@@ -36,9 +37,29 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.lang.reflect.Constructor;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class LastSyntaxTokenFinderTest {
+
+  @Test
+  public void private_constructor() throws Exception {
+    Constructor constructor = LastSyntaxTokenFinder.class.getDeclaredConstructor();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
+
+  @Test
+  public void nullTree() {
+    assertThat(LastSyntaxTokenFinder.lastSyntaxToken(null)).isNull();
+  }
+
+  @Test
+  public void inferedType() {
+    assertThat(LastSyntaxTokenFinder.lastSyntaxToken(new InferedTypeTree())).isNull();
+  }
 
   @Test
   public void compilationUnit() {
@@ -147,6 +168,14 @@ public class LastSyntaxTokenFinderTest {
     c = getFirstClass(getCompilationUnit(p));
     lastToken = getLastSyntaxToken(c.modifiers());
     assertThat(lastToken.text()).isEqualTo("public");
+  }
+
+  @Test
+  public void annotations() {
+    String p = "@Deprecated class Foo {}";
+    ClassTree c = getFirstClass(getCompilationUnit(p));
+    SyntaxToken lastToken = getLastSyntaxToken(c.modifiers());
+    assertThat(lastToken.text()).isEqualTo("Deprecated");
   }
 
   @Test
