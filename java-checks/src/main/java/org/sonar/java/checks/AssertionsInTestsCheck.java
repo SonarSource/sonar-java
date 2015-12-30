@@ -85,6 +85,9 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     MethodMatcher.create().typeDefinition("org.assertj.core.api.Fail").name(NameCriteria.is("shouldHaveThrown")).withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.assertj.core.api.Assertions").name(NameCriteria.startsWith("fail")).withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.assertj.core.api.Assertions").name(NameCriteria.is("shouldHaveThrown")).withNoParameterConstraint(),
+    // hamcrest
+    MethodMatcher.create().typeDefinition(
+      TypeCriteria.subtypeOf("org.hamcrest.MatcherAssert")).name("assertThat").addParameter(TypeCriteria.anyType()).addParameter(TypeCriteria.anyType()),
     // Mockito
     MethodMatcher.create().typeDefinition("org.mockito.Mockito").name("verifyNoMoreInteractions").withNoParameterConstraint()
   );

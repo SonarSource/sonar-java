@@ -39,4 +39,9 @@ public class AssertionsInTestsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckAssertJ.java", new AssertionsInTestsCheck());
   }
 
+  @Test
+  public void hamcrest() {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckHamcrest.java", new AssertionsInTestsCheck());
+  }
+
 }
