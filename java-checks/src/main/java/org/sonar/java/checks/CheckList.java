@@ -367,6 +367,7 @@ public final class CheckList {
       .add(DeadStoreCheck.class)
       .add(DataStoredInSessionCheck.class)
       .add(DiamondOperatorCheck.class)
+      .add(CommentRegularExpressionCheck.class)
       .build();
   }
 
