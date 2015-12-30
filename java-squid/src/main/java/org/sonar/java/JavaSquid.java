@@ -138,7 +138,7 @@ public class JavaSquid {
 
   private void scanTests(Iterable<File> testFiles) {
     TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Test Files AST scan");
-    astScannerForTests.simpleScan(testFiles);
+    astScannerForTests.scan(testFiles);
     profiler.stop();
   }
 

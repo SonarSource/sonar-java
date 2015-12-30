@@ -37,10 +37,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.api.SourceFile;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +47,6 @@ import java.util.Map;
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
   @VisibleForTesting
-  public final SourceFile sourceFile;
   private final SemanticModel semanticModel;
   private final SonarComponents sonarComponents;
   private final ComplexityVisitor complexityVisitor;
@@ -58,11 +55,9 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final boolean fileParsed;
   private final Map<Class<? extends SECheck>, SetMultimap<Tree, String>> seIssues = new HashMap<>();
 
-  public DefaultJavaFileScannerContext(
-    CompilationUnitTree tree, SourceFile sourceFile, File file, SemanticModel semanticModel, boolean analyseAccessors, @Nullable SonarComponents sonarComponents,
-    JavaVersion javaVersion, boolean fileParsed) {
+  public DefaultJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel, boolean analyseAccessors,
+                                       @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
     this.tree = tree;
-    this.sourceFile = sourceFile;
     this.file = file;
     this.semanticModel = semanticModel;
     this.sonarComponents = sonarComponents;
@@ -119,7 +114,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public String getFileKey() {
-    return sourceFile.getKey();
+    return file.getAbsolutePath();
   }
 
   @Override

@@ -25,14 +25,12 @@ import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.ast.visitors.VisitorContext;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.api.SourceProject;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -43,8 +41,6 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class VisitorsBridgeTest {
 
-  private final VisitorContext context = new VisitorContext(new SourceProject("Java project"));
-
   @Test
   public void test_semantic_exclusions() {
     VisitorsBridge visitorsBridgeWithoutSemantic = new VisitorsBridge(Collections.singletonList(new JavaFileScanner() {
@@ -54,7 +50,6 @@ public class VisitorsBridgeTest {
         assertThat(context.fileParsed()).isTrue();
       }
     }), Lists.<File>newArrayList(), null);
-    visitorsBridgeWithoutSemantic.setContext(context);
     checkFile(contstructFileName("java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("src", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
     checkFile(contstructFileName("home", "user", "oracleSdk", "java", "lang", "someFile.java"), "package java.lang; class A {}", visitorsBridgeWithoutSemantic);
@@ -72,12 +67,11 @@ public class VisitorsBridgeTest {
         return ImmutableList.of(Tree.Kind.METHOD);
       }
     }), Lists.<File>newArrayList(), null);
-    visitorsBridgeWithParsingIssue.setContext(context);
     checkFile(contstructFileName("org", "foo", "bar", "Foo.java"), "class Foo { arrrrrrgh", visitorsBridgeWithParsingIssue);
   }
 
   private void checkFile(String filename, String code, VisitorsBridge visitorsBridge) {
-    context.setFile(new File(filename));
+    visitorsBridge.setCurrentFile(new File(filename));
     visitorsBridge.visitFile(parse(code));
   }
 
