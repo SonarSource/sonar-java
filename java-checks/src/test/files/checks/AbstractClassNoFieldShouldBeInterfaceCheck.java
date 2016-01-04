@@ -23,3 +23,20 @@ abstract class D {
 
 abstract class E extends A {
 }
+
+public abstract class F {
+  public abstract double v();
+
+  @Override
+  public String toString() {
+    return ":";
+  }
+}
+
+public abstract class G {
+  public abstract double v();
+
+  public String toString() {
+    return ":";
+  }
+}
