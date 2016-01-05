@@ -45,6 +45,7 @@ public class Symbols {
    */
   static final JavaType.ClassJavaType unknownType;
   public static final JavaSymbol.TypeJavaSymbol unknownSymbol;
+  public static final JavaSymbol.MethodJavaSymbol unknownMethodSymbol;
 
   final JavaSymbol.TypeJavaSymbol arrayClass;
 
@@ -122,6 +123,22 @@ public class Symbols {
     unknownType.supertype = null;
     unknownType.interfaces = ImmutableList.of();
     unknownSymbol.type = unknownType;
+    unknownMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "!unknown!", unknownSymbol) {
+      @Override
+      public TypeJavaSymbol getReturnType() {
+        return unknownSymbol;
+      }
+
+      @Override
+      public TypeSymbol returnType() {
+        return unknownSymbol;
+      }
+
+      @Override
+      public boolean isUnknown() {
+        return true;
+      }
+    };
   }
 
   public Symbols(BytecodeCompleter bytecodeCompleter) {

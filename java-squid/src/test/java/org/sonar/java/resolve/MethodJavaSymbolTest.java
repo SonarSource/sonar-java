@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -43,12 +44,26 @@ public class MethodJavaSymbolTest {
   @Test
   public void test() {
     File bytecodeDir = new File("target/test-classes");
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"), new VisitorsBridge(Collections.singletonList(new MethodVisitor()), Lists.newArrayList(bytecodeDir), null));
+    MethodVisitor methodVisitor = new MethodVisitor(Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84, 89, 91, 98, 100, 102), new HashSet<Integer>());
+    JavaAstScanner.scanSingleFileForTests(
+      new File("src/test/java/org/sonar/java/resolve/targets/MethodSymbols.java"),
+      new VisitorsBridge(Collections.singleton(methodVisitor), Lists.newArrayList(bytecodeDir), null));
+  }
+
+  @Test
+  public void test_unknowns() {
+    MethodVisitor methodVisitor = new MethodVisitor(Sets.newHashSet(16, 21), Sets.newHashSet(7, 15, 17, 31));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/resolve/MethodSymbols.java"), new VisitorsBridge(methodVisitor));
   }
 
   private static class MethodVisitor extends SubscriptionVisitor {
+    private final Set<Integer> overrides;
+    private final Set<Integer> unknowns;
 
-    private static final Set<Integer> overrides = Sets.newHashSet(28, 32, 40, 44, 46, 56, 72, 76, 84, 89, 91, 98, 100, 102);
+    public MethodVisitor(Set<Integer> overrides, Set<Integer> unknowns) {
+      this.overrides = overrides;
+      this.unknowns = unknowns;
+    }
 
     @Override
     public List<Tree.Kind> nodesToVisit() {
@@ -62,6 +77,8 @@ public class MethodJavaSymbolTest {
       ObjectAssert assertion = assertThat(symbol.overriddenSymbol()).as("Method at line " + line);
       if (overrides.contains(line)) {
         assertion.isNotNull();
+      } else if (unknowns.contains(line)) {
+        assertion.isEqualTo(Symbols.unknownMethodSymbol);
       } else {
         assertion.isNull();
       }

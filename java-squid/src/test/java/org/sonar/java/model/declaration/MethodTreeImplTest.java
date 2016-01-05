@@ -75,6 +75,12 @@ public class MethodTreeImplTest {
   }
 
   @Test
+  public void override_unknown() {
+    MethodTreeImpl method = getUniqueMethod("class A extends Unknown { void foo(){}}");
+    assertThat(method.isOverriding()).isNull();
+  }
+
+  @Test
   public void static_method_cannot_be_overriden() {
     assertThat(getUniqueMethod("class A{ static void m(){}}").isOverriding()).isFalse();
   }

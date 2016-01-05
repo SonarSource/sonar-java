@@ -36,7 +36,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -505,11 +504,19 @@ public class JavaSymbol implements Symbol {
         return null;
       }
       TypeJavaSymbol enclosingClass = enclosingClass();
+      boolean unknownFound = false;
       for (JavaType.ClassJavaType superType : enclosingClass.superTypes()) {
         MethodJavaSymbol overridden = overriddenSymbolFrom(superType);
         if (overridden != null) {
-          return overridden;
+          if (!overridden.isUnknown()) {
+            return overridden;
+          } else {
+            unknownFound = true;
+          }
         }
+      }
+      if (unknownFound) {
+        return Symbols.unknownMethodSymbol;
       }
       return null;
     }
@@ -517,16 +524,27 @@ public class JavaSymbol implements Symbol {
     @Nullable
     private MethodJavaSymbol overriddenSymbolFrom(JavaType.ClassJavaType classType) {
       if (classType.isTagged(JavaType.UNKNOWN)) {
-        return null;
+        return Symbols.unknownMethodSymbol;
       }
+      boolean unknownFound = false;
       List<JavaSymbol> symbols = classType.getSymbol().members().lookup(name);
       for (JavaSymbol overrideSymbol : symbols) {
         if (overrideSymbol.isKind(JavaSymbol.MTH)) {
           MethodJavaSymbol methodJavaSymbol = (MethodJavaSymbol) overrideSymbol;
-          if (canOverride(methodJavaSymbol) && Boolean.TRUE.equals(isOverriding(methodJavaSymbol, classType))) {
-            return methodJavaSymbol;
+          if (canOverride(methodJavaSymbol)) {
+            Boolean overriding = isOverriding(methodJavaSymbol, classType);
+            if (overriding == null) {
+              if (!unknownFound) {
+                unknownFound = true;
+              }
+            } else if (overriding) {
+              return methodJavaSymbol;
+            }
           }
         }
+      }
+      if (unknownFound) {
+        return Symbols.unknownMethodSymbol;
       }
       return null;
     }
