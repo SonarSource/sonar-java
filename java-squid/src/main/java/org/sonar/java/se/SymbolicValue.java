@@ -23,6 +23,8 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 
+import javax.annotation.CheckForNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -139,6 +141,13 @@ public class SymbolicValue {
     return this;
   }
 
+  /**
+   * @return TRUE if the receiver is one of the predefined symbolic values: NULL (id=0), TRUE (id=1) or FALSE(id=2)
+   */
+  boolean isPredefined() {
+    return id <= FALSE_LITERAL.id;
+  }
+
   abstract static class BinarySymbolicValue extends SymbolicValue {
 
     SymbolicValue leftOp;
@@ -163,11 +172,16 @@ public class SymbolicValue {
     }
 
     @Override
-    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+    public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
+      ProgramState programState = initialProgramState;
       if (leftOp.equals(rightOp)) {
         if (shouldNotInverse().equals(booleanConstraint)) {
           return ImmutableList.of(programState);
         }
+        return ImmutableList.of();
+      }
+      programState = checkRelation(booleanConstraint, programState);
+      if (programState == null) {
         return ImmutableList.of();
       }
       List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
@@ -184,7 +198,30 @@ public class SymbolicValue {
         }
       }
       return results;
+    }
 
+    private ProgramState checkRelation(BooleanConstraint booleanConstraint, ProgramState initialProgramState) {
+      ProgramState programState = initialProgramState;
+      if (!leftOp.equals(rightOp) && !leftOp.isPredefined() && !rightOp.isPredefined()) {
+        SymbolicValueRelation relationToFulfill = getSymbolicValueRelation();
+        if (relationToFulfill != null) {
+          if (BooleanConstraint.FALSE.equals(booleanConstraint)) {
+            relationToFulfill = relationToFulfill.inverse();
+          }
+          Boolean fulfilled = programState.isFulfilled(relationToFulfill);
+          if (fulfilled == null) {
+            programState = programState.addRelation(relationToFulfill);
+          } else if (!fulfilled.booleanValue()) {
+            return null;
+          }
+        }
+      }
+      return programState;
+    }
+
+    @CheckForNull
+    protected SymbolicValueRelation getSymbolicValueRelation() {
+      return null;
     }
 
     @Override
@@ -225,6 +262,12 @@ public class SymbolicValue {
     BooleanConstraint shouldNotInverse() {
       return BooleanConstraint.FALSE;
     }
+
+    @Override
+    @CheckForNull
+    protected SymbolicValueRelation getSymbolicValueRelation() {
+      return new NotEqualRelation(leftOp, rightOp);
+    }
   }
 
   static class EqualToSymbolicValue extends BinarySymbolicValue {
@@ -238,6 +281,11 @@ public class SymbolicValue {
       return BooleanConstraint.TRUE;
     }
 
+    @Override
+    @CheckForNull
+    protected SymbolicValueRelation getSymbolicValueRelation() {
+      return new EqualRelation(leftOp, rightOp);
+    }
   }
 
   abstract static class UnarySymbolicValue extends SymbolicValue {

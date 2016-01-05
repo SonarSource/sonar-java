@@ -67,7 +67,7 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE),
     AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
-    Lists.<SymbolicValue>newLinkedList());
+    Lists.<SymbolicValue>newLinkedList(), new ArrayList<SymbolicValueRelation>());
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
 
@@ -75,15 +75,18 @@ public class ProgramState {
   private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Integer> references;
   private final PMap<SymbolicValue, Object> constraints;
+  private final List<SymbolicValueRelation> symbolicValueRelations;
+
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack) {
+    Deque<SymbolicValue> stack, List<SymbolicValueRelation> newSymbolicValueRelations) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
     constraintSize = 3;
+    symbolicValueRelations = newSymbolicValueRelations;
   }
 
   private ProgramState(ProgramState ps, Deque<SymbolicValue> newStack) {
@@ -93,6 +96,7 @@ public class ProgramState {
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
     stack = newStack;
+    symbolicValueRelations = ps.symbolicValueRelations;
   }
 
   private ProgramState(ProgramState ps, PMap<SymbolicValue, Object> newConstraints) {
@@ -102,6 +106,17 @@ public class ProgramState {
     constraintSize = ps.constraintSize +1;
     visitedPoints = ps.visitedPoints;
     this.stack = ps.stack;
+    symbolicValueRelations = ps.symbolicValueRelations;
+  }
+
+  private ProgramState(ProgramState ps, List<SymbolicValueRelation> newRelation) {
+    values = ps.values;
+    references = ps.references;
+    constraints = ps.constraints;
+    constraintSize = ps.constraintSize;
+    visitedPoints = ps.visitedPoints;
+    this.stack = ps.stack;
+    symbolicValueRelations = newRelation;
   }
 
   ProgramState stackValue(SymbolicValue sv) {
@@ -154,7 +169,8 @@ public class ProgramState {
     ProgramState that = (ProgramState) o;
     return Objects.equals(values, that.values) &&
       Objects.equals(constraints, that.constraints) &&
-      Objects.equals(peekValue(), that.peekValue());
+      Objects.equals(peekValue(), that.peekValue()) &&
+      Objects.equals(symbolicValueRelations, that.symbolicValueRelations);
   }
 
   @Override
@@ -167,7 +183,25 @@ public class ProgramState {
 
   @Override
   public String toString() {
-    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
+    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }" + relationsString();
+  }
+
+  private String relationsString() {
+    StringBuilder buffer = new StringBuilder();
+    if (!symbolicValueRelations.isEmpty()) {
+      buffer.append(" {");
+      boolean first = true;
+      for (SymbolicValueRelation relation : symbolicValueRelations) {
+        if (first) {
+          first = false;
+        } else {
+          buffer.append(';');
+        }
+        buffer.append(relation);
+      }
+      buffer.append('}');
+    }
+    return buffer.toString();
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Object constraint) {
@@ -190,7 +224,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, symbolicValueRelations);
     }
     return this;
   }
@@ -248,7 +282,7 @@ public class ProgramState {
         }
       }
     }
-    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack) : this;
+    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack, symbolicValueRelations) : this;
   }
 
   public ProgramState cleanupConstraints() {
@@ -266,7 +300,7 @@ public class ProgramState {
         newReferences = newReferences.remove(symbolicValue);
       }
     }
-    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack) : this;
+    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack, symbolicValueRelations) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -297,7 +331,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, symbolicValueRelations);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -314,7 +348,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, symbolicValueRelations);
   }
 
   @CheckForNull
@@ -375,5 +409,16 @@ public class ProgramState {
       }
     });
     return fieldValues;
+  }
+
+  public ProgramState addRelation(SymbolicValueRelation constraint) {
+    List<SymbolicValueRelation> newRelations = new ArrayList<>(symbolicValueRelations);
+    newRelations.add(constraint);
+    return new ProgramState(this, newRelations);
+  }
+
+  @CheckForNull
+  public Boolean isFulfilled(SymbolicValueRelation relationToFulfill) {
+    return relationToFulfill.impliedBy(symbolicValueRelations);
   }
 }
