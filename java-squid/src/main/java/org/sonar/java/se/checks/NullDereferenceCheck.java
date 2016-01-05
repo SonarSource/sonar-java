@@ -76,16 +76,23 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
   }
 
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree syntaxNode, SymbolicValue currentVal) {
+    final ProgramState programState = context.getState();
     if ("class".equals(syntaxNode.identifier().name())) {
       // expression ClassName.class won't raise NPE.
-      return context.getState();
+      return programState;
     }
 
     if (context.isNull(currentVal)) {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
       return null;
     }
-    return context.getState();
+    final SymbolicValue targetValue = programState.peekValue();
+    final Object constraint = programState.getConstraint(targetValue);
+    if (constraint == null) {
+      // We dereferenced the target value for the member select, so we can assume it is not null when not already known
+      return programState.addConstraint(targetValue, ObjectConstraint.NOT_NULL);
+    }
+    return programState;
   }
 
   @Override

@@ -43,6 +43,33 @@ public class SymbolicValueRelationsTest {
   public void testEqual() {
     List<SymbolicValueRelation> constraints = new ArrayList<>();
     constraints.add(new EqualRelation(values[0], values[1]));
+    constraints.add(new EqualRelation(values[0], values[2]));
+    constraints.add(new EqualRelation(values[0], values[3]));
+    constraints.add(new EqualRelation(values[0], values[4]));
+    for (int i = 0; i < NUMBER_OF_VALUES; i++) {
+      for (int j = 0; j < NUMBER_OF_VALUES; j++) {
+        if (i != j) {
+          final EqualRelation relation = new EqualRelation(values[i], values[j]);
+          Boolean result = relation.impliedBy(constraints);
+          assertThat(result).as(relation.toString()).isEqualTo(Boolean.TRUE);
+        }
+      }
+    }
+    for (int i = 0; i < NUMBER_OF_VALUES; i++) {
+      for (int j = 0; j < NUMBER_OF_VALUES; j++) {
+        if (i != j) {
+          final NotEqualRelation relation = new NotEqualRelation(values[i], values[j]);
+          Boolean result = relation.impliedBy(constraints);
+          assertThat(result).as(relation.toString()).isEqualTo(Boolean.FALSE);
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testEqualChained() {
+    List<SymbolicValueRelation> constraints = new ArrayList<>();
+    constraints.add(new EqualRelation(values[0], values[1]));
     constraints.add(new EqualRelation(values[1], values[2]));
     constraints.add(new EqualRelation(values[2], values[3]));
     constraints.add(new EqualRelation(values[3], values[4]));
@@ -68,6 +95,42 @@ public class SymbolicValueRelationsTest {
 
   @Test
   public void testNotEqual() {
+    List<SymbolicValueRelation> constraints = new ArrayList<>();
+    constraints.add(new NotEqualRelation(values[0], values[1]));
+    constraints.add(new NotEqualRelation(values[0], values[2]));
+    constraints.add(new NotEqualRelation(values[0], values[3]));
+    constraints.add(new NotEqualRelation(values[0], values[4]));
+    for (int i = 0; i < NUMBER_OF_VALUES; i++) {
+      for (int j = 0; j < NUMBER_OF_VALUES; j++) {
+        if (i != j) {
+          final NotEqualRelation relation = new NotEqualRelation(values[i], values[j]);
+          Boolean result = relation.impliedBy(constraints);
+          if (i == 0 || j == 0) {
+            assertThat(result).as(relation.toString()).isEqualTo(Boolean.TRUE);
+          } else {
+            assertThat(result).as(relation.toString()).isNull();
+          }
+        }
+      }
+    }
+    for (int i = 0; i < NUMBER_OF_VALUES; i++) {
+      for (int j = 0; j < NUMBER_OF_VALUES; j++) {
+        if (i != j) {
+          final EqualRelation relation = new EqualRelation(values[i], values[j]);
+          Boolean result = relation.impliedBy(constraints);
+          if (i == 0 || j == 0) {
+            assertThat(result).as(relation.toString()).isEqualTo(Boolean.FALSE);
+          } else {
+            assertThat(result).as(relation.toString()).isNull();
+            ;
+          }
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testNotEqualChained() {
     List<SymbolicValueRelation> constraints = new ArrayList<>();
     constraints.add(new NotEqualRelation(values[0], values[1]));
     constraints.add(new NotEqualRelation(values[1], values[2]));
@@ -190,5 +253,82 @@ public class SymbolicValueRelationsTest {
     final SymbolicValueRelation checked = new EqualRelation(values[0], values[2]); // a==c?
     Boolean result = checked.impliedBy(knownRelations);
     assertThat(result).as(checked.toString()).isEqualTo(Boolean.FALSE);
+  }
+
+  @Test
+  public void testEqualImplies() {
+    SymbolicValue a = values[0];
+    SymbolicValue b = values[1];
+    SymbolicValueRelation hypothesis = new EqualRelation(a, b);
+    SymbolicValueRelation checked = new EqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+    checked = new EqualRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+    checked = new NotEqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.FALSE);
+    checked = new NotEqualRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.FALSE);
+    checked = new MethodEqualsRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+    checked = new MethodEqualsRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+  }
+
+  @Test
+  public void testNotEqualImplies() {
+    SymbolicValue a = values[0];
+    SymbolicValue b = values[1];
+    SymbolicValueRelation hypothesis = new NotEqualRelation(a, b);
+    SymbolicValueRelation checked = new EqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.FALSE);
+    checked = new EqualRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.FALSE);
+    checked = new NotEqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+    checked = new NotEqualRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+    checked = new MethodEqualsRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isNull();
+    checked = new MethodEqualsRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isNull();
+  }
+
+  @Test
+  public void testNotMethodEqualsImplies() {
+    SymbolicValue a = values[0];
+    SymbolicValue b = values[1];
+    SymbolicValueRelation hypothesis = new NotMethodEqualsRelation(a, b);
+    SymbolicValueRelation checked = new EqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.FALSE);
+  }
+
+  @Test
+  public void testEqualsMethodImplies() {
+    SymbolicValue a = values[0];
+    SymbolicValue b = values[1];
+    SymbolicValueRelation hypothesis = new MethodEqualsRelation(a, b);
+    SymbolicValueRelation checked = new EqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isNull();
+    checked = new EqualRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isNull();
+    checked = new NotEqualRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isNull();
+    checked = new NotEqualRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isNull();
+    checked = new MethodEqualsRelation(a, b);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+    checked = new MethodEqualsRelation(b, a);
+    assertThat(hypothesis.implies(checked)).as(hypothesis.toString() + "=>" + checked.toString()).isEqualTo(Boolean.TRUE);
+  }
+
+  @Test
+  public void endlessCase() {
+    final List<SymbolicValueRelation> knownRelations = ImmutableList.of(
+      new NotEqualRelation(values[0], values[1]), // a!=b
+      new EqualRelation(values[0], values[2]));// a==c
+    final SymbolicValueRelation checked = new NotMethodEqualsRelation(values[1], values[0]); // !b.equals(a)
+    Boolean result = checked.impliedBy(knownRelations);
+    assertThat(result).as(checked.toString()).isNull();
+
   }
 }

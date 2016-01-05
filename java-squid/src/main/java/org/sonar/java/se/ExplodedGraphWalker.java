@@ -408,9 +408,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private void executeMethodInvocation(MethodInvocationTree mit) {
     setSymbolicValueOnFields(mit);
     // unstack arguments and method identifier
-    programState = programState.unstackValue(mit.arguments().size() + 1).state;
+    ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
+    programState = unstack.state;
     logState(mit);
-    programState = programState.stackValue(constraintManager.createSymbolicValue(mit));
+    programState = programState.stackValue(constraintManager.createMethodSymbolicValue(mit, unstack.values));
   }
 
   private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {

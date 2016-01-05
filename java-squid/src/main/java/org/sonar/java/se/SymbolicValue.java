@@ -67,6 +67,10 @@ public class SymbolicValue {
     this.id = id;
   }
 
+  public int id() {
+    return id;
+  }
+
   public boolean references(SymbolicValue other) {
     return false;
   }
@@ -282,6 +286,18 @@ public class SymbolicValue {
     @CheckForNull
     protected SymbolicValueRelation getSymbolicValueRelation() {
       return new EqualRelation(leftOp, rightOp);
+    }
+  }
+
+  static class MethodEqualsToSymbolicValue extends EqualToSymbolicValue {
+
+    public MethodEqualsToSymbolicValue(int id) {
+      super(id);
+    }
+
+    @Override
+    protected SymbolicValueRelation getSymbolicValueRelation() {
+      return new MethodEqualsRelation(leftOp, rightOp);
     }
   }
 

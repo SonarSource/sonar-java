@@ -1,5 +1,7 @@
 package javax.annotation;
 
+import java.util.List;
+
 import static java.lang.Boolean.TRUE;
 
 @interface CheckForNull {}
@@ -1386,6 +1388,53 @@ class SuperClass {
 
         }
       }
+    }
+  }
+  
+  public void useEquals(Object a, Object b) {
+    if (a.equals(b)) {
+      log("Are equal!");
+      if (!a.equals(b)) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+        log("Not equal!");
+      }
+    }
+  }
+  
+  public void negateEquals(Object a, Object b) {
+    if (!a.equals(b)) {
+      log("Not equal!");
+      if (a.equals(b)) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+        log("Are equal!");
+      }
+    }
+  }
+
+  private void disableRulesDebt(List<RuleDto> ruleDtos, Integer a) {
+    for (RuleDto ruleDto : ruleDtos) {
+      if (a.equals(ruleDto.getSubCharacteristicId())) {
+        ruleDto.setSubCharacteristicId(RuleDto.DISABLED_CHARACTERISTIC_ID);
+      }
+      if (a.equals(ruleDto.getDefaultSubCharacteristicId())) {
+        ruleDto.setDefaultSubCharacteristicId(null);
+      }
+    }
+  }
+
+  public void equalsAfterEqual(Object a, Object b) {
+    // Same as expression in method tests
+    if (a == b || a.equals(b)) { // Compliant "!=" does not imply "equals"
+    }
+  }
+
+  public void equalsBeforeEqual(Object a, Object b) {
+    if (a.equals(b) || a == b) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+    }
+  }
+  
+  public void notNullAfterCall(Object a) {
+    a.toString();
+    if (a == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      log("Error");
     }
   }
 }

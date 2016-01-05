@@ -19,10 +19,17 @@
  */
 package org.sonar.java.se;
 
+import javax.annotation.CheckForNull;
+
 public class EqualRelation extends SymbolicValueRelation {
 
   EqualRelation(SymbolicValue v1, SymbolicValue v2) {
     super(v1, v2);
+  }
+
+  @Override
+  protected SymbolicValueRelation symmetric() {
+    return new EqualRelation(v2, v1);
   }
 
   @Override
@@ -36,43 +43,55 @@ public class EqualRelation extends SymbolicValueRelation {
   }
 
   @Override
-  protected Boolean implies(SymbolicValueRelation relation) {
-    if (hasSameOperand(relation)) {
-      return relation instanceof EqualRelation;
-    }
-    return null;
+  public Boolean isImpliedBy(SymbolicValueRelation relation) {
+    return relation.impliesEqual();
   }
 
   @Override
-  protected SymbolicValueRelation underHypothesis(SymbolicValueRelation relation) {
-    return relation.hypothesisWithEqual(this);
+  protected Boolean impliesEqual() {
+    return Boolean.TRUE;
   }
 
   @Override
-  protected SymbolicValueRelation hypothesisWithEqual(EqualRelation relation) {
-    if (v2.equals(relation.v1)) {
-      return new EqualRelation(v1, relation.v2);
-    } else if (v1.equals(relation.v2)) {
-      return new EqualRelation(v2, relation.v1);
-    } else if (v1.equals(relation.v1)) {
-      return new EqualRelation(v2, relation.v2);
-    } else if (v2.equals(relation.v2)) {
-      return new EqualRelation(v1, relation.v1);
-    }
-    return null;
+  protected Boolean impliesNotEqual() {
+    return Boolean.FALSE;
   }
 
   @Override
-  protected SymbolicValueRelation hypothesisWithNotEqual(NotEqualRelation relation) {
-    if (v2.equals(relation.v1)) {
-      return new NotEqualRelation(v1, relation.v2);
-    } else if (v1.equals(relation.v2)) {
-      return new NotEqualRelation(v2, relation.v1);
-    } else if (v1.equals(relation.v1)) {
-      return new NotEqualRelation(v2, relation.v2);
-    } else if (v2.equals(relation.v2)) {
-      return new NotEqualRelation(v1, relation.v1);
-    }
-    return null;
+  protected Boolean impliesMethodEquals() {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  protected Boolean impliesNotMethodEquals() {
+    return Boolean.FALSE;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedAfter(SymbolicValueRelation relation) {
+    return relation.combinedWithEqual(this);
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithEqual(EqualRelation relation) {
+    return new EqualRelation(v1, relation.v2);
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithNotEqual(NotEqualRelation relation) {
+    return new NotEqualRelation(v1, relation.v2);
+  }
+
+  @Override
+  protected SymbolicValueRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
+    return new MethodEqualsRelation(v1, relation.v2);
+  }
+
+  @Override
+  protected SymbolicValueRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation) {
+    return new NotMethodEqualsRelation(v1, relation.v2);
   }
 }

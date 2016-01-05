@@ -21,64 +21,71 @@ package org.sonar.java.se;
 
 import javax.annotation.CheckForNull;
 
-public class NotEqualRelation extends SymbolicValueRelation {
+public class MethodEqualsRelation extends SymbolicValueRelation {
 
-  NotEqualRelation(SymbolicValue v1, SymbolicValue v2) {
+  public MethodEqualsRelation(SymbolicValue v1, SymbolicValue v2) {
     super(v1, v2);
   }
 
   @Override
+  protected String getOperand() {
+    // unused because toString() is overwritten
+    return null;
+  }
+
+  @Override
   protected SymbolicValueRelation symmetric() {
-    return new NotEqualRelation(v2, v1);
+    return new MethodEqualsRelation(v2, v1);
   }
 
   @Override
   protected SymbolicValueRelation inverse() {
-    return new EqualRelation(v1, v2);
+    return new NotMethodEqualsRelation(v1, v2);
   }
 
   @Override
-  protected String getOperand() {
-    return "!=";
+  public String toString() {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append(v1);
+    buffer.append(".equals(");
+    buffer.append(v2);
+    buffer.append(')');
+    return buffer.toString();
   }
 
   @Override
   protected Boolean isImpliedBy(SymbolicValueRelation relation) {
-    return relation.impliesNotEqual();
+    return relation.impliesMethodEquals();
   }
 
   @Override
   protected Boolean impliesEqual() {
-    return Boolean.FALSE;
+    return null;
   }
 
   @Override
   protected Boolean impliesNotEqual() {
+    return null;
+  }
+
+  @Override
+  protected Boolean impliesMethodEquals() {
     return Boolean.TRUE;
   }
 
   @Override
-  @CheckForNull
-  protected Boolean impliesMethodEquals() {
-    return null;
-  }
-
-  @Override
-  @CheckForNull
   protected Boolean impliesNotMethodEquals() {
-    return null;
+    return Boolean.FALSE;
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedAfter(SymbolicValueRelation relation) {
-    return relation.combinedWithNotEqual(this);
+    return relation.combinedWithMethodEquals(this);
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithEqual(EqualRelation relation) {
-    return new NotEqualRelation(v1, relation.v2);
+    return new MethodEqualsRelation(v1, relation.v2);
   }
 
   @Override
@@ -88,14 +95,12 @@ public class NotEqualRelation extends SymbolicValueRelation {
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
-    return null;
+    return new MethodEqualsRelation(v1, relation.v2);
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation) {
-    return null;
+    return new NotMethodEqualsRelation(v1, relation.v2);
   }
 }

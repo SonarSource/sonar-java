@@ -608,4 +608,12 @@ class NullPointerTest {
   public boolean equals(Object obj) {
     return getValue() == ((MyClass) obj).getValue(); // Noncompliant {{NullPointerException might be thrown as 'obj' is nullable here}}
   }
+  
+  private void equalsToCheckForNull(Integer a) {
+    Objeect b = checkForNullMethod();
+    if (a.equals(b)) {
+      System.out.println("Found!");
+    }
+    a.toString(); // Compliant: a cannot be null hereafter
+  }
 }
