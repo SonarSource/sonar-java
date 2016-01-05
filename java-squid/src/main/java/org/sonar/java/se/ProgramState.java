@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.collections.AVLTree;
 import org.sonar.java.collections.PMap;
+import org.sonar.java.se.SymbolicValue.BinaryKey;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -39,6 +40,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -67,7 +69,7 @@ public class ProgramState {
       .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
       .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE),
     AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
-    Lists.<SymbolicValue>newLinkedList());
+    Lists.<SymbolicValue>newLinkedList(), new HashMap<SymbolicValue.BinaryKey, AbstractBinaryConstraint>());
 
   private final PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints;
 
@@ -75,15 +77,18 @@ public class ProgramState {
   private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Integer> references;
   private final PMap<SymbolicValue, Object> constraints;
+  private final Map<SymbolicValue.BinaryKey, AbstractBinaryConstraint> binaryConstraints;
+
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
                        PMap<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
-    Deque<SymbolicValue> stack) {
+    Deque<SymbolicValue> stack, Map<SymbolicValue.BinaryKey, AbstractBinaryConstraint> newBinaryConstraints) {
     this.values = values;
     this.references = references;
     this.constraints = constraints;
     this.visitedPoints = visitedPoints;
     this.stack = stack;
     constraintSize = 3;
+    binaryConstraints = newBinaryConstraints;
   }
 
   private ProgramState(ProgramState ps, Deque<SymbolicValue> newStack) {
@@ -93,6 +98,7 @@ public class ProgramState {
     constraintSize = ps.constraintSize;
     visitedPoints = ps.visitedPoints;
     stack = newStack;
+    binaryConstraints = ps.binaryConstraints;
   }
 
   private ProgramState(ProgramState ps, PMap<SymbolicValue, Object> newConstraints) {
@@ -102,6 +108,17 @@ public class ProgramState {
     constraintSize = ps.constraintSize +1;
     visitedPoints = ps.visitedPoints;
     this.stack = ps.stack;
+    binaryConstraints = ps.binaryConstraints;
+  }
+
+  private ProgramState(ProgramState ps, Map<BinaryKey, AbstractBinaryConstraint> newBinaryConstraints) {
+    values = ps.values;
+    references = ps.references;
+    constraints = ps.constraints;
+    constraintSize = ps.constraintSize;
+    visitedPoints = ps.visitedPoints;
+    this.stack = ps.stack;
+    binaryConstraints = newBinaryConstraints;
   }
 
   ProgramState stackValue(SymbolicValue sv) {
@@ -154,7 +171,8 @@ public class ProgramState {
     ProgramState that = (ProgramState) o;
     return Objects.equals(values, that.values) &&
       Objects.equals(constraints, that.constraints) &&
-      Objects.equals(peekValue(), that.peekValue());
+      Objects.equals(peekValue(), that.peekValue()) &&
+      Objects.equals(binaryConstraints, that.binaryConstraints);
   }
 
   @Override
@@ -167,7 +185,27 @@ public class ProgramState {
 
   @Override
   public String toString() {
-    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
+    return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }" + binaryConstraintsString();
+  }
+
+  private String binaryConstraintsString() {
+    StringBuilder buffer = new StringBuilder();
+    if (!binaryConstraints.isEmpty()) {
+      buffer.append(" {");
+      boolean first = true;
+      for (Entry<BinaryKey, AbstractBinaryConstraint> entry : binaryConstraints.entrySet()) {
+        if (first) {
+          first = false;
+        } else {
+          buffer.append(';');
+        }
+        final AbstractBinaryConstraint value = entry.getValue();
+        String operand = value instanceof EqualConstraint ? "=" : "!=";
+        buffer.append(entry.getKey().toString(operand));
+      }
+      buffer.append('}');
+    }
+    return buffer.toString();
   }
 
   public ProgramState addConstraint(SymbolicValue symbolicValue, Object constraint) {
@@ -190,7 +228,7 @@ public class ProgramState {
       }
       newReferences = increaseReference(newReferences, value);
       PMap<Symbol, SymbolicValue> newValues = values.put(symbol, value);
-      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+      return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, binaryConstraints);
     }
     return this;
   }
@@ -248,7 +286,7 @@ public class ProgramState {
         }
       }
     }
-    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack) : this;
+    return newProgramState ? new ProgramState(newValues, newReferences, newConstraints, visitedPoints, stack, binaryConstraints) : this;
   }
 
   public ProgramState cleanupConstraints() {
@@ -266,7 +304,7 @@ public class ProgramState {
         newReferences = newReferences.remove(symbolicValue);
       }
     }
-    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack) : this;
+    return newProgramState ? new ProgramState(values, newReferences, newConstraints, visitedPoints, stack, binaryConstraints) : this;
   }
 
   public ProgramState resetFieldValues(ConstraintManager constraintManager) {
@@ -297,7 +335,7 @@ public class ProgramState {
       newValues = newValues.put(symbol, newValue);
       newReferences = increaseReference(newReferences, newValue);
     }
-    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack);
+    return new ProgramState(newValues, newReferences, constraints, visitedPoints, stack, binaryConstraints);
   }
 
   public static boolean isField(Symbol symbol) {
@@ -314,7 +352,7 @@ public class ProgramState {
   }
 
   public ProgramState visitedPoint(ExplodedGraph.ProgramPoint programPoint, int nbOfVisit) {
-    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack);
+    return new ProgramState(values, references, constraints, visitedPoints.put(programPoint, nbOfVisit), stack, binaryConstraints);
   }
 
   @CheckForNull
@@ -375,5 +413,15 @@ public class ProgramState {
       }
     });
     return fieldValues;
+  }
+
+  public AbstractBinaryConstraint getBinaryConstraint(SymbolicValue.BinaryKey key) {
+    return binaryConstraints.get(key);
+  }
+
+  public ProgramState setBinaryConstraint(SymbolicValue.BinaryKey key, AbstractBinaryConstraint constraint) {
+    Map<SymbolicValue.BinaryKey, AbstractBinaryConstraint> newBinaryConstraints = new HashMap<>(binaryConstraints);
+    newBinaryConstraints.put(key, constraint);
+    return new ProgramState(this, newBinaryConstraints);
   }
 }
