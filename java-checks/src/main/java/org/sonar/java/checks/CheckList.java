@@ -369,6 +369,7 @@ public final class CheckList {
       .add(DiamondOperatorCheck.class)
       .add(CommentRegularExpressionCheck.class)
       .add(AssertOnBooleanVariableCheck.class)
+      .add(CombineCatchCheck.class)
       .build();
   }
 
