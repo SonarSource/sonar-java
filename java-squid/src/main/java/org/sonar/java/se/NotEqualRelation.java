@@ -23,7 +23,7 @@ import javax.annotation.CheckForNull;
 
 public class NotEqualRelation extends SymbolicValueRelation {
 
-  NotEqualRelation(SymbolicValue v1, SymbolicValue v2) {
+  public NotEqualRelation(SymbolicValue v1, SymbolicValue v2) {
     super(v1, v2);
   }
 
@@ -71,6 +71,30 @@ public class NotEqualRelation extends SymbolicValueRelation {
 
   @Override
   @CheckForNull
+  protected Boolean impliesGreaterThan() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected Boolean impliesGreaterThanOrEqual() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected Boolean impliesLessThan() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected Boolean impliesLessThanOrEqual() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
   protected SymbolicValueRelation combinedAfter(SymbolicValueRelation relation) {
     return relation.combinedWithNotEqual(this);
   }
@@ -88,14 +112,36 @@ public class NotEqualRelation extends SymbolicValueRelation {
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
     return null;
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithGreaterThan(GreaterThanRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithLessThan(LessThanRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation) {
     return null;
   }
 }

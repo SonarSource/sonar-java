@@ -28,12 +28,6 @@ public class NotMethodEqualsRelation extends SymbolicValueRelation {
   }
 
   @Override
-  protected String getOperand() {
-    // unused because toString() is overwritten
-    return null;
-  }
-
-  @Override
   protected SymbolicValueRelation symmetric() {
     return new NotMethodEqualsRelation(v2, v1);
   }
@@ -55,6 +49,13 @@ public class NotMethodEqualsRelation extends SymbolicValueRelation {
   }
 
   @Override
+  protected String getOperand() {
+    // Unused because toString() is overwritten
+    return "";
+  }
+
+  @Override
+  @CheckForNull
   protected Boolean isImpliedBy(SymbolicValueRelation relation) {
     return relation.impliesNotMethodEquals();
   }
@@ -80,8 +81,33 @@ public class NotMethodEqualsRelation extends SymbolicValueRelation {
   }
 
   @Override
+  @CheckForNull
+  protected Boolean impliesGreaterThan() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected Boolean impliesGreaterThanOrEqual() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected Boolean impliesLessThan() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected Boolean impliesLessThanOrEqual() {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
   protected SymbolicValueRelation combinedAfter(SymbolicValueRelation relation) {
-    return relation.combinedWithNotMethodEquals(this);
+    return combinedWithNotMethodEquals(this);
   }
 
   @Override
@@ -90,7 +116,6 @@ public class NotMethodEqualsRelation extends SymbolicValueRelation {
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithNotEqual(NotEqualRelation relation) {
     return null;
   }
@@ -103,6 +128,30 @@ public class NotMethodEqualsRelation extends SymbolicValueRelation {
   @Override
   @CheckForNull
   protected SymbolicValueRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithGreaterThan(GreaterThanRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithLessThan(LessThanRelation relation) {
+    return null;
+  }
+
+  @Override
+  @CheckForNull
+  protected SymbolicValueRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation) {
     return null;
   }
 }

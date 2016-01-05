@@ -71,6 +71,17 @@ public abstract class SymbolicValueRelation {
     }
   }
 
+  @Override
+  public String toString() {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append(v1);
+    buffer.append(' ');
+    buffer.append(getOperand());
+    buffer.append(' ');
+    buffer.append(v2);
+    return buffer.toString();
+  }
+
   @CheckForNull
   public Boolean impliedBy(Collection<SymbolicValueRelation> knownRelations) {
     return impliedBy(knownRelations, new HashSet<SymbolicValueRelation>());
@@ -95,7 +106,8 @@ public abstract class SymbolicValueRelation {
     return impliedBy(transitiveReduction(knownRelations, usedRelations), usedRelations);
   }
 
-  private Collection<SymbolicValueRelation> transitiveReduction(Collection<SymbolicValueRelation> knownRelations, Set<SymbolicValueRelation> usedRelations) {
+  private Collection<SymbolicValueRelation> transitiveReduction(Collection<SymbolicValueRelation> knownRelations,
+    Set<SymbolicValueRelation> usedRelations) {
     boolean changed = false;
     List<SymbolicValueRelation> result = new ArrayList<>();
     for (SymbolicValueRelation relation : knownRelations) {
@@ -117,12 +129,7 @@ public abstract class SymbolicValueRelation {
   private Collection<SymbolicValueRelation> combinedRelations(Collection<SymbolicValueRelation> relations, Set<SymbolicValueRelation> usedRelations) {
     List<SymbolicValueRelation> result = new ArrayList<>();
     for (SymbolicValueRelation relation : relations) {
-      SymbolicValueRelation combined = null;
-      if (v2.equals(relation.v1) && !v1.equals(relation.v2)) {
-        combined = relation.combinedAfter(this);
-      } else if (v2.equals(relation.v2) && !v1.equals(relation.v2)) {
-        combined = relation.symmetric().combinedAfter(this);
-      }
+      SymbolicValueRelation combined = combineUnordered(relation);
       if (combined != null && !usedRelations.contains(combined)) {
         result.add(combined);
       }
@@ -130,15 +137,19 @@ public abstract class SymbolicValueRelation {
     return result;
   }
 
-  @Override
-  public String toString() {
-    StringBuilder buffer = new StringBuilder();
-    buffer.append(v1);
-    buffer.append(' ');
-    buffer.append(getOperand());
-    buffer.append(' ');
-    buffer.append(v2);
-    return buffer.toString();
+  /**
+   * Create a new relation, if any, that is a transitive combination of the receiver with the supplied relation.
+   * @param relation another SymbolicValueRelation
+   * @return a SymbolicValueRelation or null if the receiver and the supplied relation cannot be combined
+   */
+  private SymbolicValueRelation combineUnordered(SymbolicValueRelation relation) {
+    SymbolicValueRelation combined = null;
+    if (v2.equals(relation.v1) && !v1.equals(relation.v2)) {
+      combined = relation.combinedAfter(this);
+    } else if (v2.equals(relation.v2) && !v1.equals(relation.v1)) {
+      combined = relation.symmetric().combinedAfter(this);
+    }
+    return combined;
   }
 
   protected abstract String getOperand();
@@ -166,7 +177,7 @@ public abstract class SymbolicValueRelation {
     if (v1.equals(relation.v1) && v2.equals(relation.v2)) {
       return relation.isImpliedBy(this);
     } else if (v1.equals(relation.v2) && v2.equals(relation.v1)) {
-      return relation.isImpliedBy(symmetric());
+      return relation.symmetric().isImpliedBy(this);
     }
     return null;
   }
@@ -187,6 +198,18 @@ public abstract class SymbolicValueRelation {
   protected abstract Boolean impliesNotMethodEquals();
 
   @CheckForNull
+  protected abstract Boolean impliesGreaterThan();
+
+  @CheckForNull
+  protected abstract Boolean impliesGreaterThanOrEqual();
+
+  @CheckForNull
+  protected abstract Boolean impliesLessThan();
+
+  @CheckForNull
+  protected abstract Boolean impliesLessThanOrEqual();
+
+  @CheckForNull
   protected abstract SymbolicValueRelation combinedAfter(SymbolicValueRelation relation);
 
   @CheckForNull
@@ -200,4 +223,12 @@ public abstract class SymbolicValueRelation {
 
   @CheckForNull
   protected abstract SymbolicValueRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation);
+
+  protected abstract SymbolicValueRelation combinedWithGreaterThan(GreaterThanRelation relation);
+
+  protected abstract SymbolicValueRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation);
+
+  protected abstract SymbolicValueRelation combinedWithLessThan(LessThanRelation relation);
+
+  protected abstract SymbolicValueRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation);
 }

@@ -21,59 +21,59 @@ package org.sonar.java.se;
 
 import javax.annotation.CheckForNull;
 
-public class EqualRelation extends SymbolicValueRelation {
+public class GreaterThanRelation extends SymbolicValueRelation {
 
-  public EqualRelation(SymbolicValue v1, SymbolicValue v2) {
+  public GreaterThanRelation(SymbolicValue v1, SymbolicValue v2) {
     super(v1, v2);
   }
 
   @Override
   protected SymbolicValueRelation symmetric() {
-    return new EqualRelation(v2, v1);
+    return new LessThanRelation(v2, v1);
   }
 
   @Override
   protected SymbolicValueRelation inverse() {
-    return new NotEqualRelation(v1, v2);
+    return new LessThanOrEqualRelation(v1, v2);
   }
 
   @Override
   protected String getOperand() {
-    return "=";
+    return ">";
   }
 
   @Override
   protected Boolean isImpliedBy(SymbolicValueRelation relation) {
-    return relation.impliesEqual();
+    return relation.impliesGreaterThan();
   }
 
   @Override
   protected Boolean impliesEqual() {
-    return Boolean.TRUE;
+    return Boolean.FALSE;
   }
 
   @Override
   protected Boolean impliesNotEqual() {
-    return Boolean.FALSE;
-  }
-
-  @Override
-  protected Boolean impliesMethodEquals() {
     return Boolean.TRUE;
   }
 
   @Override
-  protected Boolean impliesNotMethodEquals() {
+  protected Boolean impliesMethodEquals() {
     return Boolean.FALSE;
   }
 
   @Override
-  protected Boolean impliesGreaterThan() {
-    return Boolean.FALSE;
+  protected Boolean impliesNotMethodEquals() {
+    return Boolean.TRUE;
   }
 
   @Override
   protected Boolean impliesGreaterThanOrEqual() {
+    return Boolean.TRUE;
+  }
+
+  @Override
+  protected Boolean impliesGreaterThan() {
     return Boolean.TRUE;
   }
 
@@ -84,35 +84,35 @@ public class EqualRelation extends SymbolicValueRelation {
 
   @Override
   protected Boolean impliesLessThanOrEqual() {
-    return Boolean.TRUE;
+    return Boolean.FALSE;
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedAfter(SymbolicValueRelation relation) {
-    return relation.combinedWithEqual(this);
+    return relation.combinedWithGreaterThan(this);
   }
 
   @Override
-  @CheckForNull
   protected SymbolicValueRelation combinedWithEqual(EqualRelation relation) {
-    return new EqualRelation(v1, relation.v2);
+    return new GreaterThanRelation(v1, relation.v2);
   }
 
   @Override
   @CheckForNull
   protected SymbolicValueRelation combinedWithNotEqual(NotEqualRelation relation) {
-    return new NotEqualRelation(v1, relation.v2);
+    return null;
   }
 
   @Override
+  @CheckForNull
   protected SymbolicValueRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
-    return new MethodEqualsRelation(v1, relation.v2);
+    return null;
   }
 
   @Override
+  @CheckForNull
   protected SymbolicValueRelation combinedWithNotMethodEquals(NotMethodEqualsRelation relation) {
-    return new NotMethodEqualsRelation(v1, relation.v2);
+    return null;
   }
 
   @Override
@@ -122,16 +122,18 @@ public class EqualRelation extends SymbolicValueRelation {
 
   @Override
   protected SymbolicValueRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation) {
-    return new GreaterThanOrEqualRelation(v1, relation.v2);
+    return new GreaterThanRelation(v1, relation.v2);
   }
 
   @Override
+  @CheckForNull
   protected SymbolicValueRelation combinedWithLessThan(LessThanRelation relation) {
-    return new LessThanRelation(v1, relation.v2);
+    return null;
   }
 
   @Override
+  @CheckForNull
   protected SymbolicValueRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation) {
-    return new LessThanOrEqualRelation(v1, relation.v2);
+    return null;
   }
 }
