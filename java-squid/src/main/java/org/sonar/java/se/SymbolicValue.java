@@ -225,6 +225,22 @@ public class SymbolicValue {
     BooleanConstraint shouldNotInverse() {
       return BooleanConstraint.FALSE;
     }
+
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      ProgramState ps = programState;
+      if (leftOp.id > 2 && rightOp.id > 2) {
+        SymbolicValue.BinaryKey key = new SymbolicValue.BinaryKey(leftOp, rightOp);
+        AbstractBinaryConstraint binaryConstraint = ps.getBinaryConstraint(key);
+        if (binaryConstraint == null) {
+          binaryConstraint = BooleanConstraint.TRUE.equals(booleanConstraint) ? new NotEqualConstraint() : new EqualConstraint();
+          ps = programState.setBinaryConstraint(key, binaryConstraint);
+        } else if (!binaryConstraint.comptatibleWithNotEqual(booleanConstraint)) {
+          return ImmutableList.of();
+        }
+      }
+      return super.setConstraint(ps, booleanConstraint);
+    }
   }
 
   static class EqualToSymbolicValue extends BinarySymbolicValue {
@@ -238,6 +254,21 @@ public class SymbolicValue {
       return BooleanConstraint.TRUE;
     }
 
+    @Override
+    public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
+      ProgramState ps = programState;
+      if (leftOp.id > 2 && rightOp.id > 2) {
+        SymbolicValue.BinaryKey key = new SymbolicValue.BinaryKey(leftOp, rightOp);
+        AbstractBinaryConstraint binaryConstraint = ps.getBinaryConstraint(key);
+        if (binaryConstraint == null) {
+          binaryConstraint = BooleanConstraint.TRUE.equals(booleanConstraint) ? new EqualConstraint() : new NotEqualConstraint();
+          ps = programState.setBinaryConstraint(key, binaryConstraint);
+        } else if (!binaryConstraint.comptatibleWithEqual(booleanConstraint)) {
+          return ImmutableList.of();
+        }
+        }
+      return super.setConstraint(ps, booleanConstraint);
+    }
   }
 
   abstract static class UnarySymbolicValue extends SymbolicValue {
@@ -416,6 +447,48 @@ public class SymbolicValue {
     @Override
     public String toString() {
       return leftOp + " ^ " + rightOp;
+    }
+  }
+
+  static class BinaryKey {
+
+    private final int[] ids;
+
+    BinaryKey(SymbolicValue v1, SymbolicValue v2) {
+      ids = new int[2];
+      if (v1.id < v2.id) {
+        ids[0] = v1.id;
+        ids[1] = v2.id;
+      } else {
+        ids[0] = v2.id;
+        ids[1] = v1.id;
+      }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (obj instanceof BinaryKey) {
+        final BinaryKey key = (BinaryKey) obj;
+        return ids[0] == key.ids[0] && ids[1] == key.ids[1];
+      }
+      return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+      long bits = ids[0];
+      bits ^= 31 * ids[1];
+      return ((int) bits) ^ (int) (bits >> 32);
+    }
+
+    public String toString(String operand) {
+      StringBuilder buffer = new StringBuilder();
+      buffer.append('(');
+      buffer.append(ids[0]);
+      buffer.append(operand);
+      buffer.append(ids[1]);
+      buffer.append(')');
+      return buffer.toString();
     }
   }
 }

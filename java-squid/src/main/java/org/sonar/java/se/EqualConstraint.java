@@ -17,15 +17,19 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se.checks;
+package org.sonar.java.se;
 
-import org.junit.Test;
-import org.sonar.java.se.JavaCheckVerifier;
+import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 
-public class ConditionAlwaysTrueOrFalseCheckTest {
+public class EqualConstraint extends AbstractBinaryConstraint {
 
-  @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/se/ConditionAlwaysTrueOrFalseCheck.java", new ConditionAlwaysTrueOrFalseCheck());
+  @Override
+  public boolean comptatibleWithEqual(BooleanConstraint booleanConstraint) {
+    return BooleanConstraint.TRUE.equals(booleanConstraint);
+  }
+
+  @Override
+  public boolean comptatibleWithNotEqual(BooleanConstraint booleanConstraint) {
+    return BooleanConstraint.FALSE.equals(booleanConstraint);
   }
 }
