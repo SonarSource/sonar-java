@@ -115,5 +115,12 @@ class A {
   void assignUnknownSymbol() {
     unknown |= false;
   }
+  
+  void testDoWhile() {
+    Object check = null;
+    do {
+      
+    } while (check == null);  // Noncompliant
+  }
 
 }

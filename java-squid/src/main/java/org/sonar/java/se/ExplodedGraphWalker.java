@@ -46,6 +46,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -252,6 +253,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         case WHILE_STATEMENT:
           ExpressionTree whileCondition = ((WhileStatementTree) terminator).condition();
           handleBranch(block, whileCondition, !whileCondition.is(Tree.Kind.BOOLEAN_LITERAL));
+          return;
+        case DO_STATEMENT:
+          ExpressionTree doCondition = ((DoWhileStatementTree) terminator).condition();
+          handleBranch(block, doCondition, !doCondition.is(Tree.Kind.BOOLEAN_LITERAL));
           return;
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues();
