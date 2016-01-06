@@ -20,10 +20,33 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+import java.util.HashSet;
 import org.apache.commons.lang.StringUtils;
 
 public class Convert {
+  private static final HashSet<String> scalaSymbols;
 
+  static {
+    scalaSymbols = new HashSet<String>();
+    scalaSymbols.add("$tilde");
+    scalaSymbols.add("$eq");
+    scalaSymbols.add("$less");
+    scalaSymbols.add("$greater");
+    scalaSymbols.add("$bang");
+    scalaSymbols.add("$hash");
+    scalaSymbols.add("$percent");
+    scalaSymbols.add("$up");
+    scalaSymbols.add("$amp");
+    scalaSymbols.add("$bar");
+    scalaSymbols.add("$times");
+    scalaSymbols.add("$div");
+    scalaSymbols.add("$plus");
+    scalaSymbols.add("$minus");
+    scalaSymbols.add("$colon");
+    scalaSymbols.add("$bslash");
+    scalaSymbols.add("$qmark");
+    scalaSymbols.add("$at");
+  }
   private Convert() {
   }
 
@@ -46,8 +69,18 @@ public class Convert {
 
   public static String enclosingClassName(String shortName) {
     String normalizedShortName = normalizeShortName(shortName);
-    int lastDollar = normalizedShortName.lastIndexOf('$');
-    return lastDollar < 0 ? "" : normalizedShortName.substring(0, lastDollar);
+    int endOfCurrentTerm = normalizedShortName.length();
+    int currentLastDollar = normalizedShortName.lastIndexOf('$');
+    String currentSubString = "";
+    if(currentLastDollar >= 0)
+      currentSubString = normalizedShortName.substring(currentLastDollar, endOfCurrentTerm);
+    while(currentLastDollar >= 0 &&
+      scalaSymbols.contains(currentSubString)) {
+      endOfCurrentTerm = currentLastDollar;
+      currentLastDollar = normalizedShortName.lastIndexOf('$', endOfCurrentTerm - 1);
+      currentSubString = normalizedShortName.substring(currentLastDollar, endOfCurrentTerm);
+    }
+    return currentLastDollar < 0 ? "" : normalizedShortName.substring(0, currentLastDollar);
   }
 
   public static String innerClassName(String enclosingClassName, String shortName) {
