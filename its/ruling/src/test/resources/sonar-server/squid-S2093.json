@@ -1,0 +1,15 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v44/ConvertProfileMeasuresMigration.java':[
+52,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/ClassLoaderUtils.java':[
+92,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileCopier.java':[
+97,
+109,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/HtmlTextDecorator.java':[
+61,
+],
+}

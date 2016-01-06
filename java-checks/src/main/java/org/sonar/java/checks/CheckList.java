@@ -370,6 +370,7 @@ public final class CheckList {
       .add(CommentRegularExpressionCheck.class)
       .add(AssertOnBooleanVariableCheck.class)
       .add(CombineCatchCheck.class)
+      .add(TryWithResourcesCheck.class)
       .build();
   }
 
