@@ -33,7 +33,10 @@ public class FormalParameterDeclsRestTest {
 
     assertThat(b, JavaLexer.FORMAL_PARAMETERS_DECLS_REST)
       .matches("foo")
+      .matches("this")
       .matches("foo , type bar")
+      .matches("this , type bar")
+      .matches("foo, type this") // invalid syntax but supported by our grammar
       .matches("... foo")
       .matches("@Foo ... foo");
   }

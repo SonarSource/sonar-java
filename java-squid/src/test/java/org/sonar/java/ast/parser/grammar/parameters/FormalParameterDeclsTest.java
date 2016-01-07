@@ -37,6 +37,7 @@ public class FormalParameterDeclsTest {
       .matches("@Foo type ... foo")
       .matches("final final type foo")
       .matches("@Foo @Bar type foo")
+      .matches("@Foo Foo this")
       .matches("@Foo final @Bar final type foo");
   }
 

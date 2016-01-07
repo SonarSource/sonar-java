@@ -528,8 +528,13 @@ public class JavaGrammar {
     return b.<FormalParametersListTreeImpl>nonterminal(JavaLexer.FORMAL_PARAMETERS_DECLS_REST)
       .is(
         b.firstOf(
-          f.prependNewFormalParameter(VARIABLE_DECLARATOR_ID(), b.optional(f.newTuple18(b.token(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
+          f.prependNewFormalParameter(b.firstOf(VARIABLE_DECLARATOR_ID(), RECEIVER_PARAMETER_ID()),
+              b.optional(f.newTuple18(b.token(JavaPunctuator.COMMA), FORMAL_PARAMETERS_DECLS()))),
           f.newVariableArgumentFormalParameter(b.zeroOrMore(ANNOTATION()), b.token(JavaPunctuator.ELLIPSIS), VARIABLE_DECLARATOR_ID())));
+  }
+
+  public VariableTreeImpl RECEIVER_PARAMETER_ID() {
+    return b.<VariableTreeImpl>nonterminal(JavaLexer.RECEIVER_PARAMETER_ID).is(f.receiverParameterId(b.token(JavaKeyword.THIS)));
   }
 
   public VariableTreeImpl VARIABLE_DECLARATOR_ID() {

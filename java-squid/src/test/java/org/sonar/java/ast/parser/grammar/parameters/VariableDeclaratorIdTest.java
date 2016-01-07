@@ -33,7 +33,8 @@ public class VariableDeclaratorIdTest {
       .notMatches("identifier []") //FIXME missing [] tokens
       .notMatches("identifier @Foo []") //FIXME missing [] tokens
       .notMatches("identifier [] []") //FIXME missing [] tokens
-      .notMatches("identifier [] @Foo @Bar []"); //FIXME missing [] tokens
+      .notMatches("identifier [] @Foo @Bar []") //FIXME missing [] tokens
+      .notMatches("this");
   }
 
 }

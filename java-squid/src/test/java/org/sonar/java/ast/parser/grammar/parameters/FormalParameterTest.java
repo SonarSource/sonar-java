@@ -35,6 +35,7 @@ public class FormalParameterTest {
       .matches("int foo")
       .notMatches("final List<Integer> foo[]") // FIXME missing [] tokens
       .matches("@Foo int foo")
+      .notMatches("@Foo Type this")
       .matches("final final int foo")
       .matches("@Foo @Bar int foo")
       .matches("@Foo final @Bar final int foo");

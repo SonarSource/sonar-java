@@ -1120,6 +1120,10 @@ public class TreeFactory {
     return new InstanceOfTreeImpl(instanceofToken, type);
   }
 
+  public VariableTreeImpl receiverParameterId(InternalSyntaxToken thisToken) {
+    return new VariableTreeImpl(new IdentifierTreeImpl(thisToken), null);
+  }
+
   private static class OperatorAndOperand {
 
     private final InternalSyntaxToken operator;
