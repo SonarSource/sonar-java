@@ -1,7 +1,11 @@
 public class TestClass {
 
-  public void method(int a) {
+  public void method(int a, Integer integer, Double doubleParam) {
     byte b = a % 1; // Noncompliant [[sc=16;ec=17]] {{Remove this computation of % 1, which always evaluates to zero.}}
+    double v = 7.4d;
+    double remainder = v % 1; // compliant, remainder is ~0.4
+    b = integer % 1; // Noncompliant
+    b = doubleParam % 1; // Compliant, double
     int c = a % 2; // Compliant
     int d = a % a; // Compliant, currently not covered by this rule
     short s;

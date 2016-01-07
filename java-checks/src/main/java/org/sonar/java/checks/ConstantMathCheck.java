@@ -27,6 +27,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -41,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 
 @Rule(
@@ -113,7 +115,7 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
     if (hasSemantic()) {
       if (tree.is(Tree.Kind.REMAINDER)) {
         BinaryExpressionTree remainderTree = (BinaryExpressionTree) tree;
-        if (isIntegralOne(remainderTree.rightOperand())) {
+        if (isIntegralOne(remainderTree.rightOperand()) && isIntOrLong(remainderTree.leftOperand())) {
           reportIssue(remainderTree.operatorToken(), "Remove this computation of % 1, which always evaluates to zero.");
         }
       } else {
@@ -123,6 +125,11 @@ public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFi
         }
       }
     }
+  }
+
+  private static boolean isIntOrLong(ExpressionTree expression) {
+    JavaType type = (JavaType) expression.symbolType();
+    return isIntegral(type) || (type.isPrimitiveWrapper() && isIntegral(type.primitiveType()));
   }
 
   private static boolean isTruncation(MethodInvocationTree methodTree) {
