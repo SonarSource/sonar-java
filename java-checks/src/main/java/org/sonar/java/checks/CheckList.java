@@ -371,6 +371,7 @@ public final class CheckList {
       .add(AssertOnBooleanVariableCheck.class)
       .add(CombineCatchCheck.class)
       .add(TryWithResourcesCheck.class)
+      .add(ConstantMethodCheck.class)
       .build();
   }
 
