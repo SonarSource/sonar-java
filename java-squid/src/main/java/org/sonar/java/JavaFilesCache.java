@@ -33,6 +33,7 @@ import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -195,9 +196,34 @@ public class JavaFilesCache extends BaseTreeVisitor implements JavaFileScanner {
     List<String> args = Lists.newArrayList();
     if (expression.is(Tree.Kind.STRING_LITERAL)) {
       args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
+    } else if (expression.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifierTree = (IdentifierTree)expression;
+      if(isStringConstant(identifierTree)) {
+        args.addAll(getValueFromStringConstant(identifierTree));
+      }
     } else if (expression.is(Tree.Kind.NEW_ARRAY)) {
       for (ExpressionTree initializer : ((NewArrayTree) expression).initializers()) {
         args.addAll(getValueFromExpression(initializer));
+      }
+    }
+    return args;
+  }
+
+  private static boolean isStringConstant(IdentifierTree identifierTree) {
+    Symbol symbol = identifierTree.symbol();
+    return symbol.isVariableSymbol() && symbol.isStatic() && symbol.isFinal() && symbol.type().is("java.lang.String");
+  }
+
+  private static List<String> getValueFromStringConstant(IdentifierTree identifierTree) {
+    List<String> args = Lists.newArrayList();
+
+    Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) identifierTree.symbol();
+
+    VariableTree declaration = variableSymbol.declaration();
+    if(declaration != null) {
+      ExpressionTree expression = declaration.initializer();
+      if (expression != null && expression.is(Tree.Kind.STRING_LITERAL)) {
+        args.add(LiteralUtils.trimQuotes(((LiteralTree) expression).value()));
       }
     }
     return args;
