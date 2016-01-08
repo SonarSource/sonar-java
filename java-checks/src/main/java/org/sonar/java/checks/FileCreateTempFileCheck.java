@@ -54,7 +54,7 @@ import java.util.Map;
   key = "S2976",
   name = "\"File.createTempFile\" should not be used to create a directory",
   priority = Priority.CRITICAL,
-  tags = {Tag.JAVA_7, Tag.OWASP_A9, Tag.SECURITY})
+  tags = {Tag.OWASP_A9, Tag.SECURITY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("5min")

@@ -57,7 +57,7 @@ import java.util.List;
   key = "S2293",
   name = "The diamond operator (\"<>\") should be used",
   priority = Priority.MAJOR,
-  tags = {Tag.JAVA_7, Tag.CLUMSY})
+  tags = {Tag.CLUMSY})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
