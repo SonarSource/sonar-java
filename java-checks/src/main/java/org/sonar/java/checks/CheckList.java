@@ -78,6 +78,7 @@ public final class CheckList {
       .add(TabCharacterCheck.class)
       .add(TooLongLineCheck.class)
       .add(MissingNewLineAtEndOfFileCheck.class)
+      .add(VarArgCheck.class)
       .add(ParsingErrorCheck.class)
       .add(MethodComplexityCheck.class)
       .add(ClassComplexityCheck.class)
