@@ -44,8 +44,6 @@ class JacocoController {
   private JacocoController() {
     try {
       this.agent = RT.getAgent();
-    } catch (NoClassDefFoundError e) {
-      throw new JacocoControllerError(ERROR, e);
     } catch (Exception e) {
       throw new JacocoControllerError(ERROR, e);
     }
