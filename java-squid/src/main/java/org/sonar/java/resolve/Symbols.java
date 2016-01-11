@@ -125,6 +125,11 @@ public class Symbols {
     unknownSymbol.type = unknownType;
     unknownMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "!unknown!", unknownSymbol) {
       @Override
+      public boolean isMethodSymbol() {
+        return false;
+      }
+
+      @Override
       public TypeJavaSymbol getReturnType() {
         return unknownSymbol;
       }

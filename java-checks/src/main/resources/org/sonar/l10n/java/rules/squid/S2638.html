@@ -1,0 +1,30 @@
+<p>Because a subclass instance may be cast to and treated as an instance of the superclass, overriding methods should uphold the same contracts as the ones in the superclass. Specifically, if the parameters or return type of the superclass method are marked with any of the following, that should not be changed in a subclass: <code>@Nullable</code>, <code>@CheckForNull</code>, <code>@NotNull</code>, <code>@NonNull</code>, and <code>@Nonnull</code>.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Fruit {
+
+  private Season ripe;
+  private String color;
+
+  public void setRipe(@NotNull Season ripe) {
+    this.ripe = ripe;
+  }
+
+  public @NotNull Integer getProtein() {
+    return null;
+  }
+}
+
+public class Raspberry {
+
+  public void setRipe(@Nullable Season ripe) {  // Noncompliant
+    this.ripe = ripe;
+  }
+
+  public @Nullable Integer getProtein() {  // Noncompliant
+    return null;
+  }
+}
+</pre>
+

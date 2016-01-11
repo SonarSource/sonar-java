@@ -373,6 +373,7 @@ public final class CheckList {
       .add(CombineCatchCheck.class)
       .add(TryWithResourcesCheck.class)
       .add(ConstantMethodCheck.class)
+      .add(ChangeMethodContractCheck.class)
       .build();
   }
 
