@@ -87,8 +87,12 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
       if (classTree.symbol().metadata().isAnnotatedWith("org.testng.annotations.Test")) {
         checkTestNGmembers(simpleName, members);
       } else {
-        checkJunit3TestClass(simpleName, symbol, members);
-        checkJunit4TestClass(simpleName, symbol, members);
+        boolean isJunit3TestClass = symbol.type().isSubtypeOf("junit.framework.TestCase");
+        if (isJunit3TestClass) {
+          checkJunit3TestClass(simpleName, members);
+        } else {
+          checkJunit4TestClass(simpleName, symbol, members);
+        }
       }
     }
   }
@@ -102,10 +106,8 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
     reportIssue(className, "Add some tests to this class.");
   }
 
-  private void checkJunit3TestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
-    if (symbol.type().isSubtypeOf("junit.framework.TestCase")) {
-      checkMethods(className, members, false);
-    }
+  private void checkJunit3TestClass(IdentifierTree className, Iterable<Symbol> members) {
+    checkMethods(className, members, false);
   }
 
   private void checkJunit4TestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {

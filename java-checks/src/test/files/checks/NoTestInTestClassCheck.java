@@ -4,6 +4,12 @@ class A extends junit.framework.TestCase {
   void testFoo() {
   }
 }
+
+public class JUnit3Test extends junit.framework.TestCase {
+  public void testNothing() {
+    assertTrue(true);
+  }
+}
 class B extends junit.framework.TestCase { // Noncompliant [[sc=7;ec=8]] {{Add some tests to this class.}}
   void foo() {
   }
