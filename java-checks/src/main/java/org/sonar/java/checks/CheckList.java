@@ -374,6 +374,7 @@ public final class CheckList {
       .add(TryWithResourcesCheck.class)
       .add(ConstantMethodCheck.class)
       .add(ChangeMethodContractCheck.class)
+      .add(CatchRethrowingCheck.class)
       .build();
   }
 
