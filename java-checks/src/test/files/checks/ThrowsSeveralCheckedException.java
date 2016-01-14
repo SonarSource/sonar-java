@@ -36,6 +36,9 @@ public class ThrowsSeveralCheckedException extends Base {
   void foo11() throws IOException, IOException, SQLException {
   }
 
+  public void foo12() throws IOException, UnknownException { // Compliant - in order to avoid false positives, we do not raise issue for unknown exceptions
+  }
+
   public class MyException extends Exception {
   }
 

@@ -74,7 +74,7 @@ public class ThrowsSeveralCheckedExceptionCheck extends SubscriptionBaseVisitor 
   private static List<String> getThrownCheckedExceptions(MethodTree methodTree) {
     ImmutableList.Builder<String> builder = ImmutableList.builder();
     for (Type thrownClass : methodTree.symbol().thrownTypes()) {
-      if (!isSubClassOfRuntimeException(thrownClass)) {
+      if (!thrownClass.isUnknown() && !isSubClassOfRuntimeException(thrownClass)) {
         builder.add(thrownClass.fullyQualifiedName());
       }
     }
