@@ -18,13 +18,6 @@ case "$TEST" in
 CI)
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     strongEcho "Build and analyze commit in master"
-    # this commit is master must be built and analyzed (with upload of report)
-    mvn verify -B -e -V
-
-    # Switch to java 8 as the Dory HTTPS certificate is not supported by Java 7
-    source $HOME/.jdk_switcher_rc
-    jdk_switcher use oraclejdk8
-
     # integration of jacoco report is quite memory-consuming
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
     git fetch --unshallow
