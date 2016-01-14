@@ -19,7 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import com.google.common.io.Closeables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
@@ -61,17 +60,12 @@ public class MissingNewLineAtEndOfFile_S00113_Check extends SubscriptionBaseVisi
   }
 
   public void visitFile(File file) {
-    RandomAccessFile randomAccessFile = null;
-    try {
-      randomAccessFile = new RandomAccessFile(file, "r");
+    try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "r")) {
       if (!endsWithNewline(randomAccessFile)) {
-
         addIssueOnFile("Add a new line at the end of this file.");
       }
     } catch (IOException e) {
       throw new SonarException(e);
-    } finally {
-      Closeables.closeQuietly(randomAccessFile);
     }
   }
 

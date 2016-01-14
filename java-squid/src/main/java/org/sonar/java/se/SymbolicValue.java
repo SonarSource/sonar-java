@@ -184,11 +184,8 @@ public class SymbolicValue {
       if (programState == null) {
         return ImmutableList.of();
       }
-      List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
-      if (copiedConstraints.isEmpty()) {
-        return ImmutableList.of();
-      }
       List<ProgramState> results = new ArrayList<>();
+      List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
       for (ProgramState ps : copiedConstraints) {
         List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
         if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
