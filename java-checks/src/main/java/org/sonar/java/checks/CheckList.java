@@ -375,6 +375,7 @@ public final class CheckList {
       .add(ConstantMethodCheck.class)
       .add(ChangeMethodContractCheck.class)
       .add(CatchRethrowingCheck.class)
+      .add(InappropriateRegexpCheck.class)
       .build();
   }
 
