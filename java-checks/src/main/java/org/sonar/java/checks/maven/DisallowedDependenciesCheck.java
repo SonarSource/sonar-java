@@ -42,14 +42,12 @@ public class DisallowedDependenciesCheck implements MavenFileScanner {
 
   @RuleProperty(
     key = "dependencyName",
-    description = "Pattern describing forbidden dependencies group and artifact ids. "
-      + "E.G. <code>*:.*log4j</code>, or <code>x.y:*</code> ")
+    description = "Pattern describing forbidden dependencies group and artifact ids. E.G. '``*:.*log4j``' or '``x.y:*``'")
   public String dependencyName = "";
 
   @RuleProperty(
     key = "version",
-    description = "Dependency version pattern or dash-delimited range. Leave blank for all versions. "
-      + "E.G. <code>1.3.*</code>, <code>1.0-3.1</code>, <code>1.0-*</code> or <code>*-3.1</code>")
+    description = "Dependency version pattern or dash-delimited range. Leave blank for all versions. E.G. '``1.3.*``', '``1.0-3.1``', '``1.0-*``' or '``*-3.1``'")
   public String version = "";
 
   private MavenDependencyMatcher matcher = null;
