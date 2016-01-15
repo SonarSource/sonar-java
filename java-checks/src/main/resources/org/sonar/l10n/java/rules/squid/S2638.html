@@ -12,11 +12,11 @@ public class Fruit {
   }
 
   public @NotNull Integer getProtein() {
-    return null;
+    return 12;
   }
 }
 
-public class Raspberry {
+public class Raspberry extends Fruit {
 
   public void setRipe(@Nullable Season ripe) {  // Noncompliant
     this.ripe = ripe;
