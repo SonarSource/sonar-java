@@ -26,77 +26,77 @@ import org.jacoco.agent.rt.RT;
 
 class JacocoController {
 
-	private static final String ERROR = "Unable to access JaCoCo Agent - make sure that you use JaCoCo and version not lower than 0.6.2.";
+  private static final String ERROR = "Unable to access JaCoCo Agent - make sure that you use JaCoCo and version not lower than 0.6.2.";
 
-	private IAgent agent;
+  private IAgent agent;
 
-	private boolean testStarted;
+  private boolean testStarted;
 
-	private static JacocoController singleton;
+  private static JacocoController singleton;
 
-	public static synchronized JacocoController getInstance() {
-		if (singleton == null) {
-			singleton = new JacocoController();
-		}
-		return singleton;
-	}
+  public static synchronized JacocoController getInstance() {
+    if (singleton == null) {
+      singleton = new JacocoController();
+    }
+    return singleton;
+  }
 
-	private JacocoController() {
-		super();
-	}
+  private JacocoController() {
+    super();
+  }
 
-	JacocoController(final IAgent agent) {
-		this.agent = agent;
-	}
+  JacocoController(IAgent agent) {
+    this.agent = agent;
+  }
 
 
-	private IAgent getAgent() {
-		if (agent == null) {
-			try {
-				agent = RT.getAgent();
-			} catch (final Exception e) {
-				throw new JacocoControllerError(ERROR, e);
-			}
-		}
-		return agent;
-	}
+  private IAgent getAgent() {
+    if (agent == null) {
+      try {
+        agent = RT.getAgent();
+      } catch (final Exception e) {
+        throw new JacocoControllerError(ERROR, e);
+      }
+    }
+    return agent;
+  }
 
-	public synchronized void onTestStart(final String name) {
-		if (testStarted) {
-			throw new JacocoControllerError("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
-		}
-		// Dump coverage between tests
-		dump("");
-		testStarted = true;
-	}
+  public synchronized void onTestStart(String name) {
+    if (testStarted) {
+      throw new JacocoControllerError("Looks like several tests executed in parallel in the same JVM, thus coverage per test can't be recorded correctly.");
+    }
+    // Dump coverage between tests
+    dump("");
+    testStarted = true;
+  }
 
-	public synchronized void onTestFinish(final String name) {
-		// Dump coverage for test
-		dump(name);
-		testStarted = false;
-	}
+  public synchronized void onTestFinish(String name) {
+    // Dump coverage for test
+    dump(name);
+    testStarted = false;
+  }
 
-	private void dump(final String sessionId) {
-		getAgent().setSessionId(sessionId);
-		try {
-			getAgent().dump(true);
-		} catch (final IOException e) {
-			throw new JacocoControllerError(e);
-		}
-	}
+  private void dump(String sessionId) {
+    getAgent().setSessionId(sessionId);
+    try {
+      getAgent().dump(true);
+    } catch (IOException e) {
+      throw new JacocoControllerError(e);
+    }
+  }
 
-	public static class JacocoControllerError extends Error {
-		public JacocoControllerError(final String message) {
-			super(message);
-		}
+  public static class JacocoControllerError extends Error {
+    public JacocoControllerError(String message) {
+      super(message);
+    }
 
-		public JacocoControllerError(final String message, final Throwable cause) {
-			super(message, cause);
-		}
+    public JacocoControllerError(String message, Throwable cause) {
+      super(message, cause);
+    }
 
-		public JacocoControllerError(final Throwable cause) {
-			super(cause);
-		}
-	}
+    public JacocoControllerError(Throwable cause) {
+      super(cause);
+    }
+  }
 
 }

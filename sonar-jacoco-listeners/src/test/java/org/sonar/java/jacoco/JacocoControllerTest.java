@@ -19,6 +19,16 @@
  */
 package org.sonar.java.jacoco;
 
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+
 import org.jacoco.agent.rt.IAgent;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,14 +37,6 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.sonar.java.jacoco.JacocoController.JacocoControllerError;
-
-import java.io.IOException;
-
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 public class JacocoControllerTest {
 
@@ -48,6 +50,16 @@ public class JacocoControllerTest {
   public void setUp() {
     agent = mock(IAgent.class);
     jacoco = new JacocoController(agent);
+  }
+
+  @Test
+  public void agent_is_lazily_loaded() throws Exception {
+    final JacocoController controller = JacocoController.getInstance();
+    final Class<?> cls = controller.getClass();
+    final Field field = cls.getDeclaredField("agent");
+    field.setAccessible(true);
+    final Object agent = field.get(controller);
+    assertNull(agent);
   }
 
   @Test
