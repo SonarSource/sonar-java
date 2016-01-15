@@ -24,6 +24,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.maven.helpers.MavenDependencyCollector;
 import org.sonar.java.checks.maven.helpers.MavenDependencyMatcher;
+import org.sonar.java.tag.Tag;
 import org.sonar.maven.MavenFileScanner;
 import org.sonar.maven.MavenFileScannerContext;
 import org.sonar.maven.model.maven2.Dependency;
@@ -33,7 +34,8 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 @Rule(
   key = DisallowedDependenciesCheck.KEY,
   name = "Disallowed dependencies should not be used",
-  priority = Priority.MAJOR)
+  priority = Priority.MAJOR,
+  tags = {Tag.MAVEN})
 @RuleTemplate
 @NoSqale
 public class DisallowedDependenciesCheck implements MavenFileScanner {
