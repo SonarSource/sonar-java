@@ -31,12 +31,6 @@ CI)
     # http://docs.travis-ci.com/user/pull-requests/#Security-Restrictions-when-testing-Pull-Requests
     # That's why the analysis does not need to be executed if the variable GITHUB_TOKEN is not defined.
     strongEcho "Build and analyze pull request"
-    mvn verify -B -e -V
-
-    # Switch to java 8 as the Dory HTTPS certificate is not supported by Java 7
-    source $HOME/.jdk_switcher_rc
-    jdk_switcher use oraclejdk8
-
     export MAVEN_OPTS="-Xmx1G -Xms128m"
     mvn verify sonar:sonar -B -e -V \
         -Dsonar.analysis.mode=issues \
