@@ -1,0 +1,36 @@
+<p>When a <code>private</code> method is only invoked by an inner class, there's no reason not to move it into that class. It will still have the same access to the outer class' members, but the outer class will be clearer and less cluttered.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Outie {
+  private int i=0;
+
+  private void increment() {  // Noncompliant
+    i++;
+  }
+
+  public class Innie {
+    public void doTheThing() {
+      Outie.this.increment();
+    }
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Outie {
+  private int i=0;
+
+  public class Innie {
+    public void doTheThing() {
+      Outie.this.increment();
+    }
+
+    private void increment() {
+      Outie.this.i++;
+    }
+  }
+}
+</pre>
+
