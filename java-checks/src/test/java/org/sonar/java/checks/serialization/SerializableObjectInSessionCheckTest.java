@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.serialization;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
@@ -26,6 +26,6 @@ public class SerializableObjectInSessionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SerializableObjectInSessionCheck.java", new SerializableObjectInSessionCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerializableObjectInSessionCheck.java", new SerializableObjectInSessionCheck());
   }
 }

@@ -25,7 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.java.checks.SerializableContract;
+import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.tag.Tag;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;

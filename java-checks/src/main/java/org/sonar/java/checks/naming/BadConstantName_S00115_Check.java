@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.checks.SerializableContract;
+import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;

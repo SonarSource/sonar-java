@@ -17,14 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.serialization;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class SerialVersionUidCheckTest {
+public class SerializableSuperConstructorCheckTest {
+
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SerialVersionUidCheck.java", new SerialVersionUidCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/serialization/SerializableSuperConstructorCheck.java", new SerializableSuperConstructorCheck());
   }
+
 }

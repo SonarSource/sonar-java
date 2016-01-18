@@ -17,16 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+@ParametersAreNonnullByDefault
+package org.sonar.java.checks.unused;
 
-import org.junit.Test;
-import org.sonar.java.checks.verifier.JavaCheckVerifier;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public class SerializableComparatorCheckTest {
-
-  @Test
-  public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/SerializableComparatorCheck.java", new SerializableComparatorCheck());
-  }
-
-}

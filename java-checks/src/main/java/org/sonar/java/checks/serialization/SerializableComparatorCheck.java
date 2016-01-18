@@ -17,48 +17,50 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.checks.methods.MethodMatcher;
-import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
-import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 @Rule(
-  key = "S2441",
-  name = "Non-serializable objects should not be stored in \"HttpSessions\"",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.CWE})
-@ActivatedByDefault
+  key = "S2063",
+  name = "Comparators should be \"Serializable\"",
+  priority = Priority.MAJOR,
+  tags = {Tag.PITFALL, Tag.SERIALIZATION})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation("20min")
-public class SerializableObjectInSessionCheck extends AbstractMethodDetection {
-
+@SqaleConstantRemediation("5min")
+public class SerializableComparatorCheck extends SubscriptionBaseVisitor {
 
   @Override
-  protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(MethodMatcher.create().typeDefinition("javax.servlet.http.HttpSession")
-      .name("setAttribute").addParameter("java.lang.String").addParameter(TypeCriteria.anyType()));
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    ExpressionTree argument = mit.arguments().get(1);
-    Type type = argument.symbolType();
-    if (!type.isPrimitive() && !type.isSubtypeOf("java.io.Serializable")) {
-      reportIssue(argument, "Make \"" + type + "\" serializable or don't store it in the session.");
+  public void visitNode(Tree tree) {
+    if (hasSemantic()) {
+      ClassTree classTree = (ClassTree) tree;
+      Symbol.TypeSymbol symbol = classTree.symbol();
+      Type type = symbol.type();
+      IdentifierTree simpleName = classTree.simpleName();
+      if (simpleName != null && type.isSubtypeOf("java.util.Comparator") && !type.isSubtypeOf("java.io.Serializable") && !symbol.isAbstract()) {
+        reportIssue(simpleName, "Make this class \"Serializable\".");
+      }
     }
   }
+
 }
