@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.unused;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
+import org.sonar.java.checks.SerializableContract;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.java.signature.Parameter;
 import org.sonar.java.tag.Tag;

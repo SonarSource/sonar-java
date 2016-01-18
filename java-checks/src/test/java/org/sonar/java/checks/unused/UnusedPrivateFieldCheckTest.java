@@ -17,16 +17,21 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.unused;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class UnusedLabelCheckTest {
+public class UnusedPrivateFieldCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/UnusedLabelCheck.java", new UnusedLabelCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedPrivateFieldCheck.java", new UnusedPrivateFieldCheck());
+  }
+
+  @Test
+  public void testNative() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/unused/UnusedPrivateFieldCheckWithNative.java", new UnusedPrivateFieldCheck());
   }
 
 }

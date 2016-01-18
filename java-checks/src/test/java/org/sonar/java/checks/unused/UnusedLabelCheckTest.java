@@ -17,25 +17,16 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.unused;
 
 import org.junit.Test;
-import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-import java.util.List;
-
-import static org.fest.assertions.Assertions.assertThat;
-
-public class UnusedProtectedMethodCheckTest {
+public class UnusedLabelCheckTest {
 
   @Test
   public void test() {
-    UnusedProtectedMethodCheck check = new UnusedProtectedMethodCheck();
-    List<AnalyzerMessage> unusedProtectedMethod = BytecodeFixture.scan("src/test/java/org/sonar/java/checks/targets/UnusedProtectedMethod.java", check);
-    assertThat(unusedProtectedMethod).hasSize(1);
-    AnalyzerMessage analyzerMessage = unusedProtectedMethod.iterator().next();
-    assertThat(analyzerMessage.getLine()).isEqualTo(31);
-    assertThat(analyzerMessage.getMessage()).isEqualTo("Protected method 'unusedProtectedMethod(...)' is never used.");
+    JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedLabelCheck.java", new UnusedLabelCheck());
   }
 
 }
