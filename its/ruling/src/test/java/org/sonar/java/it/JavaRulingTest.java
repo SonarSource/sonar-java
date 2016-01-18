@@ -24,7 +24,9 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
+import com.sonar.orchestrator.build.Build;
 import com.sonar.orchestrator.build.MavenBuild;
+import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.FileLocation;
 import org.fest.assertions.Fail;
 import org.junit.BeforeClass;
@@ -118,6 +120,21 @@ public class JavaRulingTest {
     test_project("org.codehaus.sonar:sonar-server", "sonarqube/server", "sonar-server");
   }
 
+  @Test
+  public void jboss_ejb3_tutorial() throws Exception {
+    // https://github.com/jbossejb3/jboss-ejb3-tutorial (18/01/2015)
+    String projectName = "jboss-ejb3-tutorial";
+    prepareProject(projectName, projectName);
+    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jboss-ejb3-tutorial").getFile())
+      .setProjectKey(projectName)
+      .setProjectName(projectName)
+      .setProjectVersion("0.1.0-SNAPSHOT")
+      .setSourceEncoding("UTF-8")
+      .setSourceDirs(".")
+      .setProperty("sonar.java.source", "1.5");
+    executeBuildWithCommonProperties(build, projectName);
+  }
+
   private static void test_project(String projectKey, String projectName) throws IOException {
     test_project(projectKey, null, projectName);
   }
@@ -125,10 +142,18 @@ public class JavaRulingTest {
   private static void test_project(String projectKey, @Nullable String path, String projectName) throws IOException {
     String pomLocation = "../sources/" + (path != null ? path + "/" : "") + projectName + "/pom.xml";
     File pomFile = FileLocation.of(pomLocation).getFile();
+    prepareProject(projectKey, projectName);
+    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests");
+    executeBuildWithCommonProperties(mavenBuild, projectName);
+  }
+
+  private static void prepareProject(String projectKey, String projectName) {
     orchestrator.getServer().provisionProject(projectKey, projectName);
     orchestrator.getServer().associateProjectToQualityProfile(projectKey, "java", "rules");
-    MavenBuild mavenBuild = MavenBuild.create().setPom(pomFile).setCleanPackageSonarGoals().addArgument("-DskipTests")
-      .setProperty("sonar.cpd.skip", "true")
+  }
+
+  private static void executeBuildWithCommonProperties(Build<?> build, String projectName) throws IOException {
+    build.setProperty("sonar.cpd.skip", "true")
       .setProperty("sonar.import_unknown_files", "true")
       .setProperty("sonar.skipPackageDesign", "true")
       .setProperty("sonar.analysis.mode", "preview")
@@ -137,7 +162,7 @@ public class JavaRulingTest {
       .setProperty("dump.old", FileLocation.of("src/test/resources/" + projectName).getFile().getAbsolutePath())
       .setProperty("dump.new", FileLocation.of("target/actual/" + projectName).getFile().getAbsolutePath())
       .setProperty("lits.differences", litsDifferencesPath(projectName));
-    orchestrator.executeBuild(mavenBuild);
+    orchestrator.executeBuild(build);
     assertNoDifferences(projectName);
   }
 
