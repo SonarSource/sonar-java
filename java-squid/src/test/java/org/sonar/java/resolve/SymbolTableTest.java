@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 import static org.fest.assertions.Fail.failure;
 
 public class SymbolTableTest {
@@ -715,6 +716,15 @@ public class SymbolTableTest {
     methodDeclarationSymbol = result.symbol("unwrapException", 22);
     assertThat(methodSymbol).isEqualTo(methodDeclarationSymbol);
     assertThat(methodDeclarationSymbol.usages()).hasSize(1);
+
+    assertThat(exceptionVariableSymbol.usages()).hasSize(1);
+    try {
+      exceptionVariableSymbol.usages().clear();
+      fail("list of usages of a symbol is not immutable");
+    } catch (UnsupportedOperationException uoe) {
+      assertThat(exceptionVariableSymbol.usages()).hasSize(1);
+    }
+
 
     exceptionVariableSymbol = result.symbol("e2");
     assertThat(exceptionVariableSymbol.type()).isEqualTo(Symbols.unknownType);

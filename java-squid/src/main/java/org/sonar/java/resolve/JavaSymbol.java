@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -65,6 +66,7 @@ public class JavaSymbol implements Symbol {
   JavaType type;
 
   boolean completing = false;
+  private ImmutableList.Builder<IdentifierTree> usagesBuilder;
   private List<IdentifierTree> usages;
 
   public JavaSymbol(int kind, int flags, @Nullable String name, @Nullable JavaSymbol owner) {
@@ -73,7 +75,7 @@ public class JavaSymbol implements Symbol {
     this.name = name;
     this.owner = owner;
     this.symbolMetadata = new SymbolMetadataResolve();
-    this.usages = Lists.newArrayList();
+    this.usagesBuilder = ImmutableList.builder();
   }
 
   /**
@@ -249,11 +251,14 @@ public class JavaSymbol implements Symbol {
   }
 
   public void addUsage(IdentifierTree tree) {
-    usages.add(tree);
+    usagesBuilder.add(tree);
   }
 
   @Override
   public List<IdentifierTree> usages() {
+    if (usages == null) {
+      usages = usagesBuilder.build();
+    }
     return usages;
   }
 
