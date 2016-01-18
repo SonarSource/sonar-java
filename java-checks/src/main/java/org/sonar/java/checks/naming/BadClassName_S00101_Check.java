@@ -17,44 +17,61 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
-import org.sonar.plugins.java.api.tree.Modifier;
-import org.sonar.plugins.java.api.tree.ModifiersTree;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.regex.Pattern;
+
 @Rule(
-  key = "S00116",
-  name = "Field names should comply with a naming convention",
+  key = "S00101",
+  name = "Class names should comply with a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
-public class BadFieldName_S00116_Check extends AbstractBadFieldNameChecker {
+@SqaleConstantRemediation("5min")
+public class BadClassName_S00101_Check extends BaseTreeVisitor implements JavaFileScanner {
+
+  private static final String DEFAULT_FORMAT = "^[A-Z][a-zA-Z0-9]*$";
 
   @RuleProperty(
-    key = DEFAULT_FORMAT_KEY,
-    description = DEFAULT_FORMAT_DESCRIPTION,
-    defaultValue = DEFAULT_FORMAT_VALUE)
-  public String format = DEFAULT_FORMAT_VALUE;
+    key = "format",
+    description = "Regular expression used to check the class names against.",
+    defaultValue = "" + DEFAULT_FORMAT)
+  public String format = DEFAULT_FORMAT;
+
+  private Pattern pattern = null;
+  private JavaFileScannerContext context;
 
   @Override
-  protected String getFormat() {
-    return format;
+  public void scanFile(JavaFileScannerContext context) {
+    if (pattern == null) {
+      pattern = Pattern.compile(format, Pattern.DOTALL);
+    }
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  protected boolean isFieldModifierConcernedByRule(ModifiersTree modifier) {
-    return !ModifiersUtils.hasModifier(modifier, Modifier.STATIC);
+  public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.CLASS) && tree.simpleName() != null && !pattern.matcher(tree.simpleName().name()).matches()) {
+      context.reportIssue(this, tree.simpleName(), "Rename this class name to match the regular expression '" + format + "'.");
+    }
+
+    super.visitClass(tree);
   }
 
 }

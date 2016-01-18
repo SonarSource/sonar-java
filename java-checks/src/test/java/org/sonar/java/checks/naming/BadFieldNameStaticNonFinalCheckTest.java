@@ -17,29 +17,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadMethodName_S00100_CheckTest {
+public class BadFieldNameStaticNonFinalCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BadMethodName.java", new BadMethodName_S00100_Check());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadFieldNameStaticNonFinal.java", new BadFieldNameStaticNonFinalCheck());
   }
 
   @Test
   public void test2() {
-    BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
-    check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadMethodNameCustom.java", check);
+    BadFieldNameStaticNonFinalCheck check = new BadFieldNameStaticNonFinalCheck();
+    check.format = "^[a-zA-Z0-9_]*$";
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadFieldNameStaticNonFinal2.java", check);
   }
 
-  @Test
-  public void testOverrideWithoutAnnotation() throws Exception {
-    BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
-    check.format = "^[A-Z0-9]*$";
-    JavaCheckVerifier.verify("src/test/files/checks/BadMethodNameCustomNoncompliant.java", check);
-  }
 }

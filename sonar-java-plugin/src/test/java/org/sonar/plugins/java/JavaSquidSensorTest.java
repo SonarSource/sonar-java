@@ -40,7 +40,7 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.checks.BadMethodName_S00100_Check;
+import org.sonar.java.checks.naming.BadMethodName_S00100_Check;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;

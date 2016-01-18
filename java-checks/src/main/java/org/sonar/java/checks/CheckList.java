@@ -20,6 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.checks.naming.BadAbstractClassName_S00118_Check;
+import org.sonar.java.checks.naming.BadClassName_S00101_Check;
+import org.sonar.java.checks.naming.BadConstantName_S00115_Check;
+import org.sonar.java.checks.naming.BadFieldNameStaticNonFinalCheck;
+import org.sonar.java.checks.naming.BadFieldName_S00116_Check;
+import org.sonar.java.checks.naming.BadInterfaceName_S00114_Check;
+import org.sonar.java.checks.naming.BadLocalVariableName_S00117_Check;
+import org.sonar.java.checks.naming.BadMethodName_S00100_Check;
+import org.sonar.java.checks.naming.BadPackageName_S00120_Check;
+import org.sonar.java.checks.naming.BadTypeParameterName_S00119_Check;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;

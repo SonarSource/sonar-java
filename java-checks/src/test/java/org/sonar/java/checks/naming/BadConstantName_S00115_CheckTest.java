@@ -17,23 +17,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadClassName_S00101_CheckTest {
+public class BadConstantName_S00115_CheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BadClassNameNoncompliant.java", new BadClassName_S00101_Check());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadConstantNameNoncompliant.java", new BadConstantName_S00115_Check());
   }
 
   @Test
   public void test2() {
-    BadClassName_S00101_Check check = new BadClassName_S00101_Check();
-    check.format = "^[a-zA-Z0-9]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadClassName.java", check);
+    BadConstantName_S00115_Check check = new BadConstantName_S00115_Check();
+    check.format = "^[a-zA-Z0-9_]*$";
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadConstantName.java", check);
   }
 
 }

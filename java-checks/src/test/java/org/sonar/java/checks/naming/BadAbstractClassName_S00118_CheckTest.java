@@ -17,23 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadTypeParameterName_S00119_CheckTest {
+public class BadAbstractClassName_S00118_CheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BadGenericNameNoncompliant.java", new BadTypeParameterName_S00119_Check());
-  }
-
-  @Test
-  public void test2() {
-    BadTypeParameterName_S00119_Check check = new BadTypeParameterName_S00119_Check();
-    check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadGenericName.java", check);
+    BadAbstractClassName_S00118_Check check = new BadAbstractClassName_S00118_Check();
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadAbstractClassName.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadAbstractClassName.java", check);
   }
 
 }

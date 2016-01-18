@@ -17,12 +17,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.AbstractBadFieldNameChecker;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -32,14 +33,14 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
-  key = "S3008",
-  name = "Static non-final field names should comply with a naming convention",
+  key = "S00116",
+  name = "Field names should comply with a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class BadFieldNameStaticNonFinalCheck extends AbstractBadFieldNameChecker {
+public class BadFieldName_S00116_Check extends AbstractBadFieldNameChecker {
 
   @RuleProperty(
     key = DEFAULT_FORMAT_KEY,
@@ -54,7 +55,7 @@ public class BadFieldNameStaticNonFinalCheck extends AbstractBadFieldNameChecker
 
   @Override
   protected boolean isFieldModifierConcernedByRule(ModifiersTree modifier) {
-    return ModifiersUtils.hasModifier(modifier, Modifier.STATIC) && !ModifiersUtils.hasModifier(modifier, Modifier.FINAL);
+    return !ModifiersUtils.hasModifier(modifier, Modifier.STATIC);
   }
 
 }

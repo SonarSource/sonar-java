@@ -17,18 +17,18 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.model.PackageUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -36,21 +36,21 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import java.util.regex.Pattern;
 
 @Rule(
-  key = "S00120",
-  name = "Package names should comply with a naming convention",
+  key = "S00114",
+  name = "Interface names should comply with a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("10min")
-public class BadPackageName_S00120_Check extends BaseTreeVisitor implements JavaFileScanner {
+public class BadInterfaceName_S00114_Check extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final String DEFAULT_FORMAT = "^[a-z]+(\\.[a-z][a-z0-9]*)*$";
+  private static final String DEFAULT_FORMAT = "^[A-Z][a-zA-Z0-9]*$";
 
   @RuleProperty(
     key = "format",
-    description = "Regular expression used to check the package names against.",
-    defaultValue = DEFAULT_FORMAT)
+    description = "Regular expression used to check the interface names against.",
+    defaultValue = "" + DEFAULT_FORMAT)
   public String format = DEFAULT_FORMAT;
 
   private Pattern pattern = null;
@@ -66,13 +66,12 @@ public class BadPackageName_S00120_Check extends BaseTreeVisitor implements Java
   }
 
   @Override
-  public void visitCompilationUnit(CompilationUnitTree tree) {
-    if (tree.packageDeclaration() != null) {
-      String name = PackageUtils.packageName(tree.packageDeclaration(), ".");
-      if (!pattern.matcher(name).matches()) {
-        context.reportIssue(this, tree.packageDeclaration().packageName(), "Rename this package name to match the regular expression '" + format + "'.");
-      }
+  public void visitClass(ClassTree tree) {
+    if (tree.is(Tree.Kind.INTERFACE) && !pattern.matcher(tree.simpleName().name()).matches()) {
+      context.reportIssue(this, tree.simpleName(), "Rename this interface name to match the regular expression '" + format + "'.");
     }
+
+    super.visitClass(tree);
   }
 
 }

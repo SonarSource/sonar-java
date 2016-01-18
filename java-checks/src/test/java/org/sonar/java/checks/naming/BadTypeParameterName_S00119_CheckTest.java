@@ -17,23 +17,23 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class BadFieldNameStaticNonFinalCheckTest {
+public class BadTypeParameterName_S00119_CheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/BadFieldNameStaticNonFinal.java", new BadFieldNameStaticNonFinalCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/BadGenericNameNoncompliant.java", new BadTypeParameterName_S00119_Check());
   }
 
   @Test
   public void test2() {
-    BadFieldNameStaticNonFinalCheck check = new BadFieldNameStaticNonFinalCheck();
+    BadTypeParameterName_S00119_Check check = new BadTypeParameterName_S00119_Check();
     check.format = "^[a-zA-Z0-9_]*$";
-    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/BadFieldNameStaticNonFinal2.java", check);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/naming/BadGenericName.java", check);
   }
 
 }

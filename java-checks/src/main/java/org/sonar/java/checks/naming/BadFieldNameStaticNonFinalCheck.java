@@ -17,61 +17,45 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.AbstractBadFieldNameChecker;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.TypeParameterTree;
+import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.List;
-import java.util.regex.Pattern;
-
 @Rule(
-  key = "S00119",
-  name = "Type parameter names should comply with a naming convention",
+  key = "S3008",
+  name = "Static non-final field names should comply with a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
-public class BadTypeParameterName_S00119_Check extends SubscriptionBaseVisitor {
-
-  private static final String DEFAULT_FORMAT = "^[A-Z][0-9]?$";
+@SqaleConstantRemediation("2min")
+public class BadFieldNameStaticNonFinalCheck extends AbstractBadFieldNameChecker {
 
   @RuleProperty(
-      key = "format",
-      description = "Regular expression used to check the type parameter names against.",
-      defaultValue = "" + DEFAULT_FORMAT)
-  public String format = DEFAULT_FORMAT;
-  private Pattern pattern = null;
+    key = DEFAULT_FORMAT_KEY,
+    description = DEFAULT_FORMAT_DESCRIPTION,
+    defaultValue = DEFAULT_FORMAT_VALUE)
+  public String format = DEFAULT_FORMAT_VALUE;
 
   @Override
-  public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Kind.TYPE_PARAMETER);
+  protected String getFormat() {
+    return format;
   }
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    pattern = Pattern.compile(format, Pattern.DOTALL);
-    super.scanFile(context);
+  protected boolean isFieldModifierConcernedByRule(ModifiersTree modifier) {
+    return ModifiersUtils.hasModifier(modifier, Modifier.STATIC) && !ModifiersUtils.hasModifier(modifier, Modifier.FINAL);
   }
 
-  @Override
-  public void visitNode(Tree tree) {
-    IdentifierTree identifier = ((TypeParameterTree) tree).identifier();
-    if (!pattern.matcher(identifier.name()).matches()) {
-      reportIssue(identifier, "Rename this generic name to match the regular expression '" + format + "'.");
-    }
-  }
 }
