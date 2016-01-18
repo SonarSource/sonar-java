@@ -30,10 +30,8 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import java.io.File;
@@ -55,16 +53,13 @@ public class XmlParser {
 
   public static Document parseXML(File file) {
     try {
+      Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
       SAXParserFactory factory = SAXParserFactory.newInstance();
-      SAXParser parser = factory.newSAXParser();
-      DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-      DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-      Document document = docBuilder.newDocument();
-      LocationHandler locationHandler = new LocationHandler(document);
-      parser.parse(file, locationHandler);
+      factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+      factory.newSAXParser().parse(file, new LocationHandler(document));
       return document;
     } catch (ParserConfigurationException | SAXException | IOException e) {
-      LOG.error("Unable to parse xml file " + file.getPath(), e);
+      LOG.error("Unable to parse xml file: " + file.getPath(), e);
     }
     return null;
   }

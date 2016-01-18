@@ -46,6 +46,11 @@ public class XmlParserTest {
   }
 
   @Test
+  public void should_not_fail_when_xml_file_uses_external_dtd() {
+    assertThat(XmlParser.parseXML(new File("src/test/files/xml/parsing-with-dtd.xml"))).isNotNull();
+  }
+
+  @Test
   public void should_have_correct_locations() {
     assertPositionsMatch("assembly-descriptor", 1, 22, 21, 23);
     assertPositionsMatch("interceptor-binding", 2, 24, 12, 25);
