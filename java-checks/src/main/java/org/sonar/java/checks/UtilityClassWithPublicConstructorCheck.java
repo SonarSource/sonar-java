@@ -55,7 +55,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
+    if (!anonymousClass(classTree) && !extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
       boolean hasImplicitPublicConstructor = true;
       for (MethodTree explicitConstructor : getExplicitConstructors(classTree)) {
         hasImplicitPublicConstructor = false;
@@ -67,6 +67,10 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
         reportIssue(classTree.simpleName(), "Add a private constructor to hide the implicit public one.");
       }
     }
+  }
+
+  private static boolean anonymousClass(ClassTree classTree) {
+    return classTree.simpleName() == null;
   }
 
   private static boolean extendsAnotherClass(ClassTree classTree) {

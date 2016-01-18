@@ -102,3 +102,9 @@ class Foo14 { // Noncompliant [[sc=7;ec=12]] {{Add a private constructor to hide
   static {
   }
 }
+
+class Foo15 {
+  public Object o = new Object() {
+    public static void foo() {}
+  };
+}
