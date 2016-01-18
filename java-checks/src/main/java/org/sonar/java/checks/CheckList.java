@@ -377,6 +377,7 @@ public final class CheckList {
       .add(ChangeMethodContractCheck.class)
       .add(CatchRethrowingCheck.class)
       .add(InappropriateRegexpCheck.class)
+      .add(SuperClassFieldInConstructorCheck.class)
       .build();
   }
 

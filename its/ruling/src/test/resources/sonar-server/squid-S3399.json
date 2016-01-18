@@ -1,0 +1,11 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/BarChart.java':[
+48,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/PieChart.java':[
+40,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/charts/deprecated/SparkLinesChart.java':[
+47,
+],
+}

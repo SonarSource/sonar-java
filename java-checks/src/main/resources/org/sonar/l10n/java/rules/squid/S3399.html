@@ -1,0 +1,46 @@
+<p>It is both suspicious and unusual to make direct assignments to super-class fields from a class constructor. Choosing to make such direct assignments, rather than invoking the <code>super</code> constructor that sets them, potentially bypasses important initialization.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Parent {
+
+  protected int start;
+  public Parent() {
+    //...
+  }
+
+  public Parent(int start) {
+    this.start = start;
+  }
+}
+
+public class Child extends Parent {
+
+  public Child(int start) {
+    this.start = start;  // Noncompliant
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Parent {
+
+  protected int start;
+  public Parent() {
+    //...
+  }
+
+  public Parent(int start) {
+    this.start = start;
+  }
+}
+
+public class Child extends Parent {
+
+  public Child(int start) {
+    super(start);
+  }
+}
+</pre>
+
