@@ -65,8 +65,8 @@ public class XmlCheckVerifierTest {
       @Override
       public void scanFile(XmlCheckContext context) {
         try {
-          context.reportIssue(this, context.evaluateXPathExpression("//test2").item(0), "Message1");
-          context.reportIssue(this, context.evaluateXPathExpression("//test4").item(0), "Message2");
+          context.reportIssue(this, context.evaluateOnFile(context.compile("//test2")).get(0), "Message1");
+          context.reportIssue(this, context.evaluateOnFile(context.compile("//test4")).get(0), "Message2");
         } catch (Exception e) {
           Fail.fail();
         }
