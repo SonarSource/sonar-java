@@ -23,14 +23,13 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XmlCheck;
+import org.sonar.java.xml.XPathInitializerXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 @Rule(
@@ -40,35 +39,35 @@ import javax.xml.xpath.XPathExpressionException;
   tags = {Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("15min")
-public class InterceptorExclusionsCheck implements XmlCheck {
+public class InterceptorExclusionsCheck extends XPathInitializerXmlCheck {
+
+  private XPathExpression interceptorBindingsExpression;
+  private XPathExpression exclusionsExpression;
+  private XPathExpression defaultIntereceptorExpression;
 
   @Override
-  public void scanFile(XmlCheckContext context) {
-    try {
-      NodeList interceptorBindings = context.evaluateXPathExpression("ejb-jar/assembly-descriptor/interceptor-binding");
-      for (int i = 0; i < interceptorBindings.getLength(); i++) {
-        Node interceptorBinding = interceptorBindings.item(i);
-        if (!isDefaultInterceptor(context, interceptorBinding)) {
-          checkExclusions(context, interceptorBinding);
-        }
-      }
-    } catch (XPathExpressionException e) {
-      throw new AnalysisException("[S3282] Unable evaluate xpath expression for file " + context.getFile().getAbsolutePath(), e);
-    }
+  public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+    interceptorBindingsExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding");
+    exclusionsExpression = context.compile("*[self::exclude-default-interceptors[text()=\"true\"] or self::exclude-class-interceptors[text()=\"true\"]]");
+    defaultIntereceptorExpression = context.compile("ejb-name[text()=\"*\"]");
+  }
 
+  @Override
+  public void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException {
+    for (Node interceptorBinding : context.evaluateOnFile(interceptorBindingsExpression)) {
+      if (!isDefaultInterceptor(context, interceptorBinding)) {
+        checkExclusions(context, interceptorBinding);
+      }
+    }
   }
 
   private void checkExclusions(XmlCheckContext context, Node interceptorBinding) throws XPathExpressionException {
-    NodeList exclusions = context.evaluateXPathExpressionFromNode(
-      interceptorBinding,
-      "*[self::exclude-default-interceptors[text()=\"true\"] or self::exclude-class-interceptors[text()=\"true\"]]");
-    for (int i = 0; i < exclusions.getLength(); i++) {
-      context.reportIssue(this, exclusions.item(i), "Move this exclusion into the class as an annotation.");
+    for (Node exclusion : context.evaluate(exclusionsExpression, interceptorBinding)) {
+      context.reportIssue(this, exclusion, "Move this exclusion into the class as an annotation.");
     }
   }
 
-  private static boolean isDefaultInterceptor(XmlCheckContext context, Node interceptorBinding) throws XPathExpressionException {
-    return context.evaluateXPathExpressionFromNode(interceptorBinding, "ejb-name[text()=\"*\"]").getLength() > 0;
+  private boolean isDefaultInterceptor(XmlCheckContext context, Node interceptorBinding) throws XPathExpressionException {
+    return !context.evaluate(defaultIntereceptorExpression, interceptorBinding).isEmpty();
   }
-
 }
