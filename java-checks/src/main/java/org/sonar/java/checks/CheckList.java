@@ -45,6 +45,7 @@ import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
+import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
@@ -425,6 +426,7 @@ public final class CheckList {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
       .addAll(getMavenChecks())
       .add(DefaultInterceptorsLocationCheck.class)
+      .add(InterceptorExclusionsCheck.class)
       .build();
   }
 
