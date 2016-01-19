@@ -51,6 +51,9 @@ public class ChangeMethodContractCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     MethodTreeImpl methodTree = (MethodTreeImpl) tree;
     Symbol.MethodSymbol methodSymbol = methodTree.symbol();
     JavaSymbol.MethodJavaSymbol overridee = ((JavaSymbol.MethodJavaSymbol) methodSymbol).overriddenSymbol();
