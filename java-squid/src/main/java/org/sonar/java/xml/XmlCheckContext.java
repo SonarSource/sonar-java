@@ -22,8 +22,8 @@ package org.sonar.java.xml;
 import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
@@ -33,9 +33,11 @@ public interface XmlCheckContext {
 
   File getFile();
 
-  NodeList evaluateXPathExpression(String expression) throws XPathExpressionException;
+  XPathExpression compile(String expression) throws XPathExpressionException;
 
-  NodeList evaluateXPathExpressionFromNode(Node node, String expression) throws XPathExpressionException;
+  Iterable<Node> evaluate(XPathExpression expression, Node node) throws XPathExpressionException;
+
+  Iterable<Node> evaluateOnDocument(XPathExpression expression) throws XPathExpressionException;
 
   void reportIssueOnFile(JavaCheck check, String message);
 

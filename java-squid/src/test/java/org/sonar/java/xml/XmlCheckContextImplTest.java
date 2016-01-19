@@ -31,10 +31,15 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
@@ -64,7 +69,8 @@ public class XmlCheckContextImplTest {
   public void setup() {
     reportedMessage = null;
     sonarComponents = createSonarComponentsMock();
-    context = new XmlCheckContextImpl(XmlParser.parseXML(XML_FILE), XML_FILE, sonarComponents);
+    XPath xPath = XPathFactory.newInstance().newXPath();
+    context = new XmlCheckContextImpl(XmlParser.parseXML(XML_FILE), XML_FILE, xPath, sonarComponents);
   }
 
   @Test
@@ -82,10 +88,11 @@ public class XmlCheckContextImplTest {
     nodesMatchingXPathExpression("assembly-descriptor", 1);
     nodesMatchingXPathExpression("//interceptor-binding", 1);
     nodesMatchingXPathExpression("//test2/item", 3);
+    nodesMatchingXPathExpression("//unknownNode", 0);
   }
 
   private void nodesMatchingXPathExpression(String expression, int expectedChildren) throws Exception {
-    assertThat(context.evaluateXPathExpression(expression).getLength()).isEqualTo(expectedChildren);
+    assertThat(context.evaluateOnDocument(context.compile(expression))).hasSize(expectedChildren);
   }
 
   @Test
@@ -95,9 +102,33 @@ public class XmlCheckContextImplTest {
     nodesMatchingXPathExpressionFromNode("assembly-descriptor", "test2/item", 3);
   }
 
-  private void nodesMatchingXPathExpressionFromNode(String expression1, String expression2, int expectedChildren) throws Exception {
-    Node node = context.evaluateXPathExpression(expression1).item(0);
-    assertThat(context.evaluateXPathExpressionFromNode(node, expression2).getLength()).isEqualTo(expectedChildren);
+  private void nodesMatchingXPathExpressionFromNode(String expressionOnDocument, String expressionOnNode, int expectedChildren) throws Exception {
+    XPathExpression xPathExprOnNode = context.compile(expressionOnNode);
+    assertThat(context.evaluate(xPathExprOnNode, firstNode(context, expressionOnDocument))).hasSize(expectedChildren);
+  }
+
+  private static Node firstNode(XmlCheckContext context, String expression) throws XPathExpressionException {
+    Node result = null;
+    for (Node node : context.evaluateOnDocument(context.compile(expression))) {
+      result = node;
+      break;
+    }
+    return result;
+  }
+
+  @Test(expected = UnsupportedOperationException.class)
+  public void should_fail_when_trying_to_remove_nodes() throws Exception {
+    Iterable<Node> items = context.evaluateOnDocument(context.compile("//test2/item"));
+    items.iterator().remove();
+  }
+
+  @Test(expected = NoSuchElementException.class)
+  public void should_fail_when_trying_to_access_more_items() throws Exception {
+    Iterable<Node> items = context.evaluateOnDocument(context.compile("//test2/item"));
+    Iterator<Node> iterator = items.iterator();
+    for (int i = 0; i < 5; i++) {
+      iterator.next();
+    }
   }
 
   @Test
@@ -114,7 +145,7 @@ public class XmlCheckContextImplTest {
 
   @Test
   public void should_report_issue_on_node() throws Exception {
-    Node node = context.evaluateXPathExpression("//exclude-default-interceptors").item(0);
+    Node node = firstNode(context, "//exclude-default-interceptors");
     int expectedLine = Integer.valueOf(node.getAttributes().getNamedItem(XmlParser.START_LINE_ATTRIBUTE).getNodeValue());
 
     doAnswer(new Answer<Void>() {
@@ -141,7 +172,7 @@ public class XmlCheckContextImplTest {
 
   @Test
   public void should_not_report_issue_on_node_text_node() throws Exception {
-    Node textNode = context.evaluateXPathExpression("//exclude-default-interceptors").item(0).getFirstChild();
+    Node textNode = firstNode(context, "//exclude-default-interceptors").getFirstChild();
     context.reportIssue(CHECK, textNode, "message");
     Mockito.verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), anyDouble());
   }

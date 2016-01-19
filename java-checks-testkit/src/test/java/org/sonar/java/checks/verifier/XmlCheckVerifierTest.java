@@ -65,13 +65,22 @@ public class XmlCheckVerifierTest {
       @Override
       public void scanFile(XmlCheckContext context) {
         try {
-          context.reportIssue(this, context.evaluateXPathExpression("//test2").item(0), "Message1");
-          context.reportIssue(this, context.evaluateXPathExpression("//test4").item(0), "Message2");
+          context.reportIssue(this, firstNode(context, "//test2"), "Message1");
+          context.reportIssue(this, firstNode(context, "//test4"), "Message2");
         } catch (Exception e) {
           Fail.fail();
         }
       }
     });
+  }
+
+  private static Node firstNode(XmlCheckContext context, String expression) throws XPathExpressionException {
+    Node result = null;
+    for (Node node : context.evaluateOnDocument(context.compile(expression))) {
+      result = node;
+      break;
+    }
+    return result;
   }
 
   @Test

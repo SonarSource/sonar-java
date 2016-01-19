@@ -32,6 +32,9 @@ import org.sonar.maven.model.XmlLocation;
 import org.sonar.maven.model.maven2.MavenProject;
 import org.w3c.dom.Document;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 
@@ -46,7 +49,6 @@ public class PomCheckContextImplTest {
 
   private static String reportedMessage;
   private PomCheckContext context;
-  private SonarComponents sonarComponents;
   private static final PomCheck CHECK = new PomCheck() {
     @Override
     public void scanFile(PomCheckContext context) {
@@ -57,8 +59,9 @@ public class PomCheckContextImplTest {
   @Before
   public void setup() {
     reportedMessage = null;
-    sonarComponents = createSonarComponentsMock();
-    context = new PomCheckContextImpl(mock(MavenProject.class), mock(Document.class), mock(File.class), sonarComponents);
+    SonarComponents sonarComponents = createSonarComponentsMock();
+    XPath xPath = XPathFactory.newInstance().newXPath();
+    context = new PomCheckContextImpl(mock(MavenProject.class), mock(Document.class), mock(File.class), xPath, sonarComponents);
   }
 
   @Test

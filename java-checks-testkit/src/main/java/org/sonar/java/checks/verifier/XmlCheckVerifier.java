@@ -32,6 +32,7 @@ import org.w3c.dom.Node;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,7 +104,7 @@ public class XmlCheckVerifier extends CheckVerifier {
     private final Set<AnalyzerMessage> messages = new HashSet<>();
 
     public FakeXmlCheckContext(Document document, File file) {
-      super(document, file, null);
+      super(document, file, XPathFactory.newInstance().newXPath(), null);
     }
 
     public Set<AnalyzerMessage> getMessages() {

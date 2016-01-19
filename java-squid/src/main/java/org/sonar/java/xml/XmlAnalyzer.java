@@ -34,6 +34,9 @@ import org.sonar.squidbridge.ProgressReport;
 import org.sonar.squidbridge.api.CodeVisitor;
 import org.w3c.dom.Document;
 
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +47,7 @@ public class XmlAnalyzer {
   private final SonarComponents sonarComponents;
   private final List<XmlCheck> xmlChecks;
   private final List<PomCheck> pomChecks;
+  private final XPath xPath;
 
   public XmlAnalyzer(SonarComponents sonarComponents, CodeVisitor... visitors) {
     ImmutableList.Builder<XmlCheck> xmlChecksBuilder = ImmutableList.builder();
@@ -51,14 +55,14 @@ public class XmlAnalyzer {
     for (CodeVisitor visitor : visitors) {
       if (visitor instanceof XmlCheck) {
         xmlChecksBuilder.add((XmlCheck) visitor);
-      }
-      if (visitor instanceof PomCheck) {
+      } else if (visitor instanceof PomCheck) {
         pomChecksBuilder.add((PomCheck) visitor);
       }
     }
     this.xmlChecks = xmlChecksBuilder.build();
     this.pomChecks = pomChecksBuilder.build();
     this.sonarComponents = sonarComponents;
+    this.xPath = XPathFactory.newInstance().newXPath();
   }
 
   public void scan(Iterable<File> files) {
@@ -98,7 +102,7 @@ public class XmlAnalyzer {
   }
 
   private void simpleScanAsXmlFile(File file, Document document) {
-    XmlCheckContext context = new XmlCheckContextImpl(document, file, sonarComponents);
+    XmlCheckContext context = new XmlCheckContextImpl(document, file, xPath, sonarComponents);
     for (XmlCheck check : xmlChecks) {
       check.scanFile(context);
     }
@@ -107,7 +111,7 @@ public class XmlAnalyzer {
   private void simpleScanAsPomFile(File file, Document document) {
     MavenProject project = PomParser.parseXML(file);
     if (project != null) {
-      PomCheckContext context = new PomCheckContextImpl(project, document, file, sonarComponents);
+      PomCheckContext context = new PomCheckContextImpl(project, document, file, xPath, sonarComponents);
       for (PomCheck check : pomChecks) {
         check.scanFile(context);
       }

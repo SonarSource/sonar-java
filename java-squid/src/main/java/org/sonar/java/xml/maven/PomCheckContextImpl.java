@@ -30,6 +30,8 @@ import org.sonar.maven.model.maven2.MavenProject;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Document;
 
+import javax.xml.xpath.XPath;
+
 import java.io.File;
 import java.util.List;
 
@@ -37,8 +39,8 @@ public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheck
 
   private final MavenProject project;
 
-  public PomCheckContextImpl(MavenProject project, Document document, File file, SonarComponents sonarComponents) {
-    super(document, file, sonarComponents);
+  public PomCheckContextImpl(MavenProject project, Document document, File file, XPath xPath, SonarComponents sonarComponents) {
+    super(document, file, xPath, sonarComponents);
     this.project = project;
   }
 
