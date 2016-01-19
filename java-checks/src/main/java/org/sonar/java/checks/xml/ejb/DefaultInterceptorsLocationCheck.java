@@ -28,6 +28,7 @@ import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -52,7 +53,7 @@ public class DefaultInterceptorsLocationCheck implements XmlCheck {
           reportOnClasses(context, interceptorBindings.item(i));
         }
       } catch (XPathExpressionException e) {
-        throw new IllegalArgumentException("[S3281] Unable evaluate xpath expression for file " + context.getFile().getAbsolutePath(), e);
+        throw new AnalysisException("[S3281] Unable evaluate xpath expression for file " + context.getFile().getAbsolutePath(), e);
       }
     }
   }
