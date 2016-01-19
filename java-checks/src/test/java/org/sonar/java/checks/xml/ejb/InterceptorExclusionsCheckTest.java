@@ -21,16 +21,19 @@ package org.sonar.java.checks.xml.ejb;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.XmlCheckVerifier;
+import org.sonar.java.xml.XmlCheck;
 
 public class InterceptorExclusionsCheckTest {
+
+  private static final XmlCheck CHECK = new InterceptorExclusionsCheck();
+
   @Test
   public void ejb_jar() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/ejb/InterceptorExclusionsCheck/ejb-jar.xml", new InterceptorExclusionsCheck());
+    XmlCheckVerifier.verify("src/test/files/checks/xml/ejb/InterceptorExclusionsCheck/ejb-jar.xml", CHECK);
   }
 
   @Test
   public void not_an_ejb_jar() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", new InterceptorExclusionsCheck());
+    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
   }
-
 }
