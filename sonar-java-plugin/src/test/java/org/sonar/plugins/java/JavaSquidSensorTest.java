@@ -40,7 +40,7 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.SonarComponents;
-import org.sonar.java.checks.naming.BadMethodName_S00100_Check;
+import org.sonar.java.checks.naming.BadMethodNameCheck;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -108,7 +108,7 @@ public class JavaSquidSensorTest {
 
   private static SonarComponents createSonarComponentsMock(DefaultFileSystem fs) {
     SonarComponents sonarComponents = mock(SonarComponents.class);
-    BadMethodName_S00100_Check check = new BadMethodName_S00100_Check();
+    BadMethodNameCheck check = new BadMethodNameCheck();
     when(sonarComponents.checkClasses()).thenReturn(new CodeVisitor[]{check});
 
     Symbolizable symbolizable = mock(Symbolizable.class);
@@ -123,7 +123,7 @@ public class JavaSquidSensorTest {
     when(sonarComponents.getFileSystem()).thenReturn(fs);
 
     Checks<JavaCheck> checks = mock(Checks.class);
-    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodName_S00100_Check.class)));
+    when(checks.ruleKey(any(JavaCheck.class))).thenReturn(RuleKey.of("squid", RuleAnnotationUtils.getRuleKey(BadMethodNameCheck.class)));
     when(sonarComponents.checks()).thenReturn(Lists.<Checks<JavaCheck>>newArrayList(checks));
 
     return sonarComponents;

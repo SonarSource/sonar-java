@@ -20,16 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.checks.naming.BadAbstractClassName_S00118_Check;
-import org.sonar.java.checks.naming.BadClassName_S00101_Check;
-import org.sonar.java.checks.naming.BadConstantName_S00115_Check;
+import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
+import org.sonar.java.checks.naming.BadClassNameCheck;
+import org.sonar.java.checks.naming.BadConstantNameCheck;
 import org.sonar.java.checks.naming.BadFieldNameStaticNonFinalCheck;
-import org.sonar.java.checks.naming.BadFieldName_S00116_Check;
-import org.sonar.java.checks.naming.BadInterfaceName_S00114_Check;
-import org.sonar.java.checks.naming.BadLocalVariableName_S00117_Check;
-import org.sonar.java.checks.naming.BadMethodName_S00100_Check;
-import org.sonar.java.checks.naming.BadPackageName_S00120_Check;
-import org.sonar.java.checks.naming.BadTypeParameterName_S00119_Check;
+import org.sonar.java.checks.naming.BadFieldNameCheck;
+import org.sonar.java.checks.naming.BadInterfaceNameCheck;
+import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
+import org.sonar.java.checks.naming.BadMethodNameCheck;
+import org.sonar.java.checks.naming.BadPackageNameCheck;
+import org.sonar.java.checks.naming.BadTypeParameterNameCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidCheck;
 import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
@@ -71,9 +71,9 @@ public final class CheckList {
 
   public static List<Class<? extends JavaCheck>> getJavaChecks() {
     return ImmutableList.<Class<? extends JavaCheck>>builder()
-      .add(TabCharacter_S00105_Check.class)
-      .add(TooLongLine_S00103_Check.class)
-      .add(MissingNewLineAtEndOfFile_S00113_Check.class)
+      .add(TabCharacterCheck.class)
+      .add(TooLongLineCheck.class)
+      .add(MissingNewLineAtEndOfFileCheck.class)
       .add(ParsingErrorCheck.class)
       .add(MethodComplexityCheck.class)
       .add(ClassComplexityCheck.class)
@@ -81,22 +81,22 @@ public final class CheckList {
       .add(NoSonarCheck.class)
       .add(CommentedOutCodeLineCheck.class)
       .add(EmptyFileCheck.class)
-      .add(EmptyBlock_S00108_Check.class)
-      .add(TooManyLinesOfCodeInFile_S00104_Check.class)
-      .add(TooManyParameters_S00107_Check.class)
-      .add(RawException_S00112_Check.class)
-      .add(BadMethodName_S00100_Check.class)
-      .add(BadClassName_S00101_Check.class)
-      .add(BadInterfaceName_S00114_Check.class)
-      .add(BadConstantName_S00115_Check.class)
-      .add(BadFieldName_S00116_Check.class)
+      .add(EmptyBlockCheck.class)
+      .add(TooManyLinesOfCodeInFileCheck.class)
+      .add(TooManyParametersCheck.class)
+      .add(RawExceptionCheck.class)
+      .add(BadMethodNameCheck.class)
+      .add(BadClassNameCheck.class)
+      .add(BadInterfaceNameCheck.class)
+      .add(BadConstantNameCheck.class)
+      .add(BadFieldNameCheck.class)
       .add(BadFieldNameStaticNonFinalCheck.class)
-      .add(BadLocalVariableName_S00117_Check.class)
-      .add(BadAbstractClassName_S00118_Check.class)
-      .add(BadTypeParameterName_S00119_Check.class)
-      .add(BadPackageName_S00120_Check.class)
-      .add(MissingCurlyBraces_S00121_Check.class)
-      .add(TooManyStatementsPerLine_S00122_Check.class)
+      .add(BadLocalVariableNameCheck.class)
+      .add(BadAbstractClassNameCheck.class)
+      .add(BadTypeParameterNameCheck.class)
+      .add(BadPackageNameCheck.class)
+      .add(MissingCurlyBracesCheck.class)
+      .add(TooManyStatementsPerLineCheck.class)
       .add(LeftCurlyBraceStartLineCheck.class)
       .add(RightCurlyBraceSameLineAsNextBlockCheck.class)
       .add(RightCurlyBraceStartLineCheck.class)
