@@ -24,13 +24,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.squidbridge.api.AnalysisException;
+import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class XPathInitializedXmlCheckTest {
@@ -104,6 +107,41 @@ public class XPathInitializedXmlCheckTest {
       }
     };
     check.scanFile(context);
+  }
+
+  @Test
+  public void should_report_issues_on_node() throws Exception {
+    final Node node = mock(Node.class);
+    final String message = "message";
+    XmlCheck check = new XPathInitializedXmlCheck() {
+      @Override
+      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      }
+
+      @Override
+      public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+        reportIssue(node, message);
+      }
+    };
+    check.scanFile(context);
+    verify(context).reportIssue(eq(check), eq(node), eq(message));
+  }
+
+  @Test
+  public void should_report_issues_on_File() throws Exception {
+    final String message = "message";
+    XmlCheck check = new XPathInitializedXmlCheck() {
+      @Override
+      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      }
+
+      @Override
+      public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+        reportIssueOnFile(message);
+      }
+    };
+    check.scanFile(context);
+    verify(context).reportIssueOnFile(eq(check), eq(message));
   }
 
   @Test

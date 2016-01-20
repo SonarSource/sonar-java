@@ -61,4 +61,8 @@ public abstract class XPathInitializedXmlCheck implements XmlCheck {
   public void reportIssue(Node node, String message) {
     context.reportIssue(this, node, message);
   }
+
+  public void reportIssueOnFile(String message) {
+    context.reportIssueOnFile(this, message);
+  }
 }
