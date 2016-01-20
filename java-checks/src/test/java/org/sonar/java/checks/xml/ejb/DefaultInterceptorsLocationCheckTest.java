@@ -23,18 +23,20 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.XmlCheckVerifier;
 
 public class DefaultInterceptorsLocationCheckTest {
+  private static final DefaultInterceptorsLocationCheck CHECK = new DefaultInterceptorsLocationCheck();
+
   @Test
   public void interceptors_in_ejb_jar() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/ejb/DefaultInterceptorsLocationCheck/ejb-jar.xml", new DefaultInterceptorsLocationCheck());
+    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/ejb/DefaultInterceptorsLocationCheck/ejb-jar.xml", CHECK);
   }
 
   @Test
   public void interceptors_not_in_ejb_jar() {
-    XmlCheckVerifier.verify("src/test/files/checks/xml/ejb/DefaultInterceptorsLocationCheck/ejb-interceptors.xml", new DefaultInterceptorsLocationCheck());
+    XmlCheckVerifier.verify("src/test/files/checks/xml/ejb/DefaultInterceptorsLocationCheck/ejb-interceptors.xml", CHECK);
   }
 
   @Test
   public void not_an_ejb_jar() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", new DefaultInterceptorsLocationCheck());
+    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/irrelevant.xml", CHECK);
   }
 }

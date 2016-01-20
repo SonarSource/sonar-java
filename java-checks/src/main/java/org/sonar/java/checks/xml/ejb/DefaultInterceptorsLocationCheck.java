@@ -23,15 +23,14 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XmlCheck;
+import org.sonar.java.xml.XPathInitializedXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 @Rule(
@@ -42,26 +41,21 @@ import javax.xml.xpath.XPathExpressionException;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault
-public class DefaultInterceptorsLocationCheck implements XmlCheck {
+public class DefaultInterceptorsLocationCheck extends XPathInitializedXmlCheck {
+
+  private XPathExpression defaultInterceptorClassesExpression;
 
   @Override
-  public void scanFile(XmlCheckContext context) {
-    if (!"ejb-jar.xml".equalsIgnoreCase(context.getFile().getName())) {
-      try {
-        NodeList interceptorBindings = context.evaluateXPathExpression("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]");
-        for (int i = 0; i < interceptorBindings.getLength(); i++) {
-          reportOnClasses(context, interceptorBindings.item(i));
-        }
-      } catch (XPathExpressionException e) {
-        throw new AnalysisException("[S3281] Unable evaluate xpath expression for file " + context.getFile().getAbsolutePath(), e);
-      }
-    }
+  public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+    defaultInterceptorClassesExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
   }
 
-  private void reportOnClasses(XmlCheckContext context, Node interceptorBinding) throws XPathExpressionException {
-    NodeList classes = context.evaluateXPathExpressionFromNode(interceptorBinding, "interceptor-class");
-    for (int i = 0; i < classes.getLength(); i++) {
-      context.reportIssue(this, classes.item(i), "Move this default interceptor to \"ejb-jar.xml\"");
+  @Override
+  public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+    if (!"ejb-jar.xml".equalsIgnoreCase(context.getFile().getName())) {
+      for (Node interceptorClass : context.evaluateOnFile(defaultInterceptorClassesExpression)) {
+        reportIssue(interceptorClass, "Move this default interceptor to \"ejb-jar.xml\"");
+      }
     }
   }
 }

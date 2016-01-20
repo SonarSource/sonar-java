@@ -19,6 +19,8 @@
  */
 package org.sonar.java.xml;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Document;
@@ -28,20 +30,23 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
 import java.io.File;
+import java.util.List;
 
 public class XmlCheckContextImpl implements XmlCheckContext {
 
   private final Document document;
   private final File file;
   private final SonarComponents sonarComponents;
+  private final XPath xPath;
 
-  public XmlCheckContextImpl(Document document, File file, SonarComponents sonarComponents) {
+  public XmlCheckContextImpl(Document document, File file, XPath xPath, SonarComponents sonarComponents) {
     this.document = document;
     this.file = file;
+    this.xPath = xPath;
     this.sonarComponents = sonarComponents;
   }
 
@@ -51,15 +56,26 @@ public class XmlCheckContextImpl implements XmlCheckContext {
   }
 
   @Override
-  public NodeList evaluateXPathExpression(String expression) throws XPathExpressionException {
-    XPath xPath = XPathFactory.newInstance().newXPath();
-    return (NodeList) xPath.compile(expression).evaluate(document, XPathConstants.NODESET);
+  public XPathExpression compile(String expression) throws XPathExpressionException {
+    return xPath.compile(expression);
   }
 
   @Override
-  public NodeList evaluateXPathExpressionFromNode(Node node, String expression) throws XPathExpressionException {
-    XPath xPath = XPathFactory.newInstance().newXPath();
-    return (NodeList) xPath.compile(expression).evaluate(node, XPathConstants.NODESET);
+  public List<Node> evaluateOnFile(XPathExpression expression) throws XPathExpressionException {
+    return evaluate(expression, document);
+  }
+
+  @Override
+  public List<Node> evaluate(XPathExpression expression, Node node) throws XPathExpressionException {
+    NodeList nodeList = (NodeList) expression.evaluate(node, XPathConstants.NODESET);
+    if (nodeList.getLength() == 0) {
+      return ImmutableList.of();
+    }
+    Builder<Node> builder = ImmutableList.<Node>builder();
+    for (int i = 0; i < nodeList.getLength(); i++) {
+      builder.add(nodeList.item(i));
+    }
+    return builder.build();
   }
 
   @Override
