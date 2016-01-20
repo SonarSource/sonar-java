@@ -77,35 +77,45 @@ public class XmlCheckContextImpl implements XmlCheckContext {
   private static class NodeListIterable implements Iterable<Node> {
 
     private final NodeList nodeList;
-    private final int length;
 
     public NodeListIterable(NodeList nodeList) {
       this.nodeList = nodeList;
-      this.length = nodeList.getLength();
     }
 
     @Override
     public Iterator<Node> iterator() {
-      return new Iterator<Node>() {
-        private int count = 0;
+      return new NodeListIterator(nodeList);
+    }
 
-        @Override
-        public boolean hasNext() {
-          return count < length;
-        }
+    private static class NodeListIterator implements Iterator<Node> {
+      private final NodeList nodeList;
+      private final int length;
+      private int count = 0;
 
-        @Override
-        public Node next() {
-          if (count > length)
-            throw new NoSuchElementException();
-          return nodeList.item(count++);
-        }
+      public NodeListIterator(NodeList nodeList) {
+        this.nodeList = nodeList;
+        this.length = nodeList.getLength();
+      }
 
-        @Override
-        public void remove() {
-          throw new UnsupportedOperationException();
+      @Override
+      public boolean hasNext() {
+        return count < length;
+      }
+
+      @Override
+      public Node next() {
+        Node node = nodeList.item(count);
+        if (node == null) {
+          throw new NoSuchElementException();
         }
-      };
+        count++;
+        return node;
+      }
+
+      @Override
+      public void remove() {
+        throw new UnsupportedOperationException();
+      }
     }
   }
 
