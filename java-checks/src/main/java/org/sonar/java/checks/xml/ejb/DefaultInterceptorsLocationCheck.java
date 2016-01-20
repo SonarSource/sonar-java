@@ -23,7 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XPathInitializerXmlCheck;
+import org.sonar.java.xml.XPathInitializedXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -41,24 +41,20 @@ import javax.xml.xpath.XPathExpressionException;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault
-public class DefaultInterceptorsLocationCheck extends XPathInitializerXmlCheck {
+public class DefaultInterceptorsLocationCheck extends XPathInitializedXmlCheck {
 
-  private XPathExpression defaultInterceptorBindingsExpression;
-  private XPathExpression interceptorClassesExpression;
+  private XPathExpression defaultInterceptorClassesExpression;
 
   @Override
   public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
-    defaultInterceptorBindingsExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]");
-    interceptorClassesExpression = context.compile("interceptor-class");
+    defaultInterceptorClassesExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
   }
 
   @Override
-  public void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
     if (!"ejb-jar.xml".equalsIgnoreCase(context.getFile().getName())) {
-      for (Node interceptorBinding : context.evaluateOnFile(defaultInterceptorBindingsExpression)) {
-        for (Node interceptorClass : context.evaluate(interceptorClassesExpression, interceptorBinding)) {
-          context.reportIssue(this, interceptorClass, "Move this default interceptor to \"ejb-jar.xml\"");
-        }
+      for (Node interceptorClass : context.evaluateOnFile(defaultInterceptorClassesExpression)) {
+        reportIssue(interceptorClass, "Move this default interceptor to \"ejb-jar.xml\"");
       }
     }
   }

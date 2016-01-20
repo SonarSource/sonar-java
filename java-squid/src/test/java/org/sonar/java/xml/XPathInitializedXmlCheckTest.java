@@ -33,7 +33,7 @@ import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class XPathInitializerXmlCheckTest {
+public class XPathInitializedXmlCheckTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -50,14 +50,14 @@ public class XPathInitializerXmlCheckTest {
 
   @Test()
   public void should_fail_when_initialiation_fail() throws Exception {
-    XmlCheck check = new XPathInitializerXmlCheck() {
+    XmlCheck check = new XPathInitializedXmlCheck() {
       @Override
       public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
         throw new XPathExpressionException("");
       }
 
       @Override
-      public void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
       }
     };
     thrown.expect(AnalysisException.class);
@@ -68,13 +68,13 @@ public class XPathInitializerXmlCheckTest {
 
   @Test()
   public void should_fail_when_scan_fail() throws Exception {
-    XmlCheck check = new XPathInitializerXmlCheck() {
+    XmlCheck check = new XPathInitializedXmlCheck() {
       @Override
       public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
       }
 
       @Override
-      public void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
         throw new XPathExpressionException("");
       }
     };
@@ -87,12 +87,12 @@ public class XPathInitializerXmlCheckTest {
 
   @Test
   public void init_should_be_called_before_scan() throws Exception {
-    XmlCheck check = new XPathInitializerXmlCheck() {
+    XmlCheck check = new XPathInitializedXmlCheck() {
       private boolean initialized = false;
       private boolean scanned = false;
 
       @Override
-      public void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
         assertThat(initialized).isTrue();
         scanned = true;
       }
@@ -117,12 +117,12 @@ public class XPathInitializerXmlCheckTest {
     assertThat(check.countedScan).isEqualTo(numberScan);
   }
 
-  private static class CounterXmlCheck extends XPathInitializerXmlCheck {
+  private static class CounterXmlCheck extends XPathInitializedXmlCheck {
     private int countedScan = 0;
     private int countedInit = 0;
 
     @Override
-    public void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException {
+    public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
       countedScan++;
     }
 

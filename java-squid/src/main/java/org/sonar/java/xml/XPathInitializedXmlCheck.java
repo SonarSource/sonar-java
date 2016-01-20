@@ -20,21 +20,24 @@
 package org.sonar.java.xml;
 
 import org.sonar.squidbridge.api.AnalysisException;
+import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpressionException;
 
-public abstract class XPathInitializerXmlCheck implements XmlCheck {
+public abstract class XPathInitializedXmlCheck implements XmlCheck {
 
   private boolean initialized = false;
+  private XmlCheckContext context;
 
   @Override
   public void scanFile(XmlCheckContext context) {
+    this.context = context;
     try {
       if (!initialized) {
         initXPathExpressions(context);
         initialized = true;
       }
-      scanFileWithExpressions(context);
+      scanFileWithXPathExpressions(context);
     } catch (XPathExpressionException e) {
       throw new AnalysisException("Unable perform analysis on file " + context.getFile().getAbsolutePath(), e);
     }
@@ -42,7 +45,7 @@ public abstract class XPathInitializerXmlCheck implements XmlCheck {
 
   /**
    * Will be called only once by XmlCheck.
-   * Using {@link XmlCheckContext#compile(String)}, should compile all the XPath expressions which will be re-used for all the analyzed files.
+   * Using {@link XmlCheckContext#compile(String)}, should compile all the fixed XPath expressions which will be re-used when analyzing files.
    * @param context
    * @throws XPathExpressionException
    */
@@ -53,6 +56,9 @@ public abstract class XPathInitializerXmlCheck implements XmlCheck {
    * @param context
    * @throws XPathExpressionException
    */
-  public abstract void scanFileWithExpressions(XmlCheckContext context) throws XPathExpressionException;
+  public abstract void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException;
 
+  public void reportIssue(Node node, String message) {
+    context.reportIssue(this, node, message);
+  }
 }
