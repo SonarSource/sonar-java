@@ -64,10 +64,9 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -126,8 +125,8 @@ public class CFG {
   public static class Block {
     private int id;
     private final List<Tree> elements = new ArrayList<>();
-    private final Set<Block> successors = new HashSet<>();
-    private final Set<Block> predecessors = new HashSet<>();
+    private final Set<Block> successors = new LinkedHashSet<>();
+    private final Set<Block> predecessors = new LinkedHashSet<>();
     private Block trueBlock;
     private Block falseBlock;
     private Block exitBlock;

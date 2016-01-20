@@ -1437,4 +1437,17 @@ class SuperClass {
       log("Error");
     }
   }
+
+  void SONARJAVA_1485(boolean condition) {
+    boolean still = false;
+    for (Foo foo : foos) {
+      for (Foo foo2 : foos) {
+        if (condition) {
+          still = true;
+        }
+      }
+    }
+    if (still) {
+    }
+  }
 }
