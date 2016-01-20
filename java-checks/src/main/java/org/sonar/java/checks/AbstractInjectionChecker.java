@@ -51,7 +51,9 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
   }
 
   protected boolean isDynamicString(Tree methodTree, ExpressionTree arg, @Nullable Symbol currentlyChecking, boolean firstLevel) {
-    if (arg.is(Tree.Kind.IDENTIFIER)) {
+    if (arg.is(Tree.Kind.MEMBER_SELECT)) {
+      return !isConstant(((MemberSelectExpressionTree) arg).identifier().symbol());
+    } else if (arg.is(Tree.Kind.IDENTIFIER)) {
       return isIdentifierDynamicString(methodTree, (IdentifierTree) arg, currentlyChecking, firstLevel);
     } else if (arg.is(Tree.Kind.PLUS)) {
       BinaryExpressionTree binaryArg = (BinaryExpressionTree) arg;

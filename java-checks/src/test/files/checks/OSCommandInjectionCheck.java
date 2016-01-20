@@ -52,4 +52,16 @@ class A {
   private static List<String> getCommands() {
     return new ArrayList<String>();
   }
+
+
+  class Commands {
+    public static final String LS = "ls";
+    public static final String ROOT = "/";
+  }
+
+  public static void main(String... args) throws Exception {
+    ProcessBuilder b = new ProcessBuilder(Commands.LS, Commands.ROOT); //
+    Process p = b.start();
+    new BufferedReader(new InputStreamReader(p.getInputStream())).lines().forEach(System.out::println);
+  }
 }
