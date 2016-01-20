@@ -72,21 +72,6 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
     tree.accept(new DeprecatedTypeVisitor());
   }
 
-  private static boolean isDeprecatedType(Type symbolType) {
-    if (symbolType.isClass()) {
-      for (String deprecatedType : REPLACEMENTS.keySet()) {
-        if (symbolType.is(deprecatedType)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private static boolean isOverriding(MethodTree tree) {
-    return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
-  }
-
   private class DeprecatedTypeVisitor extends BaseTreeVisitor {
 
     @Override
@@ -111,6 +96,10 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
       scan(tree.block());
     }
 
+    private boolean isOverriding(MethodTree tree) {
+      return BooleanUtils.isTrue(((MethodTreeImpl) tree).isOverriding());
+    }
+
     @Override
     public void visitVariable(VariableTree tree) {
       ExpressionTree initializer = tree.initializer();
@@ -123,6 +112,17 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
       if (isDeprecatedType(type)) {
         addIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
         return true;
+      }
+      return false;
+    }
+
+    private boolean isDeprecatedType(Type symbolType) {
+      if (symbolType.isClass()) {
+        for (String deprecatedType : REPLACEMENTS.keySet()) {
+          if (symbolType.is(deprecatedType)) {
+            return true;
+          }
+        }
       }
       return false;
     }

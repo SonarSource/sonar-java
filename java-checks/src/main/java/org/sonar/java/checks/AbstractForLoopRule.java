@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 import static org.sonar.java.model.LiteralUtils.intLiteralValue;
@@ -54,11 +55,6 @@ public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
   }
 
   public abstract void visitForStatement(ForStatementTree forStatement);
-
-  @CheckForNull
-  private static Integer minus(@Nullable Integer nullableInteger) {
-    return nullableInteger == null ? null : -nullableInteger;
-  }
 
   protected static boolean isSameIdentifier(IdentifierTree identifier, ExpressionTree expression) {
     if (expression.is(Tree.Kind.IDENTIFIER)) {
@@ -183,6 +179,11 @@ public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
         return new ForLoopIncrement((IdentifierTree) expression, value);
       }
       return null;
+    }
+
+    @CheckForNull
+    private static Integer minus(@Nullable Integer nullableInteger) {
+      return nullableInteger == null ? null : -nullableInteger;
     }
 
     private static ForLoopIncrement assignmentIncrement(AssignmentExpressionTree assignmentExpression) {

@@ -71,9 +71,6 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
     return superType != null && superType.equals(classSymbol.owner().type());
   }
 
-  private static boolean isConstructor(Symbol symbol) {
-    return "<init>".equals(symbol.name());
-  }
 
   private class MethodInvocationVisitor extends BaseTreeVisitor {
     private final Symbol.TypeSymbol classSymbol;
@@ -94,6 +91,10 @@ public class CallSuperMethodFromInnerClassCheck extends SubscriptionBaseVisitor 
 
     private boolean isCallToSuperclassMethod(Symbol symbol) {
       return symbol.isMethodSymbol() && !isConstructor(symbol) && isInherited(symbol) && outerClassHasMethodWithSameName(symbol);
+    }
+
+    private boolean isConstructor(Symbol symbol) {
+      return "<init>".equals(symbol.name());
     }
 
     private boolean isInherited(Symbol symbol) {
