@@ -25,7 +25,12 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,6 +40,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(
@@ -47,16 +53,58 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
 
+  private List<VariableTree> issuableVariables = new ArrayList<>();
+  private List<VariableTree> excludedVariables = new ArrayList<>();
+
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.VARIABLE);
+    return ImmutableList.of(Tree.Kind.VARIABLE, Kind.METHOD);
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    if(context.getSemanticModel() == null) {
+      return;
+    }
+    super.scanFile(context);
+    reportIssuesOnVariable();
   }
 
   @Override
   public void visitNode(Tree tree) {
-    VariableTree variable = (VariableTree) tree;
-    if (hasSemantic() && isOwnedByAServlet(variable) && !isStaticOrFinal(variable)) {
+    if (tree.is(Kind.METHOD) && isServletInit((MethodTree) tree)) {
+      tree.accept(new AssignmentVisitor());
+    } else if (tree.is(Kind.VARIABLE)) {
+      VariableTree variable = (VariableTree) tree;
+      if (isOwnedByAServlet(variable) && !isStaticOrFinal(variable)) {
+        issuableVariables.add(variable);
+
+      }
+    }
+  }
+
+  private static boolean isServletInit(MethodTree tree) {
+    return "init".equals(tree.simpleName().name()) && tree.parameters().size() == 1 && tree.parameters().get(0).symbol().type().is("javax.servlet.ServletConfig");
+  }
+
+  private void reportIssuesOnVariable() {
+    issuableVariables.removeAll(excludedVariables);
+    for (VariableTree variable : issuableVariables) {
       reportIssue(variable.simpleName(), "Remove this misleading mutable servlet instance fields or make it \"static\" and/or \"final\"");
+    }
+    issuableVariables.clear();
+    excludedVariables.clear();
+  }
+
+  private class AssignmentVisitor extends BaseTreeVisitor {
+    @Override
+    public void visitAssignmentExpression(AssignmentExpressionTree tree) {
+      if (tree.variable().is(Kind.IDENTIFIER)) {
+        Tree declaration = ((IdentifierTree) tree.variable()).symbol().declaration();
+        if (declaration != null && declaration.is(Kind.VARIABLE)) {
+          excludedVariables.add((VariableTree) declaration);
+        }
+      }
     }
   }
 
