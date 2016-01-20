@@ -23,8 +23,8 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
-import org.sonar.java.checks.naming.BadFieldNameStaticNonFinalCheck;
 import org.sonar.java.checks.naming.BadFieldNameCheck;
+import org.sonar.java.checks.naming.BadFieldNameStaticNonFinalCheck;
 import org.sonar.java.checks.naming.BadInterfaceNameCheck;
 import org.sonar.java.checks.naming.BadLocalVariableNameCheck;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
@@ -51,6 +51,7 @@ import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
+import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
@@ -427,6 +428,7 @@ public final class CheckList {
       .addAll(getMavenChecks())
       .add(DefaultInterceptorsLocationCheck.class)
       .add(InterceptorExclusionsCheck.class)
+      .add(SingleConnectionFactoryCheck.class)
       .build();
   }
 
