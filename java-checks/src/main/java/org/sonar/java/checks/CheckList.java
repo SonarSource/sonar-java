@@ -44,6 +44,7 @@ import org.sonar.java.checks.unused.UnusedProtectedMethodCheck;
 import org.sonar.java.checks.unused.UnusedReturnedDataCheck;
 import org.sonar.java.checks.unused.UnusedTestRuleCheck;
 import org.sonar.java.checks.unused.UnusedTypeParameterCheck;
+import org.sonar.java.checks.xml.SecurityConstraintsInWebXmlCheck;
 import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
@@ -429,6 +430,7 @@ public final class CheckList {
       .add(DefaultInterceptorsLocationCheck.class)
       .add(InterceptorExclusionsCheck.class)
       .add(SingleConnectionFactoryCheck.class)
+      .add(SecurityConstraintsInWebXmlCheck.class)
       .build();
   }
 

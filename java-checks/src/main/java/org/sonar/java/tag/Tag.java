@@ -35,6 +35,7 @@ public final class Tag {
   public static final String OWASP_A2 = "owasp-a2";
   public static final String OWASP_A5 = "owasp-a5";
   public static final String OWASP_A6 = "owasp-a6";
+  public static final String OWASP_A7 = "owasp-a7";
   public static final String OWASP_A9 = "owasp-a9";
   public static final String SECURITY = "security";
   public static final String PERFORMANCE = "performance";
@@ -61,6 +62,7 @@ public final class Tag {
   public static final String TESTS = "tests";
   public static final String STRUTS = "struts";
   public static final String MAVEN = "maven";
+  public static final String WEBSPHERE = "websphere";
 
   private Tag() {
   }
