@@ -24,7 +24,7 @@ import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpressionException;
 
-public abstract class XPathInitializedXmlCheck implements XmlCheck {
+public abstract class XPathXmlCheck implements XmlCheck {
 
   private boolean initialized = false;
   private XmlCheckContext context;
@@ -34,7 +34,7 @@ public abstract class XPathInitializedXmlCheck implements XmlCheck {
     this.context = context;
     try {
       if (!initialized) {
-        initXPathExpressions(context);
+        precompileXPathExpressions(context);
         initialized = true;
       }
       scanFileWithXPathExpressions(context);
@@ -49,7 +49,7 @@ public abstract class XPathInitializedXmlCheck implements XmlCheck {
    * @param context
    * @throws XPathExpressionException
    */
-  public abstract void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException;
+  public abstract void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException;
 
   /**
    * Will be called for each file.

@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XPathInitializedXmlCheck;
+import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -42,13 +42,13 @@ import javax.xml.xpath.XPathExpressionException;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("2min")
 @ActivatedByDefault
-public class SingleConnectionFactoryCheck extends XPathInitializedXmlCheck {
+public class SingleConnectionFactoryCheck extends XPathXmlCheck {
 
   private XPathExpression singleConnectionFactoryBeansExpression;
   private XPathExpression reconnectOnExceptionPropertyValueExpression;
 
   @Override
-  public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
     singleConnectionFactoryBeansExpression = context.compile("beans/bean[@class='org.springframework.jms.connection.SingleConnectionFactory']");
     reconnectOnExceptionPropertyValueExpression = context.compile("property[@name='reconnectOnException' and value='true']");
   }

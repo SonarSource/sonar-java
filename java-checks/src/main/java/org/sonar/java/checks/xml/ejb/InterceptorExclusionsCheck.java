@@ -23,7 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XPathInitializedXmlCheck;
+import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -39,13 +39,13 @@ import javax.xml.xpath.XPathExpressionException;
   tags = {Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("15min")
-public class InterceptorExclusionsCheck extends XPathInitializedXmlCheck {
+public class InterceptorExclusionsCheck extends XPathXmlCheck {
 
   private XPathExpression notDefaultInterceptorBindingsExpression;
   private XPathExpression exclusionsExpression;
 
   @Override
-  public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
     notDefaultInterceptorBindingsExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name!=\"*\"]");
     exclusionsExpression = context.compile("*[self::exclude-default-interceptors[text()=\"true\"] or self::exclude-class-interceptors[text()=\"true\"]]");
   }

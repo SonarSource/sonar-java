@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XPathInitializedXmlCheck;
+import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -41,12 +41,12 @@ import java.io.File;
   tags = {Tag.CWE, Tag.JEE, Tag.OWASP_A7, Tag.SECURITY, Tag.WEBSPHERE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("3h")
-public class SecurityConstraintsInWebXmlCheck extends XPathInitializedXmlCheck {
+public class SecurityConstraintsInWebXmlCheck extends XPathXmlCheck {
 
   private XPathExpression securityConstraintExpression;
 
   @Override
-  public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
     this.securityConstraintExpression = context.compile("web-app/security-constraint");
   }
 

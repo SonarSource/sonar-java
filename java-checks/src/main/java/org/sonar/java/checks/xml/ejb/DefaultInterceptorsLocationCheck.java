@@ -23,7 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XPathInitializedXmlCheck;
+import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -41,12 +41,12 @@ import javax.xml.xpath.XPathExpressionException;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault
-public class DefaultInterceptorsLocationCheck extends XPathInitializedXmlCheck {
+public class DefaultInterceptorsLocationCheck extends XPathXmlCheck {
 
   private XPathExpression defaultInterceptorClassesExpression;
 
   @Override
-  public void initXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
     defaultInterceptorClassesExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
   }
 
