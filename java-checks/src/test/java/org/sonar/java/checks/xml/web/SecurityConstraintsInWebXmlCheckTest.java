@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.xml;
+package org.sonar.java.checks.xml.web;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.XmlCheckVerifier;
@@ -30,14 +30,14 @@ public class SecurityConstraintsInWebXmlCheckTest {
   @Test
   public void web_xml_without_constraints() {
     XmlCheckVerifier.verifyIssueOnFile(
-      "src/test/files/checks/xml/SecurityConstraintsInWebXmlCheck/withoutSecurityConstraints/web.xml",
+      "src/test/files/checks/xml/web/SecurityConstraintsInWebXmlCheck/withoutSecurityConstraints/web.xml",
       "Add \"security-constraint\" elements to this descriptor.",
       CHECK);
   }
 
   @Test
   public void web_xml_with_constraints() {
-    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/SecurityConstraintsInWebXmlCheck/withSecurityConstraints/web.xml", CHECK);
+    XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/web/SecurityConstraintsInWebXmlCheck/withSecurityConstraints/web.xml", CHECK);
   }
 
   @Test
