@@ -25,7 +25,7 @@ CI)
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.login=$SONAR_TOKEN
 
-  elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ "$TRAVIS_SECURE_ENV_VARS" == "true"]; then
+  elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -z "$GITHUB_TOKEN" ]; then
     # For security reasons environment variables are not available on the pull requests
     # coming from outside repositories
     # http://docs.travis-ci.com/user/pull-requests/#Security-Restrictions-when-testing-Pull-Requests
