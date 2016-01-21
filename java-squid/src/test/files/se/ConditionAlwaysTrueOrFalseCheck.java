@@ -1450,4 +1450,24 @@ class SuperClass {
     if (still) {
     }
   }
+  
+  public void incrementChange(int n, int m) {
+    int i = n;
+    if( i == m) {
+      ++i;
+      if ( i == m) {
+        log("equality");
+      }
+    }
+  }
+  
+  public void decrementChange(int n, int m) {
+    int i = n;
+    if( i == m) {
+      --i;
+      if ( i == m) {
+        log("equality");
+      }
+    }
+  }
 }

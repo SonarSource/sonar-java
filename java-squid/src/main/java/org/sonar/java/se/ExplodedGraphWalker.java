@@ -508,7 +508,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     programState = unstackUnary.state;
     SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
     unarySymbolicValue.computedFrom(unstackUnary.values);
-    if(tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_DECREMENT)
+    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)
         && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
       programState = programState.put(((IdentifierTree) ((UnaryExpressionTree) tree).expression()).symbol(), unarySymbolicValue);
     }
