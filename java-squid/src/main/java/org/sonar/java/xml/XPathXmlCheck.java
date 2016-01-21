@@ -19,10 +19,7 @@
  */
 package org.sonar.java.xml;
 
-import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Node;
-
-import javax.xml.xpath.XPathExpressionException;
 
 public abstract class XPathXmlCheck implements XmlCheck {
 
@@ -32,31 +29,25 @@ public abstract class XPathXmlCheck implements XmlCheck {
   @Override
   public void scanFile(XmlCheckContext context) {
     this.context = context;
-    try {
-      if (!initialized) {
-        precompileXPathExpressions(context);
-        initialized = true;
-      }
-      scanFileWithXPathExpressions(context);
-    } catch (XPathExpressionException e) {
-      throw new AnalysisException("Unable perform analysis on file " + context.getFile().getAbsolutePath(), e);
+    if (!initialized) {
+      precompileXPathExpressions(context);
+      initialized = true;
     }
+    scanFileWithXPathExpressions(context);
   }
 
   /**
    * Will be called only once by XmlCheck.
    * Using {@link XmlCheckContext#compile(String)}, should compile all the fixed XPath expressions which will be re-used when analyzing files.
    * @param context
-   * @throws XPathExpressionException
    */
-  public abstract void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException;
+  public abstract void precompileXPathExpressions(XmlCheckContext context);
 
   /**
    * Will be called for each file.
    * @param context
-   * @throws XPathExpressionException
    */
-  public abstract void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException;
+  public abstract void scanFileWithXPathExpressions(XmlCheckContext context);
 
   public void reportIssue(Node node, String message) {
     context.reportIssue(this, node, message);

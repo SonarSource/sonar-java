@@ -32,7 +32,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 
 @Rule(
   key = "S3438",
@@ -48,13 +47,13 @@ public class SingleConnectionFactoryCheck extends XPathXmlCheck {
   private XPathExpression reconnectOnExceptionPropertyValueExpression;
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) {
     singleConnectionFactoryBeansExpression = context.compile("beans/bean[@class='org.springframework.jms.connection.SingleConnectionFactory']");
     reconnectOnExceptionPropertyValueExpression = context.compile("property[@name='reconnectOnException' and value='true']");
   }
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void scanFileWithXPathExpressions(XmlCheckContext context) {
     for (Node bean : context.evaluateOnDocument(singleConnectionFactoryBeansExpression)) {
       if (!hasPropertyAsAttribute(bean) && !hasPropertyAsChild(bean, context)) {
         reportIssue(bean, "Add a \"reconnectOnException\" property, set to \"true\"");
@@ -67,7 +66,7 @@ public class SingleConnectionFactoryCheck extends XPathXmlCheck {
     return attribute != null && "true".equals(attribute.getNodeValue());
   }
 
-  private boolean hasPropertyAsChild(Node bean, XmlCheckContext context) throws XPathExpressionException {
+  private boolean hasPropertyAsChild(Node bean, XmlCheckContext context) {
     return !Iterables.isEmpty(context.evaluate(reconnectOnExceptionPropertyValueExpression, bean));
   }
 

@@ -30,7 +30,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 
 @Rule(
   key = "S3282",
@@ -45,19 +44,19 @@ public class InterceptorExclusionsCheck extends XPathXmlCheck {
   private XPathExpression exclusionsExpression;
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) {
     notDefaultInterceptorBindingsExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name!=\"*\"]");
     exclusionsExpression = context.compile("*[self::exclude-default-interceptors[text()=\"true\"] or self::exclude-class-interceptors[text()=\"true\"]]");
   }
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void scanFileWithXPathExpressions(XmlCheckContext context) {
     for (Node interceptorBinding : context.evaluateOnDocument(notDefaultInterceptorBindingsExpression)) {
       checkExclusions(context, interceptorBinding);
     }
   }
 
-  private void checkExclusions(XmlCheckContext context, Node interceptorBinding) throws XPathExpressionException {
+  private void checkExclusions(XmlCheckContext context, Node interceptorBinding) {
     for (Node exclusion : context.evaluate(exclusionsExpression, interceptorBinding)) {
       reportIssue(exclusion, "Move this exclusion into the class as an annotation.");
     }

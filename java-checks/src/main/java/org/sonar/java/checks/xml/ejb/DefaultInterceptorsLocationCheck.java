@@ -31,7 +31,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 
 @Rule(
   key = "S3281",
@@ -46,12 +45,12 @@ public class DefaultInterceptorsLocationCheck extends XPathXmlCheck {
   private XPathExpression defaultInterceptorClassesExpression;
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) {
     defaultInterceptorClassesExpression = context.compile("ejb-jar/assembly-descriptor/interceptor-binding[ejb-name=\"*\"]/interceptor-class");
   }
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void scanFileWithXPathExpressions(XmlCheckContext context) {
     if (!"ejb-jar.xml".equalsIgnoreCase(context.getFile().getName())) {
       for (Node interceptorClass : context.evaluateOnDocument(defaultInterceptorClassesExpression)) {
         reportIssue(interceptorClass, "Move this default interceptor to \"ejb-jar.xml\"");

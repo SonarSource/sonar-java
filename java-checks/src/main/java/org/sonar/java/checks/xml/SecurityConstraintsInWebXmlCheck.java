@@ -30,7 +30,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
 
@@ -46,18 +45,18 @@ public class SecurityConstraintsInWebXmlCheck extends XPathXmlCheck {
   private XPathExpression securityConstraintExpression;
 
   @Override
-  public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void precompileXPathExpressions(XmlCheckContext context) {
     this.securityConstraintExpression = context.compile("web-app/security-constraint");
   }
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+  public void scanFileWithXPathExpressions(XmlCheckContext context) {
     if (isWebXmlFile(context.getFile()) && hasNoSecurityConstraint(context)) {
       reportIssueOnFile("Add \"security-constraint\" elements to this descriptor.");
     }
   }
 
-  private boolean hasNoSecurityConstraint(XmlCheckContext context) throws XPathExpressionException {
+  private boolean hasNoSecurityConstraint(XmlCheckContext context) {
     return Iterables.isEmpty(context.evaluateOnDocument(securityConstraintExpression));
   }
 

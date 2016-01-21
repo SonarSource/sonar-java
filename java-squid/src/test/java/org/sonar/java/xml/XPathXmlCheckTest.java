@@ -23,10 +23,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Node;
-
-import javax.xml.xpath.XPathExpressionException;
 
 import java.io.File;
 
@@ -51,42 +48,6 @@ public class XPathXmlCheckTest {
     when(f.getAbsolutePath()).thenReturn("'path'");
   }
 
-  @Test()
-  public void should_fail_when_initialiation_fail() throws Exception {
-    XmlCheck check = new XPathXmlCheck() {
-      @Override
-      public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
-        throw new XPathExpressionException("");
-      }
-
-      @Override
-      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
-      }
-    };
-    thrown.expect(AnalysisException.class);
-    thrown.expectMessage("Unable perform analysis on file 'path'");
-
-    check.scanFile(context);
-  }
-
-  @Test()
-  public void should_fail_when_scan_fail() throws Exception {
-    XmlCheck check = new XPathXmlCheck() {
-      @Override
-      public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
-      }
-
-      @Override
-      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
-        throw new XPathExpressionException("");
-      }
-    };
-
-    thrown.expect(AnalysisException.class);
-    thrown.expectMessage("Unable perform analysis on file 'path'");
-
-    check.scanFile(context);
-  }
 
   @Test
   public void init_should_be_called_before_scan() throws Exception {
@@ -95,13 +56,13 @@ public class XPathXmlCheckTest {
       private boolean scanned = false;
 
       @Override
-      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void scanFileWithXPathExpressions(XmlCheckContext context) {
         assertThat(initialized).isTrue();
         scanned = true;
       }
 
       @Override
-      public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void precompileXPathExpressions(XmlCheckContext context) {
         assertThat(scanned).isFalse();
         initialized = true;
       }
@@ -115,11 +76,11 @@ public class XPathXmlCheckTest {
     final String message = "message";
     XmlCheck check = new XPathXmlCheck() {
       @Override
-      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void scanFileWithXPathExpressions(XmlCheckContext context) {
       }
 
       @Override
-      public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void precompileXPathExpressions(XmlCheckContext context) {
         reportIssue(node, message);
       }
     };
@@ -132,11 +93,11 @@ public class XPathXmlCheckTest {
     final String message = "message";
     XmlCheck check = new XPathXmlCheck() {
       @Override
-      public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void scanFileWithXPathExpressions(XmlCheckContext context) {
       }
 
       @Override
-      public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+      public void precompileXPathExpressions(XmlCheckContext context) {
         reportIssueOnFile(message);
       }
     };
@@ -160,12 +121,12 @@ public class XPathXmlCheckTest {
     private int countedInit = 0;
 
     @Override
-    public void scanFileWithXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+    public void scanFileWithXPathExpressions(XmlCheckContext context) {
       countedScan++;
     }
 
     @Override
-    public void precompileXPathExpressions(XmlCheckContext context) throws XPathExpressionException {
+    public void precompileXPathExpressions(XmlCheckContext context) {
       countedInit++;
     }
   }

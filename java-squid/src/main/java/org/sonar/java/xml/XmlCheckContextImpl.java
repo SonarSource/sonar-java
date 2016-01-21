@@ -22,6 +22,7 @@ package org.sonar.java.xml;
 import com.google.common.collect.ImmutableList;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -56,22 +57,30 @@ public class XmlCheckContextImpl implements XmlCheckContext {
   }
 
   @Override
-  public XPathExpression compile(String expression) throws XPathExpressionException {
-    return xPath.compile(expression);
+  public XPathExpression compile(String expression) {
+    try {
+      return xPath.compile(expression);
+    } catch (XPathExpressionException e) {
+      throw new AnalysisException("Unable to compile XPath expression '" + expression + "'", e);
+    }
   }
 
   @Override
-  public Iterable<Node> evaluateOnDocument(XPathExpression expression) throws XPathExpressionException {
+  public Iterable<Node> evaluateOnDocument(XPathExpression expression) {
     return evaluate(expression, document);
   }
 
   @Override
-  public Iterable<Node> evaluate(XPathExpression expression, Node node) throws XPathExpressionException {
-    NodeList nodeList = (NodeList) expression.evaluate(node, XPathConstants.NODESET);
-    if (nodeList.getLength() == 0) {
-      return ImmutableList.of();
+  public Iterable<Node> evaluate(XPathExpression expression, Node node) {
+    try {
+      NodeList nodeList = (NodeList) expression.evaluate(node, XPathConstants.NODESET);
+      if (nodeList.getLength() == 0) {
+        return ImmutableList.of();
+      }
+      return new NodeListIterable(nodeList);
+    } catch (XPathExpressionException e) {
+      throw new AnalysisException("Unable to evaluate XPath expression", e);
     }
-    return new NodeListIterable(nodeList);
   }
 
   private static class NodeListIterable implements Iterable<Node> {

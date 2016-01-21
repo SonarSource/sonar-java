@@ -26,6 +26,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -57,6 +58,7 @@ public class XmlCheckContextImplTest {
   private static String reportedMessage;
   private SonarComponents sonarComponents;
   private XmlCheckContext context;
+  private XPath xPath;
   private static final File XML_FILE = new File("src/test/files/xml/parsing.xml");
   private static final XmlCheck CHECK = new XmlCheck() {
     @Override
@@ -69,7 +71,7 @@ public class XmlCheckContextImplTest {
   public void setup() {
     reportedMessage = null;
     sonarComponents = createSonarComponentsMock();
-    XPath xPath = XPathFactory.newInstance().newXPath();
+    xPath = XPathFactory.newInstance().newXPath();
     context = new XmlCheckContextImpl(XmlParser.parseXML(XML_FILE), XML_FILE, xPath, sonarComponents);
   }
 
@@ -129,6 +131,17 @@ public class XmlCheckContextImplTest {
     for (int i = 0; i < 5; i++) {
       iterator.next();
     }
+  }
+
+  @Test(expected = AnalysisException.class)
+  public void should_fail_when_compiling_bad_XPathExpression() throws Exception {
+    context.compile("");
+  }
+
+  @Test(expected = AnalysisException.class)
+  public void should_fail_when_unable_to_evaluate_XPathExpression() throws Exception {
+    context = new XmlCheckContextImpl(null, new File("."), xPath, sonarComponents);
+    context.evaluateOnDocument(context.compile("tag"));
   }
 
   @Test
