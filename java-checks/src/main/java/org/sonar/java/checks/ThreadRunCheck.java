@@ -29,6 +29,8 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -44,15 +46,23 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("20min")
 public class ThreadRunCheck extends AbstractMethodDetection {
+  private static final MethodMatcher RUNNABLE_RUN_METHOD_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Runnable")).name("run")
+    .withNoParameterConstraint();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(
-      MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Runnable")).name("run").withNoParameterConstraint());
+    return ImmutableList.of(RUNNABLE_RUN_METHOD_MATCHER);
   }
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    Tree parent = mit.parent();
+    while (parent != null && !parent.is(Tree.Kind.METHOD)) {
+      parent = parent.parent();
+    }
+    if (parent != null && RUNNABLE_RUN_METHOD_MATCHER.matches((MethodTree) parent)) {
+      return;
+    }
     reportIssue(MethodsHelper.methodName(mit), "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
   }
 

@@ -50,8 +50,8 @@ class A {
     @Override
     public void run() {
       C c = new C();
-      c.run(); // Noncompliant
-      super.run(); // Noncompliant
+      c.run(); // compliant, withing run method
+      super.run(); // compliant, withing run method
     }
   }
 
@@ -65,3 +65,4 @@ class A {
   static class F extends E {
   }
 }
+
