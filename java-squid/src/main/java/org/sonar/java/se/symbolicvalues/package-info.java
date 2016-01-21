@@ -17,12 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+@ParametersAreNonnullByDefault
+package org.sonar.java.se.symbolicvalues;
 
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.tree.Tree;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-public interface SymbolicValueFactory {
-
-  SymbolicValue createSymbolicValue(int id, Tree syntaxNode);
-}

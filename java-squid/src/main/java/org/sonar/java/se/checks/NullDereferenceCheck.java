@@ -28,7 +28,7 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
-import org.sonar.java.se.SymbolicValue;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;

@@ -222,13 +222,13 @@ public static class Class extends SuperClass {
     if (parameter1 == parameter2) {
       if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 >= parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 > parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 <= parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 < parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
       if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
@@ -239,9 +239,9 @@ public static class Class extends SuperClass {
 
   public void relational_ge(boolean parameter1, boolean parameter2) {
     if (parameter1 >= parameter2) {
-      if (parameter1 >= parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 < parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
     }
     if (parameter1 >= parameter2) {
@@ -264,17 +264,17 @@ public static class Class extends SuperClass {
 
   public void relational_g(boolean parameter1, boolean parameter2) {
     if (parameter1 > parameter2) {
-      if (parameter1 == parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 >= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 > parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 <= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 < parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 != parameter2) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 > parameter2) { // Compliant
@@ -288,9 +288,9 @@ public static class Class extends SuperClass {
       }
       if (j > i) { // Compliant
       }
-      if (j < k) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (j < k) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (k > j) { // False negative:Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (k > j) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (i < j) {
@@ -417,10 +417,10 @@ public static class Class extends SuperClass {
     // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 != parameter2) {
     }
-    // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 > parameter2) {
     }
-    // False negative:Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
+    // Noncompliant@+1 {{Change this condition so that it does not always evaluate to "false"}}
     if (parameter1 == parameter2 && parameter1 < parameter2) {
     }
   }
@@ -569,22 +569,22 @@ public static class Class extends SuperClass {
     if (a < b) {
       return;
     }
-    if (a >= b) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (a >= b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
 
     if (c < d || c <= d) {
     } else {
       return;
     }
-    if (c <= d) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (c <= d) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 
   public void relationa_le(boolean parameter1, boolean parameter2) {
     if (parameter1 <= parameter2) {
-      if (parameter1 > parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 <= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 <= parameter2) {
@@ -607,17 +607,17 @@ public static class Class extends SuperClass {
 
   public void relational_l(boolean parameter1, boolean parameter2) {
     if (parameter1 < parameter2) {
-      if (parameter1 == parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 == parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 >= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 >= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 > parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      if (parameter1 > parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
       }
-      if (parameter1 <= parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 <= parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 < parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 < parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
-      if (parameter1 != parameter2) { //False negative: Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+      if (parameter1 != parameter2) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
     if (parameter1 < parameter2) { // Compliant
@@ -1039,6 +1039,9 @@ public static class Class extends SuperClass {
       if (value == 3) { // False negative Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
       }
     }
+  }
+  
+  public void test_integer_literals_split(boolean condition, int value) {
     // out of scope, must evaluate to unknown
     if (3 > 3) {
 
@@ -1467,6 +1470,62 @@ class SuperClass {
       --i;
       if ( i == m) {
         log("equality");
+      }
+    }
+  }
+  
+  void equalsDoesNotImpliesNull(Object o, Object v) {
+    if(o.equals(v) || v==null) {
+      
+    }
+    
+  }
+  
+  void conjunctionEqual(Integer a, Integer b) {
+    if( a <= b) {
+      if( a >= b) {
+        if(a == b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          
+        }
+        if(a.equals(b)) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          
+        }
+      }
+    }
+  }
+  
+  void conjunctionLessThan(Integer a, Integer b) {
+    if( a <= b) {
+      if(a < b) {
+        
+      }
+      if( a != b) {
+        if(a < b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          
+        }
+      }
+      if( !a.equals(b)) {
+        if(a < b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          
+        }
+      }
+    }
+  }
+  
+  void conjunctionGreaterThan(Integer a, Integer b) {
+    if( a >= b) {
+      if(a > b) {
+        
+      }
+      if( a != b) {
+        if(a > b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          
+        }
+      }
+      if( !a.equals(b)) {
+        if(a > b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+          
+        }
       }
     }
   }

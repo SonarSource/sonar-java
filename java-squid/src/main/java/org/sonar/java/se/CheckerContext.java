@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.tree.Tree;
 
 public interface CheckerContext {

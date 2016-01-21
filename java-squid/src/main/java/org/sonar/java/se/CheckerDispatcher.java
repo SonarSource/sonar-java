@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.SECheck;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;

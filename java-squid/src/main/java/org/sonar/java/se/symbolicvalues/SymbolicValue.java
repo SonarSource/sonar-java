@@ -17,11 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
+import org.sonar.java.se.ObjectConstraint;
+import org.sonar.java.se.ProgramState;
 
 import javax.annotation.CheckForNull;
 
@@ -58,7 +61,11 @@ public class SymbolicValue {
   );
 
   public static boolean isDisposable(SymbolicValue symbolicValue) {
-    return !PROTECTED_SYMBOLIC_VALUES.contains(symbolicValue);
+    if (symbolicValue instanceof NotSymbolicValue) {
+      NotSymbolicValue notSV = (NotSymbolicValue) symbolicValue;
+      return !(notSV.operand instanceof RelationalSymbolicValue);
+    }
+    return !PROTECTED_SYMBOLIC_VALUES.contains(symbolicValue) && !(symbolicValue instanceof RelationalSymbolicValue);
   }
 
   private final int id;
@@ -152,156 +159,7 @@ public class SymbolicValue {
     return id <= FALSE_LITERAL.id;
   }
 
-  abstract static class BinarySymbolicValue extends SymbolicValue {
-
-    SymbolicValue leftOp;
-    SymbolicValue rightOp;
-
-    public BinarySymbolicValue(int id) {
-      super(id);
-    }
-
-    abstract BooleanConstraint shouldNotInverse();
-
-    @Override
-    public boolean references(SymbolicValue other) {
-      return leftOp.equals(other) || rightOp.equals(other) || leftOp.references(other) || rightOp.references(other);
-    }
-
-    @Override
-    public void computedFrom(List<SymbolicValue> symbolicValues) {
-      Preconditions.checkArgument(symbolicValues.size() == 2);
-      rightOp = symbolicValues.get(0);
-      leftOp = symbolicValues.get(1);
-    }
-
-    @Override
-    public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-      ProgramState programState = initialProgramState;
-      if (leftOp.equals(rightOp)) {
-        if (shouldNotInverse().equals(booleanConstraint)) {
-          return ImmutableList.of(programState);
-        }
-        return ImmutableList.of();
-      }
-      programState = checkRelation(booleanConstraint, programState);
-      if (programState == null) {
-        return ImmutableList.of();
-      }
-      List<ProgramState> results = new ArrayList<>();
-      List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
-      for (ProgramState ps : copiedConstraints) {
-        List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
-        if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
-          results.add(programState.addConstraint(this, booleanConstraint));
-        } else {
-          results.addAll(copiedConstraintsRightToLeft);
-        }
-      }
-      return results;
-    }
-
-    private ProgramState checkRelation(BooleanConstraint booleanConstraint, ProgramState initialProgramState) {
-      ProgramState programState = initialProgramState;
-      if (!leftOp.equals(rightOp) && !leftOp.isPredefined() && !rightOp.isPredefined()) {
-        SymbolicValueRelation relationToFulfill = getSymbolicValueRelation();
-        if (relationToFulfill != null) {
-          if (BooleanConstraint.FALSE.equals(booleanConstraint)) {
-            relationToFulfill = relationToFulfill.inverse();
-          }
-          Boolean fulfilled = programState.isFulfilled(relationToFulfill);
-          if (fulfilled == null) {
-            programState = programState.addRelation(relationToFulfill);
-          } else if (!fulfilled.booleanValue()) {
-            return null;
-          }
-        }
-      }
-      return programState;
-    }
-
-    @CheckForNull
-    protected SymbolicValueRelation getSymbolicValueRelation() {
-      return null;
-    }
-
-    @Override
-    public String toString() {
-      return "EQ_TO_" + super.toString();
-    }
-
-    private List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-      Object constraintLeft = programState.getConstraint(from);
-      if (constraintLeft instanceof BooleanConstraint) {
-        BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
-        return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
-      } else if (constraintLeft instanceof ObjectConstraint) {
-        ObjectConstraint nullConstraint = (ObjectConstraint) constraintLeft;
-        if (nullConstraint.equals(ObjectConstraint.NULL)) {
-          return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
-        } else if (shouldNotInverse().equals(booleanConstraint)) {
-          return to.setConstraint(programState, nullConstraint);
-        }
-      }
-      return ImmutableList.of(programState);
-    }
-
-  }
-
-  static class NotEqualToSymbolicValue extends BinarySymbolicValue {
-
-    public NotEqualToSymbolicValue(int id) {
-      super(id);
-    }
-
-    @Override
-    public String toString() {
-      return "NEQ_TO_" + super.toString();
-    }
-
-    @Override
-    BooleanConstraint shouldNotInverse() {
-      return BooleanConstraint.FALSE;
-    }
-
-    @Override
-    @CheckForNull
-    protected SymbolicValueRelation getSymbolicValueRelation() {
-      return new NotEqualRelation(leftOp, rightOp);
-    }
-  }
-
-  static class EqualToSymbolicValue extends BinarySymbolicValue {
-
-    public EqualToSymbolicValue(int id) {
-      super(id);
-    }
-
-    @Override
-    BooleanConstraint shouldNotInverse() {
-      return BooleanConstraint.TRUE;
-    }
-
-    @Override
-    @CheckForNull
-    protected SymbolicValueRelation getSymbolicValueRelation() {
-      return new EqualRelation(leftOp, rightOp);
-    }
-  }
-
-  static class MethodEqualsToSymbolicValue extends EqualToSymbolicValue {
-
-    public MethodEqualsToSymbolicValue(int id) {
-      super(id);
-    }
-
-    @Override
-    protected SymbolicValueRelation getSymbolicValueRelation() {
-      return new MethodEqualsRelation(leftOp, rightOp);
-    }
-  }
-
-  abstract static class UnarySymbolicValue extends SymbolicValue {
+  public abstract static class UnarySymbolicValue extends SymbolicValue {
     protected SymbolicValue operand;
 
     public UnarySymbolicValue(int id) {
@@ -321,7 +179,7 @@ public class SymbolicValue {
 
   }
 
-  static class NotSymbolicValue extends UnarySymbolicValue {
+  public static class NotSymbolicValue extends UnarySymbolicValue {
 
     public NotSymbolicValue(int id) {
       super(id);
@@ -338,7 +196,7 @@ public class SymbolicValue {
     }
   }
 
-  static class InstanceOfSymbolicValue extends UnarySymbolicValue {
+  public static class InstanceOfSymbolicValue extends UnarySymbolicValue {
     public InstanceOfSymbolicValue(int id) {
       super(id);
     }
@@ -363,19 +221,19 @@ public class SymbolicValue {
     }
   }
 
-  abstract static class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
+  public abstract static class BooleanExpressionSymbolicValue extends BinarySymbolicValue {
 
     protected BooleanExpressionSymbolicValue(int id) {
       super(id);
     }
 
     @Override
-    BooleanConstraint shouldNotInverse() {
+    public BooleanConstraint shouldNotInverse() {
       return BooleanConstraint.TRUE;
     }
   }
 
-  static class AndSymbolicValue extends BooleanExpressionSymbolicValue {
+  public static class AndSymbolicValue extends BooleanExpressionSymbolicValue {
 
     public AndSymbolicValue(int id) {
       super(id);
@@ -409,7 +267,7 @@ public class SymbolicValue {
     }
   }
 
-  static class OrSymbolicValue extends BooleanExpressionSymbolicValue {
+  public static class OrSymbolicValue extends BooleanExpressionSymbolicValue {
 
     public OrSymbolicValue(int id) {
       super(id);
@@ -443,7 +301,7 @@ public class SymbolicValue {
     }
   }
 
-  static class XorSymbolicValue extends BooleanExpressionSymbolicValue {
+  public static class XorSymbolicValue extends BooleanExpressionSymbolicValue {
 
     public XorSymbolicValue(int id) {
       super(id);
@@ -478,5 +336,10 @@ public class SymbolicValue {
     public String toString() {
       return leftOp + " ^ " + rightOp;
     }
+  }
+
+  @CheckForNull
+  public BinaryRelation binaryRelation() {
+    return null;
   }
 }

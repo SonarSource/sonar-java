@@ -20,6 +20,9 @@
 package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -45,10 +48,22 @@ public class ConstraintManager {
     SymbolicValue result;
     switch (syntaxNode.kind()) {
       case EQUAL_TO:
-        result = new SymbolicValue.EqualToSymbolicValue(counter);
+        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.EQUAL);
         break;
       case NOT_EQUAL_TO:
-        result = new SymbolicValue.NotEqualToSymbolicValue(counter);
+        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.NOT_EQUAL);
+        break;
+      case LESS_THAN:
+        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.LESS_THAN);
+        break;
+      case LESS_THAN_OR_EQUAL_TO:
+        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL);
+        break;
+      case GREATER_THAN:
+        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.GREATER_THAN);
+        break;
+      case GREATER_THAN_OR_EQUAL_TO:
+        result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL);
         break;
       case LOGICAL_COMPLEMENT:
         result = new SymbolicValue.NotSymbolicValue(counter);
@@ -84,8 +99,10 @@ public class ConstraintManager {
   public SymbolicValue createMethodSymbolicValue(MethodInvocationTree syntaxNode, List<SymbolicValue> values) {
     SymbolicValue result;
     if (isEqualsMethod(syntaxNode)) {
-      result = new SymbolicValue.MethodEqualsToSymbolicValue(counter);
-      result.computedFrom(values);
+      result = new RelationalSymbolicValue(counter, RelationalSymbolicValue.Kind.METHOD_EQUALS);
+      SymbolicValue leftOp = values.get(0);
+      SymbolicValue rightOp = values.get(1);
+      result.computedFrom(ImmutableList.of(rightOp, leftOp));
     } else {
       result = createDefaultSymbolicValue(syntaxNode);
     }
@@ -155,7 +172,7 @@ public class ConstraintManager {
   public enum BooleanConstraint {
     TRUE,
     FALSE;
-    BooleanConstraint inverse() {
+    public BooleanConstraint inverse() {
       if (TRUE == this) {
         return FALSE;
       }
