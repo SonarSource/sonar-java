@@ -63,6 +63,7 @@ public final class Tag {
   public static final String STRUTS = "struts";
   public static final String MAVEN = "maven";
   public static final String WEBSPHERE = "websphere";
+  public static final String INJECTION = "injection";
 
   private Tag() {
   }
