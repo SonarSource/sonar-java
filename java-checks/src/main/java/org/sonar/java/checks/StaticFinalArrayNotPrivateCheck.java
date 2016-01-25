@@ -25,6 +25,9 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -53,7 +56,7 @@ public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
   @Override
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
-    if (variableTree.type().is(Kind.ARRAY_TYPE) && isStaticFinalNotPrivate(variableTree)) {
+    if (variableTree.type().is(Kind.ARRAY_TYPE) && isStaticFinalNotPrivate(variableTree) && !isExcluded(variableTree)) {
       reportIssue(variableTree.simpleName(), "Make this array \"private\".");
     }
   }
@@ -76,6 +79,29 @@ public class StaticFinalArrayNotPrivateCheck extends SubscriptionBaseVisitor {
 
   private static boolean hasModifier(VariableTree variableTree, Modifier modifier) {
     return ModifiersUtils.hasModifier(variableTree.modifiers(), modifier);
+  }
+  
+  private static boolean isExcluded(VariableTree variableTree) {
+    return hasVisibleForTestingAnnotation(variableTree.modifiers().annotations());
+  }
+
+  private static boolean hasVisibleForTestingAnnotation(Iterable<AnnotationTree> annotations) {
+    for (AnnotationTree annotationTree : annotations) {
+      if (hasVisibleForTestingAnnotation(annotationTree)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public static boolean hasVisibleForTestingAnnotation(AnnotationTree tree) {
+    String id = null;
+    if (tree.annotationType().is(Kind.IDENTIFIER)) {
+      id = ((IdentifierTree) tree.annotationType()).name();
+    } else if (tree.annotationType().is(Kind.MEMBER_SELECT)) {
+      id = ((MemberSelectExpressionTree) tree.annotationType()).identifier().name();
+    }
+    return "VisibleForTesting".equals(id);
   }
 
 }
