@@ -1,4 +1,5 @@
 import java.lang.Deprecated;
+import org.junit.experimental.runners.Enclosed;
 
 class A extends junit.framework.TestCase {
   void testFoo() {
@@ -81,3 +82,11 @@ class OtherTest extends BaseTest {
   public void test2() {
   }
 }
+@org.junit.runner.RunWith(org.junit.experimental.runners.Enclosed.class)
+public class MyNewTest { // should not raise an issue
+}
+@org.junit.runner.RunWith(Enclosed.class)
+public class MyNewTest2 { // no issue
+}
+
+

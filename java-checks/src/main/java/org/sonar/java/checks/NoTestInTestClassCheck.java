@@ -34,7 +34,9 @@ import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -42,6 +44,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -111,9 +115,18 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
   }
 
   private void checkJunit4TestClass(IdentifierTree className, JavaSymbol.TypeJavaSymbol symbol, Iterable<Symbol> members) {
-    if (symbol.name().endsWith("Test")) {
+    if (symbol.name().endsWith("Test") && !runWithEnclosedRunner(symbol)) {
       checkMethods(className, members, true);
     }
+  }
+
+  private static boolean runWithEnclosedRunner(JavaSymbol.TypeJavaSymbol symbol) {
+    List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
+    if(annotationValues != null && annotationValues.size() == 1) {
+      Object value = annotationValues.get(0).value();
+      return value instanceof MemberSelectExpressionTree && concatenate((ExpressionTree) value).endsWith("Enclosed.class");
+    }
+    return false;
   }
 
   private void checkMethods(IdentifierTree simpleName, Iterable<Symbol> members, boolean forJunit4) {
@@ -140,5 +153,26 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
       superclass = superclass.getSymbol().getSuperclass();
     }
     return members;
+  }
+
+  private static String concatenate(ExpressionTree tree) {
+    Deque<String> pieces = new LinkedList<>();
+    ExpressionTree expr = tree;
+    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
+      pieces.push(mse.identifier().name());
+      pieces.push(".");
+      expr = mse.expression();
+    }
+    if (expr.is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree idt = (IdentifierTree) expr;
+      pieces.push(idt.name());
+    }
+
+    StringBuilder sb = new StringBuilder();
+    for (String piece: pieces) {
+      sb.append(piece);
+    }
+    return sb.toString();
   }
 }
