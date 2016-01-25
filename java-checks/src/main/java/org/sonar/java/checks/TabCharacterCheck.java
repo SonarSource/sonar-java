@@ -21,7 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.io.Files;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.CharsetAwareVisitor;
@@ -68,7 +67,7 @@ public class TabCharacterCheck extends SubscriptionBaseVisitor implements Charse
     try {
       lines = Files.readLines(file, charset);
     } catch (IOException e) {
-      throw new SonarException(e);
+      throw new IllegalStateException(e);
     }
     for (String line : lines) {
       if (line.contains("\t")) {

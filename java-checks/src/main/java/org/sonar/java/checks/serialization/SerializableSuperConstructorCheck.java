@@ -60,7 +60,7 @@ public class SerializableSuperConstructorCheck extends SubscriptionBaseVisitor {
       Symbol.TypeSymbol classSymbol = ((ClassTree) tree).symbol();
       Type superclass = classSymbol.superClass();
       if (isSerializable(classSymbol.type()) && isNotSerializableMissingNoArgConstructor(superclass)) {
-        addIssue(tree, "Add a no-arg constructor to \"" + superclass + "\".");
+        reportIssue(tree, "Add a no-arg constructor to \"" + superclass + "\".");
       }
     }
   }

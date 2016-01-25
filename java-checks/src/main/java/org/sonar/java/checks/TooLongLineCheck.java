@@ -22,7 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.api.utils.SonarException;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
@@ -111,7 +110,7 @@ public class TooLongLineCheck extends SubscriptionBaseVisitor implements Charset
     try {
       lines = Files.readLines(file, charset);
     } catch (IOException e) {
-      throw new SonarException(e);
+      throw new IllegalStateException(e);
     }
     for (int i = 0; i < lines.size(); i++) {
       if (!ignoredLines.contains(i + 1)) {
