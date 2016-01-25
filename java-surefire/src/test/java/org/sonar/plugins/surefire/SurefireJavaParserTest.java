@@ -90,7 +90,7 @@ public class SurefireJavaParserTest {
     when(perspectives.as(eq(MutableTestPlan.class),
         argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")))).thenReturn(testPlan);
 
-    parser.collect(context, getDir("multipleReports"));
+    parser.collect(context, getDir("multipleReports"), true);
 
     verify(testPlan).addTestCase("testGetUnKnownCollector");
     verify(testPlan).addTestCase("testGetJDependsCollector");
@@ -99,18 +99,17 @@ public class SurefireJavaParserTest {
 
   @Test
   public void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() throws Exception {
-    Project project = mock(Project.class);
 
     SensorContext context = mockContext();
-    parser.collect(context, null);
+    parser.collect(context, null, false);
     verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
     context = mockContext();
-    parser.collect(context, getDir("nonExistingReportsDirectory"));
+    parser.collect(context, getDir("nonExistingReportsDirectory"), false);
     verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
     context = mockContext();
-    parser.collect(context, getDir("file.txt"));
+    parser.collect(context, getDir("file.txt"), true);
     verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
   }
 
@@ -118,7 +117,7 @@ public class SurefireJavaParserTest {
   public void shouldAggregateReports() throws URISyntaxException {
     SensorContext context = mockContext();
 
-    parser.collect(context, getDir("multipleReports"));
+    parser.collect(context, getDir("multipleReports"), true);
 
     // Only 6 tests measures should be stored, no more: the TESTS-AllTests.xml must not be read as there's 1 file result per unit test
     // (SONAR-2841).
@@ -132,7 +131,7 @@ public class SurefireJavaParserTest {
   public void shouldUseTestSuiteReportIfAlone() throws URISyntaxException {
     SensorContext context = mockContext();
 
-    parser.collect(context, getDir("onlyTestSuiteReport"));
+    parser.collect(context, getDir("onlyTestSuiteReport"), true);
 
     verify(context, times(2)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
     verify(context, times(2)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
@@ -144,9 +143,8 @@ public class SurefireJavaParserTest {
   @Test
   public void shouldInsertZeroWhenNoReports() throws URISyntaxException {
     SensorContext context = mockContext();
-    Project project = mock(Project.class);
 
-    parser.collect(context, getDir("noReports"));
+    parser.collect(context, getDir("noReports"), true);
     verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
 
   }
@@ -160,7 +158,7 @@ public class SurefireJavaParserTest {
     Project project = mock(Project.class);
     when(project.getModules()).thenReturn(Arrays.asList(new Project("foo")));
 
-    parser.collect(context, getDir("noReports"));
+    parser.collect(context, getDir("noReports"), true);
 
     verify(context, never()).saveMeasure(CoreMetrics.TESTS, 0.0);
   }
@@ -169,7 +167,7 @@ public class SurefireJavaParserTest {
   public void shouldNotInsertZeroOnFiles() throws URISyntaxException {
     SensorContext context = mockContext();
 
-    parser.collect(context, getDir("noTests"));
+    parser.collect(context, getDir("noTests"), true);
 
     verify(context, never()).saveMeasure(any(Resource.class), any(Metric.class), anyDouble());
   }
@@ -185,7 +183,7 @@ public class SurefireJavaParserTest {
       }
     }), eq(false))).thenReturn(true);
 
-    parser.collect(context, getDir("innerClasses"));
+    parser.collect(context, getDir("innerClasses"), true);
 
     verify(context)
         .saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.apache.commons.collections.bidimap.AbstractTestBidiMap")), eq(CoreMetrics.TESTS), eq(7.0));
@@ -199,7 +197,7 @@ public class SurefireJavaParserTest {
   public void shouldMergeNestedInnerClasses() throws URISyntaxException {
 
     SensorContext context = mockContext();
-    parser.collect(context, getDir("nestedInnerClasses"));
+    parser.collect(context, getDir("nestedInnerClasses"), true);
 
     verify(context).saveMeasure(
         argThat(new IsResource(Scopes.FILE, Qualifiers.FILE, "org.sonar.plugins.surefire.NestedInnerTest")),
@@ -211,7 +209,7 @@ public class SurefireJavaParserTest {
   public void should_not_count_negative_tests() throws URISyntaxException {
     SensorContext context = mockContext();
 
-    parser.collect(context, getDir("negativeTestTime"));
+    parser.collect(context, getDir("negativeTestTime"), true);
     //Test times : -1.120, 0.644, 0.015 -> computed time : 0.659, ignore negative time.
 
     verify(context, times(1)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.SKIPPED_TESTS), eq(0.0));

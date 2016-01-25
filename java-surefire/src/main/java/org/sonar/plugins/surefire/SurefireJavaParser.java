@@ -58,19 +58,20 @@ public class SurefireJavaParser implements BatchExtension {
     this.javaResourceLocator = javaResourceLocator;
   }
 
-
-  public void collect(SensorContext context, File reportsDir) {
-    File[] xmlFiles = getReports(reportsDir);
+  public void collect(SensorContext context, File reportsDir, boolean reportDirSetByUser) {
+    File[] xmlFiles = getReports(reportsDir, reportDirSetByUser);
     if (xmlFiles.length > 0) {
       parseFiles(context, xmlFiles);
     }
   }
 
-  private File[] getReports(File dir) {
+  private File[] getReports(File dir, boolean reportDirSetByUser) {
     if (dir == null) {
       return new File[0];
     } else if (!dir.isDirectory()) {
-      LOGGER.error("Reports path not found or is not a directory: " + dir.getAbsolutePath());
+      if(reportDirSetByUser) {
+        LOGGER.error("Reports path not found or is not a directory: " + dir.getAbsolutePath());
+      }
       return new File[0];
     }
     File[] unitTestResultFiles = findXMLFilesStartingWith(dir, "TEST-");

@@ -62,7 +62,7 @@ public class SurefireSensor implements Sensor {
 
   protected void collect(SensorContext context, File reportsDir) {
     LOGGER.info("parsing {}", reportsDir);
-    surefireJavaParser.collect(context, reportsDir);
+    surefireJavaParser.collect(context, reportsDir, settings.hasKey(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY));
   }
 
   @Override

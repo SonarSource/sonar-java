@@ -30,14 +30,13 @@ import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class SurefireUtilsTest {
 
   @Test
   public void shouldGetReportsFromProperty() {
-    Settings settings = mock(Settings.class);
-    when(settings.getString("sonar.junit.reportsPath")).thenReturn("target/surefire");
+    Settings settings = new Settings();
+    settings.setProperty("sonar.junit.reportsPath", "target/surefire");
     Project project = MavenTestUtils.loadProjectFromPom(getClass(), "shouldGetReportsFromProperty/pom.xml");
     DefaultFileSystem fs = new DefaultFileSystem(project.getFileSystem().getBasedir());
     PathResolver pathResolver = new PathResolver();

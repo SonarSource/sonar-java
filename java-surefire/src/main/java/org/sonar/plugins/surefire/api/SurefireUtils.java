@@ -50,12 +50,14 @@ public final class SurefireUtils {
 
   @CheckForNull
   private static File getReportsDirectoryFromProperty(Settings settings, FileSystem fs, PathResolver pathResolver) {
-    String path = settings.getString(SUREFIRE_REPORTS_PATH_PROPERTY);
-    if (path != null) {
-      try {
-        return pathResolver.relativeFile(fs.baseDir(), path);
-      } catch (Exception e) {
-        LOGGER.info("Surefire report path: "+fs.baseDir()+"/"+path +" not found.");
+    if(settings.hasKey(SUREFIRE_REPORTS_PATH_PROPERTY)) {
+      String path = settings.getString(SUREFIRE_REPORTS_PATH_PROPERTY);
+      if (path != null) {
+        try {
+          return pathResolver.relativeFile(fs.baseDir(), path);
+        } catch (Exception e) {
+          LOGGER.info("Surefire report path: "+fs.baseDir()+"/"+path +" not found.");
+        }
       }
     }
     return null;
