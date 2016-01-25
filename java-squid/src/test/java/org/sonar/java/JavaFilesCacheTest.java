@@ -86,8 +86,8 @@ public class JavaFilesCacheTest {
   public void suppressWarning_external() {
     JavaFilesCache javaFilesCache = new JavaFilesCache();
     JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/JavaSuppressWarning.java"), new VisitorsBridge(javaFilesCache));
-    assertThat(javaFilesCache.suppressWarningLines.keySet()).hasSize(3);
-    for (Integer line : Lists.newArrayList(10, 11)) {
+    assertThat(javaFilesCache.suppressWarningLines.keySet()).hasSize(6);
+    for (Integer line : Lists.newArrayList(10, 11, 16, 17)) {
       assertThat(javaFilesCache.suppressWarningLines.get(line)).as("on line " + line).contains("foo");
     }
   }

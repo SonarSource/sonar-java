@@ -9,4 +9,10 @@ class JavaFilesCacheTestWithSuppressWarnings {
   @java.lang.SuppressWarnings("foo")
   static class C {
   }
+
+  private static final String FOO = "foo";
+
+  @java.lang.SuppressWarnings(FOO)
+  static class D {
+  }
 }
