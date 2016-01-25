@@ -52,6 +52,7 @@ import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
 import org.sonar.java.checks.xml.spring.SingleConnectionFactoryCheck;
+import org.sonar.java.checks.xml.struts.ActionNumberCheck;
 import org.sonar.java.checks.xml.web.SecurityConstraintsInWebXmlCheck;
 import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -435,6 +436,7 @@ public final class CheckList {
       .add(SingleConnectionFactoryCheck.class)
       .add(SecurityConstraintsInWebXmlCheck.class)
       .add(ValidationFiltersCheck.class)
+      .add(ActionNumberCheck.class)
       .build();
   }
 
