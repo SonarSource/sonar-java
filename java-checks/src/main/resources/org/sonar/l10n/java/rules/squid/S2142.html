@@ -1,0 +1,49 @@
+<p><code>InterruptedExceptions</code> should never be ignored in the code, and simply logging the exception counts in this case as "ignoring". Instead, <code>InterruptedExceptions</code> should either be rethrown - immediately or after cleaning up the method's state - or the method should be reinterrupted. Any other course of action risks delaying thread shutdown and loses the information that the thread was interrupted - probably without finishing its task.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void run () {
+  try {
+    while (true) { 
+      // do stuff
+    }
+  }catch (InterruptedException e) { // Noncompliant; logging is not enough
+    LOGGER.log(Level.WARN, "Interrupted!", e);
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public void run () throws InterruptedException{
+  try {
+    while (true) { 
+      // do stuff
+    }
+  }catch (InterruptedException e) {
+    LOGGER.log(Level.WARN, "Interrupted!", e);
+    // clean up state...
+    throw e;
+  }
+}
+</pre>
+<p>or</p>
+<pre>
+public void run () {
+  try {
+    while (true) { 
+      // do stuff
+    }
+  }catch (InterruptedException e) {
+    LOGGER.log(Level.WARN, "Interrupted!", e);
+    // clean up state...
+    Thread.currentThread().interrupt();
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/391.html">MITRE, CWE-391</a> - Unchecked Error Condition
+</li></ul>
+

@@ -407,6 +407,7 @@ public final class CheckList {
       .add(CatchRethrowingCheck.class)
       .add(InappropriateRegexpCheck.class)
       .add(CallOuterPrivateMethodCheck.class)
+      .add(InterruptedExceptionCheck.class)
       .build();
   }
 
