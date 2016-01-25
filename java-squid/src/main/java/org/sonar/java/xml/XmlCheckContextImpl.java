@@ -20,6 +20,8 @@
 package org.sonar.java.xml;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.AnalyzerMessage.TextSpan;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.AnalysisException;
@@ -28,6 +30,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
@@ -130,7 +134,7 @@ public class XmlCheckContextImpl implements XmlCheckContext {
 
   @Override
   public void reportIssueOnFile(JavaCheck check, String message) {
-    sonarComponents.addIssue(file, check, -1, message, null);
+    reportIssue(check, -1, message);
   }
 
   @Override
@@ -140,15 +144,57 @@ public class XmlCheckContextImpl implements XmlCheckContext {
 
   @Override
   public void reportIssue(JavaCheck check, Node node, String message) {
+    Integer line = getNodeLine(node);
+    if (line != null) {
+      reportIssue(check, line, message);
+    }
+  }
+
+  @CheckForNull
+  public static Integer getNodeLine(Node node) {
     NamedNodeMap attributes = node.getAttributes();
     if (attributes == null) {
-      return;
+      return null;
     }
     Node lineAttribute = attributes.getNamedItem(XmlParser.START_LINE_ATTRIBUTE);
     if (lineAttribute != null) {
-      Integer line = Integer.valueOf(lineAttribute.getNodeValue());
-      sonarComponents.addIssue(file, check, line, message, null);
+      return Integer.valueOf(lineAttribute.getNodeValue());
     }
+    return null;
+  }
+
+  @Override
+  public void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary) {
+    reportIssue(check, node, message, secondary, null);
+  }
+
+  @Override
+  public void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost) {
+    Integer line = getNodeLine(node);
+    if (line != null) {
+      sonarComponents.reportIssue(buildAnalyzerMessage(check, message, line, secondary, cost, getFile()));
+    }
+  }
+
+  public static AnalyzerMessage buildAnalyzerMessage(JavaCheck check, String message, Integer line, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost, File file) {
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(check, file, line, message, cost != null ? cost.intValue() : 0);
+    for (XmlDocumentLocation location : secondary) {
+      AnalyzerMessage secondaryLocation = getSecondaryAnalyzerMessage(check, file, location);
+      if (secondaryLocation != null) {
+        analyzerMessage.secondaryLocations.add(secondaryLocation);
+      }
+    }
+    return analyzerMessage;
+  }
+
+  @CheckForNull
+  private static AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, XmlDocumentLocation location) {
+    Integer startLine = getNodeLine(location.node);
+    if (startLine == null) {
+      return null;
+    }
+    TextSpan ts = new TextSpan(startLine, 0, startLine, 0);
+    return new AnalyzerMessage(check, file, ts, location.msg, 0);
   }
 
   public SonarComponents getSonarComponents() {

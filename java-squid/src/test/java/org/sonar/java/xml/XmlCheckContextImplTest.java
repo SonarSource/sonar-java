@@ -19,21 +19,22 @@
  */
 package org.sonar.java.xml;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -159,7 +160,7 @@ public class XmlCheckContextImplTest {
   @Test
   public void should_report_issue_on_node() throws Exception {
     Node node = firstNode(context, "//exclude-default-interceptors");
-    int expectedLine = Integer.valueOf(node.getAttributes().getNamedItem(XmlParser.START_LINE_ATTRIBUTE).getNodeValue());
+    int expectedLine = getNodeLine(node);
 
     doAnswer(new Answer<Void>() {
       @Override
@@ -174,13 +175,109 @@ public class XmlCheckContextImplTest {
   }
 
   @Test
+  public void should_report_issue_on_node_with_secondary() throws Exception {
+    Node node = firstNode(context, "//test2");
+    int nodeLine = getNodeLine(node);
+    Node childNode = node.getFirstChild();
+    int childNodeLine = getNodeLine(childNode);
+
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
+        reportedMessage = "onNode:" + analyzerMessage.getMessage() + "(" + analyzerMessage.getLine() + ")";
+        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+          reportedMessage += ";onChild:" + secondary.getMessage() + "(" + secondary.getLine() + ")";
+        }
+        return null;
+      }
+    }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
+
+    context.reportIssue(CHECK, node, "message1", Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("message2", childNode)));
+
+    String expectedMessage = "onNode:message1(" + nodeLine + ");onChild:message2(" + childNodeLine + ")";
+    assertThat(reportedMessage).isEqualTo(expectedMessage);
+  }
+
+  @Test
+  public void should_report_issue_on_node_with_secondary_and_cost() throws Exception {
+    Node node = firstNode(context, "//test2");
+    int nodeLine = getNodeLine(node);
+    Node childNode = node.getFirstChild();
+    int childNodeLine = getNodeLine(childNode);
+    int cost = 42;
+
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
+        reportedMessage = "onNode:" + analyzerMessage.getMessage() + "(" + analyzerMessage.getLine() + ")[" + analyzerMessage.getCost() + "]";
+        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+          reportedMessage += ";onChild:" + secondary.getMessage() + "(" + secondary.getLine() + ")";
+        }
+        return null;
+      }
+    }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
+
+    context.reportIssue(CHECK, node, "message1", Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("message2", childNode)), cost);
+
+    String expectedMessage = "onNode:message1(" + nodeLine + ")[42.0];onChild:message2(" + childNodeLine + ")";
+    assertThat(reportedMessage).isEqualTo(expectedMessage);
+  }
+
+  @Test
   public void should_not_report_issue_on_unknown_node() throws Exception {
+    // manual parsing
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(context.getFile());
 
-    Node node = ((NodeList) XPathFactory.newInstance().newXPath().compile("//exclude-default-interceptors").evaluate(doc, XPathConstants.NODESET)).item(0);
+    // uses document with recorded lines
+    Node node = Iterables.get(context.evaluate(context.compile("//exclude-default-interceptors"), doc), 0);
 
     context.reportIssue(CHECK, node, "message");
     verify(sonarComponents, never()).addIssue(any(File.class), any(JavaCheck.class), anyInt(), anyString(), anyDouble());
+  }
+
+  @Test
+  public void should_not_report_issue_on_unknown_node_with_secondaries() throws Exception {
+    // manual parsing
+    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(context.getFile());
+
+    // uses document with recorded lines
+    Node node = Iterables.get(context.evaluate(context.compile("//exclude-default-interceptors"), doc), 0);
+
+    context.reportIssue(CHECK, node, "message1", Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("message2", node.getFirstChild())));
+    verify(sonarComponents, never()).reportIssue(any(AnalyzerMessage.class));
+  }
+
+  @Test
+  public void should_not_report_unknown_secondaries() throws Exception {
+    // manual parsing
+    Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(context.getFile());
+    Node node = firstNode(context, "//test2");
+    int nodeLine = getNodeLine(node);
+
+    // uses document with recorded lines
+    Node child = Iterables.get(context.evaluate(context.compile("//test2/item"), doc), 0);
+
+    doAnswer(new Answer<Void>() {
+      @Override
+      public Void answer(InvocationOnMock invocation) throws Throwable {
+        AnalyzerMessage analyzerMessage = (AnalyzerMessage) invocation.getArguments()[0];
+        reportedMessage = "onNode:" + analyzerMessage.getMessage() + "(" + analyzerMessage.getLine() + ")";
+        for (AnalyzerMessage secondary : analyzerMessage.secondaryLocations) {
+          reportedMessage += ";onChild:" + secondary.getMessage() + "(" + secondary.getLine() + ")";
+        }
+        return null;
+      }
+    }).when(sonarComponents).reportIssue(any(AnalyzerMessage.class));
+
+    context.reportIssue(CHECK, node, "message1", Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("message2", child)));
+
+    assertThat(reportedMessage).isEqualTo("onNode:message1(" + nodeLine + ")");
+  }
+
+  private static Integer getNodeLine(Node node) {
+    return Integer.valueOf(node.getAttributes().getNamedItem(XmlParser.START_LINE_ATTRIBUTE).getNodeValue());
   }
 
   @Test

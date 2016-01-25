@@ -23,6 +23,7 @@ import com.google.common.annotations.Beta;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Node;
 
+import javax.annotation.Nullable;
 import javax.xml.xpath.XPathExpression;
 
 import java.io.File;
@@ -43,4 +44,18 @@ public interface XmlCheckContext {
   void reportIssue(JavaCheck check, int line, String message);
 
   void reportIssue(JavaCheck check, Node node, String message);
+
+  void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary);
+
+  void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost);
+
+  class XmlDocumentLocation {
+    public final String msg;
+    public final Node node;
+
+    public XmlDocumentLocation(String msg, Node node) {
+      this.msg = msg;
+      this.node = node;
+    }
+  }
 }

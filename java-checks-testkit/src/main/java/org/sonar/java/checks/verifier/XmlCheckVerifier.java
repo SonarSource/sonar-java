@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import javax.annotation.Nullable;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -118,9 +119,8 @@ public class XmlCheckVerifier extends CheckVerifier {
 
     @Override
     public void reportIssue(JavaCheck check, Node node, String message) {
-      Node lineAttribute = node.getAttributes().getNamedItem(XmlParser.START_LINE_ATTRIBUTE);
-      if (lineAttribute != null) {
-        Integer line = Integer.valueOf(lineAttribute.getNodeValue());
+      Integer line = getNodeLine(node);
+      if (line != null) {
         reportIssue(check, line, message);
       } else {
         Fail.fail("The provided node does not have line attribute '" + XmlParser.START_COLUMN_ATTRIBUTE + "'");
@@ -130,6 +130,21 @@ public class XmlCheckVerifier extends CheckVerifier {
     @Override
     public void reportIssue(JavaCheck check, int line, String message) {
       messages.add(new AnalyzerMessage(check, getFile(), line, message, 0));
+    }
+
+    @Override
+    public void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary) {
+      reportIssue(check, node, message, secondary, null);
+    }
+
+    @Override
+    public void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost) {
+      Integer line = getNodeLine(node);
+      if (line != null) {
+        messages.add(buildAnalyzerMessage(check, message, line, secondary, cost, getFile()));
+      } else {
+        Fail.fail("The provided node does not have line attribute '" + XmlParser.START_COLUMN_ATTRIBUTE + "'");
+      }
     }
   }
 }

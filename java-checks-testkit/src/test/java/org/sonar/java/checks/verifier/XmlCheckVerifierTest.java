@@ -19,8 +19,10 @@
  */
 package org.sonar.java.checks.verifier;
 
+import com.google.common.collect.Lists;
 import org.fest.assertions.Fail;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.java.checks.verifier.XmlCheckVerifier.FakeXmlCheckContext;
 import org.sonar.java.xml.XmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
@@ -35,6 +37,7 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -42,6 +45,7 @@ import static org.fest.assertions.Assertions.assertThat;
 public class XmlCheckVerifierTest {
 
   private static final String XML_WITH_ISSUES = "src/test/files/xml/XmlCheckVerifier.xml";
+  private static final String XML_WITH_SECONDARIES = "src/test/files/xml/XmlCheckVerifierSecondaries.xml";
   private static final String XML_NO_ISSUE = "src/test/files/xml/XmlCheckVerifierNoIssue.xml";
   private static final String XML_PARSING_ISSUE = "src/test/files/xml/XmlCheckVerifierParsingIssue.xml";
   private static XmlCheckContext fakeContext;
@@ -74,6 +78,24 @@ public class XmlCheckVerifierTest {
     });
   }
 
+  @Test
+  public void should_detect_issues_using_secondaries() {
+    XmlCheckVerifier.verify(XML_WITH_SECONDARIES, new XmlCheck() {
+      @Override
+      public void scanFile(XmlCheckContext context) {
+        try {
+          context.reportIssue(
+            this,
+            firstNode(context, "//test2"),
+            "Message1",
+            Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("Message2", firstNode(context, "//test4"))));
+        } catch (Exception e) {
+          Fail.fail();
+        }
+      }
+    });
+  }
+
   private static Node firstNode(XmlCheckContext context, String expression) throws XPathExpressionException {
     Node result = null;
     for (Node node : context.evaluateOnDocument(context.compile(expression))) {
@@ -84,7 +106,7 @@ public class XmlCheckVerifierTest {
   }
 
   @Test
-  public void should_failt_when_adding_issues_on_node_from_own_parsing() {
+  public void should_fail_when_adding_issues_on_unknown_node() {
     try {
       XmlCheckVerifier.verify(XML_WITH_ISSUES, new XmlCheck() {
         @Override
@@ -131,6 +153,16 @@ public class XmlCheckVerifierTest {
         // do nothing
       }
     });
+  }
+
+  @Test(expected = AssertionError.class)
+  public void should_fail_retrieving_messages_when_parsing_issue() {
+    XmlCheckVerifier.retrieveExpectedIssuesFromFile(new File(XML_PARSING_ISSUE), Mockito.mock(CheckVerifier.class));
+  }
+
+  @Test(expected = AssertionError.class)
+  public void should_fail_retrieving_messages_when_files_does_not_exist() {
+    XmlCheckVerifier.retrieveExpectedIssuesFromFile(new File(""), Mockito.mock(CheckVerifier.class));
   }
 
 }
