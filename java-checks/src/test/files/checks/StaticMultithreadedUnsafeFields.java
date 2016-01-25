@@ -11,5 +11,7 @@ public class TestClass {
   private java.util.Calendar calendar1; // Compliant
   private static java.util.Calendar calendar2; // Noncompliant {{Make "calendar2" an instance variable.}}
   private static ConcreteCalendar calendar3; // Noncompliant {{Make "calendar3" an instance variable.}}
+  private static javax.xml.xpath.XPath xPath; // Noncompliant {{Make "xPath" an instance variable.}}
+  private static javax.xml.validation.SchemaFactory schemaFactory; // Noncompliant {{Make "schemaFactory" an instance variable.}}
 
 }

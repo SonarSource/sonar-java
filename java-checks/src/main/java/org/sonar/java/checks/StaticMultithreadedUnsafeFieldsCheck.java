@@ -46,7 +46,7 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class StaticMultithreadedUnsafeFieldsCheck extends SubscriptionBaseVisitor {
 
-  private static final String[] FORBIDDEN_TYPES = {"java.text.SimpleDateFormat", "java.util.Calendar"};
+  private static final String[] FORBIDDEN_TYPES = {"java.text.SimpleDateFormat", "java.util.Calendar", "javax.xml.xpath.XPath", "javax.xml.validation.SchemaFactory"};
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
