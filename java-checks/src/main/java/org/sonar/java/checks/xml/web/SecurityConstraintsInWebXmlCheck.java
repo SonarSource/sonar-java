@@ -24,14 +24,11 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
-import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.xml.xpath.XPathExpression;
-
-import java.io.File;
 
 @Rule(
   key = "S3369",
@@ -40,27 +37,23 @@ import java.io.File;
   tags = {Tag.CWE, Tag.JEE, Tag.OWASP_A7, Tag.SECURITY, Tag.WEBSPHERE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("3h")
-public class SecurityConstraintsInWebXmlCheck extends XPathXmlCheck {
+public class SecurityConstraintsInWebXmlCheck extends WebXmlCheckTemplate {
 
   private XPathExpression securityConstraintExpression;
 
   @Override
   public void precompileXPathExpressions(XmlCheckContext context) {
-    this.securityConstraintExpression = context.compile("web-app/security-constraint");
+    this.securityConstraintExpression = context.compile(WEB_XML_ROOT + "/security-constraint");
   }
 
   @Override
-  public void scanFileWithXPathExpressions(XmlCheckContext context) {
-    if (isWebXmlFile(context.getFile()) && hasNoSecurityConstraint(context)) {
+  public void scanWebXml(XmlCheckContext context) {
+    if (hasNoSecurityConstraint(context)) {
       reportIssueOnFile("Add \"security-constraint\" elements to this descriptor.");
     }
   }
 
   private boolean hasNoSecurityConstraint(XmlCheckContext context) {
     return Iterables.isEmpty(context.evaluateOnDocument(securityConstraintExpression));
-  }
-
-  private static boolean isWebXmlFile(File file) {
-    return "web.xml".equalsIgnoreCase(file.getName());
   }
 }
