@@ -48,6 +48,7 @@ import org.sonar.java.checks.xml.ejb.DefaultInterceptorsLocationCheck;
 import org.sonar.java.checks.xml.ejb.InterceptorExclusionsCheck;
 import org.sonar.java.checks.xml.maven.ArtifactIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.DependencyWithSystemScopeCheck;
+import org.sonar.java.checks.xml.maven.DeprecatedPomPropertiesCheck;
 import org.sonar.java.checks.xml.maven.DisallowedDependenciesCheck;
 import org.sonar.java.checks.xml.maven.GroupIdNamingConventionCheck;
 import org.sonar.java.checks.xml.maven.PomElementOrderCheck;
@@ -449,6 +450,7 @@ public final class CheckList {
       .add(GroupIdNamingConventionCheck.class)
       .add(ArtifactIdNamingConventionCheck.class)
       .add(DisallowedDependenciesCheck.class)
+      .add(DeprecatedPomPropertiesCheck.class)
       .build();
   }
 }
