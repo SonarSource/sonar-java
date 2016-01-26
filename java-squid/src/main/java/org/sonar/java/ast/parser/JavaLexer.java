@@ -262,9 +262,6 @@ public enum JavaLexer implements GrammarRuleKey {
   UNARY_EXPRESSION_NOT_PLUS_MINUS,
   CAST_EXPRESSION,
 
-  // Helpers
-  // TODO Introduce ANNOTATIONS?
-
   MODIFIERS,
 
   ANNOTATION_ARGUMENTS,
