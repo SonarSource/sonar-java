@@ -44,6 +44,11 @@ public class ValidationFiltersCheckTest {
   }
 
   @Test
+  public void web_xml_incoherent_filters() {
+    XmlCheckVerifier.verify("src/test/files/checks/xml/web/ValidationFiltersCheck/incoherentFilters/web.xml", CHECK);
+  }
+
+  @Test
   public void web_xml_with_filter() {
     XmlCheckVerifier.verifyNoIssue("src/test/files/checks/xml/web/ValidationFiltersCheck/withFilters/web.xml", CHECK);
   }

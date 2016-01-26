@@ -28,8 +28,12 @@ import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Rule(
   key = "S3355",
@@ -51,14 +55,31 @@ public class ValidationFiltersCheck extends WebXmlCheckTemplate {
 
   @Override
   public void scanWebXml(XmlCheckContext context) {
-    if (hasMissingFilter(context)) {
+    Iterable<Node> filtersDefinedInFilters = context.evaluateOnDocument(filterNamesFromFilterExpression);
+    Iterable<Node> filtersUsedInMapping = context.evaluateOnDocument(filterNamesFromFilterMappingExpression);
+    if (Iterables.isEmpty(filtersDefinedInFilters) || Iterables.isEmpty(filtersUsedInMapping)) {
       reportIssueOnFile("Add a validation filter to this \"web.xml\".");
+    } else {
+      Set<String> filterNamesFromFilters = getFilterNames(filtersDefinedInFilters);
+      for (Node node : filtersUsedInMapping) {
+        String filterName = getStringValue(node);
+        if (!filterNamesFromFilters.contains(filterName)) {
+          reportIssue(node, "\"" + filterName + "\" is not defined in this file.");
+        }
+      }
     }
   }
 
-  private boolean hasMissingFilter(XmlCheckContext context) {
-    return Iterables.isEmpty(context.evaluateOnDocument(filterNamesFromFilterExpression))
-      || Iterables.isEmpty(context.evaluateOnDocument(filterNamesFromFilterMappingExpression));
+  private static Set<String> getFilterNames(Iterable<Node> nodes) {
+    Set<String> nodeByFilterName = new HashSet<>();
+    for (Node node : nodes) {
+      nodeByFilterName.add(getStringValue(node));
+    }
+    return nodeByFilterName;
+  }
+
+  private static String getStringValue(Node node) {
+    return node.getFirstChild().getNodeValue();
   }
 
 }
