@@ -30,21 +30,6 @@ public class UnclosedResourcesCheckTest {
   }
 
   @Test
-  public void nonReproducible() {
-    JavaCheckVerifier.verify("src/test/files/se/IrreproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
-  }
-
-  // Failing test @Test
-  public void reproducible() {
-    JavaCheckVerifier.verify("src/test/files/se/ReproducibleUnclosedResourcesTestFile.java", new UnclosedResourcesCheck());
-  }
-
-  // Failing test @Test
-  public void foreign() {
-    JavaCheckVerifier.verify("src/test/files/se/CloseResourceTestFile.java", new UnclosedResourcesCheck());
-  }
-
-  @Test
   public void jdbcTests() {
     JavaCheckVerifier.verify("src/test/files/se/JdbcResourcesTestFile.java", new UnclosedResourcesCheck());
   }
