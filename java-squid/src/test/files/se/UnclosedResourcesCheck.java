@@ -277,6 +277,7 @@ public class A {
   public void checkPath(String fileName) throws IOException {
     new FileInputStream(fileName).close(); // Compliant, but unlikely; check correct retrieval of value passed to method invocation.
   }
+
   private final static int MAX_LOOP = 42;
 
   public void justToBeAbleToUseVerify() {
@@ -348,6 +349,18 @@ public class A {
       fw.write("hello");
     } catch (Exception e) {
       // ...
+    }
+  }
+  void  foo() {
+    try {
+      java.util.zip.ZipFile file = new java.util.zip.ZipFile(fileName);
+      try {
+        // do something with the file...
+      } finally {
+        file.close();
+      }
+    } catch (Exception e) {
+      // Handle exception
     }
   }
 }

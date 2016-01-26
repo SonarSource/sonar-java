@@ -760,8 +760,14 @@ public class CFG {
     }
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
-    for (Block catchBlock : catches) {
-      currentBlock.addSuccessor(catchBlock);
+    if(currentBlock.exitBlock != null && currentBlock.exitBlock.isFinallyBlock) {
+      for (Block catchBlock : catches) {
+        currentBlock.exitBlock.addSuccessor(catchBlock);
+      }
+    } else {
+      for (Block catchBlock : catches) {
+        currentBlock.addSuccessor(catchBlock);
+      }
     }
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
