@@ -25,6 +25,7 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
@@ -44,8 +45,6 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -124,7 +123,7 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
     List<SymbolMetadata.AnnotationValue> annotationValues = symbol.metadata().valuesForAnnotation("org.junit.runner.RunWith");
     if(annotationValues != null && annotationValues.size() == 1) {
       Object value = annotationValues.get(0).value();
-      return value instanceof MemberSelectExpressionTree && concatenate((ExpressionTree) value).endsWith("Enclosed.class");
+      return value instanceof MemberSelectExpressionTree && ExpressionsHelper.concatenate((ExpressionTree) value).endsWith("Enclosed.class");
     }
     return false;
   }
@@ -153,26 +152,5 @@ public class NoTestInTestClassCheck extends SubscriptionBaseVisitor {
       superclass = superclass.getSymbol().getSuperclass();
     }
     return members;
-  }
-
-  private static String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<>();
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(".");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece: pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
   }
 }

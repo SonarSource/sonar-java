@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -40,11 +41,8 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import javax.annotation.Nullable;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,7 +74,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     lineByImportReference.clear();
     pendingImports.clear();
 
-    currentPackage = concatenate(packageName);
+    currentPackage = ExpressionsHelper.concatenate(packageName);
     for (ImportClauseTree importClauseTree : cut.imports()) {
       ImportTree importTree = null;
 
@@ -85,7 +83,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
       }
 
       if (importTree != null && !importTree.isStatic()) {
-        String importName = concatenate((ExpressionTree) importTree.qualifiedIdentifier());
+        String importName = ExpressionsHelper.concatenate((ExpressionTree) importTree.qualifiedIdentifier());
         if ("java.lang.*".equals(importName)) {
           context.reportIssue(this, importTree, "Remove this unnecessary import: java.lang classes are always implicitly imported.");
         } else if (isImportFromSamePackage(importName)) {
@@ -135,7 +133,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     scan(tree.annotations());
-    pendingReferences.add(concatenate(tree));
+    pendingReferences.add(ExpressionsHelper.concatenate(tree));
     //Don't visit identifiers of a member select expression.
     if (!tree.expression().is(Tree.Kind.IDENTIFIER)) {
       scan(tree.expression());
@@ -192,32 +190,6 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
   private static String extractFirstClassName(String reference) {
     int firstIndexOfDot = reference.indexOf('.');
     return firstIndexOfDot == -1 ? reference : reference.substring(0, firstIndexOfDot);
-  }
-
-
-  private static String concatenate(@Nullable ExpressionTree tree) {
-    if (tree == null) {
-      return "";
-    }
-    Deque<String> pieces = new LinkedList<>();
-
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(".");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece : pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
   }
 
   private static class CommentVisitor extends SubscriptionBaseVisitor {

@@ -26,6 +26,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -47,7 +48,6 @@ import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -139,24 +139,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     if (!tree.is(Kind.MEMBER_SELECT)) {
       return false;
     }
-    Deque<String> pieces = new LinkedList<>();
-    ExpressionTree expr = (MemberSelectExpressionTree) tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(".");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece: pieces) {
-      sb.append(piece);
-    }
-    return Iterables.contains(exceptions, sb.toString());
+    return Iterables.contains(exceptions, ExpressionsHelper.concatenate((MemberSelectExpressionTree) tree));
   }
 
 }

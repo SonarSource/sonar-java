@@ -23,10 +23,9 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -34,8 +33,6 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -70,30 +67,7 @@ public class MethodNamedEqualsCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isObjectType(VariableTree variableTree) {
-    String type = concatenate((ExpressionTree) variableTree.type());
+    String type = ExpressionsHelper.concatenate((ExpressionTree) variableTree.type());
     return "Object".equals(type)|| "java.lang.Object".equals(type);
   }
-
-  private static String concatenate(ExpressionTree tree) {
-    Deque<String> pieces = new LinkedList<>();
-    ExpressionTree expr = tree;
-    while (expr.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) expr;
-      pieces.push(mse.identifier().name());
-      pieces.push(".");
-      expr = mse.expression();
-    }
-    if (expr.is(Tree.Kind.IDENTIFIER)) {
-      IdentifierTree idt = (IdentifierTree) expr;
-      pieces.push(idt.name());
-    }
-
-    StringBuilder sb = new StringBuilder();
-    for (String piece: pieces) {
-      sb.append(piece);
-    }
-    return sb.toString();
-  }
-
-
 }
