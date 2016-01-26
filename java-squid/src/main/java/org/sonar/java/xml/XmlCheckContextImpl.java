@@ -26,7 +26,6 @@ import org.sonar.java.SonarComponents;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.AnalysisException;
 import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -40,6 +39,8 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.File;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import static org.sonar.java.xml.XmlCheckUtils.nodeLine;
 
 public class XmlCheckContextImpl implements XmlCheckContext {
 
@@ -144,23 +145,10 @@ public class XmlCheckContextImpl implements XmlCheckContext {
 
   @Override
   public void reportIssue(JavaCheck check, Node node, String message) {
-    Integer line = getNodeLine(node);
+    Integer line = nodeLine(node);
     if (line != null) {
       reportIssue(check, line, message);
     }
-  }
-
-  @CheckForNull
-  public static Integer getNodeLine(Node node) {
-    NamedNodeMap attributes = node.getAttributes();
-    if (attributes == null) {
-      return null;
-    }
-    Node lineAttribute = attributes.getNamedItem(XmlParser.START_LINE_ATTRIBUTE);
-    if (lineAttribute != null) {
-      return Integer.valueOf(lineAttribute.getNodeValue());
-    }
-    return null;
   }
 
   @Override
@@ -170,7 +158,7 @@ public class XmlCheckContextImpl implements XmlCheckContext {
 
   @Override
   public void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost) {
-    Integer line = getNodeLine(node);
+    Integer line = nodeLine(node);
     if (line != null) {
       sonarComponents.reportIssue(buildAnalyzerMessage(check, message, line, secondary, cost, getFile()));
     }
@@ -189,7 +177,7 @@ public class XmlCheckContextImpl implements XmlCheckContext {
 
   @CheckForNull
   private static AnalyzerMessage getSecondaryAnalyzerMessage(JavaCheck check, File file, XmlDocumentLocation location) {
-    Integer startLine = getNodeLine(location.node);
+    Integer startLine = nodeLine(location.node);
     if (startLine == null) {
       return null;
     }

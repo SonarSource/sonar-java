@@ -160,7 +160,7 @@ public class XmlCheckContextImplTest {
   @Test
   public void should_report_issue_on_node() throws Exception {
     Node node = firstNode(context, "//exclude-default-interceptors");
-    int expectedLine = getNodeLine(node);
+    int expectedLine = XmlCheckUtils.nodeLine(node);
 
     doAnswer(new Answer<Void>() {
       @Override
@@ -177,9 +177,9 @@ public class XmlCheckContextImplTest {
   @Test
   public void should_report_issue_on_node_with_secondary() throws Exception {
     Node node = firstNode(context, "//test2");
-    int nodeLine = getNodeLine(node);
+    int nodeLine = XmlCheckUtils.nodeLine(node);
     Node childNode = node.getFirstChild();
-    int childNodeLine = getNodeLine(childNode);
+    int childNodeLine = XmlCheckUtils.nodeLine(childNode);
 
     doAnswer(new Answer<Void>() {
       @Override
@@ -202,9 +202,9 @@ public class XmlCheckContextImplTest {
   @Test
   public void should_report_issue_on_node_with_secondary_and_cost() throws Exception {
     Node node = firstNode(context, "//test2");
-    int nodeLine = getNodeLine(node);
+    int nodeLine = XmlCheckUtils.nodeLine(node);
     Node childNode = node.getFirstChild();
-    int childNodeLine = getNodeLine(childNode);
+    int childNodeLine = XmlCheckUtils.nodeLine(childNode);
     int cost = 42;
 
     doAnswer(new Answer<Void>() {
@@ -254,7 +254,7 @@ public class XmlCheckContextImplTest {
     // manual parsing
     Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(context.getFile());
     Node node = firstNode(context, "//test2");
-    int nodeLine = getNodeLine(node);
+    int nodeLine = XmlCheckUtils.nodeLine(node);
 
     // uses document with recorded lines
     Node child = Iterables.get(context.evaluate(context.compile("//test2/item"), doc), 0);
@@ -274,10 +274,6 @@ public class XmlCheckContextImplTest {
     context.reportIssue(CHECK, node, "message1", Lists.newArrayList(new XmlCheckContext.XmlDocumentLocation("message2", child)));
 
     assertThat(reportedMessage).isEqualTo("onNode:message1(" + nodeLine + ")");
-  }
-
-  private static Integer getNodeLine(Node node) {
-    return Integer.valueOf(node.getAttributes().getNamedItem(XmlParser.START_LINE_ATTRIBUTE).getNodeValue());
   }
 
   @Test

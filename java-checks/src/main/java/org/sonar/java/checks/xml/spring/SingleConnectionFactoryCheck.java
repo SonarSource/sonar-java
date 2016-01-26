@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
+import org.sonar.java.xml.XmlCheckUtils;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -62,7 +63,7 @@ public class SingleConnectionFactoryCheck extends XPathXmlCheck {
   }
 
   private static boolean hasPropertyAsAttribute(Node bean) {
-    Node attribute = bean.getAttributes().getNamedItem("p:reconnectOnException");
+    Node attribute = XmlCheckUtils.nodeAttribute(bean, "p:reconnectOnException");
     return attribute != null && "true".equals(attribute.getNodeValue());
   }
 

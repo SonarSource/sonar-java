@@ -24,6 +24,7 @@ import org.fest.assertions.Fail;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.xml.XmlCheck;
 import org.sonar.java.xml.XmlCheckContextImpl;
+import org.sonar.java.xml.XmlCheckUtils;
 import org.sonar.java.xml.XmlParser;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.w3c.dom.Document;
@@ -119,7 +120,7 @@ public class XmlCheckVerifier extends CheckVerifier {
 
     @Override
     public void reportIssue(JavaCheck check, Node node, String message) {
-      Integer line = getNodeLine(node);
+      Integer line = XmlCheckUtils.nodeLine(node);
       if (line != null) {
         reportIssue(check, line, message);
       } else {
@@ -139,7 +140,7 @@ public class XmlCheckVerifier extends CheckVerifier {
 
     @Override
     public void reportIssue(JavaCheck check, Node node, String message, Iterable<XmlDocumentLocation> secondary, @Nullable Integer cost) {
-      Integer line = getNodeLine(node);
+      Integer line = XmlCheckUtils.nodeLine(node);
       if (line != null) {
         messages.add(buildAnalyzerMessage(check, message, line, secondary, cost, getFile()));
       } else {
