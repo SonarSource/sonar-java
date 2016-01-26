@@ -76,7 +76,7 @@ public class SwitchWithTooManyCasesCheck extends SubscriptionBaseVisitor {
       for (Tree element : cases) {
         secondary.add(new JavaFileScannerContext.Location("Case + 1", element));
       }
-      reportIssue(switchStatementTree, "Reduce the number of switch cases from " + size + " to at most " + maximumCases + ".", secondary, null);
+      reportIssue(switchStatementTree.switchKeyword(), "Reduce the number of switch cases from " + size + " to at most " + maximumCases + ".", secondary, null);
     }
   }
 }
