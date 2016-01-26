@@ -977,6 +977,45 @@ public class CFGTest {
   }
 
   @Test
+  public void exit_block_for_finally_with_if_statement() throws Exception {
+    CFG cfg = buildCFG(" void test(boolean fooCalled) {\n" +
+      "      Object bar;\n" +
+      "      try {\n" +
+      "        bar = new Bar();\n" +
+      "      } finally {\n" +
+      "        if (fooCalled) {foo();\n" +
+      "        }\n" +
+      "      }\n" +
+      "      bar.toString();\n" +
+      "    }");
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Kind.VARIABLE, "bar"),
+        element(Kind.TRY_STATEMENT)
+      ).successors(5, 4).exit(4),
+      block(
+        element(Kind.NEW_CLASS),
+        element(Kind.IDENTIFIER, "bar"),
+        element(Kind.ASSIGNMENT)
+      ).successors(4),
+      block(
+        element(Kind.IDENTIFIER, "fooCalled")
+      ).terminator(Kind.IF_STATEMENT).successors(2, 3),
+      block(
+        element(Kind.IDENTIFIER, "foo"),
+        element(Kind.METHOD_INVOCATION)
+      ).successors(2),
+      new BlockChecker(1, 0).exit(0),
+      block(
+        element(Kind.IDENTIFIER, "bar"),
+        element(Kind.METHOD_INVOCATION)
+      ).successors(0)
+    );
+    cfgChecker.check(cfg);
+
+  }
+
+  @Test
   public void try_statement() {
     CFG cfg = buildCFG("void fun() {try {System.out.println('');} finally { System.out.println(''); }}");
     CFGChecker cfgChecker = checker(

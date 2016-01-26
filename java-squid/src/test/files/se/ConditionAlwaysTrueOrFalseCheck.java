@@ -1099,7 +1099,7 @@ public static class Class extends SuperClass {
     }
     if (b) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
-    if (c) {
+    if (c) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
     }
   }
 

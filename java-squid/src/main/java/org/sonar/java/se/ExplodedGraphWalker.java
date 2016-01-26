@@ -267,7 +267,14 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     // unconditional jumps, for-statement, switch-statement, synchronized:
     if(node.exitPath) {
-      enqueue(new ExplodedGraph.ProgramPoint(block.exitBlock(), 0), programState, true);
+      if(block.exitBlock() != null) {
+        enqueue(new ExplodedGraph.ProgramPoint(block.exitBlock(), 0), programState, true);
+      } else {
+        for (CFG.Block successor : block.successors()) {
+          enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, true);
+        }
+      }
+
     } else {
       for (CFG.Block successor : block.successors()) {
         if (!block.isFinallyBlock() || successor != block.exitBlock()) {
@@ -286,7 +293,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     for (ProgramState state : pair.a) {
       // enqueue false-branch, if feasible
       ProgramState ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), ps);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), ps, node.exitPath);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
@@ -294,7 +301,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     for (ProgramState state : pair.b) {
       ProgramState ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
       // enqueue true-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), ps);
+      enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), ps, node.exitPath);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }

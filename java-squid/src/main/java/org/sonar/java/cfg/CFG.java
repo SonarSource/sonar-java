@@ -745,8 +745,9 @@ public class CFG {
     BlockTree finallyBlockTree = tryStatementTree.finallyBlock();
     if (finallyBlockTree != null) {
       currentBlock.isFinallyBlock = true;
+      Block finallyBlock = currentBlock;
       build(finallyBlockTree);
-      currentBlock.addExitSuccessor(exitBlock());
+      finallyBlock.addExitSuccessor(exitBlock());
       exitBlocks.push(currentBlock);
     }
     Block finallyOrEndBlock = currentBlock;

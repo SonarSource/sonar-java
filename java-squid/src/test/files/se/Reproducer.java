@@ -123,4 +123,15 @@ class A {
     } while (check == null);  // Noncompliant
   }
 
+  public void exitPathWithBranch(boolean fooCalled) {
+    Object bar;
+    try {
+      bar = new Bar();
+    } finally {
+      if (fooCalled) {
+        foo();
+      }
+    }
+    bar.toString();
+  }
 }
