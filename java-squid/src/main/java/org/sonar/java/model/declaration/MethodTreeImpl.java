@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ListTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -289,14 +290,29 @@ public class MethodTreeImpl extends JavaTree implements MethodTree {
 
   public boolean isAnnotatedOverride() {
     for (AnnotationTree annotationTree : modifiers.annotations()) {
-      if (annotationTree.annotationType().is(Tree.Kind.IDENTIFIER)) {
-        IdentifierTree identifier = (IdentifierTree) annotationTree.annotationType();
-        if (Override.class.getSimpleName().equals(identifier.name())) {
-          return true;
-        }
+      if (isJavaLangOverride(annotationTree.annotationType())) {
+        return true;
       }
     }
     return false;
+  }
+
+  private static boolean isJavaLangOverride(TypeTree annotationType) {
+    return (annotationType.is(Tree.Kind.IDENTIFIER) && isOverride((IdentifierTree) annotationType))
+      || (annotationType.is(Kind.MEMBER_SELECT) && isJavaLangOverride((MemberSelectExpressionTree) annotationType));
+  }
+
+  private static boolean isJavaLangOverride(MemberSelectExpressionTree annotationType) {
+    MemberSelectExpressionTree mse = annotationType;
+    if(isOverride(mse.identifier()) && mse.expression().is(Kind.MEMBER_SELECT)) {
+      mse = (MemberSelectExpressionTree) mse.expression();
+      return "lang".equals(mse.identifier().name()) && mse.expression().is(Kind.IDENTIFIER) && "java".equals(((IdentifierTree) mse.expression()).name());
+    }
+    return false;
+  }
+
+  private static boolean isOverride(IdentifierTree id) {
+    return "Override".equals(id.name());
   }
 
   public boolean isMainMethod() {

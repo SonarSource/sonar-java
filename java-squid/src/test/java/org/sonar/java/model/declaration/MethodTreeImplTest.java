@@ -93,7 +93,11 @@ public class MethodTreeImplTest {
   @Test
   public void override_annotated_method_should_be_overriden() {
     assertThat(getUniqueMethod("class A{ @Override void m(){}}").isOverriding()).isTrue();
+    assertThat(getUniqueMethod("class A{ @Foo @Override void m(){}}").isOverriding()).isTrue();
+    assertThat(getUniqueMethod("class A{ @java.lang.Override void m(){}}").isOverriding()).isTrue();
     assertThat(getUniqueMethod("class A{ @cutom.namespace.Override void m(){}}").isOverriding()).isFalse();
+    assertThat(getUniqueMethod("class A{ @foo.bar.lang.Override void m(){}}").isOverriding()).isFalse();
+    assertThat(getUniqueMethod("class A{ @foo.lang.Override void m(){}}").isOverriding()).isFalse();
     assertThat(getUniqueMethod("class A{ @Foo void m(){}}").isOverriding()).isFalse();
   }
 

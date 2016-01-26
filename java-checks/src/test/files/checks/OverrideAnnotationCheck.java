@@ -20,4 +20,11 @@ class B extends A implements I {
     super.finalize();
   }
 }
+class C extends A implements I {
+  @java.lang.Override
+  void foo() {}
+  @Deprecated
+  @Override
+  void bar() {}
+}
 
