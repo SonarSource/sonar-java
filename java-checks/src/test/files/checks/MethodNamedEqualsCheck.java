@@ -35,3 +35,14 @@ class A {
   private boolean EqUaLs() { // Noncompliant
   }
 }
+
+interface I {
+  boolean equals(Integer i, Integer y); // Noncompliant
+}
+
+class B implements I {
+  @Override
+  public boolean equals(Integer i, Integer y) { // Compliant
+    return false;
+  }
+}
