@@ -1,12 +1,4 @@
 {
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BasicDynaClass.java':[
-223,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanMap.java':[
-280,
-290,
-309,
-],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanUtilsBean.java':[
 420,
 431,
@@ -65,9 +57,6 @@
 2067,
 2079,
 2084,
-],
-'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/ResultSetDynaClass.java':[
-245,
 ],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/DateTimeConverter.java':[
 538,

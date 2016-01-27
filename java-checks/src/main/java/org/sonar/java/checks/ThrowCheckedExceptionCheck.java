@@ -20,16 +20,22 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
 
 @Rule(
@@ -41,18 +47,53 @@ import java.util.List;
 @SqaleConstantRemediation("1h")
 public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {
 
+  private Deque<MethodTree> methods = new LinkedList<>();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.THROW_STATEMENT);
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.THROW_STATEMENT);
   }
 
   @Override
   public void visitNode(Tree tree) {
-    ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
-    Type symbolType = throwStatementTree.expression().symbolType();
-    if (symbolType.isSubtypeOf("java.lang.Exception") && !symbolType.isSubtypeOf("java.lang.RuntimeException")) {
-      reportIssue(throwStatementTree.expression(), "Remove the usage of the checked exception '" + symbolType.name() + "'.");
+    if (tree.is(Tree.Kind.METHOD)) {
+      methods.push((MethodTree) tree);
+    } else {
+      ThrowStatementTree throwStatementTree = (ThrowStatementTree) tree;
+      Type symbolType = throwStatementTree.expression().symbolType();
+      if (symbolType.isSubtypeOf("java.lang.Exception") && !symbolType.isSubtypeOf("java.lang.RuntimeException") && !isFromMethodOverride(symbolType)) {
+        reportIssue(throwStatementTree.expression(), "Remove the usage of the checked exception '" + symbolType.name() + "'.");
+      }
     }
   }
 
+  @Override
+  public void leaveNode(Tree tree) {
+    if (tree.is(Tree.Kind.METHOD)) {
+      methods.pop();
+    }
+  }
+
+  private boolean isFromMethodOverride(Type exceptionType) {
+    if (!methods.isEmpty()) {
+      MethodTree method = methods.peek();
+      if (isOverriding(method) && isCompatibleWithThrows(exceptionType, method.throwsClauses())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isCompatibleWithThrows(Type exceptionType, List<TypeTree> throwsClauses) {
+    for (TypeTree typeTree : throwsClauses) {
+      if (exceptionType.isSubtypeOf(typeTree.symbolType())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean isOverriding(MethodTree methodTree) {
+    return BooleanUtils.isTrue(((MethodTreeImpl) methodTree).isOverriding());
+  }
 }

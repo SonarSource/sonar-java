@@ -1,14 +1,6 @@
 {
-'net.code-story:http:src/main/java/net/codestory/http/compilers/PathSource.java':[
-40,
-48,
-54,
-],
 'net.code-story:http:src/main/java/net/codestory/http/payload/PayloadWriter.java':[
 285,
 304,
-],
-'net.code-story:http:src/main/java/net/codestory/http/templating/HandlebarsCompiler.java':[
-91,
 ],
 }
