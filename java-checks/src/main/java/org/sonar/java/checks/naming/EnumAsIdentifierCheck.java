@@ -17,48 +17,46 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
-import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MethodTree;
-import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.List;
-
 @Rule(
-  key = "S1221",
-  name = "Methods should not be named \"hashcode\" or \"equal\"",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.PITFALL})
+  key = "S1190",
+  name = "Future keywords should not be used as names",
+  priority = Priority.MAJOR,
+  tags = {Tag.OBSOLETE, Tag.PITFALL})
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("10min")
-public class MethodNamedHashcodeOrEqualCheck extends SubscriptionBaseVisitor {
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
+@SqaleConstantRemediation("5min")
+public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
+
+  private JavaFileScannerContext context;
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD);
+  public void scanFile(JavaFileScannerContext context) {
+    this.context = context;
+    scan(context.getTree());
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    IdentifierTree methodIdentifier = ((MethodTree) tree).simpleName();
-    String methodName = methodIdentifier.name();
-    if ("hashcode".equals(methodName) || "equal".equals(methodName)) {
-      String substitute = "hashCode()";
-      if ("equal".equals(methodName)) {
-        substitute = "equals(Object obj)";
-      }
-      reportIssue(methodIdentifier, "Either override Object." + substitute + ", or totally rename the method to prevent any confusion.");
+  public void visitVariable(VariableTree tree) {
+    IdentifierTree simpleName = tree.simpleName();
+    if ("enum".equals(simpleName.name())) {
+      context.reportIssue(this, simpleName, "Use a different name than \"enum\".");
     }
+    super.visitVariable(tree);
   }
 
 }

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
@@ -26,7 +26,7 @@ public class FieldNameMatchingTypeNameCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/FieldNameMatchingTypeNameCheck.java", new FieldNameMatchingTypeNameCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/FieldNameMatchingTypeNameCheck.java", new FieldNameMatchingTypeNameCheck());
   }
 
 }

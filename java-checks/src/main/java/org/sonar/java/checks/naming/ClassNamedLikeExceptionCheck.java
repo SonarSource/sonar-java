@@ -17,46 +17,51 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.tag.Tag;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.List;
+
 @Rule(
-  key = "S1190",
-  name = "Future keywords should not be used as names",
+  key = "S2166",
+  name = "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
   priority = Priority.MAJOR,
-  tags = {Tag.OBSOLETE, Tag.PITFALL})
+  tags = {Tag.CONVENTION, Tag.PITFALL})
 @ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
+@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
-
-  private JavaFileScannerContext context;
+public class ClassNamedLikeExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
-  public void scanFile(JavaFileScannerContext context) {
-    this.context = context;
-    scan(context.getTree());
+  public List<Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override
-  public void visitVariable(VariableTree tree) {
-    IdentifierTree simpleName = tree.simpleName();
-    if ("enum".equals(simpleName.name())) {
-      context.reportIssue(this, simpleName, "Use a different name than \"enum\".");
+  public void visitNode(Tree tree) {
+    if (hasSemantic()) {
+      ClassTree classTree = (ClassTree) tree;
+      Symbol symbol = classTree.symbol();
+      String className = symbol.name();
+      if (className.toLowerCase().endsWith("exception") && !symbol.type().isSubtypeOf("java.lang.Exception")) {
+        String suffix = className.substring(className.length() - "exception".length());
+        reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
+      }
     }
-    super.visitVariable(tree);
   }
+
 
 }

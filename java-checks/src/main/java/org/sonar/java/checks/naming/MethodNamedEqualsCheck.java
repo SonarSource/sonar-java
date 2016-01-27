@@ -17,13 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;

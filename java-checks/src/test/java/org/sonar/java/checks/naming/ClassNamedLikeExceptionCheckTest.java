@@ -17,16 +17,15 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks;
+package org.sonar.java.checks.naming;
 
 import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
-public class MethodNameSameAsClassCheckTest {
+public class ClassNamedLikeExceptionCheckTest {
 
   @Test
   public void test() {
-    JavaCheckVerifier.verify("src/test/files/checks/MethodNameSameAsClassCheck.java", new MethodNameSameAsClassCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/naming/ClassNamedLikeExceptionCheck.java", new ClassNamedLikeExceptionCheck());
   }
-
 }
