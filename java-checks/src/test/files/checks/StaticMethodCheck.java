@@ -91,3 +91,12 @@ class SerializableExclusions implements Serializable {
     recursive();
   }
 }
+
+static class FooBar {
+  enum MyEnum{
+    FOO;
+  }
+  private void plop() { // Noncompliant enum is static and enum constants are static
+    Object o = MyEnum.FOO;
+  }
+}

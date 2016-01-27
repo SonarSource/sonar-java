@@ -323,7 +323,7 @@ public class FirstPass extends BaseTreeVisitor {
 
   @Override
   public void visitEnumConstant(EnumConstantTree tree) {
-    declareVariable(Flags.PUBLIC | Flags.ENUM, tree.simpleName(), (VariableTreeImpl) tree);
+    declareVariable(Flags.PUBLIC | Flags.STATIC | Flags.ENUM, tree.simpleName(), (VariableTreeImpl) tree);
     super.visitEnumConstant(tree);
   }
 
