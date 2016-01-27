@@ -975,7 +975,6 @@ public class CFGTest {
         element(Tree.Kind.POSTFIX_INCREMENT)).successors(0));
     cfgChecker.check(cfg);
   }
-
   @Test
   public void exit_block_for_finally_with_if_statement() throws Exception {
     CFG cfg = buildCFG(" void test(boolean fooCalled) {\n" +
@@ -1011,6 +1010,43 @@ public class CFGTest {
         element(Kind.METHOD_INVOCATION)
       ).successors(0)
     );
+    cfgChecker.check(cfg);
+
+  }
+  @Test
+  public void nested_try_finally() throws Exception {
+
+    CFG cfg = buildCFG("  void  foo() {\n"+
+      "    try {\n"+
+      "      java.util.zip.ZipFile file = new java.util.zip.ZipFile(fileName);\n"+
+      "      try {\n"+
+      "        file.foo();// do something with the file...\n"+
+      "      } finally {\n"+
+      "        file.close();\n"+
+      "      }\n"+
+      "    } catch (Exception e) {\n"+
+      "      // Handle exception\n"+
+      "    }\n"+
+      "  }");
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)
+      ).successors(3, 0),
+      block(
+        element(Tree.Kind.IDENTIFIER, "fileName"),
+        element(Kind.NEW_CLASS),
+        element(Kind.VARIABLE, "file"),
+        element(Kind.TRY_STATEMENT)
+      ).successors(1, 2).exit(1),
+      block(
+        element(Tree.Kind.IDENTIFIER, "file"),
+        element(Tree.Kind.METHOD_INVOCATION)
+      ).successors(1),
+      block(
+        element(Tree.Kind.IDENTIFIER, "file"),
+        element(Tree.Kind.METHOD_INVOCATION)
+      ).successors(0)
+      );
     cfgChecker.check(cfg);
 
   }
