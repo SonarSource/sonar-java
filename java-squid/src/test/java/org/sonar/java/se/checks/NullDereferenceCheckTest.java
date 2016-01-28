@@ -29,4 +29,9 @@ public class NullDereferenceCheckTest {
     JavaCheckVerifier.verify("src/test/files/se/NullDereferenceCheck.java", new NullDereferenceCheck());
   }
 
+  @Test
+  public void objectsMethodsTest() {
+    JavaCheckVerifier.verify("src/test/files/se/ObjectsMethodsTest.java", new NullDereferenceCheck());
+  }
+
 }

@@ -21,6 +21,7 @@ package org.sonar.java.se;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.se.symbolicvalues.NullCheckSymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -103,6 +104,14 @@ public class ConstraintManager {
       SymbolicValue leftOp = values.get(0);
       SymbolicValue rightOp = values.get(1);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
+    } else if (ExplodedGraphWalker.isObjectsMethod(syntaxNode, "isNull", 1)) {
+      result = new NullCheckSymbolicValue(counter, true);
+      SymbolicValue operand = values.get(1);
+      result.computedFrom(ImmutableList.of(operand));
+    } else if (ExplodedGraphWalker.isObjectsMethod(syntaxNode, "nonNull", 1)) {
+      result = new NullCheckSymbolicValue(counter, false);
+      SymbolicValue operand = values.get(1);
+      result.computedFrom(ImmutableList.of(operand));
     } else {
       result = createDefaultSymbolicValue(syntaxNode);
     }
