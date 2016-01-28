@@ -103,7 +103,7 @@ public class GreaterThanOrEqualRelation extends BinaryRelation {
   @Override
   @CheckForNull
   protected BinaryRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
-    return null;
+    return new GreaterThanOrEqualRelation(leftOp, relation.rightOp);
   }
 
   @Override

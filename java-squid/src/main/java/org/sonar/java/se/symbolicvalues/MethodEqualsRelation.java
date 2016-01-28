@@ -128,7 +128,7 @@ public class MethodEqualsRelation extends BinaryRelation {
   @Override
   @CheckForNull
   protected BinaryRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation) {
-    return null;
+    return new GreaterThanOrEqualRelation(leftOp, relation.rightOp);
   }
 
   @Override
@@ -140,6 +140,6 @@ public class MethodEqualsRelation extends BinaryRelation {
   @Override
   @CheckForNull
   protected BinaryRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation) {
-    return null;
+    return new LessThanOrEqualRelation(leftOp, relation.rightOp);
   }
 }

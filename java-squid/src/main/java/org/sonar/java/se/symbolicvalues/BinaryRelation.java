@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
@@ -71,10 +72,6 @@ public abstract class BinaryRelation {
       return key[0] == rel.key[0] && key[1] == rel.key[1];
     }
     return false;
-  }
-
-  public boolean isKind(Kind kind) {
-    return this.kind.equals(kind);
   }
 
   @Override
@@ -158,8 +155,9 @@ public abstract class BinaryRelation {
    * @param relation another SymbolicValueRelation
    * @return a SymbolicValueRelation or null if the receiver and the supplied relation cannot be combined
    */
+  @VisibleForTesting
   @CheckForNull
-  private BinaryRelation combineUnordered(BinaryRelation relation) {
+  BinaryRelation combineUnordered(BinaryRelation relation) {
     BinaryRelation combined = null;
     if (rightOp.equals(relation.leftOp)) {
       combined = relation.combineOrdered(this);

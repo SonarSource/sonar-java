@@ -31,7 +31,15 @@ import java.util.List;
 public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   public enum Kind {
-    EQUAL("=="), NOT_EQUAL("!="), GREATER_THAN(">="), GREATER_THAN_OR_EQUAL(">="), LESS_THAN("<"), LESS_THAN_OR_EQUAL("<="), METHOD_EQUALS(".EQ."), NOT_METHOD_EQUALS(".NE.");
+    EQUAL("=="),
+    NOT_EQUAL("!="),
+    GREATER_THAN(">="),
+    GREATER_THAN_OR_EQUAL(">="),
+    LESS_THAN("<"),
+    LESS_THAN_OR_EQUAL("<="),
+    METHOD_EQUALS(".EQ."),
+    NOT_METHOD_EQUALS(".NE.");
+
     final String operand;
 
     Kind(String operand) {
