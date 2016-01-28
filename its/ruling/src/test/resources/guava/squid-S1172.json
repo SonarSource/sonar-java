@@ -11,15 +11,6 @@
 'com.google.guava:guava:src/com/google/common/collect/Cut.java':[
 66,
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableAsList.java':[
-79,
-],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableList.java':[
-601,
-],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSet.java':[
-779,
-],
 'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
 2364,
 ],

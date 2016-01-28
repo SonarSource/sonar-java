@@ -1,5 +1,9 @@
 import javax.annotation.Nonnull;
 import javax.enterprise.event.Observes;
+import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 class A extends B{
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
@@ -37,7 +41,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=40]]
+  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=44]]
     System.out.println("");
   }
 }
@@ -66,12 +70,12 @@ class G implements inter {
   void foo(int a) {
     System.out.println("plop");
   }
-  private void writeObject(ObjectOutputStream out)
+  private void writeObject(ObjectOutputStream out) // Compliant
       throws IOException {
     throw new NotSerializableException(getClass().getName());
   }
 
-  private void readObject(ObjectInputStream in)
+  private void readObject(ObjectInputStream in) // Compliant
       throws IOException, ClassNotFoundException {
     throw new NotSerializableException(getClass().getName());
   }
@@ -100,6 +104,18 @@ class OpenForExtension {
   public Supplier<String> parameterNotUsed(final Object o) {
     return o::toString;
   }
+}
+
+class MethodFromSerialization {
+  private void writeObject(ObjectOutputStream out) throws MyException { // Compliant
+    throw new MyException();
+  }
+
+  private void readObject(ObjectInputStream in) throws MyException { // Compliant
+    throw new MyException();
+  }
+
+  private static class MyException extends Exception {}
 }
 
 class Annotations {

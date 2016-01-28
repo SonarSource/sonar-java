@@ -26,6 +26,8 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.SubscriptionBaseVisitor;
+import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
+import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
@@ -55,6 +57,9 @@ import java.util.List;
 public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
 
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
+  private static final MethodInvocationMatcherCollection SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+    MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
+    MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -96,13 +101,7 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
   }
 
   private static boolean isSerializableMethod(MethodTree methodTree) {
-    boolean result = false;
-    // FIXME detect methods based on type of arg and throws, not arity.
-    if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
-      result |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
-      result |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
-    }
-    return result;
+    return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && SERIALIZABLE_METHODS.anyMatch(methodTree);
   }
 
   private static boolean isOverriding(MethodTree tree) {
