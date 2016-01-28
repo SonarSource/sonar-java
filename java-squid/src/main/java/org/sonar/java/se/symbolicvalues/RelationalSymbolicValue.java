@@ -19,11 +19,13 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
+import com.google.common.collect.ImmutableList;
 import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 import org.sonar.java.se.ProgramState;
 
 import javax.annotation.CheckForNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RelationalSymbolicValue extends BinarySymbolicValue {
@@ -56,6 +58,32 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   }
 
   @Override
+  public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
+    ProgramState programState = initialProgramState;
+    if (leftOp.equals(rightOp)) {
+      if (shouldNotInverse().equals(booleanConstraint)) {
+        return ImmutableList.of(programState);
+      }
+      return ImmutableList.of();
+    }
+    programState = checkRelation(booleanConstraint, programState);
+    if (programState == null) {
+      return ImmutableList.of();
+    }
+    List<ProgramState> results = new ArrayList<>();
+    List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
+    for (ProgramState ps : copiedConstraints) {
+      List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
+      if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
+        results.add(programState.addConstraint(this, booleanConstraint));
+      } else {
+        results.addAll(copiedConstraintsRightToLeft);
+      }
+    }
+    return results;
+  }
+
+  @Override
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
     ProgramState newState = programState;
     if (programState.canReach(from) || programState.canReach(to)) {
@@ -64,9 +92,8 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     return super.copyConstraint(from, to, newState, booleanConstraint);
   }
 
-  @Override
   @CheckForNull
-  protected ProgramState checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
+  private ProgramState checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
     RelationState relationState = binaryRelation().resolveState(programState.getKnownRelations());
     if (relationState.rejects(booleanConstraint)) {
       return null;

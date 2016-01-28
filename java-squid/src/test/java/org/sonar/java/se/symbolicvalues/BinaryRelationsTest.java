@@ -643,6 +643,6 @@ public class BinaryRelationsTest {
     checkConjunction(LessThanOrEqualRelation.class, NotMethodEqualsRelation.class, LessThanRelation.class, RelationState.FULFILLED);
     checkConjunction(GreaterThanOrEqualRelation.class, NotMethodEqualsRelation.class, GreaterThanRelation.class, RelationState.FULFILLED);
     checkConjunction(GreaterThanOrEqualRelation.class, MethodEqualsRelation.class, EqualRelation.class, RelationState.UNDETERMINED);
-    checkConjunction(NotMethodEqualsRelation.class, NotMethodEqualsRelation.class, EqualRelation.class, RelationState.UNDETERMINED);
+    checkConjunction(NotMethodEqualsRelation.class, NotEqualRelation.class, LessThanRelation.class, RelationState.UNDETERMINED);
   }
 }

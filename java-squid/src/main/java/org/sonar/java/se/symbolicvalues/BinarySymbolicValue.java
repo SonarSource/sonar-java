@@ -25,9 +25,6 @@ import org.sonar.java.se.ConstraintManager.BooleanConstraint;
 import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 
-import javax.annotation.CheckForNull;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BinarySymbolicValue extends SymbolicValue {
@@ -51,42 +48,6 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
     Preconditions.checkArgument(symbolicValues.size() == 2);
     rightOp = symbolicValues.get(0);
     leftOp = symbolicValues.get(1);
-  }
-
-  @Override
-  public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    ProgramState programState = initialProgramState;
-    if (leftOp.equals(rightOp)) {
-      if (shouldNotInverse().equals(booleanConstraint)) {
-        return ImmutableList.of(programState);
-      }
-      return ImmutableList.of();
-    }
-    programState = checkRelation(booleanConstraint, programState);
-    if (programState == null) {
-      return ImmutableList.of();
-    }
-    List<ProgramState> results = new ArrayList<>();
-    List<ProgramState> copiedConstraints = copyConstraint(leftOp, rightOp, programState, booleanConstraint);
-    for (ProgramState ps : copiedConstraints) {
-      List<ProgramState> copiedConstraintsRightToLeft = copyConstraint(rightOp, leftOp, ps, booleanConstraint);
-      if (copiedConstraintsRightToLeft.size() == 1 && copiedConstraintsRightToLeft.get(0).equals(programState)) {
-        results.add(programState.addConstraint(this, booleanConstraint));
-      } else {
-        results.addAll(copiedConstraintsRightToLeft);
-      }
-    }
-    return results;
-  }
-
-  @CheckForNull
-  protected ProgramState checkRelation(BooleanConstraint booleanConstraint, ProgramState programState) {
-    return programState;
-  }
-
-  @Override
-  public String toString() {
-    return "EQ_TO_" + super.toString();
   }
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
