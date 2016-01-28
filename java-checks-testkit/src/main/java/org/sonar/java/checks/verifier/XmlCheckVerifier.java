@@ -120,12 +120,7 @@ public class XmlCheckVerifier extends CheckVerifier {
 
     @Override
     public void reportIssue(JavaCheck check, Node node, String message) {
-      Integer line = XmlCheckUtils.nodeLine(node);
-      if (line != null) {
-        reportIssue(check, line, message);
-      } else {
-        Fail.fail("The provided node does not have line attribute '" + XmlParser.START_COLUMN_ATTRIBUTE + "'");
-      }
+      reportIssue(check, node, message, new HashSet<XmlDocumentLocation>(), null);
     }
 
     @Override
