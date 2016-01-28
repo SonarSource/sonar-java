@@ -300,7 +300,7 @@ public class SymbolTableTest {
 
     JavaSymbol.VariableJavaSymbol variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("FIRST_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(enumSymbol);
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.ENUM);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL | Flags.ENUM);
 
     JavaSymbol.TypeJavaSymbol anonymousSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("method", 11).owner();
     assertThat(anonymousSymbol.name).isEqualTo("");
@@ -311,7 +311,7 @@ public class SymbolTableTest {
 
     variableSymbol = (JavaSymbol.VariableJavaSymbol) result.symbol("SECOND_CONSTANT");
     assertThat(variableSymbol.owner()).isSameAs(enumSymbol);
-    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.ENUM);
+    assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL | Flags.ENUM);
 
     anonymousSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("method", 16).owner();
     assertThat(anonymousSymbol.name).isEqualTo("");
