@@ -30,6 +30,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -53,6 +54,8 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
 
+  private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
@@ -64,7 +67,8 @@ public class UnusedMethodParameterCheck extends SubscriptionBaseVisitor {
     if (hasSemantic() && methodTree.block() != null && !isExcluded(methodTree)) {
       List<IdentifierTree> unused = Lists.newArrayList();
       for (VariableTree var : methodTree.parameters()) {
-        if (var.symbol().usages().isEmpty()) {
+        Symbol symbol = var.symbol();
+        if (symbol.usages().isEmpty() && !symbol.metadata().isAnnotatedWith(AUTHORIZED_ANNOTATION)) {
           unused.add(var.simpleName());
         }
       }

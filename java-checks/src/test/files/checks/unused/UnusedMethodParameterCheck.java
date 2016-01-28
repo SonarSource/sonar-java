@@ -1,3 +1,6 @@
+import javax.annotation.Nonnull;
+import javax.enterprise.event.Observes;
+
 class A extends B{
   void doSomething(int a, int b) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=31;ec=32]]
     compute(a);
@@ -34,7 +37,7 @@ class C extends B {
 }
 
 class D extends C {
-  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=37]]
+  void foo(int b, int a) { // Noncompliant {{Remove this unused method parameter "b".}} [[sc=16;ec=17;secondary=40]]
     System.out.println("");
   }
 }
@@ -97,5 +100,14 @@ class OpenForExtension {
   public Supplier<String> parameterNotUsed(final Object o) {
     return o::toString;
   }
+}
 
+class Annotations {
+  public void foo(@Observes Object event, int arg2) { // Compliant
+    System.out.println(arg2);
+  }
+
+  public void bar(@Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}} [[sc=35;ec=40]]
+    System.out.println(arg2);
+  }
 }

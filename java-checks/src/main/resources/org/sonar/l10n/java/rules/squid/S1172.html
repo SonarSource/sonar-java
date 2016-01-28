@@ -15,7 +15,7 @@ void doSomething(int a) {
 </pre>
 <h2>Exceptions</h2>
 
-<p>Override and implementation methods are excluded, as are methods that are intended to be overridden.</p>
+<p>Override and implementation methods are excluded, as are parameters annotated with <code>@Observes</code>, and methods that are intended to be overridden.</p>
 <pre>
 @override
 void doSomething(int a, int b) {     // no issue reported on b
@@ -37,7 +37,7 @@ public void qix(String s) {
 <h2>See</h2>
 
 <ul>
-<li> MISRA C++:2008, 0-1-11</li>
-<li> MISRA C:2012, 2.7</li>
+<li> MISRA C++:2008, 0-1-11 - There shall be no unused parameters (named or unnamed) in nonvirtual functions.</li>
+<li> MISRA C:2012, 2.7 - There should be no unused parameters in functions</li>
 </ul>
 
