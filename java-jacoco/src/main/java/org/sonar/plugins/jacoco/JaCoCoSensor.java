@@ -19,7 +19,6 @@
  */
 package org.sonar.plugins.jacoco;
 
-import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
@@ -51,14 +50,6 @@ public class JaCoCoSensor implements Sensor {
     this.pathResolver = pathResolver;
     this.javaResourceLocator = javaResourceLocator;
     this.javaClasspath = javaClasspath;
-  }
-
-  /**
-   * Should be executed after Surefire, which imports details of the tests.
-   */
-  @DependsUpon
-  public String dependsOnSurefireSensors() {
-    return "surefire-java";
   }
 
   @Override

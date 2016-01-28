@@ -86,7 +86,7 @@ public class CallOuterPrivateMethodCheck extends SubscriptionBaseVisitor {
     }
 
     private boolean isPrivateMethodOfOuterClass(Symbol symbol) {
-      return symbol.isPrivate() && symbol.owner() == classSymbol.owner();
+      return symbol.isPrivate() && symbol.owner().equals(classSymbol.owner());
     }
 
     public void checkUsages() {

@@ -96,11 +96,6 @@ public class JaCoCoSensorTest {
   }
 
   @Test
-  public void should_depend_on_surefire() {
-    assertThat(sensor.dependsOnSurefireSensors()).isEqualTo("surefire-java");
-  }
-
-  @Test
   public void should_execute_if_report_exists() {
     Project project = mock(Project.class);
     File outputDir = TestUtils.getResource(JaCoCoOverallSensorTest.class, ".");

@@ -16,7 +16,9 @@ class A {
       baz();
       baz();
       baz();
+      innerFun();
     }
+    private void innerFun() {}
   }
 
 }
