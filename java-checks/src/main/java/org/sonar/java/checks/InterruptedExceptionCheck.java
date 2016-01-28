@@ -48,7 +48,7 @@ import java.util.List;
   key = "S2142",
   name = "\"InterruptedException\" should not be ignored",
   priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.CWE})
+  tags = {Tag.BUG, Tag.CWE, Tag.MULTI_THREADING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("15min")
