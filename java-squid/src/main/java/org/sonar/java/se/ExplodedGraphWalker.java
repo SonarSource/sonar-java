@@ -81,7 +81,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   private static final int MAX_STEPS = 10000;
   private static final Logger LOG = LoggerFactory.getLogger(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
-  public static final String OBJECT_CLASS_NAME = "java.lang.Object";
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
@@ -570,17 +569,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       if (target.is(Tree.Kind.IDENTIFIER)) {
         IdentifierTree identifier = (IdentifierTree) target;
         return THIS_SUPER.contains(identifier.name());
-      }
-    }
-    return false;
-  }
-
-  public static boolean isObjectsMethod(MethodInvocationTree syntaxNode, String methodName, int numberOfParameter) {
-    Symbol symbol = syntaxNode.symbol();
-    if (symbol.isMethodSymbol()) {
-      Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-      if (methodSymbol.owner().type().is("java.util.Objects") && methodName.equals(methodSymbol.name())) {
-        return methodSymbol.parameterTypes().size() == numberOfParameter;
       }
     }
     return false;

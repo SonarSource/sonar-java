@@ -42,7 +42,7 @@ public class ObjectsNullCheck {
   }
 }
 
-// Needed to ensure that all methods of Objects are declared (for tests with Java version prior to 1.8
+// Needed to ensure that all methods of Objects are declared (for tests with Java version prior to 1.8)
 
 class Objects {
   public static boolean isNull(Object obj) {

@@ -38,11 +38,9 @@ public class NullCheckSymbolicValue extends UnarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-    final ObjectConstraint constraint;
-    if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-      constraint = isNull ? ObjectConstraint.NULL : ObjectConstraint.NOT_NULL;
-    } else {
-      constraint = isNull ? ObjectConstraint.NOT_NULL : ObjectConstraint.NULL;
+    ObjectConstraint constraint = ObjectConstraint.NULL;
+    if (BooleanConstraint.TRUE.equals(booleanConstraint) ^ isNull) {
+      constraint = ObjectConstraint.NOT_NULL;
     }
     return ImmutableList.of(programState.addConstraint(operand, constraint));
   }

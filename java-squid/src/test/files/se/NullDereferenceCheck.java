@@ -1,10 +1,7 @@
 @SomeAnnotation(name = value)
 package javax.annotation;
 
-import java.util.function.Supplier;
-
 import java.util.List;
-import java.util.Objects;
 
 @interface CheckForNull {}
 

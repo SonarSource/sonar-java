@@ -26,12 +26,12 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ExplodedGraphWalker;
 import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -52,8 +52,6 @@ import java.util.Map;
 @ActivatedByDefault
 public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
 
-  private static final String REQUIRE_NON_NULL_METHOD_NAME = "requireNonNull";
-
   @Override
   public void scanFile(JavaFileScannerContext context) {
     Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(NullDereferenceCheck.class);
@@ -73,19 +71,20 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
       MethodInvocationTree methodInvocation = (MethodInvocationTree) syntaxNode;
       toCheck = methodInvocation.methodSelect();
-      if (ExplodedGraphWalker.isObjectsMethod(methodInvocation, REQUIRE_NON_NULL_METHOD_NAME, 1)) {
-        final List<SymbolicValue> values = context.getState().peekValues(2);
-        return context.getState().addConstraint(values.get(1), ObjectConstraint.NOT_NULL);
-      } else if (ExplodedGraphWalker.isObjectsMethod(methodInvocation, REQUIRE_NON_NULL_METHOD_NAME, 2)
-        || ExplodedGraphWalker.isObjectsMethod(methodInvocation, REQUIRE_NON_NULL_METHOD_NAME, 2)) {
-        final List<SymbolicValue> values = context.getState().peekValues(3);
-        return context.getState().addConstraint(values.get(2), ObjectConstraint.NOT_NULL);
+      if (isObjectsRequireNonNullMethod(methodInvocation.symbol())) {
+        int numberArguments = methodInvocation.arguments().size();
+        List<SymbolicValue> values = context.getState().peekValues(numberArguments + 1);
+        return context.getState().addConstraint(values.get(numberArguments), ObjectConstraint.NOT_NULL);
       }
     }
     if (toCheck.is(Tree.Kind.MEMBER_SELECT)) {
       return checkMemberSelect(context, (MemberSelectExpressionTree) toCheck, currentVal);
     }
     return context.getState();
+  }
+
+  private static boolean isObjectsRequireNonNullMethod(Symbol symbol) {
+    return symbol.owner().type().is("java.util.Objects") && "requireNonNull".equals(symbol.name());
   }
 
   private ProgramState checkMemberSelect(CheckerContext context, MemberSelectExpressionTree syntaxNode, SymbolicValue currentVal) {

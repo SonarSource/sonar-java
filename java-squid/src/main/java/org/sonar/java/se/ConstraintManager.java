@@ -104,11 +104,11 @@ public class ConstraintManager {
       SymbolicValue leftOp = values.get(0);
       SymbolicValue rightOp = values.get(1);
       result.computedFrom(ImmutableList.of(rightOp, leftOp));
-    } else if (ExplodedGraphWalker.isObjectsMethod(syntaxNode, "isNull", 1)) {
+    } else if (isObjectsMethod(syntaxNode.symbol(), "isNull")) {
       result = new NullCheckSymbolicValue(counter, true);
       SymbolicValue operand = values.get(1);
       result.computedFrom(ImmutableList.of(operand));
-    } else if (ExplodedGraphWalker.isObjectsMethod(syntaxNode, "nonNull", 1)) {
+    } else if (isObjectsMethod(syntaxNode.symbol(), "nonNull")) {
       result = new NullCheckSymbolicValue(counter, false);
       SymbolicValue operand = values.get(1);
       result.computedFrom(ImmutableList.of(operand));
@@ -117,6 +117,10 @@ public class ConstraintManager {
     }
     counter++;
     return result;
+  }
+
+  private static boolean isObjectsMethod(Symbol symbol, String methodName) {
+    return symbol.owner().type().is("java.util.Objects") && methodName.equals(symbol.name());
   }
 
   private static boolean isEqualsMethod(MethodInvocationTree syntaxNode) {
