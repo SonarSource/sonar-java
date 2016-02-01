@@ -35,7 +35,7 @@ import java.util.Set;
 
 public abstract class BinaryRelation {
 
-  public class TransitiveRelationExceededException extends RuntimeException {
+  public static class TransitiveRelationExceededException extends RuntimeException {
     public TransitiveRelationExceededException() {
       super("Number of transitive relations exceeded!");
     }
