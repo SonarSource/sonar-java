@@ -512,8 +512,8 @@ public class BinaryRelationsTest {
     try {
       relation(EQUAL, first, last).resolveState(relations);
       fail("Transitive limit was exceeded, but not detected!");
-    } catch (IllegalStateException e) {
-      assertThat(e.getMessage()).isEqualTo(BinaryRelation.TRANSITIVE_RELATIONS_EXCEEDED);
+    } catch (BinaryRelation.TransitiveRelationExceededException e) {
+      assertThat(e.getMessage()).contains("exceeded");
     }
   }
 

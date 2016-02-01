@@ -35,7 +35,11 @@ import java.util.Set;
 
 public abstract class BinaryRelation {
 
-  static final String TRANSITIVE_RELATIONS_EXCEEDED = "Number of transitive relations exceeded!";
+  public class TransitiveRelationExceededException extends RuntimeException {
+    public TransitiveRelationExceededException() {
+      super("Number of transitive relations exceeded!");
+    }
+  }
 
   protected final Kind kind;
   protected final SymbolicValue leftOp;
@@ -93,7 +97,7 @@ public abstract class BinaryRelation {
       return RelationState.UNDETERMINED;
     }
     if (usedRelations.size() > 200) {
-      throw new IllegalStateException(TRANSITIVE_RELATIONS_EXCEEDED);
+      throw new TransitiveRelationExceededException();
     }
     for (BinaryRelation relation : knownRelations) {
       RelationState result = relation.implies(this);
@@ -210,7 +214,7 @@ public abstract class BinaryRelation {
   protected abstract BinaryRelation symmetric();
 
   /**
-   * @param a relation between symbolic values
+   * @param relation a relation between symbolic values
    * @return a RelationState<ul>
    * <li>FULFILLED  if the receiver implies that the supplied relation is true</li>
    * <li>UNFULFILLED if the receiver implies that the supplied relation is false</li>

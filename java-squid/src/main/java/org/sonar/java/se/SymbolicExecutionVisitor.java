@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   public void visitNode(Tree tree) {
     try {
       tree.accept(new ExplodedGraphWalker(context));
-    } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException exception) {
+    } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException | BinaryRelation.TransitiveRelationExceededException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
     }
 
