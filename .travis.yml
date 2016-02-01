@@ -39,3 +39,6 @@ cache:
 
 notifications:
   email: false
+  webhooks:
+   # URL to QA hook, including credentials
+      - secure: "gHzcFGyVYDOi0v32h+Nt/502IrtsznYASl+k9PmcRLnX/kvD0xIxF8RENDEqMTdslNMOs6yi9yESKgNR6Etk2iRAfI4UBCZfgms1Xdg680l/hLL48s2nleHP3QXkNY4r1SwGB7EvP13FUVBj2JLKa+qZ2HipBSPmxDfR4A83sRs="

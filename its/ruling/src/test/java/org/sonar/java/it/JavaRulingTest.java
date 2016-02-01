@@ -21,7 +21,6 @@ package org.sonar.java.it;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import com.google.common.io.Files;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.Build;
@@ -37,12 +36,9 @@ import org.slf4j.LoggerFactory;
 import org.sonar.wsclient.SonarClient;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,13 +48,7 @@ public class JavaRulingTest {
 
   @ClassRule
   public static Orchestrator orchestrator = Orchestrator.builderEnv()
-  // workaround until https://jira.sonarsource.com/browse/PM-27 PM-28 are fixed
-  .addPlugin(FileLocation.of(Iterables.getOnlyElement(Arrays.asList(new File("../../sonar-java-plugin/target/").listFiles(new FilenameFilter() {
-    @Override
-    public boolean accept(File dir, String name) {
-      return name.endsWith(".jar") && !name.endsWith("-sources.jar");
-    }
-  }))).getAbsolutePath()))
+  .addPlugin(FileLocation.byWildcardMavenFilename(new File("../../sonar-java-plugin/target"), "sonar-java-plugin-*.jar"))
   .setOrchestratorProperty("litsVersion", "0.5")
   .addPlugin("lits")
   .build();
