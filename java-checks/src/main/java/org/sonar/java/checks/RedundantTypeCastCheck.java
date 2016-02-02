@@ -21,17 +21,20 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
+import org.sonar.plugins.java.api.tree.WildcardTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -66,14 +69,25 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
   public void visitNode(Tree tree) {
     if (tree.is(Tree.Kind.METHOD_INVOCATION, Tree.Kind.NEW_CLASS)) {
       addArgsToExclusion(tree);
-    } else if (!excluded.contains(tree)) {
+    } else {
       TypeCastTree typeCastTree = (TypeCastTree) tree;
       JavaType cast = (JavaType) typeCastTree.type().symbolType();
-      JavaType expressionType = (JavaType) typeCastTree.expression().symbolType();
-      if (!isExcluded(cast) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType))) {
-        reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
+      ExpressionTree expression = typeCastTree.expression();
+      if (isChainedCastWithWildcard(typeCastTree)) {
+        excluded.add(expression);
+      }
+      if (!excluded.contains(tree)) {
+        JavaType expressionType = (JavaType) expression.symbolType();
+        if (!isExcluded(cast) && (isRedundantNumericalCast(cast, expressionType) || isRedundantCast(cast, expressionType))) {
+          reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
+        }
       }
     }
+  }
+
+  private static boolean isChainedCastWithWildcard(TypeCastTree typeCastTree) {
+    ExpressionTree expression = typeCastTree.expression();
+    return expression.is(Tree.Kind.TYPE_CAST) && usesWildCard(expression);
   }
 
   private void addArgsToExclusion(Tree tree) {
@@ -101,10 +115,36 @@ public class RedundantTypeCastCheck extends SubscriptionBaseVisitor {
     if(erasedExpressionType.isTagged(JavaType.TYPEVAR)) {
       erasedExpressionType = erasedExpressionType.erasure();
     }
-    return erasedExpressionType.equals(cast) || (!(cast instanceof JavaType.ParametrizedTypeJavaType) && !cast.isNumerical() && erasedExpressionType.isSubtypeOf(cast));
+    if (isParametrizedType(cast) ^ isParametrizedType(expressionType)) {
+      return false;
+    }
+    if (isParametrizedType(cast) && isParametrizedType(expressionType)) {
+      return expressionType.isSubtypeOf(cast);
+    }
+    return erasedExpressionType.equals(cast) || (!cast.isNumerical() && erasedExpressionType.isSubtypeOf(cast));
+  }
+
+  private static boolean isParametrizedType(JavaType cast) {
+    return cast instanceof JavaType.ParametrizedTypeJavaType;
   }
 
   private static boolean isRedundantNumericalCast(JavaType cast, JavaType expressionType) {
     return cast.isNumerical() && cast.equals(expressionType);
+  }
+
+  private static boolean usesWildCard(ExpressionTree expression) {
+    WildCardFinder visitor = new WildCardFinder();
+    expression.accept(visitor);
+    return visitor.foundWildcard;
+  }
+
+  private static class WildCardFinder extends BaseTreeVisitor {
+    private boolean foundWildcard = false;
+
+    @Override
+    public void visitWildcard(WildcardTree tree) {
+      foundWildcard = true;
+    }
+
   }
 }

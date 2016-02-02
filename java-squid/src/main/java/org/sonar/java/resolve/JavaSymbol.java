@@ -679,4 +679,38 @@ public class JavaSymbol implements Symbol {
 
   }
 
+  public static class WildcardSymbol extends TypeJavaSymbol {
+
+    public WildcardSymbol(String name) {
+      super(0, name, Symbols.unknownSymbol);
+      this.members = new Scope(this);
+    }
+
+    @Override
+    public ClassTree declaration() {
+      return null;
+    }
+
+    @Override
+    @Nullable
+    public JavaType getSuperclass() {
+      return null;
+    }
+
+    @Override
+    public List<JavaType> getInterfaces() {
+      return ImmutableList.of();
+    }
+
+    @Override
+    public String getFullyQualifiedName() {
+      return name;
+    }
+
+    @Override
+    String getInternalName() {
+      throw new UnsupportedOperationException();
+    }
+  }
+
 }

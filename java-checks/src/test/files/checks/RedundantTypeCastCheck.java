@@ -1,5 +1,8 @@
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 class Outer {
   class A {
   }
@@ -25,6 +28,13 @@ class Outer {
     int e = (int) d;
     obj = (Plop<String>) bar;
     C c = new C((A)null);
+    foo((List<List<A>>) (List<?>) foo2()); // compliant
+  }
+  
+  void foo(List<List<A>> a) {}
+  
+  List<List<B>> foo2() {
+    return null;
   }
   void fun(A a) {
   }
@@ -50,5 +60,21 @@ class Outer {
       Object[] a = null;
       java.util.Collection<C> c = (java.util.Collection<C>) Arrays.asList(a);
     }
+  }
+}
+
+class D {
+  <T> List<T> genericCast() {
+    List<Object> objectList;
+    return (List<T>) objectList;
+  }
+}
+
+class E<T> {
+  <K, V> Map<K, Set<V>> secondTypeChangeCast(Map<K, V> multimap) {
+    return (Map<K, Set<V>>) (Map<K, ?>) multimap; // Compliant
+  }
+  E<List<Object>> typeChangeCast(E<List<String>> list) {
+    return (E<List<Object>>) (E<?>) list; // Compliant
   }
 }

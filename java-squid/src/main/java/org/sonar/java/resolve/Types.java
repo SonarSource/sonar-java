@@ -20,7 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
+
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -70,13 +70,7 @@ public class Types {
             result = false;
             break;
           }
-
-          //FIXME work on erased types while generics method is not implemented/read from bytecode.
-          Set<JavaType> erasedTypes = Sets.newHashSet();
-          for (JavaType.ClassJavaType classType : t.getSymbol().superTypes()) {
-            erasedTypes.add(classType.erasure());
-          }
-          result = erasedTypes.contains(s.erasure());
+          result = t.isSubtypeOf(s);
           break;
         case JavaType.BOT:
           result = s.tag == JavaType.BOT || s.tag == JavaType.CLASS || s.tag == JavaType.ARRAY;

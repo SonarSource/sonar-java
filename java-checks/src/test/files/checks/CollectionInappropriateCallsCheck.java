@@ -140,3 +140,12 @@ class F<T> {
   }
 
 }
+
+class G {
+  public <E> void union(final Set<? extends E> set1, Object o) {
+    boolean trux = set1.contains(o); // Noncompliant
+  }
+  public <E> void union2(final Set<? extends E> set1, E o) {
+    boolean trux = set1.contains(o);
+  }
+}

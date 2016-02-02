@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -46,6 +47,7 @@ public class JavaType implements Type {
   public static final int BOT = 13;
   public static final int UNKNOWN = 14;
   public static final int TYPEVAR = 15;
+  public static final int WILDCARD = 16;
 
   int tag;
 
@@ -113,6 +115,9 @@ public class JavaType implements Type {
       //Only possibility to be supertype of array without being an array is to be Object.
       return "java.lang.Object".equals(supType.fullyQualifiedName());
     } else if(isTagged(TYPEVAR)) {
+      if (supType.isTagged(WILDCARD)) {
+        return ((WildCardType) supType).isSubtypeOfBound(this);
+      }
       return this.equals(superType) || erasure().isSubtypeOf(superType.erasure());
     }
     return false;
@@ -234,9 +239,12 @@ public class JavaType implements Type {
       if(isTagged(BOT)) {
         return ((JavaType) superType).isTagged(BOT) || superType.isClass() || superType.isArray();
       }
+      if (((JavaType) superType).isTagged(JavaType.WILDCARD)) {
+        return ((WildCardType) superType).isSubtypeOfBound(this);
+      }
       if (superType.isClass()) {
         ClassJavaType superClassType = (ClassJavaType) superType;
-        return this.equals(superClassType) || superTypeContains(superClassType.fullyQualifiedName());
+        return this.equals(superClassType) || this.equals(superClassType.erasure()) || superTypeContains(superClassType.fullyQualifiedName());
       }
       return false;
     }
@@ -383,6 +391,111 @@ public class JavaType implements Type {
         return typeSubstitution.typeVariables();
       }
       return Lists.newArrayList();
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      if (erasure().isSubtypeOf(superType.erasure())) {
+        boolean superTypeIsParametrizedJavaType = superType instanceof ParametrizedTypeJavaType;
+        if (superTypeIsParametrizedJavaType) {
+          return checkSubstitutedTypesCompatibility((ParametrizedTypeJavaType) superType);
+        }
+        return !superTypeIsParametrizedJavaType;
+      }
+      return false;
+    }
+
+    public boolean usesWildCard() {
+      for (JavaType substitution : typeSubstitution.substitutedTypes()) {
+        if (substitution.isTagged(WILDCARD)) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
+      List<JavaType> myTypes = typeSubstitution.substitutedTypes();
+      List<JavaType> itsTypes = superType.typeSubstitution.substitutedTypes();
+      if (itsTypes.size() != myTypes.size()) {
+        return false;
+      }
+      for (int i = 0; i < myTypes.size(); i++) {
+        JavaType myType = myTypes.get(i);
+        JavaType itsType = itsTypes.get(i);
+        if (itsType.isTagged(WILDCARD)) {
+          if (!myType.isSubtypeOf(itsType)) {
+            return false;
+          }
+        } else if (!myType.equals(itsType)) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
+  public static class WildCardType extends JavaType {
+
+    public enum BoundType {
+      UNBOUNDED("?"),
+      SUPER("? super "),
+      EXTENDS("? extends ");
+
+      private final String name;
+
+      BoundType(String name) {
+        this.name = name;
+      }
+
+      @Override
+      public String toString() {
+        return name;
+      }
+    }
+
+    private final JavaType bound;
+    private final BoundType boundType;
+
+    public WildCardType(JavaType bound, BoundType boundType) {
+      super(WILDCARD, new JavaSymbol.WildcardSymbol(boundType == BoundType.UNBOUNDED ? boundType.toString() : (boundType + bound.symbol().name())));
+      this.bound = bound;
+      this.boundType = boundType;
+      this.symbol.type = this;
+    }
+
+    public boolean isUnbounded() {
+      return boundType == BoundType.UNBOUNDED;
+    }
+
+    @Override
+    public boolean isSubtypeOf(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      if (((JavaType) superType).isTagged(WILDCARD)) {
+        WildCardType superTypeWildcard = (WildCardType) superType;
+        if (superTypeWildcard.boundType == BoundType.UNBOUNDED) {
+          return true;
+        }
+        if ((boundType == BoundType.UNBOUNDED || boundType == BoundType.EXTENDS) && superTypeWildcard.boundType == BoundType.EXTENDS) {
+          return bound.isSubtypeOf(superTypeWildcard.bound);
+        }
+        return boundType == BoundType.SUPER && superTypeWildcard.boundType == BoundType.SUPER && superTypeWildcard.bound.isSubtypeOf(bound);
+      }
+      return false;
+    }
+
+    public boolean isSubtypeOfBound(JavaType type) {
+      if (isUnbounded()) {
+        return true;
+      }
+      if (boundType == BoundType.EXTENDS) {
+        return type.isSubtypeOf(bound);
+      }
+      return bound.isSubtypeOf(type);
     }
   }
 }

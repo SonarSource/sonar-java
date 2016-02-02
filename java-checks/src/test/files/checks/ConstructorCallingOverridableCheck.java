@@ -1,3 +1,5 @@
+import org.foo.A.Foo;
+
 class A {
   
   A(A otherA, B b) {
@@ -101,5 +103,15 @@ public class Child extends Parent {
   public void doSomething () {
     System.out.println(this.foo.length());
   }
+}
 
+public class Foo {
+  public Foo() {
+    register(Foo.class); // Noncompliant
+    Class<?> type = null;
+    register(type); // Noncompliant
+  }
+
+  public <T> void register(Class<? extends T> type) {
+  }
 }

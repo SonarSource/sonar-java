@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
@@ -470,8 +471,10 @@ public class Resolve {
     if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, site) || candidate.type == null) {
       return bestSoFar;
     }
-    boolean isVarArgs = ((JavaSymbol.MethodJavaSymbol) candidate).isVarArgs();
-    if (!isArgumentsAcceptable(argTypes, ((JavaType.MethodJavaType) candidate.type).argTypes, isVarArgs, autoboxing)) {
+    JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) candidate;
+    boolean isVarArgs = methodJavaSymbol.isVarArgs();
+    boolean usesTypeParameter = usesTypeParameter(methodJavaSymbol);
+    if (!isArgumentsAcceptable(argTypes, ((JavaType.MethodJavaType) candidate.type).argTypes, isVarArgs, autoboxing, usesTypeParameter)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
@@ -486,11 +489,15 @@ public class Resolve {
     return mostSpecific;
   }
 
+  private static boolean usesTypeParameter(JavaSymbol.MethodJavaSymbol methodSymbol) {
+    return !methodSymbol.typeVariableTypes.isEmpty();
+  }
+
   /**
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
    */
-  private boolean isArgumentsAcceptable(List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing) {
+  private boolean isArgumentsAcceptable(List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing, boolean isParameterized) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
     int nbArgToCheck = argsSize - formalsSize;
@@ -509,20 +516,28 @@ public class Resolve {
       JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
       JavaType argType = argTypes.get(argsSize - i);
       // check type of element of array or if we invoke with an array that it is a compatible array type
-      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
+      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing, isParameterized) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
         return false;
       }
     }
     for (int i = 0; i < argsSize - nbArgToCheck; i++) {
-      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing)) {
+      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing, isParameterized)) {
         return false;
       }
     }
     return true;
   }
 
-  private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
+  private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing, boolean isParameterized) {
+    // FIXME Inference of types for method using parameter types is not handled so fall back to behavior based on erasure
+    if (!isParameterized && usesWildcard(formal)) {
+      return types.isSubtype(arg, formal);
+    }
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
+  }
+
+  private static boolean usesWildcard(JavaType type) {
+    return type instanceof JavaType.ParametrizedTypeJavaType && ((JavaType.ParametrizedTypeJavaType) type).usesWildCard();
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {
@@ -563,10 +578,12 @@ public class Resolve {
   private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2) {
     List<JavaType> m1ArgTypes = ((JavaType.MethodJavaType) m1.type).argTypes;
     List<JavaType> m2ArgTypes = ((JavaType.MethodJavaType) m2.type).argTypes;
-    if (((JavaSymbol.MethodJavaSymbol) m1).isVarArgs()) {
+    JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
+    if (methodJavaSymbol.isVarArgs()) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());
     }
-    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false);
+    boolean usesTypeParameter = usesTypeParameter(methodJavaSymbol);
+    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false, usesTypeParameter);
   }
 
   private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {

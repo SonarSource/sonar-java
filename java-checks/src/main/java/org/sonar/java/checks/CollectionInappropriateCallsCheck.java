@@ -100,6 +100,10 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
+    // FIXME SONARJAVA-1514 subtyping of type using generics is not handled correctly, but wildcards are covered
+    if (((JavaType) collectionParameterType).isTagged(JavaType.WILDCARD)) {
+      return argumentType.isSubtypeOf(collectionParameterType);
+    }
     return isSubtypeOf(argumentType.erasure(), collectionParameterType.erasure())
       || isSubtypeOf(collectionParameterType.erasure(), argumentType.erasure())
       || autoboxing(argumentType, collectionParameterType);
