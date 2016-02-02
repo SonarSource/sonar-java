@@ -20,16 +20,14 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -41,7 +39,6 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Rule(
   key = "S2259",
@@ -50,15 +47,7 @@ import java.util.Map;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 @ActivatedByDefault
-public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(NullDereferenceCheck.class);
-    for (Map.Entry<Tree, String> issue : issues.entries()) {
-      context.reportIssue(this, issue.getKey(), issue.getValue());
-    }
-  }
+public class NullDereferenceCheck extends SECheck {
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -94,12 +83,17 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
       return programState;
     }
 
-    if (context.isNull(currentVal)) {
-      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
+    Constraint constraint = programState.getConstraint(currentVal);
+    if (constraint != null && constraint.isNull()) {
+      List<JavaFileScannerContext.Location> secondary = new ArrayList<>();
+      if(((ObjectConstraint) constraint).syntaxNode() != null ) {
+        secondary.add(new JavaFileScannerContext.Location("", ((ObjectConstraint) constraint).syntaxNode()));
+      }
+      context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here", secondary);
       return null;
     }
-    final SymbolicValue targetValue = programState.peekValue();
-    final Object constraint = programState.getConstraint(targetValue);
+    SymbolicValue targetValue = programState.peekValue();
+    constraint = programState.getConstraint(targetValue);
     if (constraint == null) {
       // We dereferenced the target value for the member select, so we can assume it is not null when not already known
       return programState.addConstraint(targetValue, ObjectConstraint.NOT_NULL);
@@ -109,7 +103,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
 
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT) && context.isNull(context.getState().peekValue())) {
+    if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
       context.createSink();
       return context.getState();
@@ -125,7 +119,7 @@ public class NullDereferenceCheck extends SECheck implements JavaFileScanner {
     SymbolicValue val = context.getState().peekValue();
     if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION) && isAnnotatedCheckForNull((MethodInvocationTree) syntaxNode)) {
       List<ProgramState> states = new ArrayList<>();
-      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NULL));
+      states.addAll(val.setConstraint(context.getState(), ObjectConstraint.nullConstraint(syntaxNode)));
       states.addAll(val.setConstraint(context.getState(), ObjectConstraint.NOT_NULL));
       return states;
     }

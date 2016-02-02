@@ -19,19 +19,15 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Multimap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ConstraintManager;
-import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
+import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
@@ -50,7 +46,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +58,7 @@ import java.util.Map;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
+public class UnclosedResourcesCheck extends SECheck {
 
   private enum Status {
     OPENED, CLOSED
@@ -82,14 +77,6 @@ public class UnclosedResourcesCheck extends SECheck implements JavaFileScanner {
     "java.io.StringWriter",
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
   };
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(UnclosedResourcesCheck.class);
-    for (Map.Entry<Tree, String> issue : issues.entries()) {
-      context.reportIssue(this, issue.getKey(), issue.getValue());
-    }
-  }
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {

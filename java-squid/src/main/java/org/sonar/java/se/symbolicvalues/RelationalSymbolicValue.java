@@ -20,7 +20,7 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.se.ConstraintManager.BooleanConstraint;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.ProgramState;
 
 import javax.annotation.CheckForNull;

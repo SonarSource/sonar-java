@@ -21,8 +21,9 @@ package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.se.ConstraintManager.BooleanConstraint;
-import org.sonar.java.se.ObjectConstraint;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 
 import java.util.List;
@@ -51,13 +52,13 @@ public abstract class BinarySymbolicValue extends SymbolicValue {
   }
 
   protected List<ProgramState> copyConstraint(SymbolicValue from, SymbolicValue to, ProgramState programState, BooleanConstraint booleanConstraint) {
-    Object constraintLeft = programState.getConstraint(from);
+    Constraint constraintLeft = programState.getConstraint(from);
     if (constraintLeft instanceof BooleanConstraint) {
       BooleanConstraint boolConstraint = (BooleanConstraint) constraintLeft;
       return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? boolConstraint : boolConstraint.inverse());
     } else if (constraintLeft instanceof ObjectConstraint) {
       ObjectConstraint nullConstraint = (ObjectConstraint) constraintLeft;
-      if (nullConstraint.equals(ObjectConstraint.NULL)) {
+      if (nullConstraint.isNull()) {
         return to.setConstraint(programState, shouldNotInverse().equals(booleanConstraint) ? nullConstraint : nullConstraint.inverse());
       } else if (shouldNotInverse().equals(booleanConstraint)) {
         return to.setConstraint(programState, nullConstraint);

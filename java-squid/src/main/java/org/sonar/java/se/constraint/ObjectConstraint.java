@@ -17,15 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.constraint;
 
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
-public class ObjectConstraint {
+public class ObjectConstraint implements Constraint {
 
-  public static final ObjectConstraint NULL = new ObjectConstraint(true, false, null, null);
   public static final ObjectConstraint NOT_NULL = new ObjectConstraint(false, true, null, null);
 
   private final boolean isNull;
@@ -45,17 +44,23 @@ public class ObjectConstraint {
     this.status = status;
   }
 
+  public static ObjectConstraint nullConstraint() {
+    return nullConstraint(null);
+  }
+
+  public static ObjectConstraint nullConstraint(@Nullable  Tree syntaxNode) {
+    return new ObjectConstraint(true, false, syntaxNode, null);
+  }
+
   public ObjectConstraint inverse() {
-    if (isNull) {
-      return new ObjectConstraint(!isNull, disposable, syntaxNode, status);
-    }
-    return ObjectConstraint.NULL;
+    return new ObjectConstraint(!isNull, disposable, syntaxNode, status);
   }
 
   public ObjectConstraint withStatus(Object newStatus) {
     return new ObjectConstraint(isNull, disposable, syntaxNode, newStatus);
   }
 
+  @Override
   public boolean isNull() {
     return isNull;
   }

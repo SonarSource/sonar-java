@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 @Beta
 public interface JavaFileScannerContext {
@@ -83,6 +84,24 @@ public interface JavaFileScannerContext {
     public Location(String msg, Tree syntaxNode) {
       this.msg = msg;
       this.syntaxNode = syntaxNode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      Location location = (Location) o;
+      return Objects.equals(msg, location.msg) &&
+        Objects.equals(syntaxNode, location.syntaxNode);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(msg, syntaxNode);
     }
   }
 }

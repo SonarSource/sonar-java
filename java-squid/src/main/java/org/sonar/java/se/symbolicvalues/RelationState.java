@@ -19,7 +19,7 @@
  */
 package org.sonar.java.se.symbolicvalues;
 
-import org.sonar.java.se.ConstraintManager.BooleanConstraint;
+import org.sonar.java.se.constraint.BooleanConstraint;
 
 import javax.annotation.Nullable;
 

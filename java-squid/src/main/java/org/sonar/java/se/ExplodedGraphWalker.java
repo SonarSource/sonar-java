@@ -36,6 +36,8 @@ import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
+import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -156,7 +158,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       programPosition = node.programPoint;
       programState = node.programState;
       if (programPosition.block.successors().isEmpty()) {
-        checkerDispatcher.executeCheckEndOfExecutionPath(tree, constraintManager);
+        checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
         LOG.debug("End of potential path reached!");
         continue;
       }
@@ -177,7 +179,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
 
-    checkerDispatcher.executeCheckEndOfExecution(tree);
+    checkerDispatcher.executeCheckEndOfExecution();
     // Cleanup:
     explodedGraph = null;
     workList = null;
@@ -204,7 +206,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           @Override
           public List<ProgramState> apply(ProgramState input) {
             List<ProgramState> states = new ArrayList<>();
-            states.addAll(sv.setConstraint(input, ObjectConstraint.NULL));
+            states.addAll(sv.setConstraint(input, ObjectConstraint.nullConstraint(variableTree)));
             states.addAll(sv.setConstraint(input, ObjectConstraint.NOT_NULL));
             return states;
           }

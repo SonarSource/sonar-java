@@ -23,6 +23,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.se.ProgramState.Pop;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 

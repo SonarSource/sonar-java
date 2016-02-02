@@ -20,20 +20,16 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ConstraintManager;
-import org.sonar.java.se.ConstraintManager.BooleanConstraint;
-import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.java.se.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -45,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
-import java.util.Map;
 
 @Rule(
   key = "S2222",
@@ -55,7 +50,7 @@ import java.util.Map;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("20min")
-public class LocksNotUnlockedCheck extends SECheck implements JavaFileScanner {
+public class LocksNotUnlockedCheck extends SECheck {
 
   private enum Status {
     LOCKED, UNLOCKED;
@@ -150,14 +145,6 @@ public class LocksNotUnlockedCheck extends SECheck implements JavaFileScanner {
     private static boolean isMemberSelectActingOnField(IdentifierTree expression) {
       final Symbol symbol = expression.symbol();
       return ProgramState.isField(symbol);
-    }
-  }
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(LocksNotUnlockedCheck.class);
-    for (Map.Entry<Tree, String> issue : issues.entries()) {
-      context.reportIssue(this, issue.getKey(), issue.getValue());
     }
   }
 

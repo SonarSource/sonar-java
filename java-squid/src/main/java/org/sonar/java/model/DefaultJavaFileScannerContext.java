@@ -39,10 +39,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
@@ -53,7 +55,7 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final File file;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
-  private final Map<Class<? extends SECheck>, SetMultimap<Tree, String>> seIssues = new HashMap<>();
+  private final Map<Class<? extends SECheck>, SetMultimap<Tree, SEIssue>> seIssues = new HashMap<>();
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel, boolean analyseAccessors,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
@@ -131,12 +133,16 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
+    sonarComponents.reportIssue(createAnalyzerMessage(javaCheck, syntaxNode, message, secondary, cost));
+  }
+
+  private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
     AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(syntaxNode), message, cost != null ? cost : 0);
     for (Location location : secondary) {
       AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
       analyzerMessage.secondaryLocations.add(secondaryLocation);
     }
-    sonarComponents.reportIssue(analyzerMessage);
+    return analyzerMessage;
   }
 
   @Override
@@ -159,18 +165,61 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
     return complexityVisitor.scan(enclosingClass, methodTree);
   }
 
-  public void reportSEIssue(Class<? extends SECheck> check, Tree tree, String message) {
+  public void reportSEIssue(Class<? extends SECheck> check, Tree tree, String message, List<Location> secondary) {
     if (!seIssues.containsKey(check)) {
-      seIssues.put(check, LinkedHashMultimap.<Tree, String>create());
+      seIssues.put(check, LinkedHashMultimap.<Tree, SEIssue>create());
     }
-    seIssues.get(check).put(tree, message);
+    seIssues.get(check).put(tree, new SEIssue(tree, message, secondary));
   }
 
-  public Multimap<Tree, String> getSEIssues(Class<? extends SECheck> check) {
+  public Multimap<Tree, SEIssue> getSEIssues(Class<? extends SECheck> check) {
     if (seIssues.containsKey(check)) {
       return seIssues.get(check);
     } else {
       return ImmutableMultimap.of();
+    }
+  }
+
+  public static class SEIssue {
+    private final Tree tree;
+    private final String message;
+    private final List<Location> secondary;
+
+    public SEIssue(Tree tree, String message, List<Location> secondary) {
+      this.tree = tree;
+      this.message = message;
+      this.secondary = secondary;
+    }
+
+    public Tree getTree() {
+      return tree;
+    }
+
+    public String getMessage() {
+      return message;
+    }
+
+    public List<Location> getSecondary() {
+      return secondary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      SEIssue seIssue = (SEIssue) o;
+      return Objects.equals(tree, seIssue.tree) &&
+        Objects.equals(message, seIssue.message) &&
+        Objects.equals(secondary, seIssue.secondary);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(tree, message, secondary);
     }
   }
 }

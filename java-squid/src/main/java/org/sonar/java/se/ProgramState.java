@@ -24,7 +24,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.collections.AVLTree;
 import org.sonar.java.collections.PMap;
-import org.sonar.java.se.ConstraintManager.BooleanConstraint;
+import org.sonar.java.se.constraint.Constraint;
+import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -65,10 +68,10 @@ public class ProgramState {
   public static final ProgramState EMPTY_STATE = new ProgramState(
     AVLTree.<Symbol, SymbolicValue>create(),
     AVLTree.<SymbolicValue, Integer>create(),
-    AVLTree.<SymbolicValue, Object>create()
-      .put(SymbolicValue.NULL_LITERAL, ObjectConstraint.NULL)
-      .put(SymbolicValue.TRUE_LITERAL, ConstraintManager.BooleanConstraint.TRUE)
-      .put(SymbolicValue.FALSE_LITERAL, ConstraintManager.BooleanConstraint.FALSE),
+    AVLTree.<SymbolicValue, Constraint>create()
+      .put(SymbolicValue.NULL_LITERAL, ObjectConstraint.nullConstraint())
+      .put(SymbolicValue.TRUE_LITERAL, BooleanConstraint.TRUE)
+      .put(SymbolicValue.FALSE_LITERAL, BooleanConstraint.FALSE),
     AVLTree.<ExplodedGraph.ProgramPoint, Integer>create(),
     Lists.<SymbolicValue>newLinkedList());
 
@@ -77,10 +80,10 @@ public class ProgramState {
   private final Deque<SymbolicValue> stack;
   private final PMap<Symbol, SymbolicValue> values;
   private final PMap<SymbolicValue, Integer> references;
-  private final PMap<SymbolicValue, Object> constraints;
+  private final PMap<SymbolicValue, Constraint> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, Object> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
+                       PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
     Deque<SymbolicValue> stack) {
     this.values = values;
     this.references = references;
@@ -99,7 +102,7 @@ public class ProgramState {
     stack = newStack;
   }
 
-  private ProgramState(ProgramState ps, PMap<SymbolicValue, Object> newConstraints) {
+  private ProgramState(ProgramState ps, PMap<SymbolicValue, Constraint> newConstraints) {
     values = ps.values;
     references = ps.references;
     constraints = newConstraints;
@@ -118,7 +121,7 @@ public class ProgramState {
     return unstackValue(stack.size()).state;
   }
 
-  Pop unstackValue(int nbElements) {
+  public Pop unstackValue(int nbElements) {
     if (nbElements == 0) {
       return new Pop(this, Collections.<SymbolicValue>emptyList());
     }
@@ -174,8 +177,8 @@ public class ProgramState {
     return "{" + values.toString() + "}  {" + constraints.toString() + "}" + " { " + stack.toString() + " }";
   }
 
-  public ProgramState addConstraint(SymbolicValue symbolicValue, Object constraint) {
-    PMap<SymbolicValue, Object> newConstraints = constraints.put(symbolicValue, constraint);
+  public ProgramState addConstraint(SymbolicValue symbolicValue, Constraint constraint) {
+    PMap<SymbolicValue, Constraint> newConstraints = constraints.put(symbolicValue, constraint);
     if (newConstraints != constraints) {
       return new ProgramState(this, newConstraints);
     }
@@ -234,7 +237,7 @@ public class ProgramState {
   public ProgramState cleanupDeadSymbols(Set<Symbol> liveVariables) {
     PMap<Symbol, SymbolicValue> newValues = values;
     PMap<SymbolicValue, Integer> newReferences = references;
-    PMap<SymbolicValue, Object> newConstraints = constraints;
+    PMap<SymbolicValue, Constraint> newConstraints = constraints;
     boolean newProgramState = false;
     for (Iterator<Map.Entry<Symbol, SymbolicValue>> iter = newValues.entriesIterator(); iter.hasNext();) {
       Map.Entry<Symbol, SymbolicValue> next = iter.next();
@@ -256,11 +259,11 @@ public class ProgramState {
   }
 
   public ProgramState cleanupConstraints() {
-    PMap<SymbolicValue, Object> newConstraints = constraints;
+    PMap<SymbolicValue, Constraint> newConstraints = constraints;
     PMap<SymbolicValue, Integer> newReferences = references;
     boolean newProgramState = false;
-    for (Iterator<Map.Entry<SymbolicValue, Object>> iter = newConstraints.entriesIterator(); iter.hasNext();) {
-      Map.Entry<SymbolicValue, Object> next = iter.next();
+    for (Iterator<Map.Entry<SymbolicValue, Constraint>> iter = newConstraints.entriesIterator(); iter.hasNext();) {
+      Map.Entry<SymbolicValue, Constraint> next = iter.next();
       SymbolicValue symbolicValue = next.getKey();
       if (!isReachable(symbolicValue, newReferences) && isDisposable(symbolicValue, next.getValue()) && !inStack(stack, symbolicValue)) {
         if (!newProgramState) {
@@ -322,7 +325,7 @@ public class ProgramState {
   }
 
   @CheckForNull
-  public Object getConstraint(SymbolicValue sv) {
+  public Constraint getConstraint(SymbolicValue sv) {
     return constraints.get(sv);
   }
 
@@ -337,9 +340,9 @@ public class ProgramState {
 
   public Map<SymbolicValue, ObjectConstraint> getValuesWithConstraints(final Object state) {
     final Map<SymbolicValue, ObjectConstraint> result = new HashMap<>();
-    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Constraint>() {
       @Override
-      public void accept(SymbolicValue value, Object valueConstraint) {
+      public void accept(SymbolicValue value, Constraint valueConstraint) {
         if (valueConstraint instanceof ObjectConstraint) {
           ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
           if (constraint.hasStatus(state)) {
@@ -354,9 +357,9 @@ public class ProgramState {
   public List<ObjectConstraint> getFieldConstraints(final Object state) {
     final Set<SymbolicValue> valuesAssignedToFields = getFieldValues();
     final List<ObjectConstraint> result = new ArrayList<>();
-    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Constraint>() {
       @Override
-      public void accept(SymbolicValue value, Object valueConstraint) {
+      public void accept(SymbolicValue value, Constraint valueConstraint) {
         if (valueConstraint instanceof ObjectConstraint && !valuesAssignedToFields.contains(value)) {
           ObjectConstraint constraint = (ObjectConstraint) valueConstraint;
           if (constraint.hasStatus(state)) {
@@ -383,9 +386,9 @@ public class ProgramState {
 
   public List<BinaryRelation> getKnownRelations() {
     final List<BinaryRelation> knownRelations = new ArrayList<>();
-    constraints.forEach(new PMap.Consumer<SymbolicValue, Object>() {
+    constraints.forEach(new PMap.Consumer<SymbolicValue, Constraint>() {
       @Override
-      public void accept(SymbolicValue value, Object constraint) {
+      public void accept(SymbolicValue value, Constraint constraint) {
         BinaryRelation relation = value.binaryRelation();
         if (relation != null) {
           if (BooleanConstraint.TRUE.equals(constraint)) {

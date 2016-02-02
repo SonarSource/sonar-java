@@ -17,10 +17,13 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.constraint;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.se.Pair;
+import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.SymbolicValueFactory;
 import org.sonar.java.se.symbolicvalues.NullCheckSymbolicValue;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -170,30 +173,17 @@ public class ConstraintManager {
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {
-    return ObjectConstraint.NULL.equals(ps.getConstraint(val));
+    Object constraint = ps.getConstraint(val);
+    return constraint instanceof ObjectConstraint && ((ObjectConstraint) constraint).isNull();
   }
 
   public Pair<List<ProgramState>, List<ProgramState>> assumeDual(ProgramState programState) {
 
     ProgramState.Pop unstack = programState.unstackValue(1);
     SymbolicValue sv = unstack.values.get(0);
-    final List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
-    final List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
+    List<ProgramState> falseConstraint = sv.setConstraint(unstack.state, BooleanConstraint.FALSE);
+    List<ProgramState> trueConstraint = sv.setConstraint(unstack.state, BooleanConstraint.TRUE);
     return new Pair<>(falseConstraint, trueConstraint);
   }
 
-  public enum BooleanConstraint {
-    TRUE,
-    FALSE;
-    public BooleanConstraint inverse() {
-      if (TRUE == this) {
-        return FALSE;
-      }
-      return TRUE;
-    }
-  }
-
-  public static class TypedConstraint {
-    // Empty class for now, but should store the resolved type for instanceof operator.
-  }
 }

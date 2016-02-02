@@ -20,8 +20,8 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.se.ConstraintManager.BooleanConstraint;
-import org.sonar.java.se.ObjectConstraint;
+import org.sonar.java.se.constraint.BooleanConstraint;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.symbolicvalues.SymbolicValue.UnarySymbolicValue;
 
@@ -38,7 +38,7 @@ public class NullCheckSymbolicValue extends UnarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-    ObjectConstraint constraint = ObjectConstraint.NULL;
+    ObjectConstraint constraint = ObjectConstraint.nullConstraint();
     if (BooleanConstraint.TRUE.equals(booleanConstraint) ^ isNull) {
       constraint = ObjectConstraint.NOT_NULL;
     }

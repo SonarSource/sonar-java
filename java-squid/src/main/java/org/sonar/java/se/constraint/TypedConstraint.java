@@ -17,27 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.se;
+package org.sonar.java.se.constraint;
 
-import org.sonar.java.se.checks.SECheck;
-import org.sonar.java.se.constraint.ConstraintManager;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
-import org.sonar.plugins.java.api.tree.Tree;
+public class TypedConstraint implements Constraint {
+  // Empty class for now, but should store the resolved type for instanceof operator.
 
-import java.util.List;
-
-public interface CheckerContext {
-
-  Object createSink();
-
-  void reportIssue(Tree tree, SECheck check, String message);
-
-  void reportIssue(Tree tree, SECheck check, String message, List<JavaFileScannerContext.Location> locations);
-
-  void addTransition(ProgramState state);
-
-  ProgramState getState();
-
-  ConstraintManager getConstraintManager();
-
+  @Override
+  public boolean isNull() {
+    // This constraint is only used when we already know that a SV is not null.
+    return false;
+  }
 }

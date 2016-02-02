@@ -22,6 +22,7 @@ package org.sonar.java.se;
 import org.junit.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 
@@ -41,7 +42,7 @@ public class ObjectConstraintTest {
     ObjectConstraint constraint = new ObjectConstraint(tree, TestStatus.OPENED);
     assertThat(constraint.isNull()).as("Opened constraint is not null").isFalse();
     assertThat(constraint.isDisposable()).isTrue();
-    assertThat(constraint.inverse()).as("Inverse of opened constraint is NULL").isEqualTo(ObjectConstraint.NULL);
+    assertThat(constraint.inverse().isNull()).as("Inverse of opened constraint is NULL").isTrue();
     assertThat(constraint.hasStatus(TestStatus.OPENED)).as("Opened constraint is 'opened'").isTrue();
     assertThat(constraint.hasStatus(TestStatus.CLOSED)).as("Opened constraint is not 'opened'").isFalse();
     assertThat(constraint.syntaxNode()).as("Constraint's syntax node").isSameAs(tree);
@@ -55,7 +56,7 @@ public class ObjectConstraintTest {
 
   @Test
   public void null_constraint() throws Exception {
-    assertThat(ObjectConstraint.NULL.hasStatus(TestStatus.OPENED)).isFalse();
-    assertThat(ObjectConstraint.NULL.hasStatus(null)).isTrue();
+    assertThat(ObjectConstraint.nullConstraint().hasStatus(TestStatus.OPENED)).isFalse();
+    assertThat(ObjectConstraint.nullConstraint().hasStatus(null)).isTrue();
   }
 }

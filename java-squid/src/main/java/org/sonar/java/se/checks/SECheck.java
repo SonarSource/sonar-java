@@ -19,13 +19,18 @@
  */
 package org.sonar.java.se.checks;
 
+import com.google.common.collect.Multimap;
+import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.java.se.ConstraintManager;
 import org.sonar.java.se.ProgramState;
-import org.sonar.plugins.java.api.JavaCheck;
+import org.sonar.java.se.constraint.ConstraintManager;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
-public abstract class SECheck implements JavaCheck {
+import java.util.Map;
+
+public abstract class SECheck implements JavaFileScanner {
 
   public void init(){
   }
@@ -45,4 +50,14 @@ public abstract class SECheck implements JavaCheck {
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
     // By default do nothing
   }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    Multimap<Tree, DefaultJavaFileScannerContext.SEIssue> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(getClass());
+    for (Map.Entry<Tree, DefaultJavaFileScannerContext.SEIssue> issue : issues.entries()) {
+      DefaultJavaFileScannerContext.SEIssue seIssue = issue.getValue();
+      context.reportIssue(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getSecondary(), null);
+    }
+  }
+
 }

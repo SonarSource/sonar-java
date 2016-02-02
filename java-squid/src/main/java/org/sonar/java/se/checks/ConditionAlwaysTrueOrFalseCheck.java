@@ -19,21 +19,16 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-import java.util.Map;
 import java.util.Set;
 
 @Rule(
@@ -44,18 +39,10 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class ConditionAlwaysTrueOrFalseCheck extends SECheck implements JavaFileScanner {
+public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
 
   private final Set<Tree> evaluatedToFalse = Sets.newHashSet();
   private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
-
-  @Override
-  public void scanFile(JavaFileScannerContext context) {
-    Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(this.getClass());
-    for (Map.Entry<Tree, String> issue : issues.entries()) {
-      context.reportIssue(this, issue.getKey(), issue.getValue());
-    }
-  }
 
   @Override
   public void init() {

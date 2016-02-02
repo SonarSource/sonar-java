@@ -98,9 +98,10 @@ public class ExplodedGraphWalkerTest {
     }
 
     private void reportIssuesFor(JavaFileScannerContext context, JavaCheck check) {
-      Multimap<Tree, String> issues = ((DefaultJavaFileScannerContext) context).getSEIssues((Class<? extends SECheck>) check.getClass());
-      for (Map.Entry<Tree, String> issue : issues.entries()) {
-        context.reportIssue(check, issue.getKey(), issue.getValue());
+      Multimap<Tree, DefaultJavaFileScannerContext.SEIssue> issues = ((DefaultJavaFileScannerContext) context).getSEIssues((Class<? extends SECheck>) check.getClass());
+      for (Map.Entry<Tree, DefaultJavaFileScannerContext.SEIssue> issue : issues.entries()) {
+        DefaultJavaFileScannerContext.SEIssue seIssue = issue.getValue();
+        context.reportIssue(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getSecondary(), null);
       }
     }
   }
