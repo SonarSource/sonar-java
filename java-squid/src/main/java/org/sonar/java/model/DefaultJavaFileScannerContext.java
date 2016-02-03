@@ -140,6 +140,11 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   }
 
   @Override
+  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
+    sonarComponents.reportIssue(new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanBetween(startTree, endTree), message, 0));
+  }
+
+  @Override
   public File getFile() {
     return file;
   }

@@ -94,5 +94,10 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
       }
       issues.add(analyzerMessage);
     }
+
+    @Override
+    public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
+      issues.add(new AnalyzerMessage(javaCheck, getFile(), AnalyzerMessage.textSpanBetween(startTree, endTree), message, 0));
+    }
   }
 }

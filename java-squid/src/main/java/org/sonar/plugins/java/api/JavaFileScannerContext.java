@@ -74,6 +74,8 @@ public interface JavaFileScannerContext {
 
   void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
+  void reportIssue(JavaCheck javaCheck, Tree starTree, Tree endTree, String message);
+
   class Location {
     public final String msg;
     public final Tree syntaxNode;

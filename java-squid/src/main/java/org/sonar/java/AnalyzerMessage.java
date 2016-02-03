@@ -110,6 +110,16 @@ public class AnalyzerMessage {
   public static AnalyzerMessage.TextSpan textSpanFor(Tree syntaxNode) {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(syntaxNode);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(syntaxNode);
+    return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
+  }
+
+  public static AnalyzerMessage.TextSpan textSpanBetween(Tree startTree, Tree endTree) {
+    SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(startTree);
+    SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(endTree);
+    return textSpanBetween(firstSyntaxToken, lastSyntaxToken);
+  }
+
+  private static AnalyzerMessage.TextSpan textSpanBetween(SyntaxToken firstSyntaxToken, SyntaxToken lastSyntaxToken) {
     return new AnalyzerMessage.TextSpan(
       firstSyntaxToken.line(),
       firstSyntaxToken.column(),
@@ -117,5 +127,4 @@ public class AnalyzerMessage {
       lastSyntaxToken.column() + lastSyntaxToken.text().length()
     );
   }
-
 }

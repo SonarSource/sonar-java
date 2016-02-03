@@ -40,7 +40,7 @@ public class IssuableSubscriptionVisitorTest {
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(new CustomRule()), Lists.<File>newArrayList(), null);
     JavaAstScanner.scanSingleFileForTests(new File("src/test/resources/IssuableSubscriptionClass.java"), visitorsBridge);
     Set<AnalyzerMessage> issues = visitorsBridge.lastCreatedTestContext().getIssues();
-    assertThat(issues).hasSize(6);
+    assertThat(issues).hasSize(7);
   }
 
   private static class CustomRule extends IssuableSubscriptionVisitor {
@@ -58,6 +58,7 @@ public class IssuableSubscriptionVisitorTest {
       addIssueOnFile("issue on file");
       reportIssue(tree, "issue on tree");
       reportIssue(tree, "issue on tree", ImmutableList.<JavaFileScannerContext.Location>of(), null);
+      reportIssue(tree, tree, "issue from tree to tree");
     }
   }
 }

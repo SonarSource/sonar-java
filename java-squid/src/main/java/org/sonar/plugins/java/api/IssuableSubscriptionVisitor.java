@@ -58,4 +58,8 @@ public abstract class IssuableSubscriptionVisitor extends SubscriptionVisitor {
   public void reportIssue(Tree tree, String message, List<JavaFileScannerContext.Location> flow, @Nullable Integer cost) {
     context.reportIssue(this, tree, message, flow, cost);
   }
+
+  public void reportIssue(Tree startTree, Tree endTree, String message) {
+    context.reportIssue(this, startTree, endTree, message);
+  }
 }

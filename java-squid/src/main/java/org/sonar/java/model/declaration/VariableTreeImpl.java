@@ -169,6 +169,11 @@ public class VariableTreeImpl extends JavaTree implements VariableTree {
     return initializer;
   }
 
+  @CheckForNull
+  public SyntaxToken equalToken() {
+    return equalToken;
+  }
+
   @Override
   public org.sonar.plugins.java.api.semantic.Symbol symbol() {
     return symbol;
