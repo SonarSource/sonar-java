@@ -28,6 +28,7 @@ import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.cfg.LocalVariableReadExtractor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
+import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -100,11 +101,12 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
       Symbol symbol;
       switch (element.kind()) {
         case ASSIGNMENT:
-          ExpressionTree lhs = ExpressionsHelper.skipParentheses(((AssignmentExpressionTree) element).variable());
+          AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
+          ExpressionTree lhs = ExpressionsHelper.skipParentheses(assignmentExpressionTree.variable());
           if (lhs.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) lhs).symbol();
             if (isLocalVariable(symbol) && !out.contains(symbol)) {
-              createIssue(lhs, symbol);
+              createIssue(assignmentExpressionTree.operatorToken(), assignmentExpressionTree.expression(), symbol);
             }
             assignmentLHS.add(lhs);
             out.remove(symbol);
@@ -177,13 +179,21 @@ public class DeadStoreCheck extends SubscriptionBaseVisitor {
   }
 
   private void createIssue(Tree element, Symbol symbol) {
-    reportIssue(element, "Remove this useless assignment to local variable \"" + symbol.name() + "\".");
+    reportIssue(element, getMessage(symbol));
+  }
+
+  private void createIssue(Tree startTree, Tree endTree, Symbol symbol) {
+    reportIssue(startTree, endTree, getMessage(symbol));
+  }
+
+  private static String getMessage(Symbol symbol) {
+    return "Remove this useless assignment to local variable \"" + symbol.name() + "\".";
   }
 
   private Set<Symbol> handleVariable(Set<Symbol> out, VariableTree localVar) {
     Symbol symbol = localVar.symbol();
     if (localVar.initializer() != null && !out.contains(symbol)) {
-      createIssue(localVar.simpleName(), symbol);
+      createIssue(((VariableTreeImpl) localVar).equalToken(),  localVar.initializer(), symbol);
     }
     out.remove(symbol);
     return out;

@@ -4,20 +4,27 @@ import java.lang.Exception;
 
 class A {
 
+  int var;
+
   abstract int foo();
 
   int foo(int u) {
-    int x = 0;// Noncompliant {{Remove this useless assignment to local variable "x".}}
+    int x = 0;// Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=11;ec=14]]
     x = 3;
-    int y = x + 1; // Noncompliant {{Remove this useless assignment to local variable "y".}}
-    x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}}
+    int y = x + 1; // Noncompliant {{Remove this useless assignment to local variable "y".}} [[sc=11;ec=18]]
+    x = 2; // Noncompliant {{Remove this useless assignment to local variable "x".}} [[sc=7;ec=10]]
     x = 3;
     y = 2;
     foo(y);
     foo(x);
     Object a = new Object();
     System.out.println(a);
-    a = null; // Noncompliant
+    a = null; // Noncompliant [[sc=7;ec=13]]
+  }
+
+  void fields() {
+    this.var = 2; // Compliant
+    var = 3; // Compliant - do not check fields
   }
 
   void foo2() {
@@ -134,7 +141,7 @@ class A {
   int increment_operator() {
     int i = 0;
     int b = 12;
-    ++b; // Noncompliant
+    ++b; // Noncompliant [[sc=5;ec=8]]
     int c = 0;
     foo(++c); // compliant not last element of block
     int j = -1;
@@ -151,13 +158,13 @@ class A {
   void parenthesis_identifier_in_assignement() {
     int i = 0;
     System.out.println(i);
-    (i) = 12; // Noncompliant
+    (i) = 12; // Noncompliant [[sc=9;ec=13]]
   }
   int parenthesis_identifier_in_postfix_increment() {
     int j = 0;
     for (int i = 0; i < 10; ++j, ++i) ;
     int b = 0;
-    return (b)++; // Noncompliant
+    return (b)++; // Noncompliant [[sc=12;ec=17]]
   }
   void foo() {
     int i = 0;
