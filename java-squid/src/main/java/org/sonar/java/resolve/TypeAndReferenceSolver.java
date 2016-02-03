@@ -359,7 +359,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitWildcard(WildcardTree tree) {
     if (tree.bound() == null) {
-      registerType(tree, Symbols.unknownType);
+      registerType(tree, Symbols.anyType);
     } else {
       resolveAs(tree.bound(), JavaSymbol.TYP);
       registerType(tree, getType(tree.bound()));

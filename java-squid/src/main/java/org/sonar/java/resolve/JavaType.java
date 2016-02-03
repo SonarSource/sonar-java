@@ -27,7 +27,9 @@ import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JavaType implements Type {
 
@@ -228,6 +230,9 @@ public class JavaType implements Type {
 
     @Override
     public boolean isSubtypeOf(Type superType) {
+      if (superType == Symbols.anyType) {
+        return true;
+      }
       if(isTagged(UNKNOWN)) {
         return false;
       }
@@ -383,6 +388,28 @@ public class JavaType implements Type {
         return typeSubstitution.typeVariables();
       }
       return Lists.newArrayList();
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      if (superType instanceof JavaType.ParametrizedTypeJavaType && erasure().isSubtypeOf(superType.erasure())) {
+        return checkWildCards((JavaType.ParametrizedTypeJavaType) superType);
+      }
+      return super.isSubtypeOf(superType);
+    }
+
+    private boolean checkWildCards(ParametrizedTypeJavaType superType) {
+      Map<String, JavaType> itsTypes = new HashMap<>();
+      for (Map.Entry<TypeVariableJavaType, JavaType> entry : superType.typeSubstitution.substitutionEntries()) {
+        itsTypes.put(entry.getKey().name(), entry.getValue());
+      }
+      for (Map.Entry<TypeVariableJavaType, JavaType> entry : typeSubstitution.substitutionEntries()) {
+        JavaType itsType = itsTypes.get(entry.getKey().name());
+        if (Symbols.anyType != itsType) {
+          return false;
+        }
+      }
+      return true;
     }
   }
 }

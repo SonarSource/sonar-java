@@ -29,9 +29,12 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -275,6 +278,58 @@ public class TypesTest {
     CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(builder.toString());
     SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
     return cut;
+  }
+
+  @Test
+  public void testUnboundedWildCards() {
+    List<Type> elementTypes = declaredTypesOfLastClassMembers(
+      "import java.util.Collection;",
+      "import java.util.List;",
+      "class Animal {}",
+      "class Cat extends Animal {}",
+      "class Test {",
+      "List<?> objects;",
+      "List<Animal> animals;",
+      "List<Cat> cats;",
+      "Animal a;",
+      "Collection<?> aCollection;",
+      "}");
+    Type objectsListType = elementTypes.get(0);
+    Type animalsType = elementTypes.get(1);
+    Type catsType = elementTypes.get(2);
+    Type animalType = elementTypes.get(3);
+    Type collectionType = elementTypes.get(4);
+    assertThat(animalsType.isSubtypeOf(objectsListType)).isTrue();
+    assertThat(objectsListType.isSubtypeOf(animalsType)).isFalse();
+
+    assertThat(catsType.isSubtypeOf(objectsListType)).isTrue();
+    assertThat(objectsListType.isSubtypeOf(catsType)).isFalse();
+
+    assertThat(animalsType.isSubtypeOf(catsType)).isFalse();
+    assertThat(catsType.isSubtypeOf(animalsType)).isFalse();
+
+    assertThat(animalsType.isSubtypeOf(animalType)).isFalse();
+    assertThat(animalType.isSubtypeOf(animalsType)).isFalse();
+
+    assertThat(collectionType.isSubtypeOf(objectsListType)).isFalse();
+    assertThat(objectsListType.isSubtypeOf(collectionType)).isTrue();
+  }
+
+  private static List<Type> declaredTypesOfLastClassMembers(String... lines) {
+    CompilationUnitTree tree = treeOf(lines);
+    List<Tree> declaredClasses = tree.types();
+    Object last = declaredClasses.get(declaredClasses.size() - 1);
+    if (!(last instanceof ClassTree)) {
+      return Collections.emptyList();
+    }
+    ClassTree testClass = (ClassTree) last;
+    List<Type> types = new ArrayList<>();
+    for (Tree member : testClass.members()) {
+      if (member instanceof VariableTree) {
+        types.add(((VariableTree) member).type().symbolType());
+      }
+    }
+    return types;
   }
 
 }

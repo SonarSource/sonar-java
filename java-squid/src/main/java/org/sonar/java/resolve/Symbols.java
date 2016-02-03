@@ -44,6 +44,7 @@ public class Symbols {
    * Type, which can't be modelled for the moment.
    */
   static final JavaType.ClassJavaType unknownType;
+  static final JavaType.ClassJavaType anyType;
   public static final JavaSymbol.TypeJavaSymbol unknownSymbol;
   public static final JavaSymbol.MethodJavaSymbol unknownMethodSymbol;
 
@@ -123,6 +124,17 @@ public class Symbols {
     unknownType.supertype = null;
     unknownType.interfaces = ImmutableList.of();
     unknownSymbol.type = unknownType;
+
+    anyType = new JavaType.ClassJavaType(unknownSymbol) {
+      @Override
+      public String toString() {
+        return "?";
+      }
+    };
+    anyType.tag = JavaType.TYPEVAR;
+    anyType.supertype = null;
+    anyType.interfaces = ImmutableList.of();
+
     unknownMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "!unknown!", unknownSymbol) {
       @Override
       public boolean isMethodSymbol() {
