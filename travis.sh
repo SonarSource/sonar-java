@@ -4,7 +4,7 @@ set -euo pipefail
 
 function configureTravis {
   mkdir ~/.local
-  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v24 | tar zx --strip-components 1 -C ~/.local
+  curl -sSL https://github.com/SonarSource/travis-utils/tarball/v25 | tar zx --strip-components 1 -C ~/.local
   source ~/.local/bin/install
 }
 
@@ -58,14 +58,10 @@ CI)
 
 plugin|ruling)
 
-  if [ "$SQ_VERSION" = "DEV" ] ; then
-    build_snapshot "SonarSource/sonarqube"
-  fi
-
   [ "$TEST" = "ruling" ] && git submodule update --init --recursive
   EXTRA_PARAMS=
   [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
-  mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -Pit-$TEST $EXTRA_PARAMS
+  mvn package -Dsonar.runtimeVersion="$SQ_VERSION" -Dmaven.test.redirectTestOutputToFile=false -B -e -V -Pit-$TEST $EXTRA_PARAMS
   ;;
 
 *)
