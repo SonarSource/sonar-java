@@ -52,6 +52,9 @@ public class CatchRethrowingCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     TryStatementTree tst = (TryStatementTree) tree;
     if (tst.catches().size() == 1) {
       CatchTree catchTree = tst.catches().get(0);

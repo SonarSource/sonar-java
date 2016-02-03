@@ -63,7 +63,9 @@ public class InterruptedExceptionCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    super.scanFile(context);
+    if(context.getSemanticModel() != null) {
+      super.scanFile(context);
+    }
     withinInterruptingFinally.clear();
   }
 
