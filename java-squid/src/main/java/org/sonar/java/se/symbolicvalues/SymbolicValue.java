@@ -197,7 +197,7 @@ public class SymbolicValue {
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
+      if (booleanConstraint.isTrue()) {
         Constraint constraint = programState.getConstraint(operand);
         if (constraint !=null && constraint.isNull()) {
           // irrealizable constraint : instance of true if operand is null
@@ -237,21 +237,16 @@ public class SymbolicValue {
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
       final List<ProgramState> states = new ArrayList<>();
-      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
-        for (ProgramState ps : trueFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
-        }
-      } else {
+      if (booleanConstraint.isFalse()) {
         List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
-        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
         for (ProgramState ps : falseFirstOp) {
           states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
           states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
         }
-        for (ProgramState ps : trueFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
-        }
+      }
+      List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+      for (ProgramState ps : trueFirstOp) {
+        states.addAll(rightOp.setConstraint(ps, booleanConstraint));
       }
       return states;
     }
@@ -270,22 +265,17 @@ public class SymbolicValue {
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      final List<ProgramState> states = new ArrayList<>();
-      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
+      List<ProgramState> states = new ArrayList<>();
+      if (booleanConstraint.isTrue()) {
         List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
-        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
         for (ProgramState ps : trueFirstOp) {
           states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
           states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
         }
-        for (ProgramState ps : falseFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
-        }
-      } else {
-        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
-        for (ProgramState ps : falseFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
-        }
+      }
+      List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+      for (ProgramState ps : falseFirstOp) {
+        states.addAll(rightOp.setConstraint(ps, booleanConstraint));
       }
       return states;
     }
@@ -304,25 +294,14 @@ public class SymbolicValue {
 
     @Override
     public List<ProgramState> setConstraint(ProgramState programState, BooleanConstraint booleanConstraint) {
-      final List<ProgramState> states = new ArrayList<>();
-      if (BooleanConstraint.TRUE.equals(booleanConstraint)) {
-        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
-        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
-        for (ProgramState ps : trueFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
-        }
-        for (ProgramState ps : falseFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
-        }
-      } else {
-        List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
-        List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
-        for (ProgramState ps : trueFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
-        }
-        for (ProgramState ps : falseFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
-        }
+      List<ProgramState> states = new ArrayList<>();
+      List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
+      for (ProgramState ps : trueFirstOp) {
+        states.addAll(rightOp.setConstraint(ps, booleanConstraint.inverse()));
+      }
+      List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
+      for (ProgramState ps : falseFirstOp) {
+        states.addAll(rightOp.setConstraint(ps, booleanConstraint));
       }
       return states;
     }

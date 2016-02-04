@@ -27,6 +27,15 @@ public enum BooleanConstraint implements Constraint {
   public boolean isNull() {
     return false;
   }
+
+  public boolean isTrue() {
+    return this == TRUE;
+  }
+
+  public boolean isFalse() {
+    return this == FALSE;
+  }
+
   public BooleanConstraint inverse() {
     if (TRUE == this) {
       return FALSE;
