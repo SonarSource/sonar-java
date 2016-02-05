@@ -21,6 +21,7 @@ install:
         [System.IO.Compression.ZipFile]::ExtractToDirectory("C:\Users\appveyor\maven.zip", "C:\Users\appveyor\maven")
       }
   - set PATH=%PATH%;C:\Users\appveyor\maven\apache-maven-%MAVEN_VERSION%\bin
+  - curl https://raw.githubusercontent.com/dbolkensteyn/travis-utils/master/m2/settings-public.xml -o C:\Users\appveyor\maven\apache-maven-%MAVEN_VERSION%\conf\settings.xml
   - echo %JAVA_HOME%
   - if "%RUN%" == "ruling" (git submodule update --init --recursive)
 
