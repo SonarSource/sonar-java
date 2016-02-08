@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 public class MeasurerTest {
 
-  private static final int NB_OF_METRICS = 14;
+  private static final int NB_OF_METRICS = 15;
   private SensorContext context;
   private JavaSquid squid;
   private File baseDir;
@@ -98,6 +98,7 @@ public class MeasurerTest {
   @Test
   public void verify_complexity_metric() {
     checkMetric("Complexity.java", "complexity", 13.0);
+    checkMetric("Complexity.java", "complexity_in_classes", 13.0);
   }
 
   @Test

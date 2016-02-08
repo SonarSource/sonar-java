@@ -107,6 +107,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     saveMetricOnFile(CoreMetrics.FUNCTIONS, methods);
     saveMetricOnFile(CoreMetrics.ACCESSORS, accessors);
     saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_FUNCTIONS, complexityInMethods);
+    saveMetricOnFile(CoreMetrics.COMPLEXITY_IN_CLASSES, fileComplexity);
     saveMetricOnFile(CoreMetrics.COMPLEXITY, fileComplexity);
     saveMetricOnFile(CoreMetrics.PUBLIC_API, publicApiChecker.getPublicApi());
     saveMetricOnFile(CoreMetrics.PUBLIC_DOCUMENTED_API_DENSITY, publicApiChecker.getDocumentedPublicApiDensity());
