@@ -25,6 +25,7 @@ import com.google.common.collect.Multiset;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,6 +37,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Rule(
@@ -92,12 +94,22 @@ public class CallOuterPrivateMethodCheck extends SubscriptionBaseVisitor {
     public void checkUsages() {
       for (Symbol methodUsed : usages.elementSet()) {
         if (methodUsed.usages().size() == usages.count(methodUsed)) {
-          MethodTree declaration = (MethodTree) methodUsed.declaration();
-          if (declaration != null) {
-            reportIssue(declaration.simpleName(), "Move this method into \"" + classSymbol.name() + "\".");
-          }
+          reportIssueOnMethod((MethodTree) methodUsed.declaration());
         }
       }
     }
+
+    private void reportIssueOnMethod(@Nullable MethodTree declaration) {
+      if (declaration != null) {
+        String message = "Move this method into ";
+        if (classSymbol.name().isEmpty()) {
+          message += "the anonymous class declared at line " + ((JavaTree) classSymbol.declaration()).getLine()+".";
+        } else {
+          message += "\"" + classSymbol.name() + "\".";
+        }
+        reportIssue(declaration.simpleName(), message);
+      }
+    }
+
   }
 }

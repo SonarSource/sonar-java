@@ -6,6 +6,7 @@ class A {
     bar();
   }
   private void baz(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into "inner".}}
+  private void bax(){} // Noncompliant [[sc=16;ec=19]] {{Move this method into the anonymous class declared at line 25.}}
 
   class inner {
     void plop() {
@@ -20,5 +21,11 @@ class A {
     }
     private void innerFun() {}
   }
+
+  Object foo = new Object() {
+    void plop() {
+      bax();
+    }
+  };
 
 }
