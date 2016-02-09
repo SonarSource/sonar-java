@@ -33,7 +33,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
   public enum Kind {
     EQUAL("=="),
     NOT_EQUAL("!="),
-    GREATER_THAN(">="),
+    GREATER_THAN(">"),
     GREATER_THAN_OR_EQUAL(">="),
     LESS_THAN("<"),
     LESS_THAN_OR_EQUAL("<="),
@@ -67,14 +67,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public List<ProgramState> setConstraint(ProgramState initialProgramState, BooleanConstraint booleanConstraint) {
-    ProgramState programState = initialProgramState;
-    if (leftOp.equals(rightOp)) {
-      if (shouldNotInverse().equals(booleanConstraint)) {
-        return ImmutableList.of(programState);
-      }
-      return ImmutableList.of();
-    }
-    programState = checkRelation(booleanConstraint, programState);
+    ProgramState programState = checkRelation(booleanConstraint, initialProgramState);
     if (programState == null) {
       return ImmutableList.of();
     }

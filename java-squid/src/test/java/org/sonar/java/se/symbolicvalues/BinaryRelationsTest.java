@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.sonar.java.se.symbolicvalues.RelationalSymbolicValue.Kind;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -264,6 +265,15 @@ public class BinaryRelationsTest {
       assertThat(relation.rightOp).isEqualTo(symmetricOfSymmetric.rightOp);
     } catch (Exception e) {
       fail(e.getMessage());
+    }
+  }
+
+  @Test
+  public void operandInRelationWithItself() throws Exception {
+    RelationState[] expected = {FULFILLED, UNFULFILLED, UNFULFILLED, FULFILLED, UNFULFILLED, FULFILLED, FULFILLED, UNFULFILLED};
+    for (Kind kind : Kind.values()) {
+      BinaryRelation relation = relation(kind, SVa, SVa);
+      assertRelationHasState(relation, Collections.<BinaryRelation>emptyList(), expected[kind.ordinal()]);
     }
   }
 

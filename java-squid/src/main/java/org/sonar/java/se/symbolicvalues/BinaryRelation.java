@@ -93,6 +93,23 @@ public abstract class BinaryRelation {
 
   @CheckForNull
   protected RelationState resolveState(Collection<BinaryRelation> knownRelations, Set<BinaryRelation> usedRelations) {
+    //relation on same operand
+    if(leftOp.equals(rightOp)) {
+      switch (kind) {
+        case EQUAL:
+        case GREATER_THAN_OR_EQUAL:
+        case LESS_THAN_OR_EQUAL:
+        case METHOD_EQUALS:
+          return RelationState.FULFILLED;
+        case NOT_EQUAL:
+        case GREATER_THAN:
+        case LESS_THAN:
+        case NOT_METHOD_EQUALS:
+          return RelationState.UNFULFILLED;
+        default:
+          throw new IllegalStateException("Binary relation kind unsupported" + kind);
+      }
+    }
     if (knownRelations.isEmpty()) {
       return RelationState.UNDETERMINED;
     }

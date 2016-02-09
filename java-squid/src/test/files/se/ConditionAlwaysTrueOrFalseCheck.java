@@ -1529,4 +1529,11 @@ class SuperClass {
       }
     }
   }
+
+  void foo(int x, int y) {
+    x = y;
+    if(x<=y) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+
+    }
+  }
 }
