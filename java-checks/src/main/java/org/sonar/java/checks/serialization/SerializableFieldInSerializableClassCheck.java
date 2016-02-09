@@ -59,7 +59,7 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
+    return ImmutableList.of(Tree.Kind.CLASS);
   }
 
   @Override

@@ -7,14 +7,15 @@ class Address {
 }
 class Person implements Serializable {
   Address address; // Noncompliant [[sc=11;ec=18]] {{Make "address" transient or serializable.}}
+  A a;
   UnknownField unknownField;
   static Address address;//Compliant : static field
   transient Address address;
 }
 enum A {
   B;
-  Address address;// Noncompliant {{Make "address" transient or serializable.}}
-  Address[][] addressArray;// Noncompliant {{Make "addressArray" transient or serializable.}}
+  Address address;
+  Address[][] addressArray;
 }
 
 class Person2 implements Serializable {
