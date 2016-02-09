@@ -221,6 +221,9 @@ public class CFG {
       if (successors.remove(inactiveBlock)) {
         successors.addAll(inactiveBlock.successors);
       }
+      if (inactiveBlock.equals(exitBlock)) {
+        exitBlock = inactiveBlock.successors.iterator().next();
+      }
     }
   }
 

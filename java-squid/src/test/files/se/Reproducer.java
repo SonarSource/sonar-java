@@ -134,4 +134,27 @@ class A {
     }
     bar.toString();
   }
+
+
+    List<String> sList;
+    List<String> sList2;
+
+    public void SONARJAVA_1531(boolean a, boolean b, boolean c, boolean d) {
+      try {
+        for (String s : sList) {
+          System.out.println("");
+          try {
+            if (a) {
+
+            }
+          } finally {
+
+          }
+        }
+      } finally {
+        for (String s2 : sList2) {
+
+        }
+      }
+    }
 }
