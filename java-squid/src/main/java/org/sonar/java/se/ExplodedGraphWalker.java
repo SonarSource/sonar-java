@@ -65,7 +65,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -235,7 +234,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     if (terminator != null) {
       switch (terminator.kind()) {
         case IF_STATEMENT:
-          handleBranch(block, ((IfStatementTree) terminator).condition());
+          handleBranch(block, cleanupCondition(((IfStatementTree) terminator).condition()));
           return;
         case CONDITIONAL_OR:
         case CONDITIONAL_AND:
@@ -253,11 +252,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
           break;
         case WHILE_STATEMENT:
           ExpressionTree whileCondition = ((WhileStatementTree) terminator).condition();
-          handleBranch(block, whileCondition, !whileCondition.is(Tree.Kind.BOOLEAN_LITERAL));
+          handleBranch(block, cleanupCondition(whileCondition), !whileCondition.is(Tree.Kind.BOOLEAN_LITERAL));
           return;
         case DO_STATEMENT:
           ExpressionTree doCondition = ((DoWhileStatementTree) terminator).condition();
-          handleBranch(block, doCondition, !doCondition.is(Tree.Kind.BOOLEAN_LITERAL));
+          handleBranch(block, cleanupCondition(doCondition), !doCondition.is(Tree.Kind.BOOLEAN_LITERAL));
           return;
         case SYNCHRONIZED_STATEMENT:
           resetFieldValues();
@@ -283,6 +282,16 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         }
       }
     }
+  }
+  /**
+   * Required for accurate reporting.
+   * If condition is && or || expression, then return its right operand.
+   */
+  private static Tree cleanupCondition(Tree condition) {
+    if(condition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
+      return ((BinaryExpressionTree) condition).rightOperand();
+    }
+    return condition;
   }
 
   private void handleBranch(CFG.Block programPosition, Tree condition) {

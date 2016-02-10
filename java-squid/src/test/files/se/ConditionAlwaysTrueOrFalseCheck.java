@@ -32,7 +32,7 @@ public static class Class extends SuperClass {
     }
   }
 
-  public void conditional_and(boolean parameter1, boolean parameter2) {
+  public void conditional_and(boolean parameter1, boolean parameter2, boolean parameter3) {
     if (false && false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
     if (false && true) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
@@ -49,10 +49,29 @@ public static class Class extends SuperClass {
     }
     if (parameter1 && false) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
     }
-    if (parameter1 && true) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+    if (parameter1 && true) { // Noncompliant [[sc=23;ec=27]] {{Change this condition so that it does not always evaluate to "true"}}
     }
     if (parameter1 && parameter2) { // Compliant, unknown
+      if(parameter3 || (!parameter3)){} // Noncompliant [[sc=24;ec=37]] {{Change this condition so that it does not always evaluate to "true"}}
     }
+
+  }
+
+  void precise_issue_location(int max, int min, int R, boolean param) {
+
+    if (max != R && (min == R || min > max)) {
+    } else if (min < R || max < R) { // Noncompliant [[sc=27;ec=34]] {{Change this condition so that it does not always evaluate to "false"}}
+    }
+
+    if ((min == R || min > max)) {
+      if (max != R && (min == R || min > max)) { // Noncompliant [[sc=23;ec=46]] {{Change this condition so that it does not always evaluate to "true"}}
+
+      }
+    }
+    while (param && true) { // Noncompliant [[sc=21;ec=25]] {{Change this condition so that it does not always evaluate to "true"}}
+      break;
+    }
+    do{}while (parameter1 && false); // Noncompliant [[sc=30;ec=35]] {{Change this condition so that it does not always evaluate to "false"}}
   }
 
   public void bitwise_and(boolean parameter1, boolean parameter2) {
