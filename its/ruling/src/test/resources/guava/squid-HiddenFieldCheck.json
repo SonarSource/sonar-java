@@ -39,9 +39,6 @@
 'com.google.guava:guava:src/com/google/common/collect/ImmutableRangeSet.java':[
 210,
 ],
-'com.google.guava:guava:src/com/google/common/collect/ImmutableSetMultimap.java':[
-273,
-],
 'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
 329,
 443,
@@ -69,9 +66,6 @@
 3422,
 3471,
 ],
-'com.google.guava:guava:src/com/google/common/collect/MinMaxPriorityQueue.java':[
-220,
-],
 'com.google.guava:guava:src/com/google/common/collect/RegularImmutableMultiset.java':[
 62,
 65,
@@ -93,9 +87,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeMultiset.java':[
 977,
-],
-'com.google.guava:guava:src/com/google/common/eventbus/EventBus.java':[
-237,
 ],
 'com.google.guava:guava:src/com/google/common/hash/BloomFilterStrategies.java':[
 154,

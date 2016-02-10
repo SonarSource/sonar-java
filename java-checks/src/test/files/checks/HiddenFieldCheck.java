@@ -63,7 +63,7 @@ public class HiddenFieldCheck extends MyBaseClass {
     public class MyInnerInnerClass {
 
       public void foo() {
-        int foo = 0; // Noncompliant {{Rename "foo" which hides the field declared at line 3.}}
+        int foo = 0;
         int myInnerClass1 = 0; // Noncompliant
         System.out.println(foo + myInnerClass1);
       }

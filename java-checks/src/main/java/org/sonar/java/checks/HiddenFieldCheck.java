@@ -30,6 +30,7 @@ import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -41,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.List;
 
@@ -115,12 +117,24 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
       }
       String identifier = variableTree.simpleName().name();
       VariableTree hiddenVariable = variables.get(identifier);
-      if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null) {
+      if (!flattenExcludedVariables.contains(variableTree) && hiddenVariable != null && !isInStaticInnerClass(hiddenVariable, variableTree)) {
         int line = FirstSyntaxTokenFinder.firstSyntaxToken(hiddenVariable).line();
         reportIssue(variableTree.simpleName(), "Rename \"" + identifier + "\" which hides the field declared at line " + line + ".");
         return;
       }
     }
+  }
+
+  private static boolean isInStaticInnerClass(VariableTree hiddenVariable, VariableTree variableTree) {
+    Symbol hiddenVariableOwner = hiddenVariable.symbol().owner();
+    Symbol owner = variableTree.symbol().owner();
+    while (!owner.equals(hiddenVariableOwner)) {
+      if (owner.isTypeSymbol() && owner.isStatic()) {
+        return true;
+      }
+      owner = owner.owner();
+    }
+    return false;
   }
 
   private static boolean isClassTree(Tree tree) {
