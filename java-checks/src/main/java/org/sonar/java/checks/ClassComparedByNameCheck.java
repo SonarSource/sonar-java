@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -28,6 +29,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -35,6 +37,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Rule(
@@ -47,9 +50,6 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
-  private ClassGetNameDetector classGetNameDetector = new ClassGetNameDetector();
-  private MethodInvocationTree reportTree;
-
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(MethodMatcher.create().typeDefinition("java.lang.String").name("equals").withNoParameterConstraint());
@@ -57,23 +57,38 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree mit) {
-    reportTree = mit;
+    List<ExpressionTree> expressionsToCheck = new ArrayList<>(2);
     if (mit.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      ((MemberSelectExpressionTree) mit.methodSelect()).expression().accept(classGetNameDetector);
+      expressionsToCheck.add(((MemberSelectExpressionTree) mit.methodSelect()).expression());
     }
-    mit.arguments().get(0).accept(classGetNameDetector);
+    expressionsToCheck.add(mit.arguments().get(0));
+
+    ClassGetNameDetector visitor = new ClassGetNameDetector();
+    for (ExpressionTree expression : expressionsToCheck) {
+      expression.accept(visitor);
+    }
+    if (visitor.useClassGetName && !visitor.useStackTraceElementGetClassName) {
+      reportIssue(mit, "Use an \"instanceof\" comparison instead.");
+    }
   }
 
-  private class ClassGetNameDetector extends BaseTreeVisitor {
+  private static class ClassGetNameDetector extends BaseTreeVisitor {
+
+    private boolean useClassGetName = false;
+    private boolean useStackTraceElementGetClassName = false;
 
     private final MethodInvocationMatcherCollection methodMatchers = MethodInvocationMatcherCollection.create(
       MethodMatcher.create().typeDefinition("java.lang.Class").name("getName"),
       MethodMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName"));
 
+    private final MethodMatcher stackTraceElementMatcher = MethodMatcher.create().typeDefinition("java.lang.StackTraceElement").name("getClassName");
+
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
       if (methodMatchers.anyMatch(tree)) {
-        reportIssue(reportTree, "Use an \"instanceof\" comparison instead.");
+        useClassGetName = true;
+      } else if (stackTraceElementMatcher.matches(tree)) {
+        useStackTraceElementGetClassName = true;
       }
       scan(tree.methodSelect());
     }

@@ -2,7 +2,4 @@
 'com.google.guava:guava:src/com/google/common/base/internal/Finalizer.java':[
 78,
 ],
-'com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java':[
-531,
-],
 }
