@@ -544,13 +544,31 @@ public class BytecodeVisitor extends ClassVisitor {
     }
 
     @Override
-    public SignatureVisitor visitTypeArgument(char wildcard) {
-      //TODO wildcard
+    public void visitTypeArgument() {
+      // is called only when using unbounded wildcard '<?>'
+      this.typeArguments.add(new JavaType.WildCardType(symbols.objectType, JavaType.WildCardType.BoundType.UNBOUNDED));
+    }
+
+    @Override
+    public SignatureVisitor visitTypeArgument(final char wildcard) {
       return new ReadType(methodSymbol) {
         @Override
         public void visitEnd() {
           super.visitEnd();
-          ReadType.this.typeArguments.add(this.typeRead);
+          JavaType typeArgument;
+          switch (wildcard) {
+            case SUPER:
+              typeArgument = new JavaType.WildCardType(this.typeRead, JavaType.WildCardType.BoundType.SUPER);
+              break;
+            case EXTENDS:
+              typeArgument = new JavaType.WildCardType(this.typeRead, JavaType.WildCardType.BoundType.EXTENDS);
+              break;
+            case INSTANCEOF:
+            default:
+              typeArgument = this.typeRead;
+              break;
+          }
+          ReadType.this.typeArguments.add(typeArgument);
         }
       };
     }

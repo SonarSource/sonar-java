@@ -442,8 +442,8 @@ public class JavaType implements Type {
       }
     }
 
-    private final JavaType bound;
-    private final BoundType boundType;
+    final JavaType bound;
+    final BoundType boundType;
 
     public WildCardType(JavaType bound, BoundType boundType) {
       super(WILDCARD, new JavaSymbol.WildcardSymbol(boundType == BoundType.UNBOUNDED ? boundType.toString() : (boundType + bound.symbol().name())));

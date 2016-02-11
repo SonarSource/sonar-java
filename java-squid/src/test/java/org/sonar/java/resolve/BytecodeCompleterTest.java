@@ -310,6 +310,74 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void wildcards_in_fields_declaration() {
+    JavaSymbol.TypeJavaSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.Wildcards");
+    JavaSymbol.VariableJavaSymbol unboudedItems = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("unboudedItems").get(0);
+    JavaSymbol.VariableJavaSymbol extendsItems = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("extendsItems").get(0);
+    JavaSymbol.VariableJavaSymbol superItems = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("superItems").get(0);
+
+    assertThatWildcardIs(unboudedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardIs(extendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardIs(superItems, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+  }
+
+  @Test
+  public void wildcards_in_methods_declaration() {
+    JavaSymbol.TypeJavaSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.Wildcards");
+    JavaSymbol.MethodJavaSymbol returnsUnboundedItems = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("returnsUnboundedItems").get(0);
+    JavaSymbol.MethodJavaSymbol returnsExtendsItems = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("returnsExtendsItems").get(0);
+    JavaSymbol.MethodJavaSymbol returnsSuperItems = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("returnsSuperItems").get(0);
+
+    assertThatWildcardIs(returnsUnboundedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardIs(returnsExtendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardIs(returnsSuperItems, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+
+    assertThatWildcardInFirstParamIs(returnsUnboundedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardInFirstParamIs(returnsExtendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardInFirstParamIs(returnsSuperItems, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+  }
+
+  @Test
+  public void wildcards_in_class_declaration() {
+    JavaSymbol.TypeJavaSymbol wildcardUnboundedClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.WildcardUnboundedClass");
+    JavaSymbol.TypeJavaSymbol WildcardExtendsClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.WildcardExtendsClass");
+    JavaSymbol.TypeJavaSymbol WildcardSuperClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.WildcardSuperClass");
+
+    assertThatWildcardInTypeParamIs(wildcardUnboundedClass, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardInTypeParamIs(WildcardExtendsClass, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardInTypeParamIs(WildcardSuperClass, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+  }
+
+  private static void assertThatWildcardInTypeParamIs(JavaSymbol.TypeJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
+    JavaType javaType = ((JavaType.TypeVariableJavaType) symbol.typeParameters().lookup("X").iterator().next().getType()).bounds.get(0);
+    assertThatWildcardIs(javaType, wildcard, bound);
+  }
+
+  private static void assertThatWildcardInFirstParamIs(JavaSymbol.MethodJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
+    assertThatWildcardIs(symbol.parameterTypes().get(0), wildcard, bound);
+  }
+
+  private static void assertThatWildcardIs(JavaSymbol.MethodJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
+    assertThatWildcardIs(((JavaType.MethodJavaType) symbol.type).resultType, wildcard, bound);
+  }
+
+  private static void assertThatWildcardIs(JavaSymbol.VariableJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
+    assertThatWildcardIs(symbol.type, wildcard, bound);
+  }
+
+  private static void assertThatWildcardIs(Type type, JavaType.WildCardType.BoundType wildcard, String bound) {
+    assertThat(type).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+    
+    JavaType.ParametrizedTypeJavaType ptjt = (JavaType.ParametrizedTypeJavaType) type;
+    JavaType substitutedType = ptjt.typeSubstitution.substitutedTypes().get(0);
+    assertThat(substitutedType).isInstanceOf(JavaType.WildCardType.class);
+    
+    JavaType.WildCardType wildcardType = (JavaType.WildCardType) substitutedType;
+    assertThat(wildcardType.boundType).isEqualTo(wildcard);
+    assertThat(wildcardType.bound.is(bound)).isTrue();
+  }
+
+  @Test
   public void class_not_found_should_have_unknown_super_type_and_no_interfaces() {
     Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.UnknownClass");
     assertThat(clazz.type()).isNotNull();
