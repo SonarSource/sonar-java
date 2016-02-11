@@ -464,10 +464,6 @@ public class JavaType implements Type {
       this.symbol.type = this;
     }
 
-    public boolean isUnbounded() {
-      return boundType == BoundType.UNBOUNDED;
-    }
-
     @Override
     public boolean isSubtypeOf(String fullyQualifiedName) {
       return false;
@@ -477,25 +473,29 @@ public class JavaType implements Type {
     public boolean isSubtypeOf(Type superType) {
       if (((JavaType) superType).isTagged(WILDCARD)) {
         WildCardType superTypeWildcard = (WildCardType) superType;
-        if (superTypeWildcard.boundType == BoundType.UNBOUNDED) {
-          return true;
+        JavaType superTypeBound = superTypeWildcard.bound;
+        switch (superTypeWildcard.boundType) {
+          case UNBOUNDED:
+            return true;
+          case SUPER:
+            return boundType == BoundType.SUPER && superTypeBound.isSubtypeOf(bound);
+          case EXTENDS:
+           return boundType != BoundType.SUPER && bound.isSubtypeOf(superTypeBound);
         }
-        if ((boundType == BoundType.UNBOUNDED || boundType == BoundType.EXTENDS) && superTypeWildcard.boundType == BoundType.EXTENDS) {
-          return bound.isSubtypeOf(superTypeWildcard.bound);
-        }
-        return boundType == BoundType.SUPER && superTypeWildcard.boundType == BoundType.SUPER && superTypeWildcard.bound.isSubtypeOf(bound);
       }
       return false;
     }
 
     public boolean isSubtypeOfBound(JavaType type) {
-      if (isUnbounded()) {
-        return true;
-      }
-      if (boundType == BoundType.EXTENDS) {
+      switch (boundType) {
+        case SUPER:
+          return bound.isSubtypeOf(type);
+        case EXTENDS:
         return type.isSubtypeOf(bound);
+        case UNBOUNDED:
+        default:
+          return true;
       }
-      return bound.isSubtypeOf(type);
     }
   }
 }

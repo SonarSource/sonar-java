@@ -95,20 +95,7 @@ public abstract class BinaryRelation {
   protected RelationState resolveState(Collection<BinaryRelation> knownRelations, Set<BinaryRelation> usedRelations) {
     //relation on same operand
     if(leftOp.equals(rightOp)) {
-      switch (kind) {
-        case EQUAL:
-        case GREATER_THAN_OR_EQUAL:
-        case LESS_THAN_OR_EQUAL:
-        case METHOD_EQUALS:
-          return RelationState.FULFILLED;
-        case NOT_EQUAL:
-        case GREATER_THAN:
-        case LESS_THAN:
-        case NOT_METHOD_EQUALS:
-          return RelationState.UNFULFILLED;
-        default:
-          throw new IllegalStateException("Binary relation kind unsupported" + kind);
-      }
+      return relationStateForSameOperand();
     }
     if (knownRelations.isEmpty()) {
       return RelationState.UNDETERMINED;
@@ -130,6 +117,23 @@ public abstract class BinaryRelation {
       transitiveReduction = symmetric().transitiveReduction(knownRelations, usedRelations);
     }
     return resolveState(transitiveReduction, usedRelations);
+  }
+
+  private RelationState relationStateForSameOperand() {
+    switch (kind) {
+      case EQUAL:
+      case GREATER_THAN_OR_EQUAL:
+      case LESS_THAN_OR_EQUAL:
+      case METHOD_EQUALS:
+        return RelationState.FULFILLED;
+      case NOT_EQUAL:
+      case GREATER_THAN:
+      case LESS_THAN:
+      case NOT_METHOD_EQUALS:
+        return RelationState.UNFULFILLED;
+      default:
+        throw new IllegalStateException("Binary relation kind unsupported" + kind);
+    }
   }
 
   /**

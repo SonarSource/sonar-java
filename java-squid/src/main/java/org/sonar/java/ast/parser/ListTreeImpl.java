@@ -79,7 +79,7 @@ public abstract class ListTreeImpl<T extends Tree> extends JavaTree implements L
     private final ImmutableList<Iterator<? extends Tree>> iterators;
 
     public InterleaveIterable(List<T> list, List<SyntaxToken> separators) {
-      iterators = ImmutableList.of(((Iterable<? extends Tree>) list).iterator(), separators.iterator());
+      iterators = ImmutableList.of(list.iterator(), separators.iterator());
     }
 
     @Override
