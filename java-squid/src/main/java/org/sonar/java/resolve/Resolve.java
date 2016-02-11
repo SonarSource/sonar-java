@@ -537,7 +537,15 @@ public class Resolve {
   }
 
   private static boolean usesWildcard(JavaType type) {
-    return type instanceof JavaType.ParametrizedTypeJavaType && ((JavaType.ParametrizedTypeJavaType) type).usesWildCard();
+    if (type instanceof JavaType.ParametrizedTypeJavaType) {
+      JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
+      for (JavaType substitution : parametrizedType.typeSubstitution.substitutedTypes()) {
+        if (substitution.isTagged(JavaType.WILDCARD)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {

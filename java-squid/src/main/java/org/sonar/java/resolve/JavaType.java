@@ -405,15 +405,6 @@ public class JavaType implements Type {
       return false;
     }
 
-    public boolean usesWildCard() {
-      for (JavaType substitution : typeSubstitution.substitutedTypes()) {
-        if (substitution.isTagged(WILDCARD)) {
-          return true;
-        }
-      }
-      return false;
-    }
-
     private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
       List<JavaType> myTypes = typeSubstitution.substitutedTypes();
       List<JavaType> itsTypes = superType.typeSubstitution.substitutedTypes();
