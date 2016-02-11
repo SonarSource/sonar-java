@@ -25,8 +25,8 @@ CI)
     # integration of jacoco report is quite memory-consuming
     export MAVEN_OPTS="-Xmx1536m -Xms128m"
     git fetch --unshallow
-    mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify sonar:sonar -B -e -V \
-       -Pcoverage-per-test \
+    mvn org.jacoco:jacoco-maven-plugin:prepare-agent deploy sonar:sonar -B -e -V \
+       -Pcoverage-per-test,deploy-sonarsource \
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
        -Dsonar.login=$SONAR_TOKEN
