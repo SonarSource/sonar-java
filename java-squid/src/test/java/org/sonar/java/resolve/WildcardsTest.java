@@ -339,6 +339,19 @@ public class WildcardsTest {
     assertThat(gulObject.usages()).hasSize(0); // should be 2
   }
 
+  @Test
+  public void test_method_resolution_based_on_wildcards_with_nested_generics() {
+    List<Type> elementTypes = declaredTypes(
+      "interface I<Z> {}",
+      "class A<X extends I<? extends X>> {"
+        + "   A(X x) {}"
+        + "   <Y extends I<? extends Y>> void foo(Y y) { new A<>(y); }"
+        + "}");
+
+    JavaSymbol.MethodJavaSymbol constructor = getMethodSymbol((JavaType) elementTypes.get(1), "<init>", 0);
+    assertThat(constructor.usages()).hasSize(1);
+  }
+
   private static MethodJavaSymbol getMethodSymbol(JavaType aType, String methodName, int index) {
     return (JavaSymbol.MethodJavaSymbol) aType.symbol.members.lookup(methodName).get(index);
   }
@@ -518,12 +531,12 @@ public class WildcardsTest {
   /**
    * Used hierarchy:
    * <pre>
-   *   interface A<T> {}
-   *   interface B<T> extends A<T> {}
-   *   interface C<T> {}
+   *   interface A&lt;T&gt; {}
+   *   interface B&lt;T&gt; extends A&lt;T&gt; {}
+   *   interface C&lt;T&gt; {}
    *   class Animal {}
    *   class Cat extends Animal {}
-   *   class Test<T, U, V> {}
+   *   class Test&lt;T, U, V&gt; {}
    * </pre>
    * @param types
    * @return

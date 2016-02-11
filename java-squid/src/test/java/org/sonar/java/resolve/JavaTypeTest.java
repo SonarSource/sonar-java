@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
@@ -120,6 +121,20 @@ public class JavaTypeTest {
       assertThat(symbols.charType.isPrimitive(primitive)).isEqualTo(primitive.equals(org.sonar.plugins.java.api.semantic.Type.Primitives.CHAR));
     }
 
+  }
+
+  @Test
+  public void erasure_of_type_variable() {
+    JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", new JavaSymbol.PackageJavaSymbol("org.foo.bar", null));
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
+    typeSubstitution.add((JavaType.TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("T", typeSymbol).type, typeSymbol.type);
+    JavaType.ParametrizedTypeJavaType parametrizedType = new JavaType.ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
+
+    JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("X", typeSymbol).type;
+    typeVariableType.bounds = ImmutableList.<JavaType>of(parametrizedType);
+
+    assertThat(typeVariableType.erasure()).isNotEqualTo(parametrizedType);
+    assertThat(typeVariableType.erasure()).isEqualTo(parametrizedType.erasure());
   }
 
   @Test

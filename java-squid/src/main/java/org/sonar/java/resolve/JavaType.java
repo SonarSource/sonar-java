@@ -357,7 +357,7 @@ public class JavaType implements Type {
      */
     @Override
     public JavaType erasure() {
-      return bounds.get(0);
+      return bounds.get(0).erasure();
     }
   }
 
