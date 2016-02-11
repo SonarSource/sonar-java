@@ -615,5 +615,6 @@ class NullPointerTest {
       System.out.println("Found!");
     }
     a.toString(); // Compliant: a cannot be null hereafter
+    this.checkForNullMethod().toString(); // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
 }

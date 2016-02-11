@@ -20,6 +20,7 @@
 package org.sonar.java.se.checks;
 
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -69,6 +70,11 @@ public class SyntaxTreeNameFinder extends BaseTreeVisitor {
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
-    tree.methodSelect().accept(this);
+    ExpressionTree methodSelect = tree.methodSelect();
+    if(methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
+      name = ((MemberSelectExpressionTree) methodSelect).identifier().name();
+    } else {
+      methodSelect.accept(this);
+    }
   }
 }

@@ -27,7 +27,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
-import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,51 +36,51 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class SyntaxTreeNameFinderTest {
 
-  public static final ActionParser<Tree> parser = JavaParser.createParser(Charsets.UTF_8);
+  public static ActionParser<Tree> parser = JavaParser.createParser(Charsets.UTF_8);
 
-  private static MethodTree buildSyntaxTree(final String methodCode) {
-    final CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");
+  private static MethodTree buildSyntaxTree(String methodCode) {
+    CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");
     return ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
   }
 
   @Test
   public void testClassCast() {
-    final MethodTree tree = buildSyntaxTree("public boolean equals(Object obj) {((String) obj).toString();}");
-    final BlockTree block = tree.block();
-    final StatementTree statementTree = block.body().get(0);
-    final MethodInvocationTree methodInvocation = (MethodInvocationTree) ((ExpressionStatementTree) statementTree).expression();
-    assertThat(SyntaxTreeNameFinder.getName(methodInvocation)).isEqualTo("obj");
+    MethodTree tree = buildSyntaxTree("public boolean equals(Object obj) {((String) obj).length;}");
+    BlockTree block = tree.block();
+    StatementTree statementTree = block.body().get(0);
+    MemberSelectExpressionTree mse = (MemberSelectExpressionTree) ((ExpressionStatementTree) statementTree).expression();
+    assertThat(SyntaxTreeNameFinder.getName(mse)).isEqualTo("obj");
   }
 
   @Test
   public void testSwitch() {
-    final MethodTree tree = buildSyntaxTree("public void test() {int i; switch (i) { case 0: break;}}");
-    final BlockTree block = tree.block();
-    final StatementTree statementTree = block.body().get(1);
+    MethodTree tree = buildSyntaxTree("public void test() {int i; switch (i) { case 0: break;}}");
+    BlockTree block = tree.block();
+    StatementTree statementTree = block.body().get(1);
     assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("i");
   }
 
   @Test
   public void testMethodInvocationOnIdentifier() {
-    final MethodTree tree = buildSyntaxTree("public void test() {String s; s.length();}");
-    final BlockTree block = tree.block();
-    final StatementTree statementTree = block.body().get(1);
-    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("s");
+    MethodTree tree = buildSyntaxTree("public void test() {String s; s.length();}");
+    BlockTree block = tree.block();
+    StatementTree statementTree = block.body().get(1);
+    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("length");
   }
 
   @Test
   public void testMethodInvocationOnOtherInvocation() {
-    final MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length();}");
-    final BlockTree block = tree.block();
-    final StatementTree statementTree = block.body().get(0);
-    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("checkForNullMethod");
+    MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length();}");
+    BlockTree block = tree.block();
+    StatementTree statementTree = block.body().get(0);
+    assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("length");
   }
 
   @Test
   public void testMemberSelectOnMethodInvocation() {
-    final MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length;}");
-    final BlockTree block = tree.block();
-    final StatementTree statementTree = block.body().get(0);
+    MethodTree tree = buildSyntaxTree("public void test() {int i = checkForNullMethod().length;}");
+    BlockTree block = tree.block();
+    StatementTree statementTree = block.body().get(0);
     assertThat(SyntaxTreeNameFinder.getName(statementTree)).isEqualTo("checkForNullMethod");
   }
 }
