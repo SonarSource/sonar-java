@@ -54,7 +54,7 @@
                       <overWrite>true</overWrite>
                     </artifactItem>
                   </artifactItems>
-                  <outputDirectory>../sonar-java-plugin/target</outputDirectory>
+                  <outputDirectory>../../sonar-java-plugin/target</outputDirectory>
                   <overWriteReleases>true</overWriteReleases>
                   <overWriteSnapshots>true</overWriteSnapshots>
                 </configuration>
