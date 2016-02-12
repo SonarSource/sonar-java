@@ -40,6 +40,13 @@ class Foo {
     this.unknown++;
     java.util.Stream<Object> s;
     s.map(v -> "");
+
+    try (Stream foo3 = new Stream()) {
+      foo3.bar();
+    }
+    try (Stream foo3 = new Stream()) {
+      foo3.bar();
+    }
   }
 
 }

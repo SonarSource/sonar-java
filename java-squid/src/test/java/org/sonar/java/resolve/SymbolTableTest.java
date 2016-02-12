@@ -756,7 +756,13 @@ public class SymbolTableTest {
         assertThat(sym.metadata().isAnnotatedWith("java.lang.Deprecated")).isTrue();
       }
     }
+  }
 
+  @Test
+  public void try_with_resources() {
+    Result result = Result.createFor("references/TryWithResources");
+    assertThat(result.symbol("foo3", 4)).isSameAs(result.reference(5, 7));
+    assertThat(result.symbol("foo3", 7)).isSameAs(result.reference(8, 7));
   }
 
   public void assertThatReferenceNotFound(Result result, int line, int column) {

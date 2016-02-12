@@ -45,6 +45,7 @@ import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PackageDeclarationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -401,6 +402,21 @@ public class FirstPass extends BaseTreeVisitor {
     createNewEnvironment(tree);
     super.visitBlock(tree);
     restoreEnvironment(tree);
+  }
+
+  @Override
+  public void visitTryStatement(TryStatementTree tree) {
+    if (tree.resources().isEmpty()) {
+      super.visitTryStatement(tree);
+    } else {
+      //Declare scope for resources
+      createNewEnvironment(tree.resources());
+      scan(tree.resources());
+      scan(tree.block());
+      restoreEnvironment(tree.resources());
+      scan(tree.catches());
+      scan(tree.finallyBlock());
+    }
   }
 
   @Override
