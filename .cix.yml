@@ -1,0 +1,93 @@
+# Definition of QA pipeline at SonarSource
+#
+# Possible values for SLAVE_TYPE: "performance" (for perf tests) and "linux" (for linux machines connected to DB services)
+
+TEST:
+  - PLUGIN
+  - RULING
+  - PERFORMANCE
+
+SQ_VERSION:
+  - LTS
+  - 5.2
+  - 5.3
+  - DEV
+  - LATEST_RELEASE
+
+
+
+exclude:
+#exclude plugin tests on performance slaves
+  - TEST: PLUGIN
+    SLAVE_TYPE: performance
+    SQ_VERSION: LTS
+  - TEST: PLUGIN
+    SLAVE_TYPE: performance
+    SQ_VERSION: 5.2
+  - TEST: PLUGIN
+    SLAVE_TYPE: performance
+    SQ_VERSION: 5.3
+  - TEST: PLUGIN
+    SLAVE_TYPE: performance
+    SQ_VERSION: DEV
+  - TEST: PLUGIN
+    SLAVE_TYPE: performance
+    SQ_VERSION: LATEST_RELEASE
+#exclude ruling tests on performance slaves
+  - TEST: RULING
+    SLAVE_TYPE: performance
+    SQ_VERSION: LTS
+  - TEST: RULING
+    SLAVE_TYPE: performance
+    SQ_VERSION: 5.2
+  - TEST: RULING
+    SLAVE_TYPE: performance
+    SQ_VERSION: 5.3
+  - TEST: RULING
+    SLAVE_TYPE: performance
+    SQ_VERSION: DEV
+  - TEST: RULING
+    SLAVE_TYPE: performance
+    SQ_VERSION: LATEST_RELEASE
+#exclude all ruling jobs other than on LATEST_RELEASE
+  - TEST: RULING
+    SLAVE_TYPE: linux
+    SQ_VERSION: LTS
+  - TEST: RULING
+    SLAVE_TYPE: linux
+    SQ_VERSION: 5.2
+  - TEST: RULING
+    SLAVE_TYPE: linux
+    SQ_VERSION: 5.3
+  - TEST: RULING
+    SLAVE_TYPE: linux
+    SQ_VERSION: DEV
+#exclude all performances jobs on linux slaves
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: linux
+    SQ_VERSION: LTS
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: linux
+    SQ_VERSION: 5.2
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: linux
+    SQ_VERSION: 5.3
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: linux
+    SQ_VERSION: DEV
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: linux
+    SQ_VERSION: LATEST_RELEASE
+#exclude all performances jobs other than on LATEST_RELEASE
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: performance
+    SQ_VERSION: LTS
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: performance
+    SQ_VERSION: 5.2
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: performance
+    SQ_VERSION: 5.3
+  - TEST: PERFORMANCE
+    SLAVE_TYPE: performance
+    SQ_VERSION: DEV
