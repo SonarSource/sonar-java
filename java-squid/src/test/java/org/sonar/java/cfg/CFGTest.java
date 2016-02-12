@@ -501,9 +501,16 @@ public class CFGTest {
 
   @Test
   public void switch_statement() {
-    final CFG cfg = buildCFG(
+    CFG cfg = buildCFG("void foo(int i, int j, int k) {\n" +
+        "    switch (i==-1 ? j:k) {\n" +
+        "      default:;\n" +
+        "    }\n" +
+        "  }");
+
+    assertThat(cfg.blocks().get(0).id()).isEqualTo(5);
+    cfg = buildCFG(
       "void fun(int foo) { int a; switch(foo) { case 1: System.out.println(bar);case 2: System.out.println(qix);break; default: System.out.println(baz);} }");
-    final CFGChecker cfgChecker = checker(
+    CFGChecker cfgChecker = checker(
       block(
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.IDENTIFIER, "System"),

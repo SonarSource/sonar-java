@@ -585,6 +585,7 @@ public class CFG {
     currentBlock.terminator = switchStatementTree;
     switches.addLast(currentBlock);
     build(switchStatementTree.expression());
+    Block conditionBlock = currentBlock;
     // process body
     currentBlock = createBlock(switchSuccessor);
     breakTargets.addLast(switchSuccessor);
@@ -609,6 +610,7 @@ public class CFG {
     if (!hasDefaultCase) {
       currentBlock.addSuccessor(switchSuccessor);
     }
+    currentBlock = conditionBlock;
   }
 
   private static boolean containsDefaultCase(List<CaseLabelTree> labels) {

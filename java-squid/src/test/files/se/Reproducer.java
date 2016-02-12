@@ -7,7 +7,7 @@ package javax.annotation;
 @interface Nullable {}
 
 class A {
-  public void testCheckNotNull2(@CheckForNull Object parameter) {
+ public void testCheckNotNull2(@CheckForNull Object parameter) {
     long remainingNanos = 0;
     final long endNanos = remainingNanos > 0 ? System.nanoTime() + remainingNanos : 0;
     label :
@@ -157,4 +157,10 @@ class A {
         }
       }
     }
+
+  void foo(int i, int j, int k) {
+    switch (i==-1 ? j:k) {
+      default:;
+    }
+  }
 }
