@@ -41,4 +41,4 @@ notifications:
   email: false
   webhooks:
    # URL to QA hook, including credentials
-      - secure: "gHzcFGyVYDOi0v32h+Nt/502IrtsznYASl+k9PmcRLnX/kvD0xIxF8RENDEqMTdslNMOs6yi9yESKgNR6Etk2iRAfI4UBCZfgms1Xdg680l/hLL48s2nleHP3QXkNY4r1SwGB7EvP13FUVBj2JLKa+qZ2HipBSPmxDfR4A83sRs="
+      - secure: "I3GB32NiZsKkLqC5eh8UGvg0Nub4BYZdEfK5VUQsCysj+FpxfZHUwDCbbA0+LF2/uWCsVsiqBkgFCl2eIStsee8+/4ZK1kwGo1fl378LJVKrl1yZRZPD6QuaqCP8642EjoNcFa5CN7O17swZI1OdNZdBo8cVItyx/SrCIyIsIRU="
