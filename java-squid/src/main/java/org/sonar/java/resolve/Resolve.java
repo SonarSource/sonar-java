@@ -529,18 +529,20 @@ public class Resolve {
   }
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing, boolean isParameterized) {
-    // FIXME Inference of types for method using parameter types is not handled so fall back to behavior based on erasure
-    if (!isParameterized && usesWildcard(formal)) {
+    // FIXME SOANRJAVA-1514 Inference of types for method using parameter types is not handled
+    // FIXME SONARJAVA-1535 type substitution should work with wildcards
+    if (!isParameterized && usesWildcardWithoutTypeSubstitution(formal)) {
       return types.isSubtype(arg, formal);
     }
+    // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
-  private static boolean usesWildcard(JavaType type) {
+  private static boolean usesWildcardWithoutTypeSubstitution(JavaType type) {
     if (type instanceof JavaType.ParametrizedTypeJavaType) {
       JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
       for (JavaType substitution : parametrizedType.typeSubstitution.substitutedTypes()) {
-        if (substitution.isTagged(JavaType.WILDCARD)) {
+        if (substitution.isTagged(JavaType.WILDCARD) && !((JavaType.WildCardType) substitution).bound.isTagged(JavaType.TYPEVAR)) {
           return true;
         }
       }

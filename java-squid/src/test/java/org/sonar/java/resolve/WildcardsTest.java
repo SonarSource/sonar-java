@@ -340,6 +340,46 @@ public class WildcardsTest {
   }
 
   @Test
+  public void test_method_resolution_nested_parametrized_type_with_wildcards() {
+    List<Type> elementTypes = declaredTypes(
+      "class A<X> {"
+        + "  void foo1(A<A<X>> a) {}"
+        + "  void foo2(A<A<? extends X>> a) {}"
+
+        + "  A<A<String>> qix1() { return null; }"
+        + "  A<A<? extends String>> qix2() { return null; }"
+
+        + "  void bar() {"
+        + "    new A<String>().foo1(qix1());"
+        + "    new A<String>().foo2(qix2());"
+        + "  }"
+        + "}");
+
+    JavaSymbol.MethodJavaSymbol foo1 = getMethodSymbol((JavaType) elementTypes.get(0), "foo1", 0);
+    assertThat(foo1.usages()).hasSize(1);
+
+    JavaSymbol.MethodJavaSymbol foo2 = getMethodSymbol((JavaType) elementTypes.get(0), "foo2", 0);
+    assertThat(foo2.usages()).hasSize(1);
+  }
+
+  @Test
+  public void test_method_resolution_with_type_substitution() {
+    List<Type> elementTypes = declaredTypes(
+      "class A<X> {"
+        + "  void foo(A<? extends X> a) {}"
+
+        + "  A<String> qix() { return null; }"
+
+        + "  void bar() {"
+        + "    new A<String>().foo(qix());"
+        + "  }"
+        + "}");
+
+    JavaSymbol.MethodJavaSymbol foo = getMethodSymbol((JavaType) elementTypes.get(0), "foo", 0);
+    assertThat(foo.usages()).hasSize(1);
+  }
+
+  @Test
   public void test_method_resolution_based_on_wildcards_with_nested_generics() {
     List<Type> elementTypes = declaredTypes(
       "interface I<Z> {}",

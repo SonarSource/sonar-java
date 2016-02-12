@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve.targets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Wildcards {
@@ -36,6 +37,11 @@ class Wildcards {
 
   public List<? super Number> returnsSuperItems(List<? super Number> param) {
     return param;
+  }
+
+  List<String> myList = new ArrayList<>();
+  public void foo() {
+    myList.addAll(new ArrayList<String>());
   }
 }
 
