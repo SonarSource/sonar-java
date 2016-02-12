@@ -3,9 +3,9 @@
 # Possible values for SLAVE_TYPE: "performance" (for perf tests) and "linux" (for linux machines connected to DB services)
 
 TEST:
-  - PLUGIN
-  - RULING
-  - PERFORMANCE
+  - plugin
+  - ruling
+  - performancing
 
 SQ_VERSION:
   - LTS
@@ -18,76 +18,76 @@ SQ_VERSION:
 
 exclude:
 #exclude plugin tests on performance slaves
-  - TEST: PLUGIN
+  - TEST: plugin
     SLAVE_TYPE: performance
     SQ_VERSION: LTS
-  - TEST: PLUGIN
+  - TEST: plugin
     SLAVE_TYPE: performance
     SQ_VERSION: 5.2
-  - TEST: PLUGIN
+  - TEST: plugin
     SLAVE_TYPE: performance
     SQ_VERSION: 5.3
-  - TEST: PLUGIN
+  - TEST: plugin
     SLAVE_TYPE: performance
     SQ_VERSION: DEV
-  - TEST: PLUGIN
+  - TEST: plugin
     SLAVE_TYPE: performance
     SQ_VERSION: LATEST_RELEASE
 #exclude ruling tests on performance slaves
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: performance
     SQ_VERSION: LTS
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: performance
     SQ_VERSION: 5.2
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: performance
     SQ_VERSION: 5.3
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: performance
     SQ_VERSION: DEV
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: performance
     SQ_VERSION: LATEST_RELEASE
 #exclude all ruling jobs other than on LATEST_RELEASE
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: linux
     SQ_VERSION: LTS
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: linux
     SQ_VERSION: 5.2
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: linux
     SQ_VERSION: 5.3
-  - TEST: RULING
+  - TEST: ruling
     SLAVE_TYPE: linux
     SQ_VERSION: DEV
 #exclude all performances jobs on linux slaves
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: linux
     SQ_VERSION: LTS
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: linux
     SQ_VERSION: 5.2
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: linux
     SQ_VERSION: 5.3
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: linux
     SQ_VERSION: DEV
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: linux
     SQ_VERSION: LATEST_RELEASE
 #exclude all performances jobs other than on LATEST_RELEASE
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: performance
     SQ_VERSION: LTS
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: performance
     SQ_VERSION: 5.2
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: performance
     SQ_VERSION: 5.3
-  - TEST: PERFORMANCE
+  - TEST: performancing
     SLAVE_TYPE: performance
     SQ_VERSION: DEV
