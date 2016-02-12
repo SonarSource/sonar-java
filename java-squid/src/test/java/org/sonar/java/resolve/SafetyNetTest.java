@@ -29,9 +29,6 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 
 import java.io.File;
 
-/**
- * TODO in fact it supersedes {@link org.sonar.java.ast.parser.JavaParserIntegrationTest}
- */
 public class SafetyNetTest {
 
   private final String[] dirs = {
