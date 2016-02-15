@@ -12,10 +12,6 @@ script: ./travis.sh
 env:
   - TEST=CI
   - TEST=plugin
-    SQ_VERSION=DEV
-  - TEST=plugin
-    SQ_VERSION=LATEST_RELEASE
-  - TEST=plugin
     SQ_VERSION=LTS
 matrix:
   fast_finish: true
