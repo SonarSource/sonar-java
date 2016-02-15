@@ -64,13 +64,14 @@ public class JavaSquid {
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
                    JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
     Iterable<CodeVisitor> codeVisitors = Iterables.concat(Collections.singletonList(javaResourceLocator), Arrays.asList(visitors));
+    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
     if (measurer != null) {
       Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);
+      testCodeVisitors.add(measurer.new TestFileMeasurer());
     }
     List<File> classpath = Lists.newArrayList();
     List<File> testClasspath = Lists.newArrayList();
-    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
     if (sonarComponents != null) {
       codeVisitors = Iterables.concat(
           codeVisitors,

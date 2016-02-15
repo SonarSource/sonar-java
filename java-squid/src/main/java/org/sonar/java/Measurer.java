@@ -37,6 +37,7 @@ import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.ast.visitors.StatementVisitor;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -75,6 +76,14 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     this.noSonarFilter = noSonarFilter;
   }
 
+  public class TestFileMeasurer implements JavaFileScanner {
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      sonarFile = fs.inputFile(fs.predicates().is(context.getFile()));
+      createCommentLineVisitorAndFindNoSonar(context);
+    }
+  }
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.INTERFACE, Tree.Kind.ENUM, Tree.Kind.ANNOTATION_TYPE,
@@ -97,9 +106,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     }
     publicApiChecker.scan(context.getTree());
     methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
-    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
-    commentLinesVisitor.analyzeCommentLines(context.getTree());
-    noSonarFilter.addComponent(sensorContext.getResource(sonarFile).getEffectiveKey(), commentLinesVisitor.noSonarLines());
+    CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
     super.scanFile(context);
     //leave file.
     int fileComplexity = context.getComplexityNodes(context.getTree()).size();
@@ -122,6 +129,13 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     sensorContext.saveMeasure(sonarFile, fileComplexityDistribution.add(fileComplexity).build(true).setPersistenceMode(PersistenceMode.MEMORY));
     saveLinesMetric();
 
+  }
+
+  private CommentLinesVisitor createCommentLineVisitorAndFindNoSonar(JavaFileScannerContext context) {
+    CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
+    commentLinesVisitor.analyzeCommentLines(context.getTree());
+    noSonarFilter.addComponent(sensorContext.getResource(sonarFile).getEffectiveKey(), commentLinesVisitor.noSonarLines());
+    return commentLinesVisitor;
   }
 
   private void saveLinesMetric() {

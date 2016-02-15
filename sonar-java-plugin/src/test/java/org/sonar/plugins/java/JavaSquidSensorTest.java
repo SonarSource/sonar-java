@@ -20,10 +20,12 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -77,24 +79,39 @@ public class JavaSquidSensorTest {
   }
 
   @Test
-  public void test_issues_creation() throws Exception {
+  public void test_issues_creation_on_main_file() {
+    testIssueCreation(InputFile.Type.MAIN, 4);
+  }
+
+  @Test
+  public void test_issues_creation_on_test_file() { // NOSONAR required to test NOSONAR reporting on test files
+    testIssueCreation(InputFile.Type.TEST, 0);
+  }
+
+
+  private void testIssueCreation(InputFile.Type onType, int expectedIssues) {
     Settings settings = new Settings();
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/java/"));
-    File file = new File("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java");
-    fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage("java"));
+    String effectiveKey = "src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java";
+    File file = new File(effectiveKey);
+    fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage("java").setType(onType).setKey(effectiveKey));
     Project project = mock(Project.class);
     JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
 
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
-    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, mock(NoSonarFilter.class));
+    NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
+    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, noSonarFilter);
     SensorContext context = mock(SensorContext.class);
-    when(context.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create("src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java"));
+    org.sonar.api.resources.File resource = org.sonar.api.resources.File.create(effectiveKey);
+    resource.setEffectiveKey(effectiveKey);
+    when(context.getResource(any(InputPath.class))).thenReturn(resource);
 
     jss.analyse(project, context);
 
     String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    verify(sonarComponents, times(3)).reportIssue(any(AnalyzerMessage.class));
+    verify(noSonarFilter, times(1)).addComponent(effectiveKey, Sets.newHashSet(87));
+    verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);
     jss.analyse(project, context);
