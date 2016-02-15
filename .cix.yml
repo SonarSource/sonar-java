@@ -33,6 +33,10 @@ exclude:
   - TEST: plugin
     SLAVE_TYPE: performance
     SQ_VERSION: LATEST_RELEASE
+#exclude plugin tests on windows except for LATEST_RELEASE
+  - TEST: plugin
+    SLAVE_TYPE: windows
+    SQ_VERSION: LATEST_RELEASE
 #exclude ruling tests on performance slaves
   - TEST: ruling
     SLAVE_TYPE: performance
@@ -49,7 +53,7 @@ exclude:
   - TEST: ruling
     SLAVE_TYPE: performance
     SQ_VERSION: LATEST_RELEASE
-#exclude all ruling jobs other than on LATEST_RELEASE
+#exclude all ruling jobs other than on LATEST_RELEASE on linux
   - TEST: ruling
     SLAVE_TYPE: linux
     SQ_VERSION: LTS
@@ -61,6 +65,19 @@ exclude:
     SQ_VERSION: 5.3
   - TEST: ruling
     SLAVE_TYPE: linux
+    SQ_VERSION: DEV
+#exclude all ruling jobs other than on LATEST_RELEASE on windows
+  - TEST: ruling
+    SLAVE_TYPE: windows
+    SQ_VERSION: LTS
+  - TEST: ruling
+    SLAVE_TYPE: windows
+    SQ_VERSION: 5.2
+  - TEST: ruling
+    SLAVE_TYPE: windows
+    SQ_VERSION: 5.3
+  - TEST: ruling
+    SLAVE_TYPE: windows
     SQ_VERSION: DEV
 #exclude all performances jobs on linux slaves
   - TEST: performancing
@@ -77,6 +94,22 @@ exclude:
     SQ_VERSION: DEV
   - TEST: performancing
     SLAVE_TYPE: linux
+    SQ_VERSION: LATEST_RELEASE
+#exclude all performances jobs on windows slaves
+  - TEST: performancing
+    SLAVE_TYPE: windows
+    SQ_VERSION: LTS
+  - TEST: performancing
+    SLAVE_TYPE: windows
+    SQ_VERSION: 5.2
+  - TEST: performancing
+    SLAVE_TYPE: windows
+    SQ_VERSION: 5.3
+  - TEST: performancing
+    SLAVE_TYPE: windows
+    SQ_VERSION: DEV
+  - TEST: performancing
+    SLAVE_TYPE: windows
     SQ_VERSION: LATEST_RELEASE
 #exclude all performances jobs other than on LATEST_RELEASE
   - TEST: performancing
