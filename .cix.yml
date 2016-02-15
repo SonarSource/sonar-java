@@ -36,7 +36,16 @@ exclude:
 #exclude plugin tests on windows except for LATEST_RELEASE
   - TEST: plugin
     SLAVE_TYPE: windows
-    SQ_VERSION: LATEST_RELEASE
+    SQ_VERSION: LTS
+  - TEST: plugin
+    SLAVE_TYPE: windows
+    SQ_VERSION: 5.2
+  - TEST: plugin
+    SLAVE_TYPE: windows
+    SQ_VERSION: 5.3
+  - TEST: plugin
+    SLAVE_TYPE: windows
+    SQ_VERSION: DEV
 #exclude ruling tests on performance slaves
   - TEST: ruling
     SLAVE_TYPE: performance
