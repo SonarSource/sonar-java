@@ -20,8 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.targets.Annotations;
 import org.sonar.java.resolve.targets.AnonymousClass;
 import org.sonar.java.resolve.targets.HasInnerClass;
@@ -310,11 +312,40 @@ public class BytecodeCompleterTest {
   }
 
   @Test
+  public void wildcards_type_equality() {
+    JavaSymbol.TypeJavaSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.Wildcards");
+
+    assertTypeAreTheSame(clazz, "equalityUnboundedWildcard1", "equalityUnboundedWildcard2");
+    assertTypeAreTheSame(clazz, "equalityExtendsWildcard1", "equalityExtendsWildcard2");
+    assertTypeAreTheSame(clazz, "equalitySuperWildcard1", "equalitySuperWildcard2");
+
+    assertTypeAreNotTheSame(clazz, "equalityUnboundedWildcard1", "equalityExtendsWildcard1");
+    assertTypeAreNotTheSame(clazz, "equalityUnboundedWildcard1", "equalitySuperWildcard1");
+    assertTypeAreNotTheSame(clazz, "equalityExtendsWildcard1", "equalitySuperWildcard1");
+  }
+
+  private static void assertTypeAreTheSame(TypeJavaSymbol clazz, String varName1, String varName2) {
+    JavaSymbol.VariableJavaSymbol var1 = getVariable(clazz, varName1);
+    JavaSymbol.VariableJavaSymbol var2 = getVariable(clazz, varName2);
+    assertThat(var1.type).isSameAs(var2.type);
+  }
+
+  private static void assertTypeAreNotTheSame(TypeJavaSymbol clazz, String varName1, String varName2) {
+    JavaSymbol.VariableJavaSymbol var1 = getVariable(clazz, varName1);
+    JavaSymbol.VariableJavaSymbol var2 = getVariable(clazz, varName2);
+    assertThat(var1.type).isNotSameAs(var2.type);
+  }
+
+  private static JavaSymbol.VariableJavaSymbol getVariable(JavaSymbol.TypeJavaSymbol clazz, String name) {
+    return (JavaSymbol.VariableJavaSymbol) clazz.members().lookup(name).get(0);
+  }
+
+  @Test
   public void wildcards_in_fields_declaration() {
     JavaSymbol.TypeJavaSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.Wildcards");
-    JavaSymbol.VariableJavaSymbol unboudedItems = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("unboudedItems").get(0);
-    JavaSymbol.VariableJavaSymbol extendsItems = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("extendsItems").get(0);
-    JavaSymbol.VariableJavaSymbol superItems = (JavaSymbol.VariableJavaSymbol) clazz.members().lookup("superItems").get(0);
+    JavaSymbol.VariableJavaSymbol unboudedItems = getVariable(clazz, "unboudedItems");
+    JavaSymbol.VariableJavaSymbol extendsItems = getVariable(clazz, "extendsItems");
+    JavaSymbol.VariableJavaSymbol superItems = getVariable(clazz, "superItems");
 
     assertThatWildcardIs(unboudedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
     assertThatWildcardIs(extendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");

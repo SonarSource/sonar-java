@@ -358,14 +358,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitWildcard(WildcardTree tree) {
-    JavaType bound = symbols.objectType;
-    JavaType.WildCardType.BoundType boundType = JavaType.WildCardType.BoundType.UNBOUNDED;
-    if (!tree.is(Tree.Kind.UNBOUNDED_WILDCARD)) {
+    if (tree.is(Tree.Kind.UNBOUNDED_WILDCARD)) {
+      registerType(tree, symbols.unboundedWildcard);
+    } else {
       resolveAs(tree.bound(), JavaSymbol.TYP);
-      bound = getType(tree.bound());
-      boundType = tree.is(Tree.Kind.SUPER_WILDCARD) ? JavaType.WildCardType.BoundType.SUPER : JavaType.WildCardType.BoundType.EXTENDS;
+      JavaType bound = getType(tree.bound());
+      JavaType.WildCardType.BoundType boundType = tree.is(Tree.Kind.SUPER_WILDCARD) ? JavaType.WildCardType.BoundType.SUPER : JavaType.WildCardType.BoundType.EXTENDS;
+      registerType(tree, parametrizedTypeCache.getWildcardType(bound, boundType));
     }
-    registerType(tree, new JavaType.WildCardType(bound, boundType));
   }
 
   @Override

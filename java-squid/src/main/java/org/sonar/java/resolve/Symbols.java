@@ -78,6 +78,8 @@ public class Symbols {
   final JavaType classType;
   final JavaType stringType;
 
+  final JavaType.WildCardType unboundedWildcard;
+
   /**
    * {@link java.lang.annotation.Annotation}
    */
@@ -177,6 +179,8 @@ public class Symbols {
     serializableType = bytecodeCompleter.loadClass("java.io.Serializable").type;
     annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
     enumType = bytecodeCompleter.loadClass("java.lang.Enum").type;
+
+    unboundedWildcard = new JavaType.WildCardType(objectType, JavaType.WildCardType.BoundType.UNBOUNDED);
 
     // Associate boxed types
     boxedTypes = HashBiMap.create();

@@ -19,37 +19,43 @@
  */
 package org.sonar.java.resolve.targets;
 
-import java.util.ArrayList;
-import java.util.List;
-
 class Wildcards {
-  public List<?> unboudedItems;
-  public List<? extends String> extendsItems;
-  public List<? super Number> superItems;
 
-  public List<?> returnsUnboundedItems(List<?> param) {
+  ParamType<?> equalityUnboundedWildcard1;
+  ParamType<?> equalityUnboundedWildcard2;
+  ParamType<? extends String> equalityExtendsWildcard1;
+  ParamType<? extends String> equalityExtendsWildcard2;
+  ParamType<? super Number> equalitySuperWildcard1;
+  ParamType<? super Number> equalitySuperWildcard2;
+
+  public ParamType<?> unboudedItems;
+  public ParamType<? extends String> extendsItems;
+  public ParamType<? super Number> superItems;
+
+  public ParamType<?> returnsUnboundedItems(ParamType<?> param) {
     return param;
   }
 
-  public List<? extends String> returnsExtendsItems(List<? extends String> param) {
+  public ParamType<? extends String> returnsExtendsItems(ParamType<? extends String> param) {
     return param;
   }
 
-  public List<? super Number> returnsSuperItems(List<? super Number> param) {
+  public ParamType<? super Number> returnsSuperItems(ParamType<? super Number> param) {
     return param;
   }
+}
 
-  List<String> myList = new ArrayList<>();
-  public void foo() {
-    myList.addAll(new ArrayList<String>());
+class ParamType<T> {
+  ParamType<T> foo(ParamType<T> a) {
+    return a;
   }
 }
 
-class WildcardUnboundedClass<X extends List<?>> {
+class WildcardUnboundedClass<X extends ParamType<?>> {
 }
 
-class WildcardExtendsClass<X extends List<? extends String>> {
+class WildcardExtendsClass<X extends ParamType<? extends String>> {
 }
 
-class WildcardSuperClass<X extends List<? super Number>> {
+class WildcardSuperClass<X extends ParamType<? super Number>> {
 }

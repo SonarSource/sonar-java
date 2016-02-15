@@ -529,7 +529,7 @@ public class Resolve {
   }
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing, boolean isParameterized) {
-    // FIXME SOANRJAVA-1514 Inference of types for method using parameter types is not handled
+    // FIXME SONARJAVA-1514 Inference of types for method using parameter types is not handled
     // FIXME SONARJAVA-1535 type substitution should work with wildcards
     if (!isParameterized && usesWildcardWithoutTypeSubstitution(formal)) {
       return types.isSubtype(arg, formal);

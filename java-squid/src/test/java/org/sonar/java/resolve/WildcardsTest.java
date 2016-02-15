@@ -46,6 +46,35 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class WildcardsTest {
   @Test
+  public void test_wildcard_instances() {
+    assertTypesAreTheSame("A<?>", "A<?>");
+    assertTypesAreTheSame("A<? extends String>", "A<? extends String>");
+    assertTypesAreTheSame("A<? super Number>", "A<? super Number>");
+
+    assertTypesAreTheSame("A<? super UnknownType>", "A<? super UnknownType>");
+    assertTypesAreTheSame("A<? extends UnknownType>", "A<? extends UnknownType>");
+
+    assertTypesAreNotTheSame("A<?>", "A<? extends Object>");
+    assertTypesAreNotTheSame("A<?>", "A<? super String>");
+    assertTypesAreNotTheSame("A<?>", "A<? extends String>");
+    assertTypesAreNotTheSame("A<? extends String>", "A<? super String>");
+  }
+
+  private static void assertTypesAreTheSame(String type1, String type2) {
+    List<Type> elementTypes = declaredTypesUsingHierarchy(type1, type2);
+    Type t1 = elementTypes.get(0);
+    Type t2 = elementTypes.get(1);
+    SubtypeAssert.assertThat(t1).isSameAs(t2);
+  }
+
+  private static void assertTypesAreNotTheSame(String type1, String type2) {
+    List<Type> elementTypes = declaredTypesUsingHierarchy(type1, type2);
+    Type t1 = elementTypes.get(0);
+    Type t2 = elementTypes.get(1);
+    SubtypeAssert.assertThat(t1).isNotSameAs(t2);
+  }
+
+  @Test
   public void testUnboundedWildCards() {
     List<Type> elementTypes = declaredTypesUsingHierarchy(
       "A<?>",

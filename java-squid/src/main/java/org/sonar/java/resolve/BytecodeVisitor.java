@@ -546,7 +546,7 @@ public class BytecodeVisitor extends ClassVisitor {
     @Override
     public void visitTypeArgument() {
       // is called only when using unbounded wildcard '<?>'
-      this.typeArguments.add(new JavaType.WildCardType(symbols.objectType, JavaType.WildCardType.BoundType.UNBOUNDED));
+      this.typeArguments.add(symbols.unboundedWildcard);
     }
 
     @Override
@@ -557,11 +557,11 @@ public class BytecodeVisitor extends ClassVisitor {
           super.visitEnd();
           JavaType typeArgument;
           switch (wildcard) {
-            case SUPER:
-              typeArgument = new JavaType.WildCardType(this.typeRead, JavaType.WildCardType.BoundType.SUPER);
-              break;
             case EXTENDS:
-              typeArgument = new JavaType.WildCardType(this.typeRead, JavaType.WildCardType.BoundType.EXTENDS);
+              typeArgument = parametrizedTypeCache.getWildcardType(this.typeRead, JavaType.WildCardType.BoundType.EXTENDS);
+              break;
+            case SUPER:
+              typeArgument = parametrizedTypeCache.getWildcardType(this.typeRead, JavaType.WildCardType.BoundType.SUPER);
               break;
             case INSTANCEOF:
             default:
