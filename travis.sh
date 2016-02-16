@@ -12,10 +12,10 @@ function strongEcho {
   echo ""
   echo "================ $1 ================="
 }
-configureTravis
 case "$TEST" in
 
 CI)
+  configureTravis
   if [ "$TRAVIS_BRANCH" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
     strongEcho "Build and analyze commit in master"
     SONAR_PROJECT_VERSION=`maven_expression "project.version"`
@@ -57,7 +57,12 @@ CI)
   ;;
 
 plugin|ruling)
+  if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+   strongEcho "We do not run plugin or ruling tests on branches, open a pull request to run those!"
+   exit 0;
+  fi
 
+  configureTravis
   [ "$TEST" = "ruling" ] && git submodule update --init --recursive
   EXTRA_PARAMS=
   [ -n "${PROJECT:-}" ] && EXTRA_PARAMS="-DfailIfNoTests=false -Dtest=JavaRulingTest#$PROJECT"
