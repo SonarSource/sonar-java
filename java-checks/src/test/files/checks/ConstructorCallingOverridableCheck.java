@@ -1,5 +1,3 @@
-import org.foo.A.Foo;
-
 class A {
   
   A(A otherA, B b) {
@@ -113,5 +111,29 @@ public class Foo {
   }
 
   public <T> void register(Class<? extends T> type) {
+  }
+}
+
+class Extra {
+  class Easy {
+  }
+
+  class A<K, V> {
+    A(B b) {
+      foo(b.bar().qix()); // False negative (see SONARJAVA-1535), substitution of wildcard not handled - Noncompliant
+    }
+
+    void foo(Easy easy) {
+    }
+  }
+
+  class B {
+    I<? extends Easy> bar() {
+      return null;
+    }
+  }
+
+  interface I<T> {
+    T qix();
   }
 }
