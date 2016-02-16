@@ -35,6 +35,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.WhileStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -127,6 +128,11 @@ public class AssignmentInSubExpressionCheck extends BaseTreeVisitor implements J
       Kind.LESS_THAN_OR_EQUAL_TO,
       Kind.GREATER_THAN,
       Kind.GREATER_THAN_OR_EQUAL_TO);
+  }
+
+  @Override
+  public void visitWhileStatement(WhileStatementTree tree) {
+    scan(tree.statement());
   }
 
   @Override

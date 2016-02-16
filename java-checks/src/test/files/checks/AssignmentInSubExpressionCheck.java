@@ -1,4 +1,8 @@
+import java.util.List;
+import java.util.Set;
+
 class Foo {
+  
   void foo() {
     int a = 0;                   // Compliant
     a = 0;                       // Compliant
@@ -38,10 +42,10 @@ class Foo {
     while ((foo = bar()) > 0) { // Compliant
     }
 
-    while ((a = foo()).foo != 0) { // Noncompliant
+    while ((a = foo()).foo != 0) { // Compliant
     }
 
-    while ((a += 0) > 42) { // Noncompliant
+    while ((a += 0) > 42) { // Compliant
     }
 
     a + 0;
@@ -55,6 +59,20 @@ class Foo {
     eventBus.register((NextPlayer) event -> isPlaying = !isPlaying);
     eventBus.register((NextPlayer) event -> {isPlaying = !isPlaying;});
     eventBus.register((NextPlayer) event -> {if(isPlaying = !isPlaying) return false;}); // Noncompliant
+  }
+
+  void sonarJava1516() {
+    Set<Integer> ids;
+    while ((ids = getNextIds()).size() > 0) { // Compliant
+      log.info("Result: {}", ids);
+    }
+  }
+
+  void sonarJava1516_bis(List<Integer> ids) {
+    Integer a;
+    while (!ids.isEmpty()) {
+      int x = (a = ids.remove(0)) + 5; // Noncompliant
+    }
   }
 
 }
