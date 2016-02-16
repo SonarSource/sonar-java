@@ -19,8 +19,8 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -143,7 +143,7 @@ public class JavaType implements Type {
 
   @Override
   public boolean isUnknown() {
-    return isTagged(UNKNOWN);
+    return false;
   }
 
   public boolean isPrimitiveWrapper() {
@@ -233,9 +233,6 @@ public class JavaType implements Type {
 
     @Override
     public boolean isSubtypeOf(Type superType) {
-      if(isTagged(UNKNOWN)) {
-        return false;
-      }
       if(isTagged(BOT)) {
         return ((JavaType) superType).isTagged(BOT) || superType.isClass() || superType.isArray();
       }
@@ -471,7 +468,7 @@ public class JavaType implements Type {
           case SUPER:
             return boundType == BoundType.SUPER && superTypeBound.isSubtypeOf(bound);
           case EXTENDS:
-           return boundType != BoundType.SUPER && bound.isSubtypeOf(superTypeBound);
+            return boundType != BoundType.SUPER && bound.isSubtypeOf(superTypeBound);
         }
       }
       return false;
@@ -482,11 +479,40 @@ public class JavaType implements Type {
         case SUPER:
           return bound.isSubtypeOf(type);
         case EXTENDS:
-        return type.isSubtypeOf(bound);
+          return type.isSubtypeOf(bound);
         case UNBOUNDED:
         default:
           return true;
       }
+    }
+  }
+
+  public static class UnknownType extends ClassJavaType {
+    public UnknownType(JavaSymbol.TypeJavaSymbol symbol) {
+      super(symbol);
+      tag = UNKNOWN;
+      supertype = null;
+      interfaces = ImmutableList.of();
+    }
+
+    @Override
+    public boolean isSubtypeOf(String fullyQualifiedName) {
+      return false;
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      return false;
+    }
+
+    @Override
+    public boolean isUnknown() {
+      return true;
+    }
+
+    @Override
+    public String toString() {
+      return "!unknown!";
     }
   }
 }

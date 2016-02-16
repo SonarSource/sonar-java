@@ -28,7 +28,7 @@ public class ParametrizedTypeCache {
   private Map<JavaSymbol, Map<TypeSubstitution, JavaType.ParametrizedTypeJavaType>> typeCache = Maps.newHashMap();
 
   public JavaType getParametrizedTypeType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
-    if (symbol.getType().isTagged(JavaType.UNKNOWN)) {
+    if (symbol.getType().isUnknown()) {
       return symbol.getType();
     }
     if (typeCache.get(symbol) == null) {

@@ -528,7 +528,7 @@ public class JavaSymbol implements Symbol {
 
     @Nullable
     private MethodJavaSymbol overriddenSymbolFrom(JavaType.ClassJavaType classType) {
-      if (classType.isTagged(JavaType.UNKNOWN)) {
+      if (classType.isUnknown()) {
         return Symbols.unknownMethodSymbol;
       }
       boolean unknownFound = false;
@@ -572,7 +572,7 @@ public class JavaSymbol implements Symbol {
       }
       for (int i = 0; i < getParametersTypes().size(); i++) {
         JavaType paramOverrider = getParametersTypes().get(i);
-        if (paramOverrider.isTagged(JavaType.UNKNOWN)) {
+        if (paramOverrider.isUnknown()) {
           // FIXME : complete symbol table should not have unknown types and generics should be handled properly for this.
           return null;
         }
