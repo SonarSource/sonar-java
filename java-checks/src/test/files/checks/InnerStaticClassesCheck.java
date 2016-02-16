@@ -123,6 +123,26 @@ public class A {
       return new Object();
     }
   }
+  
+  class SubB extends B {  // Compliant since super class is not static
+    Object foo() {
+      return new Object();
+    }
+  }
+  
+  class SubSubB extends SubB {  // Compliant since super class is not static
+    Object foo() {
+      return new Object();
+    }
+  }
+  
+  class InnerObject extends Object { // Noncompliant
+    
+  }
+  
+  class InnerArrayList extends java.util.ArrayList<String> { // Noncompliant
+    
+  }
 
 }
 

@@ -69,13 +69,20 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
     scan(tree.members());
     Boolean oneReference = atLeastOneReference.pop();
     outerClasses.pop();
-    if (!symbol.isStatic() && !oneReference && !outerClasses.isEmpty() && isFirstParentStatic(outerClasses)) {
+    if (!symbol.isStatic() && !oneReference && couldBeDeclaredStatic(symbol)) {
       String named = symbol.name().isEmpty() ? "named " : "";
       context.addIssue(tree, this, "Make this a " + named + "\"static\" inner class.");
     }
   }
 
-  private static boolean isFirstParentStatic(Deque<Symbol> outerClasses) {
+  private boolean couldBeDeclaredStatic(Symbol.TypeSymbol symbol) {
+    Type superClass = symbol.superClass();
+    if (superClass != null) {
+      Symbol superClassSymbol = superClass.symbol();
+      if (!superClassSymbol.owner().isPackageSymbol() && !superClassSymbol.isStatic()) {
+        return false;
+      }
+    }
     if (outerClasses.size() == 1) {
       return true;
     }
