@@ -1555,4 +1555,15 @@ class SuperClass {
 
     }
   }
+
+  void testAfterAddAssignment(int y) {
+    int x = y;
+    if(x == y) { // Noncompliant {{Change this condition so that it does not always evaluate to "true"}}
+
+    }
+    x += y;
+    if(x == y) { // Compliant (unless y==0!)
+
+    }
+  }
 }

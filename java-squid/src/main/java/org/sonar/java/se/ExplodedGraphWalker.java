@@ -67,6 +67,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -469,7 +470,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       // FIXME restricted to identifiers for now.
 
       ProgramState.Pop unstack = programState.unstackValue(2);
-      SymbolicValue value = unstack.values.get(1);
+      SymbolicValue value = tree.is(Tree.Kind.ASSIGNMENT) ? unstack.values.get(1) : constraintManager.createSymbolicValue(tree);
       programState = unstack.state;
       programState = programState.put(((IdentifierTree) variable).symbol(), value);
       programState = programState.stackValue(value);
