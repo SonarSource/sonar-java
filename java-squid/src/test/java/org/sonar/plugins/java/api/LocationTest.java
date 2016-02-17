@@ -35,4 +35,33 @@ public class LocationTest {
     assertThat(location.msg).isEqualTo(message);
     assertThat(location.syntaxNode).isEqualTo(node);
   }
+
+  @Test
+  public void testEquality() {
+    String message = "message";
+    Tree node = mock(Tree.class);
+    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
+
+    // same message, same node
+    assertThat(location).isEqualTo(new JavaFileScannerContext.Location(message, node));
+    // same object
+    assertThat(location).isEqualTo(location);
+
+    assertThat(location).isNotEqualTo(new JavaFileScannerContext.Location("msg", node));
+    assertThat(location).isNotEqualTo(new JavaFileScannerContext.Location(message, mock(Tree.class)));
+    assertThat(location).isNotEqualTo(null);
+    assertThat(location).isNotEqualTo(new Object());
+  }
+
+  @Test
+  public void testHashCode() {
+    String message = "message";
+    Tree node = mock(Tree.class);
+    JavaFileScannerContext.Location location = new JavaFileScannerContext.Location(message, node);
+
+    // same message, same node
+    assertThat(location.hashCode()).isEqualTo(new JavaFileScannerContext.Location(message, node).hashCode());
+    // different location
+    assertThat(location.hashCode()).isNotEqualTo(new JavaFileScannerContext.Location("msg", node).hashCode());
+  }
 }
