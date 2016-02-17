@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import org.fest.assertions.Fail;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -130,6 +131,24 @@ public class JavaSymbolTest {
     assertThat(variableSymbol.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
     assertThat(variableSymbol.outermostClass()).isSameAs(outermostClass);
     assertThat(variableSymbol.enclosingClass()).isSameAs(typeSymbol);
+  }
+
+  @Test
+  public void test_WildcardSymbol() {
+    String name = "? extends String";
+    JavaSymbol.WildcardSymbol wildcardSymbol = new JavaSymbol.WildcardSymbol(name);
+    assertThat(wildcardSymbol.kind).isEqualTo(JavaSymbol.TYP);
+    assertThat(wildcardSymbol.owner()).isSameAs(Symbols.unknownSymbol);
+    assertThat(wildcardSymbol.declaration()).isNull();
+    assertThat(wildcardSymbol.getSuperclass()).isNull();
+    assertThat(wildcardSymbol.getInterfaces()).isEmpty();
+    assertThat(wildcardSymbol.getFullyQualifiedName()).isEqualTo(name);
+    try {
+      wildcardSymbol.getInternalName();
+      Fail.fail("should have failed");
+    } catch (Exception e) {
+      assertThat(e).isInstanceOf(UnsupportedOperationException.class);
+    }
   }
 
   @Test

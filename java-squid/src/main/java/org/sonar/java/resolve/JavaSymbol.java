@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multiset;
+
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -687,6 +688,7 @@ public class JavaSymbol implements Symbol {
     }
 
     @Override
+    @Nullable
     public ClassTree declaration() {
       return null;
     }
