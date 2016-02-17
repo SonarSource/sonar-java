@@ -19,7 +19,10 @@
  */
 package org.sonar.java.checks.xml.maven;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
+import org.apache.commons.lang.StringUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -32,6 +35,8 @@ import org.sonar.maven.model.maven2.Dependency;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.Nullable;
 
 import java.util.List;
 
@@ -51,12 +56,21 @@ public class DependencyWithSystemScopeCheck implements PomCheck {
     for (Dependency dependency : dependencies) {
       LocatedAttribute scope = dependency.getScope();
       if (scope != null && "system".equalsIgnoreCase(scope.getValue())) {
-        context.reportIssue(
-          this,
-          scope.startLocation().line(),
-          "Update this scope and remove the \"systemPath\".",
-          Lists.newArrayList(new PomCheckContext.Location("Remove this", dependency.getSystemPath())));
+        String message = "Update this scope.";
+        LocatedAttribute systemPath = dependency.getSystemPath();
+        List<PomCheckContext.Location> secondaries = getSecondary(systemPath);
+        if (systemPath != null) {
+          message = "Update this scope and remove the \"systemPath\".";
+        }
+        context.reportIssue(this, scope.startLocation().line(), message, secondaries);
       }
     }
+  }
+
+  private static List<PomCheckContext.Location> getSecondary(@Nullable LocatedAttribute systemPath) {
+    if (systemPath != null && StringUtils.isNotBlank(systemPath.getValue())) {
+      return Lists.newArrayList(new PomCheckContext.Location("Remove this", systemPath));
+    }
+    return ImmutableList.of();
   }
 }

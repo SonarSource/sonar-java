@@ -32,6 +32,17 @@
       <groupId>g1</groupId>
       <artifactId>a4</artifactId> <!-- Compliant, no scope defined -->
     </dependency>
+    <dependency>
+      <groupId>g1</groupId>
+      <artifactId>a5</artifactId>
+      <scope>system</scope> <!-- Noncompliant {{Update this scope.}} -->
+    </dependency>
+    <dependency>
+      <groupId>g1</groupId>
+      <artifactId>a6</artifactId>
+      <scope>system</scope> <!-- Noncompliant {{Update this scope and remove the "systemPath".}} -->
+      <systemPath></systemPath>
+    </dependency>
   </dependencies>
 
 </project>
