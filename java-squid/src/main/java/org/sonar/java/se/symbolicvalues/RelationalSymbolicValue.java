@@ -20,11 +20,10 @@
 package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.ProgramState;
+import org.sonar.java.se.constraint.BooleanConstraint;
 
 import javax.annotation.CheckForNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,36 +103,7 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
 
   @Override
   public BinaryRelation binaryRelation() {
-    BinaryRelation relation;
-    switch (kind) {
-      case EQUAL:
-        relation = new EqualRelation(leftOp, rightOp);
-        break;
-      case NOT_EQUAL:
-        relation = new NotEqualRelation(leftOp, rightOp);
-        break;
-      case LESS_THAN:
-        relation = new LessThanRelation(leftOp, rightOp);
-        break;
-      case LESS_THAN_OR_EQUAL:
-        relation = new LessThanOrEqualRelation(leftOp, rightOp);
-        break;
-      case GREATER_THAN:
-        relation = new GreaterThanRelation(leftOp, rightOp);
-        break;
-      case GREATER_THAN_OR_EQUAL:
-        relation = new GreaterThanOrEqualRelation(leftOp, rightOp);
-        break;
-      case METHOD_EQUALS:
-        relation = new MethodEqualsRelation(leftOp, rightOp);
-        break;
-      case NOT_METHOD_EQUALS:
-        relation = new NotMethodEqualsRelation(leftOp, rightOp);
-        break;
-      default:
-        throw new IllegalStateException("Creation of relation of kind " + kind + " is missing!");
-    }
-    return relation;
+    return BinaryRelation.binaryRelation(kind, leftOp, rightOp);
   }
 
   @Override

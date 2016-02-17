@@ -31,12 +31,18 @@ public class NotMethodEqualsRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation symmetric() {
-    return new NotMethodEqualsRelation(rightOp, leftOp);
+    if (symmetric == null) {
+      symmetric = binaryRelation(RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS, rightOp, leftOp);
+    }
+    return symmetric;
   }
 
   @Override
   public BinaryRelation inverse() {
-    return new MethodEqualsRelation(leftOp, rightOp);
+    if (inverse == null) {
+      inverse = binaryRelation(RelationalSymbolicValue.Kind.METHOD_EQUALS, leftOp, rightOp);
+    }
+    return inverse;
   }
 
   @Override
@@ -104,7 +110,7 @@ public class NotMethodEqualsRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation combinedWithEqual(EqualRelation relation) {
-    return new NotMethodEqualsRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS, leftOp, relation.rightOp);
   }
 
   @Override
@@ -114,7 +120,7 @@ public class NotMethodEqualsRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
-    return new NotMethodEqualsRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS, leftOp, relation.rightOp);
   }
 
   @Override
@@ -152,9 +158,9 @@ public class NotMethodEqualsRelation extends BinaryRelation {
     Preconditions.checkArgument(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
     switch (relation.kind) {
       case LESS_THAN_OR_EQUAL:
-        return new LessThanRelation(leftOp, rightOp);
+        return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, leftOp, rightOp);
       case GREATER_THAN_OR_EQUAL:
-        return new GreaterThanRelation(leftOp, rightOp);
+        return binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, rightOp);
       default:
         return super.conjunction(relation);
     }

@@ -31,12 +31,18 @@ public class NotEqualRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation symmetric() {
-    return new NotEqualRelation(rightOp, leftOp);
+    if (symmetric == null) {
+      symmetric = binaryRelation(RelationalSymbolicValue.Kind.NOT_EQUAL, rightOp, leftOp);
+    }
+    return symmetric;
   }
 
   @Override
   public BinaryRelation inverse() {
-    return new EqualRelation(leftOp, rightOp);
+    if (inverse == null) {
+      inverse = BinaryRelation.binaryRelation(RelationalSymbolicValue.Kind.EQUAL, leftOp, rightOp);
+    }
+    return inverse;
   }
 
   @Override
@@ -93,7 +99,7 @@ public class NotEqualRelation extends BinaryRelation {
   @Override
   @CheckForNull
   protected BinaryRelation combinedWithEqual(EqualRelation relation) {
-    return new NotEqualRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.NOT_EQUAL, leftOp, relation.rightOp);
   }
 
   @Override
@@ -142,9 +148,9 @@ public class NotEqualRelation extends BinaryRelation {
     Preconditions.checkArgument(leftOp.equals(relation.leftOp) && rightOp.equals(relation.rightOp), "Conjunction condition not matched!");
     switch (relation.kind) {
       case LESS_THAN_OR_EQUAL:
-        return new LessThanRelation(leftOp, rightOp);
+        return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, leftOp, rightOp);
       case GREATER_THAN_OR_EQUAL:
-        return new GreaterThanOrEqualRelation(leftOp, rightOp);
+        return binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL, leftOp, rightOp);
       default:
         return null;
     }

@@ -35,6 +35,49 @@ import java.util.Set;
 
 public abstract class BinaryRelation {
 
+
+  public static BinaryRelation binaryRelation(Kind kind, SymbolicValue leftOp, SymbolicValue rightOp) {
+    BinaryRelation relation;
+    switch (kind) {
+      case EQUAL:
+        relation = new EqualRelation(leftOp, rightOp);
+        relation.inverse = new NotEqualRelation(leftOp, rightOp);
+        relation.inverse.symmetric = new NotEqualRelation(rightOp, leftOp);
+        relation.inverse.inverse = relation;
+        relation.symmetric = new EqualRelation(rightOp, leftOp);
+        relation.symmetric.symmetric = relation;
+        relation.symmetric.inverse = relation.inverse.symmetric;
+        break;
+      case NOT_EQUAL:
+        relation = binaryRelation(Kind.EQUAL, leftOp, rightOp).inverse;
+        break;
+      case LESS_THAN:
+        relation = new LessThanRelation(leftOp, rightOp);
+        break;
+      case LESS_THAN_OR_EQUAL:
+        relation = new LessThanOrEqualRelation(leftOp, rightOp);
+        break;
+      case GREATER_THAN:
+        relation = new GreaterThanRelation(leftOp, rightOp);
+        break;
+      case GREATER_THAN_OR_EQUAL:
+        relation = new GreaterThanOrEqualRelation(leftOp, rightOp);
+        break;
+      case METHOD_EQUALS:
+        relation = new MethodEqualsRelation(leftOp, rightOp);
+        break;
+      case NOT_METHOD_EQUALS:
+        relation = new NotMethodEqualsRelation(leftOp, rightOp);
+        break;
+      default:
+        throw new IllegalStateException("Creation of relation of kind " + kind + " is missing!");
+    }
+    return relation;
+
+
+  }
+
+
   public static class TransitiveRelationExceededException extends RuntimeException {
     public TransitiveRelationExceededException() {
       super("Number of transitive relations exceeded!");
@@ -44,23 +87,20 @@ public abstract class BinaryRelation {
   protected final Kind kind;
   protected final SymbolicValue leftOp;
   protected final SymbolicValue rightOp;
-  private final int[] key;
+  protected BinaryRelation symmetric;
+  protected BinaryRelation inverse;
+  private final int hashcode;
 
   protected BinaryRelation(Kind kind, SymbolicValue v1, SymbolicValue v2) {
     this.kind = kind;
     leftOp = v1;
     rightOp = v2;
-    if (leftOp.id() < rightOp.id()) {
-      key = new int[] {leftOp.id(), rightOp.id()};
-    } else {
-      key = new int[] {rightOp.id(), leftOp.id()};
-    }
-
+    hashcode = Objects.hash(kind, leftOp, rightOp);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(kind, key[0], key[1]);
+    return hashcode;
   }
 
   @Override
@@ -73,7 +113,7 @@ public abstract class BinaryRelation {
 
   private boolean equalsRelation(BinaryRelation rel) {
     if (kind.equals(rel.kind)) {
-      return key[0] == rel.key[0] && key[1] == rel.key[1];
+      return leftOp.id() == rel.leftOp.id() && rightOp.id() == rel.rightOp.id();
     }
     return false;
   }

@@ -31,12 +31,18 @@ public class LessThanOrEqualRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation symmetric() {
-    return new GreaterThanOrEqualRelation(rightOp, leftOp);
+    if (symmetric == null) {
+      symmetric = binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL, rightOp, leftOp);
+    }
+    return symmetric;
   }
 
   @Override
   public BinaryRelation inverse() {
-    return new GreaterThanRelation(leftOp, rightOp);
+    if (inverse == null) {
+      inverse = binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, rightOp);
+    }
+    return inverse;
   }
 
   @Override
@@ -91,7 +97,7 @@ public class LessThanOrEqualRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation combinedWithEqual(EqualRelation relation) {
-    return new LessThanOrEqualRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL, leftOp, relation.rightOp);
   }
 
   @Override
@@ -103,7 +109,7 @@ public class LessThanOrEqualRelation extends BinaryRelation {
   @Override
   @CheckForNull
   protected BinaryRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
-    return new LessThanOrEqualRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL, leftOp, relation.rightOp);
   }
 
   @Override
@@ -126,12 +132,12 @@ public class LessThanOrEqualRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation combinedWithLessThan(LessThanRelation relation) {
-    return new LessThanRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, leftOp, relation.rightOp);
   }
 
   @Override
   protected BinaryRelation combinedWithLessThanOrEqual(LessThanOrEqualRelation relation) {
-    return new LessThanOrEqualRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL, leftOp, relation.rightOp);
   }
 
   @Override
@@ -140,9 +146,9 @@ public class LessThanOrEqualRelation extends BinaryRelation {
     switch (relation.kind) {
       case NOT_EQUAL:
       case NOT_METHOD_EQUALS:
-        return new LessThanRelation(leftOp, rightOp);
+        return binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, leftOp, rightOp);
       case GREATER_THAN_OR_EQUAL:
-        return new EqualRelation(leftOp, rightOp);
+        return binaryRelation(RelationalSymbolicValue.Kind.EQUAL, leftOp, rightOp);
       default:
         return super.conjunction(relation);
     }

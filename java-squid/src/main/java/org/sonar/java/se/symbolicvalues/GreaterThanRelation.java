@@ -29,12 +29,18 @@ public class GreaterThanRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation symmetric() {
-    return new LessThanRelation(rightOp, leftOp);
+    if (symmetric == null) {
+      symmetric = binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, rightOp, leftOp);
+    }
+    return symmetric;
   }
 
   @Override
   public BinaryRelation inverse() {
-    return new LessThanOrEqualRelation(leftOp, rightOp);
+    if (inverse == null) {
+      inverse = binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL, leftOp, rightOp);
+    }
+    return inverse;
   }
 
   @Override
@@ -89,7 +95,7 @@ public class GreaterThanRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation combinedWithEqual(EqualRelation relation) {
-    return new GreaterThanRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, relation.rightOp);
   }
 
   @Override
@@ -101,7 +107,7 @@ public class GreaterThanRelation extends BinaryRelation {
   @Override
   @CheckForNull
   protected BinaryRelation combinedWithMethodEquals(MethodEqualsRelation relation) {
-    return new GreaterThanRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, relation.rightOp);
   }
 
   @Override
@@ -112,12 +118,12 @@ public class GreaterThanRelation extends BinaryRelation {
 
   @Override
   protected BinaryRelation combinedWithGreaterThan(GreaterThanRelation relation) {
-    return new GreaterThanRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, relation.rightOp);
   }
 
   @Override
   protected BinaryRelation combinedWithGreaterThanOrEqual(GreaterThanOrEqualRelation relation) {
-    return new GreaterThanRelation(leftOp, relation.rightOp);
+    return binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, relation.rightOp);
   }
 
   @Override
