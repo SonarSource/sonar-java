@@ -79,7 +79,9 @@ public class HiddenFieldCheck extends SubscriptionBaseVisitor {
     fields.clear();
     excludedVariables.clear();
     flattenExcludedVariables.clear();
-    super.scanFile(context);
+    if (context.getSemanticModel() != null) {
+      super.scanFile(context);
+    }
   }
 
   @Override
