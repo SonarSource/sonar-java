@@ -83,7 +83,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
       } else if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree memberSelect = (MemberSelectExpressionTree) methodSelect;
         methodIdentifier = memberSelect.identifier();
-        isInvocationOnSelf = isThisOrSuper(memberSelect.expression());
+        isInvocationOnSelf = isThis(memberSelect.expression());
       }
       if (isInvocationOnSelf) {
         Symbol symbol = methodIdentifier.symbol();
@@ -94,12 +94,20 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
       super.visitMethodInvocation(tree);
     }
 
-    private boolean isThisOrSuper(ExpressionTree expression) {
+    private boolean is(ExpressionTree expression, String match) {
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         String targetName = ((IdentifierTree) expression).name();
-        return "this".equals(targetName) || "super".equals(targetName);
+        return match.equals(targetName);
       }
       return false;
+    }
+
+    private boolean isThis(ExpressionTree expression) {
+      return is(expression, "this");
+    }
+
+    private boolean isThisOrSuper(ExpressionTree expression) {
+      return is(expression, "this") || is(expression, "super");
     }
 
     private boolean isMethodDefinedOnConstructedType(Symbol symbol) {

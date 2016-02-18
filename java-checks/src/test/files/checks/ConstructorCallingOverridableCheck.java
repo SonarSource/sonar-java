@@ -41,7 +41,7 @@ class SubClass extends SuperClass {
   
   SuperClass() {
     super.finalMethod();
-    super.nonFinalPublicMethod(); // Noncompliant
+    super.nonFinalPublicMethod(); // Compliant
   }
   
 }
