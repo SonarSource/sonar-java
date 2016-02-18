@@ -27,6 +27,7 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -55,7 +56,12 @@ public class ThreadOverridesRunCheck extends SubscriptionBaseVisitor {
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol classSymbol = classTree.symbol();
     if (classSymbol != null && isDirectSubtypeOfThread(classSymbol) && !overridesRunMethod(classSymbol)) {
-      addIssue(tree, "Stop extending the Thread class as the \"run\" method is not overridden");
+      Tree report = classTree.simpleName();
+      Tree parent = classTree.parent();
+      if(parent.is(Tree.Kind.NEW_CLASS)) {
+        report = ((NewClassTree) parent).identifier();
+      }
+      reportIssue(report, "Stop extending the Thread class as the \"run\" method is not overridden");
     }
   }
 

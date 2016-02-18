@@ -26,7 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.sonar.api.utils.SonarException;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
@@ -44,7 +44,7 @@ public class JacocoReportReaderTest {
 
   @Test
   public void reading_unexisting_file_should_fail() {
-    expectedException.expect(SonarException.class);
+    expectedException.expect(AnalysisException.class);
     new JacocoReportReader(dummy);
   }
 
@@ -67,7 +67,7 @@ public class JacocoReportReaderTest {
     File report = testFolder.newFile("jacoco.exec");
     FileUtils.copyFile(TestUtils.getResource("/org/sonar/plugins/jacoco/JaCoCo_incompatible_merge/jacoco-0.7.5.exec"), report);
     JacocoReportReader jacocoReportReader = new JacocoReportReader(report);
-    expectedException.expect(SonarException.class);
+    expectedException.expect(AnalysisException.class);
     if(!report.delete()) {
       Fail.fail("report was not deleted, unable to complete test.");
     }
@@ -78,7 +78,7 @@ public class JacocoReportReaderTest {
   @Test
   public void incorrect_binary_format_should_fail() throws Exception {
     File report = TestUtils.getResource("/Hello.class.toCopy");
-    expectedException.expect(SonarException.class);
+    expectedException.expect(AnalysisException.class);
     new JacocoReportReader(report);
 
   }

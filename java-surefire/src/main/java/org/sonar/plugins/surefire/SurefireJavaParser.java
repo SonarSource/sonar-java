@@ -31,13 +31,13 @@ import org.sonar.api.resources.Resource;
 import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.ParsingUtils;
-import org.sonar.api.utils.SonarException;
 import org.sonar.api.utils.StaxParser;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
 import org.sonar.plugins.surefire.data.UnitTestIndex;
 import org.sonar.plugins.surefire.data.UnitTestResult;
+import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -108,7 +108,7 @@ public class SurefireJavaParser implements BatchExtension {
       try {
         parser.parse(report);
       } catch (XMLStreamException e) {
-        throw new SonarException("Fail to parse the Surefire report: " + report, e);
+        throw new AnalysisException("Fail to parse the Surefire report: " + report, e);
       }
     }
   }
