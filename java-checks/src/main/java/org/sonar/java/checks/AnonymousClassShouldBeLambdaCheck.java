@@ -81,7 +81,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
       if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && hasOnlyOneMethod(classBody.members())) {
-        context.addIssue(identifier, this, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
+        context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
   }

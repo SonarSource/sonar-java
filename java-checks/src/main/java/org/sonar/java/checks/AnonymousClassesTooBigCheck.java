@@ -74,7 +74,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     if (tree.classBody() != null && !isEnumConstantBody) {
       int lines = getNumberOfLines(tree.classBody());
       if (lines > max) {
-        context.addIssue(tree, this, "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
+        context.reportIssue(this, tree.newKeyword(), tree.identifier(), "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
       }
     }
     isEnumConstantBody = false;
@@ -91,7 +91,7 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
   public void visitLambdaExpression(LambdaExpressionTree lambdaExpressionTree) {
     int lines = getNumberOfLines(lambdaExpressionTree);
     if (lines > max) {
-      context.addIssue(lambdaExpressionTree, this, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
+      context.reportIssue(this, lambdaExpressionTree, "Reduce this lambda expression number of lines from " + lines + " to at most " + max + ".");
     }
     super.visitLambdaExpression(lambdaExpressionTree);
   }

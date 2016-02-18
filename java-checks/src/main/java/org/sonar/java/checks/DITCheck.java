@@ -30,6 +30,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -72,7 +74,11 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       superClass = superClass.symbol().superClass();
     }
     if(dit > max) {
-      context.addIssue(tree, this, "This class has "+dit+" parents which is greater than "+max+" authorized.");
+      Tree reportTree = tree.simpleName();
+      if(tree.parent().is(Tree.Kind.NEW_CLASS)) {
+        reportTree = ((NewClassTree) tree.parent()).newKeyword();
+      }
+      context.reportIssue(this, reportTree, "This class has "+dit+" parents which is greater than "+max+" authorized.");
     }
     super.visitClass(tree);
   }

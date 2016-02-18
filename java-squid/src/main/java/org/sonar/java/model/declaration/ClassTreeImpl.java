@@ -53,7 +53,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   private final SyntaxToken closeBraceToken;
   private ModifiersTree modifiers;
   private SyntaxToken atToken;
-  private SyntaxToken declarationKeyowrd;
+  private SyntaxToken declarationKeyword;
   private IdentifierTree simpleName;
   private TypeParameters typeParameters;
   @Nullable
@@ -61,7 +61,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   private TypeTree superClass;
   @Nullable
-  private SyntaxToken implementsKeyowrd;
+  private SyntaxToken implementsKeyword;
   private ListTree<TypeTree> superInterfaces;
   private JavaSymbol.TypeJavaSymbol symbol = Symbols.unknownSymbol;
 
@@ -114,7 +114,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     if (is(Kind.INTERFACE)) {
       extendsKeyword = keyword;
     } else {
-      implementsKeyowrd = keyword;
+      implementsKeyword = keyword;
     }
     this.superInterfaces = interfaces;
     return this;
@@ -129,7 +129,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   }
 
   public ClassTreeImpl completeDeclarationKeyword(SyntaxToken declarationKeyword) {
-    this.declarationKeyowrd = declarationKeyword;
+    this.declarationKeyword = declarationKeyword;
     return this;
   }
 
@@ -190,7 +190,7 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
   @Nullable
   @Override
   public SyntaxToken declarationKeyword() {
-    return declarationKeyowrd;
+    return declarationKeyword;
   }
 
   @Override
@@ -216,12 +216,12 @@ public class ClassTreeImpl extends JavaTree implements ClassTree {
     return Iterables.concat(
       Collections.singletonList(modifiers),
       addIfNotNull(atToken),
-      addIfNotNull(declarationKeyowrd),
+      addIfNotNull(declarationKeyword),
       addIfNotNull(simpleName),
       Collections.singletonList(typeParameters),
       addIfNotNull(extendsKeyword),
       addIfNotNull(superClass),
-      addIfNotNull(implementsKeyowrd),
+      addIfNotNull(implementsKeyword),
       Collections.singletonList(superInterfaces),
       addIfNotNull(openBraceToken),
       members,

@@ -55,7 +55,7 @@ public class CloneableImplementingCloneCheck extends SubscriptionBaseVisitor {
     ClassTree classTree = (ClassTree) tree;
     Symbol.TypeSymbol classSymbol = classTree.symbol();
     if (isCloneable(classTree) && !classSymbol.isAbstract() && !declaresCloneMethod(classSymbol)) {
-      addIssue(tree, "Add a \"clone()\" method to this class.");
+      reportIssue(classTree.simpleName(), "Add a \"clone()\" method to this class.");
     }
   }
 

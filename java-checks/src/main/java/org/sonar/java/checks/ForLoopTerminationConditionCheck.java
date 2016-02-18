@@ -79,8 +79,8 @@ public class ForLoopTerminationConditionCheck extends AbstractForLoopRule {
     }
   }
 
-  private void addIssue(Tree tree) {
-    addIssue(tree, "Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.");
+  private void addIssue(ForStatementTree tree) {
+    reportIssue(tree.condition(), "Replace '!=' operator with one of '<=', '>=', '<', or '>' comparison operators.");
   }
 
   private static boolean forBodyUpdatesLoopIdentifier(ForStatementTree forStatement, IdentifierTree loopIdentifier) {

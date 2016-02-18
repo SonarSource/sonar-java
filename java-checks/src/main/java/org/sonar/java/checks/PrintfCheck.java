@@ -97,21 +97,21 @@ public class PrintfCheck extends AbstractMethodDetection {
 
       List<String> params = getParameters(formatString, mit);
       if (usesMessageFormat(formatString, params)) {
-        addIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
+        reportIssue(mit, "Looks like there is a confusion with the use of java.text.MessageFormat, parameters will be simply ignored here");
         return;
       }
       if (params.isEmpty()) {
-        addIssue(mit, "String contains no format specifiers.");
+        reportIssue(mit, "String contains no format specifiers.");
         return;
       }
       cleanupLineSeparator(params);
       if (argIndexes(params).size() > args.size()) {
-        addIssue(mit, "Not enough arguments.");
+        reportIssue(mit, "Not enough arguments.");
         return;
       }
       verifyParameters(mit, args, params);
     } else if (isConcatenationOnSameLine(formatStringTree)) {
-      addIssue(mit, "Format specifiers should be used instead of string concatenation.");
+      reportIssue(mit, "Format specifiers should be used instead of string concatenation.");
     }
   }
 
@@ -150,7 +150,7 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private void checkLineFeed(String formatString, MethodInvocationTree mit) {
     if (formatString.contains("\\n")) {
-      addIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
+      reportIssue(mit, "%n should be used in place of \\n to produce the platform-specific line separator.");
     }
   }
 
@@ -163,7 +163,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       if (param.contains("$")) {
         argIndex = getIndex(param) - 1;
         if (argIndex == -1) {
-          addIssue(mit, "Arguments are numbered starting from 1.");
+          reportIssue(mit, "Arguments are numbered starting from 1.");
           return;
         }
         param = param.substring(param.indexOf("$") + 1);
@@ -190,13 +190,13 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private void checkBoolean(MethodInvocationTree mit, String param, Type argType) {
     if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
-      addIssue(mit, "Directly inject the boolean value.");
+      reportIssue(mit, "Directly inject the boolean value.");
     }
   }
 
   private void checkNumerical(MethodInvocationTree mit, String param, Type argType) {
     if (param.startsWith("d") && !isNumerical(argType)) {
-      addIssue(mit, "An 'int' is expected rather than a " + argType + ".");
+      reportIssue(mit, "An 'int' is expected rather than a " + argType + ".");
     }
   }
 
@@ -204,12 +204,12 @@ public class PrintfCheck extends AbstractMethodDetection {
     if (param.startsWith("t") || param.startsWith("T")) {
       String timeConversion = param.substring(1);
       if (timeConversion.isEmpty()) {
-        addIssue(mit, "Time conversion requires a second character.");
+        reportIssue(mit, "Time conversion requires a second character.");
         checkTimeTypeArgument(mit, argType);
         return;
       }
       if (!TIME_CONVERSIONS.contains(timeConversion)) {
-        addIssue(mit, timeConversion + " is not a supported time conversion character");
+        reportIssue(mit, timeConversion + " is not a supported time conversion character");
       }
       checkTimeTypeArgument(mit, argType);
     }
@@ -217,7 +217,7 @@ public class PrintfCheck extends AbstractMethodDetection {
 
   private void checkTimeTypeArgument(MethodInvocationTree mit, Type argType) {
     if (!(argType.isNumerical() || argType.is("java.lang.Long") || argType.isSubtypeOf("java.util.Date") || argType.isSubtypeOf("java.util.Calendar"))) {
-      addIssue(mit, "Time argument is expected (long, Long, Date or Calendar).");
+      reportIssue(mit, "Time argument is expected (long, Long, Date or Calendar).");
     }
   }
 
@@ -258,7 +258,7 @@ public class PrintfCheck extends AbstractMethodDetection {
       } else if (i >= 3) {
         stringArgIndex = (i + 1) + "th";
       }
-      addIssue(mit, stringArgIndex + " argument is not used.");
+      reportIssue(mit, stringArgIndex + " argument is not used.");
     }
   }
 
@@ -267,7 +267,7 @@ public class PrintfCheck extends AbstractMethodDetection {
     Matcher matcher = PRINTF_PARAM_PATTERN.matcher(formatString);
     while (matcher.find()) {
       if (firstArgumentIsLT(params, matcher.group(2))) {
-        addIssue(mit, "The argument index '<' refers to the previous format specifier but there isn't one.");
+        reportIssue(mit, "The argument index '<' refers to the previous format specifier but there isn't one.");
         continue;
       }
       StringBuilder param = new StringBuilder();

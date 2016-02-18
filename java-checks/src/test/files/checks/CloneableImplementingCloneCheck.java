@@ -31,3 +31,11 @@ abstract class AbstractClass implements Cloneable {
 interface Cloneable2 extends Cloneable {
   
 }
+
+class A {
+  void foo() {
+    Object a = new Cloneable() { //False negative
+
+    };
+  }
+}
