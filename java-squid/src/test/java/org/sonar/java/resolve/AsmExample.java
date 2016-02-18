@@ -26,13 +26,34 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
-import org.sonar.java.resolve.Flags.Flag;
 
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.EnumSet;
 
 public class AsmExample {
+  enum Flag {
+    PUBLIC,
+    PRIVATE,
+    PROTECTED,
+    STATIC,
+    FINAL,
+    SYNCHRONIZED,
+    VOLATILE,
+    TRANSIENT,
+    NATIVE,
+    INTERFACE,
+    ABSTRACT,
+    STRICTFP,
+    SYNTHETIC,
+    ANNOTATION,
+    ENUM;
+
+    @Override
+    public String toString() {
+      return name().toLowerCase();
+    }
+  }
 
   public static void main(String[] args) throws Exception {
     ClassVisitor cv = new ClassVisitor(Opcodes.ASM5) {
@@ -125,6 +146,7 @@ public class AsmExample {
         }
         return result;
       }
+
     };
 
     InputStream in = AsmExample.class.getResourceAsStream("/org/sonar/java/resolve/AsmExample.class");

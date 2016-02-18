@@ -23,14 +23,12 @@ import org.sonar.plugins.java.api.tree.Modifier;
 
 public class Flags {
 
-  private Flags() {
-  }
-
   public static final int PUBLIC = 1 << 0;
+
   public static final int PRIVATE = 1 << 1;
   public static final int PROTECTED = 1 << 2;
-
   public static final int STATIC = 1 << 3;
+
   public static final int FINAL = 1 << 4;
   public static final int SYNCHRONIZED = 1 << 5;
   public static final int VOLATILE = 1 << 6;
@@ -40,7 +38,6 @@ public class Flags {
    */
   public static final int VARARGS = 1 << 7;
   public static final int NATIVE = 1 << 8;
-
   /**
    * Interface or annotation type.
    */
@@ -75,29 +72,8 @@ public class Flags {
    */
   public static final int ACCESS_FLAGS = PUBLIC | PROTECTED | PRIVATE;
 
-  enum Flag {
-    PUBLIC,
-    PRIVATE,
-    PROTECTED,
-    STATIC,
-    FINAL,
-    SYNCHRONIZED,
-    VOLATILE,
-    TRANSIENT,
-    NATIVE,
-    INTERFACE,
-    ABSTRACT,
-    STRICTFP,
-    SYNTHETIC,
-    ANNOTATION,
-    ENUM;
-
-    @Override
-    public String toString() {
-      return name().toLowerCase();
-    }
+  private Flags() {
   }
-
 
   public static int flagForModifier(Modifier modifier) {
     int result;
