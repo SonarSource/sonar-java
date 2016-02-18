@@ -5,12 +5,12 @@ public class Fruit extends Food {
     if (obj == this) {
       return true;
     }
-    if (Fruit.class == obj.getClass()) { // Noncompliant {{Compare to "this.getClass()" instead.}}
+    if (Fruit.class == obj.getClass()) { // Noncompliant [[sc=9;ec=20]] {{Compare to "this.getClass()" instead.}}
       return ripe.equals(((Fruit) obj).getRipe());
     }
-    if (obj instanceof Fruit) {  // Noncompliant broken for child classes
+    if (obj instanceof Fruit) {  // Noncompliant [[sc=9;ec=29]] {{Compare to "this.getClass()" instead.}}
       return ripe.equals(((Fruit) obj).getRipe());
-    } else if (obj instanceof Season) { // Noncompliant {{Remove this comparison to an unrelated class.}}
+    } else if (obj instanceof Season) { // Noncompliant [[sc=16;ec=37]] {{Remove this comparison to an unrelated class.}}
       // ...
     }
     if (Fruit.class != obj.getClass()) { // Noncompliant broken for child classes
@@ -45,7 +45,7 @@ public class Fruit3 extends Food {
         if (Foo.class==obj.getClass()){ // Noncompliant
 
         }
-        if (obj instanceof Season) { // Noncompliant symmetry broken for Season class
+        if (obj instanceof Season) { // Noncompliant [[sc=13;ec=34]] symmetry broken for Season class
           // ...
         }
         return false;

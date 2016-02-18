@@ -69,7 +69,7 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
         PrimitiveCheck primitiveCheck = getPrimitiveCheck(variableType);
         ExpressionTree initializer = variableTree.initializer();
         if (primitiveCheck != null && initializer != null) {
-          primitiveCheck.checkInstanciation(initializer);
+          primitiveCheck.checkInstantiation(initializer);
         }
       } else {
         MethodInvocationTree methodInvocationTree = (MethodInvocationTree) tree;
@@ -128,17 +128,17 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
     private void checkMethodInvocation(MethodInvocationTree methodInvocationTree) {
       if (unboxingInvocationMatcher.matches(methodInvocationTree)) {
         MemberSelectExpressionTree methodSelect = (MemberSelectExpressionTree) methodInvocationTree.methodSelect();
-        checkInstanciation(methodSelect.expression());
+        checkInstantiation(methodSelect.expression());
       }
     }
 
-    private void checkInstanciation(ExpressionTree expression) {
-      if (isBadlyInstanciated(expression)) {
-        addIssue(expression, message);
+    private void checkInstantiation(ExpressionTree expression) {
+      if (isBadlyInstantiated(expression)) {
+        reportIssue(expression, message);
       }
     }
 
-    private boolean isBadlyInstanciated(ExpressionTree expression) {
+    private boolean isBadlyInstantiated(ExpressionTree expression) {
       boolean result = false;
       if (expression.is(Tree.Kind.NEW_CLASS)) {
         result = isStringBasedConstructor((NewClassTree) expression);
@@ -149,18 +149,18 @@ public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
         Symbol reference = identifier.symbol();
         if (reference.isVariableSymbol() && reference.usages().size() == 1) {
           Symbol.VariableSymbol variableSymbol = (Symbol.VariableSymbol) reference;
-          result = isBadlyInstanciatedVariable(variableSymbol);
+          result = isBadlyInstantiatedVariable(variableSymbol);
         }
       }
       return result;
     }
 
-    private boolean isBadlyInstanciatedVariable(Symbol.VariableSymbol variableSymbol) {
+    private boolean isBadlyInstantiatedVariable(Symbol.VariableSymbol variableSymbol) {
       VariableTree variableTree = variableSymbol.declaration();
       if (variableTree != null) {
         ExpressionTree initializer = variableTree.initializer();
         if (initializer != null) {
-          return isBadlyInstanciated(initializer);
+          return isBadlyInstantiated(initializer);
         }
       }
       return false;

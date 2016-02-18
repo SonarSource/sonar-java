@@ -79,10 +79,10 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
     public void visitInstanceOf(InstanceOfTree tree) {
       if (tree.type().symbolType().equals(owner.type())) {
         if (!isOwnerFinal()) {
-          addIssue(tree, "Compare to \"this.getClass()\" instead.");
+          reportIssue(tree, "Compare to \"this.getClass()\" instead.");
         }
       } else {
-        addIssue(tree, "Remove this comparison to an unrelated class.");
+        reportIssue(tree, "Remove this comparison to an unrelated class.");
       }
       super.visitInstanceOf(tree);
     }
@@ -105,7 +105,7 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
       if (expressionTree.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mset = (MemberSelectExpressionTree) expressionTree;
         if (isClassExpression(mset) && isClassOfOwner(mset) && !isOwnerFinal()) {
-          addIssue(expressionTree, "Compare to \"this.getClass()\" instead.");
+          reportIssue(expressionTree, "Compare to \"this.getClass()\" instead.");
         }
       }
     }

@@ -102,7 +102,7 @@ public class LoopsOnSameSetCheck extends SubscriptionBaseVisitor {
   }
 
   private void addIssue(Tree tree, int line) {
-    addIssue(tree, "Combine this loop with the one that starts on line " + line + ".");
+    reportIssue(tree, "Combine this loop with the one that starts on line " + line + ".");
   }
 
   private static class InvalidatorVisitor extends BaseTreeVisitor {
