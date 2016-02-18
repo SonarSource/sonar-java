@@ -26,12 +26,15 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
@@ -92,6 +95,15 @@ public class StringLiteralDuplicatedCheck extends BaseTreeVisitor implements Jav
         occurrences.put(literal, tree);
       }
     }
+  }
+
+  @Override
+  public void visitMethod(MethodTree tree) {
+    if(ModifiersUtils.hasModifier(tree.modifiers(), Modifier.DEFAULT)) {
+      //Ignore default methods to avoid catch-22 with S1214
+      return;
+    }
+    super.visitMethod(tree);
   }
 
   @Override

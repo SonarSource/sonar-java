@@ -13,4 +13,13 @@ class A {
     System.out.println("dddd");
     System.out.println("dddd");
   }
+
+  interface F {
+    default void foo() {
+      System.out.println("aaaaa");
+      System.out.println("aaaaa");
+      System.out.println("aaaaa");
+
+    }
+  }
 }
