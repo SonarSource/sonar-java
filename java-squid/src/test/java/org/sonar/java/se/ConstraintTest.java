@@ -22,7 +22,9 @@ package org.sonar.java.se;
 import org.junit.Test;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
+import org.sonar.java.se.constraint.TypedConstraint;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 
@@ -30,7 +32,7 @@ import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class ObjectConstraintTest {
+public class ConstraintTest {
 
   private enum TestStatus {
     OPENED, CLOSED
@@ -59,4 +61,17 @@ public class ObjectConstraintTest {
     assertThat(ObjectConstraint.nullConstraint().hasStatus(TestStatus.OPENED)).isFalse();
     assertThat(ObjectConstraint.nullConstraint().hasStatus(null)).isTrue();
   }
+
+  @Test
+  public void boolean_constraint_should_not_be_null() {
+    for (BooleanConstraint booleanConstraint : BooleanConstraint.values()) {
+      assertThat(booleanConstraint.isNull()).isFalse();
+    }
+  }
+
+  @Test
+  public void typed_constraint_should_not_be_null() {
+    assertThat(new TypedConstraint().isNull()).isFalse();
+  }
+
 }
