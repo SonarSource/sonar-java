@@ -74,7 +74,8 @@ public class AnonymousClassesTooBigCheck extends BaseTreeVisitor implements Java
     if (tree.classBody() != null && !isEnumConstantBody) {
       int lines = getNumberOfLines(tree.classBody());
       if (lines > max) {
-        context.reportIssue(this, tree.newKeyword(), tree.identifier(), "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
+        context.reportIssue(this, tree.newKeyword(), tree.identifier(),
+          "Reduce this anonymous class number of lines from " + lines + " to at most " + max + ", or make it a named class.");
       }
     }
     isEnumConstantBody = false;

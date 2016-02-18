@@ -23,7 +23,6 @@ import org.junit.Test;
 import org.objectweb.asm.Opcodes;
 
 import java.lang.reflect.Constructor;
-import java.util.EnumSet;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -57,13 +56,6 @@ public class FlagsTest {
     assertThat(Flags.SYNTHETIC).isEqualTo(Opcodes.ACC_SYNTHETIC);
     assertThat(Flags.ANNOTATION).isEqualTo(Opcodes.ACC_ANNOTATION);
     assertThat(Flags.ENUM).isEqualTo(Opcodes.ACC_ENUM);
-  }
-
-  @Test
-  public void asFlagSet() {
-    assertThat(Flags.asFlagSet(Flags.PUBLIC)).isEqualTo(EnumSet.of(Flags.Flag.PUBLIC));
-    assertThat(Flags.asFlagSet(Flags.ENUM)).isEqualTo(EnumSet.of(Flags.Flag.ENUM));
-    assertThat(Flags.asFlagSet(Flags.PRIVATE | Flags.ENUM)).isEqualTo(EnumSet.of(Flags.Flag.PRIVATE, Flags.Flag.ENUM));
   }
 
 }

@@ -26,9 +26,11 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.sonar.java.resolve.Flags.Flag;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.EnumSet;
 
 public class AsmExample {
 
@@ -37,7 +39,7 @@ public class AsmExample {
       @Override
       public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         System.out.println("CLASS");
-        System.out.println("access: " + Flags.asFlagSet(access));
+        System.out.println("access: " + asFlagSet(access));
         System.out.println("name: " + name);
         System.out.println("signature: " + signature);
         System.out.println("superName: " + superName);
@@ -77,7 +79,7 @@ public class AsmExample {
       @Override
       public void visitInnerClass(String name, String outerName, String innerName, int access) {
         System.out.println("INNER CLASS");
-        System.out.println("access: " + Flags.asFlagSet(access));
+        System.out.println("access: " + asFlagSet(access));
         System.out.println("name: " + name);
         System.out.println("outerName: " + outerName);
         System.out.println("innerName: " + innerName);
@@ -87,7 +89,7 @@ public class AsmExample {
       @Override
       public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
         System.out.println("FIELD");
-        System.out.println("access: " + Flags.asFlagSet(access));
+        System.out.println("access: " + asFlagSet(access));
         System.out.println("name: " + name);
         System.out.println("desc: " + desc);
         System.out.println("signature: " + desc);
@@ -98,7 +100,7 @@ public class AsmExample {
       @Override
       public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         System.out.println("METHOD");
-        System.out.println("access: " + Flags.asFlagSet(access));
+        System.out.println("access: " + asFlagSet(access));
         System.out.println("name: " + name);
         System.out.println("desc: " + desc);
         System.out.println("signature: " + desc);
@@ -110,6 +112,18 @@ public class AsmExample {
       @Override
       public void visitEnd() {
         System.out.println("END");
+      }
+
+      public EnumSet<Flag> asFlagSet(int flags) {
+        EnumSet<Flag> result = EnumSet.noneOf(Flag.class);
+        int mask = 1;
+        for (int i = 0; i < 15; i++) {
+          if ((flags & mask) != 0) {
+            result.add(Flag.values()[i]);
+          }
+          mask = mask << 1;
+        }
+        return result;
       }
     };
 

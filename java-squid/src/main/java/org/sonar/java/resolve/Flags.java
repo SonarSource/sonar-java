@@ -21,8 +21,6 @@ package org.sonar.java.resolve;
 
 import org.sonar.plugins.java.api.tree.Modifier;
 
-import java.util.EnumSet;
-
 public class Flags {
 
   private Flags() {
@@ -76,18 +74,6 @@ public class Flags {
    * Masks.
    */
   public static final int ACCESS_FLAGS = PUBLIC | PROTECTED | PRIVATE;
-
-  public static EnumSet<Flag> asFlagSet(int flags) {
-    EnumSet<Flag> result = EnumSet.noneOf(Flag.class);
-    int mask = 1;
-    for (int i = 0; i < 15; i++) {
-      if ((flags & mask) != 0) {
-        result.add(Flag.values()[i]);
-      }
-      mask = mask << 1;
-    }
-    return result;
-  }
 
   enum Flag {
     PUBLIC,
