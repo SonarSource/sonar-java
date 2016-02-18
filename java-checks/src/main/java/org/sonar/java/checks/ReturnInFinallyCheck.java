@@ -26,8 +26,12 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
+import org.sonar.plugins.java.api.tree.BreakStatementTree;
+import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.ThrowStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -77,10 +81,32 @@ public class ReturnInFinallyCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitReturnStatement(ReturnStatementTree tree) {
-    if (isInFinally()) {
-      context.reportIssue(this, tree.returnKeyword(), "Remove this return statement from this finally block.");
-    }
+    reportIssue(tree.returnKeyword(), "return");
     super.visitReturnStatement(tree);
+  }
+
+  @Override
+  public void visitThrowStatement(ThrowStatementTree tree) {
+    reportIssue(tree.throwKeyword(), "throw");
+    super.visitThrowStatement(tree);
+  }
+
+  @Override
+  public void visitContinueStatement(ContinueStatementTree tree) {
+    reportIssue(tree.continueKeyword(), "continue");
+    super.visitContinueStatement(tree);
+  }
+
+  @Override
+  public void visitBreakStatement(BreakStatementTree tree) {
+    reportIssue(tree.breakKeyword(), "break");
+    super.visitBreakStatement(tree);
+  }
+
+  private void reportIssue(Tree tree, String statement) {
+    if (isInFinally()) {
+      context.reportIssue(this, tree, "Remove this "+statement+" statement from this finally block.");
+    }
   }
 
   private boolean isInFinally() {
