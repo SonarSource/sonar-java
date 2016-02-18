@@ -23,9 +23,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.sonar.squidbridge.api.AnalysisException;
 import org.sonar.test.TestUtils;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+
+import static java.lang.reflect.Modifier.isFinal;
+import static java.lang.reflect.Modifier.isPrivate;
+import static org.fest.assertions.Assertions.assertThat;
 
 public class JaCoCoReportMergerTest {
 
@@ -34,6 +40,16 @@ public class JaCoCoReportMergerTest {
 
   @Rule
   public ExpectedException exception = ExpectedException.none();
+
+  @Test
+  public void private_constructor() throws Exception {
+    assertThat(isFinal(JaCoCoReportMerger.class.getModifiers())).isTrue();
+    Constructor constructor = JaCoCoReportMerger.class.getDeclaredConstructor();
+    assertThat(isPrivate(constructor.getModifiers())).isTrue();
+    assertThat(constructor.isAccessible()).isFalse();
+    constructor.setAccessible(true);
+    constructor.newInstance();
+  }
 
   @Test
   public void merge_different_format_should_fail() {
@@ -52,6 +68,14 @@ public class JaCoCoReportMergerTest {
   @Test
   public void merge_same_format_should_not_fail() throws Exception {
     merge("jacoco-0.7.5.exec", "jacoco-it-0.7.5.exec");
+  }
+
+  @Test
+  public void fail_merge() throws Exception {
+    exception.expect(AnalysisException.class);
+    exception.expectMessage("Unable to write overall coverage report");
+    JaCoCoReportMerger.mergeReports(testFolder.getRoot(), new File[0]);
+
   }
 
   private void merge(String file1, String file2) {

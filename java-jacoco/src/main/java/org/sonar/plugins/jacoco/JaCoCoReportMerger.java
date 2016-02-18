@@ -37,7 +37,7 @@ import java.io.IOException;
  *
  * This class handles two versions of JaCoCo binary format to merge.
  */
-public class JaCoCoReportMerger {
+public final class JaCoCoReportMerger {
 
   private JaCoCoReportMerger() {
   }
