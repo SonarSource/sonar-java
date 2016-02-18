@@ -94,6 +94,10 @@ public class JavaAstScannerTest {
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
     verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(8));
+    //No Sonar on tests files
+    NoSonarFilter noSonarFilterForTest = mock(NoSonarFilter.class);
+    JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilterForTest).new TestFileMeasurer()));
+    verify(noSonarFilterForTest).addComponent(file.getAbsolutePath(), ImmutableSet.of(8));
   }
 
   @Test
