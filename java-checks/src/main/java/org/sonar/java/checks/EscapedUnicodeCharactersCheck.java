@@ -51,7 +51,8 @@ public class EscapedUnicodeCharactersCheck extends SubscriptionBaseVisitor {
   private static final Predicate<String> IS_PRINTABLE_ESCAPED_UNICODE = new Predicate<String>() {
     @Override
     public boolean apply(String input) {
-      return Integer.parseInt(input.substring(input.length() - 4), 16) > 31;
+      int unicodePointDecimal = Integer.parseInt(input.substring(input.length() - 4), 16);
+      return (31 < unicodePointDecimal && unicodePointDecimal < 127) || 160 < unicodePointDecimal ;
     }
   };
 
@@ -66,8 +67,8 @@ public class EscapedUnicodeCharactersCheck extends SubscriptionBaseVisitor {
     if (value.isEmpty()) {
       return;
     }
-    // replace \\u with \\z just to differentiate \u0000 and \\u0000
-    Matcher matcher = UNICODE_ESCAPED_CHAR.matcher(value.replaceAll("\\\\\\\\u", "\\\\z"));
+    // replace \\ with nothing just to differentiate \u0000 and \\u0000
+    Matcher matcher = UNICODE_ESCAPED_CHAR.matcher(value.replaceAll("\\\\\\\\",""));
     List<String> matches = getAllMatches(matcher);
     if (!matches.isEmpty()) {
       boolean notOnlyUnicodeEscaped = !matcher.replaceAll("").isEmpty();
