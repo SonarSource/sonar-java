@@ -267,12 +267,22 @@ public abstract class BinaryRelation {
   /**
    * @return a new relation, the negation of the receiver
    */
-  public abstract BinaryRelation inverse();
+  public BinaryRelation inverse() {
+    if (inverse == null) {
+      inverse = binaryRelation(kind.inverse(), leftOp, rightOp);
+    }
+    return inverse;
+  }
 
   /**
    * @return a new relation, equivalent to the receiver with inverted parameters
    */
-  protected abstract BinaryRelation symmetric();
+  protected BinaryRelation symmetric() {
+    if (symmetric == null) {
+      symmetric = binaryRelation(kind.symmetric(), rightOp, leftOp);
+    }
+    return symmetric;
+  }
 
   /**
    * @param relation a relation between symbolic values

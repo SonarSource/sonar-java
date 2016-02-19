@@ -28,22 +28,6 @@ public class MethodEqualsRelation extends BinaryRelation {
   }
 
   @Override
-  protected BinaryRelation symmetric() {
-    if (symmetric == null) {
-      symmetric = binaryRelation(RelationalSymbolicValue.Kind.METHOD_EQUALS, rightOp, leftOp);
-    }
-    return symmetric;
-  }
-
-  @Override
-  public BinaryRelation inverse() {
-    if (inverse == null) {
-      inverse = binaryRelation(RelationalSymbolicValue.Kind.NOT_METHOD_EQUALS, leftOp, rightOp);
-    }
-    return inverse;
-  }
-
-  @Override
   public String toString() {
     StringBuilder buffer = new StringBuilder();
     buffer.append(leftOp);

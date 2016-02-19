@@ -30,22 +30,6 @@ public class LessThanOrEqualRelation extends BinaryRelation {
   }
 
   @Override
-  protected BinaryRelation symmetric() {
-    if (symmetric == null) {
-      symmetric = binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN_OR_EQUAL, rightOp, leftOp);
-    }
-    return symmetric;
-  }
-
-  @Override
-  public BinaryRelation inverse() {
-    if (inverse == null) {
-      inverse = binaryRelation(RelationalSymbolicValue.Kind.GREATER_THAN, leftOp, rightOp);
-    }
-    return inverse;
-  }
-
-  @Override
   protected RelationState isImpliedBy(BinaryRelation relation) {
     return relation.impliesLessThanOrEqual();
   }

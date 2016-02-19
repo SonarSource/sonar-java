@@ -44,6 +44,46 @@ public class RelationalSymbolicValue extends BinarySymbolicValue {
     Kind(String operand) {
       this.operand = operand;
     }
+
+    public Kind inverse() {
+      switch (this) {
+        case GREATER_THAN:
+          return LESS_THAN_OR_EQUAL;
+        case GREATER_THAN_OR_EQUAL:
+          return LESS_THAN;
+        case LESS_THAN:
+          return GREATER_THAN_OR_EQUAL;
+        case LESS_THAN_OR_EQUAL:
+          return GREATER_THAN;
+        case METHOD_EQUALS:
+          return NOT_METHOD_EQUALS;
+        case NOT_METHOD_EQUALS:
+          return METHOD_EQUALS;
+        default:
+          return this;
+      }
+    }
+
+    public Kind symmetric() {
+      Kind sym;
+      switch (this) {
+        case GREATER_THAN:
+          sym = LESS_THAN;
+          break;
+        case GREATER_THAN_OR_EQUAL:
+          sym = LESS_THAN_OR_EQUAL;
+          break;
+        case LESS_THAN:
+          sym = GREATER_THAN;
+          break;
+        case LESS_THAN_OR_EQUAL:
+          sym = GREATER_THAN_OR_EQUAL;
+          break;
+        default:
+          sym = this;
+      }
+      return sym;
+    }
   }
 
   private final Kind kind;

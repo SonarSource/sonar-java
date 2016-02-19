@@ -28,22 +28,6 @@ public class GreaterThanRelation extends BinaryRelation {
   }
 
   @Override
-  protected BinaryRelation symmetric() {
-    if (symmetric == null) {
-      symmetric = binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN, rightOp, leftOp);
-    }
-    return symmetric;
-  }
-
-  @Override
-  public BinaryRelation inverse() {
-    if (inverse == null) {
-      inverse = binaryRelation(RelationalSymbolicValue.Kind.LESS_THAN_OR_EQUAL, leftOp, rightOp);
-    }
-    return inverse;
-  }
-
-  @Override
   protected RelationState isImpliedBy(BinaryRelation relation) {
     return relation.impliesGreaterThan();
   }

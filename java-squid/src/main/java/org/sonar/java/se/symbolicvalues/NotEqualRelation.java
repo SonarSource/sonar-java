@@ -30,22 +30,6 @@ public class NotEqualRelation extends BinaryRelation {
   }
 
   @Override
-  protected BinaryRelation symmetric() {
-    if (symmetric == null) {
-      symmetric = binaryRelation(RelationalSymbolicValue.Kind.NOT_EQUAL, rightOp, leftOp);
-    }
-    return symmetric;
-  }
-
-  @Override
-  public BinaryRelation inverse() {
-    if (inverse == null) {
-      inverse = BinaryRelation.binaryRelation(RelationalSymbolicValue.Kind.EQUAL, leftOp, rightOp);
-    }
-    return inverse;
-  }
-
-  @Override
   protected RelationState isImpliedBy(BinaryRelation relation) {
     return relation.impliesNotEqual();
   }
