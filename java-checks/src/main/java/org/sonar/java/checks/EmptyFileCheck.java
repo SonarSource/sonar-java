@@ -43,7 +43,7 @@ public final class EmptyFileCheck implements JavaFileScanner {
     if (context.fileParsed()) {
       CompilationUnitTree tree = context.getTree();
       if (tree.packageDeclaration() == null && tree.types().isEmpty()) {
-        context.addIssue(context.getTree(), this, "This Java file is empty.");
+        context.reportIssue(this, context.getTree(), "This Java file is empty.");
       }
     }
   }

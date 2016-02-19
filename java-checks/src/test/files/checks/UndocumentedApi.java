@@ -2,7 +2,7 @@
  * some documentation
  */
 public class UndocumentedApi { // Compliant - documented
-  public String p; // Noncompliant
+  public String p; // Noncompliant [[sc=17;ec=18]]
   private String key; // Compliant - private
 
   public UndocumentedApi() { // Compliant - empty constructor
@@ -259,8 +259,8 @@ public class MyRunner extends Foo {
     void method();
   }
 
-  public void foo
-  ( // Noncompliant
+  public void foo // Noncompliant [[sc=15;ec=18]]
+  (
   )
   {
   }
@@ -275,7 +275,7 @@ public class MyRunner extends Foo {
 
   @Target({METHOD})
   @Retention(RUNTIME)
-  public @interface Transient { // Noncompliant
+  public @interface Transient { // Noncompliant [[sc=21;ec=30]]
       boolean value() default true; // Noncompliant
   }
 }

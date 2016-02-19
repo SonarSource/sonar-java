@@ -105,7 +105,8 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitClass(ClassTree tree) {
-    visitNode(tree);
+    //No anonymous class, no visit of new class trees.
+    visitNode(tree, tree.simpleName());
     super.visitClass(tree);
     classTrees.pop();
     currentParents.pop();
@@ -113,29 +114,29 @@ public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileSca
 
   @Override
   public void visitVariable(VariableTree tree) {
-    visitNode(tree);
+    visitNode(tree, tree.simpleName());
     super.visitVariable(tree);
   }
 
   @Override
   public void visitMethod(MethodTree tree) {
-    visitNode(tree);
+    visitNode(tree, tree.simpleName());
     super.visitMethod(tree);
     currentParents.pop();
   }
 
-  private void visitNode(Tree tree) {
+  private void visitNode(Tree tree, Tree reportTree) {
     if (!isExcluded(tree)) {
       String javadoc = PublicApiChecker.getApiJavadoc(tree);
       if (javadoc == null || isEmptyJavadoc(javadoc)) {
-        context.addIssue(tree, this, "Document this public " + getType(tree) + ".");
+        context.reportIssue(this, reportTree, "Document this public " + getType(tree) + ".");
       } else if (!javadoc.contains("{@inheritDoc}")) {
         List<String> undocumentedParameters = getUndocumentedParameters(javadoc, getParameters(tree));
         if (!undocumentedParameters.isEmpty()) {
-          context.addIssue(tree, this, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
+          context.reportIssue(this, reportTree, "Document the parameter(s): " + Joiner.on(", ").join(undocumentedParameters));
         }
         if (hasNonVoidReturnType(tree) && !hasReturnJavadoc(javadoc)) {
-          context.addIssue(tree, this, "Document this method return value.");
+          context.reportIssue(this, reportTree, "Document this method return value.");
         }
       }
     }

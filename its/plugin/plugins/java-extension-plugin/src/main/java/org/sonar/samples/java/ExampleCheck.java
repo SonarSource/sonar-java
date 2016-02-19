@@ -39,7 +39,7 @@ public class ExampleCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    context.addIssue(tree, this, "Method.");
+    context.reportIssue(this, tree, "Method.");
     super.visitMethod(tree);
   }
 

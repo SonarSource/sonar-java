@@ -94,7 +94,7 @@ public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements 
       int currentColumn = currentToken.column();
       int currentLine = currentToken.line();
       if (previousColumn == currentColumn) {
-        context.addIssue(current, this, String.format(Locale.US, condition ? IF_MESSAGE : LOOP_MESSAGE, 1 + currentLine - previousLine));
+        context.reportIssue(this, current, String.format(Locale.US, condition ? IF_MESSAGE : LOOP_MESSAGE, 1 + currentLine - previousLine));
       }
     }
   }
