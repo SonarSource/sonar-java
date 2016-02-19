@@ -41,7 +41,7 @@ public class DeprecatedTagPresenceCheck extends AbstractDeprecatedChecker {
   @Override
   public void visitNode(Tree tree) {
     if (hasDeprecatedAnnotation(tree) || hasJavadocDeprecatedTag(tree)) {
-      addIssue(tree, "Do not forget to remove this deprecated code someday.");
+      reportIssue(getReportTree(tree), "Do not forget to remove this deprecated code someday.");
     }
   }
 

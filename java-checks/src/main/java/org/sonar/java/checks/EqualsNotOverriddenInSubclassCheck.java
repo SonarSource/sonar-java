@@ -58,7 +58,7 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (hasSemantic() && hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree)) {
-      addIssue(classTree, "Override this superclass' \"equals\" method.");
+      reportIssue(classTree.simpleName(), "Override this superclass' \"equals\" method.");
     }
   }
 

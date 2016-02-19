@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
 import org.sonar.java.ast.visitors.PublicApiChecker;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -81,6 +82,18 @@ public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
       }
     }
     return false;
+  }
+
+  protected static Tree getReportTree(Tree tree) {
+    Tree reportTree = tree;
+    if(reportTree.is(PublicApiChecker.classKinds())) {
+      reportTree = ExpressionsHelper.reportOnClassTree(((ClassTree) reportTree));
+    } else if(reportTree.is(PublicApiChecker.methodKinds())) {
+      reportTree = ((MethodTree) reportTree).simpleName();
+    } else if(reportTree.is(Tree.Kind.VARIABLE)) {
+      reportTree = ((VariableTree) reportTree).simpleName();
+    }
+    return reportTree;
   }
 
   public static boolean isDeprecated(AnnotationTree tree) {

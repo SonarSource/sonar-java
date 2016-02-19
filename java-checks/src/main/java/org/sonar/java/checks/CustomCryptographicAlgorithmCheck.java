@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -51,8 +52,9 @@ public class CustomCryptographicAlgorithmCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if (hasSemantic() && isJavaSecurityMessageDigestSubClass((ClassTree) tree)) {
-      addIssue(tree, "Use a standard algorithm instead of creating a custom one.");
+    ClassTree classTree = (ClassTree) tree;
+    if (hasSemantic() && isJavaSecurityMessageDigestSubClass(classTree)) {
+      reportIssue(ExpressionsHelper.reportOnClassTree(classTree), "Use a standard algorithm instead of creating a custom one.");
     }
   }
 

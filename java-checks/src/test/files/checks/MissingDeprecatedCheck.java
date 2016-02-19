@@ -1,7 +1,7 @@
 class Foo {
 
   @Deprecated
-  public int foo; // Noncompliant {{Add the missing @deprecated Javadoc tag.}}
+  public int foo; // Noncompliant [[sc=14;ec=17]] {{Add the missing @deprecated Javadoc tag.}}
 
   public void foo1() {
   }

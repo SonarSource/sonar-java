@@ -25,6 +25,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -78,7 +79,7 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
     public void visitClass(ClassTree tree) {
       TypeTree superClass = tree.superClass();
       if (superClass != null) {
-        reportIssueOnDeprecatedType(tree, superClass.symbolType());
+        reportIssueOnDeprecatedType(ExpressionsHelper.reportOnClassTree(tree), superClass.symbolType());
       }
 
       scan(tree.members());
@@ -110,7 +111,7 @@ public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
 
     private boolean reportIssueOnDeprecatedType(Tree tree, Type type) {
       if (isDeprecatedType(type)) {
-        addIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
+        reportIssue(tree, "Replace the synchronized class \"" + type.name() + "\" by an unsynchronized one such as " + REPLACEMENTS.get(type.fullyQualifiedName()) + ".");
         return true;
       }
       return false;

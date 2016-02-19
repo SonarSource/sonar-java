@@ -1,7 +1,7 @@
 class Foo {
 
   @Deprecated
-  public int foo; // Noncompliant {{Do not forget to remove this deprecated code someday.}}
+  public int foo; // Noncompliant [[sc=14;ec=17]] {{Do not forget to remove this deprecated code someday.}}
 
   public void foo1() { // Compliant
   }
@@ -22,7 +22,7 @@ class Foo {
    */
   @Ignore
   @Deprecated
-  public void foo4() { // Noncompliant
+  public void foo4() { // Noncompliant [[sc=15;ec=19]]
   }
 
   @Deprecated

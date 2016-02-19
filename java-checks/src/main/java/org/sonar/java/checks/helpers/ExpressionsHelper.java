@@ -19,9 +19,11 @@
  */
 package org.sonar.java.checks.helpers;
 
+import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
@@ -65,6 +67,19 @@ public class ExpressionsHelper {
       sb.append(piece);
     }
     return sb.toString();
+  }
+
+  /**
+   * Return the correct tree to report on for class trees.
+   * @param classTree class tree raising an issue.
+   * @return simple name of class tree or identifier in parent expression for anonymous class.
+   */
+  public static Tree reportOnClassTree(ClassTree classTree) {
+    Tree reportTree = classTree.simpleName();
+    if(reportTree == null) {
+      reportTree = ((NewClassTree) classTree.parent()).identifier();
+    }
+    return reportTree;
   }
 
 

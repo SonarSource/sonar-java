@@ -62,9 +62,9 @@ public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
     boolean hasJavadocDeprecatedTag = hasJavadocDeprecatedTag(tree);
     if (currentClassNotDeprecated() && !isLocalVar) {
       if (hasDeprecatedAnnotation && !hasJavadocDeprecatedTag) {
-        addIssue(tree, "Add the missing @deprecated Javadoc tag.");
+        reportIssue(getReportTree(tree), "Add the missing @deprecated Javadoc tag.");
       } else if (hasJavadocDeprecatedTag && !hasDeprecatedAnnotation) {
-        addIssue(tree, "Add the missing @Deprecated annotation.");
+        reportIssue(getReportTree(tree), "Add the missing @Deprecated annotation.");
       }
     }
     if (tree.is(CLASS_KINDS)) {

@@ -3,12 +3,18 @@ class A {
   static String staticMember = "static member";
   String s1;
 
+  void foo() {
+    Object o = new A() {
+      int inner;
+    };
+  }
+
   public boolean equals(Object obj) {
     return true;
   }
 }
 
-class B extends A { // Noncompliant {{Override this superclass' "equals" method.}}
+class B extends A { // Noncompliant [[sc=7;ec=8]]  {{Override this superclass' "equals" method.}}
   String s2;
 }
 

@@ -2,7 +2,7 @@ import java.util.Hashtable;     // Compliant
 import java.util.Vector;        // Compliant
 
 class A {
-  List a = new Vector();         // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+  List a = new Vector();         // Noncompliant [[sc=12;ec=24]] {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
   Vector a = new Vector();       // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
   Hashtable a = new Hashtable(); // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
   Map a = new Hashtable();       // Noncompliant {{Replace the synchronized class "Hashtable" by an unsynchronized one such as "HashMap".}}
@@ -26,7 +26,7 @@ class A {
     List result = new java.util.Vector<Integer>(); // Noncompliant
   }
   
-  private Vector getVector() { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+  private Vector getVector() { // Noncompliant [[sc=11;ec=17]]{{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
     return new Vector();
   }
 
@@ -35,7 +35,7 @@ class A {
   public java.util.Stack f() { // Noncompliant {{Replace the synchronized class "Stack" by an unsynchronized one such as "Deque".}}
   }
 
-  public void f(Vector a) { // Noncompliant {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
+  public void f(Vector a) { // Noncompliant [[sc=17;ec=23]] {{Replace the synchronized class "Vector" by an unsynchronized one such as "ArrayList" or "LinkedList".}}
   }
 
   @Override

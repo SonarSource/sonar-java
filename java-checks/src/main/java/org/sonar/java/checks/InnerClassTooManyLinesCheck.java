@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.java.tag.Tag;
@@ -70,7 +71,7 @@ public class InnerClassTooManyLinesCheck extends SubscriptionBaseVisitor {
       int last = LastSyntaxTokenFinder.lastSyntaxToken(node).line();
       int length = last - first + 1;
       if (length > max) {
-        addIssue(node, "Reduce this class from " + length + " to the maximum allowed " + max + " or externalize it in a public class.");
+        reportIssue(ExpressionsHelper.reportOnClassTree(node), "Reduce this class from " + length + " to the maximum allowed " + max + " or externalize it in a public class.");
       }
     }
   }

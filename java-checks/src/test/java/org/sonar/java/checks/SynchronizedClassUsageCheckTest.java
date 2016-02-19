@@ -24,11 +24,9 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class SynchronizedClassUsageCheckTest {
 
-  private final SynchronizedClassUsageCheck check = new SynchronizedClassUsageCheck();
-
   @Test
   public void detected() {
-    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedClassUsageCheck.java", check);
+    JavaCheckVerifier.verify("src/test/files/checks/SynchronizedClassUsageCheck.java", new SynchronizedClassUsageCheck());
   }
 
 }
