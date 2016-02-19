@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.model.JavaTree;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.java.tag.Tag;
@@ -199,7 +200,7 @@ public class IndentationCheck extends SubscriptionBaseVisitor {
   private void checkIndentation(Tree tree, int expectedLevel) {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
     if (firstSyntaxToken.column() != expectedLevel && !isExcluded(tree, firstSyntaxToken.line())) {
-      addIssue(tree, "Make this line start at column " + (expectedLevel + 1) + ".");
+      addIssue(((JavaTree) tree).getLine(), "Make this line start at column " + (expectedLevel + 1) + ".");
       isBlockAlreadyReported = true;
     }
     lastCheckedLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();

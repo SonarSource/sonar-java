@@ -192,3 +192,10 @@ class IndentFoo {
   }
 
 }
+
+public interface plop {
+   @Foo
+   public static class Inner { // Noncompliant
+    public static final String FOO = "foo";
+   }
+}

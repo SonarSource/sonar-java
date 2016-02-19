@@ -87,7 +87,7 @@ public class AbstractDeprecatedChecker extends SubscriptionBaseVisitor {
   protected static Tree getReportTree(Tree tree) {
     Tree reportTree = tree;
     if(reportTree.is(PublicApiChecker.classKinds())) {
-      reportTree = ExpressionsHelper.reportOnClassTree(((ClassTree) reportTree));
+      reportTree = ExpressionsHelper.reportOnClassTree((ClassTree) reportTree);
     } else if(reportTree.is(PublicApiChecker.methodKinds())) {
       reportTree = ((MethodTree) reportTree).simpleName();
     } else if(reportTree.is(Tree.Kind.VARIABLE)) {
