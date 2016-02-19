@@ -303,18 +303,20 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private void handleBranch(CFG.Block programPosition, Tree condition, boolean checkPath) {
     Pair<List<ProgramState>, List<ProgramState>> pair = constraintManager.assumeDual(programState);
+    ExplodedGraph.ProgramPoint falseBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0);
     for (ProgramState state : pair.a) {
       // enqueue false-branch, if feasible
       ProgramState ps = state.stackValue(SymbolicValue.FALSE_LITERAL);
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.falseBlock(), 0), ps, node.exitPath);
+      enqueue(falseBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToFalse(condition);
       }
     }
+    ExplodedGraph.ProgramPoint trueBlockProgramPoint = new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0);
     for (ProgramState state : pair.b) {
       ProgramState ps = state.stackValue(SymbolicValue.TRUE_LITERAL);
       // enqueue true-branch, if feasible
-      enqueue(new ExplodedGraph.ProgramPoint(programPosition.trueBlock(), 0), ps, node.exitPath);
+      enqueue(trueBlockProgramPoint, ps, node.exitPath);
       if (checkPath) {
         alwaysTrueOrFalseChecker.evaluatedToTrue(condition);
       }
@@ -607,15 +609,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
+    checkMaxStepsWhileEnqueuing();
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       debugPrint(programState);
       return;
     }
-    if (isExplodedGraphTooBig(programState)) {
-      throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
-        + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name());
-    }
+    checkExplodedGraphTooBig(programState);
     ExplodedGraph.Node cachedNode = explodedGraph.getNode(programPoint, programState.visitedPoint(programPoint, nbOfExecution + 1));
     if (!cachedNode.isNew && exitPath == cachedNode.exitPath) {
       // has been enqueued earlier
@@ -625,9 +625,19 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     workList.addFirst(cachedNode);
   }
 
-  private boolean isExplodedGraphTooBig(ProgramState programState) {
-    // Arbitrary formula to avoid out of memory errors.
-    return steps + workList.size() > MAX_STEPS / 2 && programState.constraintsSize() > 75;
+  private void checkMaxStepsWhileEnqueuing() {
+    if (steps + workList.size() + 1 > MAX_STEPS) {
+      throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS +
+        " steps for method " + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name() +" while enqueuing program states.");
+    }
+  }
+
+  private void checkExplodedGraphTooBig(ProgramState programState) {
+    // Arbitrary formula to avoid out of memory errors
+    if (steps + workList.size() > MAX_STEPS / 2 && programState.constraintsSize() > 75) {
+      throw new ExplodedGraphTooBigException("Program state constraints are too big : stopping Symbolic Execution for method "
+        + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name());
+    }
   }
 
 }

@@ -73,7 +73,7 @@ public class ExplodedGraphWalkerTest {
   }
 
   @Test
-  public void test2() throws Exception {
+  public void test_limited_loop_execution() throws Exception {
     JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor() {
       @Override
       public void visitNode(Tree tree) {
@@ -82,7 +82,21 @@ public class ExplodedGraphWalkerTest {
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
           fail("loop execution should be limited");
         }
+      }
+    });
+  }
 
+  @Test
+  public void test_maximum_steps_reached() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxSteps.java", new SymbolicExecutionVisitor() {
+      @Override
+      public void visitNode(Tree tree) {
+        try {
+          tree.accept(new ExplodedGraphWalker(context));
+          fail("Too many states were processed !");
+        } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+          assertThat(exception.getMessage()).endsWith("while enqueuing program states.");
+        }
       }
     });
   }
