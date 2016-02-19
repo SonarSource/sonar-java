@@ -52,9 +52,9 @@ public class IssuableSubscriptionVisitorTest {
 
     @Override
     public void visitNode(Tree tree) {
-      addIssue(tree, "issue on tree");
+      reportIssue(tree, "issue on tree");
       addIssue(1, "issue on 1st line");
-      addIssue(tree, "message", 0d);
+      reportIssue(tree, "message", Lists.<JavaFileScannerContext.Location>newArrayList(), 0);
       addIssueOnFile("issue on file");
       reportIssue(tree, "issue on tree");
       reportIssue(tree, "issue on tree", ImmutableList.<JavaFileScannerContext.Location>of(), null);

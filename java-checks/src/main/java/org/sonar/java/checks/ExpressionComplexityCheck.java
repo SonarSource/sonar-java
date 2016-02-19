@@ -31,6 +31,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -155,7 +156,8 @@ public class ExpressionComplexityCheck extends SubscriptionBaseVisitor {
       if (currentLevel == 1) {
         int opCount = count.pop();
         if (opCount > max) {
-          addIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").", (double) opCount - max);
+          reportIssue(tree, "Reduce the number of conditional operators (" + opCount + ") used in the expression (maximum allowed " + max + ").",
+            Collections.<JavaFileScannerContext.Location>emptyList(), opCount - max);
         }
         count.push(0);
       }
