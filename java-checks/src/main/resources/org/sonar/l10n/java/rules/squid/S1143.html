@@ -1,6 +1,7 @@
-<p>Returning from a <code>finally</code> block suppresses the propagation of any unhandled <code>Throwable</code> which was thrown in the <code>try</code> or <code>catch</code> block.</p>
-<h2>Noncompliant Code Example</h2>
+<p><code>return</code>ing, <code>break</code>ing, <code>throw</code>ing, and so on from a <code>finally</code> block suppresses the propagation of any unhandled <code>Throwable</code> which was thrown in the <code>try</code> or <code>catch</code> block.</p>
+<p>This rule raises an issue when a jump statement (<code>break</code>, <code>continue</code>, <code>return</code>, <code>throw</code>, and <code>goto</code>) would force control flow to leave a <code>finally</code> block. </p>
 
+<h2>Noncompliant Code Example</h2>
 <pre>
 public static void main(String[] args) {
   try {
@@ -15,6 +16,13 @@ public static void doSomethingWhichThrowsException() {
   try {
     throw new RuntimeException();
   } finally {
+    for (int i = 0; i &lt; 10; i ++) {
+      //...
+      if (q == i) {
+        break; // ignored
+      }
+    }
+
     /* ... */
     return;      // Noncompliant - prevents the RuntimeException from being propagated
   }
@@ -36,12 +44,21 @@ public static void doSomethingWhichThrowsException() {
   try {
     throw new RuntimeException();
   } finally {
+    for (int i = 0; i &lt; 10; i ++) {
+      //...
+      if (q == i) {
+        break; // ignored
+      }
+    }
+
     /* ... */
   }
 }
 </pre>
-<h2>See</h2>
 
+<h2>See</h2>
 <ul>
-  <li><a href="http://cwe.mitre.org/data/definitions/584.html">MITRE, CWE-584</a> - Return Inside Finally Block</li>
-</ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/584.html">MITRE, CWE-584</a> - Return Inside Finally Block
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/mIEbAQ">CERT, ERR04-J.</a> - Do not complete abruptly from a finally block
+</li></ul>
+
