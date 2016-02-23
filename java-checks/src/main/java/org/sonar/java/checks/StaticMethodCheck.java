@@ -19,6 +19,12 @@
  */
 package org.sonar.java.checks;
 
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Objects;
+
+import javax.annotation.CheckForNull;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -31,15 +37,12 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
-
-import java.util.Deque;
-import java.util.LinkedList;
 
 @Rule(
   key = "S2325",
@@ -61,23 +64,14 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   );
 
   private JavaFileScannerContext context;
-  private Deque<Symbol> outerClasses = new LinkedList<>();
-  private Deque<Boolean> atLeastOneReference = new LinkedList<>();
-  private Deque<Symbol> currentMethod = new LinkedList<>();
+  private Deque<MethodReference> methodReferences = new LinkedList<>();
 
   @Override
-  public void scanFile(final JavaFileScannerContext context) {
+  public void scanFile(JavaFileScannerContext context) {
     this.context = context;
     if (context.getSemanticModel() != null) {
       scan(context.getTree());
     }
-  }
-
-  @Override
-  public void visitClass(ClassTree tree) {
-    outerClasses.push(tree.symbol());
-    super.visitClass(tree);
-    outerClasses.pop();
   }
 
   @Override
@@ -86,15 +80,11 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       return;
     }
     Symbol.MethodSymbol symbol = tree.symbol();
-    if (outerClasses.size() > 1 && !outerClasses.peek().isStatic()) {
-      return;
-    }
-    atLeastOneReference.push(Boolean.FALSE);
-    currentMethod.push(symbol);
+    methodReferences.push(new MethodReference(symbol));
+    scan(tree.parameters());
     scan(tree.block());
-    Boolean oneReference = atLeastOneReference.pop();
-    currentMethod.pop();
-    if (symbol.isPrivate() && !symbol.isStatic() && !oneReference) {
+    MethodReference reference = methodReferences.pop();
+    if (symbol.isPrivate() && !symbol.isStatic() && !reference.hasNonStaticReference()) {
       context.reportIssue(this, tree.simpleName(), "Make \"" + symbol.name() + "\" a \"static\" method.");
     }
   }
@@ -106,28 +96,122 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
   @Override
   public void visitIdentifier(IdentifierTree tree) {
     super.visitIdentifier(tree);
+    if ("class".equals(tree.name()) || methodReferences.isEmpty()) {
+      return;
+    }
     Symbol symbol = tree.symbol();
-    if (!atLeastOneReference.isEmpty() && !atLeastOneReference.peek() && !currentMethod.peek().equals(symbol)  && referenceInstance(symbol)) {
-      atLeastOneReference.pop();
-      atLeastOneReference.push(Boolean.TRUE);
+    MethodReference currentMethod = methodReferences.peek();
+    if (symbol.isUnknown()) {
+      currentMethod.setNonStaticReference();
+      return;
+    }
+    for (MethodReference methodReference : methodReferences) {
+      methodReference.checkSymbol(symbol);
     }
   }
 
-  private boolean referenceInstance(Symbol symbol) {
-    return symbol.isUnknown() || (!symbol.isStatic() && fromInstance(symbol.owner()));
+  @Override
+  public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
+    if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
+      IdentifierTree identifier = (IdentifierTree) tree.expression();
+      Symbol owner = identifier.symbol().owner();
+      if (owner != null && owner.isMethodSymbol()) {
+        // No need to investigate selection on local symbols
+        return;
+      }
+    }
+    if (tree.expression().symbolType().isSubtypeOf("java.lang.Class")) {
+      // No need to investigate selection on a Class object
+      return;
+    }
+    super.visitMemberSelectExpression(tree);
   }
 
-  private boolean fromInstance(Symbol owner) {
-    for (Symbol outerClass : outerClasses) {
-      Type ownerType = owner.type();
-      if (ownerType != null) {
-        if (owner.equals(outerClass) || outerClass.type().isSubtypeOf(ownerType)) {
-          return true;
-        } else {
-          return fromInstance(ownerType.symbol().owner());
+  private static class MethodReference {
+
+    private final Symbol.MethodSymbol methodSymbol;
+    private final Symbol methodScopeOwner;
+    private boolean nonStaticReference = false;
+
+    MethodReference(Symbol.MethodSymbol symbol) {
+      methodSymbol = symbol;
+      methodScopeOwner = methodSymbol.owner();
+      if (methodScopeOwner != null && methodScopeOwner.isTypeSymbol()) {
+        nonStaticReference = !methodScopeOwner.isStatic() && !methodScopeOwner.owner().isPackageSymbol();
+      }
+    }
+
+    @CheckForNull
+    private static Symbol getPackage(Symbol symbol) {
+      Symbol owner = symbol.owner();
+      while (owner != null) {
+        if (owner.isPackageSymbol()) {
+          break;
+        }
+        owner = owner.owner();
+      }
+      return owner;
+    }
+
+    void setNonStaticReference() {
+      nonStaticReference = true;
+    }
+
+    boolean hasNonStaticReference() {
+      return nonStaticReference;
+    }
+
+    void checkSymbol(Symbol symbol) {
+      if (nonStaticReference || methodSymbol.equals(symbol) || symbol.isStatic()) {
+        return;
+      }
+      Symbol scopeOwner = symbol.owner();
+      if (isConstructor(symbol)) {
+        checkConstructor(scopeOwner);
+      } else if (scopeOwner != null) {
+        checkNonConstructor(scopeOwner);
+      }
+    }
+
+    private void checkConstructor(Symbol constructorClass) {
+      if (!constructorClass.isStatic()) {
+        Symbol methodPackage = getPackage(methodScopeOwner);
+        Symbol constructorPackage = getPackage(constructorClass);
+        if (Objects.equals(methodPackage, constructorPackage) && !constructorClass.owner().isPackageSymbol()) {
+          setNonStaticReference();
         }
       }
     }
-    return false;
+
+    private void checkNonConstructor(Symbol scopeOwner) {
+      if (scopeOwner.isMethodSymbol()) {
+        return;
+      }
+      if (hasLocalAccess(methodScopeOwner, scopeOwner)) {
+        setNonStaticReference();
+      }
+    }
+
+    private static boolean isConstructor(Symbol symbol) {
+      return "<init>".equals(symbol.name());
+    }
+
+    private static boolean hasLocalAccess(Symbol scope, Symbol symbol) {
+      if (scope.equals(symbol)) {
+        return true;
+      }
+      if (scope.isTypeSymbol() && symbol.isTypeSymbol()) {
+        // FIXME use erasure until Parameterized types are correctly supported!
+        Type scopeType = scope.type().erasure();
+        Type symbolType = symbol.type().erasure();
+        if (scopeType.isSubtypeOf(symbolType)) {
+          return true;
+        }
+        if (!scope.isStatic()) {
+          return hasLocalAccess(scope.owner(), symbol);
+        }
+      }
+      return false;
+    }
   }
 }

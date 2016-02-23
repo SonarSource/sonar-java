@@ -3,6 +3,8 @@ package foo;
 import java.io.IOException;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.Map;
+import java.util.HashMap;
 
 class Utilities {
   private static String magicWord = "magic";
@@ -10,6 +12,18 @@ class Utilities {
   private String otherWord = "other";
 
   public Utilities() {
+  }
+  
+  private void registerPrimitives(final boolean type) {
+    register(Boolean.TYPE, new Toto());
+  }
+  
+  private void register(final Class<?> clazz, final Object converter) {
+    otherWord = "";
+  }
+  
+  private void register( final Object converter, final Class<?> clazz) {
+    otherWord = "";
   }
 
   private String getMagicWord() { // Noncompliant [[sc=18;ec=30]] {{Make "getMagicWord" a "static" method.}}
@@ -29,6 +43,10 @@ class Utilities {
   private String getOtherWord() {
     return otherWord;
   }
+
+  private int getOtherWordLength() {
+    return otherWord.length();
+  }
   private String getOtherWord2() {
     return this.otherWord;
   }
@@ -41,6 +59,18 @@ class Utilities {
     // coverage
     otherWord = value;
   }
+  
+  private int useOnlyArguments(int a, int b) {  // Noncompliant
+    return a + b;
+  }
+  
+  private String methodOnlyOnArgument(Object obj) {  // Noncompliant
+    return (obj == null ? null : obj.toString());
+  }
+  
+  private String attributeOnArgument(Utilities obj) {  // Noncompliant
+    return obj.otherWord;
+  }
 
   class Inner {
     public Inner(String a, String b) {
@@ -48,6 +78,10 @@ class Utilities {
 
     public final String getMagicWord() {
       return "a";
+    }
+    
+    public String getOuterOtherWord() {
+      return Utilities.this.getOtherWord();
     }
   }
 
@@ -59,13 +93,38 @@ class Utilities {
 
   public void publicMethod() {
   }
-
-  private Utilities.Inner test() {
-    return new Utilities.Inner("", "");
+  
+  public int localAccessViasClass() {  // Compliant
+    return Integer.valueOf(otherWord);
   }
 
-  private Unknown unknown() {
+  private Utilities.Inner createInner() { // Compliant because there is a reference to an inner, non-static class
+    return new Utilities.Inner("", "");
+  }
+  
+  private Utilities.Nested createNested() { // Noncompliant
+    return new Utilities.Nested();
+  }
+
+  private Unknown unknown() { // Compliant because we should not make any decision on an unknown class
     return new Unknown("", "");
+  }
+
+  private Map newMap() { // Noncompliant
+    return new HashMap();
+  }
+  
+  private static final int BOOLEAN_TYPE = 1;
+  
+  private void writeAnyClass(final Class<?> clazz) { // Noncompliant
+    int primitiveType = 0;
+    if (Boolean.TYPE.equals(clazz)) {
+        primitiveType = BOOLEAN_TYPE;
+    }
+  }
+  
+  private <T> int sizeOfMap(Map<T> map) { // Noncompliant
+    return map.size();
   }
 
 }
@@ -90,6 +149,10 @@ class SerializableExclusions implements Serializable {
   private void recursive() { // Noncompliant
     recursive();
   }
+  
+  private void delegateOther() {  // Compliant since other() is not static (although it should...)
+    other();
+  }
 }
 
 static class FooBar {
@@ -99,4 +162,32 @@ static class FooBar {
   private void plop() { // Noncompliant enum is static and enum constants are static
     Object o = MyEnum.FOO;
   }
+}
+
+static class FooBarQix {
+  private int instanceVariable;
+  
+  public void instanceMethod() {}
+
+  private void foo() { // Compliant: foo cannot be static because it references a non-static method
+    new Plop(){
+      void plop1(){
+        instanceMethod();
+      }
+    };
+  }
+
+  private void init() { // Compliant: foo cannot be static because it references a non-static field
+    new Plop(){
+      void plop1(){
+        instanceVariable = 0;
+      }
+    };
+  }
+}
+
+class Plop {
+  Plop(){}
+  void plop1(){}
+
 }
