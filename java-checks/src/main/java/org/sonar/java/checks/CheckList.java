@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.checks.naming.BadAbstractClassNameCheck;
 import org.sonar.java.checks.naming.BadClassNameCheck;
 import org.sonar.java.checks.naming.BadConstantNameCheck;
@@ -418,6 +419,7 @@ public final class CheckList {
       .add(InappropriateRegexpCheck.class)
       .add(CallOuterPrivateMethodCheck.class)
       .add(InterruptedExceptionCheck.class)
+      .add(RawByteBitwiseOperationsCheck.class)
       .build();
   }
 
