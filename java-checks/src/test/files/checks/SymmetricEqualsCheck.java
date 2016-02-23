@@ -55,6 +55,17 @@ public class Fruit3 extends Food {
   }
 }
 
+public class BaseClass {
+
+  @Override
+  public final boolean equals(Object obj) {
+      if (this == obj) return true;
+      if (obj == null) return false;
+      if (!(obj instanceof BaseClass)) return false; // Compliant; equals is final
+      return true;
+  }
+}
+
 public interface I {
   public abstract boolean equals(Object anObject);
 }

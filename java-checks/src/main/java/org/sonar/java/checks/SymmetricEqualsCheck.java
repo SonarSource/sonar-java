@@ -58,17 +58,19 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
     if (hasSemantic()) {
       MethodTreeImpl methodTree = (MethodTreeImpl) tree;
       if (methodTree.isEqualsMethod() && methodTree.block() != null) {
-        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol().owner()));
+        methodTree.block().accept(new SymmetryBrokePatterns(methodTree.symbol()));
       }
     }
   }
 
   private class SymmetryBrokePatterns extends BaseTreeVisitor {
 
+    private final Symbol.MethodSymbol methodSymbol;
     private final Symbol owner;
 
-    public SymmetryBrokePatterns(Symbol owner) {
-      this.owner = owner;
+    public SymmetryBrokePatterns(Symbol.MethodSymbol methodSymbol) {
+      this.methodSymbol = methodSymbol;
+      this.owner = methodSymbol.owner();
     }
 
     private boolean isOwnerFinal() {
@@ -78,7 +80,7 @@ public class SymmetricEqualsCheck extends SubscriptionBaseVisitor {
     @Override
     public void visitInstanceOf(InstanceOfTree tree) {
       if (tree.type().symbolType().equals(owner.type())) {
-        if (!isOwnerFinal()) {
+        if (!isOwnerFinal() && !methodSymbol.isFinal()) {
           reportIssue(tree, "Compare to \"this.getClass()\" instead.");
         }
       } else {

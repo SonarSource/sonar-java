@@ -69,15 +69,9 @@
 459,
 636,
 ],
-'com.google.guava:guava:src/com/google/common/eventbus/Subscriber.java':[
-122,
-],
 'com.google.guava:guava:src/com/google/common/hash/Funnels.java':[
 110,
 193,
-],
-'com.google.guava:guava:src/com/google/common/hash/HashCode.java':[
-390,
 ],
 'com.google.guava:guava:src/com/google/common/primitives/Booleans.java':[
 442,
@@ -108,9 +102,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/reflect/Element.java':[
 154,
-],
-'com.google.guava:guava:src/com/google/common/reflect/TypeParameter.java':[
-57,
 ],
 'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
 780,
