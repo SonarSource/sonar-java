@@ -21,10 +21,12 @@ package org.sonar.java.se.symbolicvalues;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+
+import org.sonar.java.se.ExplodedGraphWalker;
+import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
-import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.TypedConstraint;
 
 import javax.annotation.CheckForNull;
@@ -226,6 +228,13 @@ public class SymbolicValue {
     public BooleanConstraint shouldNotInverse() {
       return BooleanConstraint.TRUE;
     }
+
+    protected static void addStates(List<ProgramState> states, List<ProgramState> newStates) {
+      if (states.size() > ExplodedGraphWalker.MAX_NESTED_BOOLEAN_STATES || newStates.size() > ExplodedGraphWalker.MAX_NESTED_BOOLEAN_STATES) {
+        throw new ExplodedGraphWalker.TooManyNestedBooleanStatesException();
+      }
+      states.addAll(newStates);
+    }
   }
 
   public static class AndSymbolicValue extends BooleanExpressionSymbolicValue {
@@ -240,13 +249,13 @@ public class SymbolicValue {
       if (booleanConstraint.isFalse()) {
         List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
         for (ProgramState ps : falseFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+          addStates(states, rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+          addStates(states, rightOp.setConstraint(ps, BooleanConstraint.FALSE));
         }
       }
       List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
       for (ProgramState ps : trueFirstOp) {
-        states.addAll(rightOp.setConstraint(ps, booleanConstraint));
+        addStates(states, rightOp.setConstraint(ps, booleanConstraint));
       }
       return states;
     }
@@ -269,13 +278,13 @@ public class SymbolicValue {
       if (booleanConstraint.isTrue()) {
         List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
         for (ProgramState ps : trueFirstOp) {
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.TRUE));
-          states.addAll(rightOp.setConstraint(ps, BooleanConstraint.FALSE));
+          addStates(states, rightOp.setConstraint(ps, BooleanConstraint.TRUE));
+          addStates(states, rightOp.setConstraint(ps, BooleanConstraint.FALSE));
         }
       }
       List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
       for (ProgramState ps : falseFirstOp) {
-        states.addAll(rightOp.setConstraint(ps, booleanConstraint));
+        addStates(states, rightOp.setConstraint(ps, booleanConstraint));
       }
       return states;
     }
@@ -297,11 +306,11 @@ public class SymbolicValue {
       List<ProgramState> states = new ArrayList<>();
       List<ProgramState> trueFirstOp = leftOp.setConstraint(programState, BooleanConstraint.TRUE);
       for (ProgramState ps : trueFirstOp) {
-        states.addAll(rightOp.setConstraint(ps, booleanConstraint.inverse()));
+        addStates(states, rightOp.setConstraint(ps, booleanConstraint.inverse()));
       }
       List<ProgramState> falseFirstOp = leftOp.setConstraint(programState, BooleanConstraint.FALSE);
       for (ProgramState ps : falseFirstOp) {
-        states.addAll(rightOp.setConstraint(ps, booleanConstraint));
+        addStates(states, rightOp.setConstraint(ps, booleanConstraint));
       }
       return states;
     }

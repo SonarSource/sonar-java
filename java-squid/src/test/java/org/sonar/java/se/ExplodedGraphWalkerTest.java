@@ -20,6 +20,7 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Multimap;
+
 import org.junit.Test;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
@@ -95,7 +96,22 @@ public class ExplodedGraphWalkerTest {
           tree.accept(new ExplodedGraphWalker(context));
           fail("Too many states were processed !");
         } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
-          assertThat(exception.getMessage()).endsWith("while enqueuing program states.");
+          assertThat(exception.getMessage()).startsWith("reached limit of 10000 steps for method");
+        }
+      }
+    });
+  }
+
+  @Test
+  public void test_maximum_number_nested_states() throws Exception {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxNestedStates.java", new SymbolicExecutionVisitor() {
+      @Override
+      public void visitNode(Tree tree) {
+        try {
+          tree.accept(new ExplodedGraphWalker(context));
+          fail("Too many states were processed !");
+        } catch (ExplodedGraphWalker.MaximumStepsReachedException exception) {
+          assertThat(exception.getMessage()).startsWith("reached maximum number of 10000 branched states");
         }
       }
     });

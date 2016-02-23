@@ -26,6 +26,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -81,6 +82,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
    * Arbitrary number to limit symbolic execution.
    */
   private static final int MAX_STEPS = 10000;
+  public static final int MAX_NESTED_BOOLEAN_STATES = 10000;
   private static final Logger LOG = LoggerFactory.getLogger(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
@@ -112,6 +114,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     public MaximumStepsReachedException(String s) {
       super(s);
     }
+
+    public MaximumStepsReachedException(String s, TooManyNestedBooleanStatesException e) {
+      super(s, e);
+    }
+  }
+
+  public static class TooManyNestedBooleanStatesException extends RuntimeException {
   }
 
   public ExplodedGraphWalker(JavaFileScannerContext context) {
@@ -163,20 +172,25 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
         LOG.debug("End of potential path reached!");
         continue;
       }
-      if (programPosition.i < programPosition.block.elements().size()) {
-        // process block element
-        visit(programPosition.block.elements().get(programPosition.i), programPosition.block.terminator());
-      } else if (programPosition.block.terminator() == null) {
-        // process block exit, which is unconditional jump such as goto-statement or return-statement
-        handleBlockExit(programPosition);
-      } else if (programPosition.i == programPosition.block.elements().size()) {
-        // process block exist, which is conditional jump such as if-statement
-        checkerDispatcher.executeCheckPostStatement(programPosition.block.terminator());
-      } else {
-        // process branch
-        // process block exist, which is conditional jump such as if-statement
-        checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator());
-        handleBlockExit(programPosition);
+      try {
+        if (programPosition.i < programPosition.block.elements().size()) {
+          // process block element
+          visit(programPosition.block.elements().get(programPosition.i), programPosition.block.terminator());
+        } else if (programPosition.block.terminator() == null) {
+          // process block exit, which is unconditional jump such as goto-statement or return-statement
+          handleBlockExit(programPosition);
+        } else if (programPosition.i == programPosition.block.elements().size()) {
+          // process block exist, which is conditional jump such as if-statement
+          checkerDispatcher.executeCheckPostStatement(programPosition.block.terminator());
+        } else {
+          // process branch
+          // process block exist, which is conditional jump such as if-statement
+          checkerDispatcher.executeCheckPreStatement(programPosition.block.terminator());
+          handleBlockExit(programPosition);
+        }
+      } catch (ExplodedGraphWalker.TooManyNestedBooleanStatesException e) {
+        throw new MaximumStepsReachedException(
+          "reached maximum number of " + MAX_NESTED_BOOLEAN_STATES + " branched states for method " + tree.simpleName().name() + " in class " + tree.symbol().owner().name(), e);
       }
     }
 
@@ -609,7 +623,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   public void enqueue(ExplodedGraph.ProgramPoint programPoint, ProgramState programState, boolean exitPath) {
-    checkMaxStepsWhileEnqueuing();
     int nbOfExecution = programState.numberOfTimeVisited(programPoint);
     if (nbOfExecution > MAX_EXEC_PROGRAM_POINT) {
       debugPrint(programState);
@@ -623,13 +636,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     cachedNode.exitPath = exitPath;
     workList.addFirst(cachedNode);
-  }
-
-  private void checkMaxStepsWhileEnqueuing() {
-    if (steps + workList.size() + 1 > MAX_STEPS) {
-      throw new MaximumStepsReachedException("reached limit of " + MAX_STEPS +
-        " steps for method " + methodTree.simpleName().name() + " in class " + methodTree.symbol().owner().name() +" while enqueuing program states.");
-    }
   }
 
   private void checkExplodedGraphTooBig(ProgramState programState) {
