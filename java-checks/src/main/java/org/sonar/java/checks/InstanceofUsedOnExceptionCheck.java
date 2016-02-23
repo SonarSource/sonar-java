@@ -41,7 +41,7 @@ import java.util.Set;
   key = "S1193",
   name = "Exception types should not be tested using \"instanceof\" in catch blocks",
   priority = Priority.MAJOR,
-  tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
+  tags = {Tag.ERROR_HANDLING})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
