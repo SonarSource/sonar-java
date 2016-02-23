@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -104,12 +105,14 @@ public class CatchExceptionCheck extends SubscriptionBaseVisitor {
         return;
       }
       Symbol symbol = tree.symbol();
-      if (symbol.isMethodSymbol()) {
-        for (Type type : ((Symbol.MethodSymbol) symbol).thrownTypes()) {
-          if (isJavaLangException(type)) {
-            containsExplicitThrowsException = true;
-            return;
-          }
+      if (symbol.isUnknown()) {
+        containsExplicitThrowsException = true;
+        return;
+      }
+      for (Type type : ((Symbol.MethodSymbol) symbol).thrownTypes()) {
+        if (isJavaLangException(type)) {
+          containsExplicitThrowsException = true;
+          return;
         }
       }
       super.visitMethodInvocation(tree);
