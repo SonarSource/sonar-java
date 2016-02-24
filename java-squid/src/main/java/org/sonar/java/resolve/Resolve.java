@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +96,13 @@ public class Resolve {
         newSubstitution.add(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
       }
       return parametrizedTypeCache.getParametrizedTypeType(ptt.rawType.getSymbol(), newSubstitution);
+    }
+    if (type instanceof JavaType.WildCardType) {
+      JavaType.WildCardType wildCardType = (JavaType.WildCardType) type;
+      substitutedType = substitution.substitutedType(wildCardType.bound);
+      if (substitutedType != null) {
+        return parametrizedTypeCache.getWildcardType(substitutedType, wildCardType.boundType);
+      }
     }
     return type;
   }
@@ -417,7 +425,7 @@ public class Resolve {
     // look in site members
     for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
       if (symbol.kind == JavaSymbol.MTH) {
-        JavaSymbol best = selectBest(env, callSite.symbol, argTypes, symbol, bestSoFar.symbol, autoboxing);
+        JavaSymbol best = selectBest(env, callSite, argTypes, symbol, bestSoFar.symbol, autoboxing);
         if(best == symbol) {
           bestSoFar = Resolution.resolution(best);
           bestSoFar.type = resolveTypeSubstitution(((JavaType.MethodJavaType) best.type).resultType, site);
@@ -430,7 +438,7 @@ public class Resolve {
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
       method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, superclass), site);
-      JavaSymbol best = selectBest(env, callSite.symbol, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
+      JavaSymbol best = selectBest(env, callSite, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
       }
@@ -438,7 +446,7 @@ public class Resolve {
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
       method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, interfaceType), site);
-      JavaSymbol best = selectBest(env, callSite.symbol, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
+      JavaSymbol best = selectBest(env, callSite, argTypes, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
       }
@@ -466,19 +474,21 @@ public class Resolve {
    * @param candidate    candidate
    * @param bestSoFar previously found best match
    */
-  private JavaSymbol selectBest(Env env, JavaSymbol.TypeJavaSymbol site, List<JavaType> argTypes, JavaSymbol candidate, JavaSymbol bestSoFar, boolean autoboxing) {
+  private JavaSymbol selectBest(Env env, JavaType site, List<JavaType> argTypes, JavaSymbol candidate, JavaSymbol bestSoFar, boolean autoboxing) {
+    JavaSymbol.TypeJavaSymbol siteSymbol = site.symbol;
     // TODO get rid of null check
-    if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, site) || candidate.type == null) {
+    if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, siteSymbol) || candidate.type == null) {
       return bestSoFar;
     }
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) candidate;
     boolean isVarArgs = methodJavaSymbol.isVarArgs();
     boolean usesTypeParameter = usesTypeParameter(methodJavaSymbol);
-    if (!isArgumentsAcceptable(argTypes, ((JavaType.MethodJavaType) candidate.type).argTypes, isVarArgs, autoboxing, usesTypeParameter)) {
+    List<JavaType> formals = handleTypeSubstitutionInFormalParameters(((JavaType.MethodJavaType) candidate.type).argTypes, site);
+    if (!isArgumentsAcceptable(argTypes, formals, isVarArgs, autoboxing, usesTypeParameter)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
-    if (!isAccessible(env, site, candidate)) {
+    if (!isAccessible(env, siteSymbol, candidate)) {
       return new AccessErrorJavaSymbol(candidate, Symbols.unknownType);
     }
     JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar);
@@ -487,6 +497,19 @@ public class Resolve {
       mostSpecific = bestSoFar;
     }
     return mostSpecific;
+  }
+
+  private List<JavaType> handleTypeSubstitutionInFormalParameters(List<JavaType> formalParameters, JavaType site) {
+    if (!formalParameters.isEmpty() && site instanceof JavaType.ParametrizedTypeJavaType) {
+      List<JavaType> substitutedTypes = new LinkedList<>();
+      TypeSubstitution typeSubstitution = ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution;
+      for (JavaType formalParameter : formalParameters) {
+        JavaType substitutedFormalParameter = substituteTypeParameter(formalParameter, typeSubstitution);
+        substitutedTypes.add(substitutedFormalParameter);
+      }
+      return substitutedTypes;
+    }
+    return formalParameters;
   }
 
   private static boolean usesTypeParameter(JavaSymbol.MethodJavaSymbol methodSymbol) {
@@ -530,19 +553,18 @@ public class Resolve {
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing, boolean isParameterized) {
     // FIXME SONARJAVA-1514 Inference of types for method using parameter types is not handled
-    // FIXME SONARJAVA-1535 type substitution should work with wildcards
-    if (!isParameterized && usesWildcardWithoutTypeSubstitution(formal)) {
+    if (!isParameterized && usesWildcard(formal)) {
       return types.isSubtype(arg, formal);
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
-  private static boolean usesWildcardWithoutTypeSubstitution(JavaType type) {
+  private static boolean usesWildcard(JavaType type) {
     if (type instanceof JavaType.ParametrizedTypeJavaType) {
       JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
       for (JavaType substitution : parametrizedType.typeSubstitution.substitutedTypes()) {
-        if (substitution.isTagged(JavaType.WILDCARD) && !((JavaType.WildCardType) substitution).bound.isTagged(JavaType.TYPEVAR)) {
+        if (substitution.isTagged(JavaType.WILDCARD)) {
           return true;
         }
       }
