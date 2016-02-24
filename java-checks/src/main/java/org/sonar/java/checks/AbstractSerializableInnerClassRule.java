@@ -20,6 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
+import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -46,17 +48,18 @@ public abstract class AbstractSerializableInnerClassRule extends SubscriptionBas
   private void visitClassTree(ClassTree classTree) {
     Symbol.TypeSymbol symbol = classTree.symbol();
     if (isInnerClass(symbol) && directlyImplementsSerializable(symbol)) {
+      Tree reportTree = ExpressionsHelper.reportOnClassTree(classTree);
       Symbol owner = symbol.owner();
       if (owner.isTypeSymbol()) {
         Symbol.TypeSymbol ownerType = (Symbol.TypeSymbol) owner;
         if (isMatchingOuterClass(ownerType.type()) && !symbol.isStatic()) {
-          reportIssue(classTree.simpleName(), "Make this inner class static");
+          reportIssue(reportTree, "Make this inner class static");
         }
       } else if (owner.isMethodSymbol()) {
         Symbol.TypeSymbol methodOwner = (Symbol.TypeSymbol) owner.owner();
         if (isMatchingOuterClass(methodOwner.type()) && !owner.isStatic()) {
           String methodName = owner.name();
-          reportIssue(classTree.simpleName(), "Make \"" + methodName + "\" static");
+          reportIssue(reportTree, "Make \"" + methodName + "\" static");
         }
       }
     }

@@ -11,6 +11,8 @@ class A implements Serializable {
 
 class B {
   
+  Serializable Anon = new Serializable() {}; // Noncompliant [[sc=27;ec=39]] {{Make this inner class static}}
+
   class B1 {}
   class B2 implements Cloneable {}
   class B3 implements Serializable {} // Noncompliant [[sc=9;ec=11]]{{Make this inner class static}}
