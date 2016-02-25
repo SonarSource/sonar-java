@@ -66,6 +66,7 @@ import org.sonar.java.checks.xml.struts.FormNameDuplicationCheck;
 import org.sonar.java.checks.xml.web.SecurityConstraintsInWebXmlCheck;
 import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -356,6 +357,7 @@ public final class CheckList {
       .add(NullDereferenceCheck.class)
       .add(ConditionAlwaysTrueOrFalseCheck.class)
       .add(UnclosedResourcesCheck.class)
+      .add(CustomUnclosedResourcesCheck.class)
       .add(StaticFieldUpateCheck.class)
       .add(IgnoredStreamReturnValueCheck.class)
       .add(DateUtilsTruncateCheck.class)

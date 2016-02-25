@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collections;
@@ -121,7 +122,7 @@ public class VisitorsBridge {
     JavaFileScannerContext javaFileScannerContext = createScannerContext(tree, semanticModel, analyseAccessors, sonarComponents, fileParsed);
     // Symbolic execution checks
     if (symbolicExecutionEnabled && isNotJavaLangOrSerializable(PackageUtils.packageName(tree.packageDeclaration(), "/"))) {
-      new SymbolicExecutionVisitor().scanFile(javaFileScannerContext);
+      new SymbolicExecutionVisitor(executableScanners).scanFile(javaFileScannerContext);
     }
     for (JavaFileScanner scanner : executableScanners) {
       scanner.scanFile(javaFileScannerContext);

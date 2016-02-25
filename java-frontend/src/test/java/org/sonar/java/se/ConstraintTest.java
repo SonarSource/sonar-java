@@ -25,6 +25,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.constraint.TypedConstraint;
+import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 
@@ -72,6 +73,22 @@ public class ConstraintTest {
   @Test
   public void typed_constraint_should_not_be_null() {
     assertThat(new TypedConstraint().isNull()).isFalse();
+  }
+
+  @Test
+  public void testConstraintWithStatus() {
+    ProgramState state = ProgramState.EMPTY_STATE;
+    final SymbolicValue sv3 = new SymbolicValue(3);
+    SymbolicValue sv4 = new SymbolicValue(4) {
+      public SymbolicValue wrappedValue() {
+        return sv3;
+      }
+    };
+    ObjectConstraint constraint = new ObjectConstraint(null, TestStatus.OPENED);
+    assertThat(state.getConstraintWithStatus(sv4, constraint)).isNull();
+    state = state.addConstraint(sv3, constraint);
+    assertThat(state.getConstraintWithStatus(sv4, TestStatus.OPENED)).isEqualTo(constraint);
+    assertThat(state.getConstraintWithStatus(sv4, TestStatus.CLOSED)).isNull();
   }
 
 }

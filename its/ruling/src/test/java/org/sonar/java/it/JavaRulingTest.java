@@ -81,6 +81,7 @@ public class JavaRulingTest {
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"");
     instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";");
     instantiateTemplateRule("S3417", "doNotUseJunitBefore4", "dependencyName=\"junit:junit\";version=\"*-3.9.9\"");
+    instantiateTemplateRule("S3546", "InstancesOfNewControllerClosedWithDone", "constructors=\"org.sonar.api.server.ws.WebService.NewController\";closingMethods=\"org.sonar.api.server.ws.WebService.NewController#done\"");
   }
 
   @Test

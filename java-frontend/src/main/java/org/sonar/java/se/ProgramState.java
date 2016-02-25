@@ -24,9 +24,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.sonar.java.collections.AVLTree;
 import org.sonar.java.collections.PMap;
+import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.Constraint;
 import org.sonar.java.se.constraint.ConstraintManager;
-import org.sonar.java.se.constraint.BooleanConstraint;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
@@ -83,7 +83,7 @@ public class ProgramState {
   private final PMap<SymbolicValue, Constraint> constraints;
 
   private ProgramState(PMap<Symbol, SymbolicValue> values, PMap<SymbolicValue, Integer> references,
-                       PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
+    PMap<SymbolicValue, Constraint> constraints, PMap<ExplodedGraph.ProgramPoint, Integer> visitedPoints,
     Deque<SymbolicValue> stack) {
     this.values = values;
     this.references = references;
@@ -106,7 +106,7 @@ public class ProgramState {
     values = ps.values;
     references = ps.references;
     constraints = newConstraints;
-    constraintSize = ps.constraintSize +1;
+    constraintSize = ps.constraintSize + 1;
     visitedPoints = ps.visitedPoints;
     this.stack = ps.stack;
   }
@@ -400,5 +400,16 @@ public class ProgramState {
       }
     });
     return knownRelations;
+  }
+
+  public ObjectConstraint getConstraintWithStatus(SymbolicValue value, Object aState) {
+    final Object constraint = getConstraint(value.wrappedValue());
+    if (constraint instanceof ObjectConstraint) {
+      ObjectConstraint oConstraint = (ObjectConstraint) constraint;
+      if (oConstraint.hasStatus(aState)) {
+        return oConstraint;
+      }
+    }
+    return null;
   }
 }

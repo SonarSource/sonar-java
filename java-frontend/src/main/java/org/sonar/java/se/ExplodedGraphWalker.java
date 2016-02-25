@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
@@ -40,6 +39,7 @@ import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -71,6 +71,7 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -123,7 +124,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   public static class TooManyNestedBooleanStatesException extends RuntimeException {
   }
 
-  public ExplodedGraphWalker(JavaFileScannerContext context) {
+  @VisibleForTesting
+  ExplodedGraphWalker(JavaFileScannerContext context) {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
     this.checkerDispatcher = new CheckerDispatcher(this, context,
       Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(), new LocksNotUnlockedCheck()));
@@ -133,6 +135,11 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   ExplodedGraphWalker(JavaFileScannerContext context, boolean cleanup) {
     this(context);
     this.cleanup = cleanup;
+  }
+
+  private ExplodedGraphWalker(JavaFileScannerContext context, ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks) {
+    this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
+    this.checkerDispatcher = new CheckerDispatcher(this, context, seChecks);
   }
 
   @Override
@@ -283,8 +290,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
     // unconditional jumps, for-statement, switch-statement, synchronized:
-    if(node.exitPath) {
-      if(block.exitBlock() != null) {
+    if (node.exitPath) {
+      if (block.exitBlock() != null) {
         enqueue(new ExplodedGraph.ProgramPoint(block.exitBlock(), 0), programState, true);
       } else {
         for (CFG.Block successor : block.successors()) {
@@ -300,12 +307,13 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       }
     }
   }
+
   /**
    * Required for accurate reporting.
    * If condition is && or || expression, then return its right operand.
    */
   private static Tree cleanupCondition(Tree condition) {
-    if(condition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
+    if (condition.is(Tree.Kind.CONDITIONAL_AND, Tree.Kind.CONDITIONAL_OR)) {
       return ((BinaryExpressionTree) condition).rightOperand();
     }
     return condition;
@@ -545,10 +553,10 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     SymbolicValue unarySymbolicValue = constraintManager.createSymbolicValue(tree);
     unarySymbolicValue.computedFrom(unstackUnary.values);
     if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT, Tree.Kind.PREFIX_DECREMENT, Tree.Kind.PREFIX_INCREMENT)
-        && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
+      && ((UnaryExpressionTree) tree).expression().is(Tree.Kind.IDENTIFIER)) {
       programState = programState.put(((IdentifierTree) ((UnaryExpressionTree) tree).expression()).symbol(), unarySymbolicValue);
     }
-    if(tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
+    if (tree.is(Tree.Kind.POSTFIX_DECREMENT, Tree.Kind.POSTFIX_INCREMENT)) {
       programState = programState.stackValue(unstackUnary.values.get(0));
     } else {
       programState = programState.stackValue(unarySymbolicValue);
@@ -646,4 +654,47 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
+  /**
+   * This class ensures that the SE checks are placed in the correct order for the ExplodedGraphWalker
+   * In addition, checks that are needed for a correct ExplodedGraphWalker processing are provided in all cases.
+   *
+   */
+  public static class ExplodedGraphWalkerFactory {
+
+    private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
+    private final List<SECheck> seChecks = new ArrayList<>();
+
+    public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {
+      List<SECheck> seChecks = new ArrayList<>();
+      for (JavaFileScanner scanner : scanners) {
+        if (scanner instanceof SECheck) {
+          seChecks.add((SECheck) scanner);
+        }
+      }
+      alwaysTrueOrFalseChecker = removeOrDefault(seChecks, new ConditionAlwaysTrueOrFalseCheck());
+      // This order of the mandatory SE checks is required by the ExplodedGraphWalker
+      this.seChecks.add(alwaysTrueOrFalseChecker);
+      this.seChecks.add(removeOrDefault(seChecks, new NullDereferenceCheck()));
+      this.seChecks.add(removeOrDefault(seChecks, new UnclosedResourcesCheck()));
+      this.seChecks.add(removeOrDefault(seChecks, new LocksNotUnlockedCheck()));
+      this.seChecks.addAll(seChecks);
+    }
+
+    public ExplodedGraphWalker createWalker(JavaFileScannerContext context) {
+      return new ExplodedGraphWalker(context, alwaysTrueOrFalseChecker, seChecks);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends SECheck> T removeOrDefault(List<SECheck> checks, T defaultInstance) {
+      Iterator<SECheck> iterator = checks.iterator();
+      while (iterator.hasNext()) {
+        SECheck check = iterator.next();
+        if (check.getClass().equals(defaultInstance.getClass())) {
+          iterator.remove();
+          return (T) check;
+        }
+      }
+      return defaultInstance;
+    }
+  }
 }

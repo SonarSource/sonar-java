@@ -46,6 +46,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,7 @@ public class UnclosedResourcesCheck extends SECheck {
       } else if (syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
         name = ((MethodInvocationTree) syntaxNode).symbolType().name();
       }
-      if(name != null) {
+      if (name != null) {
         context.reportIssue(syntaxNode, this, "Close this \"" + name + "\".");
       }
     }
@@ -230,7 +231,7 @@ public class UnclosedResourcesCheck extends SECheck {
           } else {
             currentVal = programState.peekValue();
           }
-          programState = closeResource(programState, currentVal);
+          closeResource(currentVal);
         }
       }
     }
@@ -241,7 +242,7 @@ public class UnclosedResourcesCheck extends SECheck {
       if (variable.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
         List<SymbolicValue> stackedValues = programState.peekValues(2);
         SymbolicValue value = stackedValues.get(1);
-        programState = closeResource(programState, value);
+        closeResource(value);
       }
     }
 
@@ -253,9 +254,9 @@ public class UnclosedResourcesCheck extends SECheck {
           final ExpressionTree targetExpression = ((MemberSelectExpressionTree) methodSelect).expression();
           if (targetExpression.is(Tree.Kind.IDENTIFIER)) {
             final IdentifierTree identifier = (IdentifierTree) targetExpression;
-            programState = closeResource(programState, programState.getValue(identifier.symbol()));
+            closeResource(programState.getValue(identifier.symbol()));
           } else {
-            programState = closeResource(programState, programState.peekValue());
+            closeResource(programState.peekValue());
           }
         }
       } else if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isOpeningResultSet(syntaxNode.symbol())) {
@@ -298,29 +299,17 @@ public class UnclosedResourcesCheck extends SECheck {
       final List<SymbolicValue> values = programState.peekValues(arguments.size() + stackOffset);
       final List<SymbolicValue> argumentValues = values.subList(stackOffset, values.size());
       for (SymbolicValue target : argumentValues) {
-        programState = closeResource(programState, target);
+        closeResource(target);
       }
     }
 
-    private static ProgramState closeResource(ProgramState programState, @Nullable final SymbolicValue target) {
+    private void closeResource(@Nullable final SymbolicValue target) {
       if (target != null) {
-        ObjectConstraint oConstraint = openedConstraint(programState, target);
+        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
         if (oConstraint != null) {
-          return programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(Status.CLOSED));
+          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(Status.CLOSED));
         }
       }
-      return programState;
-    }
-
-    private static ObjectConstraint openedConstraint(ProgramState programState, SymbolicValue value) {
-      final Object constraint = programState.getConstraint(value.wrappedValue());
-      if (constraint instanceof ObjectConstraint) {
-        ObjectConstraint oConstraint = (ObjectConstraint) constraint;
-        if (oConstraint.hasStatus(Status.OPENED)) {
-          return oConstraint;
-        }
-      }
-      return null;
     }
 
     private static boolean isClosingResource(Symbol symbol) {

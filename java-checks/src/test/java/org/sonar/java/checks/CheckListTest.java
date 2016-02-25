@@ -47,6 +47,7 @@ public class CheckListTest {
       "NullDereferenceCheck",
     "ConditionAlwaysTrueOrFalseCheck",
     "UnclosedResourcesCheck",
+    "CustomUnclosedResourcesCheck",
     "LocksNotUnlockedCheck"
   );
 

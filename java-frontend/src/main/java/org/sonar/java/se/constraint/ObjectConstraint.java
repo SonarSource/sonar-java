@@ -48,7 +48,7 @@ public class ObjectConstraint implements Constraint {
     return nullConstraint(null);
   }
 
-  public static ObjectConstraint nullConstraint(@Nullable  Tree syntaxNode) {
+  public static ObjectConstraint nullConstraint(@Nullable Tree syntaxNode) {
     return new ObjectConstraint(true, false, syntaxNode, null);
   }
 

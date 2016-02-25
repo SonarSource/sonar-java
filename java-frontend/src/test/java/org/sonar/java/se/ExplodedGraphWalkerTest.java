@@ -20,10 +20,10 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Multimap;
-
 import org.junit.Test;
 import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
+import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -48,15 +49,15 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void test_cleanup_state() {
     final int[] steps = new int[2];
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor(Collections.<JavaFileScanner>emptyList()) {
       @Override
       public void visitNode(Tree tree) {
-          ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(context, false);
-          tree.accept(explodedGraphWalker);
+        ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(context, false);
+        tree.accept(explodedGraphWalker);
         steps[0] += explodedGraphWalker.steps;
       }
     });
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCleanupState.java", new SymbolicExecutionVisitor(Collections.<JavaFileScanner>emptyList()) {
       @Override
       public void visitNode(Tree tree) {
         ExplodedGraphWalker explodedGraphWalker = new ExplodedGraphWalker(context);
@@ -75,7 +76,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void test_limited_loop_execution() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/SeEngineTestCase.java", new SymbolicExecutionVisitor(Collections.<JavaFileScanner>emptyList()) {
       @Override
       public void visitNode(Tree tree) {
         try {
@@ -89,7 +90,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void test_maximum_steps_reached() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxSteps.java", new SymbolicExecutionVisitor() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxSteps.java", new SymbolicExecutionVisitor(Collections.<JavaFileScanner>emptyList()) {
       @Override
       public void visitNode(Tree tree) {
         try {
@@ -104,7 +105,7 @@ public class ExplodedGraphWalkerTest {
 
   @Test
   public void test_maximum_number_nested_states() throws Exception {
-    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxNestedStates.java", new SymbolicExecutionVisitor() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/MaxNestedStates.java", new SymbolicExecutionVisitor(Collections.<JavaFileScanner>emptyList()) {
       @Override
       public void visitNode(Tree tree) {
         try {
@@ -124,6 +125,7 @@ public class ExplodedGraphWalkerTest {
       reportIssuesFor(context, new NullDereferenceCheck());
       reportIssuesFor(context, new ConditionAlwaysTrueOrFalseCheck());
       reportIssuesFor(context, new UnclosedResourcesCheck());
+      reportIssuesFor(context, new CustomUnclosedResourcesCheck());
       reportIssuesFor(context, new LocksNotUnlockedCheck());
     }
 
