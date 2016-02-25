@@ -69,7 +69,7 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
   @Override
   public void visitMethod(MethodTree tree) {
     super.visitMethod(tree);
-    if (Boolean.TRUE.equals(((MethodTreeImpl) tree).isOverriding())) {
+    if (Boolean.TRUE.equals(((MethodTreeImpl) tree).isOverriding()) || usesSpringRequestMappingAnnotation(tree)) {
       return;
     }
     int max;
@@ -85,6 +85,10 @@ public class TooManyParametersCheck extends BaseTreeVisitor implements JavaFileS
     if (size > max) {
       context.reportIssue(this, tree.simpleName(), partialMessage + " has " + size + " parameters, which is greater than " + max + " authorized.");
     }
+  }
+
+  private static boolean usesSpringRequestMappingAnnotation(MethodTree method) {
+    return method.symbol().metadata().isAnnotatedWith("org.springframework.web.bind.annotation.RequestMapping");
   }
 
 }
