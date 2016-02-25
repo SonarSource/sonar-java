@@ -47,4 +47,13 @@ public class ArchitectureCheckTest {
     check.toClasses = "java.**.Pattern";
     JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ArchitectureOk.java", check);
   }
+
+  @Test
+  public void testSkipFolder() {
+    ArchitectureCheck check = new ArchitectureCheck();
+    check.fromClasses = "org.*.util.**";
+    check.toClasses = "java.lang.String";
+    JavaCheckVerifier.verify("src/test/files/checks/ArchitectureSkipSingleFolder.java", check);
+    JavaCheckVerifier.verifyNoIssue("src/test/files/checks/ArchitectureSkipSingleFolderOK.java", check);
+  }
 }
