@@ -1302,4 +1302,87 @@ public class CFGTest {
         ).successors(0));
     cfgChecker.check(cfg);
   }
+
+  @Test
+  public void try_statement_with_CFG_blocks() {
+    CFG cfg = buildCFG(
+      "  private void f(boolean action) {\n" +
+        "    try {\n" +
+        "    if (action) {" +
+        "       performAction();" +
+        "    }" +
+        "    doSomething();" +
+        "} catch(Exception e) { foo();} bar(); }");
+    CFGChecker cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(3, 5),
+      block(
+        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(2, 4),
+      block(
+        element(Tree.Kind.IDENTIFIER, "performAction"),
+        element(Kind.METHOD_INVOCATION)).successors(2),
+      block(
+        element(Tree.Kind.IDENTIFIER, "foo"),
+        element(Kind.METHOD_INVOCATION)).successors(1),
+      block(
+        element(Tree.Kind.IDENTIFIER, "doSomething"),
+        element(Kind.METHOD_INVOCATION)).successors(1, 3),
+      block(
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+    cfg = buildCFG(
+      "  private void f(boolean action) {\n" +
+        "    try {\n" +
+        "    doSomething();" +
+        "    if (action) {" +
+        "       performAction();" +
+        "    }" +
+        "} catch(Exception e) { foo();} bar(); }");
+    cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(3, 5),
+      block(
+        element(Tree.Kind.IDENTIFIER, "doSomething"),
+        element(Kind.METHOD_INVOCATION),
+        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(2, 4),
+      block(
+        element(Tree.Kind.IDENTIFIER, "performAction"),
+        element(Kind.METHOD_INVOCATION)).successors(2),
+      block(
+        element(Tree.Kind.IDENTIFIER, "foo"),
+        element(Kind.METHOD_INVOCATION)).successors(1),
+      new BlockChecker(1, 3),
+      block(
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+    cfg = buildCFG(
+      "  private void f(boolean action) {\n" +
+        "    try {\n" +
+        "    if (action) {" +
+        "       performAction();" +
+        "    }" +
+        "    doSomething();" +
+        "} finally { foo();} bar(); }");
+    cfgChecker = checker(
+      block(
+        element(Tree.Kind.TRY_STATEMENT)).successors(2, 5),
+      block(
+        element(Tree.Kind.IDENTIFIER, "action")).terminator(Kind.IF_STATEMENT).successors(3, 4),
+      block(
+        element(Tree.Kind.IDENTIFIER, "performAction"),
+        element(Kind.METHOD_INVOCATION)).successors(3),
+      block(
+        element(Tree.Kind.IDENTIFIER, "doSomething"),
+        element(Kind.METHOD_INVOCATION)).successors(2),
+      block(
+        element(Tree.Kind.IDENTIFIER, "foo"),
+        element(Kind.METHOD_INVOCATION)).successors(0, 1),
+      block(
+        element(Tree.Kind.IDENTIFIER, "bar"),
+        element(Kind.METHOD_INVOCATION)).successors(0));
+    cfgChecker.check(cfg);
+  }
+
 }

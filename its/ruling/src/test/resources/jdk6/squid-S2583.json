@@ -30,10 +30,6 @@
 'jdk6:java/math/BigDecimal.java':[
 3660,
 ],
-'jdk6:java/net/ServerSocket.java':[
-470,
-475,
-],
 'jdk6:java/nio/ByteBuffer.java':[
 1104,
 1131,

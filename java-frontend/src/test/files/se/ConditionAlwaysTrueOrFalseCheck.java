@@ -1567,3 +1567,41 @@ class SuperClass {
     }
   }
 }
+
+public class TryCatchCFG {
+
+  private Object monitor;
+  private boolean shutdown;
+
+  private void doSomething() {
+  }
+
+  void fun(boolean abort) {
+    while (!abort) {
+      try {
+        synchronized (monitor) {
+          long delay = 1000L;
+          while (!shutdown && delay > 0) {
+            long now = System.currentTimeMillis();
+            monitor.wait(delay);
+            delay -= (System.currentTimeMillis() - now);
+          }
+          if (shutdown) {
+            abort = true;
+          }
+          doSomething(); // may throw an exception
+        }
+
+      } catch (RuntimeException e) {
+        if (abort) {
+          System.out.println("Abort");
+        } else {
+          System.out.println("Retry");
+        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }
+}
+

@@ -64,6 +64,7 @@ import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashSet;
@@ -253,6 +254,10 @@ public class CFG {
       for (Block block : blocks) {
         block.id = id;
         id += 1;
+      }
+      inactiveBlocks.removeAll(blocks);
+      if (!inactiveBlocks.isEmpty()) {
+        prune();
       }
     }
   }
@@ -765,26 +770,28 @@ public class CFG {
     }
     currentBlock = beforeFinally;
     build(tryStatementTree.block());
-    if(currentBlock.exitBlock != null && currentBlock.exitBlock.isFinallyBlock) {
-      for (Block catchBlock : catches) {
-        currentBlock.exitBlock.addSuccessor(catchBlock);
-      }
-    } else {
-      for (Block catchBlock : catches) {
-        currentBlock.addSuccessor(catchBlock);
-      }
-    }
+    linkToCatchBlocks(beforeFinally, catches);
     build((List<? extends Tree>) tryStatementTree.resources());
     currentBlock = createBlock(currentBlock);
     currentBlock.elements.add(tryStatementTree);
     if (finallyBlockTree != null) {
       exitBlocks.pop();
-      if(catches.isEmpty()) {
+      if (catches.isEmpty()) {
         currentBlock.addExitSuccessor(finallyOrEndBlock);
       }
     }
     for (Block catchBlock : catches) {
       currentBlock.addSuccessor(catchBlock);
+    }
+  }
+
+  protected void linkToCatchBlocks(Block block, List<Block> catches) {
+    Block blockForSuccessor = block;
+    if (block.exitBlock != null && block.exitBlock.isFinallyBlock) {
+      blockForSuccessor = block.exitBlock;
+    }
+    for (Block catchBlock : catches) {
+      blockForSuccessor.addSuccessor(catchBlock);
     }
   }
 

@@ -52,6 +52,7 @@
 361,
 ],
 'jdk6:java/net/SocksSocketImpl.java':[
+398,
 714,
 ],
 'jdk6:java/net/URI.java':[
@@ -63,10 +64,6 @@
 ],
 'jdk6:java/security/CodeSource.java':[
 531,
-],
-'jdk6:java/security/Signature.java':[
-976,
-1015,
 ],
 'jdk6:java/security/UnresolvedPermission.java':[
 558,
