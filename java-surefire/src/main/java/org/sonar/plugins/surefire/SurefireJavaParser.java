@@ -85,7 +85,7 @@ public class SurefireJavaParser implements BatchExtension {
     return unitTestResultFiles;
   }
 
-  private File[] findXMLFilesStartingWith(File dir, final String fileNameStart) {
+  private static File[] findXMLFilesStartingWith(File dir, final String fileNameStart) {
     return dir.listFiles(new FilenameFilter() {
       @Override
       public boolean accept(File dir, String name) {

@@ -133,7 +133,7 @@ public class NewClassTreeImpl extends AbstractTypedTree implements NewClassTree 
     return getConstructorIdentifier(identifier());
   }
 
-  private IdentifierTree getConstructorIdentifier(Tree constructorSelect) {
+  private static IdentifierTree getConstructorIdentifier(Tree constructorSelect) {
     IdentifierTree constructorIdentifier;
     if (constructorSelect.is(Tree.Kind.MEMBER_SELECT)) {
       MemberSelectExpressionTree mset = (MemberSelectExpressionTree) constructorSelect;

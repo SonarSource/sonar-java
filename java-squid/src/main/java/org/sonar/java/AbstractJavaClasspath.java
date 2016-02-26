@@ -120,7 +120,7 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
     return getMatchingFiles(filePattern, dir, libraryProperty);
   }
 
-  private List<File> getMatchingFiles(String pattern, File dir, boolean libraryProperty) {
+  private static List<File> getMatchingFiles(String pattern, File dir, boolean libraryProperty) {
     WilcardPatternFileFilter wilcardPatternFileFilter = new WilcardPatternFileFilter(dir, pattern);
     FileFilter fileFilter = wilcardPatternFileFilter;
     List<File> files = Lists.newArrayList();

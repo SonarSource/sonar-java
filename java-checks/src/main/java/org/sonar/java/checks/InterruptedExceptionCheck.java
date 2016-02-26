@@ -98,7 +98,7 @@ public class InterruptedExceptionCheck extends SubscriptionBaseVisitor {
     withinInterruptingFinally.removeFirst();
   }
 
-  private boolean isFinallyInterrupting(@Nullable BlockTree blockTree) {
+  private static boolean isFinallyInterrupting(@Nullable BlockTree blockTree) {
     if(blockTree == null ){
       return false;
     }

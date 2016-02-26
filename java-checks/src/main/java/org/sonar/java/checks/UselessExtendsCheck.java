@@ -99,7 +99,7 @@ public class UselessExtendsCheck extends SubscriptionBaseVisitor implements Java
     }
   }
 
-  private String extractInterfaceName(TypeTree interfaceTree) {
+  private static String extractInterfaceName(TypeTree interfaceTree) {
     if (interfaceTree.is(Tree.Kind.IDENTIFIER)) {
       return ((IdentifierTree) interfaceTree).name();
     } else if (interfaceTree.is(Tree.Kind.MEMBER_SELECT)) {

@@ -98,7 +98,7 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     return methodCounter == 1;
   }
 
-  private boolean useThisIdentifier(ClassTree body) {
+  private static boolean useThisIdentifier(ClassTree body) {
     ThisIdentifierVisitor visitor = new ThisIdentifierVisitor();
     body.accept(visitor);
     return visitor.usesThisIdentifier;

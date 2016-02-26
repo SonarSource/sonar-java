@@ -488,7 +488,7 @@ public class TreeFactory {
     return partial.completeWithTypeParameters(typeParameters);
   }
 
-  private MethodTreeImpl newMethodOrConstructor(
+  private static MethodTreeImpl newMethodOrConstructor(
     Optional<TypeTree> type, InternalSyntaxToken identifierToken, FormalParametersListTreeImpl parameters,
     Optional<List<Tuple<Optional<List<AnnotationTreeImpl>>, Tuple<InternalSyntaxToken, InternalSyntaxToken>>>> annotatedDimensions,
     Optional<Tuple<InternalSyntaxToken, QualifiedIdentifierListTreeImpl>> throwsClause,
@@ -1160,7 +1160,7 @@ public class TreeFactory {
     return result;
   }
 
-  private OperatorAndOperand newOperatorAndOperand(InternalSyntaxToken operator, ExpressionTree operand) {
+  private static OperatorAndOperand newOperatorAndOperand(InternalSyntaxToken operator, ExpressionTree operand) {
     return new OperatorAndOperand(operator, operand);
   }
 
@@ -1719,7 +1719,7 @@ public class TreeFactory {
     }
   }
 
-  private <T, U> Tuple<T, U> newTuple(T first, U second) {
+  private static <T, U> Tuple<T, U> newTuple(T first, U second) {
     return new Tuple<>(first, second);
   }
 
