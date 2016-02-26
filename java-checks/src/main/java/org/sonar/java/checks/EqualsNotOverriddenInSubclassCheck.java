@@ -20,12 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -49,6 +51,12 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor {
 
+  private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
+    .add("lombok.EqualsAndHashCode")
+    .add("lombok.Data")
+    .add("lombok.Value")
+    .build();
+
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Kind.CLASS);
@@ -57,9 +65,23 @@ public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (hasSemantic() && hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree)) {
+    if (hasSemantic() && shouldImplementEquals(classTree)) {
       reportIssue(classTree.simpleName(), "Override this superclass' \"equals\" method.");
     }
+  }
+
+  private static boolean shouldImplementEquals(ClassTree classTree) {
+    return !generatesEquals(classTree) && hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree);
+  }
+
+  private static boolean generatesEquals(ClassTree classTree) {
+    SymbolMetadata metadata = classTree.symbol().metadata();
+    for (String annotation : EXCLUDED_ANNOTATIONS_TYPE) {
+      if (metadata.isAnnotatedWith(annotation)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean hasAtLeastOneField(ClassTree classTree) {
