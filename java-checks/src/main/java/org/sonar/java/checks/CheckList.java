@@ -420,6 +420,7 @@ public final class CheckList {
       .add(CallOuterPrivateMethodCheck.class)
       .add(InterruptedExceptionCheck.class)
       .add(RawByteBitwiseOperationsCheck.class)
+      .add(EnumSetCheck.class)
       .build();
   }
 
