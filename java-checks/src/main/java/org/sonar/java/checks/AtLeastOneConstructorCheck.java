@@ -53,6 +53,9 @@ public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     ClassTree node = (ClassTree) tree;
     IdentifierTree simpleName = node.simpleName();
     if (simpleName != null && !ModifiersUtils.hasModifier(((ClassTree) tree).modifiers(), Modifier.ABSTRACT)) {

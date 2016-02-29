@@ -1,0 +1,14 @@
+{
+'jdk_1_6:java/awt/Graphics.java':[
+1146,
+],
+'jdk_1_6:java/awt/PrintJob.java':[
+59,
+],
+'jdk_1_6:java/awt/image/ColorModel.java':[
+1610,
+],
+'jdk_1_6:java/awt/image/IndexColorModel.java':[
+1498,
+],
+}
