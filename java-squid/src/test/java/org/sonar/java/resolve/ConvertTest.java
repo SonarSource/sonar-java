@@ -66,6 +66,9 @@ public class ConvertTest {
     assertThat(Convert.enclosingClassName("MyClass$InnerClass")).isEqualTo("MyClass");
     assertThat(Convert.enclosingClassName("MyClass$$InnerClass$class")).isEqualTo("MyClass$");
     assertThat(Convert.enclosingClassName("MyClass$$InnerClass$")).isEqualTo("MyClass$");
+    assertThat(Convert.enclosingClassName(
+      "MyClass$$tilde$eq$less$greater$bang$hash$percent$up$amp$bar$times$div$plus$minus$colon$bslash$qmark$at"))
+      .isEqualTo("MyClass");
   }
 
   @Test
@@ -76,7 +79,9 @@ public class ConvertTest {
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$InnerClass$class")).isEqualTo("InnerClass$class");
     assertThat(Convert.innerClassName(enclosingClassName, "MyClass$$InnerClass$")).isEqualTo("$InnerClass$");
     assertThat(Convert.innerClassName("Rules$ListResponse$Rule", "Rules$ListResponse$Rule$Builder")).isEqualTo("Builder");
-
+    assertThat(Convert.innerClassName(enclosingClassName,
+      "MyClass$$tilde$eq$less$greater$bang$hash$percent$up$amp$bar$times$div$plus$minus$colon$bslash$qmark$at"))
+      .isEqualTo("$tilde$eq$less$greater$bang$hash$percent$up$amp$bar$times$div$plus$minus$colon$bslash$qmark$at");
   }
 
   @Test
