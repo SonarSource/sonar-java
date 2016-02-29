@@ -51,6 +51,9 @@ public class EnumSetCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     VariableTree variableTree = (VariableTree) tree;
     Type variableType = variableTree.symbol().type();
     ExpressionTree initializer = variableTree.initializer();

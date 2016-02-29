@@ -55,6 +55,9 @@ public class VariableDeclarationScopeCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     BlockTree block = (BlockTree) tree;
     List<StatementTree> body = block.body();
     int bodySize = body.size();

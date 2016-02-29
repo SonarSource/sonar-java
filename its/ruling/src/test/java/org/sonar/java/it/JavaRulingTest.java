@@ -125,6 +125,26 @@ public class JavaRulingTest {
     executeBuildWithCommonProperties(build, projectName);
   }
 
+  /**
+   * Relevant to test lack of semantic, because we don't construct semantic for files in java/lang package.
+   */
+  @Test
+  public void jdk_1_6_source() throws Exception {
+    String projectName = "jdk_1_6";
+    prepareProject(projectName, projectName);
+    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/sslr/oracle-jdk-1.6.0.31").getFile())
+      .setProjectKey(projectName)
+      .setProjectName(projectName)
+      .setProjectVersion("0.1.0-SNAPSHOT")
+      .setSourceEncoding("UTF-8")
+      .setSourceDirs(".")
+      .setProperty("sonar.java.source", "1.5")
+      .setProperty("sonar.inclusions", "java/**/*.java");
+    executeBuildWithCommonProperties(build, projectName);
+
+
+  }
+
   private static void test_project(String projectKey, String projectName) throws IOException {
     test_project(projectKey, null, projectName);
   }
