@@ -65,7 +65,7 @@ public class SurefireJavaParser implements BatchExtension {
     }
   }
 
-  private File[] getReports(File dir, boolean reportDirSetByUser) {
+  private static File[] getReports(File dir, boolean reportDirSetByUser) {
     if (dir == null) {
       return new File[0];
     } else if (!dir.isDirectory()) {
