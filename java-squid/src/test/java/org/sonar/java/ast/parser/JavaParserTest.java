@@ -24,8 +24,10 @@ import org.junit.Test;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 
 public class JavaParserTest {
 
@@ -37,5 +39,19 @@ public class JavaParserTest {
     assertThat(method.parent()).isSameAs(classTree);
     assertThat(classTree.parent()).isSameAs(cut);
     assertThat(cut.parent()).isNull();
+  }
+
+  @Test
+  public void receiver_type_should_be_parsed() throws Exception {
+    try {
+      String code = "class Main { class Inner { Inner(Main Main.this) {}};}";
+      CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(code);
+      Tree constructor = ((ClassTree) ((ClassTree) cut.types().get(0)).members().get(0)).members().get(0);
+      assertThat(constructor).isInstanceOf(MethodTree.class);
+      assertThat(((MethodTree) constructor).parameters().get(0).simpleName().name()).isEqualTo("this");
+    } catch (Exception ex) {
+      fail("Receiver type of inner classes should be parsed correctly", ex);
+    }
+
   }
 }

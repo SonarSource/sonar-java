@@ -36,6 +36,7 @@ public class FormalParameterDeclsRestTest {
       .matches("this")
       .matches("foo , type bar")
       .matches("this , type bar")
+      .matches("Main.this , type bar")
       .matches("foo, type this") // invalid syntax but supported by our grammar
       .matches("... foo")
       .matches("@Foo ... foo");

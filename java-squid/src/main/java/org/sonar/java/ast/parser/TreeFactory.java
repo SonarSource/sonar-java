@@ -1120,7 +1120,10 @@ public class TreeFactory {
     return new InstanceOfTreeImpl(instanceofToken, type);
   }
 
-  public VariableTreeImpl receiverParameterId(InternalSyntaxToken thisToken) {
+  public VariableTreeImpl receiverParameterId(Optional<List<Tuple<InternalSyntaxToken, InternalSyntaxToken>>> optional, InternalSyntaxToken thisToken) {
+    if(optional.isPresent()) {
+      // FIXME qualified id of outer class for receiver type.
+    }
     return new VariableTreeImpl(new IdentifierTreeImpl(thisToken), null);
   }
 
@@ -1752,6 +1755,10 @@ public class TreeFactory {
   }
 
   public <T, U> Tuple<T, U> newTuple8(T first, U second) {
+    return newTuple(first, second);
+  }
+
+  public <T, U> Tuple<T, U> newTuple9(T first, U second) {
     return newTuple(first, second);
   }
 
