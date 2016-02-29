@@ -421,6 +421,7 @@ public final class CheckList {
       .add(InterruptedExceptionCheck.class)
       .add(RawByteBitwiseOperationsCheck.class)
       .add(EnumSetCheck.class)
+      .add(StringPrimitiveConstructorCheck.class)
       .build();
   }
 
