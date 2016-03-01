@@ -78,7 +78,7 @@ public class Resolve {
   }
 
   public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
-    if(definition instanceof JavaType.ParametrizedTypeJavaType) {
+    if(isParametrizedType(definition)) {
       return substituteTypeParameter(type, ((JavaType.ParametrizedTypeJavaType) definition).typeSubstitution);
     }
     return type;
@@ -89,7 +89,7 @@ public class Resolve {
     if (substitutedType != null) {
       return substitutedType;
     }
-    if(type instanceof JavaType.ParametrizedTypeJavaType) {
+    if(isParametrizedType(type)) {
       JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) type;
       TypeSubstitution newSubstitution = new TypeSubstitution();
       for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry : ptt.typeSubstitution.substitutionEntries()) {
@@ -500,7 +500,7 @@ public class Resolve {
   }
 
   private List<JavaType> handleTypeSubstitutionInFormalParameters(List<JavaType> formalParameters, JavaType site) {
-    if (!formalParameters.isEmpty() && site instanceof JavaType.ParametrizedTypeJavaType) {
+    if (!formalParameters.isEmpty() && isParametrizedType(site)) {
       List<JavaType> substitutedTypes = new LinkedList<>();
       TypeSubstitution typeSubstitution = ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution;
       for (JavaType formalParameter : formalParameters) {
@@ -552,24 +552,20 @@ public class Resolve {
   }
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing, boolean isParameterized) {
-    // FIXME SONARJAVA-1514 Inference of types for method using parameter types is not handled
-    if (!isParameterized && usesWildcard(formal)) {
+    // FIXME SONARJAVA-1298 type parameters should be handled in formal arguments prior to the call to this method
+    if (!isParameterized && (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal))) {
       return types.isSubtype(arg, formal);
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
-  private static boolean usesWildcard(JavaType type) {
-    if (type instanceof JavaType.ParametrizedTypeJavaType) {
-      JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
-      for (JavaType substitution : parametrizedType.typeSubstitution.substitutedTypes()) {
-        if (substitution.isTagged(JavaType.WILDCARD)) {
-          return true;
-        }
-      }
-    }
-    return false;
+  private static boolean isWilcardType(JavaType type) {
+    return type.isTagged(JavaType.WILDCARD);
+  }
+
+  private static boolean isParametrizedType(JavaType type) {
+    return type instanceof JavaType.ParametrizedTypeJavaType;
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {

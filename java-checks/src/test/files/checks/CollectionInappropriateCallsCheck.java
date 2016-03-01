@@ -142,10 +142,37 @@ class F<T> {
 }
 
 class G {
-  public <E> void union(final Set<? extends E> set1, Object o) {
-    boolean trux = set1.contains(o); // Noncompliant
+  <E> void foo(Set<? extends E> set, Object o) {
+    set.contains(o); // Compliant
   }
-  public <E> void union2(final Set<? extends E> set1, E o) {
-    boolean trux = set1.contains(o);
+  <E> void foo2(Set<? extends E> set, E o) {
+    set.contains(o);
+  }
+}
+
+class H<K, V> {
+  static class Entry<K, V> {
+  }
+
+  void foo(Entry<?, ?> entry, Set<Entry<K, V>> entries) {
+    entries.remove(entry); // Compliant
+  }
+
+  void bar(Set<Entry<K, V>> entries, Entry<?, ?> entry) {
+    entries.remove(qix(entry)); // Compliant
+  }
+
+  static <K, V> Entry<K, V> qix(Entry<? extends K, ? extends V> entry) {
+    return null;
+  }
+}
+
+class J {
+  void foo(Set<J> s) {
+    gul(new J()).remove(new G()); // compliant
+  }
+
+  static <K> set<K> gul(K k) {
+    return null;
   }
 }

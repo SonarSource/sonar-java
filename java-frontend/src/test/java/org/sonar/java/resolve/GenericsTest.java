@@ -44,7 +44,7 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class WildcardsTest {
+public class GenericsTest {
   @Test
   public void test_wildcard_instances() {
     assertTypesAreTheSame("A<?>", "A<?>");
@@ -234,11 +234,49 @@ public class WildcardsTest {
     SubtypeAssert.assertThat(wcSuperAnimalAType).isSubtypeOfObject();
     SubtypeAssert.assertThat(wcSuperAnimalAType).isSubtypeOf(objectType);
     SubtypeAssert.assertThat(objectType).isNotSubtypeOf(wcSuperAnimalAType);
+  }
 
-    Type wildCardObjectType = ((ParametrizedTypeJavaType) wcExtendsObjectAType).typeSubstitution.substitutedTypes().get(0);
-    SubtypeAssert.assertThat(objectType).isSubtypeOf(wildCardObjectType);
-    SubtypeAssert.assertThat(wildCardObjectType).isNotSubtypeOf(objectType);
-    SubtypeAssert.assertThat(wildCardObjectType).isNotSubtypeOfObject();
+  @Test
+  public void test_type_hierarchy_directly_between_wildcards_and_other_types() {
+    List<Type> elementTypes = declaredTypesUsingHierarchy(
+      "A<? extends Cat>",
+      "A<? super Cat>",
+      "A<?>",
+      "Object",
+      "Animal",
+      "Cat",
+      "Integer");
+    Type wcExtendsCatType = ((ParametrizedTypeJavaType) elementTypes.get(0)).typeSubstitution.substitutedTypes().get(0);
+    Type wcSuperCatType = ((ParametrizedTypeJavaType) elementTypes.get(1)).typeSubstitution.substitutedTypes().get(0);
+    Type wcUnboundedType = ((ParametrizedTypeJavaType) elementTypes.get(2)).typeSubstitution.substitutedTypes().get(0);
+    Type objectType = elementTypes.get(3);
+    Type animalType = elementTypes.get(4);
+    Type catType = elementTypes.get(5);
+    Type integerType = elementTypes.get(6);
+
+    SubtypeAssert.assertThat(wcExtendsCatType).isSubtypeOf(objectType);
+    SubtypeAssert.assertThat(wcExtendsCatType).isSubtypeOf(catType);
+    SubtypeAssert.assertThat(wcExtendsCatType).isSubtypeOf(animalType);
+    SubtypeAssert.assertThat(wcExtendsCatType).isSubtypeOf("java.lang.Object");
+    SubtypeAssert.assertThat(wcExtendsCatType).isSubtypeOf("org.foo.Cat");
+    SubtypeAssert.assertThat(wcExtendsCatType).isSubtypeOf("org.foo.Animal");
+
+    SubtypeAssert.assertThat(wcSuperCatType).isSubtypeOf(objectType);
+    SubtypeAssert.assertThat(wcSuperCatType).isNotSubtypeOf(catType);
+    SubtypeAssert.assertThat(wcSuperCatType).isNotSubtypeOf(animalType);
+    SubtypeAssert.assertThat(wcSuperCatType).isSubtypeOf("java.lang.Object");
+    SubtypeAssert.assertThat(wcSuperCatType).isNotSubtypeOf("org.foo.Cat");
+    SubtypeAssert.assertThat(wcSuperCatType).isNotSubtypeOf("org.foo.Animal");
+
+    SubtypeAssert.assertThat(wcUnboundedType).isSubtypeOf(objectType);
+    SubtypeAssert.assertThat(wcUnboundedType).isNotSubtypeOf(catType);
+    SubtypeAssert.assertThat(wcUnboundedType).isNotSubtypeOf(animalType);
+    SubtypeAssert.assertThat(wcUnboundedType).isSubtypeOf("java.lang.Object");
+    SubtypeAssert.assertThat(wcUnboundedType).isNotSubtypeOf("org.foo.Cat");
+    SubtypeAssert.assertThat(wcUnboundedType).isNotSubtypeOf("org.foo.Animal");
+
+    SubtypeAssert.assertThat(wcExtendsCatType).isNotSubtypeOf(integerType);
+    SubtypeAssert.assertThat(wcExtendsCatType).isNotSubtypeOf("java.lang.Integer");
   }
 
   @Test
@@ -363,9 +401,26 @@ public class WildcardsTest {
     JavaSymbol.MethodJavaSymbol gulGenerics = getMethodSymbol(aType, "gul", 0);
     JavaSymbol.MethodJavaSymbol gulObject = getMethodSymbol(aType, "gul", 1);
 
-    // FIXME SONARJAVA-1514 generics should be handled correctly
-    assertThat(gulGenerics.usages()).hasSize(3); // should be 1
-    assertThat(gulObject.usages()).hasSize(0); // should be 2
+    assertThat(gulGenerics.usages()).hasSize(1);
+    assertThat(gulObject.usages()).hasSize(2);
+  }
+
+  @Test
+  public void test_method_resolution() {
+    List<Type> elementTypes = declaredTypes(
+      "import java.util.Arrays;",
+      "import java.util.Collection;",
+      "class A {",
+      "  void foo() {",
+      "    bar(Arrays.asList(\"string\"));",
+      "  }",
+      "  void bar(Collection<String> c) {}",
+      "}");
+
+    JavaType aType = (JavaType) elementTypes.get(0);
+    JavaSymbol.MethodJavaSymbol bar = getMethodSymbol(aType, "bar", 0);
+    // FIXME SONARJAVA-1498 type substitution not handled in '<T> List<T> Arrays.asList(T ...) {}'
+    assertThat(bar.usages()).hasSize(0);
   }
 
   @Test
@@ -501,11 +556,12 @@ public class WildcardsTest {
     List<Type> elementTypes = declaredTypesUsingHierarchy(
       "B<Cat>",
       "A<Animal>");
-    Type bType = elementTypes.get(0);
-    Type aType = elementTypes.get(1);
+    SubtypeAssert.assertThat(elementTypes.get(0)).isNotSubtypeOf(elementTypes.get(1));
 
-    // FIXME SONARJAVA-1514
-    // SubtypeAssert.assertThat(bType).isSubtypeOf(aType);
+    elementTypes = declaredTypesUsingHierarchy(
+      "B<Cat>",
+      "A<Cat>");
+    SubtypeAssert.assertThat(elementTypes.get(0)).isSubtypeOf(elementTypes.get(1));
   }
 
   @Test
@@ -515,15 +571,19 @@ public class WildcardsTest {
       "class ObjectPredicate implements Predicate<Object> {}",
 
       "class Test<X> {",
-      "Predicate<X> myPredicate;",
-      "ObjectPredicate objectPredicate;",
+      "  Predicate<X> myPredicate;",
+      "  ObjectPredicate objectPredicate;",
+      "  Predicate<Object> oPredicate;",
       "}");
     Type xPredicateType = elementTypes.get(0);
     Type objectPredicateType = elementTypes.get(1);
+    Type oPredicateType = elementTypes.get(2);
+
+    SubtypeAssert.assertThat(objectPredicateType).isSubtypeOf(oPredicateType);
+    SubtypeAssert.assertThat(oPredicateType).isNotSubtypeOf(objectPredicateType);
 
     SubtypeAssert.assertThat(xPredicateType).isNotSubtypeOf(objectPredicateType);
-    // FIXME SONARJAVA-1514
-    SubtypeAssert.assertThat(objectPredicateType).isSubtypeOf(xPredicateType);
+    SubtypeAssert.assertThat(objectPredicateType).isNotSubtypeOf(xPredicateType);
   }
 
   static class SubtypeAssert extends GenericAssert<SubtypeAssert, Type> {
@@ -560,6 +620,16 @@ public class WildcardsTest {
       return this;
     }
 
+    SubtypeAssert isSubtypeOf(String fullyQualifiedName) {
+      Assertions.assertThat(actual.isSubtypeOf(fullyQualifiedName)).overridingErrorMessage(isSubtypeOfMsg(fullyQualifiedName)).isTrue();
+      return this;
+    }
+
+    SubtypeAssert isNotSubtypeOf(String fullyQualifiedName) {
+      Assertions.assertThat(actual.isSubtypeOf(fullyQualifiedName)).overridingErrorMessage(isNotSubtypeOfMsg(fullyQualifiedName)).isFalse();
+      return this;
+    }
+
     SubtypeAssert isSubtypeOf(Type expected) {
       Assertions.assertThat(actual.isSubtypeOf(expected)).overridingErrorMessage(isSubtypeOfMsg(expected)).isTrue();
       return this;
@@ -571,11 +641,19 @@ public class WildcardsTest {
     }
 
     private String isNotSubtypeOfMsg(Type type) {
-      return "'" + prettyPrint(actual) + "' should not be be a subtype of '" + prettyPrint(type) + "'";
+      return isNotSubtypeOfMsg(prettyPrint(type));
+    }
+
+    private String isNotSubtypeOfMsg(String type) {
+      return "'" + prettyPrint(actual) + "' should not be be a subtype of '" + type + "'";
     }
 
     private String isSubtypeOfMsg(Type type) {
-      return "'" + prettyPrint(actual) + "' should be a subtype of '" + prettyPrint(type) + "'";
+      return isSubtypeOfMsg(prettyPrint(type));
+    }
+
+    private String isSubtypeOfMsg(String type) {
+      return "'" + prettyPrint(actual) + "' should be a subtype of '" + type + "'";
     }
 
     private static String prettyPrint(Type actual) {
@@ -612,6 +690,7 @@ public class WildcardsTest {
    */
   private static List<Type> declaredTypesUsingHierarchy(String... types) {
     String[] linesBefore = new String[] {
+      "package org.foo;",
       "interface A<T> {}",
       "interface B<T> extends A<T> {}",
       "interface C<T> {}",

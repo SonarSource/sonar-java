@@ -4,6 +4,7 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java':[
 607,
+1135,
 ],
 'com.google.guava:guava:src/com/google/common/collect/Collections2.java':[
 680,
@@ -46,6 +47,7 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/StandardTable.java':[
 162,
+185,
 ],
 'com.google.guava:guava:src/com/google/common/collect/Synchronized.java':[
 1507,

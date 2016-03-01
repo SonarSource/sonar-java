@@ -120,7 +120,7 @@ class Extra {
 
   class A<K, V> {
     A(B b) {
-      foo(b.bar().qix()); // False negative (see SONARJAVA-1535), substitution of wildcard not handled - Noncompliant
+      foo(b.bar().qix()); // Noncompliant
     }
 
     void foo(Easy easy) {

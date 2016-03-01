@@ -66,10 +66,7 @@ public class Types {
           result = isSubtype(((JavaType.ArrayJavaType) t).elementType(), ((JavaType.ArrayJavaType) s).elementType());
           break;
         case JavaType.CLASS:
-          if(t.tag != s.tag) {
-            result = false;
-            break;
-          }
+        case JavaType.WILDCARD:
           result = t.isSubtypeOf(s);
           break;
         case JavaType.BOT:

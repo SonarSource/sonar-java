@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -28,18 +29,21 @@ import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -70,14 +74,28 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Override
   protected void onMethodInvocationFound(MethodInvocationTree tree) {
-    Type argumentType = tree.arguments().get(0).symbolType();
+    ExpressionTree firstArgument = tree.arguments().get(0);
+    Type argumentType = firstArgument.symbolType();
     Type collectionType = getMethodOwner(tree);
     // can be null when using raw types
     Type collectionParameterType = getTypeParameter(collectionType);
 
-    if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isArgumentCompatible(argumentType, collectionParameterType)) {
+    // FIXME remove this variable when SONARJAVA-1298 is fixed
+    boolean isCallToParametrizedMethod = isCallToParametrizedMethod(firstArgument);
+    if (!isCallToParametrizedMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+      isCallToParametrizedMethod = isCallToParametrizedMethod(((MemberSelectExpressionTree) tree.methodSelect()).expression());
+    }
+
+    if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isCallToParametrizedMethod && !isArgumentCompatible(argumentType, collectionParameterType)) {
       reportIssue(MethodsHelper.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
+  }
+
+  private static boolean isCallToParametrizedMethod(ExpressionTree expressionTree) {
+    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
+      return ((JavaSymbol.MethodJavaSymbol) ((MethodInvocationTree) expressionTree).symbol()).isParametrized();
+    }
+    return false;
   }
 
   private static Type getMethodOwner(MethodInvocationTree mit) {
@@ -89,8 +107,8 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Nullable
   private static Type getTypeParameter(Type collectionType) {
-    if (collectionType instanceof ParametrizedTypeJavaType) {
-      ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
+    if (collectionType instanceof JavaType.ParametrizedTypeJavaType) {
+      JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) collectionType;
       JavaType.TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
       if (first != null) {
         return parametrizedType.substitution(first);
@@ -100,12 +118,8 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
   }
 
   private static boolean isArgumentCompatible(Type argumentType, Type collectionParameterType) {
-    // FIXME SONARJAVA-1514 subtyping of type using generics is not handled correctly, but wildcards are covered
-    if (((JavaType) collectionParameterType).isTagged(JavaType.WILDCARD)) {
-      return argumentType.isSubtypeOf(collectionParameterType);
-    }
-    return isSubtypeOf(argumentType.erasure(), collectionParameterType.erasure())
-      || isSubtypeOf(collectionParameterType.erasure(), argumentType.erasure())
+    return isSubtypeOf(argumentType, collectionParameterType)
+      || isSubtypeOf(collectionParameterType, argumentType)
       || autoboxing(argumentType, collectionParameterType);
   }
 

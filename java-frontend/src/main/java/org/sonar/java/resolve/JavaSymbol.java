@@ -621,6 +621,10 @@ public class JavaSymbol implements Symbol {
     public MethodTree declaration() {
       return declaration;
     }
+
+    public boolean isParametrized() {
+      return !typeVariableTypes.isEmpty();
+    }
   }
 
   /**

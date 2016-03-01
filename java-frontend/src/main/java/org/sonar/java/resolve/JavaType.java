@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -241,7 +242,16 @@ public class JavaType implements Type {
       }
       if (superType.isClass()) {
         ClassJavaType superClassType = (ClassJavaType) superType;
-        return this.equals(superClassType) || this.equals(superClassType.erasure()) || superTypeContains(superClassType.fullyQualifiedName());
+        return this.equals(superClassType) || this.equals(superClassType.erasure()) || superTypeIsSubTypeOf(superClassType);
+      }
+      return false;
+    }
+
+    private boolean superTypeIsSubTypeOf(ClassJavaType superClassType) {
+      for (ClassJavaType classType : symbol.superTypes()) {
+        if (classType.isSubtypeOf(superClassType)) {
+          return true;
+        }
       }
       return false;
     }
@@ -454,7 +464,7 @@ public class JavaType implements Type {
 
     @Override
     public boolean isSubtypeOf(String fullyQualifiedName) {
-      return false;
+      return "java.lang.Object".equals(fullyQualifiedName) || (boundType == BoundType.EXTENDS && bound.isSubtypeOf(fullyQualifiedName));
     }
 
     @Override
@@ -471,7 +481,7 @@ public class JavaType implements Type {
             return boundType != BoundType.SUPER && bound.isSubtypeOf(superTypeBound);
         }
       }
-      return false;
+      return "java.lang.Object".equals(superType.fullyQualifiedName()) || (boundType == BoundType.EXTENDS && bound.isSubtypeOf(superType));
     }
 
     public boolean isSubtypeOfBound(JavaType type) {
