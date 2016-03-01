@@ -130,9 +130,9 @@ public class JavaRulingTest {
    */
   @Test
   public void jdk_1_6_source() throws Exception {
-    String projectName = "jdk_1_6";
+    String projectName = "jdk6";
     prepareProject(projectName, projectName);
-    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/sslr/oracle-jdk-1.6.0.31").getFile())
+    SonarScanner build = SonarScanner.create(FileLocation.of("../sources/jdk6").getFile())
       .setProjectKey(projectName)
       .setProjectName(projectName)
       .setProjectVersion("0.1.0-SNAPSHOT")

@@ -1,0 +1,11 @@
+{
+'jdk6:java/util/logging/FileHandler.java':[
+388,
+],
+'jdk6:java/util/logging/SocketHandler.java':[
+137,
+],
+'jdk6:java/util/zip/ZipFile.java':[
+212,
+],
+}
