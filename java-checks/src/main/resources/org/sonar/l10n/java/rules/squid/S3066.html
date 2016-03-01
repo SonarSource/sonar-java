@@ -1,0 +1,38 @@
+<p><code>enum</code>s are generally thought of as constant, but an <code>enum</code> with a <code>public</code> field or <code>public</code> setter is not only non-constant, but also vulnerable to malicious code. Ideally fields in an <code>enum</code> are <code>private</code> and set in the constructor, but if that's not possible, their visibility should be reduced as much as possible.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public enum Continent {
+
+  NORTH_AMERICA (23, 24709000),
+  // ...
+  EUROPE (50, 39310000);
+
+  public int countryCount;  // Noncompliant
+  private int landMass;
+
+  Continent(int countryCount, int landMass) { 
+    // ...
+  }
+
+  public void setLandMass(int landMass) {  // Noncompliant
+    this.landMass = landMass;
+  }
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public enum Continent {
+
+  NORTH_AMERICA (23, 24709000),
+  // ...
+  EUROPE (50, 39310000);
+
+  private int countryCount; 
+  private int landMass;
+
+  Continent(int countryCount, int landMass) { 
+    // ...
+  }
+</pre>
+

@@ -422,6 +422,7 @@ public final class CheckList {
       .add(RawByteBitwiseOperationsCheck.class)
       .add(EnumSetCheck.class)
       .add(StringPrimitiveConstructorCheck.class)
+      .add(EnumMutableFieldCheck.class)
       .build();
   }
 
