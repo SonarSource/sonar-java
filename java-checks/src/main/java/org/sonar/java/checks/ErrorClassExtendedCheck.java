@@ -32,16 +32,14 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 @Rule(
   key = "S1194",
   name = "\"java.lang.Error\" should not be extended",
-  priority = Priority.CRITICAL,
+  priority = Priority.MINOR,
   tags = {Tag.ERROR_HANDLING, Tag.SECURITY})
-@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("10min")
 public class ErrorClassExtendedCheck extends BaseTreeVisitor implements JavaFileScanner {
