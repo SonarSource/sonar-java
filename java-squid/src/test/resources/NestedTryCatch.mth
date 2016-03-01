@@ -1,0 +1,28 @@
+  public void nestedTryCatch(Object monitor, boolean shutdown) {
+    boolean abort = false;
+    while (!abort) {
+      try {
+        synchronized (monitor) {
+          long delay = 1000L;
+          while (!shutdown && delay > 0) {
+            long now = System.currentTimeMillis();
+            monitor.wait(delay);
+            delay -= (System.currentTimeMillis() - now);
+          }
+          if (shutdown) {
+            abort = true;
+          }
+          doSomething(); // may throw an exception
+        }
+
+      } catch (RuntimeException e) {
+        if (abort) { // <------------------------------------- S2583: Change this condition so that it does not always evaluate to "false"
+          System.out.println("Abort");
+        } else {
+          System.out.println("Retry");
+        }
+      } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+      }
+    }
+  }

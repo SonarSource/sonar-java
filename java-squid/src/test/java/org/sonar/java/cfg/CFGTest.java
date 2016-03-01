@@ -21,6 +21,7 @@ package org.sonar.java.cfg;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
+import org.junit.Assert;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.cfg.CFG.Block;
@@ -36,11 +37,18 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -343,6 +351,23 @@ public class CFGTest {
     final CompilationUnitTree cut = (CompilationUnitTree) parser.parse("class A { " + methodCode + " }");
     final MethodTree tree = ((MethodTree) ((ClassTree) cut.types().get(0)).members().get(0));
     return CFG.build(tree);
+  }
+
+  private static CFG buildCFG(final InputStream stream) {
+    StringBuilder buffer = new StringBuilder();
+    try (BufferedReader in = new BufferedReader(new InputStreamReader(stream))) {
+      String line = in.readLine();
+      while (line != null) {
+        if (buffer.length() > 0) {
+          buffer.append('\n');
+        }
+        buffer.append(line);
+        line = in.readLine();
+      }
+    } catch (IOException e) {
+      Assert.fail("Unable to read CFG resource");
+    }
+    return buildCFG(buffer.toString());
   }
 
   @Test
@@ -1301,5 +1326,50 @@ public class CFGTest {
             element(Kind.METHOD_INVOCATION)
         ).successors(0));
     cfgChecker.check(cfg);
+  }
+
+  @Test
+  public void nestedTryCatch() {
+    CFG cfg = buildCFG(getClass().getResourceAsStream("/NestedTryCatch.mth"));
+    checkCFGFlow(cfg);
+  }
+
+  private void checkCFGFlow(CFG cfg) {
+    Map<CFG.Block, List<Integer>> predecessors = new HashMap<>();
+    Map<CFG.Block, List<Integer>> inferredPredecessors = new HashMap<>();
+    for (CFG.Block block : cfg.blocks()) {
+      checkSuccessor(block.trueBlock(), block.successors());
+      checkSuccessor(block.falseBlock(), block.successors());
+      checkSuccessor(block.exitBlock(), block.successors());
+      predecessors.put(block, idList(block.predecessors()));
+      for (CFG.Block successor : block.successors()) {
+        List<Integer> list = inferredPredecessors.get(successor);
+        if (list == null) {
+          list = new ArrayList<>();
+          inferredPredecessors.put(successor, list);
+        }
+        list.add(Integer.valueOf(block.id()));
+      }
+    }
+    for (Map.Entry<CFG.Block, List<Integer>> entry : inferredPredecessors.entrySet()) {
+      Collections.sort(entry.getValue());
+      assertThat(predecessors.get(entry.getKey())).as("Predecessors of B" + entry.getKey().id()).isEqualTo(entry.getValue());
+    }
+  }
+
+  private void checkSuccessor(Block block, Set<Block> blocks) {
+    if (block != null) {
+      assertThat(block).isIn(blocks);
+    }
+  }
+
+  private List<Integer> idList(Collection<CFG.Block> blocks) {
+    ArrayList<Integer> list = new ArrayList<Integer>(blocks.size());
+    for (CFG.Block block : blocks) {
+      list.add(Integer.valueOf(block.id()));
+    }
+    ;
+    Collections.sort(list);
+    return list;
   }
 }
