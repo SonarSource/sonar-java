@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -150,6 +151,17 @@ public class JavaCheckVerifier extends CheckVerifier {
     scanFile(filename, check, javaCheckVerifier);
   }
 
+  public static void verifyNoIssueWithoutSemantic(String filename, JavaFileScanner check) {
+    JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier() {
+      @Override
+      public String getExpectedIssueTrigger() {
+        return "// NOSEMANTIC_ISSUE";
+      }
+    };
+    javaCheckVerifier.expectNoIssues();
+    scanFile(filename, check, javaCheckVerifier, Collections.<File>emptyList(), false);
+  }
+
   /**
    * Verifies that the provided file will not raise any issue when analyzed with the given check.
    *
@@ -191,8 +203,16 @@ public class JavaCheckVerifier extends CheckVerifier {
   }
 
   private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
+    scanFile(filename, check, javaCheckVerifier, classpath, true);
+  }
+  private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath, boolean withSemantic) {
     JavaFileScanner expectedIssueCollector = new ExpectedIssueCollector(javaCheckVerifier);
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), null);
+    VisitorsBridgeForTests visitorsBridge;
+    if(withSemantic) {
+      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector), Lists.newArrayList(classpath), null);
+    } else {
+      visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, expectedIssueCollector));
+    }
     JavaConfiguration conf = new JavaConfiguration(Charset.forName("UTF-8"));
     conf.setJavaVersion(javaCheckVerifier.javaVersion);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, conf);

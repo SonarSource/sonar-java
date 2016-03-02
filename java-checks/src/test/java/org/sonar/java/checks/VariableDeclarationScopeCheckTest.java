@@ -27,5 +27,6 @@ public class VariableDeclarationScopeCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/VariableDeclarationScopeCheck.java", new VariableDeclarationScopeCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/VariableDeclarationScopeCheck.java", new VariableDeclarationScopeCheck());
   }
 }

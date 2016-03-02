@@ -41,10 +41,17 @@ import java.util.Set;
 public class VisitorsBridgeForTests extends VisitorsBridge {
 
   private TestJavaFileScannerContext testContext;
+  private boolean enableSemantic = true;
+
 
   @VisibleForTesting
   public VisitorsBridgeForTests(JavaFileScanner visitor) {
     this(Collections.singletonList(visitor), new ArrayList<File>(), null);
+  }
+
+  public VisitorsBridgeForTests(Iterable visitors) {
+    this(visitors, new ArrayList<File>(), null, false);
+    enableSemantic = false;
   }
 
   public VisitorsBridgeForTests(Iterable visitors, List<File> projectClasspath, @Nullable SonarComponents sonarComponents) {
@@ -58,7 +65,8 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
   @Override
   protected JavaFileScannerContext createScannerContext(CompilationUnitTree tree, SemanticModel semanticModel, boolean analyseAccessors,
                                                         SonarComponents sonarComponents, boolean failedParsing) {
-    testContext = new TestJavaFileScannerContext(tree, currentFile, semanticModel, analyseAccessors, sonarComponents, javaVersion, failedParsing);
+    SemanticModel model = enableSemantic ? semanticModel : null;
+    testContext = new TestJavaFileScannerContext(tree, currentFile, model, analyseAccessors, sonarComponents, javaVersion, failedParsing);
     return testContext;
   }
 

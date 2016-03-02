@@ -27,6 +27,7 @@ public class EnumSetCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/EnumSetCheck.java", new EnumSetCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/EnumSetCheck.java", new EnumSetCheck());
   }
 
 }

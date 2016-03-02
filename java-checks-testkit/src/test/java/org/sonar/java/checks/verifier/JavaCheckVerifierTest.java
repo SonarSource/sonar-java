@@ -239,6 +239,19 @@ public class JavaCheckVerifierTest {
     }
   }
 
+  @Test
+  public void test_with_no_semantic() throws Exception {
+    IssuableSubscriptionVisitor noIssueVisitor = new FakeVisitor();
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, noIssueVisitor);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor);
+    try {
+      JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues());
+      Fail.fail();
+    } catch (AssertionError e) {
+      assertThat(e.getMessage()).contains("No issues expected but got:");
+    }
+  }
+
   private static class FakeVisitor extends IssuableSubscriptionVisitor {
 
     Multimap<Integer, String> issues = LinkedListMultimap.create();

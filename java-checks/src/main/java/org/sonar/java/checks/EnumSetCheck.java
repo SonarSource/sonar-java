@@ -52,7 +52,7 @@ public class EnumSetCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
-    if(!hasSemantic()) {
+    if (!hasSemantic()) {
       return;
     }
     VariableTree variableTree = (VariableTree) tree;
