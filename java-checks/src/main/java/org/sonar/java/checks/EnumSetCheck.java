@@ -29,6 +29,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -55,31 +56,29 @@ public class EnumSetCheck extends SubscriptionBaseVisitor {
       return;
     }
     VariableTree variableTree = (VariableTree) tree;
-    Type variableType = variableTree.symbol().type();
     ExpressionTree initializer = variableTree.initializer();
-    boolean reportIssueOnInitializer = false;
     if (initializer != null) {
-      reportIssueOnInitializer = reportIssueOnType(initializer.symbolType(), initializer) || initializer.symbolType().isSubtypeOf("java.util.EnumSet");
+      checkIssue(initializer.symbolType(), initializer, variableTree.type());
     }
-    if (!reportIssueOnInitializer) {
-      reportIssueOnType(variableType, variableTree.type());
-    }
-
   }
 
-  private boolean reportIssueOnType(Type type, Tree reportTree) {
+  private void checkIssue(Type type, Tree reportTree, TypeTree typeTree) {
     if (type.isSubtypeOf("java.util.Set") && !type.isSubtypeOf("java.util.EnumSet") && type instanceof JavaType.ParametrizedTypeJavaType) {
       JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
       List<JavaType.TypeVariableJavaType> typeParameters = parametrizedType.typeParameters();
+      Type variableType = typeTree.symbolType();
+      if(typeParameters.isEmpty() && variableType instanceof JavaType.ParametrizedTypeJavaType) {
+        // for java 7 diamond operator lookup declaration.
+        parametrizedType = (JavaType.ParametrizedTypeJavaType) variableType;
+        typeParameters = parametrizedType.typeParameters();
+      }
       if(!typeParameters.isEmpty()) {
         Type typeParameter = parametrizedType.substitution(typeParameters.get(0));
         if (typeParameter != null && typeParameter.symbol().isEnum()) {
           reportIssue(reportTree, "Convert this Set to an EnumSet.");
-          return true;
         }
       }
     }
-    return false;
   }
 
 }
