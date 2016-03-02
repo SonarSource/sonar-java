@@ -1,0 +1,8 @@
+{
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/app/Webapp.java':[
+79,
+],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/ClassLoaderUtils.java':[
+108,
+],
+}

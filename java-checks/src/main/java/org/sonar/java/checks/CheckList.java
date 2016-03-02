@@ -424,6 +424,7 @@ public final class CheckList {
       .add(StringPrimitiveConstructorCheck.class)
       .add(EnumMutableFieldCheck.class)
       .add(StringMethodsWithLocaleCheck.class)
+      .add(StringMethodsOnSingleCharCheck.class)
       .build();
   }
 

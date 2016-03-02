@@ -1,0 +1,27 @@
+<p>A <code>String.startsWith</code> test for a single letter can be simplified and made more performant by switching to a comparison of <code>String.charAt(0)</code>.</p>
+<p>Similarly, an <code>indexOf</code> or <code>lastIndexOf</code> call with a <code>char</code> argument will run faster than one with a <code>String</code> argument.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+String myStr = "Hello World";
+// ...
+
+int pos = myStr.indexOf("W");  // Noncompliant
+
+if (myStr.startsWith("A")) {  // Noncompliant
+  // ...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+String myStr = "Hello World";
+// ...
+
+int pos = myStr.indexOf('W'); 
+
+if (myStr.charAt(0) == 'A') {
+  // ...
+}
+</pre>
+
