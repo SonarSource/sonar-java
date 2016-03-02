@@ -423,6 +423,7 @@ public final class CheckList {
       .add(EnumSetCheck.class)
       .add(StringPrimitiveConstructorCheck.class)
       .add(EnumMutableFieldCheck.class)
+      .add(StringMethodsWithLocaleCheck.class)
       .build();
   }
 

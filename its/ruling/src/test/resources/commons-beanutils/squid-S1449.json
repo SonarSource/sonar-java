@@ -1,0 +1,12 @@
+{
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/DefaultBeanIntrospector.java':[
+128,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/JDBCDynaClass.java':[
+190,
+],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/BooleanConverter.java':[
+213,
+242,
+],
+}
