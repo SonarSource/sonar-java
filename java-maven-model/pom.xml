@@ -76,12 +76,12 @@
             <id>generate-model</id>
             <phase>generate-sources</phase>
             <configuration>
-              <tasks>
+              <target>
                 <mkdir dir="${targetDir}" />
                 <exec executable="xjc">
                   <arg line="-extension -b ${bindingFile} -p ${javaPackageName} -d ${targetDir} -encoding UTF-8 ${xsdPath}" />
                 </exec>
-              </tasks>
+              </target>
             </configuration>
             <goals>
               <goal>run</goal>
