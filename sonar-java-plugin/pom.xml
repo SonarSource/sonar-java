@@ -39,7 +39,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>java-squid</artifactId>
+      <artifactId>java-frontend</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

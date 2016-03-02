@@ -8,9 +8,9 @@
     <version>3.12-SNAPSHOT</version>
   </parent>
 
-  <artifactId>java-squid</artifactId>
+  <artifactId>java-frontend</artifactId>
 
-  <name>SonarQube Java :: Squid</name>
+  <name>SonarQube Java :: Front-end</name>
 
   <dependencies>
     <dependency>
