@@ -29,14 +29,12 @@ import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
-import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -80,22 +78,9 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
     // can be null when using raw types
     Type collectionParameterType = getTypeParameter(collectionType);
 
-    // FIXME remove this variable when SONARJAVA-1298 is fixed
-    boolean isCallToParametrizedMethod = isCallToParametrizedMethod(firstArgument);
-    if (!isCallToParametrizedMethod && tree.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-      isCallToParametrizedMethod = isCallToParametrizedMethod(((MemberSelectExpressionTree) tree.methodSelect()).expression());
-    }
-
-    if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isCallToParametrizedMethod && !isArgumentCompatible(argumentType, collectionParameterType)) {
+    if (collectionParameterType != null && !collectionParameterType.isUnknown() && !isArgumentCompatible(argumentType, collectionParameterType)) {
       reportIssue(MethodsHelper.methodName(tree), MessageFormat.format("A \"{0}<{1}>\" cannot contain a \"{2}\"", collectionType, collectionParameterType, argumentType));
     }
-  }
-
-  private static boolean isCallToParametrizedMethod(ExpressionTree expressionTree) {
-    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION)) {
-      return ((JavaSymbol.MethodJavaSymbol) ((MethodInvocationTree) expressionTree).symbol()).isParametrized();
-    }
-    return false;
   }
 
   private static Type getMethodOwner(MethodInvocationTree mit) {
