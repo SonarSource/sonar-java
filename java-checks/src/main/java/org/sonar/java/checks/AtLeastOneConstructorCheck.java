@@ -56,11 +56,14 @@ public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {
     if(!hasSemantic()) {
       return;
     }
-    ClassTree node = (ClassTree) tree;
-    IdentifierTree simpleName = node.simpleName();
-    if (simpleName != null && !ModifiersUtils.hasModifier(((ClassTree) tree).modifiers(), Modifier.ABSTRACT)) {
+    checkClassTree((ClassTree) tree);
+  }
+
+  private void checkClassTree(ClassTree tree) {
+    IdentifierTree simpleName = tree.simpleName();
+    if (simpleName != null && !ModifiersUtils.hasModifier(tree.modifiers(), Modifier.ABSTRACT)) {
       boolean hasPrivateMember = false;
-      for (Tree member : node.members()) {
+      for (Tree member : tree.members()) {
         if (member.is(Kind.CONSTRUCTOR)) {
           return;
         } else if (member.is(Kind.VARIABLE)) {
@@ -70,7 +73,7 @@ public class AtLeastOneConstructorCheck extends SubscriptionBaseVisitor {
         }
       }
       if (hasPrivateMember) {
-        reportIssue(simpleName, "Add a constructor to the " + node.declarationKeyword().text() + ".");
+        reportIssue(simpleName, "Add a constructor to the " + tree.declarationKeyword().text() + ".");
       }
     }
   }

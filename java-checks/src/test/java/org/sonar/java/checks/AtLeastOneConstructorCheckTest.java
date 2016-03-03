@@ -27,6 +27,7 @@ public class AtLeastOneConstructorCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/AtLeastOneConstructorCheck.java", new AtLeastOneConstructorCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/AtLeastOneConstructorCheck.java", new AtLeastOneConstructorCheck());
   }
 
 }
