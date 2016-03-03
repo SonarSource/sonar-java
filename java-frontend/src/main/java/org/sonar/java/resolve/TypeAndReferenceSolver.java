@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -459,7 +460,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
-    resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));
+    resolveConstructorSymbol(getType(tree.identifier()), newClassTreeImpl.getConstructorIdentifier(), newClassEnv, getParameterTypes(tree.arguments()));
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       JavaType type = (JavaType) tree.identifier().symbolType();
@@ -478,8 +479,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
   }
 
-  private JavaSymbol resolveConstructorSymbol(IdentifierTree identifier, Resolve.Env methodEnv, List<JavaType> argTypes) {
-    JavaSymbol symbol = resolve.findMethod(methodEnv, (JavaType) identifier.symbolType(), "<init>", argTypes).symbol();
+  private JavaSymbol resolveConstructorSymbol(JavaType type, IdentifierTree identifier, Resolve.Env methodEnv, List<JavaType> argTypes) {
+    JavaSymbol symbol = resolve.findMethod(methodEnv, type, "<init>", argTypes).symbol();
     associateReference(identifier, symbol);
     return symbol;
   }
@@ -568,7 +569,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       scan(classBody);
       ((JavaType.ClassJavaType) classBody.symbol().type()).supertype = getType(newClassTree.identifier());
     }
-    resolveConstructorSymbol(tree.simpleName(), semanticModel.getEnv(tree), getParameterTypes(newClassTree.arguments()));
+    resolveConstructorSymbol(getType(tree.simpleName()), tree.simpleName(), semanticModel.getEnv(tree), getParameterTypes(newClassTree.arguments()));
   }
 
   @Override

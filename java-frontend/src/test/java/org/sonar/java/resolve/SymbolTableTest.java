@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -606,7 +607,7 @@ public class SymbolTableTest {
     assertThat(result.reference(123, 5)).isSameAs(result.symbol("fun3", 117));
     assertThat(result.reference(124, 5)).isSameAs(result.symbol("fun4", 118));
     assertThat(result.reference(125, 5)).isSameAs(result.symbol("fun5", 119));
-    assertThat(result.reference(132, 5)).isSameAs(result.symbol("fun", 131));
+    assertThat(result.reference(132, 5)).isSameAs(result.symbol("fun", 136));
     assertThat(result.reference(134, 5)).isSameAs(result.symbol("fun", 131));
 
     assertThat(result.reference(143, 5)).isSameAs(result.symbol("process", 140));
