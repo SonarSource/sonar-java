@@ -223,13 +223,13 @@ public class SecondPass implements JavaSymbol.Completer {
   }
 
   private static boolean checkTypeOfTree(Tree tree) {
-    return tree.is(Tree.Kind.MEMBER_SELECT) ||
-        tree.is(Tree.Kind.IDENTIFIER) ||
-        tree.is(Tree.Kind.PARAMETERIZED_TYPE) ||
-        tree.is(Tree.Kind.ARRAY_TYPE) ||
-        tree.is(Tree.Kind.UNION_TYPE) ||
-        tree.is(Tree.Kind.PRIMITIVE_TYPE) ||
-        tree.is(Tree.Kind.INFERED_TYPE);
+    return tree.is(Tree.Kind.MEMBER_SELECT,
+      Tree.Kind.IDENTIFIER,
+      Tree.Kind.PARAMETERIZED_TYPE,
+      Tree.Kind.ARRAY_TYPE,
+      Tree.Kind.UNION_TYPE,
+      Tree.Kind.PRIMITIVE_TYPE,
+      Tree.Kind.INFERED_TYPE);
   }
 
 }
