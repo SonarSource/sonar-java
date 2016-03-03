@@ -126,6 +126,10 @@ class Utilities {
   private <T> int sizeOfMap(Map<T> map) { // Noncompliant
     return map.size();
   }
+  
+  private void callMethodOfStaticClass() { // Noncompliant
+    new FooBar().myHash();
+  }
 
 }
 
@@ -161,6 +165,9 @@ static class FooBar {
   }
   private void plop() { // Noncompliant enum is static and enum constants are static
     Object o = MyEnum.FOO;
+  }
+  int myHash() {
+    return hashCode();
   }
 }
 
