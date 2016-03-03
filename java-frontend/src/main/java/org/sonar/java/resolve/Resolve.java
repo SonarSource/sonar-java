@@ -533,7 +533,7 @@ public class Resolve {
       }
     }
 
-    if (!typeVariablesToInfer.isEmpty()) {
+    if (!typeVariablesToInfer.isEmpty() && !hasBounds(typeVariablesToInfer)) {
       for (int i = 0; i < formals.size(); i++) {
         JavaType formalType = formals.get(i);
         JavaType argType = argTypes.get(i);
@@ -558,6 +558,16 @@ public class Resolve {
       }
     }
     return typeSubstitution;
+  }
+
+  // FIXME workaround to ignore bounds in type variable - WIP
+  private boolean hasBounds(List<JavaType.TypeVariableJavaType> typeVariablesToInfer) {
+    for (JavaType.TypeVariableJavaType typeVariableJavaType : typeVariablesToInfer) {
+      if (typeVariableJavaType.bounds.size() > 1 || !typeVariableJavaType.bounds.get(0).is("java.lang.Object")) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static void completeSubstitution(TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType) {
