@@ -446,7 +446,7 @@ public class Resolve {
           bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
 
           List<JavaType> formals = handleTypeSubstitutionInFormalParameters(((JavaType.MethodJavaType) methodSymbol.type).argTypes, site);
-          TypeSubstitution typeSubstitution = inferTypeSubstitution(methodSymbol.typeVariableTypes, formals, argTypes);
+          TypeSubstitution typeSubstitution = inferTypeSubstitution(methodSymbol, formals, argTypes);
           bestSoFar.type = substituteTypeParameter(bestSoFar.type, typeSubstitution);
         }
       }
@@ -499,8 +499,9 @@ public class Resolve {
     }
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) candidate;
     boolean isVarArgs = methodJavaSymbol.isVarArgs();
-    List<JavaType> formals = handleTypeSubstitutionInFormalParameters(((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes, site);
-    TypeSubstitution typeSubstitution = inferTypeSubstitution(methodJavaSymbol.typeVariableTypes, formals, argTypes);
+    List<JavaType> formalArgs = ((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes;
+    List<JavaType> formals = handleTypeSubstitutionInFormalParameters(formalArgs, site);
+    TypeSubstitution typeSubstitution = inferTypeSubstitution(methodJavaSymbol, formals, argTypes);
     formals = applySubstitution(formals, typeSubstitution);
     if (!isArgumentsAcceptable(argTypes, formals, isVarArgs, autoboxing)) {
       return bestSoFar;
@@ -509,7 +510,7 @@ public class Resolve {
     if (!isAccessible(env, siteSymbol, candidate)) {
       return new AccessErrorJavaSymbol(candidate, Symbols.unknownType);
     }
-    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar);
+    JavaSymbol mostSpecific = selectMostSpecific(candidate, typeSubstitution, bestSoFar);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
       mostSpecific = bestSoFar;
@@ -517,14 +518,14 @@ public class Resolve {
     return mostSpecific;
   }
 
-  private TypeSubstitution inferTypeSubstitution(List<JavaType.TypeVariableJavaType> typeVariableTypes, List<JavaType> formals, List<JavaType> argTypes) {
+  private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol methodSymbol, List<JavaType> formals, List<JavaType> argTypes) {
     TypeSubstitution typeSubstitution = new TypeSubstitution();
     if (formals.size() > argTypes.size() || formals.isEmpty() || argTypes.isEmpty()) {
       // no need to try to infer types
       return typeSubstitution;
     }
 
-    List<JavaType.TypeVariableJavaType> typeVariablesToInfer = new LinkedList<>(typeVariableTypes);
+    List<JavaType.TypeVariableJavaType> typeVariablesToInfer = new LinkedList<>(methodSymbol.typeVariableTypes);
     // compete with type variable from the scope
     for (JavaType argType : argTypes) {
       JavaSymbol owner = argType.symbol.owner;
@@ -533,7 +534,7 @@ public class Resolve {
       }
     }
 
-    if (!typeVariablesToInfer.isEmpty() && !hasBounds(typeVariablesToInfer)) {
+    if (!typeVariablesToInfer.isEmpty()) {
       for (int i = 0; i < formals.size(); i++) {
         JavaType formalType = formals.get(i);
         JavaType argType = argTypes.get(i);
@@ -542,16 +543,18 @@ public class Resolve {
           completeSubstitution(typeSubstitution, formalType, argType);
         } else if (formalType.isTagged(JavaType.ARRAY) && argType.isTagged(JavaType.ARRAY)) {
           completeSubstitution(typeSubstitution, ((JavaType.ArrayJavaType) formalType).elementType, ((JavaType.ArrayJavaType) argType).elementType);
+        } else if (formalType.isTagged(JavaType.ARRAY) && methodSymbol.isVarArgs() && i == formals.size() - 1) {
+          completeSubstitution(typeSubstitution, ((JavaType.ArrayJavaType) formalType).elementType, argType);
         } else if (isParametrizedType(formalType) && isParametrizedType(argType)) {
           List<JavaType> formalTypeSubstitutedTypes = ((JavaType.ParametrizedTypeJavaType) formalType).typeSubstitution.substitutedTypes();
           List<JavaType> argTypeSubstitutedTypes = ((JavaType.ParametrizedTypeJavaType) argType).typeSubstitution.substitutedTypes();
-          TypeSubstitution newSubstitution = inferTypeSubstitution(typeVariableTypes, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
+          TypeSubstitution newSubstitution = inferTypeSubstitution(methodSymbol, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
           typeSubstitution = mergeTypeSubstitutions(typeSubstitution, newSubstitution);
         } else if (isWildcardType(formalType)) {
           completeSubstitution(typeSubstitution, ((JavaType.WildCardType) formalType).bound, argType);
         }
 
-        if (typeSubstitution.typeVariables().containsAll(typeVariableTypes)) {
+        if (typeSubstitution.typeVariables().containsAll(methodSymbol.typeVariableTypes)) {
           // we found all the substitution
           break;
         }
@@ -560,24 +563,26 @@ public class Resolve {
     return typeSubstitution;
   }
 
-  // FIXME workaround to ignore bounds in type variable - WIP
-  private boolean hasBounds(List<JavaType.TypeVariableJavaType> typeVariablesToInfer) {
-    for (JavaType.TypeVariableJavaType typeVariableJavaType : typeVariablesToInfer) {
-      if (typeVariableJavaType.bounds.size() > 1 || !typeVariableJavaType.bounds.get(0).is("java.lang.Object")) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   private static void completeSubstitution(TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType) {
     if (formalType.isTagged(JavaType.TYPEVAR) && currentSubstitution.substitutedType(formalType) == null) {
       JavaType expectedType = argType;
       if (expectedType.isPrimitive()) {
         expectedType = expectedType.primitiveWrapperType;
       }
-      currentSubstitution.add((JavaType.TypeVariableJavaType) formalType, expectedType);
+      JavaType.TypeVariableJavaType typeVar = (JavaType.TypeVariableJavaType) formalType;
+      if (subtypeOfAllBounds(expectedType, typeVar.bounds)) {
+        currentSubstitution.add(typeVar, expectedType);
+      }
     }
+  }
+
+  private static boolean subtypeOfAllBounds(JavaType expectedType, List<JavaType> bounds) {
+    for (JavaType bound : bounds) {
+      if (!expectedType.isSubtypeOf(bound)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private TypeSubstitution mergeTypeSubstitutions(TypeSubstitution currentSubstitution, TypeSubstitution newSubstitution) {
@@ -603,12 +608,18 @@ public class Resolve {
   }
 
   private List<JavaType> handleTypeSubstitutionInFormalParameters(List<JavaType> formalParameters, JavaType site) {
-    if (!formalParameters.isEmpty() && isParametrizedType(site)) {
-      List<JavaType> substitutedTypes = new LinkedList<>();
-      TypeSubstitution typeSubstitution = ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution;
-      for (JavaType formalParameter : formalParameters) {
-        JavaType substitutedFormalParameter = substituteTypeParameter(formalParameter, typeSubstitution);
-        substitutedTypes.add(substitutedFormalParameter);
+    if (!formalParameters.isEmpty()) {
+      List<JavaType> substitutedTypes = formalParameters;
+      if (isParametrizedType(site)) {
+        substitutedTypes = new ArrayList<>(formalParameters.size());
+        TypeSubstitution typeSubstitution = ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution;
+        for (JavaType formalParameter : formalParameters) {
+          JavaType substitutedFormalParameter = substituteTypeParameter(formalParameter, typeSubstitution);
+          substitutedTypes.add(substitutedFormalParameter);
+        }
+      }
+      for (JavaType superType : site.symbol.superTypes()) {
+        substitutedTypes = handleTypeSubstitutionInFormalParameters(substitutedTypes, superType);
       }
       return substitutedTypes;
     }
@@ -643,7 +654,9 @@ public class Resolve {
       }
     }
     for (int i = 0; i < argsSize - nbArgToCheck; i++) {
-      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing)) {
+      JavaType arg = argTypes.get(i);
+      JavaType formal = formals.get(i);
+      if (!isAcceptableType(arg, formal, autoboxing)) {
         return false;
       }
     }
@@ -658,7 +671,7 @@ public class Resolve {
   }
 
   private static boolean canUseDirectSubtyping(JavaType type) {
-    return isParametrizedType(type) || isWildcardType(type);
+    return isParametrizedType(type) || isWildcardType(type) || type.isTagged(JavaType.TYPEVAR);
   }
 
   private static boolean isParametrizedType(JavaType type) {
@@ -683,14 +696,15 @@ public class Resolve {
 
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
+   * @param typeSubstitution 
    */
-  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2) {
+  private JavaSymbol selectMostSpecific(JavaSymbol m1, TypeSubstitution typeSubstitution, JavaSymbol m2) {
     // FIXME get rig of null check
     if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
     }
-    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2);
-    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1);
+    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, typeSubstitution, m2);
+    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, typeSubstitution, m1);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
       return new AmbiguityErrorJavaSymbol();
     } else if (m1SignatureMoreSpecific) {
@@ -702,10 +716,12 @@ public class Resolve {
   }
 
   /**
+   * @param typeSubstitution 
    * @return true, if signature of m1 is more specific than signature of m2
    */
-  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2) {
+  private boolean isSignatureMoreSpecific(JavaSymbol m1, TypeSubstitution typeSubstitution, JavaSymbol m2) {
     List<JavaType> m1ArgTypes = ((JavaType.MethodJavaType) m1.type).argTypes;
+    m1ArgTypes = applySubstitution(m1ArgTypes, typeSubstitution);
     List<JavaType> m2ArgTypes = ((JavaType.MethodJavaType) m2.type).argTypes;
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
     if (methodJavaSymbol.isVarArgs()) {

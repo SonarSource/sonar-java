@@ -29,11 +29,11 @@ import org.fest.assertions.GenericAssert;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -408,105 +408,57 @@ public class GenericsTest {
 
   @Test
   public void test_method_resolution_with_parametrized_methods() {
-    List<Type> elementTypes = declaredTypes(
-      "class A {"
-    // method definition using type variables
-        + "  <T> B<T> bar(T t) {"
-        + "    return null;"
-        + "  }"
+    JavaType aType = rootTypeFromFile("src/test/files/resolve/TypeParameters.java");
 
-        + "  <T> T gul(B<T> b) {"
-        + "    return null;"
-        + "  }"
+    methodHasUsagesWithSameTypeAs(aType, "f1", "bString");
+    // FIXME type is 'T' when T can not be inferred. Should be Object?
+    methodHasUsagesWithSameTypeAs(aType, "f2", "integer", null);
+    methodHasUsagesWithSameTypeAs(aType, "f3", "integer");
 
-        + "  <T> T bol(int i, B<T> b) {"
-        + "    return null;"
-        + "  }"
-
-        + "  <T> T[] qix(T[] a) {"
-        + "    return null;"
-        + "  }"
-
-        + "  <K, V> C<K, V> foo(K k, V v) {"
-        + "    return null;"
-        + "  }"
-
-        + "  <T> B<? super T> kor(B<? extends T> c) {"
-        + "    return null;"
-        + "  }"
-
-        + "  <T> T ten(B<B<T>> b) {"
-        + "    return null;"
-        + "  }"
-
-    // call to method implying type inference
-        + "  void test_resolution(B<?> bwc, B<A> ba, B<? extends A> bwcEa) {"
-        + "    bar(\"String\");"
-
-        + "    gul(new B<Integer>());"
-        + "    gul(new B());"
-
-        + "    bol(0, new B<Integer>());"
-
-        + "    qix(new String[0]);"
-
-        + "    foo(\"foo\", Integer.valueOf(42));"
-        + "    foo(\"foo\", 42);"
-
-        + "    kor(ba);"
-        + "    kor(bwc);"
-        + "    kor(bwcEa);"
-
-        + "    ten(new B<B<Integer>>());"
-        + "  }"
-
-    // reference types
-        + "  B<String> bString;"
-        + "  Integer integer;"
-        + "  String[] stringArray;"
-        + "  C<String, Integer> cStringInteger;"
-        + "  B<? super A> wcSuperA;"
-        + "  B<? super Object> wcSuperObject;"
-        + "}"
-
-        + "class B<X> {}"
-        + "class C<X, Y> {}");
-
-    JavaType aType = (JavaType) elementTypes.get(0);
-    JavaSymbol.MethodJavaSymbol method = getMethodSymbol(aType, "bar");
-    assertThat(method.usages()).hasSize(1);
-    assertThat(getMethodInvocationType(method)).isSameAs(getVariableType(aType, "bString"));
-
-    method = getMethodSymbol(aType, "gul");
-    assertThat(method.usages()).hasSize(2);
-    assertThat(getMethodInvocationType(method, 0)).isSameAs(getVariableType(aType, "integer"));
-
-    method = getMethodSymbol(aType, "bol");
-    assertThat(method.usages()).hasSize(1);
-    assertThat(getMethodInvocationType(method)).isSameAs(getVariableType(aType, "integer"));
-
-    method = getMethodSymbol(aType, "qix");
-    assertThat(method.usages()).hasSize(1);
-    Type type = getMethodInvocationType(method);
-    assertThat(type.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) type).elementType.is("java.lang.String")).isTrue();
     // FIXME array type cache?
-    assertThat(getMethodInvocationType(method)).isNotSameAs(getVariableType(aType, "stringArray"));
+    Type arrayType = getMethodInvocationType(getMethodSymbol(aType, "f4"));
+    assertThat(arrayType.isArray()).isTrue();
+    assertThat(((JavaType.ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
+    assertThat(arrayType).isNotSameAs(getVariableType(aType, "stringArray"));
+    methodHasUsagesWithSameTypeAs(aType, "f4", (String) null);
 
-    method = getMethodSymbol(aType, "foo");
-    assertThat(method.usages()).hasSize(2);
-    assertThat(getMethodInvocationType(method, 0)).isSameAs(getVariableType(aType, "cStringInteger"));
-    assertThat(getMethodInvocationType(method, 1)).isSameAs(getVariableType(aType, "cStringInteger"));
+    methodHasUsagesWithSameTypeAs(aType, "f5", "cStringInteger", "cStringInteger");
+    methodHasUsagesWithSameTypeAs(aType, "f6", "wcSuperA", "wcSuperObject", "wcSuperA");
+    methodHasUsagesWithSameTypeAs(aType, "f7", "integer");
 
-    method = getMethodSymbol(aType, "kor");
-    assertThat(method.usages()).hasSize(3);
-    assertThat(getMethodInvocationType(method, 0)).isSameAs(getVariableType(aType, "wcSuperA"));
-    assertThat(getMethodInvocationType(method, 1)).isSameAs(getVariableType(aType, "wcSuperObject"));
-    assertThat(getMethodInvocationType(method, 2)).isSameAs(getVariableType(aType, "wcSuperA"));
+    methodHasUsagesWithSameTypeAs(aType, "f8", 0, "object");
+    methodHasUsagesWithSameTypeAs(aType, "f8", 1, "bString");
+    methodHasUsagesWithSameTypeAs(aType, "f9", 0, "object", "object");
+    methodHasUsagesWithSameTypeAs(aType, "f9", 1, "dType");
+    methodHasUsagesWithSameTypeAs(aType, "f10", "integer");
+  }
 
-    method = getMethodSymbol(aType, "ten");
-    assertThat(method.usages()).hasSize(1);
-    assertThat(getMethodInvocationType(method)).isSameAs(getVariableType(aType, "integer"));
+  private JavaType rootTypeFromFile(String filePath) {
+    File file = new File(filePath);
+    CompilationUnitTree cut = (CompilationUnitTree) JavaParser.createParser(Charsets.UTF_8).parse(file);
+    SemanticModel.createFor(cut, Lists.newArrayList(new File("target/test-classes"), new File("target/classes")));
+    return (JavaType) ((ClassTree) cut.types().get(0)).symbol().type();
+  }
+
+  private static void methodHasUsagesWithSameTypeAs(JavaType type, String methodName, String... variables) {
+    methodHasUsagesWithSameTypeAs(type, methodName, 0, variables);
+  }
+
+  private static void methodHasUsagesWithSameTypeAs(JavaType type, String methodName, int methodIndex, String... variables) {
+    JavaSymbol.MethodJavaSymbol method = getMethodSymbol(type, methodName, methodIndex);
+
+    List<IdentifierTree> usages = method.usages();
+    assertThat(usages).overridingErrorMessage("Method '" + methodName + "' should have " + variables.length + " reference(s) but has " + usages.size() + ".")
+      .hasSize(variables.length);
+
+    for (int i = 0; i < variables.length; i++) {
+      String variableName = variables[i];
+      if (variableName != null) {
+        Type methodInvocationType = getMethodInvocationType(method, i);
+        Type variableType = getVariableType(type, variableName);
+        assertThat(methodInvocationType).overridingErrorMessage("Type of expression should be the same as type of variable '" + variableName + "'.").isSameAs(variableType);
+      }
+    }
   }
 
   private static Type getVariableType(JavaType owner, String variableName) {
@@ -844,7 +796,7 @@ public class GenericsTest {
     CompilationUnitTree tree = treeOf(lines);
     List<Type> results = Lists.newLinkedList();
     for (Tree classTree : tree.types()) {
-      Type type = ((TypeJavaSymbol) ((ClassTree) classTree).symbol()).type();
+      Type type = ((JavaSymbol.TypeJavaSymbol) ((ClassTree) classTree).symbol()).type();
       results.add(type);
     }
     return results;

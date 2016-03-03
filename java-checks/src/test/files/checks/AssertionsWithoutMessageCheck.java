@@ -21,6 +21,7 @@ class A {
 
 
     org.fest.assertions.Assertions.assertThat(true).isTrue();// Noncompliant {{Add a message to this assertion.}}
+    org.fest.assertions.Assertions.assertThat(new A()).isSameAs(new A()); // Noncompliant {{Add a message to this assertion.}}
     org.fest.assertions.Assertions.assertThat(true).as("verifying the truth").isTrue();
     org.fest.assertions.Assertions.Assertions.assertThat("").isEqualTo("").as("");
 
