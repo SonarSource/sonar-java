@@ -538,7 +538,7 @@ public class JavaSymbol implements Symbol {
         if (overrideSymbol.isKind(JavaSymbol.MTH) && !overrideSymbol.isStatic()) {
           MethodJavaSymbol methodJavaSymbol = (MethodJavaSymbol) overrideSymbol;
           if (canOverride(methodJavaSymbol)) {
-            Boolean overriding = isOverriding(methodJavaSymbol, classType);
+            Boolean overriding = checkOverridingParameters(methodJavaSymbol, classType);
             if (overriding == null) {
               if (!unknownFound) {
                 unknownFound = true;
@@ -565,8 +565,8 @@ public class JavaSymbol implements Symbol {
       return !overridee.isPrivate();
     }
 
-    @Nullable
-    private Boolean isOverriding(MethodJavaSymbol overridee, JavaType.ClassJavaType classType) {
+    @CheckForNull
+    public Boolean checkOverridingParameters(MethodJavaSymbol overridee, JavaType.ClassJavaType classType) {
       // same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
         return false;

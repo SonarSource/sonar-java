@@ -425,6 +425,7 @@ public final class CheckList {
       .add(EnumMutableFieldCheck.class)
       .add(StringMethodsWithLocaleCheck.class)
       .add(StringMethodsOnSingleCharCheck.class)
+      .add(ConfusingOverloadCheck.class)
       .build();
   }
 
