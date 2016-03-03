@@ -78,7 +78,7 @@ class Fruit {
     for (int i = 0; i < value; i++) {
       continue foo;
     }
-    Fruit fruit = new Fruit() { // Noncompliant [[sc=23;ec=28]] {{Make this a named "static" inner class.}}
+    Fruit fruit = new Fruit() { // compliant, we ignore anonymous classes
     };
   }
 
@@ -95,7 +95,7 @@ class Fruit {
       }
     }
 
-    Interface inter = new Interface() { // Noncompliant
+    Interface inter = new Interface() { // compliant, we ignore anonymous classes
       public void foo() {
         return;
       }

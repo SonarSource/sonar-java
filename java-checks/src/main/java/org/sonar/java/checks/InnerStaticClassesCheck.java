@@ -71,12 +71,11 @@ public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFile
     outerClasses.pop();
     if (!symbol.isStatic() && !oneReference && couldBeDeclaredStatic(symbol)) {
       Tree reportTree = tree.simpleName();
-      String named = "";
-      if (symbol.name().isEmpty()) {
-        reportTree = ((NewClassTree) tree.parent()).identifier();
-        named = "named ";
+      if(reportTree == null) {
+        // Ignore issues on anonymous classes
+        return;
       }
-      context.reportIssue(this, reportTree, "Make this a " + named + "\"static\" inner class.");
+      context.reportIssue(this, reportTree, "Make this a \"static\" inner class.");
     }
   }
 
