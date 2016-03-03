@@ -535,7 +535,7 @@ public class JavaSymbol implements Symbol {
       boolean unknownFound = false;
       List<JavaSymbol> symbols = classType.getSymbol().members().lookup(name);
       for (JavaSymbol overrideSymbol : symbols) {
-        if (overrideSymbol.isKind(JavaSymbol.MTH)) {
+        if (overrideSymbol.isKind(JavaSymbol.MTH) && !overrideSymbol.isStatic()) {
           MethodJavaSymbol methodJavaSymbol = (MethodJavaSymbol) overrideSymbol;
           if (canOverride(methodJavaSymbol)) {
             Boolean overriding = isOverriding(methodJavaSymbol, classType);

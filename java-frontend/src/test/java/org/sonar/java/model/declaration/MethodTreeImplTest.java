@@ -69,6 +69,15 @@ public class MethodTreeImplTest {
   }
 
   @Test
+  public void hiding_of_static_methods() {
+    CompilationUnitTree cut = createTree("class A { static void foo() {} } class B extends A { void foo(){} } ");
+    ClassTree clazz = (ClassTree) cut.types().get(1);
+    MethodTreeImpl methodTree = (MethodTreeImpl) clazz.members().get(0);
+
+    assertThat(methodTree.isOverriding()).isFalse();
+  }
+
+  @Test
   public void override_from_object_should_be_detected() {
     MethodTreeImpl method = getUniqueMethod("class A { String toString(){return \"\";}}");
     assertThat(method.isOverriding()).isTrue();
