@@ -137,6 +137,7 @@ public class Types {
       }
       return results;
     } catch (UnsupportedOperationException e) {
+      // FIXME SONARJAVA-1569 generics should be handled for lub calculation
       return Collections.emptyList();
     }
   }
