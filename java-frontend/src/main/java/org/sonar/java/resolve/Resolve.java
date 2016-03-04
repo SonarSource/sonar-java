@@ -78,13 +78,16 @@ public class Resolve {
   }
 
   public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
-    if(isParametrizedType(definition)) {
+    if (isParametrizedType(definition)) {
       return substituteTypeParameter(type, ((JavaType.ParametrizedTypeJavaType) definition).typeSubstitution);
     }
     return type;
   }
 
   private JavaType substituteTypeParameter(JavaType type, TypeSubstitution substitution) {
+    if (type == null) {
+      return type;
+    }
     JavaType substitutedType = substitution.substitutedType(type);
     if (substitutedType != null) {
       return substitutedType;
@@ -97,11 +100,21 @@ public class Resolve {
       }
       return parametrizedTypeCache.getParametrizedTypeType(ptt.rawType.getSymbol(), newSubstitution);
     }
-    if (type instanceof JavaType.WildCardType) {
+    if (type.isTagged(JavaType.WILDCARD)) {
       JavaType.WildCardType wildCardType = (JavaType.WildCardType) type;
       substitutedType = substitution.substitutedType(wildCardType.bound);
       if (substitutedType != null) {
+        if (substitutedType.isTagged(JavaType.WILDCARD)) {
+          substitutedType = ((JavaType.WildCardType) substitutedType).bound;
+        }
         return parametrizedTypeCache.getWildcardType(substitutedType, wildCardType.boundType);
+      }
+    }
+    if (type.isTagged(JavaType.ARRAY)) {
+      JavaType.ArrayJavaType arrayType = (JavaType.ArrayJavaType) type;
+      substitutedType = substituteTypeParameter(arrayType.elementType, substitution);
+      if (substitutedType != null) {
+        return new JavaType.ArrayJavaType(substitutedType, symbols.arrayClass);
       }
     }
     return type;
@@ -431,6 +444,10 @@ public class Resolve {
           bestSoFar.type = resolveTypeSubstitution(((JavaType.MethodJavaType) best.type).resultType, site);
           JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) best;
           bestSoFar.type = handleTypeArguments(typeParams, bestSoFar.type, methodSymbol);
+
+          List<JavaType> formals = handleTypeSubstitutionInFormalParameters(((JavaType.MethodJavaType) methodSymbol.type).argTypes, site);
+          TypeSubstitution typeSubstitution = inferTypeSubstitution(methodSymbol.typeVariableTypes, formals, argTypes);
+          bestSoFar.type = substituteTypeParameter(bestSoFar.type, typeSubstitution);
         }
       }
     }
@@ -482,9 +499,10 @@ public class Resolve {
     }
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) candidate;
     boolean isVarArgs = methodJavaSymbol.isVarArgs();
-    boolean usesTypeParameter = usesTypeParameter(methodJavaSymbol);
-    List<JavaType> formals = handleTypeSubstitutionInFormalParameters(((JavaType.MethodJavaType) candidate.type).argTypes, site);
-    if (!isArgumentsAcceptable(argTypes, formals, isVarArgs, autoboxing, usesTypeParameter)) {
+    List<JavaType> formals = handleTypeSubstitutionInFormalParameters(((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes, site);
+    TypeSubstitution typeSubstitution = inferTypeSubstitution(methodJavaSymbol.typeVariableTypes, formals, argTypes);
+    formals = applySubstitution(formals, typeSubstitution);
+    if (!isArgumentsAcceptable(argTypes, formals, isVarArgs, autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
@@ -497,6 +515,91 @@ public class Resolve {
       mostSpecific = bestSoFar;
     }
     return mostSpecific;
+  }
+
+  private TypeSubstitution inferTypeSubstitution(List<JavaType.TypeVariableJavaType> typeVariableTypes, List<JavaType> formals, List<JavaType> argTypes) {
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
+    if (formals.size() > argTypes.size() || formals.isEmpty() || argTypes.isEmpty()) {
+      // no need to try to infer types
+      return typeSubstitution;
+    }
+
+    List<JavaType.TypeVariableJavaType> typeVariablesToInfer = new LinkedList<>(typeVariableTypes);
+    // compete with type variable from the scope
+    for (JavaType argType : argTypes) {
+      JavaSymbol owner = argType.symbol.owner;
+      if (owner.isMethodSymbol() && ((JavaSymbol.MethodJavaSymbol) owner).typeVariableTypes.contains(argType)) {
+        typeVariablesToInfer.add((JavaType.TypeVariableJavaType) argType);
+      }
+    }
+
+    if (!typeVariablesToInfer.isEmpty() && !hasBounds(typeVariablesToInfer)) {
+      for (int i = 0; i < formals.size(); i++) {
+        JavaType formalType = formals.get(i);
+        JavaType argType = argTypes.get(i);
+
+        if (formalType.isTagged(JavaType.TYPEVAR)) {
+          completeSubstitution(typeSubstitution, formalType, argType);
+        } else if (formalType.isTagged(JavaType.ARRAY) && argType.isTagged(JavaType.ARRAY)) {
+          completeSubstitution(typeSubstitution, ((JavaType.ArrayJavaType) formalType).elementType, ((JavaType.ArrayJavaType) argType).elementType);
+        } else if (isParametrizedType(formalType) && isParametrizedType(argType)) {
+          List<JavaType> formalTypeSubstitutedTypes = ((JavaType.ParametrizedTypeJavaType) formalType).typeSubstitution.substitutedTypes();
+          List<JavaType> argTypeSubstitutedTypes = ((JavaType.ParametrizedTypeJavaType) argType).typeSubstitution.substitutedTypes();
+          TypeSubstitution newSubstitution = inferTypeSubstitution(typeVariableTypes, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
+          typeSubstitution = mergeTypeSubstitutions(typeSubstitution, newSubstitution);
+        } else if (isWildcardType(formalType)) {
+          completeSubstitution(typeSubstitution, ((JavaType.WildCardType) formalType).bound, argType);
+        }
+
+        if (typeSubstitution.typeVariables().containsAll(typeVariableTypes)) {
+          // we found all the substitution
+          break;
+        }
+      }
+    }
+    return typeSubstitution;
+  }
+
+  // FIXME workaround to ignore bounds in type variable - WIP
+  private boolean hasBounds(List<JavaType.TypeVariableJavaType> typeVariablesToInfer) {
+    for (JavaType.TypeVariableJavaType typeVariableJavaType : typeVariablesToInfer) {
+      if (typeVariableJavaType.bounds.size() > 1 || !typeVariableJavaType.bounds.get(0).is("java.lang.Object")) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static void completeSubstitution(TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType) {
+    if (formalType.isTagged(JavaType.TYPEVAR) && currentSubstitution.substitutedType(formalType) == null) {
+      JavaType expectedType = argType;
+      if (expectedType.isPrimitive()) {
+        expectedType = expectedType.primitiveWrapperType;
+      }
+      currentSubstitution.add((JavaType.TypeVariableJavaType) formalType, expectedType);
+    }
+  }
+
+  private TypeSubstitution mergeTypeSubstitutions(TypeSubstitution currentSubstitution, TypeSubstitution newSubstitution) {
+    TypeSubstitution result = new TypeSubstitution();
+    for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> substitution : currentSubstitution.substitutionEntries()) {
+      result.add(substitution.getKey(), substitution.getValue());
+    }
+    for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> substitution : newSubstitution.substitutionEntries()) {
+      if (!result.typeVariables().contains(substitution.getKey())) {
+        result.add(substitution.getKey(), substitution.getValue());
+      }
+    }
+    return result;
+  }
+
+  private List<JavaType> applySubstitution(List<JavaType> formals, TypeSubstitution typeSubstitution) {
+    List<JavaType> newFormals = new ArrayList<>(formals.size());
+    for (JavaType formal : formals) {
+      JavaType newFormal = substituteTypeParameter(formal, typeSubstitution);
+      newFormals.add(newFormal);
+    }
+    return newFormals;
   }
 
   private List<JavaType> handleTypeSubstitutionInFormalParameters(List<JavaType> formalParameters, JavaType site) {
@@ -512,15 +615,11 @@ public class Resolve {
     return formalParameters;
   }
 
-  private static boolean usesTypeParameter(JavaSymbol.MethodJavaSymbol methodSymbol) {
-    return !methodSymbol.typeVariableTypes.isEmpty();
-  }
-
   /**
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
    */
-  private boolean isArgumentsAcceptable(List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing, boolean isParameterized) {
+  private boolean isArgumentsAcceptable(List<JavaType> argTypes, List<JavaType> formals, boolean isVarArgs, boolean autoboxing) {
     int argsSize = argTypes.size();
     int formalsSize = formals.size();
     int nbArgToCheck = argsSize - formalsSize;
@@ -539,33 +638,35 @@ public class Resolve {
       JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
       JavaType argType = argTypes.get(argsSize - i);
       // check type of element of array or if we invoke with an array that it is a compatible array type
-      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing, isParameterized) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
+      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
         return false;
       }
     }
     for (int i = 0; i < argsSize - nbArgToCheck; i++) {
-      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing, isParameterized)) {
+      if (!isAcceptableType(argTypes.get(i), formals.get(i), autoboxing)) {
         return false;
       }
     }
     return true;
   }
 
-  private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing, boolean isParameterized) {
-    // FIXME SONARJAVA-1298 type parameters should be handled in formal arguments prior to the call to this method
-    if (!isParameterized && (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal))) {
+  private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
+    if (canUseDirectSubtyping(arg) || canUseDirectSubtyping(formal)) {
       return types.isSubtype(arg, formal);
     }
-    // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
   }
 
-  private static boolean isWilcardType(JavaType type) {
-    return type.isTagged(JavaType.WILDCARD);
+  private static boolean canUseDirectSubtyping(JavaType type) {
+    return isParametrizedType(type) || isWildcardType(type);
   }
 
   private static boolean isParametrizedType(JavaType type) {
     return type instanceof JavaType.ParametrizedTypeJavaType;
+  }
+
+  private static boolean isWildcardType(JavaType type) {
+    return type.isTagged(JavaType.WILDCARD);
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {
@@ -610,8 +711,7 @@ public class Resolve {
     if (methodJavaSymbol.isVarArgs()) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());
     }
-    boolean usesTypeParameter = usesTypeParameter(methodJavaSymbol);
-    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false, usesTypeParameter);
+    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false);
   }
 
   private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {

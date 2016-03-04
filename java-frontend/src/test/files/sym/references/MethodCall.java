@@ -133,7 +133,7 @@ class GenericErasure<T extends CharSequence> {
     T var;
     fun(var);
   }
-
+  void fun(String s) { }
 }
 
 class OverloadingAutoboxing {
