@@ -70,16 +70,33 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
       TypeSymbol owner = (TypeSymbol) methodSymbol.owner();
       Type superClass = owner.superClass();
       if(superClass != null && !SERIALIZATION_METHOD_NAME.contains(methodSymbol.name())) {
-        checkMethod(methodTree.simpleName(), methodSymbol, superClass);
+        boolean reportStaticIssue = checkMethod(methodTree.simpleName(), methodSymbol, superClass);
+        superClass = superClass.symbol().superClass();
+        while (superClass != null && !reportStaticIssue) {
+          reportStaticIssue = checkStaticMethod(methodTree.simpleName(), methodSymbol, superClass);
+          superClass = superClass.symbol().superClass();
+        }
       }
     }
   }
 
-  private void checkMethod(Tree reportTree, MethodSymbol methodSymbol, Type superClass) {
+  private boolean checkStaticMethod(Tree reportTree, MethodSymbol methodSymbol, Type superClass) {
+    for (Symbol methodWithSameName : superClass.symbol().lookupSymbols(methodSymbol.name())) {
+      if (methodWithSameName.isMethodSymbol() && hideStaticMethod(methodSymbol, superClass, methodWithSameName)) {
+        reportIssue(reportTree, "Rename this method or make it \"static\".");
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean checkMethod(Tree reportTree, MethodSymbol methodSymbol, Type superClass) {
+    boolean reportStaticIssue = false;
     for (Symbol methodWithSameName : superClass.symbol().lookupSymbols(methodSymbol.name())) {
       if (methodWithSameName.isMethodSymbol()) {
         if (hideStaticMethod(methodSymbol, superClass, methodWithSameName)) {
           reportIssue(reportTree, "Rename this method or make it \"static\".");
+          reportStaticIssue = true;
         } else if (confusingOverload(methodSymbol, (MethodSymbol) methodWithSameName)) {
           String message = "Rename this method or correct the type of the argument(s) to override the parent class method.";
           if(methodWithSameName.isPrivate()) {
@@ -89,6 +106,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
         }
       }
     }
+    return reportStaticIssue;
   }
 
   private static boolean hideStaticMethod(MethodSymbol methodSymbol, Type superClass, Symbol symbolWithSameName) {

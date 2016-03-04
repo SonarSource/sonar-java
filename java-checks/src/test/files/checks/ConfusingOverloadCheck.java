@@ -26,6 +26,19 @@ public class Child extends Parent {
   }
   private void privateMethod(){} // Noncompliant {{Rename this method; there is a "private" method in the parent class with the same name.}}
 }
+class ChildBis extends Parent {}
+class ChildBisBis extends ChildBis {
+  public static void staticDifference(int i) {
+  }
+  private void privateMethod(){} // Compliant, we only check the first parent
+}
+
+class ChildTer extends ChildBisBis {
+  public void staticDifference(int i) {  // Noncompliant {{Rename this method or make it "static".}}
+  }
+
+}
+
 public class Parent2 {
 
   public void doSomething(Computer.Pear p) {
