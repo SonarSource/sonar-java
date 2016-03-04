@@ -101,6 +101,12 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
   private static List<File> getFilesForPattern(File baseDir, String pathPattern, boolean libraryProperty) {
     String dirPath = pathPattern;
     String filePattern;
+    if(pathPattern.endsWith(".jar") || pathPattern.endsWith(".zip")) {
+      File file = resolvePath(baseDir, pathPattern);
+      if (file.isFile()) {
+        return Lists.newArrayList(file);
+      }
+    }
     int wildcardIndex = pathPattern.indexOf('*');
     if (wildcardIndex >= 0) {
       dirPath = pathPattern.substring(0, wildcardIndex);

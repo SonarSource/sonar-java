@@ -95,7 +95,7 @@ public class JavaClasspathTest {
 
   @Test
   public void absolute_file_name_should_be_resolved() {
-    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/bytecode/lib/hello.jar").getAbsolutePath());
+    settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, new File("src/test/files/classpath/lib/hello.jar").getAbsolutePath());
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(1);
     assertThat(javaClasspath.getElements().get(0)).exists();
