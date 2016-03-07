@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +31,12 @@ import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -455,6 +459,30 @@ public class TypeAndReferenceSolverTest {
   @Test
   public void assignment_expression() {
     assertThat(typeOf("var = 1")).isSameAs(variableSymbol.type);
+  }
+
+  @Test
+  public void parametrized_method_return_type_is_array() {
+    Type arrayType = returnTypeOf("<T> T[] foo(T t) { return null; }", "this.<String>foo(\"hello\");");
+    assertThat(arrayType.isArray()).isTrue();
+    assertThat(((JavaType.ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
+  }
+
+  @Test
+  public void parametrized_method_return_type_is_multidimensionnal_array() {
+    Type arrayType = returnTypeOf("<T> T[][][][][] foo(T t) { return null; }", "this.<String>foo(\"hello\");");
+    for (int i = 0; i < 4; i++) {
+      assertThat(arrayType.isArray()).isTrue();
+      arrayType = ((Type.ArrayType) arrayType).elementType();
+    }
+    assertThat(((JavaType.ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
+  }
+
+  private Type returnTypeOf(String method, String invocation) {
+    CompilationUnitTree compilationUnit = treeOf("class A { " + method + " void test() { " + invocation + " } }");
+    MethodTree testMethod = (MethodTree) ((ClassTreeImpl) compilationUnit.types().get(0)).members().get(1);
+    ExpressionTree methodInvocation = ((ExpressionStatementTree) testMethod.block().body().get(0)).expression();
+    return methodInvocation.symbolType();
   }
 
   private static final String CHAR = "(char) 42";

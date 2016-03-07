@@ -104,7 +104,28 @@ public class Resolve {
         return parametrizedTypeCache.getWildcardType(substitutedType, wildCardType.boundType);
       }
     }
+    if (type instanceof JavaType.ArrayJavaType) {
+      return substituteTypeParameterInArray((JavaType.ArrayJavaType) type, substitution);
+    }
     return type;
+  }
+
+  private JavaType substituteTypeParameterInArray(JavaType.ArrayJavaType arrayType, TypeSubstitution substitution) {
+    JavaType rootElementType = arrayType.elementType;
+    int nbDimensions = 1;
+    while (rootElementType.isTagged(JavaType.ARRAY)) {
+      rootElementType = ((JavaType.ArrayJavaType) rootElementType).elementType;
+      nbDimensions++;
+    }
+    JavaType substitutedType = substitution.substitutedType(rootElementType);
+    if (substitutedType != null) {
+      // FIXME SONARJAVA-1574 a new array type should not be created but reused if already existing for the current element type
+      for (int i = 0; i < nbDimensions; i++) {
+        substitutedType = new JavaType.ArrayJavaType(substitutedType, symbols.arrayClass);
+      }
+      return substitutedType;
+    }
+    return arrayType;
   }
 
   /**
