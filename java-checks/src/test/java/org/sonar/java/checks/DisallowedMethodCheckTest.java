@@ -34,6 +34,15 @@ public class DisallowedMethodCheckTest {
   }
 
   @Test
+  public void all_overloads() {
+    DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
+    disallowedMethodCheck.setClassName("A");
+    disallowedMethodCheck.setMethodName("foo");
+    disallowedMethodCheck.setAllOverloads(true);
+    JavaCheckVerifier.verify("src/test/files/checks/DisallowedMethodCheck/detected.java", disallowedMethodCheck);
+  }
+
+  @Test
   public void empty_parameters() {
     DisallowedMethodCheck disallowedMethodCheck = new DisallowedMethodCheck();
     disallowedMethodCheck.setClassName("A");
