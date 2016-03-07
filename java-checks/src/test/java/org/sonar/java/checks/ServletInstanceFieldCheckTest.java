@@ -27,6 +27,7 @@ public class ServletInstanceFieldCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ServletInstanceFieldCheck.java", new ServletInstanceFieldCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ServletInstanceFieldCheck.java", new ServletInstanceFieldCheck());
   }
 
 }

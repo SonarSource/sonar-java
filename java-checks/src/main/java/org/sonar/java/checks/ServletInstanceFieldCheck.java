@@ -76,11 +76,14 @@ public class ServletInstanceFieldCheck extends SubscriptionBaseVisitor {
       tree.accept(new AssignmentVisitor());
     } else if (tree.is(Kind.VARIABLE)) {
       VariableTree variable = (VariableTree) tree;
-      if (isOwnedByAServlet(variable) && !isStaticOrFinal(variable)) {
+      if (isOwnedByAServlet(variable) && !isExcluded(variable)) {
         issuableVariables.add(variable);
-
       }
     }
+  }
+
+  private static boolean isExcluded(VariableTree variable) {
+    return isStaticOrFinal(variable) || variable.symbol().metadata().isAnnotatedWith("javax.inject.Inject");
   }
 
   private static boolean isServletInit(MethodTree tree) {

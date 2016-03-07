@@ -1,6 +1,9 @@
+package javax.inject;
+
 import javax.servlet.http.HttpServlet;
 import org.apache.struts.action.Action;
 
+@interface Inject{}
 class A {
   private String userName;
 }
@@ -31,4 +34,10 @@ class C extends Action {
   public C(String x) {
     finalVar = x;
   }
+}
+
+class D extends HttpServlet {
+
+  @Inject private String userName; // compliant annotated with inject;
+  private static String staticVar;
 }
