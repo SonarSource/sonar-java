@@ -23,10 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -44,7 +44,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
 @Rule(
@@ -55,7 +54,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("30min")
-public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseVisitor {
+public class SerializableFieldInSerializableClassCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -64,6 +63,9 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
     if (isSerializable(classTree) && !hasSpecialHandlingSerializationMethods(classTree)) {
       for (Tree member : classTree.members()) {
@@ -75,10 +77,16 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
   }
 
   private void checkVariableMember(VariableTree variableTree) {
-    if (!isStatic(variableTree) && !isTransientOrSerializable(variableTree) && !isCollectionOfSerializable(variableTree.type())) {
+    if (!isExcluded(variableTree)) {
       IdentifierTree simpleName = variableTree.simpleName();
       reportIssue(simpleName, "Make \"" + simpleName.name() + "\" transient or serializable.");
     }
+  }
+
+  private static boolean isExcluded(VariableTree variableTree) {
+    return isStatic(variableTree)
+      || isTransientSerializableOrInjected(variableTree)
+      || isCollectionOfSerializable(variableTree.type());
   }
 
   private static boolean isCollectionOfSerializable(TypeTree typeTree) {
@@ -119,8 +127,8 @@ public class SerializableFieldInSerializableClassCheck extends SubscriptionBaseV
     return hasReadObject && hasWriteObject;
   }
 
-  private static boolean isTransientOrSerializable(VariableTree member) {
-    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type());
+  private static boolean isTransientSerializableOrInjected(VariableTree member) {
+    return ModifiersUtils.hasModifier(member.modifiers(), Modifier.TRANSIENT) || isSerializable(member.type()) || member.symbol().metadata().isAnnotatedWith("javax.inject.Inject");
   }
 
   private static boolean isSerializable(Tree tree) {

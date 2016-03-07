@@ -1,7 +1,9 @@
+package javax.inject;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+@interface Inject {}
 
 class Address {
 }
@@ -56,6 +58,11 @@ class Person7 implements Serializable {
   Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
   Map<String, String> ok; // Compliant
 }
+
+class Person8 implements Serializable {
+  @Inject Address address; // Compliant field is injected
+}
+
 class MyObject {
 
 }
