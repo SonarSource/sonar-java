@@ -16,6 +16,6 @@ class A {
     homepage.getPath(); // Compliant
     Map<URI, URL> uriToUrl = new HashMap<>(); // Compliant
     Map uriToUrl2 = new Hashmap(); // Compliant
-    Map<> uriToUrl2 = new Hashmap<>(); // Compliant
+    Map<> uriToUrl3 = new Hashmap<>(); // Compliant
   }
 }

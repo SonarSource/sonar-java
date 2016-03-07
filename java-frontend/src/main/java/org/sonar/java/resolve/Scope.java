@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -35,7 +36,7 @@ public class Scope {
   final Scope next;
 
   protected ArrayListMultimap<String, JavaSymbol> symbols = ArrayListMultimap.create();
-  private final List<JavaSymbol> scopeSymbols = new ArrayList<>();
+  protected final List<JavaSymbol> scopeSymbols = new ArrayList<>();
 
   public Scope(JavaSymbol owner) {
     this.owner = owner;
@@ -48,6 +49,11 @@ public class Scope {
   }
 
   public void enter(JavaSymbol symbol) {
+    if(!symbol.isMethodSymbol() && symbols.containsKey(symbol.name)) {
+      for (JavaSymbol symInScope : symbols.get(symbol.name)) {
+        Preconditions.checkState(symInScope.kind != symbol.kind, "Registering symbol: '"+ symbol.name +"' twice in the same scope");
+      }
+    }
     symbols.put(symbol.name, symbol);
     scopeSymbols.add(symbol);
   }
@@ -64,6 +70,17 @@ public class Scope {
     return scopeSymbols;
   }
 
+  public static class NamedImportScope extends Scope {
+    public NamedImportScope(JavaSymbol owner) {
+      super(owner);
+    }
+
+    @Override
+    public void enter(JavaSymbol symbol) {
+      symbols.put(symbol.name, symbol);
+      scopeSymbols.add(symbol);
+    }
+  }
   public static class StarImportScope extends Scope {
 
     private final BytecodeCompleter bytecodeCompleter;

@@ -124,14 +124,14 @@ interface I {
   public C myField = null; // Compliant
 
   public void doSomething(); // not a field
-  public static MyImmutableCollection<String> immutableList; //Compliant : immutable collection
+  public static MyImmutableCollection<String> immutableList2; //Compliant : immutable collection
 
   public static Point p = new Point(); // Noncompliant
 
   // guava
-  public static final List<String> immutableList = ImmutableList.of("a");
-  public static final Set<String> immutableSet = ImmutableSet.of("a");
-  public static final Map<String, String> immutableMap = ImmutableMap.of("a", "a");
+  public static final List<String> immutableList3 = ImmutableList.of("a");
+  public static final Set<String> immutableSet2 = ImmutableSet.of("a");
+  public static final Map<String, String> immutableMap2 = ImmutableMap.of("a", "a");
 
   // apache commons collections 4.x
   public static final Map<String, String> immutableListApacheNew = new org.apache.commons.collections4.list.UnmodifiableList(new ArrayList<>());

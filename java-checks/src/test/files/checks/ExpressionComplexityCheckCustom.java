@@ -26,7 +26,7 @@ class A {
     boolean foo = true && true && true &&
       new Foo() {                                                     
         int a = true && true && true && false && false;
-        int a = true && true && true;                                 
+        int a2 = true && true && true;
       }.someThing() &&
       true;
   }

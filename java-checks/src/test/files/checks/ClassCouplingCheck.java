@@ -3,7 +3,7 @@ class Foo { // Noncompliant [[sc=7;ec=10]] {{Split this class into smaller and m
   T2 a2;    // Foo is coupled to T2
   T3 a3;    // Foo is coupled to T3
   T4 a4;    // etc.
-  T5 a6;
+  T5 a5;
   T6 a6;
   T7 a7;
   T8 a8;
@@ -20,9 +20,9 @@ class Foo { // Noncompliant [[sc=7;ec=10]] {{Split this class into smaller and m
   T19 a19;
   T20 a20;
   T21 a21;   // Counted just once
-  T21 a21;   // Counted just once
-  T21 a21;   // Counted just once
-  T21 a21;   // Counted just once
+  T21 a22;   // Counted just once
+  T21 a23;   // Counted just once
+  T21 a24;   // Counted just once
 }
 
 class Bar {  // Compliant
@@ -35,7 +35,7 @@ class Baz {  // Noncompliant
   T2 a2;
   T3 a3;
   T4 a4;
-  T5 a6;
+  T5 a5;
   T6 a6;
   T7 a7;
   T8 a8;
@@ -62,7 +62,7 @@ class Qix { // Compliant
     T2 a2;
     T3 a3;
     T4 a4;
-    T5 a6;
+    T5 a5;
     T6 a6;
     T7 a7;
     T8 a8;
@@ -87,7 +87,7 @@ class Qux { // Noncompliant
   T2 a2;
   T3 a3;
   T4 a4;
-  T5 a6;
+  T5 a5;
   T6 a6;
   T7 a7;
   T8 a8;
@@ -122,7 +122,7 @@ class Qex {  // Compliant
   T2 a2;
   T3 a3;
   T4 a4;
-  T5 a6;
+  T5 a5;
   T6 a6;
   T7 a7;
   T8 a8;
@@ -146,7 +146,7 @@ class Plop { // Noncompliant {{Split this class into smaller and more specialize
   List<T2> a2;
   List<T3> a3;
   List<T4> a4;
-  List<T5> a6;
+  List<T5> a5;
   List<T6> a6;
   List<T7> a7;
   List<T8> a8;

@@ -41,11 +41,11 @@ public class documentedClassPublic {
   public documentedClassPublic(int param){}
 }
 public class undocumentedClassPublic {
-  public Type undocumentedVarPublic, undocumentedVarPublic;
+  public Type undocumentedVar1Public, undocumentedVarPublic;
   /**
    * Doc.
    */
-  public Type documentedVarPublic, documentedVarPublic;
+  public Type documentedVar1Public, documentedVarPublic;
 }
 
 enum B{}

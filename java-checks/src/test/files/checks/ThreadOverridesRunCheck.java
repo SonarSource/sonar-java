@@ -16,7 +16,7 @@ class D {
     Thread t1 = new Thread() {// Noncompliant [[sc=21;ec=27]] {{Stop extending the Thread class as the "run" method is not overridden}}
 
     };
-    Thread t1 = new Thread() {//Compliant
+    Thread t2 = new Thread() {//Compliant
       @Override
       public void run() {
         super.run();

@@ -14,7 +14,7 @@ class B {
 
 class C {
   public int field;
-  private static int field;
+  private static int field2;
   void foo() {
     Object o = new Object() {
       private int field;

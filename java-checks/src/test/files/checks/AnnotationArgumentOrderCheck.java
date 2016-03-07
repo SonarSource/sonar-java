@@ -22,7 +22,7 @@ class MyClass {
   }
 
   List<@MyAnnotation(myInteger=2, myName="XXX") Object[]> field; // Noncompliant [[sc=9;ec=21]]
-  List<@MyAnnotation(myName="XXX", aaaLast = "") Object[]> field;
+  List<@MyAnnotation(myName="XXX", aaaLast = "") Object[]> field2;
 }
 
 @MyUnknownAnnotation(name = "XXX") // Compliant

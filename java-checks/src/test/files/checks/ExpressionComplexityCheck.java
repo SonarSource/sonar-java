@@ -26,7 +26,7 @@ class A {
     boolean foo = true && true && true &&                             // Noncompliant [[sc=19;ec=11;effortToFix=1]]
       new Foo() {                                                     
         int a = true && true && true && false && false;               // Noncompliant [[effortToFix=1]]
-        int a = true && true && true;                                 
+        int a2 = true && true && true;
       }.someThing() &&
       true;
   }

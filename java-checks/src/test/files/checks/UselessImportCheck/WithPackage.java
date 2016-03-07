@@ -43,10 +43,10 @@ class Foo2 extends Foo {
   @a.b.c.NonCompliant
   a.b.c.NonCompliant foo(a.b.c.NonCompliant bar) {
     List<CompliantClass1> ok = ImmutableList.<CompliantClass4>of();
-    Class ok = CompliantClass2.class;
+    Class ok2 = CompliantClass2.class;
     CompliantClass3.staticMethod("OK");
-    pkg.NonCompliant1 ok;
-    Array ok;
+    pkg.NonCompliant1 ok3;
+    Array ok4;
     tottttt a;
     System.out.println(something.t);
     foo(ArrayList::new);

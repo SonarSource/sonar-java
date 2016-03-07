@@ -21,8 +21,8 @@ class TooManyParametersExtended extends TooManyParameters {
 
 class MethodsUsingSpringRequestMapping {
   @org.springframework.web.bind.annotation.RequestMapping
-  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p6, String p8) {} // Compliant
+  void foo(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
 
   @RequestMapping
-  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p6, String p8) {} // Compliant
+  void bar(String p1, String p2, String p3, String p4, String p5, String p6, String p7, String p8) {} // Compliant
 }

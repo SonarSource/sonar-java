@@ -21,18 +21,21 @@ final class A {
   String string = "string";
   String strDouble = "123.3d";
   boolean bool = true;
-
-  long a = 0;
-  long b = 1;
-  long c = -1;
-
-  double a = 0.0d;
-  double b = 1.0d;
-  double c = -1.0d;
-
-  float a = 0.0f;
-  float b = 1.0f;
-  float c = -1.0f;
+  class A1 {
+    long a = 0;
+    long b = 1;
+    long c = -1;
+  }
+  class A2 {
+    double a = 0.0d;
+    double b = 1.0d;
+    double c = -1.0d;
+  }
+  class A3{
+    float a = 0.0f;
+    float b = 1.0f;
+    float c = -1.0f;
+  }
 
   private static final int CONSTANT = 42;
 

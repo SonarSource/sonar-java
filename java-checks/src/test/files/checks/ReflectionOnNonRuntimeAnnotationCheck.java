@@ -30,8 +30,8 @@ class A {
   public @interface Expose4 {}
   private void addMethod(Class<T> c) {
     Expose annotation = c.isAnnotationPresent(Expose1.class); //Compliant
-    Expose annotation = c.isAnnotationPresent(Expose2.class); // Noncompliant {{"@Expose2" is not available at runtime and cannot be seen with reflection.}}
-    Expose annotation = c.isAnnotationPresent(Expose3.class); // Noncompliant {{"@Expose3" is not available at runtime and cannot be seen with reflection.}}
-    Expose annotation = c.isAnnotationPresent(Expose4.class); // Noncompliant {{"@Expose4" is not available at runtime and cannot be seen with reflection.}}
+    Expose annotation2 = c.isAnnotationPresent(Expose2.class); // Noncompliant {{"@Expose2" is not available at runtime and cannot be seen with reflection.}}
+    Expose annotation3 = c.isAnnotationPresent(Expose3.class); // Noncompliant {{"@Expose3" is not available at runtime and cannot be seen with reflection.}}
+    Expose annotation4 = c.isAnnotationPresent(Expose4.class); // Noncompliant {{"@Expose4" is not available at runtime and cannot be seen with reflection.}}
   }
 }

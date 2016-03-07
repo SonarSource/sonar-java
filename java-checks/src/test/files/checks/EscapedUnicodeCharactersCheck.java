@@ -2,7 +2,7 @@
 class A {
   void method() {
     String prefix = "n\uuuu00E9e"; // Noncompliant [[sc=21;ec=34]] {{Remove this Unicode escape sequence and use the character instead.}}
-    String prefix = "n\\\uuuu00E9e"; // Noncompliant [[sc=21;ec=36]] {{Remove this Unicode escape sequence and use the character instead.}}
+    String prefix2= "n\\\uuuu00E9e"; // Noncompliant [[sc=21;ec=36]] {{Remove this Unicode escape sequence and use the character instead.}}
     prefix = "n\u00E9e\u0001v"; // Noncompliant
     // compliant, only escaped
     prefix = "\u00E9\u00E9\u00E9\u00E9";

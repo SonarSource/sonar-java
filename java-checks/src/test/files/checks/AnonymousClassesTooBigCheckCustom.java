@@ -51,8 +51,8 @@ class A {
       return 1;
     };
 
-    Callable<Integer> c1 = ()-> 1 + 2;
-    Callable<Integer> c1 = ()-> 1 + 2+ // Noncompliant {{Reduce this lambda expression number of lines from 7 to at most 6.}}
+    Callable<Integer> c2 = ()-> 1 + 2;
+    Callable<Integer> c3 = ()-> 1 + 2+ // Noncompliant {{Reduce this lambda expression number of lines from 7 to at most 6.}}
         2 +
         3 * 4 +
         5+

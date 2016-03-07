@@ -10,7 +10,7 @@ class A{
   Iterator iter = Collections.emptyIterator();
   String toto =  A.TOTO;
 
-  List<String> collection1 = Collections.emptyList(); //Compliant
-  Map<String, String> collection2 = Collections.emptyMap(); //Compliant
-  Set<String> collection3 = Collections.emptySet(); //Compliant
+  List<String> collection4 = Collections.emptyList(); //Compliant
+  Map<String, String> collection5 = Collections.emptyMap(); //Compliant
+  Set<String> collection6 = Collections.emptySet(); //Compliant
 }

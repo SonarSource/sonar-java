@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 import static org.mockito.Mockito.mock;
 
 public class ScopeTest {
@@ -29,16 +30,46 @@ public class ScopeTest {
   private JavaSymbol owner = mock(JavaSymbol.class);
 
   @Test
-  public void overloading() {
+  public void overloading_for_methods_only() {
     Scope scope = new Scope(owner);
 
-    JavaSymbol first = new JavaSymbol(0, 0, "overloaded", null);
-    scope.enter(first);
+    JavaSymbol firstMethod = new JavaSymbol(JavaSymbol.MTH, 0, "overloaded", null);
+    scope.enter(firstMethod);
 
-    JavaSymbol second = new JavaSymbol(0, 0, "overloaded", null);
+    JavaSymbol secondMethod = new JavaSymbol(JavaSymbol.MTH, 0, "overloaded", null);
+    scope.enter(secondMethod);
+
+    assertThat(scope.lookup("overloaded")).containsOnly(firstMethod, secondMethod);
+
+    try {
+      JavaSymbol firstVar = new JavaSymbol(JavaSymbol.VAR, 0, "overloaded", null);
+      scope.enter(firstVar);
+
+      JavaSymbol second = new JavaSymbol(JavaSymbol.VAR, 0, "overloaded", null);
+      scope.enter(second);
+      fail("second symbol should not be accepted by scope");
+    } catch (IllegalStateException iae) {
+      assertThat(iae).hasMessage("Registering symbol: 'overloaded' twice in the same scope");
+    } catch (Exception e) {
+      fail("second symbol should not be accepted by scope");
+    }
+  }
+
+  @Test
+  public void namedImport_should_accept_multiple_symbols() throws Exception {
+    Scope scope = new Scope.NamedImportScope(owner);
+    JavaSymbol firstMethod = new JavaSymbol(JavaSymbol.MTH, 0, "overloaded", null);
+    scope.enter(firstMethod);
+
+    JavaSymbol secondMethod = new JavaSymbol(JavaSymbol.MTH, 0, "overloaded", null);
+    scope.enter(secondMethod);
+
+    JavaSymbol firstVar = new JavaSymbol(JavaSymbol.VAR, 0, "overloaded", null);
+    scope.enter(firstVar);
+
+    JavaSymbol second = new JavaSymbol(JavaSymbol.VAR, 0, "overloaded", null);
     scope.enter(second);
-
-    assertThat(scope.lookup("overloaded")).containsOnly(first, second);
+    assertThat(scope.lookup("overloaded")).containsOnly(firstMethod, secondMethod, firstVar, second);
   }
 
   @Test

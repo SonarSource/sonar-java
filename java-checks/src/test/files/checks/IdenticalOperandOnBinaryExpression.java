@@ -19,7 +19,7 @@ class A {
     float f = 0.0f;
     if(f != f) {} //valid test for NaN
     if(d != d) {} //valid test for NaN
-    int j,k;
+    int j,l;
     int k = 1 << 1; //exclude this case for bit masks
     j = 12 - k -k; //case why minus is excluded.
     j = k - k; // Noncompliant

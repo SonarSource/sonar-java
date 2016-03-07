@@ -77,8 +77,8 @@ public class MyClass {
     Class<?> that = Object.class;
     ((Class<?>) getClass()).equals(that); // Compliant
 
-    Class<Object> that = Object.class;
-    getClass().equals(that); // False negative, if it is a Class<Object> then it cannot be a Class<MyClass>
+    Class<Object> that2 = Object.class;
+    getClass().equals(that2); // False negative, if it is a Class<Object> then it cannot be a Class<MyClass>
 
     List<String> listOfStrings;
     List<java.io.File> listOfFiles;

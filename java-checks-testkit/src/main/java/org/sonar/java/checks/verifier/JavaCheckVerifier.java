@@ -217,6 +217,9 @@ public class JavaCheckVerifier extends CheckVerifier {
     conf.setJavaVersion(javaCheckVerifier.javaVersion);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge, conf);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
+    if (testJavaFileScannerContext == null) {
+      Fail.fail("Semantic was required but it was not possible to create it. Please checks the logs to find out the reason.");
+    }
     javaCheckVerifier.checkIssues(testJavaFileScannerContext.getIssues(), javaCheckVerifier.providedJavaVersion);
   }
 

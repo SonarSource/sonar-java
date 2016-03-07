@@ -7,7 +7,7 @@ class FooClass {
 
   int usedField; // Compliant
 
-  public int foo; // Compliant
+  public int foo2; // Compliant
 
   private static final long serialVersionUID = 4858622370623524688L; // Compliant
   

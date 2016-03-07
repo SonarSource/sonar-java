@@ -39,7 +39,7 @@ class A {
     String[] args = {"echo", command, argument};
     pb.command(args); // Noncompliant
     
-    ProcessBuilder pb = new ProcessBuilder(getCommands());
+    pb = new ProcessBuilder(getCommands());
     
     String[] args2 = new String[] {"echo", "alpha", "tango"};
     pb.command(args2); // Noncompliant

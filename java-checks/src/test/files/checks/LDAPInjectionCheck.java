@@ -20,7 +20,7 @@ class A {
         // parameter concatenated directly into string
         filter,  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
         sc);
-    NamingEnumeration results = dctx.search(base+"",  // Noncompliant {{Make sure that "base" is sanitized before use in this LDAP request.}}
+    results = dctx.search(base+"",  // Noncompliant {{Make sure that "base" is sanitized before use in this LDAP request.}}
         // parameter concatenated directly into string
         filter,  // Noncompliant {{Make sure that "username" is sanitized before use in this LDAP request.}}
         sc);

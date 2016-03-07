@@ -45,7 +45,7 @@ public class Class {
 
     b = b = 1; // Compliant
 
-    int c = b = a; // Compliant
+    int d = b = a; // Compliant
 
     do {
       1 & 2 | 3; // Noncompliant {{Add parentheses to make the operator precedence explicit.}}

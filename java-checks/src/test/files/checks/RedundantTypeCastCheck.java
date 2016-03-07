@@ -18,17 +18,20 @@ class Outer {
     A[][] as = (A[][]) new B[1][1]; // Noncompliant {{Remove this unnecessary cast to "A[][]".}}
     B b;
     fun(b);
-    fun((A)b);
+    fun((A) b);
     List<B> bees = new java.util.ArrayList<B>();
     java.util.List<A> aaas = (java.util.List) bees;
+    C c = new C((A)null);
+    foo((List<List<A>>) (List<?>) foo2()); // compliant
+    obj = (Plop<String>) bar;
+  }
+  List<String> foo2() {
+
     int a = 1;
     int b = 2;
     double d = (double) a / (double) b;
     int c = (int)a; // Noncompliant {{Remove this unnecessary cast to "int".}}
     int e = (int) d;
-    obj = (Plop<String>) bar;
-    C c = new C((A)null);
-    foo((List<List<A>>) (List<?>) foo2()); // compliant
   }
   
   void foo(List<List<A>> a) {}

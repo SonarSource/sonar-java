@@ -40,7 +40,7 @@ class A {
     new Scanner(file); // Noncompliant
     new java.util.Scanner(new java.io.FileInputStream("")); // Noncompliant
     FileReader reader = null; // Noncompliant
-    FileReader reader = new FileReader(""); // Noncompliant
+    FileReader reader3 = new FileReader(""); // Noncompliant
     java.io.Reader reader2 = fileReader(); // Noncompliant [[sc=30;ec=40]]
     FileWriter writer = null; // Noncompliant
     java.io.Writer writer2 = fileWriter(); // Noncompliant

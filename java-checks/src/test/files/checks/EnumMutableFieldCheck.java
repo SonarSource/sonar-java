@@ -4,7 +4,7 @@ public enum Continent {
   EUROPE(50, 39310000);
 
   public int countryCount;  // Noncompliant [[sc=3;ec=9]] {{Lower the visibility of this field.}}
-  public static int countryCount;  // compliant, static field
+  public static int countryCount2;  // compliant, static field
   private int landMass;
 
   Continent(int countryCount, int landMass) {

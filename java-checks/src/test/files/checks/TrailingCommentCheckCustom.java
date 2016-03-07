@@ -15,11 +15,11 @@ class Foo {
   int d = 0; // This is also non-compliant
 
   int e = /* Compliant */ 0;
-  int d = 0; // NOSONAR
-  int d = 0; // NOPMD
-  int d = 0; // CHECKSTYLE:OFF
-  int d = 0; // checkstyle:off
-  int d = 0; // checkstyle:off explanation
+  int f = 0; // NOSONAR
+  int g = 0; // NOPMD
+  int h = 0; // CHECKSTYLE:OFF
+  int l = 0; // checkstyle:off
+  int m = 0; // checkstyle:off explanation
 
   void foo() {
     int[] m = new int[2];

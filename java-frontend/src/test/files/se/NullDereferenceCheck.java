@@ -492,11 +492,11 @@ class NullPointerTest {
     object2.hashCode();
 
     Object object3 = null;
-    int i = 0;
+    int j = 0;
     do {
-      if(i == 1) {
+      if(j == 1) {
         object3.hashCode(); // False negative
-      } else if(i == 0) {
+      } else if(j == 0) {
         object3 = new Object();
       }
     } while (condition);
@@ -558,9 +558,9 @@ class NullPointerTest {
     a = 1 + 2; // Coverage
   }
 
-  static int a;
+  static int a1;
   static {
-    a = 0;
+    a1 = 0;
   }
 
   public void hasNullableParameters(String a, @Nullable String b) {

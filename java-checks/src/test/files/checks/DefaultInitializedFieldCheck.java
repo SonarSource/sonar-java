@@ -37,7 +37,7 @@ class a {
   String str1 = "a";
   String str2;
   Integer int1 = null;  // Noncompliant {{Remove this initialization to "null", the compiler will do that for you.}}
-  Integer int1 = 0;
+  Integer int2 = 0;
 
   void method() {}
 

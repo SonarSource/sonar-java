@@ -4,15 +4,15 @@ import java.util.ArrayList;
 
 class A {
   private void f() {
-    com.sun.imageio.plugins.bmp a = new com.sun.imageio.plugins.bmp(); // Noncompliant
+    com.sun.imageio.plugins.bmp d = new com.sun.imageio.plugins.bmp(); // Noncompliant
     new com.sun.imageio.plugins.bmp(); // Noncompliant
     java.util.List a;
-    sun.Foo a; // Noncompliant
+    sun.Foo b; // Noncompliant
     db.setErrorHandler(new com.sun.org.apache.xml.internal.security.utils // Noncompliant
         .IgnoreAllErrorHandler());
     sun       // Noncompliant
         .Foo.toto
-        .asd a;
+        .asd c;
 
     new Foo<com.sun.Bar>() {}; // Noncompliant
   }

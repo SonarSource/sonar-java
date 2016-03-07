@@ -278,8 +278,6 @@ public class A {
     new FileInputStream(fileName).close(); // Compliant, but unlikely; check correct retrieval of value passed to method invocation.
   }
 
-  private final static int MAX_LOOP = 42;
-
   public void justToBeAbleToUseVerify() {
     FileInputStream stream = new FileInputStream("myFile"); // Noncompliant {{Close this "FileInputStream".}}
     stream.read();

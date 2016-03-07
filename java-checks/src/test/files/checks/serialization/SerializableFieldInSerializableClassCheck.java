@@ -11,8 +11,8 @@ class Person implements Serializable {
   Address address; // Noncompliant [[sc=11;ec=18]] {{Make "address" transient or serializable.}}
   A a;
   UnknownField unknownField;
-  static Address address;//Compliant : static field
-  transient Address address;
+  static Address address2;//Compliant : static field
+  transient Address address3;
 }
 enum A {
   B;
@@ -22,7 +22,7 @@ enum A {
 
 class Person2 implements Serializable {
   Address address; //Compliant: read/write methods are implemented
-  transient Address address;
+  transient Address address2;
   private void writeObject(java.io.ObjectOutputStream out) throws IOException {}
   private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {}
 }

@@ -54,13 +54,13 @@ public class JavaCheckVerifierTest {
   @Test
   public void verify_line_issues() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
-    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifier.java", visitor);
+    JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
   }
 
   @Test
   public void verify_line_issues_with_java_version() {
     IssuableSubscriptionVisitor visitor = new FakeVisitor().withDefaultIssues();
-    JavaCheckVerifier.verify("src/test/files/JavaCheckVerifier.java", visitor, 7);
+    JavaCheckVerifier.verify(FILENAME_ISSUES, visitor, 7);
   }
 
   @Test
