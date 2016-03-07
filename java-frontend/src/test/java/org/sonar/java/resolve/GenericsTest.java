@@ -421,7 +421,7 @@ public class GenericsTest {
 
     JavaType aType = (JavaType) elementTypes.get(0);
     JavaSymbol.MethodJavaSymbol bar = getMethodSymbol(aType, "bar");
-    // FIXME SONARJAVA-1498 type substitution not handled in '<T> List<T> Arrays.asList(T ...) {}'
+    // FIXME SONARJAVA-1298 type substitution not handled in '<T> List<T> Arrays.asList(T ...) {}'
     assertThat(bar.usages()).hasSize(0);
   }
 
@@ -617,11 +617,33 @@ public class GenericsTest {
     methodHasUsagesWithSameTypeAs(type, "f8", 0, "object");
     methodHasUsagesWithSameTypeAs(type, "f8", 1, "bType", "dType");
 
-    methodHasUsagesWithSameTypeAs(type, "f9", 0, "object");
-    // FIXME SONARJAVA-1298 'bType' does not match the contract '<T extends B & I>' !
-    methodHasUsagesWithSameTypeAs(type, "f9", 1, /* WRONG! */ "bType", "dType");
+    methodHasUsagesWithSameTypeAs(type, "f9", 0, "object", "object");
+    methodHasUsagesWithSameTypeAs(type, "f9", 1, "dType");
 
     methodHasUsagesWithSameTypeAs(type, "f10", "integer");
+  }
+
+  @Test
+  public void test_method_resolution_for_parametrized_method_with_provided_cascading_substitution() {
+    List<Type> elementTypes = declaredTypes(
+      "class Test {"
+        + "  <T extends X, X extends A> void foo(T t) {}"
+        + "  void foo(Object o) {}"
+
+        + "  void test() {"
+        + "    this.<B, A>foo(new B());"
+        + "    this.<A, A>foo(new B());"
+        + "    this.<A, B>foo(new B());"
+        + "  }"
+        + "}"
+        + "class A {}"
+        + "class B extends A {}");
+
+    JavaType type = (JavaType) elementTypes.get(0);
+    JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "foo", 0);
+    assertThat(methodSymbol.usages()).hasSize(2);
+    methodSymbol = getMethodSymbol(type, "foo", 1);
+    assertThat(methodSymbol.usages()).hasSize(1);
   }
 
   private static void methodHasUsagesWithSameTypeAs(JavaType type, String methodName, String... variables) {
