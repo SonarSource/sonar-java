@@ -85,7 +85,7 @@ public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implemen
     exceptions = Splitter.on(",").trimResults().split(exceptionsCommaSeparated);
     exceptionIdentifiers = Lists.newArrayList();
     for (String exception : exceptions) {
-      exceptionIdentifiers.add(exception.substring(exception.lastIndexOf(".") + 1));
+      exceptionIdentifiers.add(exception.substring(exception.lastIndexOf('.') + 1));
     }
     semanticModel = (SemanticModel) context.getSemanticModel();
     if (semanticModel != null) {

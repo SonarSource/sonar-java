@@ -56,7 +56,7 @@ public class OctalValuesCheck extends BaseTreeVisitor implements JavaFileScanner
   }
 
   private static boolean isOctal(String value) {
-    return value.startsWith("0") && !"0".equals(value) && !isHexadecimal(value) && !isBinary(value);
+    return value.charAt(0) == '0'  && !"0".equals(value) && !isHexadecimal(value) && !isBinary(value);
   }
 
   private static boolean isHexadecimal(String value) {

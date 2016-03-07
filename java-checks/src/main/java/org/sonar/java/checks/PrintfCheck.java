@@ -121,7 +121,7 @@ public class PrintfCheck extends AbstractMethodDetection {
     for (String rawParam : params) {
       if (rawParam.contains("$")) {
         result.add(getIndex(rawParam));
-      } else if (!rawParam.startsWith("<")) {
+      } else if (rawParam.charAt(0) != '<') {
         index++;
         result.add(index);
       }
@@ -166,8 +166,8 @@ public class PrintfCheck extends AbstractMethodDetection {
           reportIssue(mit, "Arguments are numbered starting from 1.");
           return;
         }
-        param = param.substring(param.indexOf("$") + 1);
-      } else if (param.startsWith("<")) {
+        param = param.substring(param.indexOf('$') + 1);
+      } else if (param.charAt(0) == '<') {
         //refers to previous argument
         argIndex = Math.max(0, argIndex - 1);
       }else {
@@ -185,23 +185,23 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private static Integer getIndex(String param) {
-    return Integer.valueOf(param.substring(0, param.indexOf("$")));
+    return Integer.valueOf(param.substring(0, param.indexOf('$')));
   }
 
   private void checkBoolean(MethodInvocationTree mit, String param, Type argType) {
-    if (param.startsWith("b") && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
+    if (param.charAt(0) == 'b' && !(argType.is("boolean") || argType.is("java.lang.Boolean"))) {
       reportIssue(mit, "Directly inject the boolean value.");
     }
   }
 
   private void checkNumerical(MethodInvocationTree mit, String param, Type argType) {
-    if (param.startsWith("d") && !isNumerical(argType)) {
+    if (param.charAt(0) == 'd' && !isNumerical(argType)) {
       reportIssue(mit, "An 'int' is expected rather than a " + argType + ".");
     }
   }
 
   private void checkTimeConversion(MethodInvocationTree mit, String param, Type argType) {
-    if (param.startsWith("t") || param.startsWith("T")) {
+    if (param.charAt(0) == 't' || param.charAt(0) == 'T') {
       String timeConversion = param.substring(1);
       if (timeConversion.isEmpty()) {
         reportIssue(mit, "Time conversion requires a second character.");
@@ -282,7 +282,7 @@ public class PrintfCheck extends AbstractMethodDetection {
   }
 
   private static boolean firstArgumentIsLT(List<String> params, @Nullable String group) {
-    return params.isEmpty() && group != null && group.startsWith("<");
+    return params.isEmpty() && group != null && group.length() > 0 && group.charAt(0) == '<';
   }
 
 }

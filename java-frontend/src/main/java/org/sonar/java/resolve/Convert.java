@@ -54,7 +54,7 @@ public class Convert {
     Preconditions.checkArgument(!enclosingClassName.isEmpty(), "Enclosing class name should not be empty : " + shortName);
     int indexEnclosing = shortName.indexOf(enclosingClassName);
     Preconditions.checkState(indexEnclosing > -1, "Error short name does not include outerclass name : " + shortName + " -- " + enclosingClassName);
-    Preconditions.checkState(shortName.substring(indexEnclosing + enclosingClassName.length()).startsWith("$"));
+    Preconditions.checkState(shortName.substring(indexEnclosing + enclosingClassName.length()).charAt(0) == '$');
     return shortName.substring(indexEnclosing + enclosingClassName.length() + 1);
   }
 
