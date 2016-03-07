@@ -70,8 +70,8 @@ public class Scope {
     return scopeSymbols;
   }
 
-  public static class NamedImportScope extends Scope {
-    public NamedImportScope(JavaSymbol owner) {
+  public static class ImportScope extends Scope {
+    public ImportScope(JavaSymbol owner) {
       super(owner);
     }
 
@@ -81,7 +81,7 @@ public class Scope {
       scopeSymbols.add(symbol);
     }
   }
-  public static class StarImportScope extends Scope {
+  public static class StarImportScope extends ImportScope {
 
     private final BytecodeCompleter bytecodeCompleter;
 
@@ -103,7 +103,7 @@ public class Scope {
     }
   }
 
-  public static class StaticStarImportScope extends Scope {
+  public static class StaticStarImportScope extends ImportScope {
 
     private final BytecodeCompleter bytecodeCompleter;
 

@@ -57,7 +57,7 @@ public class ScopeTest {
 
   @Test
   public void namedImport_should_accept_multiple_symbols() throws Exception {
-    Scope scope = new Scope.NamedImportScope(owner);
+    Scope scope = new Scope.ImportScope(owner);
     JavaSymbol firstMethod = new JavaSymbol(JavaSymbol.MTH, 0, "overloaded", null);
     scope.enter(firstMethod);
 
@@ -70,6 +70,15 @@ public class ScopeTest {
     JavaSymbol second = new JavaSymbol(JavaSymbol.VAR, 0, "overloaded", null);
     scope.enter(second);
     assertThat(scope.lookup("overloaded")).containsOnly(firstMethod, secondMethod, firstVar, second);
+  }
+
+  @Test
+  public void starImport_should_accept_multiple_symbol() throws Exception {
+    Scope scope = new Scope.StarImportScope(owner, null);
+    JavaSymbol packagePck = new JavaSymbol(JavaSymbol.PCK, 0, "my.package", null);
+    scope.enter(packagePck);
+    scope.enter(packagePck);
+    assertThat(scope.scopeSymbols).hasSize(2);
   }
 
   @Test

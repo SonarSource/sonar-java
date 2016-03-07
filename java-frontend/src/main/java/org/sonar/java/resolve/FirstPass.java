@@ -112,7 +112,7 @@ public class FirstPass extends BaseTreeVisitor {
     env = new Resolve.Env();
     env.packge = compilationUnitPackage;
     env.scope = compilationUnitPackage.members;
-    env.namedImports = new Scope.NamedImportScope(compilationUnitPackage);
+    env.namedImports = new Scope.ImportScope(compilationUnitPackage);
     env.starImports = resolve.createStarImportScope(compilationUnitPackage);
     env.staticStarImports = resolve.createStaticStarImportScope(compilationUnitPackage);
     semanticModel.associateEnv(tree, env);
