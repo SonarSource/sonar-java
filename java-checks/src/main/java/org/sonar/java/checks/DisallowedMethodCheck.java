@@ -50,6 +50,9 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
   @RuleProperty(key = "argumentTypes", description = "Comma-delimited list of argument types, E.G. java.lang.String, int[], int")
   private String argumentTypes = "";
 
+  @RuleProperty(key = "allOverloads", defaultValue = "false", description = "Set to true to flag all overloads regardless of parameter type")
+  private boolean allOverloads = false;
+
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     if (StringUtils.isEmpty(methodName)) {
@@ -59,9 +62,13 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
     if (StringUtils.isNotEmpty(className)) {
       invocationMatcher.typeDefinition(className);
     }
-    String[] args = StringUtils.split(argumentTypes, ",");
-    for (String arg : args) {
-      invocationMatcher.addParameter(StringUtils.trim(arg));
+    if (allOverloads) {
+      invocationMatcher.withNoParameterConstraint();
+    } else {
+      String[] args = StringUtils.split(argumentTypes, ",");
+      for (String arg : args) {
+          invocationMatcher.addParameter(StringUtils.trim(arg));
+      }
     }
     return ImmutableList.of(invocationMatcher);
   }
@@ -81,5 +88,9 @@ public class DisallowedMethodCheck extends AbstractMethodDetection {
 
   public void setArgumentTypes(String argumentTypes) {
     this.argumentTypes = argumentTypes;
+  }
+
+  public void setAllOverloads(boolean allOverloads) {
+    this.allOverloads = allOverloads;
   }
 }
