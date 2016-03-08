@@ -1,6 +1,6 @@
 import com.google.common.io.Closer;
 
-class A {
+class A extends Exception {
   private void f() {
     Closer closer = Closer.create();
     try {
@@ -38,6 +38,10 @@ class A {
       throw closer.rethrow(e, A.class);
     } catch (Throwable e) {           // Compliant
       throw closer.rethrow(e, A.class, A.class);
+    } catch (Throwable e) {           // Compliant
+      throw closer.<A>rethrow(e, A.class);
+    } catch (Throwable e) {           // Compliant
+      throw closer.<A,A>rethrow(e, A.class, A.class);
     } finally {
     }
   }

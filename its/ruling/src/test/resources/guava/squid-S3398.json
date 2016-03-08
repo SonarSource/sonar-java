@@ -38,6 +38,9 @@
 826,
 847,
 ],
+'com.google.guava:guava:src/com/google/common/collect/MutableClassToInstanceMap.java':[
+81,
+],
 'com.google.guava:guava:src/com/google/common/collect/SortedMultisets.java':[
 156,
 163,

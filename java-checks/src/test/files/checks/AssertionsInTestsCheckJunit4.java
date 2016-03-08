@@ -40,7 +40,7 @@ public class AssertionsInTestsCheckTest {
   }
 
   @Test
-  public void compliant4() {  // Noncompliant - false positive - FIXME SONARJAVA-1298 should be correctly resolved when type inference is correct for parametrized methods
+  public void compliant4() {
     org.junit.Assert.assertThat("aaa", org.junit.matchers.JUnitMatchers.containsString("a"));
   }
 

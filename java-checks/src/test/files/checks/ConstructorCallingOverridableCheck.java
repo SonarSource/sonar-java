@@ -17,7 +17,7 @@ class A {
   
 }
 
-class B {
+class B extends A {
   
   B(B otherB) {
     nonFinalPublicMethod(); // Noncompliant {{Remove this call from a constructor to the overridable "nonFinalPublicMethod" method.}}
@@ -107,7 +107,7 @@ public class Foo {
   public Foo() {
     register(Foo.class); // Noncompliant
     Class<?> type = null;
-    register(type); // FIXME SONARJAVA-1298 - false negative - should be correctly resolved when type inference is correct for parametrized methods
+    register(type); // Noncompliant
     this.<A>register(B.class); // Noncompliant
   }
 

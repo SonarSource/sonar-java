@@ -8,6 +8,9 @@
 'jdk6:java/awt/MenuBar.java':[
 168,
 ],
+'jdk6:java/awt/color/ICC_Profile.java':[
+1085,
+],
 'jdk6:java/awt/dnd/DropTarget.java':[
 365,
 410,
@@ -70,6 +73,9 @@
 ],
 'jdk6:java/util/ArrayList.java':[
 572,
+],
+'jdk6:java/util/ResourceBundle.java':[
+2332,
 ],
 'jdk6:java/util/Scanner.java':[
 996,

@@ -1,3 +1,8 @@
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
+
 class A {
   void m1() {
     try {
@@ -32,5 +37,62 @@ class B {
       unknownMethod();
     } catch (Exception e) { // Compliant
     }
+  }
+}
+
+class ExceptionsWithParametrizedMethods {
+
+  void foo() {
+    try {
+      AccessController.doPrivileged(new B());
+    } catch (Exception e) { // Noncompliant
+    }
+
+    try {
+      java.security.AccessController.doPrivileged(
+        new java.security.PrivilegedAction() {
+          @Override
+          public Object run() {
+            return null;
+          }
+        });
+    } catch (Exception e) { // Noncompliant
+    }
+
+    try {
+      java.security.AccessController.doPrivileged(new C());
+    } catch (Exception e) { // Noncompliant
+    }
+
+    try {
+      java.security.AccessController.doPrivileged(new C());
+    } catch (PrivilegedActionException e) { // Compliant
+    }
+
+    try {
+      java.security.AccessController.doPrivileged(
+        new java.security.PrivilegedExceptionAction() {
+          @Override
+          public Object run() {
+            return null;
+          }
+        });
+    } catch (Exception e) { // Noncompliant
+    }
+  }
+
+  class B implements PrivilegedAction<Integer> {
+    @Override
+    public Integer run() {
+      return null;
+    }
+  }
+
+  class C implements PrivilegedExceptionAction<Integer> {
+    @Override
+    public Integer run() throws Exception {
+      return null;
+    }
+
   }
 }

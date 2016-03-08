@@ -7,6 +7,7 @@ class Outer {
   class A {
   }
   class B extends A { }
+  List list;
   List<String> foo() {
     Object obj;
     Object o1 = (List<String>) foo(); // Noncompliant [[sc=18;ec=30]] {{Remove this unnecessary cast to "List".}}
@@ -24,6 +25,7 @@ class Outer {
     C c = new C((A)null);
     foo((List<List<A>>) (List<?>) foo2()); // compliant
     obj = (Plop<String>) bar;
+    String[] stringList = (String[]) list.toArray(new String[0]); // Compliant
   }
   List<String> foo2() {
 

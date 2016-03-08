@@ -90,7 +90,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private final Symbols symbols;
   private final Resolve resolve;
   private final ParametrizedTypeCache parametrizedTypeCache;
-  private final TypeInferenceSolver typeInferenceSolver;
+  private final TypeSubstitutionSolver typeSubstitutionSolver;
 
   private final Map<Tree, JavaType> types = Maps.newHashMap();
   Resolve.Env env;
@@ -100,7 +100,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     this.symbols = symbols;
     this.resolve = resolve;
     this.parametrizedTypeCache = parametrizedTypeCache;
-    this.typeInferenceSolver = new TypeInferenceSolver(parametrizedTypeCache, symbols);
+    this.typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     typesOfLiterals.put(Tree.Kind.BOOLEAN_LITERAL, symbols.booleanType);
     typesOfLiterals.put(Tree.Kind.NULL_LITERAL, symbols.nullType);
     typesOfLiterals.put(Tree.Kind.CHAR_LITERAL, symbols.charType);
@@ -269,7 +269,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         identifierTree = mse.identifier();
         Resolve.Resolution res = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
         resolvedSymbol = res.symbol();
-        JavaType resolvedType = typeInferenceSolver.applySubstitution(res.type(), getType(mse.expression()));
+        JavaType resolvedType = typeSubstitutionSolver.applySiteSubstitution(res.type(), getType(mse.expression()));
         registerType(identifierTree, resolvedType);
         registerType(tree, resolvedType);
       } else {

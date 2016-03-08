@@ -11,11 +11,8 @@
 50,
 50,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileActivity.java':[
-41,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/index/ActiveRuleDoc.java':[
-40,
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualityprofile/QProfileActivityQuery.java':[
+36,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/SearchClient.java':[
 82,

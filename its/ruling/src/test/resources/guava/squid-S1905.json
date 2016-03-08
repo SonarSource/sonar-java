@@ -1,10 +1,16 @@
 {
+'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedMap.java':[
+309,
+],
 'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
 107,
 112,
 ],
 'com.google.guava:guava:src/com/google/common/collect/MultimapBuilder.java':[
 213,
+],
+'com.google.guava:guava:src/com/google/common/collect/Multisets.java':[
+1009,
 ],
 'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedMultiset.java':[
 114,
