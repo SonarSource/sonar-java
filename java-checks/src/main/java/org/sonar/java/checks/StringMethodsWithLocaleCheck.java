@@ -50,8 +50,7 @@ public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
       MethodMatcher.create().typeDefinition(STRING).name("toUpperCase"),
-      MethodMatcher.create().typeDefinition(STRING).name("toLowerCase"),
-      MethodMatcher.create().typeDefinition(STRING).name("format").addParameter("java.lang.String").addParameter("java.lang.Object[]")
+      MethodMatcher.create().typeDefinition(STRING).name("toLowerCase")
     );
   }
 
