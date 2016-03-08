@@ -23,13 +23,13 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherFactory;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
-import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -43,11 +43,7 @@ import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Rule(
   key = "S3546",
@@ -82,7 +78,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     description = "the fully-qualified name of the method which closes the open resource, with or without a parameter list. E.G. \"org.assoc.res.MyResource#closeMe\" or \"org.assoc.res.MySpecialResource#closeMe(java.lang.String, int)\"")
   public String closingMethod = "";
 
-  private List<ConstructorMatcher> classConstructor;
+  private List<MethodMatcher> classConstructor;
   private List<MethodMatcher> factoryList;
   private List<MethodMatcher> openingList;
   private List<MethodMatcher> closingList;
@@ -127,10 +123,10 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     return false;
   }
 
-  List<ConstructorMatcher> constructorClasses() {
+  List<MethodMatcher> constructorClasses() {
     if (classConstructor == null) {
       if (constructor.length() > 0) {
-        classConstructor = ImmutableList.of(new ConstructorMatcher(constructor));
+        classConstructor = ImmutableList.of(MethodMatcherFactory.constructorMatcher(constructor));
       } else {
         classConstructor = ImmutableList.of();
       }
@@ -161,7 +157,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
   private List<MethodMatcher> createMethodMatchers(String rule) {
     if (rule.length() > 0) {
-      return ImmutableList.of(new MethodMatcher(rule));
+      return ImmutableList.of(MethodMatcherFactory.methodMatcher(rule));
     } else {
       return ImmutableList.of();
     }
@@ -257,7 +253,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     private boolean isCreatingResource(NewClassTree syntaxNode) {
-      for (ConstructorMatcher matcher : constructorClasses()) {
+      for (MethodMatcher matcher : constructorClasses()) {
         if (matcher.matches(syntaxNode)) {
           return true;
         }
@@ -279,126 +275,6 @@ public class CustomUnclosedResourcesCheck extends SECheck {
         if (matcher.matches(methodInvocation)) {
           return true;
         }
-      }
-      return false;
-    }
-  }
-
-  private abstract static class ArgumentMatcher {
-
-    private static final Pattern ARGUMENT_PATTERN = Pattern.compile("(\\w+[\\.\\w+]*(?:\\[\\])?)([,\\)])?");
-
-    private final String className;
-    private final List<String> arguments;
-
-    protected ArgumentMatcher(String descriptor) {
-      Matcher matcher = pattern().matcher(descriptor);
-      if (!matcher.find()) {
-        throw new IllegalArgumentException(errorMessage(descriptor));
-      }
-      className = matcher.group(1);
-      int n = initializeOtherArguments(matcher);
-      if ("(".equals(matcher.group(n))) {
-        arguments = new ArrayList<>();
-        String remainder = descriptor.substring(matcher.group().length());
-        if (!")".equals(remainder)) {
-          matcher = ARGUMENT_PATTERN.matcher(remainder);
-          while (matcher.find()) {
-            arguments.add(matcher.group(1));
-          }
-          if (!matcher.hitEnd()) {
-            throw new IllegalArgumentException(errorMessage(descriptor));
-          }
-        }
-      } else {
-        arguments = null;
-      }
-    }
-
-    protected boolean checkArguments(Arguments constructorArguments) {
-      if (arguments != null) {
-        Iterator<String> iterator = arguments.iterator();
-        for (ExpressionTree expressionTree : constructorArguments) {
-          Type argumentType = expressionTree.symbolType();
-          if (!(iterator.hasNext() && argumentType.isSubtypeOf(iterator.next()))) {
-            return false;
-          }
-        }
-      }
-      return true;
-    }
-
-    protected boolean checkType(Type type) {
-      return type.isSubtypeOf(className);
-    }
-
-    protected abstract Pattern pattern();
-
-    protected abstract int initializeOtherArguments(Matcher matcher);
-
-    protected abstract String errorMessage(String descriptor);
-  }
-
-  private static class ConstructorMatcher extends ArgumentMatcher {
-
-    private static final Pattern CLASS_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)([\\(])?");
-
-    ConstructorMatcher(String constructorDescriptor) {
-      super(constructorDescriptor);
-    }
-
-    @Override
-    protected Pattern pattern() {
-      return CLASS_PATTERN;
-    }
-
-    @Override
-    protected int initializeOtherArguments(Matcher matcher) {
-      return 2;
-    }
-
-    @Override
-    protected String errorMessage(String descriptor) {
-      return "Illegal constructor specification: " + descriptor;
-    }
-
-    boolean matches(NewClassTree syntaxNode) {
-      Type type = syntaxNode.identifier().symbolType();
-      return checkType(type) && checkArguments(syntaxNode.arguments());
-    }
-  }
-
-  private static class MethodMatcher extends ArgumentMatcher {
-
-    private static final Pattern METHOD_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)#(\\w+)([\\(])?");
-
-    private String methodName;
-
-    MethodMatcher(String methodDescriptor) {
-      super(methodDescriptor);
-    }
-
-    @Override
-    protected Pattern pattern() {
-      return METHOD_PATTERN;
-    }
-
-    @Override
-    protected int initializeOtherArguments(Matcher matcher) {
-      methodName = matcher.group(2);
-      return 3;
-    }
-
-    @Override
-    protected String errorMessage(String descriptor) {
-      return "Illegal method specification: " + descriptor;
-    }
-
-    boolean matches(MethodInvocationTree syntaxNode) {
-      Symbol symbol = syntaxNode.symbol();
-      if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
-        Type type = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression().symbolType();
-        return methodName.equals(symbol.name()) && checkType(type) && checkArguments(syntaxNode.arguments());
       }
       return false;
     }

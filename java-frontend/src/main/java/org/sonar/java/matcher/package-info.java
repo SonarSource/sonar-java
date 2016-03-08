@@ -17,26 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.methods;
+@ParametersAreNonnullByDefault
+package org.sonar.java.matcher;
 
-import org.junit.Test;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import static org.fest.assertions.Assertions.assertThat;
-
-public class NameCriteriaTest {
-
-  @Test
-  public void should_match_exact_name() {
-    NameCriteria nc = NameCriteria.is("equal");
-    assertThat(nc.matches("foo")).isFalse();
-    assertThat(nc.matches("equal")).isTrue();
-  }
-
-  @Test
-  public void should_match_prefix() {
-    NameCriteria nc = NameCriteria.startsWith("get");
-    assertThat(nc.matches("equal")).isFalse();
-    assertThat(nc.matches("get")).isTrue();
-    assertThat(nc.matches("getObject")).isTrue();
-  }
-}

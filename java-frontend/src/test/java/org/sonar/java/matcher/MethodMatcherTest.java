@@ -17,13 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.java.checks.methods;
+package org.sonar.java.matcher;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.JavaAstScanner;
+import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -69,13 +70,13 @@ public class MethodMatcherTest {
     matches.put(objectToString, new ArrayList<Integer>());
     matches.put(integerToString, new ArrayList<Integer>());
 
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/checks/methodMatcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/matcher/Test.java"), new VisitorsBridge(new Visitor(matches)));
 
     assertThat(matches.get(objectToString)).containsExactly(6, 14);
     assertThat(matches.get(integerToString)).containsExactly(14);
   }
 
-  class Visitor extends IssuableSubscriptionVisitor {
+  class Visitor extends SubscriptionVisitor {
 
     public Map<MethodMatcher, List<Integer>> matches;
 
@@ -92,7 +93,7 @@ public class MethodMatcherTest {
     public void visitNode(Tree tree) {
       super.visitNode(tree);
       for (Map.Entry<MethodMatcher, List<Integer>> entry : matches.entrySet()) {
-        boolean match  = false;
+        boolean match = false;
         MethodMatcher matcher = entry.getKey();
         if (tree.is(Tree.Kind.METHOD_INVOCATION)) {
           match = matcher.matches((MethodInvocationTree) tree);
