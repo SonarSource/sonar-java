@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -89,6 +90,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   private final Symbols symbols;
   private final Resolve resolve;
   private final ParametrizedTypeCache parametrizedTypeCache;
+  private final TypeInferenceSolver typeInferenceSolver;
 
   private final Map<Tree, JavaType> types = Maps.newHashMap();
   Resolve.Env env;
@@ -98,6 +100,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     this.symbols = symbols;
     this.resolve = resolve;
     this.parametrizedTypeCache = parametrizedTypeCache;
+    this.typeInferenceSolver = new TypeInferenceSolver(parametrizedTypeCache, symbols);
     typesOfLiterals.put(Tree.Kind.BOOLEAN_LITERAL, symbols.booleanType);
     typesOfLiterals.put(Tree.Kind.NULL_LITERAL, symbols.nullType);
     typesOfLiterals.put(Tree.Kind.CHAR_LITERAL, symbols.charType);
@@ -266,7 +269,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         identifierTree = mse.identifier();
         Resolve.Resolution res = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
         resolvedSymbol = res.symbol();
-        JavaType resolvedType = resolve.resolveTypeSubstitution(res.type(), getType(mse.expression()));
+        JavaType resolvedType = typeInferenceSolver.applySubstitution(res.type(), getType(mse.expression()));
         registerType(identifierTree, resolvedType);
         registerType(tree, resolvedType);
       } else {

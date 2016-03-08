@@ -606,9 +606,13 @@ public class GenericsTest {
     methodHasUsagesWithSameTypeAs(type, "f3", "integer");
     methodHasUsagesWithSameTypeAs(type, "f4", (String) null);
 
-    Type stringArray = getMethodInvocationType(getMethodSymbol(type, "f4"), 0);
+    Type stringArray = getMethodInvocationType(getMethodSymbol(type, "f4", 0), 0);
     assertThat(stringArray.isArray()).isTrue();
     assertThat(((JavaType.ArrayJavaType) stringArray).elementType.is("java.lang.String")).isTrue();
+    stringArray = getMethodInvocationType(getMethodSymbol(type, "f4", 1), 0);
+    assertThat(stringArray.isArray()).isTrue();
+    assertThat(((JavaType.ArrayJavaType) stringArray).elementType.isArray()).isTrue();
+    assertThat(((JavaType.ArrayJavaType) ((JavaType.ArrayJavaType) stringArray).elementType).elementType.is("java.lang.String")).isTrue();
 
     methodHasUsagesWithSameTypeAs(type, "f5", "cStringInteger", "cStringInteger", "cAB");
     methodHasUsagesWithSameTypeAs(type, "f6", "wcSuperA");
