@@ -107,7 +107,8 @@ public class Foo {
   public Foo() {
     register(Foo.class); // Noncompliant
     Class<?> type = null;
-    register(type); // Noncompliant
+    register(type); // FIXME SONARJAVA-1298 - false negative - should be correctly resolved when type inference is correct for parametrized methods
+    this.<A>register(B.class); // Noncompliant
   }
 
   public <T> void register(Class<? extends T> type) {

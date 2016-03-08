@@ -54,7 +54,7 @@ class Outer {
     public <T> T[] toArray(T[] a) {
       Object[] elementData;
       // Make a new array of a's runtime type, but my contents:
-      return (T[]) Arrays.copyOf(elementData, 12, a.getClass()); // Noncompliant {{Remove this unnecessary cast to "T[]".}}
+      return (T[]) Arrays.copyOf(elementData, 12, a.getClass()); // Compliant - The cast is mandatory!
     }
     String[] fun2(){
       return (String[]) null; // Noncompliant {{Remove this unnecessary cast to "String[]".}}
