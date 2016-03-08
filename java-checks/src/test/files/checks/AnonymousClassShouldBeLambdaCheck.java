@@ -98,4 +98,34 @@ class A {
     return "";
   }
 
+  interface MyHandler extends Handler{}
+  public abstract class Main {
+
+    public abstract void myMethod();
+
+    public static void main(String[] args) {
+      Main main = new Main() {
+
+        @Override
+        public void myMethod() {
+        }
+      };
+      main.myMethod();
+      Object o1 = new Object() {
+        public String toString(){
+          return null;
+        }
+      };
+      Object o12 = new MyHandler() { // Noncompliant
+        @Override
+        public String handle() {
+          return null;
+        }
+      };
+    }
+  }
+
+
+
+
 }

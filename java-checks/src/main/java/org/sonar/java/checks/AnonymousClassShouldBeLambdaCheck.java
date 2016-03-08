@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
+import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -80,10 +81,19 @@ public class AnonymousClassShouldBeLambdaCheck extends BaseTreeVisitor implement
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       TypeTree identifier = tree.identifier();
-      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && hasOnlyOneMethod(classBody.members())) {
+      if (!useThisIdentifier(classBody) && !enumConstants.contains(identifier) && isSAM(classBody)) {
         context.reportIssue(this, identifier, "Make this anonymous inner class a lambda" + context.getJavaVersion().java8CompatibilityMessage());
       }
     }
+  }
+
+  private static boolean isSAM(ClassTree classBody) {
+    if(hasOnlyOneMethod(classBody.members()) && classBody.symbol().isTypeSymbol()) {
+      // Verify class body is a subtype of an interface
+      JavaSymbol.TypeJavaSymbol symbol = (JavaSymbol.TypeJavaSymbol) classBody.symbol();
+      return symbol.getInterfaces().size() == 1 && symbol.getSuperclass().is("java.lang.Object");
+    }
+    return false;
   }
 
   private static boolean hasOnlyOneMethod(List<Tree> members) {
