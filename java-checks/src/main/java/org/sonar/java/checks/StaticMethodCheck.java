@@ -19,12 +19,6 @@
  */
 package org.sonar.java.checks;
 
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Objects;
-
-import javax.annotation.CheckForNull;
-
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -44,6 +38,12 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import javax.annotation.CheckForNull;
+
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.Objects;
+
 @Rule(
   key = "S2325",
   name = "\"private\" methods that don't access instance data should be \"static\"",
@@ -60,8 +60,7 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("writeObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectOutputStream")),
     MethodMatcher.create()
-      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData")
-  );
+      .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObjectNoData"));
 
   private JavaFileScannerContext context;
   private Deque<MethodReference> methodReferences = new LinkedList<>();
@@ -99,6 +98,18 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     if ("class".equals(tree.name()) || methodReferences.isEmpty()) {
       return;
     }
+    if (parentIs(tree, Tree.Kind.MEMBER_SELECT)) {
+      MemberSelectExpressionTree parent = (MemberSelectExpressionTree) tree.parent();
+      // Exclude identifiers used in member select, except for instance creation
+      // New class may use member select to denote an inner class
+      if (tree.equals(parent.identifier()) && !parentIs(parent, Tree.Kind.NEW_CLASS)) {
+        return;
+      }
+    }
+    visitTerminalIdentifier(tree);
+  }
+
+  private void visitTerminalIdentifier(IdentifierTree tree) {
     Symbol symbol = tree.symbol();
     MethodReference currentMethod = methodReferences.peek();
     if (symbol.isUnknown()) {
@@ -110,6 +121,10 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
     }
   }
 
+  private static boolean parentIs(Tree tree, Tree.Kind kind) {
+    return tree.parent() != null && tree.parent().is(kind);
+  }
+
   @Override
   public void visitMemberSelectExpression(MemberSelectExpressionTree tree) {
     if (tree.expression().is(Tree.Kind.IDENTIFIER)) {
@@ -119,10 +134,6 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         // No need to investigate selection on local symbols
         return;
       }
-    }
-    if (tree.expression().symbolType().isSubtypeOf("java.lang.Class")) {
-      // No need to investigate selection on a Class object
-      return;
     }
     super.visitMemberSelectExpression(tree);
   }

@@ -264,10 +264,12 @@
 474,
 478,
 556,
+567,
 588,
 618,
 626,
 634,
+642,
 664,
 679,
 749,
@@ -408,6 +410,7 @@
 129,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/DefaultRuleFinder.java':[
+121,
 152,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/DeprecatedRulesDefinitionLoader.java':[
@@ -420,6 +423,7 @@
 259,
 288,
 353,
+370,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/rule/RuleOperations.java':[
 153,

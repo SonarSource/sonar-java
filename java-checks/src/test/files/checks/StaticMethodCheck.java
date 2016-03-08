@@ -40,6 +40,16 @@ class Utilities {
     magicWord = value;
   }
 
+  private String getClassName() {
+    return getClass().getSimpleName();
+  }
+  
+  private void checkClassLoader() throws IllegalArgumentException {
+    if (getClass().getClassLoader() != null) {
+      throw new IllegalArgumentException ("invalid address type");
+  }
+  }
+
   private String getOtherWord() {
     return otherWord;
   }
