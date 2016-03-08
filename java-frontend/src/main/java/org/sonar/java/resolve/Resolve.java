@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Routines for name resolution.
@@ -48,14 +47,14 @@ public class Resolve {
   private final JavaSymbolNotFound symbolNotFound = new JavaSymbolNotFound();
 
   private final BytecodeCompleter bytecodeCompleter;
-  private final ParametrizedTypeCache parametrizedTypeCache;
+  private final TypeInferenceSolver typeInferenceSolver;
   private final Types types = new Types();
   private final Symbols symbols;
 
   public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter, ParametrizedTypeCache parametrizedTypeCache) {
     this.symbols = symbols;
     this.bytecodeCompleter = bytecodeCompleter;
-    this.parametrizedTypeCache = parametrizedTypeCache;
+    this.typeInferenceSolver = new TypeInferenceSolver(parametrizedTypeCache, symbols);
   }
 
   @Nullable
@@ -76,57 +75,6 @@ public class Resolve {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
   }
 
-  public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
-    if(isParametrizedType(definition)) {
-      return substituteTypeParameter(type, ((JavaType.ParametrizedTypeJavaType) definition).typeSubstitution);
-    }
-    return type;
-  }
-
-  private JavaType substituteTypeParameter(JavaType type, TypeSubstitution substitution) {
-    JavaType substitutedType = substitution.substitutedType(type);
-    if (substitutedType != null) {
-      return substitutedType;
-    }
-    if(isParametrizedType(type)) {
-      JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) type;
-      TypeSubstitution newSubstitution = new TypeSubstitution();
-      for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry : ptt.typeSubstitution.substitutionEntries()) {
-        newSubstitution.add(entry.getKey(), substituteTypeParameter(entry.getValue(), substitution));
-      }
-      return parametrizedTypeCache.getParametrizedTypeType(ptt.rawType.getSymbol(), newSubstitution);
-    }
-    if (type instanceof JavaType.WildCardType) {
-      JavaType.WildCardType wildCardType = (JavaType.WildCardType) type;
-      substitutedType = substitution.substitutedType(wildCardType.bound);
-      if (substitutedType != null) {
-        return parametrizedTypeCache.getWildcardType(substitutedType, wildCardType.boundType);
-      }
-    }
-    if (type instanceof JavaType.ArrayJavaType) {
-      return substituteTypeParameterInArray((JavaType.ArrayJavaType) type, substitution);
-    }
-    return type;
-  }
-
-  private JavaType substituteTypeParameterInArray(JavaType.ArrayJavaType arrayType, TypeSubstitution substitution) {
-    JavaType rootElementType = arrayType.elementType;
-    int nbDimensions = 1;
-    while (rootElementType.isTagged(JavaType.ARRAY)) {
-      rootElementType = ((JavaType.ArrayJavaType) rootElementType).elementType;
-      nbDimensions++;
-    }
-    JavaType substitutedType = substitution.substitutedType(rootElementType);
-    if (substitutedType != null) {
-      // FIXME SONARJAVA-1574 a new array type should not be created but reused if already existing for the current element type
-      for (int i = 0; i < nbDimensions; i++) {
-        substitutedType = new JavaType.ArrayJavaType(substitutedType, symbols.arrayClass);
-      }
-      return substitutedType;
-    }
-    return arrayType;
-  }
-
   /**
    * Finds field with given name.
    */
@@ -137,7 +85,7 @@ public class Resolve {
       if (symbol.kind == JavaSymbol.VAR) {
         if(isAccessible(env, site, symbol)) {
           resolution.symbol = symbol;
-          resolution.type = resolveTypeSubstitution(symbol.type, c.type);
+          resolution.type = typeInferenceSolver.applySubstitution(symbol.type, c.type);
           return resolution;
         } else {
           return Resolution.resolution(new AccessErrorJavaSymbol(symbol, Symbols.unknownType));
@@ -147,7 +95,7 @@ public class Resolve {
     if (c.getSuperclass() != null) {
       resolution = findField(env, site, name, c.getSuperclass().symbol);
       if (resolution.symbol.kind < bestSoFar.symbol.kind) {
-        resolution.type = resolveTypeSubstitution(resolution.symbol.type, c.getSuperclass());
+        resolution.type = typeInferenceSolver.applySubstitution(resolution.symbol.type, c.getSuperclass());
         bestSoFar = resolution;
       }
     }
@@ -448,16 +396,14 @@ public class Resolve {
         JavaSymbol best = selectBest(env, callSite, argTypes, typeParams, symbol, bestSoFar.symbol, autoboxing);
         if(best == symbol) {
           bestSoFar = Resolution.resolution(best);
-          bestSoFar.type = resolveTypeSubstitution(((JavaType.MethodJavaType) best.type).resultType, site);
-          JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) best;
-          bestSoFar.type = substituteTypeParameter(bestSoFar.type, getSubstitutionFromTypeParams(methodSymbol.typeVariableTypes, typeParams));
+          bestSoFar.type = typeInferenceSolver.inferReturnType((JavaSymbol.MethodJavaSymbol) best, site, typeParams);
         }
       }
     }
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
-      method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, superclass), site);
+      method.type = typeInferenceSolver.applySubstitution(typeInferenceSolver.applySubstitution(method.type, superclass), site);
       JavaSymbol best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
@@ -465,7 +411,7 @@ public class Resolve {
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
-      method.type = resolveTypeSubstitution(resolveTypeSubstitution(method.type, interfaceType), site);
+      method.type = typeInferenceSolver.applySubstitution(typeInferenceSolver.applySubstitution(method.type, interfaceType), site);
       JavaSymbol best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar.symbol, autoboxing);
       if(best == method.symbol) {
         bestSoFar = method;
@@ -488,86 +434,23 @@ public class Resolve {
       return bestSoFar;
     }
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) candidate;
-    boolean isVarArgs = methodJavaSymbol.isVarArgs();
-    List<JavaType> formals = ((JavaType.MethodJavaType) candidate.type).argTypes;
-    TypeSubstitution substitution = new TypeSubstitution();
-    if (!formals.isEmpty()) {
-      if (isParametrizedType(site)) {
-        formals = applySubstitution(formals, ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution);
-      }
-      if (!methodJavaSymbol.typeVariableTypes.isEmpty() && !typeParams.isEmpty()) {
-        substitution = getSubstitutionFromTypeParams(methodJavaSymbol.typeVariableTypes, typeParams);
-        if (substitution.size() == 0) {
-          return bestSoFar;
-        }
-        formals = applySubstitution(formals, substitution);
-      }
+    TypeInferenceSolver.TypeInference typeInference = typeInferenceSolver.inferTypes(methodJavaSymbol, site, typeParams);
+    if (typeInference == null) {
+      return bestSoFar;
     }
-    if (!isArgumentsAcceptable(argTypes, formals, isVarArgs, autoboxing)) {
+    if (!isArgumentsAcceptable(argTypes, typeInference.inferedTypes, methodJavaSymbol.isVarArgs(), autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
     if (!isAccessible(env, siteSymbol, candidate)) {
       return new AccessErrorJavaSymbol(candidate, Symbols.unknownType);
     }
-    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar, substitution);
+    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar, typeInference.substitution);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
       mostSpecific = bestSoFar;
     }
     return mostSpecific;
-  }
-
-  private static TypeSubstitution getSubstitutionFromTypeParams(List<JavaType.TypeVariableJavaType> typeVariableTypes, List<JavaType> typeParams) {
-    TypeSubstitution substitution = new TypeSubstitution();
-    if (typeVariableTypes.size() == typeParams.size()) {
-      // create naive substitution
-      for (int i = 0; i < typeVariableTypes.size(); i++) {
-        JavaType.TypeVariableJavaType typeVariableType = typeVariableTypes.get(i);
-        JavaType typeParam = typeParams.get(i);
-        substitution.add(typeVariableType, typeParam);
-      }
-      if (!isValidSubtitution(substitution)) {
-        // substitution discarded
-        return new TypeSubstitution();
-      }
-    }
-    return substitution;
-  }
-
-  private static boolean isValidSubtitution(TypeSubstitution substitutions) {
-    for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> substitution : substitutions.substitutionEntries()) {
-      if (!isValidSubstitution(substitutions, substitution.getKey(), substitution.getValue())) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private static boolean isValidSubstitution(TypeSubstitution candidate, JavaType.TypeVariableJavaType typeVar, JavaType typeParam) {
-    for (JavaType bound : typeVar.bounds) {
-      while (bound.isTagged(JavaType.TYPEVAR)) {
-        bound = candidate.substitutedType(bound);
-        if (bound == null) {
-          return false;
-        }
-      }
-      if (!typeParam.isSubtypeOf(bound)) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  private List<JavaType> applySubstitution(List<JavaType> types, TypeSubstitution substitution) {
-    if (substitution.size() == 0) {
-      return types;
-    }
-    List<JavaType> results = new ArrayList<>(types.size());
-    for (JavaType type : types) {
-      results.add(substituteTypeParameter(type, substitution));
-    }
-    return results;
   }
 
   /**
@@ -663,7 +546,7 @@ public class Resolve {
     if (methodJavaSymbol.isVarArgs()) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());
     }
-    m1ArgTypes = applySubstitution(m1ArgTypes, substitution);
+    m1ArgTypes = typeInferenceSolver.applySubstitution(m1ArgTypes, substitution);
     return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false);
   }
 
