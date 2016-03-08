@@ -260,12 +260,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if (tree.is(Tree.Kind.MEMBER_SELECT)) {
         MemberSelectExpressionTree mse = (MemberSelectExpressionTree) tree;
         if (JavaKeyword.CLASS.getValue().equals(mse.identifier().name())) {
-          resolveAs(mse.expression(), JavaSymbol.TYP, resolveEnv);
-          // member select ending with .class
-          registerType(tree, symbols.classType);
-          return symbols.classType.symbol;
+          // resolve type of expression xxx.class
+          return resolveClassType(tree, resolveEnv, mse);
         }
-
         identifierTree = mse.identifier();
         Resolve.Resolution res = getSymbolOfMemberSelectExpression(mse, kind, resolveEnv);
         resolvedSymbol = res.symbol();
@@ -293,6 +290,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       throw new IllegalStateException("Type not resolved " + tree);
     }
     return type.symbol;
+  }
+
+  private JavaSymbol resolveClassType(Tree tree, Resolve.Env resolveEnv, MemberSelectExpressionTree mse) {
+    resolveAs(mse.expression(), JavaSymbol.TYP, resolveEnv);
+    // member select ending with .class
+    JavaType expressionType = getType(mse.expression());
+    if (expressionType.isPrimitive()) {
+      expressionType = expressionType.primitiveWrapperType();
+    }
+    TypeSubstitution typeSubstitution = new TypeSubstitution();
+    typeSubstitution.add(symbols.classType.getSymbol().typeVariableTypes.get(0), expressionType);
+    JavaType parametrizedClassType = parametrizedTypeCache.getParametrizedTypeType(symbols.classType.symbol, typeSubstitution);
+    registerType(tree, parametrizedClassType);
+    return parametrizedClassType.symbol;
   }
 
   private Resolve.Resolution getSymbolOfMemberSelectExpression(MemberSelectExpressionTree mse, int kind, Resolve.Env resolveEnv) {

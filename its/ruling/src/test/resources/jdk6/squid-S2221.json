@@ -249,9 +249,6 @@
 'jdk6:java/util/concurrent/atomic/AtomicReference.java':[
 29,
 ],
-'jdk6:java/util/concurrent/atomic/AtomicReferenceArray.java':[
-40,
-],
 'jdk6:java/util/concurrent/atomic/AtomicReferenceFieldUpdater.java':[
 188,
 ],

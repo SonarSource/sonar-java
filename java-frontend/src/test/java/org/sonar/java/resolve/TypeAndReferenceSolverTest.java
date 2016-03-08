@@ -22,7 +22,6 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -254,8 +253,8 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOfExpression("var[42]")).isSameAs(((JavaType.ArrayJavaType) variableSymbol.type).elementType);
 
     // qualified_identifier[].class
-    assertThat(typeOfExpression("id[].class")).isSameAs(symbols.classType);
-    assertThat(typeOfExpression("id[][].class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("id[].class").erasure()).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("id[][].class").erasure()).isSameAs(symbols.classType);
 
     // qualified_identifier(arguments)
     assertThat(typeOf("argMethod(1)")).isSameAs(symbols.intType);
@@ -263,8 +262,11 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("MyClass.var2.method()")).isSameAs(symbols.intType);
 
     // qualified_identifier.class
-    assertThat(typeOfExpression("id.class")).isSameAs(symbols.classType);
-
+    JavaType idClassType = typeOfExpression("id.class");
+    assertThat(idClassType.erasure()).isSameAs(symbols.classType);
+    assertThat(idClassType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+    JavaType.ParametrizedTypeJavaType idClassTypeParameterized = (JavaType.ParametrizedTypeJavaType) idClassType;
+    assertThat(idClassTypeParameterized.typeSubstitution.substitutedType(idClassTypeParameterized.typeParameters().get(0))).isSameAs(Symbols.unknownType);
     // TODO id.<...>...
     assertThat(typeOfExpression("MyClass.this")).isSameAs(classSymbol.type);
     assertThat(typeOf("id.super(arguments)")).isSameAs(symbols.unknownType);
@@ -273,14 +275,26 @@ public class TypeAndReferenceSolverTest {
 
   @Test
   public void primary_basic_type() {
-    assertThat(typeOfExpression("int.class")).isSameAs(symbols.classType);
-    assertThat(typeOfExpression("int[].class")).isSameAs(symbols.classType);
-    assertThat(typeOfExpression("int[][].class")).isSameAs(symbols.classType);
+    JavaType intClassType = typeOfExpression("int.class");
+    assertThat(intClassType.erasure()).isSameAs(symbols.classType);
+    assertThat(intClassType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+    JavaType.ParametrizedTypeJavaType intClassTypeParameterized = (JavaType.ParametrizedTypeJavaType) intClassType;
+    assertThat(intClassTypeParameterized.typeSubstitution.substitutedType(intClassTypeParameterized.typeParameters().get(0))).isSameAs(symbols.intType.primitiveWrapperType());
+
+
+    JavaType stringClassType = typeOfExpression("java.lang.String.class");
+    assertThat(stringClassType.erasure()).isSameAs(symbols.classType);
+    assertThat(stringClassType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+    JavaType.ParametrizedTypeJavaType StringClassTypeParameterized = (JavaType.ParametrizedTypeJavaType) stringClassType;
+    assertThat(StringClassTypeParameterized.typeSubstitution.substitutedType(StringClassTypeParameterized.typeParameters().get(0))).isSameAs(symbols.stringType);
+
+    assertThat(typeOfExpression("int[].class").erasure()).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("int[][].class").erasure()).isSameAs(symbols.classType);
   }
 
   @Test
   public void primary_void() {
-    assertThat(typeOfExpression("void.class")).isSameAs(symbols.classType);
+    assertThat(typeOfExpression("void.class").erasure()).isSameAs(symbols.classType);
   }
 
   @Test
