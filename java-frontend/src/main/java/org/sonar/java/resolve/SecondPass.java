@@ -70,8 +70,8 @@ public class SecondPass implements JavaSymbol.Completer {
     Resolve.Env env = semanticModel.getEnv(symbol);
     JavaType.ClassJavaType type = (JavaType.ClassJavaType) symbol.type;
 
-    if ((symbol.flags() & Flags.INTERFACE) == 0) {
-      // If this is a class, enter symbol for "this"
+    if ((symbol.flags() & Flags.ANNOTATION) == 0) {
+      // If this is a class or interface (default methods), enter symbol for "this"
       symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "this", symbol.type, symbol));
     }
 
