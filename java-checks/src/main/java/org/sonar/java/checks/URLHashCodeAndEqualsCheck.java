@@ -27,6 +27,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 
 @Rule(
@@ -46,7 +48,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")
-public class URLHashCodeAndEqualsCheck extends SubscriptionBaseVisitor {
+public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_NET_URL = "java.net.URL";
 

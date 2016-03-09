@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -48,7 +49,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
 @SqaleConstantRemediation("5min")
-public class MainInServletCheck extends SubscriptionBaseVisitor {
+public class MainInServletCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> SERVLET_AND_EJB_CLASSES = ImmutableSet.of(
     "javax.servlet.http.HttpServlet",

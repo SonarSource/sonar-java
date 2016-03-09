@@ -29,6 +29,7 @@ import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -54,7 +55,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class HiddenFieldCheck extends SubscriptionBaseVisitor {
+public class HiddenFieldCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<ImmutableMap<String, VariableTree>> fields = Lists.newLinkedList();
   private final Deque<List<VariableTree>> excludedVariables = Lists.newLinkedList();

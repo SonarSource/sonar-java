@@ -27,6 +27,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
@@ -45,7 +46,7 @@ import java.util.regex.Pattern;
   tags = {Tag.CONFUSING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class EscapedUnicodeCharactersCheck extends SubscriptionBaseVisitor {
+public class EscapedUnicodeCharactersCheck extends IssuableSubscriptionVisitor {
 
   private static final Pattern UNICODE_ESCAPED_CHAR = Pattern.compile("\\\\u+[a-fA-F0-9]{4}");
   private static final Predicate<String> IS_PRINTABLE_ESCAPED_UNICODE = new Predicate<String>() {

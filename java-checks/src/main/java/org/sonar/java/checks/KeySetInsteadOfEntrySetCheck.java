@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -41,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
+
 import java.util.List;
 
 @Rule(
@@ -51,7 +53,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")
-public class KeySetInsteadOfEntrySetCheck extends SubscriptionBaseVisitor {
+public class KeySetInsteadOfEntrySetCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher MAP_GET_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("java.util.Map"))

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -41,7 +42,7 @@ import java.util.List;
   tags = {Tag.BAD_PRACTICE})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("1min")
-public class NoSonarCheck extends SubscriptionBaseVisitor {
+public class NoSonarCheck extends IssuableSubscriptionVisitor {
 
   private static final String PATTERN = "NOSONAR";
   private static final String MESSAGE = "Is //NOSONAR used to exclude false-positive or to hide real quality flaw ?";

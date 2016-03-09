@@ -28,6 +28,7 @@ import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -45,7 +46,7 @@ import java.util.List;
   tags = {Tag.BRAIN_OVERLOAD})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("20min")
-public class InnerClassTooManyLinesCheck extends SubscriptionBaseVisitor {
+public class InnerClassTooManyLinesCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 25;
 

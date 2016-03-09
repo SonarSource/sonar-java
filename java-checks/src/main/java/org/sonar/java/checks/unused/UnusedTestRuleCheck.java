@@ -24,8 +24,8 @@ import com.google.common.collect.ImmutableSet;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,7 +45,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
-public class UnusedTestRuleCheck extends SubscriptionBaseVisitor {
+public class UnusedTestRuleCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> CHECKED_RULE = ImmutableSet.of(
     "org.junit.rules.TemporaryFolder",

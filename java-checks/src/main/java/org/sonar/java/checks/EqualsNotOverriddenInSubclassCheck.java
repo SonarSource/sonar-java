@@ -20,12 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -49,7 +49,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("30min")
-public class EqualsNotOverriddenInSubclassCheck extends SubscriptionBaseVisitor {
+public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
     .add("lombok.EqualsAndHashCode")

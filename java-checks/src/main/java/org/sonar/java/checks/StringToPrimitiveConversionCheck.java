@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -51,7 +52,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")
-public class StringToPrimitiveConversionCheck extends SubscriptionBaseVisitor {
+public class StringToPrimitiveConversionCheck extends IssuableSubscriptionVisitor {
 
   private final List<PrimitiveCheck> primitiveChecks = buildPrimitiveChecks();
 

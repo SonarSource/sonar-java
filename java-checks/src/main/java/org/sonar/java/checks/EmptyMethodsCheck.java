@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -48,7 +49,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("5min")
-public class EmptyMethodsCheck extends SubscriptionBaseVisitor {
+public class EmptyMethodsCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {

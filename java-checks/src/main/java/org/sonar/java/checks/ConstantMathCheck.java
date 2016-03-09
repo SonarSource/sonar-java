@@ -29,6 +29,7 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -53,7 +54,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class ConstantMathCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
+public class ConstantMathCheck extends IssuableSubscriptionVisitor implements JavaFileScanner {
 
   private static final String ABS = "abs";
   private static final String CEIL = "ceil";

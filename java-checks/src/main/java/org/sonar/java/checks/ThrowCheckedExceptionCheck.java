@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -45,7 +46,7 @@ import java.util.List;
   tags = {Tag.ERROR_HANDLING})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1h")
-public class ThrowCheckedExceptionCheck extends SubscriptionBaseVisitor {
+public class ThrowCheckedExceptionCheck extends IssuableSubscriptionVisitor {
 
   private Deque<MethodTree> methods = new LinkedList<>();
 

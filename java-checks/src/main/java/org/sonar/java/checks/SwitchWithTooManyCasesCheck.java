@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
@@ -47,7 +48,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
 @SqaleConstantRemediation("30min")
-public class SwitchWithTooManyCasesCheck extends SubscriptionBaseVisitor {
+public class SwitchWithTooManyCasesCheck extends IssuableSubscriptionVisitor {
 
 
   private static final int DEFAULT_MAXIMUM_CASES = 30;

@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -41,7 +42,7 @@ import java.util.List;
 
 import static org.sonar.java.model.LiteralUtils.intLiteralValue;
 
-public abstract class AbstractForLoopRule extends SubscriptionBaseVisitor {
+public abstract class AbstractForLoopRule extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {

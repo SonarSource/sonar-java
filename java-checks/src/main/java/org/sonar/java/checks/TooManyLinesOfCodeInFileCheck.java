@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -41,7 +42,7 @@ import java.util.List;
   tags = {Tag.BRAIN_OVERLOAD})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1h")
-public class TooManyLinesOfCodeInFileCheck extends SubscriptionBaseVisitor {
+public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;
 

@@ -25,7 +25,10 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.JavaType.ClassJavaType;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -47,7 +50,15 @@ import java.util.List;
   tags = {Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("10min")
-public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor {
+public class ConstructorCallingOverridableCheck extends IssuableSubscriptionVisitor {
+
+  private SemanticModel semanticModel;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    semanticModel = (SemanticModel) context.getSemanticModel();
+    super.scanFile(context);
+  }
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -57,7 +68,7 @@ public class ConstructorCallingOverridableCheck extends SubscriptionBaseVisitor 
   @Override
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
-      TypeJavaSymbol constructorType = (TypeJavaSymbol) getSemanticModel().getEnclosingClass(tree);
+      TypeJavaSymbol constructorType = (TypeJavaSymbol) semanticModel.getEnclosingClass(tree);
       if (!constructorType.isFinal()) {
         ((MethodTree) tree).block().accept(new ConstructorBodyVisitor(constructorType));
       }

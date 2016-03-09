@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -192,7 +193,7 @@ public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScann
     return firstIndexOfDot == -1 ? reference : reference.substring(0, firstIndexOfDot);
   }
 
-  private static class CommentVisitor extends SubscriptionBaseVisitor {
+  private static class CommentVisitor extends IssuableSubscriptionVisitor {
     private Set<String> pendingImports;
 
     @Override

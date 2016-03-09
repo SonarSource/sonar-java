@@ -20,14 +20,14 @@
 package org.sonar.java.checks.methods;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.java.checks.SubscriptionBaseVisitor;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
-public abstract class AbstractMethodDetection extends SubscriptionBaseVisitor {
+public abstract class AbstractMethodDetection extends IssuableSubscriptionVisitor {
 
   private List<MethodMatcher> matchers;
 

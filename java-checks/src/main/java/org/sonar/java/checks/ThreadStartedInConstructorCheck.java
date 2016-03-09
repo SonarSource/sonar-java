@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -45,7 +46,7 @@ import java.util.List;
   tags = {Tag.MULTI_THREADING, Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
 @SqaleConstantRemediation("30min")
-public class ThreadStartedInConstructorCheck extends SubscriptionBaseVisitor {
+public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher THREAD_START = MethodMatcher.create()
     .typeDefinition("java.lang.Thread")

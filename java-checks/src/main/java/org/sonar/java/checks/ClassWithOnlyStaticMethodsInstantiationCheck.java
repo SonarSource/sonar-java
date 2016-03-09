@@ -24,7 +24,10 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -39,6 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -51,7 +55,14 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
-public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBaseVisitor {
+public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscriptionVisitor {
+  private SemanticModel semanticModel;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    semanticModel = (SemanticModel) context.getSemanticModel();
+    super.scanFile(context);
+  }
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -73,7 +84,7 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends SubscriptionBa
   }
 
   private boolean instantiateOwnClass(Tree identifier, Symbol.TypeSymbol newClassTypeSymbol) {
-    Type enclosingClassType = getSemanticModel().getEnclosingClass(identifier).type();
+    Type enclosingClassType = semanticModel.getEnclosingClass(identifier).type();
     return enclosingClassType.equals(newClassTypeSymbol.type());
   }
 

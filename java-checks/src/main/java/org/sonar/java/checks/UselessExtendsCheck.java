@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -48,7 +49,7 @@ import java.util.Set;
   tags = {Tag.CLUMSY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("1min")
-public class UselessExtendsCheck extends SubscriptionBaseVisitor implements JavaFileScanner {
+public class UselessExtendsCheck extends IssuableSubscriptionVisitor implements JavaFileScanner {
 
   private static final String ERROR_MESSAGE = "\"%s\" is listed multiple times.";
 

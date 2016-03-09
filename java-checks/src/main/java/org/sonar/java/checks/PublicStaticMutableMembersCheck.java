@@ -34,6 +34,7 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -50,6 +51,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.HashSet;
 import java.util.List;
@@ -63,7 +65,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("15min")
-public class PublicStaticMutableMembersCheck extends SubscriptionBaseVisitor {
+public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> ALWAYS_MUTABLE_TYPES = ImmutableSet.of(
     "java.awt.Point",

@@ -24,9 +24,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.java.ast.JavaAstScanner;
-import org.sonar.java.checks.SubscriptionBaseVisitor;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.VisitorsBridge;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -75,7 +75,7 @@ public class MethodMatcherTest {
     assertThat(matches.get(integerToString)).containsExactly(14);
   }
 
-  class Visitor extends SubscriptionBaseVisitor {
+  class Visitor extends IssuableSubscriptionVisitor {
 
     public Map<MethodMatcher, List<Integer>> matches;
 

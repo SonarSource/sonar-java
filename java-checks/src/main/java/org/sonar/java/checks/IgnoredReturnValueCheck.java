@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
@@ -43,7 +44,7 @@ import java.util.List;
   tags = {Tag.BUG, Tag.CERT, Tag.MISRA})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
-public class IgnoredReturnValueCheck extends SubscriptionBaseVisitor {
+public class IgnoredReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> CHECKED_TYPES = ImmutableList.<String>builder()
       .add("java.lang.String")

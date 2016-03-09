@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -47,7 +48,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class UselessParenthesesCheck extends SubscriptionBaseVisitor {
+public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<Tree> parent = new LinkedList<>();
   private static final Kind[] PARENT_EXPRESSION =  {

@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -61,7 +62,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
-public class DiamondOperatorCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
+public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private static final Tree.Kind[] JAVA_7_KINDS = new Tree.Kind[] {
     Tree.Kind.VARIABLE,

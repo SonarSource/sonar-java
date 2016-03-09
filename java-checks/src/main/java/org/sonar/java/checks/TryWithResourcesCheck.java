@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -47,7 +48,7 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("15min")
 @ActivatedByDefault
-public class TryWithResourcesCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
+public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private final Deque<TryStatementTree> withinTry = new LinkedList<>();
   private final Deque<List<Tree>> toReport = new LinkedList<>();

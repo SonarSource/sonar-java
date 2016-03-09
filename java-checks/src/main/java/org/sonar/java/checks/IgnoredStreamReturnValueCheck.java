@@ -28,6 +28,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
@@ -47,7 +48,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class IgnoredStreamReturnValueCheck extends SubscriptionBaseVisitor {
+public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodInvocationMatcherCollection MATCHERS = MethodInvocationMatcherCollection.create(
     inputStreamInvocationMatcher("skip", "long"),

@@ -28,6 +28,7 @@ import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.NameCriteria;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -53,7 +54,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ERRORS)
 @SqaleConstantRemediation("20min")
-public class ServletMethodsExceptionsThrownCheck extends SubscriptionBaseVisitor {
+public class ServletMethodsExceptionsThrownCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher IS_SERVLET_DO_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.subtypeOf("javax.servlet.http.HttpServlet")).name(NameCriteria.startsWith("do")).withNoParameterConstraint();

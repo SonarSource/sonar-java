@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -48,7 +49,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("2min")
-public class ConstantsShouldBeStaticFinalCheck extends SubscriptionBaseVisitor {
+public class ConstantsShouldBeStaticFinalCheck extends IssuableSubscriptionVisitor {
 
   private int nestedClassesLevel;
 

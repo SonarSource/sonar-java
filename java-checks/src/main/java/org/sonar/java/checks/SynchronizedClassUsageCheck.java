@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -51,7 +52,7 @@ import java.util.Map;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("20min")
-public class SynchronizedClassUsageCheck extends SubscriptionBaseVisitor {
+public class SynchronizedClassUsageCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<String, String> REPLACEMENTS = ImmutableMap.<String, String>builder()
     .put("java.util.Vector", "\"ArrayList\" or \"LinkedList\"")

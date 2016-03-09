@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -45,7 +46,7 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("30min")
 @ActivatedByDefault
-public class AssertionInThreadRunCheck extends SubscriptionBaseVisitor {
+public class AssertionInThreadRunCheck extends IssuableSubscriptionVisitor {
 
   private static final Iterable<String> CHECKED_TYPES = ImmutableList.of(
     "org.junit.Assert",

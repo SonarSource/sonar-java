@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -48,7 +49,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class NonSerializableWriteCheck extends SubscriptionBaseVisitor {
+public class NonSerializableWriteCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher WRITE_OBJECT_MATCHER = MethodMatcher.create()
     .typeDefinition("java.io.ObjectOutputStream")

@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -40,7 +41,7 @@ import java.util.Set;
   tags = {Tag.CERT, Tag.CONVENTION, Tag.MISRA, Tag.PITFALL})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("2min")
-public class UppercaseSuffixesCheck extends SubscriptionBaseVisitor {
+public class UppercaseSuffixesCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<Character> LITERAL_SUFFIXES = ImmutableSet.of('f', 'd', 'l');
 

@@ -25,6 +25,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -45,7 +46,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")
-public class LambdaOptionalParenthesisCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
+public class LambdaOptionalParenthesisCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

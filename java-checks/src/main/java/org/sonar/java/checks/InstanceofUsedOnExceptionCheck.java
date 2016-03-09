@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CatchTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -45,7 +46,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
-public class InstanceofUsedOnExceptionCheck extends SubscriptionBaseVisitor {
+public class InstanceofUsedOnExceptionCheck extends IssuableSubscriptionVisitor {
 
   private final Set<String> caughtVariables = Sets.newHashSet();
 

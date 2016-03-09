@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
@@ -35,7 +36,7 @@ import java.util.List;
   priority = Priority.INFO)
 @ActivatedByDefault
 @NoSqale
-public class TodoTagPresenceCheck extends SubscriptionBaseVisitor {
+public class TodoTagPresenceCheck extends IssuableSubscriptionVisitor {
 
   private static final String PATTERN = "TODO";
   private static final String MESSAGE = "Complete the task associated to this TODO comment.";

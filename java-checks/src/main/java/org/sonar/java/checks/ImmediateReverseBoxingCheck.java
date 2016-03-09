@@ -28,6 +28,7 @@ import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.checks.methods.TypeCriteria;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -55,7 +56,7 @@ import java.util.Map.Entry;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
 @SqaleConstantRemediation("5min")
-public class ImmediateReverseBoxingCheck extends SubscriptionBaseVisitor {
+public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
 
   private static final Map<String, String> PRIMITIVE_TYPES_BY_WRAPPER = ImmutableMap.<String, String>builder()
     .put("java.lang.Boolean", "boolean")

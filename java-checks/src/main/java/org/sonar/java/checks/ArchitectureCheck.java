@@ -26,6 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.resolve.JavaSymbol;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -46,7 +47,7 @@ import java.util.Set;
   priority = Priority.MAJOR)
 @RuleTemplate
 @NoSqale
-public class ArchitectureCheck extends SubscriptionBaseVisitor {
+public class ArchitectureCheck extends IssuableSubscriptionVisitor {
 
   @RuleProperty(description = "Optional. If this property is not defined, all classes should adhere to this constraint. Ex : **.web.**")
   String fromClasses = "";

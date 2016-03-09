@@ -20,6 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.resolve.SemanticModel;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -37,9 +40,16 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
+public abstract class AbstractInjectionChecker extends IssuableSubscriptionVisitor {
 
   protected String parameterName;
+  private SemanticModel semanticModel;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    semanticModel = (SemanticModel) context.getSemanticModel();
+    super.scanFile(context);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -71,8 +81,8 @@ public abstract class AbstractInjectionChecker extends SubscriptionBaseVisitor {
       return false;
     }
 
-    Tree enclosingBlockTree = getSemanticModel().getTree(getSemanticModel().getEnv(methodTree));
-    Tree argEnclosingDeclarationTree = getSemanticModel().getTree(getSemanticModel().getEnv(symbol));
+    Tree enclosingBlockTree = semanticModel.getTree(semanticModel.getEnv(methodTree));
+    Tree argEnclosingDeclarationTree = semanticModel.getTree(semanticModel.getEnv(symbol));
     if (enclosingBlockTree.equals(argEnclosingDeclarationTree)) {
       //symbol is a local variable, check it is not a dynamic string.
 

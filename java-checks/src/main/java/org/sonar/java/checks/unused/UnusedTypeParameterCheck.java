@@ -23,8 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.checks.SubscriptionBaseVisitor;
+import org.sonar.java.resolve.SemanticModel;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -45,7 +47,15 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")
-public class UnusedTypeParameterCheck extends SubscriptionBaseVisitor {
+public class UnusedTypeParameterCheck extends IssuableSubscriptionVisitor {
+
+  private SemanticModel semanticModel;
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    semanticModel = (SemanticModel) context.getSemanticModel();
+    super.scanFile(context);
+  }
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -68,7 +78,7 @@ public class UnusedTypeParameterCheck extends SubscriptionBaseVisitor {
         }
       }
       for (TypeParameterTree typeParameter : typeParameters) {
-        Symbol symbol = getSemanticModel().getSymbol(typeParameter);
+        Symbol symbol = semanticModel.getSymbol(typeParameter);
         if (symbol.usages().isEmpty()) {
           String message = new StringBuilder(typeParameter.identifier().name())
             .append(" is not used in the ")

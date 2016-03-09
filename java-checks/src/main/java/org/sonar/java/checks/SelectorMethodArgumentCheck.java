@@ -28,6 +28,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -55,7 +56,7 @@ import java.util.List;
   tags = {Tag.DESIGN})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MODULARITY)
 @SqaleConstantRemediation("15min")
-public class SelectorMethodArgumentCheck extends SubscriptionBaseVisitor {
+public class SelectorMethodArgumentCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {

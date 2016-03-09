@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.MethodInvocationMatcherCollection;
 import org.sonar.java.checks.methods.MethodMatcher;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -53,7 +54,7 @@ import java.util.List;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")
-public class CatchOfThrowableOrErrorCheck extends SubscriptionBaseVisitor {
+public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";
   private final ThrowableExceptionVisitor throwableExceptionVisitor = new ThrowableExceptionVisitor();

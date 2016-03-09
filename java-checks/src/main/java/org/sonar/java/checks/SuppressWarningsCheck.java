@@ -29,6 +29,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.LiteralUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
@@ -47,7 +48,7 @@ import java.util.List;
   tags = {})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
-public class SuppressWarningsCheck extends SubscriptionBaseVisitor {
+public class SuppressWarningsCheck extends IssuableSubscriptionVisitor {
 
   @RuleProperty(
     key = "listOfWarnings",

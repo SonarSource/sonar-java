@@ -30,6 +30,7 @@ import org.sonar.java.cfg.LocalVariableReadExtractor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -62,7 +63,7 @@ import java.util.Set;
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("15min")
-public class DeadStoreCheck extends SubscriptionBaseVisitor {
+public class DeadStoreCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {

@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -42,7 +43,7 @@ import java.util.List;
   tags = {Tag.CWE, Tag.OBSOLETE, Tag.OWASP_A9, Tag.SECURITY})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SOFTWARE_RELATED_PORTABILITY)
 @SqaleConstantRemediation("15min")
-public class CallToDeprecatedMethodCheck extends SubscriptionBaseVisitor {
+public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   private int nestedDeprecationLevel = 0;
 

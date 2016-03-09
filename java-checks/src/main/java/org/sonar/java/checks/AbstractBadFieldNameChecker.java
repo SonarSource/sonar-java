@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -29,7 +30,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public abstract class AbstractBadFieldNameChecker extends SubscriptionBaseVisitor {
+public abstract class AbstractBadFieldNameChecker extends IssuableSubscriptionVisitor {
 
   protected static final String DEFAULT_FORMAT_KEY = "format";
 

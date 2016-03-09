@@ -20,15 +20,16 @@
 package org.sonar.java.checks;
 
 import org.apache.commons.lang.StringUtils;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 
 public class CommentContainsPatternChecker {
 
-  private final SubscriptionBaseVisitor newCheck;
+  private final IssuableSubscriptionVisitor newCheck;
   private final String pattern;
   private final String message;
 
-  public CommentContainsPatternChecker(SubscriptionBaseVisitor check, String pattern, String message) {
+  public CommentContainsPatternChecker(IssuableSubscriptionVisitor check, String pattern, String message) {
     this.newCheck = check;
     this.pattern = pattern;
     this.message = message;

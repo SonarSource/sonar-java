@@ -27,6 +27,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.tag.Tag;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.CatchTree;
@@ -47,7 +48,7 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault
-public class CombineCatchCheck extends SubscriptionBaseVisitor implements JavaVersionAwareVisitor {
+public class CombineCatchCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
