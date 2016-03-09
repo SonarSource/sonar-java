@@ -103,7 +103,7 @@ public class StrutsTest {
     verifySameResults(metrics);
 
     // 48: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340 - 48-12);
     // 56 methods in anonymous classes: not part of metric but part of number of methods in project.
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429 - 56 + 8);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3859 - 145 /* SONAR-3793 */- 1 /* SONAR-3794 */+ 98 /* SONARJAVA-861 */);
@@ -116,7 +116,7 @@ public class StrutsTest {
 
     verifySameResults(metrics);
 
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(1340-12);
     assertThat(metrics.get("functions").intValue()).isEqualTo(1429);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(3859);
   }

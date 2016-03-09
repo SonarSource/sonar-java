@@ -76,7 +76,6 @@
 822,
 877,
 877,
-1739,
 ],
 'com.google.guava:guava:src/com/google/common/base/Converter.java':[
 95,
@@ -142,10 +141,8 @@
 82,
 111,
 111,
-220,
 259,
 259,
-311,
 349,
 349,
 ],
@@ -463,15 +460,11 @@
 136,
 161,
 226,
-366,
-382,
 ],
 'com.google.guava:guava:src/com/google/common/cache/CacheLoader.java':[
 53,
-143,
 178,
 178,
-211,
 242,
 ],
 'com.google.guava:guava:src/com/google/common/cache/CacheStats.java':[
@@ -538,8 +531,6 @@
 838,
 843,
 848,
-3484,
-3488,
 3507,
 3533,
 3563,
@@ -578,9 +569,6 @@
 'com.google.guava:guava:src/com/google/common/collect/AbstractIterator.java':[
 64,
 169,
-],
-'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java':[
-870,
 ],
 'com.google.guava:guava:src/com/google/common/collect/AbstractSequentialIterator.java':[
 44,
@@ -647,20 +635,12 @@
 'com.google.guava:guava:src/com/google/common/collect/ComputationException.java':[
 34,
 ],
-'com.google.guava:guava:src/com/google/common/collect/ComputingConcurrentHashMap.java':[
-294,
-],
 'com.google.guava:guava:src/com/google/common/collect/ConcurrentHashMultiset.java':[
 58,
 84,
 99,
 127,
 127,
-],
-'com.google.guava:guava:src/com/google/common/collect/Constraints.java':[
-62,
-105,
-291,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ContiguousSet.java':[
 42,
@@ -1266,7 +1246,6 @@
 417,
 438,
 445,
-766,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ImmutableSortedSetFauxverideShim.java':[
 46,
@@ -1316,7 +1295,6 @@
 63,
 112,
 112,
-120,
 ],
 'com.google.guava:guava:src/com/google/common/collect/Iterables.java':[
 65,
@@ -1446,12 +1424,10 @@
 1114,
 1136,
 1136,
-1160,
 1252,
 1252,
 1270,
 1270,
-1290,
 ],
 'com.google.guava:guava:src/com/google/common/collect/LinkedHashMultimap.java':[
 83,
@@ -1470,7 +1446,6 @@
 173,
 184,
 195,
-472,
 ],
 'com.google.guava:guava:src/com/google/common/collect/ListMultimap.java':[
 44,
@@ -1499,8 +1474,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/MapConstraints.java':[
 60,
-395,
-414,
 ],
 'com.google.guava:guava:src/com/google/common/collect/MapDifference.java':[
 32,
@@ -1539,7 +1512,6 @@
 708,
 713,
 718,
-3369,
 ],
 'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
 684,
@@ -2008,7 +1980,6 @@
 297,
 332,
 332,
-563,
 ],
 'com.google.guava:guava:src/com/google/common/collect/TreeBasedTable.java':[
 79,
@@ -2197,7 +2168,6 @@
 476,
 498,
 498,
-564,
 568,
 ],
 'com.google.guava:guava:src/com/google/common/hash/HashingInputStream.java':[
@@ -2312,9 +2282,6 @@
 413,
 413,
 572,
-],
-'com.google.guava:guava:src/com/google/common/io/CharSequenceReader.java':[
-43,
 ],
 'com.google.guava:guava:src/com/google/common/io/CharSink.java':[
 64,
@@ -3052,8 +3019,6 @@
 479,
 508,
 508,
-610,
-646,
 772,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/RateLimiter.java':[
@@ -3064,7 +3029,6 @@
 40,
 ],
 'com.google.guava:guava:src/com/google/common/util/concurrent/SerializingExecutor.java':[
-65,
 77,
 88,
 ],

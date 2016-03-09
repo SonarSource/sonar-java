@@ -181,10 +181,17 @@ public class PublicApiChecker extends BaseTreeVisitor {
     }
     if (isPublicInterface(classTree)) {
       return !hasOverrideAnnotation(methodTree);
-    } else if (isEmptyDefaultConstructor(methodTree) || hasOverrideAnnotation(methodTree) || classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)) {
+    } else if (isEmptyDefaultConstructor(methodTree)
+      || hasOverrideAnnotation(methodTree)
+      || classTree.is(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE)
+      || constructorOfNonPublicClass(methodTree, classTree)) {
       return false;
     }
     return hasPublic(methodTree.modifiers());
+  }
+
+  private static boolean constructorOfNonPublicClass(MethodTree methodTree, ClassTree classTree) {
+    return methodTree.is(Kind.CONSTRUCTOR) && !hasPublic(classTree.modifiers());
   }
 
   private static boolean isEmptyDefaultConstructor(MethodTree constructor) {

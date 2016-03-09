@@ -131,9 +131,9 @@ interface FooInterface {
 }
 
 /**
- *
+ * doc.
  */
-class FooClass {
+public class FooClass {
   /** constructor.
    */
   public FooClass(int a) { // Noncompliant {{Document the parameter(s): a}}
@@ -291,5 +291,10 @@ class AnonymousInnerClass {
         return 0;
       }
     };
+  }
+}
+
+class PublicConstructorOfNonPublicClass {
+  public PublicConstructorOfNonPublicClass(int a){
   }
 }

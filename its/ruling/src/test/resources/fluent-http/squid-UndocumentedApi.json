@@ -499,7 +499,6 @@
 25,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/internal/SimpleResponse.java':[
-96,
 101,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/internal/SimpleServerWrapper.java':[
@@ -580,17 +579,11 @@
 75,
 80,
 ],
-'net.code-story:http:src/main/java/net/codestory/http/markdown/FormulaPlugin.java':[
-25,
-],
 'net.code-story:http:src/main/java/net/codestory/http/markdown/MarkdownCompiler.java':[
 24,
 27,
 35,
 39,
-],
-'net.code-story:http:src/main/java/net/codestory/http/markdown/TablePlugin.java':[
-23,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/misc/Cache.java':[
 22,
@@ -689,7 +682,6 @@
 30,
 34,
 46,
-59,
 77,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/payload/DataSupplier.java':[
@@ -789,7 +781,6 @@
 24,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/routes/BoundFolderRoute.java':[
-33,
 60,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/routes/ConfigurationOverride.java':[
@@ -967,9 +958,6 @@
 40,
 60,
 94,
-],
-'net.code-story:http:src/main/java/net/codestory/http/routes/WebJarsRoute.java':[
-39,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/security/SessionIdStore.java':[
 21,

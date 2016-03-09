@@ -162,7 +162,7 @@ public class SquidUserGuideTest {
 
     // 69: SONARJAVA-861 separatedAccessorsFromMethods property of the measurer is set to true. Getters and setters ignored.
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762 - 69);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 69 - 23);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8462 - 80 /* SONAR-3793 */- 2 /* SONAR-3794 */+ 13 /* SONARJAVA-861 */);
   }
 
@@ -174,7 +174,7 @@ public class SquidUserGuideTest {
     verifySameResults(metrics);
 
     assertThat(metrics.get("functions").intValue()).isEqualTo(3762);
-    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221);
+    assertThat(metrics.get("public_api").intValue()).isEqualTo(3221 - 23);
     assertThat(metrics.get("complexity").intValue()).isEqualTo(8462);
   }
 

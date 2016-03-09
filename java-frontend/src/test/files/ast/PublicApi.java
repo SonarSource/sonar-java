@@ -143,6 +143,9 @@ class F {
 class ClassWithGettersAndSetters {
   private int myVarGetSet;
 
+  public ClassWithGettersAndSetters() {
+
+  }
   public void myMethodPublic() {
   }
 

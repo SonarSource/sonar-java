@@ -186,7 +186,6 @@
 228,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/component/ComponentsFinderSort.java':[
-37,
 42,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/component/DefaultComponentFinder.java':[
@@ -296,7 +295,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ComputationTempFolderProvider.java':[
 43,
-86,
 90,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ComputationThread.java':[
@@ -427,7 +425,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ws/IsQueueEmptyWebService.java':[
 41,
-57,
 61,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/computation/ws/QueueWsAction.java':[
@@ -564,7 +561,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/DataChange.java':[
 27,
 29,
-33,
 39,
 43,
 47,
@@ -719,7 +715,6 @@
 40,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FeedFileSources.java':[
-147,
 228,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FeedIssueLongDates.java':[
@@ -731,7 +726,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FileSourceDto.java':[
 107,
-203,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/InsertProjectsAuthorizationUpdatedAtMigration.java':[
 41,
@@ -752,7 +746,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v51/AddNewCharacteristics.java':[
 64,
-215,
 226,
 231,
 245,
@@ -773,7 +766,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v51/FeedEventsLongDates.java':[
 33,
 37,
-57,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v51/FeedFileSourcesBinaryData.java':[
 45,
@@ -888,7 +880,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/debt/DebtRulesXMLImporter.java':[
 55,
 59,
-191,
 195,
 200,
 204,
@@ -1286,7 +1277,6 @@
 64,
 75,
 85,
-221,
 253,
 258,
 262,
@@ -1431,7 +1421,6 @@
 392,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/IssuesFinderSort.java':[
-39,
 44,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/issue/PlanAction.java':[
@@ -1880,7 +1869,6 @@
 40,
 44,
 62,
-111,
 127,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/PersistentSettings.java':[
@@ -2716,7 +2704,6 @@
 27,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/search/Facets.java':[
-46,
 112,
 116,
 ],
@@ -2873,9 +2860,6 @@
 43,
 73,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/CharactersReader.java':[
-41,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/HtmlSourceDecorator.java':[
 30,
 33,
@@ -2942,7 +2926,6 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/ws/HashAction.java':[
 40,
 44,
-90,
 106,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/source/ws/IndexAction.java':[
@@ -3155,9 +3138,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/updatecenter/ws/UpdateCenterWs.java':[
 27,
-],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/CompatibilityRealm.java':[
-33,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/user/DatabaseSessionFilter.java':[
 28,

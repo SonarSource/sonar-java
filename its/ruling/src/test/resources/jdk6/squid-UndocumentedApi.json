@@ -40,7 +40,6 @@
 856,
 ],
 'jdk6:java/awt/AWTKeyStroke.java':[
-851,
 856,
 864,
 869,
@@ -57,7 +56,6 @@
 'jdk6:java/awt/BasicStroke.java':[
 474,
 474,
-524,
 534,
 541,
 543,
@@ -83,7 +81,6 @@
 'jdk6:java/awt/CardLayout.java':[
 59,
 60,
-61,
 200,
 312,
 323,
@@ -93,7 +90,6 @@
 342,
 ],
 'jdk6:java/awt/Checkbox.java':[
-699,
 708,
 763,
 ],
@@ -103,7 +99,6 @@
 'jdk6:java/awt/Choice.java':[
 145,
 155,
-731,
 ],
 'jdk6:java/awt/ColorPaintContext.java':[
 26,
@@ -125,7 +120,6 @@
 4282,
 4307,
 4312,
-4334,
 4343,
 4346,
 4349,
@@ -206,12 +200,10 @@
 4411,
 ],
 'jdk6:java/awt/Cursor.java':[
-197,
 200,
 ],
 'jdk6:java/awt/DefaultKeyboardFocusManager.java':[
 73,
-165,
 169,
 ],
 'jdk6:java/awt/Dialog.java':[
@@ -227,10 +219,8 @@
 'jdk6:java/awt/EventDispatchThread.java':[
 97,
 101,
-111,
 115,
 120,
-402,
 405,
 ],
 'jdk6:java/awt/EventFilter.java':[
@@ -240,7 +230,6 @@
 159,
 ],
 'jdk6:java/awt/GradientPaintContext.java':[
-74,
 209,
 209,
 ],
@@ -253,9 +242,6 @@
 80,
 99,
 117,
-],
-'jdk6:java/awt/GraphicsConfiguration.java':[
-381,
 ],
 'jdk6:java/awt/GraphicsEnvironment.java':[
 316,
@@ -280,9 +266,6 @@
 1521,
 2064,
 2121,
-],
-'jdk6:java/awt/Label.java':[
-308,
 ],
 'jdk6:java/awt/LayoutManager.java':[
 51,
@@ -312,12 +295,10 @@
 798,
 823,
 1136,
-1274,
 1280,
 1283,
 1318,
 1400,
-1475,
 ],
 'jdk6:java/awt/MediaTracker.java':[
 631,
@@ -346,9 +327,6 @@
 'jdk6:java/awt/ModalEventFilter.java':[
 27,
 ],
-'jdk6:java/awt/Polygon.java':[
-562,
-],
 'jdk6:java/awt/PrintGraphics.java':[
 22,
 ],
@@ -361,7 +339,6 @@
 175,
 ],
 'jdk6:java/awt/Robot.java':[
-144,
 147,
 ],
 'jdk6:java/awt/ScrollPane.java':[
@@ -413,17 +390,13 @@
 292,
 293,
 317,
-362,
 373,
 382,
-497,
 507,
 516,
 520,
-618,
 632,
 643,
-721,
 729,
 733,
 ],
@@ -441,7 +414,6 @@
 2256,
 2273,
 2293,
-2401,
 ],
 'jdk6:java/awt/Window.java':[
 355,
@@ -471,7 +443,6 @@
 306,
 ],
 'jdk6:java/awt/datatransfer/MimeTypeParameterList.java':[
-33,
 42,
 61,
 61,
@@ -656,8 +627,6 @@
 52,
 53,
 54,
-56,
-85,
 331,
 526,
 540,
@@ -706,7 +675,6 @@
 254,
 ],
 'jdk6:java/awt/geom/Area.java':[
-648,
 667,
 687,
 700,
@@ -1085,7 +1053,6 @@
 68,
 123,
 338,
-460,
 533,
 544,
 568,
@@ -1109,7 +1076,6 @@
 ],
 'jdk6:java/beans/Introspector.java':[
 216,
-1495,
 1571,
 ],
 'jdk6:java/beans/MetaData.java':[
@@ -1121,7 +1087,6 @@
 1386,
 ],
 'jdk6:java/beans/NameGenerator.java':[
-32,
 49,
 49,
 60,
@@ -1137,7 +1102,6 @@
 40,
 120,
 228,
-287,
 293,
 319,
 341,
@@ -1379,9 +1343,6 @@
 1780,
 1781,
 1782,
-1784,
-1790,
-1797,
 2145,
 2149,
 2264,
@@ -1406,7 +1367,6 @@
 218,
 ],
 'jdk6:java/io/SerialCallbackContext.java':[
-30,
 53,
 ],
 'jdk6:java/io/StringReader.java':[
@@ -1420,7 +1380,6 @@
 192,
 ],
 'jdk6:java/io/UnixFileSystem.java':[
-20,
 68,
 81,
 86,
@@ -1469,7 +1428,6 @@
 3014,
 ],
 'jdk6:java/lang/ClassLoader.java':[
-1581,
 2059,
 ],
 'jdk6:java/lang/Enum.java':[
@@ -1535,7 +1493,6 @@
 189,
 193,
 197,
-210,
 211,
 213,
 214,
@@ -1547,11 +1504,9 @@
 233,
 236,
 252,
-288,
 294,
 295,
 299,
-306,
 307,
 309,
 310,
@@ -1559,7 +1514,6 @@
 336,
 337,
 341,
-348,
 349,
 351,
 352,
@@ -1567,7 +1521,6 @@
 363,
 366,
 370,
-375,
 376,
 378,
 379,
@@ -1678,9 +1631,6 @@
 'jdk6:java/lang/management/MemoryUsage.java':[
 224,
 ],
-'jdk6:java/lang/ref/FinalReference.java':[
-15,
-],
 'jdk6:java/lang/ref/Finalizer.java':[
 156,
 ],
@@ -1775,7 +1725,6 @@
 74,
 ],
 'jdk6:java/net/InetAddress.java':[
-680,
 698,
 698,
 749,
@@ -2880,7 +2829,6 @@
 ],
 'jdk6:java/security/MessageDigest.java':[
 375,
-498,
 ],
 'jdk6:java/security/Permissions.java':[
 399,
@@ -2964,9 +2912,6 @@
 277,
 603,
 ],
-'jdk6:java/text/BreakDictionary.java':[
-120,
-],
 'jdk6:java/text/BreakIterator.java':[
 670,
 ],
@@ -3040,9 +2985,6 @@
 498,
 804,
 ],
-'jdk6:java/text/DictionaryBasedBreakIterator.java':[
-100,
-],
 'jdk6:java/text/DigitList.java':[
 86,
 87,
@@ -3057,8 +2999,6 @@
 30,
 31,
 32,
-34,
-37,
 ],
 'jdk6:java/text/FieldPosition.java':[
 91,
@@ -3068,7 +3008,6 @@
 277,
 ],
 'jdk6:java/text/MergeCollation.java':[
-52,
 71,
 ],
 'jdk6:java/text/MessageFormat.java':[
@@ -3120,18 +3059,12 @@
 54,
 61,
 68,
-185,
 190,
 ],
-'jdk6:java/text/RBCollationTables.java':[
-61,
-],
 'jdk6:java/text/RBTableBuilder.java':[
-47,
 60,
 ],
 'jdk6:java/text/RuleBasedBreakIterator.java':[
-306,
 508,
 508,
 532,
@@ -3568,7 +3501,6 @@
 2550,
 2652,
 2838,
-3617,
 3621,
 3625,
 3630,
@@ -3763,8 +3695,6 @@
 514,
 ],
 'jdk6:java/util/Properties.java':[
-387,
-392,
 911,
 ],
 'jdk6:java/util/PropertyPermission.java':[
@@ -4388,7 +4318,6 @@
 218,
 ],
 'jdk6:java/util/jar/JarVerifier.java':[
-78,
 93,
 170,
 188,
@@ -4518,6 +4447,5 @@
 27,
 28,
 29,
-30,
 ],
 }
