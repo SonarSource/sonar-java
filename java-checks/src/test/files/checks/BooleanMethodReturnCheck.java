@@ -1,4 +1,7 @@
+package javax.annotation;
 import org.apache.commons.lang.BooleanUtils;
+
+@interface CheckForNull{}
 
 class A {
   public Boolean myMethod() {
@@ -28,5 +31,10 @@ class B {
       }
     }
     return null; // Noncompliant [[sc=12;ec=16]] {{Null is returned but a "Boolean" is expected.}}
+  }
+
+  @CheckForNull
+  public java.lang.Boolean myMethod() {
+    return null; // compliant method is annotated with @CheckForNull
   }
 }

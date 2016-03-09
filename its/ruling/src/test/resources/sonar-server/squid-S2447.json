@@ -2,8 +2,4 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/ui/JRubyFacade.java':[
 123,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/util/RubyUtils.java':[
-143,
-150,
-],
 }

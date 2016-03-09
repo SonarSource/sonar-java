@@ -54,10 +54,17 @@ public class BooleanMethodReturnCheck extends SubscriptionBaseVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     MethodTree methodTree = (MethodTree) tree;
-    if (returnsBoolean(methodTree)) {
+    if (!isAnnotatedWithCheckForNull(methodTree) && returnsBoolean(methodTree)) {
       methodTree.accept(new ReturnStatementVisitor());
     }
+  }
+
+  private static boolean isAnnotatedWithCheckForNull(MethodTree methodTree) {
+    return methodTree.symbol().metadata().isAnnotatedWith("javax.annotation.CheckForNull");
   }
 
   private static boolean returnsBoolean(MethodTree methodTree) {

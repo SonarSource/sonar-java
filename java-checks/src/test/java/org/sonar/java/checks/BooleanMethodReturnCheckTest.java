@@ -27,5 +27,6 @@ public class BooleanMethodReturnCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/BooleanMethodReturnCheck.java", new BooleanMethodReturnCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/BooleanMethodReturnCheck.java", new BooleanMethodReturnCheck());
   }
 }
