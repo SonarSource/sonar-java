@@ -24,9 +24,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
-import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.matcher.MethodMatcherFactory;
-import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
@@ -41,8 +38,46 @@ import java.util.List;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.Fail.fail;
 
 public class MethodMatcherFactoryTest {
+
+  @Test
+  public void fail_arg() throws Exception {
+    try {
+      MethodMatcherFactory.methodMatcher("org.sonar.test.Test$match");
+      fail("Argument should not be accepted.");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae.getMessage()).contains("method");
+    }
+
+    try {
+      MethodMatcherFactory.constructorMatcher("   %");
+      fail("Argument should not be accepted.");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae.getMessage()).contains("constructor");
+    }
+
+    try {
+      MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String;int)");
+      fail("Argument should not be accepted.");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae.getMessage()).contains("constructor").contains("method");
+    }
+
+    try {
+      MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String,int)followed by anything");
+      fail("Argument should not be accepted.");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae.getMessage()).contains("constructor").contains("method");
+    }
+    try {
+      MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match this is an error");
+      fail("Argument should not be accepted.");
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae.getMessage()).contains("method");
+    }
+  }
 
   @Test
   public void methodFactoryMatching() {
@@ -59,20 +94,20 @@ public class MethodMatcherFactoryTest {
     visitor.add(intInt);
     visitor.add(onlyBoolean);
 
-    File testFile = buildTestFile( //
-      "package org.sonar.test;", //
-      "private class Test {", //
-      "   private void match(String a) {}", //
-      "   private void match(String a, int b) {}", //
-      "   private void match(int a, int b) {}", //
-      "   private void caller() {", //
-      "      match(new String());", //
-      "      match(new String(), 0);", //
-      "      match(new String(), 1);", //
-      "      match(0, 1);", //
-      "      match(1, 2);", //
-      "      match(3, 5);", //
-      "   }", //
+    File testFile = buildTestFile(
+      "package org.sonar.test;",
+      "private class Test {",
+      "   private void match(String a) {}",
+      "   private void match(String a, int b) {}",
+      "   private void match(int a, int b) {}",
+      "   private void caller() {",
+      "      match(new String());",
+      "      match(new String(), 0);",
+      "      match(new String(), 1);",
+      "      match(0, 1);",
+      "      match(1, 2);",
+      "      match(3, 5);",
+      "   }",
       "}");
     JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(visitor));
 
@@ -95,16 +130,16 @@ public class MethodMatcherFactoryTest {
     visitor.add(stringBuilder);
     visitor.add(stringBytes);
 
-    File testFile = buildTestFile( //
-      "package org.sonar.test;", //
-      "private class Test {", //
-      "   private void caller() {", //
-      "      byte[] bytes = \"Hello world!\".getBytes();", //
-      "      new String();", //
-      "      new String(new StringBuilder());", //
-      "      new String(bytes, 6, 5);", //
-      "      new String(bytes, 0, 5);", //
-      "   }", //
+    File testFile = buildTestFile(
+      "package org.sonar.test;",
+      "private class Test {",
+      "   private void caller() {",
+      "      byte[] bytes = \"Hello world!\".getBytes();",
+      "      new String();",
+      "      new String(new StringBuilder());",
+      "      new String(bytes, 6, 5);",
+      "      new String(bytes, 0, 5);",
+      "   }",
       "}");
     JavaAstScanner.scanSingleFileForTests(testFile, new VisitorsBridge(visitor));
 

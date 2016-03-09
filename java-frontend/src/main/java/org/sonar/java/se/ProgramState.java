@@ -402,6 +402,7 @@ public class ProgramState {
     return knownRelations;
   }
 
+  @CheckForNull
   public ObjectConstraint getConstraintWithStatus(SymbolicValue value, Object aState) {
     final Object constraint = getConstraint(value.wrappedValue());
     if (constraint instanceof ObjectConstraint) {

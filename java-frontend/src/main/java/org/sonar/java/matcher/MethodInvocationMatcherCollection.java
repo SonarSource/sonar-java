@@ -22,6 +22,7 @@ package org.sonar.java.matcher;
 import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 import java.util.Collections;
 import java.util.List;
@@ -60,6 +61,15 @@ public class MethodInvocationMatcherCollection {
   public boolean anyMatch(final MethodTree method) {
     for (MethodMatcher matcher : matchers) {
       if (matcher.matches(method)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean anyMatch(NewClassTree newClassTree) {
+    for (MethodMatcher matcher : matchers) {
+      if (matcher.matches(newClassTree)) {
         return true;
       }
     }

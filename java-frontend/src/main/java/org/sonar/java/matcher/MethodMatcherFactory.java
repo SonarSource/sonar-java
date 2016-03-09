@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 
 public class MethodMatcherFactory {
 
-  private static final Pattern CLASS_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)([\\(])?");
-  private static final Pattern METHOD_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)#(\\w+)([\\(])?");
-  private static final Pattern ARGUMENT_PATTERN = Pattern.compile("(\\w+[\\.\\w+]*(?:\\[\\])?)([,\\)])?");
+  private static final Pattern CLASS_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)(\\()?");
+  private static final Pattern METHOD_PATTERN = Pattern.compile("^(\\w+[\\.\\w+]*(?:\\[\\])?)#(\\w+)(\\()?");
+  private static final Pattern ARGUMENT_PATTERN = Pattern.compile("\\G(\\w+[\\.\\w+]*(?:\\[\\])?)([,\\)])");
 
   private MethodMatcherFactory() {
     // no instances, only static, factory methods
@@ -45,27 +45,32 @@ public class MethodMatcherFactory {
   public static MethodMatcher methodMatcher(String descriptor) {
     Matcher matcher = METHOD_PATTERN.matcher(descriptor);
     if (!matcher.find()) {
-      throw new IllegalArgumentException("Illegal constructor specification: " + descriptor);
+      throw new IllegalArgumentException("Illegal method specification: " + descriptor);
     }
-    MethodMatcher constructorMatcher = MethodMatcher.create().typeDefinition(matcher.group(1)).name(matcher.group(2));
-    collectArguments(descriptor, matcher, 3, constructorMatcher);
-    return constructorMatcher;
+    MethodMatcher methodMatcher = MethodMatcher.create().typeDefinition(matcher.group(1)).name(matcher.group(2));
+    collectArguments(descriptor, matcher, 3, methodMatcher);
+    return methodMatcher;
   }
 
-  public static void collectArguments(String descriptor, Matcher initialMatcher, final int groupOffset, MethodMatcher constructorMatcher) {
+  public static void collectArguments(String descriptor, Matcher initialMatcher, int groupOffset, MethodMatcher methodMatcher) {
     if ("(".equals(initialMatcher.group(groupOffset))) {
       String remainder = descriptor.substring(initialMatcher.group().length());
       if (!")".equals(remainder)) {
         Matcher matcher = ARGUMENT_PATTERN.matcher(remainder);
+        int matchedLength = 0;
         while (matcher.find()) {
-          constructorMatcher.addParameter(matcher.group(1));
+          methodMatcher.addParameter(matcher.group(1));
+          matchedLength = matcher.end();
         }
-        if (!matcher.hitEnd()) {
+        if (matchedLength < remainder.length()) {
           throw new IllegalArgumentException("Illegal method or constructor arguments specification: " + descriptor);
         }
       }
     } else {
-      constructorMatcher.withNoParameterConstraint();
+      if (initialMatcher.end() < descriptor.length()) {
+        throw new IllegalArgumentException("Illegal method or constructor arguments specification: " + descriptor);
+      }
+      methodMatcher.withNoParameterConstraint();
     }
   }
 }

@@ -20,17 +20,16 @@
 package org.sonar.java.matcher;
 
 import org.junit.Test;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
-import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MethodMatcherCollectionTest {
+public class MethodInvocationMatcherCollectionTest {
 
   @Test
   public void should_create_a_collection() {
@@ -67,11 +66,21 @@ public class MethodMatcherCollectionTest {
     MethodMatcher matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodInvocationTree.class))).thenReturn(true);
     assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodInvocationTree.class))).isTrue();
+    assertThat(MethodInvocationMatcherCollection.create(matcher1).anyMatch(mock(MethodInvocationTree.class))).isFalse();
 
     matcher1 = mock(MethodMatcher.class);
     when(matcher1.matches(any(MethodTree.class))).thenReturn(false);
     matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodTree.class))).thenReturn(true);
     assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodTree.class))).isTrue();
+    assertThat(MethodInvocationMatcherCollection.create(matcher1).anyMatch(mock(MethodTree.class))).isFalse();
+
+    matcher1 = mock(MethodMatcher.class);
+    when(matcher1.matches(any(NewClassTree.class))).thenReturn(false);
+    matcher2 = mock(MethodMatcher.class);
+    when(matcher2.matches(any(NewClassTree.class))).thenReturn(true);
+    assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(NewClassTree.class))).isTrue();
+    assertThat(MethodInvocationMatcherCollection.create(matcher1).anyMatch(mock(NewClassTree.class))).isFalse();
+
   }
 }

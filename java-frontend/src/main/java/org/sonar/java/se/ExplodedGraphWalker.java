@@ -665,19 +665,19 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     private final List<SECheck> seChecks = new ArrayList<>();
 
     public ExplodedGraphWalkerFactory(List<JavaFileScanner> scanners) {
-      List<SECheck> seChecks = new ArrayList<>();
+      List<SECheck> checks = new ArrayList<>();
       for (JavaFileScanner scanner : scanners) {
         if (scanner instanceof SECheck) {
-          seChecks.add((SECheck) scanner);
+          checks.add((SECheck) scanner);
         }
       }
-      alwaysTrueOrFalseChecker = removeOrDefault(seChecks, new ConditionAlwaysTrueOrFalseCheck());
+      alwaysTrueOrFalseChecker = removeOrDefault(checks, new ConditionAlwaysTrueOrFalseCheck());
       // This order of the mandatory SE checks is required by the ExplodedGraphWalker
-      this.seChecks.add(alwaysTrueOrFalseChecker);
-      this.seChecks.add(removeOrDefault(seChecks, new NullDereferenceCheck()));
-      this.seChecks.add(removeOrDefault(seChecks, new UnclosedResourcesCheck()));
-      this.seChecks.add(removeOrDefault(seChecks, new LocksNotUnlockedCheck()));
-      this.seChecks.addAll(seChecks);
+      seChecks.add(alwaysTrueOrFalseChecker);
+      seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));
+      seChecks.add(removeOrDefault(checks, new UnclosedResourcesCheck()));
+      seChecks.add(removeOrDefault(checks, new LocksNotUnlockedCheck()));
+      seChecks.addAll(checks);
     }
 
     public ExplodedGraphWalker createWalker(JavaFileScannerContext context) {
