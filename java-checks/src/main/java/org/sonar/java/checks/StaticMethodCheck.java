@@ -212,14 +212,12 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         return true;
       }
       if (scope.isTypeSymbol() && symbol.isTypeSymbol()) {
-        // FIXME use erasure until Parameterized types are correctly supported!
+        // FIXME use erasure because Parameterized types are correctly supported!
+        // when SONARJAVA-1298 is completed, just remove ".erasure()" in the next 2 lines
         Type scopeType = scope.type().erasure();
         Type symbolType = symbol.type().erasure();
         if (scopeType.isSubtypeOf(symbolType)) {
           return true;
-        }
-        if (!scope.isStatic()) {
-          return hasLocalAccess(scope.owner(), symbol);
         }
       }
       return false;
