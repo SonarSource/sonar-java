@@ -117,7 +117,7 @@ public class Struts139Test {
 
     assertThat(getCoreModuleMeasure("comment_lines").getIntValue()).isEqualTo(7605);
 
-    int expected_public_api = 2846 - 208;
+    int expected_public_api = 2846 - 208 - 15;
     assertThat(getProjectMeasure("public_api").getIntValue()).isEqualTo(expected_public_api);
   }
 
@@ -135,7 +135,7 @@ public class Struts139Test {
     assertThat(getProjectMeasure("classes").getIntValue()).isEqualTo(337);
     assertThat(getCoreModuleMeasure("files").getIntValue()).isEqualTo(134);
 
-    assertThat(getProjectMeasure("public_api").getIntValue()).isEqualTo(2846);
+    assertThat(getProjectMeasure("public_api").getIntValue()).isEqualTo(2846 - 15);
   }
 
   @Test
