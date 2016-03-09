@@ -34,6 +34,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
+import java.util.Locale;
 
 @Rule(
   key = "S2166",
@@ -56,7 +57,7 @@ public class ClassNamedLikeExceptionCheck extends SubscriptionBaseVisitor {
       ClassTree classTree = (ClassTree) tree;
       Symbol symbol = classTree.symbol();
       String className = symbol.name();
-      if (className.toLowerCase().endsWith("exception") && !symbol.type().isSubtypeOf("java.lang.Exception")) {
+      if (className.toLowerCase(Locale.US).endsWith("exception") && !symbol.type().isSubtypeOf("java.lang.Exception")) {
         String suffix = className.substring(className.length() - "exception".length());
         reportIssue(classTree.simpleName(), "Rename this class to remove \"" + suffix + "\" or correct its inheritance.");
       }

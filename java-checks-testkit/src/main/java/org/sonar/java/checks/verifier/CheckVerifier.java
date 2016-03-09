@@ -139,7 +139,7 @@ public abstract class CheckVerifier {
   private static void updateEndLine(int expectedLine, EnumMap<IssueAttribute, String> attr) {
     if (attr.containsKey(IssueAttribute.END_LINE)) {
       String endLineStr = attr.get(IssueAttribute.END_LINE);
-      if (endLineStr.startsWith("+")) {
+      if (endLineStr.charAt(0) == '+') {
         int endLine = Integer.parseInt(endLineStr);
         attr.put(IssueAttribute.END_LINE, Integer.toString(expectedLine + endLine));
       } else {

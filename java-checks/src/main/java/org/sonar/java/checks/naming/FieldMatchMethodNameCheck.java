@@ -38,6 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class FieldMatchMethodNameCheck extends SubscriptionBaseVisitor {
       Set<String> methodNames = Sets.newHashSet();
       Collection<Symbol> symbols = classSymbol.memberSymbols();
       for (Symbol sym : symbols) {
-        String symName = sym.name().toLowerCase();
+        String symName = sym.name().toLowerCase(Locale.US);
         if (sym.isVariableSymbol()) {
           indexSymbol.put(symName, sym);
           fields.add(symName);

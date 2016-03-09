@@ -37,6 +37,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
+import java.util.Locale;
 
 @Rule(
   key = "S2333",
@@ -82,7 +83,7 @@ public class RedundantModifierCheck extends SubscriptionBaseVisitor {
   private void checkRedundantModifier(ModifiersTree modifiersTree, Modifier modifier) {
     ModifierKeywordTree foundModifier = ModifiersUtils.getModifier(modifiersTree, modifier);
     if (foundModifier != null) {
-      reportIssue(foundModifier, "\"" + modifier.toString().toLowerCase() + "\" is redundant in this context.");
+      reportIssue(foundModifier, "\"" + modifier.toString().toLowerCase(Locale.US) + "\" is redundant in this context.");
     }
   }
 
