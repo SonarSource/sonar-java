@@ -31,6 +31,7 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -47,6 +48,10 @@ import java.util.List;
 @SqaleConstantRemediation("30min")
 public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisitor {
 
+  private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
+          .add("lombok.experimental.UtilityClass")
+          .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS);
@@ -55,7 +60,7 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
   @Override
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
-    if (!anonymousClass(classTree) && !extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
+    if (!hasExcludedAnnotation(classTree) && !anonymousClass(classTree) && !extendsAnotherClass(classTree) && hasOnlyStaticMembers(classTree)) {
       boolean hasImplicitPublicConstructor = true;
       for (MethodTree explicitConstructor : getExplicitConstructors(classTree)) {
         hasImplicitPublicConstructor = false;
@@ -133,6 +138,24 @@ public class UtilityClassWithPublicConstructorCheck extends SubscriptionBaseVisi
 
   private static boolean hasPublicModifier(MethodTree methodTree) {
     return ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PUBLIC);
+  }
+
+  private static boolean hasExcludedAnnotation(ClassTree classTree) {
+    for (String excludedAnnotation : EXCLUDED_ANNOTATIONS_TYPE) {
+      if (hasAnnotation(classTree.modifiers(), excludedAnnotation)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean hasAnnotation(ModifiersTree modifiers, String annotationName) {
+    for (AnnotationTree annotation : modifiers.annotations()) {
+      if (annotation.symbolType().is(annotationName)) {
+        return true;
+      }
+    }
+    return false;
   }
 
 }

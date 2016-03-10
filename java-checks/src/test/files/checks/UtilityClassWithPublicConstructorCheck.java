@@ -108,3 +108,9 @@ class Foo15 {
     public static void foo() {}
   };
 }
+
+@lombok.experimental.UtilityClass
+class Foo16 { // Compliant
+  public static void foo() {
+  }
+}
