@@ -31,8 +31,6 @@ import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
@@ -126,7 +124,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
   }
 
-  private abstract static class AbstractStatementVisitor extends CheckerTreeNodeVisitor {
+  private abstract class AbstractStatementVisitor extends CheckerTreeNodeVisitor {
 
     protected AbstractStatementVisitor(ProgramState programState) {
       super(programState);
@@ -142,10 +140,20 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     protected void openResource(Tree syntaxNode) {
-      SymbolicValue instanceValue = programState.peekValue();
-      programState = programState.addConstraint(instanceValue, new ObjectConstraint(false, false, syntaxNode, Status.OPENED));
+      SymbolicValue sv = programState.peekValue();
+      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, syntaxNode, Status.OPENED));
     }
 
+    protected boolean isClosingResource(MethodInvocationTree mit) {
+      return closingMethods().anyMatch(mit);
+    }
+
+    private MethodInvocationMatcherCollection closingMethods() {
+      if (closingList == null) {
+        closingList = createMethodMatchers(closingMethod);
+      }
+      return closingList;
+    }
   }
   private class PreStatementVisitor extends AbstractStatementVisitor {
 
@@ -159,24 +167,25 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
 
     @Override
-    public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
-      if (isOpeningResource(syntaxNode)) {
-        openResource(syntaxNode);
+    public void visitMethodInvocation(MethodInvocationTree mit) {
+      if (isOpeningResource(mit)) {
+        openResource(mit);
+      } else if (isClosingResource(mit)) {
+        closeResource(programState.peekValue());
       } else {
-        closeArguments(syntaxNode.arguments(), 1);
+        closeArguments(mit.arguments(), 1);
       }
+    }
+
+    private boolean isOpeningResource(MethodInvocationTree syntaxNode) {
+      return openingMethods().anyMatch(syntaxNode);
     }
 
     @Override
     public void visitReturnStatement(ReturnStatementTree syntaxNode) {
       ExpressionTree expression = syntaxNode.expression();
       if (expression != null) {
-        SymbolicValue currentVal = programState.peekValue();
-        if (expression.is(Tree.Kind.IDENTIFIER)) {
-          IdentifierTree identifier = (IdentifierTree) expression;
-          currentVal = programState.getValue(identifier.symbol());
-        }
-        closeResource(currentVal);
+        closeResource(programState.peekValue());
       }
     }
 
@@ -186,10 +195,6 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       for (SymbolicValue target : argumentValues) {
         closeResource(target);
       }
-    }
-
-    private boolean isOpeningResource(MethodInvocationTree syntaxNode) {
-      return openingMethods().anyMatch(syntaxNode);
     }
 
     private MethodInvocationMatcherCollection openingMethods() {
@@ -214,15 +219,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree mit) {
-      if (isClosingResource(mit)) {
-        ExpressionTree targetExpression = ((MemberSelectExpressionTree) mit.methodSelect()).expression();
-        if (targetExpression.is(Tree.Kind.IDENTIFIER)) {
-          IdentifierTree identifier = (IdentifierTree) targetExpression;
-          closeResource(programState.getValue(identifier.symbol()));
-        } else {
-          closeResource(programState.peekValue());
-        }
-      } else if (isCreatingResource(mit)) {
+      if (isCreatingResource(mit)) {
         openResource(mit);
       }
     }
@@ -252,16 +249,6 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       return factoryList;
     }
 
-    private boolean isClosingResource(MethodInvocationTree mit) {
-      return closingMethods().anyMatch(mit);
-    }
-
-    private MethodInvocationMatcherCollection closingMethods() {
-      if (closingList == null) {
-        closingList = createMethodMatchers(closingMethod);
-      }
-      return closingList;
-    }
   }
 
 }

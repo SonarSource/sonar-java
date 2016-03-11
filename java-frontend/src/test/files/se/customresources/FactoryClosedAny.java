@@ -6,7 +6,7 @@ package org.sonar.custom;
 
 
 public class GenericResource {
-  
+
   public static void correct(String name) {
     GenericResource resource = new ResourceFactory().createResource(name);
     try {
@@ -34,6 +34,14 @@ public class GenericResource {
     GenericResource resource = new ResourceFactory().createResource(channel);  // Noncompliant
     resource.use();
   }
+
+  public static void openCloseChainedCall() {
+    new ResourceFactory().createResource("").closeResource(""); // compliant chained call
+  }
+
+  public void method() {
+    return;
+  }
   
   public GenericResource(String name) {
   }
@@ -52,8 +60,13 @@ public class GenericResource {
 
 public class ResourceFactory {
   
-  public OpenedResource createResource(String name) {
+  public GenericResource createResource(String name) {
     return new GenericResource(name);  // Compliant because the opened resource is returned
+  }
+
+  public GenericResource foo(String name) {
+    GenericResource gr = new GenericResource(name);
+    return gr;  // Compliant because the opened resource is returned
   }
   
   public OpenedResource createResource(int channel) {
