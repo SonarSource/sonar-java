@@ -75,6 +75,10 @@ public class Resolve {
     return new Scope.StaticStarImportScope(owner, bytecodeCompleter);
   }
 
+  public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
+    return typeSubstitutionSolver.applySiteSubstitution(type, definition);
+  }
+
   /**
    * Finds field with given name.
    */
@@ -393,33 +397,26 @@ public class Resolve {
     // look in site members
     for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
       if (symbol.kind == JavaSymbol.MTH) {
-        JavaSymbol best = selectBest(env, callSite, argTypes, typeParams, symbol, bestSoFar.symbol, autoboxing);
-        if(best == symbol) {
-          bestSoFar = Resolution.resolution(best);
-          if (!isConstructor(symbol)) {
-            bestSoFar.type = typeSubstitutionSolver.getReturnType((JavaSymbol.MethodJavaSymbol) best, site, typeParams, argTypes);
-          }
+        Resolution best = selectBest(env, callSite, argTypes, typeParams, symbol, bestSoFar, autoboxing);
+        if (best.symbol == symbol) {
+          bestSoFar = best;
         }
       }
     }
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
-      if (!isConstructor(method.symbol)) {
-        method.type = typeSubstitutionSolver.applySiteSubstitution(typeSubstitutionSolver.applySiteSubstitution(method.type, superclass), site);
-      }
-      JavaSymbol best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar.symbol, autoboxing);
-      if(best == method.symbol) {
+      method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
+      Resolution best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
+      if (best.symbol == method.symbol) {
         bestSoFar = method;
       }
     }
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
-      if (!isConstructor(method.symbol)) {
-        method.type = typeSubstitutionSolver.applySiteSubstitution(typeSubstitutionSolver.applySiteSubstitution(method.type, interfaceType), site);
-      }
-      JavaSymbol best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar.symbol, autoboxing);
-      if(best == method.symbol) {
+      method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, interfaceType);
+      Resolution best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
+      if (best.symbol == method.symbol) {
         bestSoFar = method;
       }
     }
@@ -429,15 +426,11 @@ public class Resolve {
     return bestSoFar;
   }
 
-  private static boolean isConstructor(JavaSymbol symbol) {
-    return "<init>".equals(symbol.name);
-  }
-
   /**
    * @param candidate    candidate
    * @param bestSoFar previously found best match
    */
-  private JavaSymbol selectBest(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams, JavaSymbol candidate, JavaSymbol bestSoFar, boolean autoboxing) {
+  private Resolution selectBest(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams, JavaSymbol candidate, Resolution bestSoFar, boolean autoboxing) {
     JavaSymbol.TypeJavaSymbol siteSymbol = site.symbol;
     // TODO get rid of null check
     if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, siteSymbol) || candidate.type == null) {
@@ -447,26 +440,33 @@ public class Resolve {
     if(!hasCompatibleArity(methodJavaSymbol.parameterTypes().size(), argTypes.size(), methodJavaSymbol.isVarArgs())) {
       return bestSoFar;
     }
-    List<JavaType> formals = ((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes;
-    formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, site);
     TypeSubstitution substitution = typeSubstitutionSolver.getTypeSubstitution(methodJavaSymbol, site, typeParams, argTypes);
     if (substitution == null) {
       return bestSoFar;
     }
+    List<JavaType> formals = ((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes;
+    formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, site);
     formals = typeSubstitutionSolver.applySubstitutionToFormalParameters(formals, substitution);
     if (!isArgumentsAcceptable(argTypes, formals, methodJavaSymbol.isVarArgs(), autoboxing)) {
       return bestSoFar;
     }
     // TODO ambiguity, errors, ...
     if (!isAccessible(env, siteSymbol, candidate)) {
-      return new AccessErrorJavaSymbol(candidate, Symbols.unknownType);
+      Resolution resolution = new Resolution(new AccessErrorJavaSymbol(candidate, Symbols.unknownType));
+      resolution.type = Symbols.unknownType;
+      return resolution;
     }
-    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar, substitution);
+    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar.symbol, substitution);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
-      mostSpecific = bestSoFar;
+      return bestSoFar;
     }
-    return mostSpecific;
+
+    Resolution resolution = new Resolution(mostSpecific);
+    JavaType resturnType = ((JavaType.MethodJavaType) ((JavaSymbol.MethodJavaSymbol) mostSpecific).type).resultType;
+    resolution.type = typeSubstitutionSolver.getReturnType(resturnType, site, !typeParams.isEmpty(), substitution);
+
+    return resolution;
   }
 
   private static boolean hasCompatibleArity(int formalArgSize, int argSize, boolean isVarArgs) {

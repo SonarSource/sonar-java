@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,17 +55,17 @@ public class TypeSubstitutionSolver {
     return substitution;
   }
 
-  JavaType getReturnType(JavaSymbol.MethodJavaSymbol method, JavaType site, List<JavaType> typeParams, List<JavaType> argTypes) {
-    JavaType resultType = applySiteSubstitution(((JavaType.MethodJavaType) method.type).resultType, site);
-    if (isRawTypeOfParametrizedType(site) && typeParams.isEmpty()) {
+  JavaType getReturnType(@Nullable JavaType returnType, JavaType site, boolean parametrizedMethodCall, TypeSubstitution substitution) {
+    if (returnType == null) {
+      // case of constructors
+      return returnType;
+    }
+    JavaType resultType = applySiteSubstitution(returnType, site);
+    if (isRawTypeOfParametrizedType(site) && !parametrizedMethodCall) {
       // JLS8 5.1.9 + JLS8 15.12.2.6
       return resultType.erasure();
     }
-    TypeSubstitution substitution = getTypeSubstitution(method, site, typeParams, argTypes);
-    if (substitution != null) {
-      resultType = applySubstitution(resultType, substitution);
-    }
-    return resultType;
+    return applySubstitution(resultType, substitution);
   }
 
   private static boolean isRawTypeOfParametrizedType(JavaType site) {
@@ -83,6 +84,14 @@ public class TypeSubstitutionSolver {
       return applySubstitution(type, ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution);
     }
     return type;
+  }
+
+  JavaType applySiteSubstitution(@Nullable JavaType resolvedType, JavaType callSite, JavaType resolvedTypeDefinition) {
+    if (resolvedType == null) {
+      // case of constructors
+      return null;
+    }
+    return applySiteSubstitution(applySiteSubstitution(resolvedType, resolvedTypeDefinition), callSite);
   }
 
   List<JavaType> applySubstitutionToFormalParameters(List<JavaType> types, TypeSubstitution substitution) {
@@ -207,7 +216,7 @@ public class TypeSubstitutionSolver {
         return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
       } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
         for (JavaType superType : ((JavaType.ClassJavaType) argType).symbol.superTypes()) {
-          if (sameRawType(formalType, superType)) {
+          if (sameErasure(formalType, superType)) {
             return inferTypeSubstitution(method, currentSubstitution, isLastParam, formalType, superType);
           }
         }
@@ -220,7 +229,7 @@ public class TypeSubstitutionSolver {
     return currentSubstitution;
   }
 
-  private static boolean sameRawType(JavaType formalType, JavaType superType) {
+  private static boolean sameErasure(JavaType formalType, JavaType superType) {
     return formalType.erasure() == superType.erasure();
   }
 
