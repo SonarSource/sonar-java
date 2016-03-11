@@ -16,7 +16,7 @@ import static java.net.HttpURLConnection.*;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Collections.reverse;
 import static java.util.Collections.sort;; // extra empty statements should be ignored
-
+import static java.util.Collections.FOO.*;
 @SuppressWarnings("all")
 class ImportResolution {
   private NotImplementedTreeImpl annotationTree;

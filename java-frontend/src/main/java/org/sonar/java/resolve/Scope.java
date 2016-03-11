@@ -125,7 +125,7 @@ public class Scope {
         }
 
         // site is a type, try to find a matching type or field
-        if ((site.kind & JavaSymbol.TYP) != 0) {
+        if ((site.kind & JavaSymbol.TYP) != 0 && site.kind < JavaSymbol.ERRONEOUS) {
           List<JavaSymbol> resolved = ((JavaSymbol.TypeJavaSymbol) site).members().lookup(name);
           for (JavaSymbol symbol : resolved) {
             // TODO check accessibility
