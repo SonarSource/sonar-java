@@ -34,10 +34,6 @@ public class MethodInvocationMatcherCollection {
   private MethodInvocationMatcherCollection() {
   }
 
-  public static MethodInvocationMatcherCollection create() {
-    return new MethodInvocationMatcherCollection();
-  }
-
   public static MethodInvocationMatcherCollection create(MethodMatcher... matchers) {
     MethodInvocationMatcherCollection collection = new MethodInvocationMatcherCollection();
     Collections.addAll(collection.matchers, matchers);
