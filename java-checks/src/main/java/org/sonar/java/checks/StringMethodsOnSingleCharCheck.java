@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -68,7 +69,7 @@ public class StringMethodsOnSingleCharCheck extends AbstractMethodDetection {
       String argValue = LiteralUtils.trimQuotes(((LiteralTree) arg).value());
       if (argValue.length() == 1) {
         if (mit.symbol().name().endsWith("With")) {
-          reportIssue(arg, "Use charAt(int) instead");
+          reportIssue(arg, "Add a length check and use \"charAt(0)\" instead.");
         } else {
           reportIssue(arg, "Put single-quotes around '"+argValue+"' to use the faster \""+mit.symbol().name()+"(char)\" method.");
 
