@@ -210,3 +210,15 @@ class GenericClass {
     ComplexNestedGenericClass<? extends List<Object>> v3 = new ComplexNestedGenericClass<List<Object>>(new java.util.ArrayList<Object>());
   }
 }
+
+class VarArgsNotInvoked {
+  void varargs3(String s, Object... o){}
+  void varargs3(String s){}
+  void varargs4(Object... o){}
+  void varargs4(){}
+
+  void test() {
+    varargs3("");
+    varargs4();
+  }
+}

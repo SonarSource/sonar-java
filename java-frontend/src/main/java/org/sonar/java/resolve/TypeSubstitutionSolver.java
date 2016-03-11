@@ -166,26 +166,16 @@ public class TypeSubstitutionSolver {
 
   private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
     TypeSubstitution substitution = new TypeSubstitution();
+    for (int i = 0; i < Math.min(formals.size(), argTypes.size()); i++) {
+      JavaType formalType = formals.get(i);
+      JavaType argType = argTypes.get(i);
+      boolean isLastParam = i == formals.size() - 1;
 
-    if (formals.size() > argTypes.size() || formals.isEmpty() || argTypes.isEmpty()) {
-      // no need to try to infer types
-      return substitution;
-    }
+      substitution = inferTypeSubstitution(method, substitution, isLastParam, formalType, argType);
 
-    List<JavaType.TypeVariableJavaType> typeVariablesToInfer = new ArrayList<>(method.typeVariableTypes);
-
-    if (!typeVariablesToInfer.isEmpty()) {
-      for (int i = 0; i < formals.size(); i++) {
-        JavaType formalType = formals.get(i);
-        JavaType argType = argTypes.get(i);
-        boolean isLastParam = i == formals.size() - 1;
-
-        substitution = inferTypeSubstitution(method, substitution, isLastParam, formalType, argType);
-
-        if (substitution.typeVariables().containsAll(method.typeVariableTypes)) {
-          // we found all the substitution
-          break;
-        }
+      if (substitution.typeVariables().containsAll(method.typeVariableTypes)) {
+        // we found all the substitution
+        break;
       }
     }
     return substitution;

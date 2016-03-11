@@ -444,6 +444,9 @@ public class Resolve {
       return bestSoFar;
     }
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) candidate;
+    if(!hasCompatibleArity(methodJavaSymbol.parameterTypes().size(), argTypes.size(), methodJavaSymbol.isVarArgs())) {
+      return bestSoFar;
+    }
     List<JavaType> formals = ((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes;
     formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, site);
     TypeSubstitution substitution = typeSubstitutionSolver.getTypeSubstitution(methodJavaSymbol, site, typeParams, argTypes);
@@ -466,6 +469,13 @@ public class Resolve {
     return mostSpecific;
   }
 
+  private static boolean hasCompatibleArity(int formalArgSize, int argSize, boolean isVarArgs) {
+    if(isVarArgs) {
+      return argSize - formalArgSize >= -1;
+    }
+    return formalArgSize == argSize;
+  }
+
   /**
    * @param argTypes types of arguments
    * @param formals  types of formal parameters of method
@@ -477,13 +487,6 @@ public class Resolve {
     if (isVarArgs) {
       // check at least last parameter for varargs compatibility
       nbArgToCheck++;
-      if (nbArgToCheck < 0) {
-        // arity is not correct, it can only differ negatively by one for varargs.
-        return false;
-      }
-    } else if (nbArgToCheck != 0) {
-      // not a vararg, we should have same number of arguments
-      return false;
     }
     for (int i = 1; i <= nbArgToCheck; i++) {
       JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
@@ -558,6 +561,9 @@ public class Resolve {
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
     if (methodJavaSymbol.isVarArgs()) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());
+    }
+    if(!hasCompatibleArity(m1ArgTypes.size(), m2ArgTypes.size(), ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs())) {
+      return false;
     }
     m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, substitution);
     return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false);
