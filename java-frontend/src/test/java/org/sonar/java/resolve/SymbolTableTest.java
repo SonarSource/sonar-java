@@ -765,6 +765,14 @@ public class SymbolTableTest {
     assertThat(result.symbol("foo3", 7)).isSameAs(result.reference(8, 7));
   }
 
+  @Test
+  public void switch_statement() {
+    Result result = Result.createFor("SwitchStatement");
+    assertThat(result.symbol("a", 16)).isSameAs(result.reference(18, 28));
+    assertThat(result.symbol("a", 20)).isSameAs(result.reference(21, 24));
+
+  }
+
   public void assertThatReferenceNotFound(Result result, int line, int column) {
     try {
       JavaSymbol reference = result.reference(line, column);
