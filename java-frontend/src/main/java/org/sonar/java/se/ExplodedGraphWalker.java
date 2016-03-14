@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
@@ -89,6 +90,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;
   private static final int MAX_EXEC_PROGRAM_POINT = 2;
+  private static final MethodMatcher SYSTEM_EXIT_MATCHER = MethodMatcher.create().typeDefinition("java.lang.System").name("exit").addParameter("int");
   private final ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker;
   private MethodTree methodTree;
   private ExplodedGraph explodedGraph;
@@ -353,7 +355,12 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
     switch (tree.kind()) {
       case METHOD_INVOCATION:
-        executeMethodInvocation((MethodInvocationTree) tree);
+        MethodInvocationTree mit = (MethodInvocationTree) tree;
+        if(SYSTEM_EXIT_MATCHER.matches(mit)) {
+          //System exit is a sink of execution
+          return;
+        }
+        executeMethodInvocation(mit);
         break;
       case LABELED_STATEMENT:
       case SWITCH_STATEMENT:

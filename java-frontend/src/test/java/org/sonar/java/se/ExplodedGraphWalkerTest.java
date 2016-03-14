@@ -118,6 +118,12 @@ public class ExplodedGraphWalkerTest {
     });
   }
 
+
+  @Test
+  public void system_exit() throws Exception {
+    JavaCheckVerifier.verify("src/test/files/se/SystemExit.java", new IssueVisitor());
+  }
+
   class IssueVisitor implements JavaFileScanner {
 
     @Override
