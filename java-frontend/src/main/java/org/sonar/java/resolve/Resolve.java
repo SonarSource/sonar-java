@@ -559,14 +559,19 @@ public class Resolve {
     List<JavaType> m1ArgTypes = ((JavaType.MethodJavaType) m1.type).argTypes;
     List<JavaType> m2ArgTypes = ((JavaType.MethodJavaType) m2.type).argTypes;
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
-    if (methodJavaSymbol.isVarArgs()) {
+    boolean m1VarArity = methodJavaSymbol.isVarArgs();
+    boolean m2VarArity = ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs();
+    if (m1VarArity != m2VarArity) {
+      return m2VarArity;
+    }
+    if (m1VarArity) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());
     }
-    if(!hasCompatibleArity(m1ArgTypes.size(), m2ArgTypes.size(), ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs())) {
+    if(!hasCompatibleArity(m1ArgTypes.size(), m2ArgTypes.size(), m2VarArity)) {
       return false;
     }
     m1ArgTypes = typeSubstitutionSolver.applySubstitutionToFormalParameters(m1ArgTypes, substitution);
-    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs(), false);
+    return isArgumentsAcceptable(m1ArgTypes, m2ArgTypes, m2VarArity, false);
   }
 
   private static List<JavaType> expandVarArgsToFitSize(List<JavaType> m1ArgTypes, int size) {

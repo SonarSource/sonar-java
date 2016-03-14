@@ -222,3 +222,20 @@ class VarArgsNotInvoked {
     varargs4();
   }
 }
+
+class MyVarArgs {
+  void varargs5(Object o) {}
+  void varargs6(String s, Object... o) {}
+}
+
+class MyVarArgsTest extends MyVarArgs {
+  void varargs5(String s, Object... o) {}
+  void varargs6(Object o) {}
+
+  void test() {
+    varargs5(null);
+    varargs5("");
+    varargs6(null);
+    varargs6("");
+  }
+}

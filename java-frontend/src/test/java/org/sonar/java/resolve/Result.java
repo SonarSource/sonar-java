@@ -114,7 +114,7 @@ class Result {
         }
       }
     }
-    throw new IllegalArgumentException("Reference Tree not found");
+    throw new IllegalArgumentException("Reference Tree not found "+line);
   }
 
 
