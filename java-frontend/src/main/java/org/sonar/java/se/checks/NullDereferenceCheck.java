@@ -43,7 +43,8 @@ import java.util.List;
 @Rule(
   key = "S2259",
   name = "Null pointers should not be dereferenced",
-  priority = Priority.BLOCKER)
+  priority = Priority.BLOCKER,
+  tags = {"bug", "cert", "cwe", "owasp-a1", "owasp-a2", "owasp-a6", "security"})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
 @SqaleConstantRemediation("10min")
 @ActivatedByDefault
