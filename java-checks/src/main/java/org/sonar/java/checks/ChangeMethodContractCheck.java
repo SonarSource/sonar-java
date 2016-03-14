@@ -28,6 +28,7 @@ import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
@@ -71,13 +72,22 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
     for (int i = 0; i < methodTree.parameters().size(); i++) {
       Symbol paramSymbol = methodTree.parameters().get(i).symbol();
       Symbol overrideeParamSymbol = overridee.getParameters().scopeSymbols().get(i);
-      if (nonNullVsNull(paramSymbol, overrideeParamSymbol) || nonNullVsNull(overrideeParamSymbol, paramSymbol)) {
-        reportIssue(methodTree.parameters().get(i), "The \"" + paramSymbol.name()
-            + "\" parameter nullability is different in the superclass method, and that should not be changed.");
+      if (nonNullVsNull(paramSymbol, overrideeParamSymbol)) {
+        Tree reportTree = methodTree.parameters().get(i);
+        for (AnnotationTree annotationTree : methodTree.parameters().get(i).modifiers().annotations()) {
+          if(annotationTree.symbolType().is("javax.annotation.Nonnull")) {
+            reportTree = annotationTree;
+          }
+        }
+        reportIssue(reportTree, "Remove this \"Nonnull\" annotation to honor the overridden method's contract.");
       }
     }
-    if (nonNullVsNull(methodTree.symbol(), overridee) || nonNullVsNull(overridee, methodTree.symbol())) {
-      reportIssue(methodTree.returnType(), "The return value nullability of this method is different in the superclass, and that should not be changed.");
+    if (nonNullVsNull(overridee, methodTree.symbol())) {
+      for (AnnotationTree annotationTree : methodTree.modifiers().annotations()) {
+        if(annotationTree.symbolType().is("javax.annotation.Nullable") || annotationTree.symbolType().is("javax.annotation.CheckForNull")) {
+          reportIssue(annotationTree, "Remove this \""+ annotationTree.symbolType().name() +"\" annotation to honor the overridden method's contract.");
+        }
+      }
     }
   }
 
