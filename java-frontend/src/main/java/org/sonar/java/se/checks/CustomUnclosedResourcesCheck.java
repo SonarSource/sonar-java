@@ -22,7 +22,7 @@ package org.sonar.java.se.checks;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcherFactory;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
@@ -79,11 +79,11 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       + " E.G. \"org.assoc.res.MyResource#closeMe\" or \"org.assoc.res.MySpecialResource#closeMe(java.lang.String, int)\"")
   public String closingMethod = "";
 
-  private MethodInvocationMatcherCollection classConstructor;
+  private MethodMatcherCollection classConstructor;
 
-  private MethodInvocationMatcherCollection factoryList;
-  private MethodInvocationMatcherCollection openingList;
-  private MethodInvocationMatcherCollection closingList;
+  private MethodMatcherCollection factoryList;
+  private MethodMatcherCollection openingList;
+  private MethodMatcherCollection closingList;
 
   @Override
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
@@ -116,11 +116,11 @@ public class CustomUnclosedResourcesCheck extends SECheck {
     }
   }
 
-  private static MethodInvocationMatcherCollection createMethodMatchers(String rule) {
+  private static MethodMatcherCollection createMethodMatchers(String rule) {
     if (rule.length() > 0) {
-      return MethodInvocationMatcherCollection.create(MethodMatcherFactory.methodMatcher(rule));
+      return MethodMatcherCollection.create(MethodMatcherFactory.methodMatcher(rule));
     } else {
-      return MethodInvocationMatcherCollection.create();
+      return MethodMatcherCollection.create();
     }
   }
 
@@ -148,7 +148,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       return closingMethods().anyMatch(mit);
     }
 
-    private MethodInvocationMatcherCollection closingMethods() {
+    private MethodMatcherCollection closingMethods() {
       if (closingList == null) {
         closingList = createMethodMatchers(closingMethod);
       }
@@ -197,7 +197,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       }
     }
 
-    private MethodInvocationMatcherCollection openingMethods() {
+    private MethodMatcherCollection openingMethods() {
       if (openingList == null) {
         openingList = createMethodMatchers(openingMethod);
       }
@@ -228,9 +228,9 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       return constructorClasses().anyMatch(newClassTree);
     }
 
-    private MethodInvocationMatcherCollection constructorClasses() {
+    private MethodMatcherCollection constructorClasses() {
       if (classConstructor == null) {
-        classConstructor = MethodInvocationMatcherCollection.create();
+        classConstructor = MethodMatcherCollection.create();
         if (constructor.length() > 0) {
           classConstructor.add(MethodMatcherFactory.constructorMatcher(constructor));
         }
@@ -242,7 +242,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
       return factoryMethods().anyMatch(mit);
     }
 
-    private MethodInvocationMatcherCollection factoryMethods() {
+    private MethodMatcherCollection factoryMethods() {
       if (factoryList == null) {
         factoryList = createMethodMatchers(factoryMethod);
       }

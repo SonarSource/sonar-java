@@ -25,7 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -77,7 +77,7 @@ public class ClassComparedByNameCheck extends AbstractMethodDetection {
     private boolean useClassGetName = false;
     private boolean useStackTraceElementGetClassName = false;
 
-    private final MethodInvocationMatcherCollection methodMatchers = MethodInvocationMatcherCollection.create(
+    private final MethodMatcherCollection methodMatchers = MethodMatcherCollection.create(
       MethodMatcher.create().typeDefinition("java.lang.Class").name("getName"),
       MethodMatcher.create().typeDefinition("java.lang.Class").name("getSimpleName"));
 

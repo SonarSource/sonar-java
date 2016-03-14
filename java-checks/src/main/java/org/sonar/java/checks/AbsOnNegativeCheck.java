@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.tag.Tag;
@@ -55,7 +55,7 @@ import java.util.List;
 @SqaleConstantRemediation("5min")
 public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodInvocationMatcherCollection MATH_ABS_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection MATH_ABS_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create()
       .typeDefinition("java.lang.Math")
       .name("abs")
@@ -66,7 +66,7 @@ public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
       .addParameter("long")
   );
 
-  private static final MethodInvocationMatcherCollection NEGATIVE_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection NEGATIVE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create()
       .name("hashCode"),
     MethodMatcher.create()

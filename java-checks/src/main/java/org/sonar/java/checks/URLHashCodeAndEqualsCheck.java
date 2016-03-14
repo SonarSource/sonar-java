@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
@@ -52,7 +52,7 @@ public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_NET_URL = "java.net.URL";
 
-  private static final MethodInvocationMatcherCollection URL_MATCHERS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection URL_MATCHERS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(JAVA_NET_URL).name("equals").addParameter("java.lang.Object"),
     MethodMatcher.create().typeDefinition(JAVA_NET_URL).name("hashCode"));
 

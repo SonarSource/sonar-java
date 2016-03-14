@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
@@ -55,7 +55,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final MethodInvocationMatcherCollection TO_STRING_MATCHERS = getToStringMatchers(
+  private static final MethodMatcherCollection TO_STRING_MATCHERS = getToStringMatchers(
     "java.lang.Byte",
     "java.lang.Character",
     "java.lang.Short",
@@ -73,8 +73,8 @@ public class PrimitiveTypeBoxingWithToStringCheck extends BaseTreeVisitor implem
     scan(context.getTree());
   }
 
-  private static MethodInvocationMatcherCollection getToStringMatchers(String... typeFullyQualifiedNames) {
-    MethodInvocationMatcherCollection matchers = MethodInvocationMatcherCollection.create();
+  private static MethodMatcherCollection getToStringMatchers(String... typeFullyQualifiedNames) {
+    MethodMatcherCollection matchers = MethodMatcherCollection.create();
     for (String fullyQualifiedName : typeFullyQualifiedNames) {
       matchers.add(MethodMatcher.create()
         .typeDefinition(TypeCriteria.subtypeOf(fullyQualifiedName))

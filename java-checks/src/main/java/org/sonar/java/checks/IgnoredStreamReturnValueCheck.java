@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.tag.Tag;
@@ -50,7 +50,7 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class IgnoredStreamReturnValueCheck extends IssuableSubscriptionVisitor {
 
-  private static final MethodInvocationMatcherCollection MATCHERS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection MATCHERS = MethodMatcherCollection.create(
     inputStreamInvocationMatcher("skip", "long"),
     inputStreamInvocationMatcher("read", "byte[]"));
 

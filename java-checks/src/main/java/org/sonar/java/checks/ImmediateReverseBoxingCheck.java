@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.tag.Tag;
@@ -69,8 +69,8 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     .put("java.lang.Character", "char")
     .build();
 
-  private static final MethodInvocationMatcherCollection unboxingInvocationMatchers = unboxingInvocationMatchers();
-  private static final MethodInvocationMatcherCollection valueOfInvocationMatchers = valueOfInvocationMatchers();
+  private static final MethodMatcherCollection unboxingInvocationMatchers = unboxingInvocationMatchers();
+  private static final MethodMatcherCollection valueOfInvocationMatchers = valueOfInvocationMatchers();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -202,8 +202,8 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     }
   }
 
-  private static MethodInvocationMatcherCollection unboxingInvocationMatchers() {
-    MethodInvocationMatcherCollection matchers = MethodInvocationMatcherCollection.create();
+  private static MethodMatcherCollection unboxingInvocationMatchers() {
+    MethodMatcherCollection matchers = MethodMatcherCollection.create();
     for (Entry<String, String> type : PRIMITIVE_TYPES_BY_WRAPPER.entrySet()) {
       String primitiveType = type.getValue();
       TypeCriteria typeCriteria;
@@ -217,8 +217,8 @@ public class ImmediateReverseBoxingCheck extends IssuableSubscriptionVisitor {
     return matchers;
   }
 
-  private static MethodInvocationMatcherCollection valueOfInvocationMatchers() {
-    MethodInvocationMatcherCollection matchers = MethodInvocationMatcherCollection.create();
+  private static MethodMatcherCollection valueOfInvocationMatchers() {
+    MethodMatcherCollection matchers = MethodMatcherCollection.create();
     for (Entry<String, String> primitiveMapping : PRIMITIVE_TYPES_BY_WRAPPER.entrySet()) {
       matchers.add(
         MethodMatcher.create()

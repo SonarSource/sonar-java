@@ -27,20 +27,20 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import java.util.Collections;
 import java.util.List;
 
-public class MethodInvocationMatcherCollection {
+public class MethodMatcherCollection {
 
   private List<MethodMatcher> matchers = Lists.newLinkedList();
 
-  private MethodInvocationMatcherCollection() {
+  private MethodMatcherCollection() {
   }
 
-  public static MethodInvocationMatcherCollection create(MethodMatcher... matchers) {
-    MethodInvocationMatcherCollection collection = new MethodInvocationMatcherCollection();
+  public static MethodMatcherCollection create(MethodMatcher... matchers) {
+    MethodMatcherCollection collection = new MethodMatcherCollection();
     Collections.addAll(collection.matchers, matchers);
     return collection;
   }
 
-  public MethodInvocationMatcherCollection add(MethodMatcher matcher) {
+  public MethodMatcherCollection add(MethodMatcher matcher) {
     this.matchers.add(matcher);
     return this;
   }

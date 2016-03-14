@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.tag.Tag;
@@ -54,7 +54,7 @@ import java.util.Objects;
 public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String JAVA_IO_SERIALIZABLE = "java.io.Serializable";
-  private static final MethodInvocationMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection EXCLUDED_SERIALIZABLE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create()
       .typeDefinition(TypeCriteria.subtypeOf(JAVA_IO_SERIALIZABLE)).name("readObject").addParameter(TypeCriteria.subtypeOf("java.io.ObjectInputStream")),
     MethodMatcher.create()

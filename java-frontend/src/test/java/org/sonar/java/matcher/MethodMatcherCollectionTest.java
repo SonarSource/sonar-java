@@ -29,34 +29,34 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class MethodInvocationMatcherCollectionTest {
+public class MethodMatcherCollectionTest {
 
   @Test
   public void should_create_a_collection() {
-    assertThat(MethodInvocationMatcherCollection.create()).isNotNull();
+    assertThat(MethodMatcherCollection.create()).isNotNull();
   }
 
   @Test
   public void should_create_a_collection_with_MethodInvocationMatcher() {
-    assertThat(MethodInvocationMatcherCollection.create(MethodMatcher.create())).isNotNull();
+    assertThat(MethodMatcherCollection.create(MethodMatcher.create())).isNotNull();
   }
 
   @Test
   public void should_be_able_to_add_MethodInvocationMatcher() {
-    assertThat(MethodInvocationMatcherCollection.create().add(MethodMatcher.create())).isNotNull();
+    assertThat(MethodMatcherCollection.create().add(MethodMatcher.create())).isNotNull();
   }
 
   @Test
   public void should_not_match_if_there_is_no_matcher() {
-    assertThat(MethodInvocationMatcherCollection.create().anyMatch(mock(MethodInvocationTree.class))).isFalse();
+    assertThat(MethodMatcherCollection.create().anyMatch(mock(MethodInvocationTree.class))).isFalse();
   }
 
   @Test
   public void should_not_match_when_method_invocation_tree_does_not_match() {
     MethodMatcher matcher = mock(MethodMatcher.class);
     when(matcher.matches(any(MethodInvocationTree.class))).thenReturn(false);
-    assertThat(MethodInvocationMatcherCollection.create(matcher).anyMatch(mock(MethodInvocationTree.class))).isFalse();
-    assertThat(MethodInvocationMatcherCollection.create(matcher).anyMatch(mock(MethodTree.class))).isFalse();
+    assertThat(MethodMatcherCollection.create(matcher).anyMatch(mock(MethodInvocationTree.class))).isFalse();
+    assertThat(MethodMatcherCollection.create(matcher).anyMatch(mock(MethodTree.class))).isFalse();
   }
 
   @Test
@@ -65,22 +65,22 @@ public class MethodInvocationMatcherCollectionTest {
     when(matcher1.matches(any(MethodInvocationTree.class))).thenReturn(false);
     MethodMatcher matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodInvocationTree.class))).thenReturn(true);
-    assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodInvocationTree.class))).isTrue();
-    assertThat(MethodInvocationMatcherCollection.create(matcher1).anyMatch(mock(MethodInvocationTree.class))).isFalse();
+    assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodInvocationTree.class))).isTrue();
+    assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(MethodInvocationTree.class))).isFalse();
 
     matcher1 = mock(MethodMatcher.class);
     when(matcher1.matches(any(MethodTree.class))).thenReturn(false);
     matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(MethodTree.class))).thenReturn(true);
-    assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodTree.class))).isTrue();
-    assertThat(MethodInvocationMatcherCollection.create(matcher1).anyMatch(mock(MethodTree.class))).isFalse();
+    assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(MethodTree.class))).isTrue();
+    assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(MethodTree.class))).isFalse();
 
     matcher1 = mock(MethodMatcher.class);
     when(matcher1.matches(any(NewClassTree.class))).thenReturn(false);
     matcher2 = mock(MethodMatcher.class);
     when(matcher2.matches(any(NewClassTree.class))).thenReturn(true);
-    assertThat(MethodInvocationMatcherCollection.create(matcher1, matcher2).anyMatch(mock(NewClassTree.class))).isTrue();
-    assertThat(MethodInvocationMatcherCollection.create(matcher1).anyMatch(mock(NewClassTree.class))).isFalse();
+    assertThat(MethodMatcherCollection.create(matcher1, matcher2).anyMatch(mock(NewClassTree.class))).isTrue();
+    assertThat(MethodMatcherCollection.create(matcher1).anyMatch(mock(NewClassTree.class))).isFalse();
 
   }
 }

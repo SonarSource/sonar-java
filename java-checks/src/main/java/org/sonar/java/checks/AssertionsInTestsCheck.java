@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
@@ -67,7 +67,7 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     .typeDefinition(TypeCriteria.anyType()).name("describedAs").withNoParameterConstraint();
   private static final MethodMatcher FEST_OVERRIDE_ERROR_METHOD = MethodMatcher.create()
     .typeDefinition(TypeCriteria.anyType()).name("overridingErrorMessage").withNoParameterConstraint();
-  private static final MethodInvocationMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection ASSERTION_INVOCATION_MATCHERS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("org.junit.Assert").name(NameCriteria.startsWith("assert")).withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.junit.Assert").name("fail").withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.junit.rules.ExpectedException").name(NameCriteria.startsWith("expect")).withNoParameterConstraint(),

@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -101,7 +101,7 @@ public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   private static class GuavaCloserRethrowVisitor extends BaseTreeVisitor {
     private static final String JAVA_LANG_CLASS = "java.lang.Class";
-    private static final MethodInvocationMatcherCollection MATCHERS = MethodInvocationMatcherCollection.create(
+    private static final MethodMatcherCollection MATCHERS = MethodMatcherCollection.create(
       rethrowMethod(),
       rethrowMethod().addParameter(JAVA_LANG_CLASS),
       rethrowMethod().addParameter(JAVA_LANG_CLASS).addParameter(JAVA_LANG_CLASS));

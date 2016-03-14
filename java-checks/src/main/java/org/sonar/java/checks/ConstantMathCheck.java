@@ -24,7 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaType;
@@ -64,14 +64,14 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor implements Ja
   private static final String MATH_PACKAGE_NAME = "java.lang.Math";
   private static final String ROUND = "round";
 
-  private static final MethodInvocationMatcherCollection CONSTANT_WITH_LITERAL_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection CONSTANT_WITH_LITERAL_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter(FLOAT),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("int"),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ABS).addParameter("long")
   );
 
-  private static final MethodInvocationMatcherCollection TRUNCATION_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection TRUNCATION_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(CEIL).addParameter(FLOAT),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(FLOOR).addParameter(DOUBLE),
@@ -81,7 +81,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor implements Ja
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name(ROUND).addParameter(FLOAT)
   );
 
-  private static final MethodInvocationMatcherCollection CONSTANT_WITH_ZERO_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection CONSTANT_WITH_ZERO_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan2").addParameter(DOUBLE).addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cos").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("cosh").addParameter(DOUBLE),
@@ -93,7 +93,7 @@ public class ConstantMathCheck extends IssuableSubscriptionVisitor implements Ja
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("toRadians").addParameter(DOUBLE)
   );
 
-  private static final MethodInvocationMatcherCollection CONSTANT_WITH_ZERO_OR_ONE_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection CONSTANT_WITH_ZERO_OR_ONE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("acos").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("asin").addParameter(DOUBLE),
     MethodMatcher.create().typeDefinition(MATH_PACKAGE_NAME).name("atan").addParameter(DOUBLE),

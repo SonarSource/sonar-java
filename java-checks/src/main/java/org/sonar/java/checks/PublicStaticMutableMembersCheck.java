@@ -29,7 +29,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.SyntaxNodePredicates;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
@@ -80,7 +80,7 @@ public class PublicStaticMutableMembersCheck extends IssuableSubscriptionVisitor
 
   private static final String DECORATE = "decorate";
   // java.util and apache commons
-  private static final MethodInvocationMatcherCollection UNMODIFIABLE_METHOD_CALLS = MethodInvocationMatcherCollection.create()
+  private static final MethodMatcherCollection UNMODIFIABLE_METHOD_CALLS = MethodMatcherCollection.create()
     .add(MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(NameCriteria.startsWith("unmodifiable")).withNoParameterConstraint())
       // apache commons 3.X
     .add(MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("org.apache.commons.collections.map.UnmodifiableMap")).name(DECORATE).withNoParameterConstraint())

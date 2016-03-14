@@ -23,7 +23,7 @@ import com.google.common.base.Objects;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
@@ -50,7 +50,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
 
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
-  private static final MethodInvocationMatcherCollection FEST_LIKE_ASSERT_THAT = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection FEST_LIKE_ASSERT_THAT = MethodMatcherCollection.create(
     // Fest 1.X
     assertThatOnType("org.fest.assertions.Assertions"),
     // Fest 2.X
@@ -68,7 +68,7 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
     return MethodMatcher.create().typeDefinition(type).name("assertThat").addParameter(TypeCriteria.anyType());
   }
 
-  private static final MethodInvocationMatcherCollection FEST_LIKE_EXCLUSIONS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection FEST_LIKE_EXCLUSIONS = MethodMatcherCollection.create(
     methodWithName(NameCriteria.startsWith("as")),
     methodWithName(NameCriteria.startsWith("using")),
     methodWithName(NameCriteria.startsWith("with")),

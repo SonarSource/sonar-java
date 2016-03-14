@@ -25,7 +25,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -57,7 +57,7 @@ import java.util.List;
 public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
 
   private static final String AUTHORIZED_ANNOTATION = "javax.enterprise.event.Observes";
-  private static final MethodInvocationMatcherCollection SERIALIZABLE_METHODS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection SERIALIZABLE_METHODS = MethodMatcherCollection.create(
     MethodMatcher.create().name("writeObject").addParameter("java.io.ObjectOutputStream"),
     MethodMatcher.create().name("readObject").addParameter("java.io.ObjectInputStream"));
 

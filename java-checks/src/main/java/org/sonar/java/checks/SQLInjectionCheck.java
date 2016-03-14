@@ -23,7 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.tag.Tag;
@@ -55,7 +55,7 @@ public class SQLInjectionCheck extends AbstractInjectionChecker {
     .name("executeQuery")
     .withNoParameterConstraint();
 
-  private static final MethodInvocationMatcherCollection CONNECTION_MATCHERS = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection CONNECTION_MATCHERS = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareStatement").withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.sql.Connection")).name("prepareCall").withNoParameterConstraint());
 

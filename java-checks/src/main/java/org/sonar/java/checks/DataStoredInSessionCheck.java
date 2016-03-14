@@ -26,7 +26,7 @@ import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodInvocationMatcherCollection;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
@@ -57,11 +57,11 @@ public class DataStoredInSessionCheck extends AbstractMethodDetection {
 
   private Set<IdentifierTree> identifiersUsedToSetAttribute;
 
-  private static final MethodInvocationMatcherCollection REQUEST_OR_COOKIE_DATA_RETRIEVAL = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection REQUEST_OR_COOKIE_DATA_RETRIEVAL = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("javax.servlet.http.Cookie").name(NameCriteria.startsWith("get")).withNoParameterConstraint(),
     MethodMatcher.create().callSite(TypeCriteria.is("javax.servlet.http.HttpServletRequest")).name(NameCriteria.startsWith("get")).withNoParameterConstraint());
 
-  private static final MethodInvocationMatcherCollection NO_EFFECT_OPERATION = MethodInvocationMatcherCollection.create(
+  private static final MethodMatcherCollection NO_EFFECT_OPERATION = MethodMatcherCollection.create(
     MethodMatcher.create().typeDefinition("java.net.URLDecoder").name("decode").withNoParameterConstraint(),
     MethodMatcher.create().typeDefinition("org.apache.commons.lang.StringEscapeUtils").name("escapeHtml").withNoParameterConstraint());
 
