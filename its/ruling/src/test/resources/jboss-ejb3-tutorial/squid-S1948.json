@@ -3,4 +3,16 @@
 45,
 46,
 ],
+'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Customer.java':[
+41,
+],
+'jboss-ejb3-tutorial:composite/src/org/jboss/tutorial/composite/bean/Flight.java':[
+45,
+],
+'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Customer.java':[
+51,
+],
+'jboss-ejb3-tutorial:relationships/src/org/jboss/tutorial/relationships/bean/Flight.java':[
+51,
+],
 }

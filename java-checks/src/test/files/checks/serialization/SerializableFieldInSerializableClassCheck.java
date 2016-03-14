@@ -1,5 +1,7 @@
 package javax.inject;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,23 +42,49 @@ class Person5 implements Serializable {
 }
 
 class Person6<E, F extends Serializable> implements Serializable {
-  List<Person6> persons; // Compliant
-  List things; // Noncompliant {{Make "things" transient or serializable.}}
-  List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
-  List<? extends MyObject> otherObjects; // Noncompliant {{Make "otherObjects" transient or serializable.}}
-  List<? extends Person6> otherPersons; // Compliant
-  List<? extends E> otherThings; // Noncompliant {{Make "otherThings" transient or serializable.}}
-  List<? extends F> otherSerializableThings; // Compliant
-  List<?> otherUnknown; // Noncompliant {{Make "otherUnknown" transient or serializable.}}
-  List<? super F> super1;
-  List<? super E> super2; // Noncompliant
+  private List<Person6> persons; // Compliant
+  private List things; // Noncompliant {{Make "things" transient or serializable.}}
+  private List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
+  private List<? extends MyObject> otherObjects; // Noncompliant {{Make "otherObjects" transient or serializable.}}
+  private List<? extends Person6> otherPersons; // Compliant
+  private List<? extends E> otherThings; // Noncompliant {{Make "otherThings" transient or serializable.}}
+  private List<? extends F> otherSerializableThings; // Compliant
+  private List<?> otherUnknown; // Noncompliant {{Make "otherUnknown" transient or serializable.}}
+  private List<? super F> super1;
+  private List<? super E> super2; // Noncompliant
+
+  public List<Person6> persons1; // Noncompliant {{Make "persons1" private or transient.}}
+  transient public List<Person6> persons2; // Compliant - transient
+  private List<Person6> persons3 = new ArrayList<>(); // Compliant - ArrayList is serializable
+  private List<Person6> persons4 = new MyNonSerializableList<>(); // Noncompliant
 }
 
 class Person7 implements Serializable {
-  Map<Object, Object> both; // Noncompliant {{Make "both" transient or serializable.}}
-  Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
-  Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
-  Map<String, String> ok; // Compliant
+  private Map<Object, Object> both; // Noncompliant {{Make "both" transient or serializable.}}
+  private Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
+  private Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
+  private Map<String, String> ok; // Compliant
+
+  private Map<String, String> nok1 = new MyNonSerializableMap<>(); // Noncompliant
+  private MyNonSerializableMap<String, String> nok2; // Noncompliant
+
+  void foo() {
+    ok = new MyNonSerializableMap<>(); // Noncompliant
+    nok2 = new MyNonSerializableMap<>(); // Noncompliant
+    ok = nok2; // Noncompliant
+    ok = null; // Compliant
+    ok = bar(); // Compliant
+    ok = MyAbstractNonSerializableMap.foo(); // Noncompliant
+    ok = new HashMap<>(); // Compliant
+    ok = unknown(); // Compliant
+    if (ok.isEmpty()) {
+      Object myVar = ok;
+    }
+  }
+
+  Map bar() {
+    return null;
+  }
 }
 
 class Person8 implements Serializable {
@@ -65,4 +93,18 @@ class Person8 implements Serializable {
 
 class MyObject {
 
+}
+
+class MyNonSerializableList<E> implements List<E> {
+  MyNonSerializableList() {}
+}
+
+class MyNonSerializableMap<K, V> implements Map<K, V> {
+  MyNonSerializableMap() {}
+}
+
+abstract class MyAbstractNonSerializableMap<K,V> extends MyNonSerializableMap<K,V> {
+  static MyAbstractNonSerializableMap foo() {
+    return null;
+  }
 }

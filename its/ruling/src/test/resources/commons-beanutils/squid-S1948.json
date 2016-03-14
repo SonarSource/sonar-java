@@ -8,6 +8,9 @@
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/BeanComparator.java':[
 52,
 ],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/JDBCDynaClass.java':[
+64,
+],
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/LazyDynaBean.java':[
 145,
 154,

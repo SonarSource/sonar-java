@@ -20,6 +20,7 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -29,7 +30,9 @@ import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -44,6 +47,7 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(
@@ -79,14 +83,47 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   private void checkVariableMember(VariableTree variableTree) {
     if (!isExcluded(variableTree)) {
       IdentifierTree simpleName = variableTree.simpleName();
-      reportIssue(simpleName, "Make \"" + simpleName.name() + "\" transient or serializable.");
+      if (isCollectionOfSerializable(variableTree.type())) {
+        if (!ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.PRIVATE)) {
+          reportIssue(simpleName, "Make \"" + simpleName.name() + "\" private or transient.");
+        } else if (isUnserializableCollection(variableTree.type().symbolType())
+          || initializerIsUnserializableCollection(variableTree.initializer())) {
+          reportIssue(simpleName);
+        }
+        checkCollectionAssignments(variableTree.symbol().usages());
+      } else {
+        reportIssue(simpleName);
+      }
     }
   }
 
+  private static boolean initializerIsUnserializableCollection(ExpressionTree initializer) {
+    return initializer != null && isUnserializableCollection(initializer.symbolType());
+  }
+
+  private static boolean isUnserializableCollection(Type type) {
+    return !type.symbol().isInterface() && isSubtypeOfCollectionApi(type) && !implementsSerializable(type);
+  }
+
+  private void checkCollectionAssignments(List<IdentifierTree> usages) {
+    for (IdentifierTree usage : usages) {
+      Tree parentTree = usage.parent();
+      if (parentTree.is(Tree.Kind.ASSIGNMENT)) {
+        AssignmentExpressionTree assignment = (AssignmentExpressionTree) parentTree;
+        ExpressionTree expression = assignment.expression();
+        if (usage.equals(assignment.variable()) && !expression.is(Tree.Kind.NULL_LITERAL) && isUnserializableCollection(expression.symbolType())) {
+          reportIssue(usage);
+        }
+      }
+    }
+  }
+
+  private void reportIssue(IdentifierTree tree) {
+    reportIssue(tree, "Make \"" + tree.name() + "\" transient or serializable.");
+  }
+
   private static boolean isExcluded(VariableTree variableTree) {
-    return isStatic(variableTree)
-      || isTransientSerializableOrInjected(variableTree)
-      || isCollectionOfSerializable(variableTree.type());
+    return isStatic(variableTree) || isTransientSerializableOrInjected(variableTree);
   }
 
   private static boolean isCollectionOfSerializable(TypeTree typeTree) {
