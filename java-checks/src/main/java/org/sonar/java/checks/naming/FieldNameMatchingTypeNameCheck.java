@@ -20,6 +20,7 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.Lists;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -84,7 +85,7 @@ public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements J
     fields.clear();
   }
 
-  private boolean staticFieldSameType(Symbol classSymbol, Symbol sym) {
+  private static boolean staticFieldSameType(Symbol classSymbol, Symbol sym) {
     return sym.type().equals(classSymbol.type()) && sym.isStatic();
   }
 
