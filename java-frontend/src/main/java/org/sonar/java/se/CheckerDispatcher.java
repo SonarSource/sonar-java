@@ -33,7 +33,7 @@ public class CheckerDispatcher implements CheckerContext {
   private final JavaFileScannerContext context;
   private final List<SECheck> checks;
   private Tree syntaxNode;
-  private int currentCheckerIndex = 0;
+  private int currentCheckerIndex = -1;
   private boolean transition = false;
 
   public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, JavaFileScannerContext context, List<SECheck> checks) {
@@ -58,32 +58,7 @@ public class CheckerDispatcher implements CheckerContext {
 
   public void executeCheckPostStatement(Tree syntaxNode) {
     this.syntaxNode = syntaxNode;
-    ProgramState ps;
-    for (SECheck checker : checks) {
-      ps = checker.checkPostStatement(this, syntaxNode);
-      if (ps == null) {
-        throw new IllegalStateException("Post statement processing is not allowed to generate a sink yet!");
-      }
-      explodedGraphWalker.programState = ps;
-    }
-  }
-
-  private void executePost() {
-    this.transition = false;
-    if (currentCheckerIndex < checks.size()) {
-      explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
-    } else {
-      if (explodedGraphWalker.programPosition.i< explodedGraphWalker.programPosition.block.elements().size()) {
-        explodedGraphWalker.clearStack(explodedGraphWalker.programPosition.block.elements().get(explodedGraphWalker.programPosition.i));
-      }
-      explodedGraphWalker.enqueue(
-        new ExplodedGraph.ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
-        explodedGraphWalker.programState, explodedGraphWalker.node.exitPath);
-      return;
-    }
-    if (!transition) {
-      addTransition(explodedGraphWalker.programState);
-    }
+    addTransition(explodedGraphWalker.programState);
   }
 
   @Override
@@ -110,6 +85,24 @@ public class CheckerDispatcher implements CheckerContext {
     currentCheckerIndex--;
     explodedGraphWalker.programState = oldState;
     this.transition = true;
+  }
+
+  private void executePost() {
+    this.transition = false;
+    if (currentCheckerIndex < checks.size()) {
+      explodedGraphWalker.programState = checks.get(currentCheckerIndex).checkPostStatement(this, syntaxNode);
+    } else {
+      if (explodedGraphWalker.programPosition.i< explodedGraphWalker.programPosition.block.elements().size()) {
+        explodedGraphWalker.clearStack(explodedGraphWalker.programPosition.block.elements().get(explodedGraphWalker.programPosition.i));
+      }
+      explodedGraphWalker.enqueue(
+        new ExplodedGraph.ProgramPoint(explodedGraphWalker.programPosition.block, explodedGraphWalker.programPosition.i + 1),
+        explodedGraphWalker.programState, explodedGraphWalker.node.exitPath);
+      return;
+    }
+    if (!transition) {
+      addTransition(explodedGraphWalker.programState);
+    }
   }
 
   @Override
