@@ -31,6 +31,6 @@ class A {
     Set<Integer> ports2 = new HashSet<>();
     Set<COLOR> ports = new HashSet<>(); // Noncompliant [[sc=24;ec=39]] {{Convert this Set to an EnumSet.}}
     SetColor ports3 = new HashSet<>();
-    Set<COLOR> ports4 = Sets.immutableEnumSet(COLOR.RED); // compliant because of bad type substitution : immutable set of E is not detected as a set of enum.
+    Set<COLOR> ports4 = Sets.immutableEnumSet(COLOR.RED); // Noncompliant
   }
 }

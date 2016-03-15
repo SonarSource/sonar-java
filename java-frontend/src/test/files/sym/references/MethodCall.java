@@ -239,3 +239,33 @@ class MyVarArgsTest extends MyVarArgs {
     varargs6("");
   }
 }
+
+class HidingOfStaticMethod {
+  static class A<T> {
+    static <E> void of(E e1, E e2) { }
+    static void by(Object o1, Object o2) { }
+  }
+
+  static class B<T> extends A<T> {
+    static <E extends Comparable<? super E>> void of(E e1, E e2) { }
+    static void by(Object o1, Object o2) { }
+
+    void tstFromB() {
+      B.by("hello", "world"); // call to B.by(), as A.by() is hidden
+
+      B.of("hello", "world"); // explicit call to B.of()
+      B.of(new C(), new C()); // call to inherited method A.of() through B
+    }
+  }
+
+  static class C {}
+
+  void tstFromOutsideHierarchy() {
+    A.by("hello", "world"); // explicit call to A.of()
+    B.by("hello", "world"); // explicit call to B.of()
+
+    A.of("hello", "world"); // explicit call to A.of()
+    B.of("hello", "world"); // explicit call to B.of()
+    B.of(new C(), new C()); // call to inherited method A.of() through B
+  }
+}

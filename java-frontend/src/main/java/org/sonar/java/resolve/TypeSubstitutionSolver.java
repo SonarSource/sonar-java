@@ -267,7 +267,7 @@ public class TypeSubstitutionSolver {
     }
   }
 
-  private static boolean isValidSubtitution(TypeSubstitution substitutions, JavaType site) {
+  private boolean isValidSubtitution(TypeSubstitution substitutions, JavaType site) {
     for (Map.Entry<JavaType.TypeVariableJavaType, JavaType> substitution : substitutions.substitutionEntries()) {
       if (!isValidSubstitution(substitutions, substitution.getKey(), substitution.getValue(), site)) {
         return false;
@@ -276,9 +276,9 @@ public class TypeSubstitutionSolver {
     return true;
   }
 
-  private static boolean isValidSubstitution(TypeSubstitution candidate, JavaType.TypeVariableJavaType typeVar, JavaType typeParam, JavaType site) {
+  private boolean isValidSubstitution(TypeSubstitution candidate, JavaType.TypeVariableJavaType typeVar, JavaType typeParam, JavaType site) {
     for (JavaType bound : typeVar.bounds) {
-      JavaType currentBound = bound;
+      JavaType currentBound = applySubstitution(bound, candidate);
       while (currentBound.isTagged(JavaType.TYPEVAR)) {
         JavaType newBound = candidate.substitutedType(currentBound);
         if (newBound == null && isParametrizedType(site)) {
