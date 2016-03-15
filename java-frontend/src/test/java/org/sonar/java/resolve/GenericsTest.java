@@ -21,7 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Assertions;
@@ -40,6 +40,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -786,36 +787,9 @@ public class GenericsTest {
   }
 
   @Test
-  public void test_method_resolution_of_parametrized_method_from_parametrized() {
-    List<Type> elementTypes = declaredTypes(
-      "abstract class A<X> implements I2<Class<? extends X>, X> {"
-        + "  <B, T extends B> T cast(Class<T> type, B value) {"
-        + "    return null;"
-        + "  }"
-
-        + "  <T extends X> T foo(Class<T> type, T value) {"
-        + "    return cast(type, put(type, value));"
-        + "  }"
-
-        + "  <T extends X> T bar(Class<T> type) {"
-        + "    return cast(type, get(type));"
-        + "  }"
-
-        + "  I1 myI = new I1() {"
-        + "    @Override"
-        + "    public void foo(Class<?> key, Object value) {"
-        + "      cast(key, value);"
-        + "    }"
-        + "  };"
-        + "}"
-
-        + "interface I1 {"
-        + "  void foo(Class<?> key, Object value);"
-        + "}"
-        + "interface I2<K, V> {"
-        + "  V put(K key, V value);"
-        + "  V get(Object key);"
-        + "}");
+  public void test_method_resolution_of_parametrized_method_from_parametrized() throws IOException {
+    List<String> lines = FileUtils.readLines(new File("src/test/files/resolve/GenericMethods.java"));
+    List<Type> elementTypes = declaredTypes(lines.toArray(new String[lines.size()]));
 
     JavaType type = (JavaType) elementTypes.get(0);
     JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "cast");

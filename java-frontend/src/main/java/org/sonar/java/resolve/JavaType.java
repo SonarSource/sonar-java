@@ -21,7 +21,6 @@ package org.sonar.java.resolve;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -115,11 +114,6 @@ public class JavaType implements Type {
       }
       //Only possibility to be supertype of array without being an array is to be Object.
       return "java.lang.Object".equals(supType.fullyQualifiedName());
-    } else if(isTagged(TYPEVAR)) {
-      if (supType.isTagged(WILDCARD)) {
-        return ((WildCardType) supType).isSubtypeOfBound(this);
-      }
-      return this.equals(superType) || erasure().isSubtypeOf(superType.erasure());
     }
     return false;
   }
@@ -371,9 +365,30 @@ public class JavaType implements Type {
     public JavaType erasure() {
       return bounds.get(0).erasure();
     }
+
+    public List<JavaType> bounds() {
+      return bounds;
+    }
+
+    @Override
+    public boolean isSubtypeOf(Type superType) {
+      JavaType supType = (JavaType) superType;
+      if (supType.isTagged(WILDCARD)) {
+        return ((WildCardType) supType).isSubtypeOfBound(this);
+      }
+      if(supType == this) {
+        return true;
+      }
+      for (JavaType bound : bounds()) {
+        if(bound.isSubtypeOf(supType)) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
 
-  public static class ParametrizedTypeJavaType extends ClassJavaType {
+  public static class ParametrizedTypeJavaType extends JavaType.ClassJavaType {
 
     final TypeSubstitution typeSubstitution;
     final JavaType rawType;
@@ -383,6 +398,8 @@ public class JavaType implements Type {
       this.rawType = symbol.getType();
       this.typeSubstitution = typeSubstitution;
     }
+
+
 
     @Override
     public JavaType erasure() {
@@ -407,6 +424,9 @@ public class JavaType implements Type {
 
     @Override
     public boolean isSubtypeOf(Type superType) {
+      if(((JavaType) superType).isTagged(TYPEVAR)) {
+        return false;
+      }
       if (erasure().isSubtypeOf(superType.erasure())) {
         boolean superTypeIsParametrizedJavaType = superType instanceof ParametrizedTypeJavaType;
         if (superTypeIsParametrizedJavaType) {
@@ -492,8 +512,14 @@ public class JavaType implements Type {
     public boolean isSubtypeOfBound(JavaType type) {
       switch (boundType) {
         case SUPER:
+          if(bound.isTagged(TYPEVAR) && !type.isTagged(TYPEVAR) && bound != type) {
+            return false;
+          }
           return bound.isSubtypeOf(type);
         case EXTENDS:
+          if(bound.isTagged(TYPEVAR) && !type.isTagged(TYPEVAR) && bound != type) {
+            return false;
+          }
           return type.isSubtypeOf(bound);
         case UNBOUNDED:
         default:

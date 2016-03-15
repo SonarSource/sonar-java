@@ -87,11 +87,31 @@ public interface Index<DOMAIN, DTO extends Dto<KEY>, KEY extends Serializable> {
 class CastToRawType {
   void fun() {
     Object o1  = (Object) Object[].class; // Noncompliant
-    Object o2  = (Class) Object[].class; // watchout
+    Class o2  = (Class) Object[].class; // Noncompliant
   }
   private final Map<Class<?>, Index<?,?,?>> indexComponents;
   public <K extends Index> K get(Class<K> clazz){
     return (K) this.indexComponents.get(clazz);
   }
 
+}
+
+class F<T> {
+  class Inner<K> {
+    K fun(T t) {
+      return (K) t;
+    }
+  }
+  public <T> T[] toArray(T[] a) {
+    int size = size();
+    if (a.length < size)
+      a = (T[])java.lang.reflect.Array
+        .newInstance(a.getClass().getComponentType(), size);
+    Iterator<Map.Entry<K,V>> it = iterator();
+    for (int i = 0; i < size; i++)
+      a[i] = (T) new java.util.AbstractMap.SimpleEntry<K,V>(it.next());
+    if (a.length > size)
+      a[size] = null;
+    return a;
+  }
 }

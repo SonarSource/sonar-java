@@ -86,6 +86,7 @@ class TypeParameterUsedInMethods<T, U> {
     getter.apply(wantedValue);
     // not valid call with different erasure, not resolved
     getter.apply("hello");
+    new TypeParameterUsedInMethods<Object, Object>().getter.apply(new Object());
   }
 
   static class Function<X, Y> {

@@ -58,13 +58,16 @@ public class TypeSubstitutionSolver {
     return substitution;
   }
 
-  JavaType getReturnType(@Nullable JavaType returnType, JavaType site, boolean parametrizedMethodCall, TypeSubstitution substitution) {
+  JavaType getReturnType(@Nullable JavaType returnType, JavaType defSite, JavaType callSite, boolean parametrizedMethodCall, TypeSubstitution substitution) {
     if (returnType == null) {
       // case of constructors
       return returnType;
     }
-    JavaType resultType = applySiteSubstitution(returnType, site);
-    if (isRawTypeOfParametrizedType(site) && !parametrizedMethodCall) {
+    JavaType resultType = applySiteSubstitution(returnType, defSite);
+    if(callSite != defSite) {
+      resultType = applySiteSubstitution(resultType, callSite);
+    }
+    if (isRawTypeOfParametrizedType(callSite) && !parametrizedMethodCall) {
       // JLS8 5.1.9 + JLS8 15.12.2.6
       return resultType.erasure();
     }
@@ -288,7 +291,7 @@ public class TypeSubstitutionSolver {
           newBound = ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution.substitutedType(currentBound);
         }
         if (newBound == null) {
-          return false;
+          return ((JavaSymbol.TypeJavaSymbol) site.symbol()).typeVariableTypes.contains(currentBound);
         }
         currentBound = newBound;
       }

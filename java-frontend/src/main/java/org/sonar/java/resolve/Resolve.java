@@ -397,7 +397,7 @@ public class Resolve {
     // look in site members
     for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
       if (symbol.kind == JavaSymbol.MTH) {
-        Resolution best = selectBest(env, callSite, argTypes, typeParams, symbol, bestSoFar, autoboxing);
+        Resolution best = selectBest(env, site, callSite, argTypes, typeParams, symbol, bestSoFar, autoboxing);
         if (best.symbol == symbol) {
           bestSoFar = best;
         }
@@ -407,7 +407,7 @@ public class Resolve {
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, superclass);
-      Resolution best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
+      Resolution best = selectBest(env, superclass, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
       if (best.symbol == method.symbol) {
         bestSoFar = method;
       }
@@ -415,7 +415,7 @@ public class Resolve {
     for (JavaType interfaceType : site.getSymbol().getInterfaces()) {
       Resolution method = findMethod(env, callSite, interfaceType, name, argTypes, typeParams);
       method.type = typeSubstitutionSolver.applySiteSubstitution(method.type, site, interfaceType);
-      Resolution best = selectBest(env, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
+      Resolution best = selectBest(env, interfaceType, callSite, argTypes, typeParams, method.symbol, bestSoFar, autoboxing);
       if (best.symbol == method.symbol) {
         bestSoFar = method;
       }
@@ -430,8 +430,8 @@ public class Resolve {
    * @param candidate    candidate
    * @param bestSoFar previously found best match
    */
-  private Resolution selectBest(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams, JavaSymbol candidate, Resolution bestSoFar, boolean autoboxing) {
-    JavaSymbol.TypeJavaSymbol siteSymbol = site.symbol;
+  private Resolution selectBest(Env env, JavaType defSite, JavaType callSite, List<JavaType> argTypes, List<JavaType> typeParams, JavaSymbol candidate, Resolution bestSoFar, boolean autoboxing) {
+    JavaSymbol.TypeJavaSymbol siteSymbol = callSite.symbol;
     // TODO get rid of null check
     if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, siteSymbol) || candidate.type == null) {
       return bestSoFar;
@@ -440,12 +440,15 @@ public class Resolve {
     if(!hasCompatibleArity(methodJavaSymbol.parameterTypes().size(), argTypes.size(), methodJavaSymbol.isVarArgs())) {
       return bestSoFar;
     }
-    TypeSubstitution substitution = typeSubstitutionSolver.getTypeSubstitution(methodJavaSymbol, site, typeParams, argTypes);
+    TypeSubstitution substitution = typeSubstitutionSolver.getTypeSubstitution(methodJavaSymbol, callSite, typeParams, argTypes);
     if (substitution == null) {
       return bestSoFar;
     }
     List<JavaType> formals = ((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes;
-    formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, site);
+    formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, callSite);
+    if(defSite != callSite) {
+      formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, defSite);
+    }
     formals = typeSubstitutionSolver.applySubstitutionToFormalParameters(formals, substitution);
     if (!isArgumentsAcceptable(argTypes, formals, methodJavaSymbol.isVarArgs(), autoboxing)) {
       return bestSoFar;
@@ -463,8 +466,8 @@ public class Resolve {
     }
 
     Resolution resolution = new Resolution(mostSpecific);
-    JavaType resturnType = ((JavaType.MethodJavaType) ((JavaSymbol.MethodJavaSymbol) mostSpecific).type).resultType;
-    resolution.type = typeSubstitutionSolver.getReturnType(resturnType, site, !typeParams.isEmpty(), substitution);
+    JavaType returnType = ((JavaType.MethodJavaType) ((JavaSymbol.MethodJavaSymbol) mostSpecific).type).resultType;
+    resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, !typeParams.isEmpty(), substitution);
 
     return resolution;
   }
