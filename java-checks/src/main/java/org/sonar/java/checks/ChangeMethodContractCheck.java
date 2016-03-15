@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -30,6 +31,7 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
@@ -45,6 +47,10 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 @ActivatedByDefault
 public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
+
+  private static final String JAVAX_ANNOTATION_CHECK_FOR_NULL = "javax.annotation.CheckForNull";
+  private static final String JAVAX_ANNOTATION_NULLABLE = "javax.annotation.Nullable";
+  private static final String JAVAX_ANNOTATION_NONNULL = "javax.annotation.Nonnull";
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -65,36 +71,40 @@ public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkContractChange(MethodTreeImpl methodTree, JavaSymbol.MethodJavaSymbol overridee) {
-    if (methodTree.isEqualsMethod() && methodTree.parameters().get(0).symbol().metadata().isAnnotatedWith("javax.annotation.Nonnull")) {
+    if (methodTree.isEqualsMethod() && methodTree.parameters().get(0).symbol().metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL)) {
       reportIssue(methodTree.parameters().get(0), "Equals method should accept null parameters and return false.");
       return;
     }
     for (int i = 0; i < methodTree.parameters().size(); i++) {
-      Symbol paramSymbol = methodTree.parameters().get(i).symbol();
+      VariableTree parameter = methodTree.parameters().get(i);
       Symbol overrideeParamSymbol = overridee.getParameters().scopeSymbols().get(i);
-      if (nonNullVsNull(paramSymbol, overrideeParamSymbol)) {
-        Tree reportTree = methodTree.parameters().get(i);
-        for (AnnotationTree annotationTree : methodTree.parameters().get(i).modifiers().annotations()) {
-          if(annotationTree.symbolType().is("javax.annotation.Nonnull")) {
-            reportTree = annotationTree;
-          }
-        }
-        reportIssue(reportTree, "Remove this \"Nonnull\" annotation to honor the overridden method's contract.");
-      }
+      checkParameter(parameter, overrideeParamSymbol);
     }
     if (nonNullVsNull(overridee, methodTree.symbol())) {
       for (AnnotationTree annotationTree : methodTree.modifiers().annotations()) {
-        if(annotationTree.symbolType().is("javax.annotation.Nullable") || annotationTree.symbolType().is("javax.annotation.CheckForNull")) {
+        if(annotationTree.symbolType().is(JAVAX_ANNOTATION_NULLABLE) || annotationTree.symbolType().is(JAVAX_ANNOTATION_CHECK_FOR_NULL)) {
           reportIssue(annotationTree, "Remove this \""+ annotationTree.symbolType().name() +"\" annotation to honor the overridden method's contract.");
         }
       }
     }
   }
 
+  private void checkParameter(VariableTree parameter, Symbol overrideeParamSymbol) {
+    Tree reportTree = parameter;
+    if (nonNullVsNull(parameter.symbol(), overrideeParamSymbol)) {
+      for (AnnotationTree annotationTree : parameter.modifiers().annotations()) {
+        if(annotationTree.symbolType().is(JAVAX_ANNOTATION_NONNULL)) {
+          reportTree = annotationTree;
+        }
+      }
+      reportIssue(reportTree, "Remove this \"Nonnull\" annotation to honor the overridden method's contract.");
+    }
+  }
+
   private static boolean nonNullVsNull(Symbol sym1, Symbol sym2) {
-    return sym1.metadata().isAnnotatedWith("javax.annotation.Nonnull") &&
-      (sym2.metadata().isAnnotatedWith("javax.annotation.Nullable")
-      || sym2.metadata().isAnnotatedWith("javax.annotation.CheckForNull"));
+    return sym1.metadata().isAnnotatedWith(JAVAX_ANNOTATION_NONNULL) &&
+      (sym2.metadata().isAnnotatedWith(JAVAX_ANNOTATION_NULLABLE)
+      || sym2.metadata().isAnnotatedWith(JAVAX_ANNOTATION_CHECK_FOR_NULL));
 
   }
 

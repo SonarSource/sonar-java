@@ -39,7 +39,7 @@ class B extends A {
 
 class C extends A {
     @Override
-    void foo1(@javax.annotation.Nonnull Object a) { } // Noncompliant {{Remove this "Nonnull" annotation to honor the overridden method's contract.}}
+    void foo1(@javax.annotation.Nonnull @MyAnnotation Object a) { } // Noncompliant {{Remove this "Nonnull" annotation to honor the overridden method's contract.}}
     @Override
     void foo2(@javax.annotation.Nonnull Object a) { } // Noncompliant
     @Override
@@ -61,3 +61,5 @@ class D extends Unknown {
     @Override
     void foo(@javax.annotation.Nonnull Object a) { } // compliant : we cannot check the overriden method
 }
+
+@interface MyAnnotation {}
