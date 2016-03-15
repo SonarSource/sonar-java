@@ -115,10 +115,12 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     if(erasedExpressionType.isTagged(JavaType.TYPEVAR)) {
       erasedExpressionType = erasedExpressionType.erasure();
     }
-    if (isParametrizedType(cast) ^ isParametrizedType(expressionType)) {
-      return false;
+    boolean expressionIsParametrized = isParametrizedType(expressionType);
+    boolean castIsParametrized = isParametrizedType(cast);
+    if (castIsParametrized ^ expressionIsParametrized) {
+      return expressionIsParametrized && expressionType.erasure() != cast.erasure() && expressionType.isSubtypeOf(cast);
     }
-    if (isParametrizedType(cast) && isParametrizedType(expressionType)) {
+    if (castIsParametrized) {
       return expressionType.isSubtypeOf(cast);
     }
     return erasedExpressionType.equals(cast) || (!cast.isNumerical() && erasedExpressionType.isSubtypeOf(cast));

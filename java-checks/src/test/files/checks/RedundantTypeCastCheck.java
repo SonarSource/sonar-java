@@ -83,3 +83,15 @@ class E<T> {
     return (E<List<Object>>) (E<?>) list; // Compliant
   }
 }
+public interface Index<DOMAIN, DTO extends Dto<KEY>, KEY extends Serializable> {}
+class CastToRawType {
+  void fun() {
+    Object o1  = (Object) Object[].class; // Noncompliant
+    Object o2  = (Class) Object[].class; // watchout
+  }
+  private final Map<Class<?>, Index<?,?,?>> indexComponents;
+  public <K extends Index> K get(Class<K> clazz){
+    return (K) this.indexComponents.get(clazz);
+  }
+
+}
