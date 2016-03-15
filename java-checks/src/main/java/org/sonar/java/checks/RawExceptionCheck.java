@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -28,8 +29,10 @@ import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
-import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
@@ -39,6 +42,7 @@ import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Rule(
@@ -51,9 +55,10 @@ import java.util.Set;
 @SqaleConstantRemediation("20min")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
-  private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("Throwable", "Error", "Exception", "RuntimeException");
+  private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("java.lang.Throwable", "java.lang.Error", "java.lang.Exception", "java.lang.RuntimeException");
 
   private JavaFileScannerContext context;
+  private Set<Type> exceptionsThrownByMethodInvocations = new HashSet<>();
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
@@ -63,34 +68,58 @@ public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanne
 
   @Override
   public void visitMethod(MethodTree tree) {
-    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && !((MethodTreeImpl) tree).isMainMethod()) {
+    super.visitMethod(tree);
+    if ((tree.is(Tree.Kind.CONSTRUCTOR) || isNotOverriden(tree)) && isNotMainMethod(tree)) {
       for (TypeTree throwClause : tree.throwsClauses()) {
-        checkExceptionAndRaiseIssue(throwClause);
+        Type exceptionType = throwClause.symbolType();
+        if (isRawException(exceptionType) && !exceptionsThrownByMethodInvocations.contains(exceptionType)) {
+          reportIssue(throwClause);
+        }
       }
     }
-    super.visitMethod(tree);
+    exceptionsThrownByMethodInvocations.clear();
   }
 
   @Override
   public void visitThrowStatement(ThrowStatementTree tree) {
     if (tree.expression().is(Tree.Kind.NEW_CLASS)) {
-      checkExceptionAndRaiseIssue(((NewClassTree) tree.expression()).identifier());
+      TypeTree exception = ((NewClassTree) tree.expression()).identifier();
+      if (isRawException(exception.symbolType())) {
+        reportIssue(exception);
+      }
     }
     super.visitThrowStatement(tree);
   }
 
-  private void checkExceptionAndRaiseIssue(Tree tree) {
-    if (isRawException(tree)) {
-      context.reportIssue(this, tree, "Define and throw a dedicated exception instead of using a generic one.");
-    }
+  private void reportIssue(Tree tree) {
+    context.reportIssue(this, tree, "Define and throw a dedicated exception instead of using a generic one.");
   }
 
-  private static boolean isRawException(Tree tree) {
-    return tree.is(Tree.Kind.IDENTIFIER) && RAW_EXCEPTIONS.contains(((IdentifierTree) tree).name());
+  @Override
+  public void visitMethodInvocation(MethodInvocationTree tree) {
+    if (tree.symbol().isMethodSymbol()) {
+      for (Type thrownType : ((Symbol.MethodSymbol) tree.symbol()).thrownTypes()) {
+        exceptionsThrownByMethodInvocations.add(thrownType);
+      }
+    }
+    super.visitMethodInvocation(tree);
+  }
+
+  private static boolean isRawException(Type type) {
+    for (String rawException : RAW_EXCEPTIONS) {
+      if (type.is(rawException)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static boolean isNotOverriden(MethodTree tree) {
     return BooleanUtils.isFalse(((MethodTreeImpl) tree).isOverriding());
+  }
+
+  private static boolean isNotMainMethod(MethodTree tree) {
+    return !((MethodTreeImpl) tree).isMainMethod();
   }
 
 }

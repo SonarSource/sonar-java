@@ -5,10 +5,6 @@
 'net.code-story:http:src/main/java/net/codestory/http/filters/PayloadSupplier.java':[
 24,
 ],
-'net.code-story:http:src/main/java/net/codestory/http/filters/auth/CookieAuthFilter.java':[
-81,
-96,
-],
 'net.code-story:http:src/main/java/net/codestory/http/misc/PreCompile.java':[
 67,
 ],
@@ -31,11 +27,7 @@
 22,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/routes/Route.java':[
-24,
 33,
-],
-'net.code-story:http:src/main/java/net/codestory/http/routes/RouteCollection.java':[
-519,
 ],
 'net.code-story:http:src/main/java/net/codestory/http/routes/StaticRoute.java':[
 79,

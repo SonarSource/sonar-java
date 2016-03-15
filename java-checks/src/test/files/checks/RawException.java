@@ -4,6 +4,16 @@ public class Example {
     throw new Throwable(); // Noncompliant
   }
 
+  public void method_throwing_throwable() throws Throwable { // Compliant
+    throwingExceptionMethod1();
+  }
+
+  private void throwingExceptionMethod1() throws Throwable { // Noncompliant [[sc=50;ec=59]]
+  }
+
+  private void throwingExceptionMethod2() throws java.lang.Throwable { // Noncompliant [[sc=50;ec=69]]
+  }
+
   public void throws_Error() {
     throw new Error(); // Noncompliant [[sc=15;ec=20]]
   }
@@ -16,11 +26,14 @@ public class Example {
     throw new RuntimeException(); // Noncompliant
   }
 
-  public void throws_custom() {
+  public void throws_custom() throws MyOtherException { // Compliant
     throw new MyException(); // OK
   }
 
   class MyException extends RuntimeException { // Compliant
+  }
+
+  class MyOtherException extends Exception { // Compliant
   }
 
   public void throws_value() {

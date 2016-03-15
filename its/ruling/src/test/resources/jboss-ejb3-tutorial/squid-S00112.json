@@ -39,8 +39,6 @@
 ],
 'jboss-ejb3-tutorial:extended_pc/src/org/jboss/tutorial/extended/client/Client.java':[
 41,
-46,
-66,
 ],
 'jboss-ejb3-tutorial:interceptor/src/org/jboss/tutorial/interceptor/bean/AccountsCancelInterceptor.java':[
 63,

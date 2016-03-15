@@ -22,9 +22,6 @@
 'jdk6:java/awt/im/spi/InputMethodDescriptor.java':[
 105,
 ],
-'jdk6:java/beans/DefaultPersistenceDelegate.java':[
-203,
-],
 'jdk6:java/beans/Encoder.java':[
 89,
 ],
@@ -34,9 +31,6 @@
 459,
 466,
 ],
-'jdk6:java/beans/Expression.java':[
-96,
-],
 'jdk6:java/beans/MetaData.java':[
 685,
 ],
@@ -44,7 +38,6 @@
 399,
 ],
 'jdk6:java/beans/Statement.java':[
-127,
 131,
 151,
 246,
@@ -61,14 +54,6 @@
 'jdk6:java/io/SequenceInputStream.java':[
 55,
 80,
-],
-'jdk6:java/lang/ClassLoader.java':[
-1356,
-],
-'jdk6:java/lang/StringCoding.java':[
-89,
-149,
-249,
 ],
 'jdk6:java/lang/ref/Finalizer.java':[
 21,
@@ -118,9 +103,6 @@
 ],
 'jdk6:java/rmi/server/RemoteCall.java':[
 104,
-],
-'jdk6:java/rmi/server/RemoteObjectInvocationHandler.java':[
-171,
 ],
 'jdk6:java/rmi/server/RemoteRef.java':[
 61,
