@@ -161,10 +161,25 @@ public class JavaAstScannerTest {
     scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
   }
 
+  @Test
+  public void should_propagate_SOError() {
+    thrown.expect(StackOverflowError.class);
+    JavaAstScanner scanner = defaultJavaAstScanner();
+    scanner.setVisitorBridge(new VisitorsBridge(new CheckThrowingSOError()));
+    scanner.scan(ImmutableList.of(new File("src/test/resources/AstScannerNoParseError.txt")));
+  }
+
   private static JavaAstScanner defaultJavaAstScanner() {
     return new JavaAstScanner(new ActionParser<Tree>(Charsets.UTF_8, FakeLexer.builder(), FakeGrammar.class, new FakeTreeFactory(), new JavaNodeBuilder(), FakeLexer.ROOT));
   }
 
+  private static class CheckThrowingSOError implements JavaFileScanner {
+
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      throw new StackOverflowError();
+    }
+  }
   private static class CheckThrowingException implements JavaFileScanner {
 
     private final RuntimeException exception;
