@@ -20,20 +20,26 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
+import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
+
+import javax.annotation.CheckForNull;
 
 import java.util.List;
 
@@ -47,7 +53,8 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVisitor {
 
-  private static final String[] FORBIDDEN_TYPES = {"java.text.SimpleDateFormat", "java.util.Calendar", "javax.xml.xpath.XPath", "javax.xml.validation.SchemaFactory"};
+  private static final String JAVA_TEXT_SIMPLE_DATE_FORMAT = "java.text.SimpleDateFormat";
+  private static final String[] FORBIDDEN_TYPES = {JAVA_TEXT_SIMPLE_DATE_FORMAT, "java.util.Calendar", "javax.xml.xpath.XPath", "javax.xml.validation.SchemaFactory"};
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -57,7 +64,11 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
   @Override
   public void visitNode(Tree tree) {
     VariableTree variableTree = (VariableTree) tree;
-    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(variableTree.type().symbolType())) {
+    Type type = variableTree.type().symbolType();
+    if (ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC) && isForbiddenType(type)) {
+      if (type.isSubtypeOf(JAVA_TEXT_SIMPLE_DATE_FORMAT) && onlySynchronizedUsages((Symbol.VariableSymbol) variableTree.symbol())) {
+        return;
+      }
       IdentifierTree identifierTree = variableTree.simpleName();
       reportIssue(identifierTree, String.format("Make \"%s\" an instance variable.", identifierTree.name()));
     }
@@ -70,6 +81,40 @@ public class StaticMultithreadedUnsafeFieldsCheck extends IssuableSubscriptionVi
       }
     }
     return false;
+  }
+
+  private static boolean onlySynchronizedUsages(Symbol.VariableSymbol variable) {
+    List<IdentifierTree> usages = variable.usages();
+    if (usages.isEmpty()) {
+      return false;
+    }
+    for (IdentifierTree usage : usages) {
+      SynchronizedStatementTree synchronizedStatementTree = getParentSynchronizedStatement(usage);
+      if (synchronizedStatementTree == null) {
+        // used outside a synchronized statement
+        return false;
+      } else {
+        ExpressionTree expression = synchronizedStatementTree.expression();
+        if (!expression.is(Tree.Kind.IDENTIFIER) || !variable.equals(((IdentifierTree) expression).symbol())) {
+          // variable is not the expression synchronized
+          return false;
+        }
+        // check other usages
+      }
+    }
+    return true;
+  }
+
+  @CheckForNull
+  private static SynchronizedStatementTree getParentSynchronizedStatement(IdentifierTree usage) {
+    Tree parent = usage.parent();
+    while (parent != null && !parent.is(Tree.Kind.SYNCHRONIZED_STATEMENT)) {
+      parent = parent.parent();
+    }
+    if (parent == null) {
+      return null;
+    }
+    return (SynchronizedStatementTree) parent;
   }
 
 }
