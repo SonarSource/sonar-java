@@ -23,6 +23,7 @@ import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.ArrayList;
@@ -123,9 +124,9 @@ public class CheckerDispatcher implements CheckerContext {
     }
   }
 
-  public void init() {
+  public void init(MethodTree methodTree) {
     for (SECheck checker : checks) {
-      checker.init();
+      checker.init(methodTree);
     }
   }
 

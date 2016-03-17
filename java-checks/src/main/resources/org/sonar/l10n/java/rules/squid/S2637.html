@@ -1,0 +1,39 @@
+<p>
+Fields, parameters and return values marked <code>@NotNull</code>, <code>@NonNull</code>, or <code>@Nonnull</code> are assumed to have 
+non-null values and are not typically null-checked before use. Therefore setting one of these values to null, or failing to set 
+such a class field in a constructor, could cause <code>NullPointerException</code>s at runtime.</p>
+
+<p>
+It is quite likely that the code does not match the programmer's intent.
+</p>
+
+<h2>Noncompliant Code Examples</h2>
+
+<pre>
+public class Fruit {
+  @NotNull
+  private Season ripe;
+
+  private String color;
+
+  public Fruit() {  // Noncompliant; ripe is left null
+  }
+
+  public void setColor(@NotNull String color) {
+    this.color = color;
+  }
+
+  public @NotNull Integer getProtein() {
+    return null;  // Noncompliant
+  }
+}
+
+public class MyClass {
+
+  public void doSomething() {
+
+    Fruit fruit = new Fruit();
+    fruit.setColor(null);  // Noncompliant
+  }
+}
+</pre>

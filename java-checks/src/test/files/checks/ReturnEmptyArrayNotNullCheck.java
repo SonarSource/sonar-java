@@ -13,10 +13,6 @@ import java.util.Set;
 
 class A {
 
-  {
-    return;
-  }
-
   public A() {
     return null;        
   }
@@ -27,7 +23,6 @@ class A {
 
   public int[] f2() {
     return null;        // Noncompliant [[sc=12;ec=16]] {{Return an empty array instead of null.}}
-    return a;           
   }
 
   public Object f3() {

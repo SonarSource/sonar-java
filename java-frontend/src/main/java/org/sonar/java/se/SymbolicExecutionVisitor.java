@@ -40,7 +40,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
-    return Lists.newArrayList(Tree.Kind.METHOD);
+    return Lists.newArrayList(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override

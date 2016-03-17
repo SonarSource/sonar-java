@@ -239,11 +239,19 @@ public class UnclosedResourcesCheck extends SECheck {
     @Override
     public void visitAssignmentExpression(AssignmentExpressionTree syntaxNode) {
       final ExpressionTree variable = syntaxNode.variable();
-      if (variable.is(Tree.Kind.ARRAY_ACCESS_EXPRESSION)) {
+      if (isNonLocalStorage(variable)) {
         List<SymbolicValue> stackedValues = programState.peekValues(2);
         SymbolicValue value = stackedValues.get(1);
         closeResource(value);
       }
+    }
+
+    private static boolean isNonLocalStorage(ExpressionTree variable) {
+      if (variable.is(Tree.Kind.IDENTIFIER)) {
+        Symbol owner = ((IdentifierTree) variable).symbol().owner();
+        return !owner.isMethodSymbol();
+      }
+      return true;
     }
 
     @Override

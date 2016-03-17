@@ -48,7 +48,8 @@ public class CheckListTest {
     "ConditionAlwaysTrueOrFalseCheck",
     "UnclosedResourcesCheck",
     "CustomUnclosedResourcesCheck",
-    "LocksNotUnlockedCheck"
+    "LocksNotUnlockedCheck",
+    "NonNullSetToNullCheck"
   );
 
   /**

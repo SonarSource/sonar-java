@@ -26,13 +26,14 @@ import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Map;
 
 public abstract class SECheck implements JavaFileScanner {
 
-  public void init(){
+  public void init(MethodTree methodTree){
   }
 
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {

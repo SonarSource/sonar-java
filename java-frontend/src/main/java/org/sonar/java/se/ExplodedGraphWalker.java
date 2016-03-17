@@ -34,6 +34,7 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
+import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -131,7 +132,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   ExplodedGraphWalker(JavaFileScannerContext context) {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
     this.checkerDispatcher = new CheckerDispatcher(this, context,
-      Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(), new LocksNotUnlockedCheck()));
+      Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck()));
   }
 
   @VisibleForTesting
@@ -155,7 +156,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void execute(MethodTree tree) {
-    checkerDispatcher.init();
+    checkerDispatcher.init(tree);
     CFG cfg = CFG.build(tree);
     liveVariables = LiveVariables.analyze(cfg);
     explodedGraph = new ExplodedGraph();
@@ -705,6 +706,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       seChecks.add(removeOrDefault(checks, new NullDereferenceCheck()));
       seChecks.add(removeOrDefault(checks, new UnclosedResourcesCheck()));
       seChecks.add(removeOrDefault(checks, new LocksNotUnlockedCheck()));
+      seChecks.add(removeOrDefault(checks, new NonNullSetToNullCheck()));
       seChecks.addAll(checks);
     }
 
