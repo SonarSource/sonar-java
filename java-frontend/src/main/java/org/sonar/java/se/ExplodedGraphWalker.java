@@ -438,12 +438,18 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       case LONG_LITERAL:
       case FLOAT_LITERAL:
       case DOUBLE_LITERAL:
-      case BOOLEAN_LITERAL:
       case CHAR_LITERAL:
       case STRING_LITERAL:
-      case NULL_LITERAL:
-        SymbolicValue val = constraintManager.evalLiteral((LiteralTree) tree);
+        SymbolicValue val = constraintManager.createSymbolicValue(tree);
         programState = programState.stackValue(val);
+        programState = programState.addConstraint(val, ObjectConstraint.NOT_NULL);
+        break;
+      case BOOLEAN_LITERAL:
+        boolean value = Boolean.parseBoolean(((LiteralTree) tree).value());
+        programState = programState.stackValue(value ? SymbolicValue.TRUE_LITERAL : SymbolicValue.FALSE_LITERAL);
+        break;
+      case NULL_LITERAL:
+        programState = programState.stackValue(SymbolicValue.NULL_LITERAL);
         break;
       case LAMBDA_EXPRESSION:
       case METHOD_REFERENCE:

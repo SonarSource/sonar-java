@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
-import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -157,19 +156,6 @@ public class ConstraintManager {
     result = symbolicValueFactory == null ? new SymbolicValue(counter) : symbolicValueFactory.createSymbolicValue(counter, syntaxNode);
     symbolicValueFactory = null;
     return result;
-  }
-
-  public SymbolicValue evalLiteral(LiteralTree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.NULL_LITERAL)) {
-      return SymbolicValue.NULL_LITERAL;
-    } else if (syntaxNode.is(Tree.Kind.BOOLEAN_LITERAL)) {
-      boolean value = Boolean.parseBoolean(syntaxNode.value());
-      if (value) {
-        return SymbolicValue.TRUE_LITERAL;
-      }
-      return SymbolicValue.FALSE_LITERAL;
-    }
-    return createSymbolicValue(syntaxNode);
   }
 
   public boolean isNull(ProgramState ps, SymbolicValue val) {

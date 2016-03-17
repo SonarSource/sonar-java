@@ -1208,6 +1208,13 @@ public static class Class extends SuperClass {
     }
     System.out.println();
   }
+  
+  public void constantTests() {
+    String value = "default";
+    if (value == null) { // Noncompliant {{Change this condition so that it does not always evaluate to "false"}}
+      raiseError();
+    }
+  } 
 }
 
 class SuperClass {
