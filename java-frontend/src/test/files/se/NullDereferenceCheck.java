@@ -617,4 +617,17 @@ class NullPointerTest {
     a.toString(); // Compliant: a cannot be null hereafter
     this.checkForNullMethod().toString(); // Noncompliant {{NullPointerException might be thrown as 'checkForNullMethod' is nullable here}}
   }
+  
+  @Nonnull
+  public static String getNonNullString() {
+    return "Rachmaninov";
+  }
+  
+  public static void useNonNullString() {
+    String nonNullString = getNonNullString();
+    if (nonNullString != null) {
+      System.out.println(nonNullString);
+    }
+    int n = nonNullString.length();  // Compliant!
+  }
 }

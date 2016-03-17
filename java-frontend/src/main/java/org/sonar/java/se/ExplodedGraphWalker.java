@@ -462,7 +462,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     ProgramState.Pop unstack = programState.unstackValue(mit.arguments().size() + 1);
     programState = unstack.state;
     logState(mit);
-    programState = programState.stackValue(constraintManager.createMethodSymbolicValue(mit, unstack.values));
+    final SymbolicValue resultValue = constraintManager.createMethodSymbolicValue(mit, unstack.values);
+    programState = programState.stackValue(resultValue);
+    if (isNonNullMethod(mit.symbol())) {
+      programState = programState.addConstraint(resultValue, ObjectConstraint.NOT_NULL);
+    }
+  }
+
+  private static boolean isNonNullMethod(Symbol symbol) {
+    return !symbol.isUnknown() && symbol.metadata().isAnnotatedWith("javax.annotation.Nonnull");
   }
 
   private void executeVariable(VariableTree variableTree, @Nullable Tree terminator) {
