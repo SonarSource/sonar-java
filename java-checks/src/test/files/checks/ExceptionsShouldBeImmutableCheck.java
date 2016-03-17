@@ -7,17 +7,26 @@ class FooException extends RuntimeException {
 }
 
 class Foo extends RuntimeException {
-  int foo;
+  int foo; // Noncompliant [[sc=7;ec=10]] {{Make this "foo" field final.}}
 }
 
 class BarException {
-  int foo; // Noncompliant
+  int foo; // Compliant
 }
 
 class FooError extends Error {
+  private final Exception e = new Exception() {
+    int foo; // Compliant - anonymous class
+  };
   int foo; // Noncompliant
 }
 
 class FooBisError {
-  int foo; // Noncompliant
+  int foo; // Compliant
+}
+
+class Bar extends Foo {
+  int bar; // Noncompliant
+
+  void method() {}
 }

@@ -27,6 +27,7 @@ public class ExceptionsShouldBeImmutableCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java", new ExceptionsShouldBeImmutableCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ExceptionsShouldBeImmutableCheck.java", new ExceptionsShouldBeImmutableCheck());
   }
 
 }

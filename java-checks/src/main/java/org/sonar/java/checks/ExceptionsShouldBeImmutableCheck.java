@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -47,9 +48,11 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class ExceptionsShouldBeImmutableCheck extends IssuableSubscriptionVisitor {
 
-
   @Override
   public void visitNode(Tree tree) {
+    if (!hasSemantic()) {
+      return;
+    }
     ClassTree classTree = (ClassTree) tree;
     if (isException(classTree)) {
       for (Tree member : classTree.members()) {
@@ -66,8 +69,7 @@ public class ExceptionsShouldBeImmutableCheck extends IssuableSubscriptionVisito
   }
 
   private static boolean isException(ClassTree classTree) {
-    IdentifierTree simpleName = classTree.simpleName();
-    return simpleName != null && (simpleName.name().endsWith("Exception") || simpleName.name().endsWith("Error"));
+    return classTree.simpleName() != null && classTree.symbol().type().isSubtypeOf("java.lang.Throwable");
   }
 
   @Override
