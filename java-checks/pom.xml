@@ -109,6 +109,11 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring-test</artifactId>
+                  <version>4.2.5.RELEASE</version>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.projectlombok</groupId>
                   <artifactId>lombok</artifactId>
                   <version>1.16.4</version>

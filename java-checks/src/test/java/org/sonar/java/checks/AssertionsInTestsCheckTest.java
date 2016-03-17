@@ -24,24 +24,31 @@ import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class AssertionsInTestsCheckTest {
 
+  private AssertionsInTestsCheck check = new AssertionsInTestsCheck();
+
   @Test
   public void junit3() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit3.java", new AssertionsInTestsCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit3.java", check);
   }
 
   @Test
   public void junit4() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit4.java", new AssertionsInTestsCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckJunit4.java", check);
   }
 
   @Test
   public void assertJ() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckAssertJ.java", new AssertionsInTestsCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckAssertJ.java", check);
   }
 
   @Test
   public void hamcrest() {
-    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckHamcrest.java", new AssertionsInTestsCheck());
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckHamcrest.java", check);
+  }
+
+  @Test
+  public void spring() {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckSpring.java", check);
   }
 
 }
