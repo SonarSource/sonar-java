@@ -53,6 +53,9 @@
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v36/ViolationMigration.java':[
 65,
 ],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v50/FileSourceDto.java':[
+181,
+],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/db/migrations/v51/FeedFileSourcesBinaryData.java':[
 150,
 ],
@@ -144,6 +147,7 @@
 117,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/ClassLoaderUtils.java':[
+119,
 130,
 ],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/MasterServletFilter.java':[

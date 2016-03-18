@@ -43,6 +43,9 @@ public class TypeSubstitutionSolver {
     if (method.isParametrized()) {
       if (!typeParams.isEmpty()) {
         substitution = getSubstitutionFromTypeParams(method.typeVariableTypes, typeParams);
+      } else if (formals.isEmpty()) {
+        // substitution can not be inferred, as it is not based on arguments, method call is still valid
+        return substitution;
       } else {
         formals = applySiteSubstitutionToFormalParameters(formals, site);
         substitution = inferTypeSubstitution(method, formals, argTypes);

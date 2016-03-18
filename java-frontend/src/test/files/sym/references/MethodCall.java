@@ -269,3 +269,15 @@ class HidingOfStaticMethod {
     B.of(new C(), new C()); // call to inherited method A.of() through B
   }
 }
+
+class ParametrizedCall {
+  <T extends B> void foo() {}
+
+  void tst() {
+    foo();
+    this.<C>foo();
+  }
+
+  static class B {}
+  static class C extends B {}
+}

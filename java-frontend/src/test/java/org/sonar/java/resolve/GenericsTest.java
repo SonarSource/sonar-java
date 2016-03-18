@@ -776,8 +776,13 @@ public class GenericsTest {
 
     JavaType type = (JavaType) elementTypes.get(0);
     JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "foo");
-    // FIXME SONARJAVA-1581 should be 1
-    assertThat(methodSymbol.usages()).hasSize(0);
+    assertThat(methodSymbol.usages()).hasSize(1);
+
+    Type methodInvocationType = getMethodInvocationType(methodSymbol, 0);
+    assertThat(methodInvocationType.erasure().is("A")).isTrue();
+    // FIXME SONARJAVA-1581 should be A<String> instead of the raw type A
+    assertThat(methodInvocationType instanceof JavaType.ParametrizedTypeJavaType).isFalse();
+    // assertThat(((JavaType.ParametrizedTypeJavaType) methodInvocationType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
   }
 
   @Test
