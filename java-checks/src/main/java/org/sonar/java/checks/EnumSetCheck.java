@@ -20,14 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -45,6 +48,9 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
 @SqaleConstantRemediation("5min")
 public class EnumSetCheck extends IssuableSubscriptionVisitor {
+
+  private static final MethodMatcher GUAVA_IMMUTABLE_ENUM_SET = MethodMatcher.create().typeDefinition("com.google.common.collect.Sets").name("immutableEnumSet")
+    .withNoParameterConstraint();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -64,7 +70,7 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIssue(Type type, Tree reportTree, TypeTree typeTree) {
-    if (type.isSubtypeOf("java.util.Set") && !type.isSubtypeOf("java.util.EnumSet") && type instanceof JavaType.ParametrizedTypeJavaType) {
+    if (type.isSubtypeOf("java.util.Set") && !callToImmutableEnumSet(reportTree) && !type.isSubtypeOf("java.util.EnumSet") && type instanceof JavaType.ParametrizedTypeJavaType) {
       JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
       List<JavaType.TypeVariableJavaType> typeParameters = parametrizedType.typeParameters();
       Type variableType = typeTree.symbolType();
@@ -80,6 +86,10 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
         }
       }
     }
+  }
+
+  private static boolean callToImmutableEnumSet(Tree tree) {
+    return tree.is(Tree.Kind.METHOD_INVOCATION) && GUAVA_IMMUTABLE_ENUM_SET.matches((MethodInvocationTree) tree);
   }
 
 }
