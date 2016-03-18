@@ -32,9 +32,24 @@ public enum Continent2 {
   private int countryCount;
   private int landMass;
 
-  Continent(int countryCount, int landMass) {
+  Continent2(int countryCount, int landMass) {
 
   }
   public abstract void setLandMass(int landMass); // Noncompliant [[sc=3;ec=9]] {{Lower the visibility of this setter or remove it altogether.}}
   public abstract void getLandMass(int landMass);
+}
+
+public enum Continent3 {
+  NORTH_AMERICA (23, 24709000),
+  EUROPE (50, 39310000);
+
+  public final int countryCount; // Compliant - final
+  private int landMass;
+  public final String[] regions; // False negative - mutable field!
+
+  Continent3(int countryCount, int landMass) {
+    this.countryCount = countryCount;
+    this.landMass = landMass;
+    this.regions = new String[] {"Grazelands", "Molag Amur", "Sheogorad", "West Gash"};
+  }
 }

@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
@@ -31,6 +32,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
+import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -61,9 +63,11 @@ public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
     ClassTree enumTree = (ClassTree) tree;
     for (Tree member : enumTree.members()) {
       if (member.is(Tree.Kind.VARIABLE)) {
-        VariableTree variableTree = (VariableTree) member;
-        ModifierKeywordTree publicModifier = ModifiersUtils.getModifier(variableTree.modifiers(), Modifier.PUBLIC);
-        if (publicModifier != null && !ModifiersUtils.hasModifier(variableTree.modifiers(), Modifier.STATIC)) {
+        ModifiersTree modifiers = ((VariableTree) member).modifiers();
+        ModifierKeywordTree publicModifier = ModifiersUtils.getModifier(modifiers, Modifier.PUBLIC);
+        if (publicModifier != null && !ModifiersUtils.hasModifier(modifiers, Modifier.STATIC)
+        // FIXME SONARJAVA-1604 final mutable field should raise issues
+          && !ModifiersUtils.hasModifier(modifiers, Modifier.FINAL)) {
           reportIssue(publicModifier, "Lower the visibility of this field.");
         }
       } else if (member.is(Tree.Kind.METHOD)) {
