@@ -53,8 +53,6 @@ public class StringMethodsOnSingleCharCheck extends AbstractMethodDetection {
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
     return ImmutableList.of(
-      MethodMatcher.create().typeDefinition(STRING).name("startsWith").addParameter(STRING),
-      MethodMatcher.create().typeDefinition(STRING).name("startsWith").addParameter(STRING).addParameter("int"),
       MethodMatcher.create().typeDefinition(STRING).name("indexOf").addParameter(STRING),
       MethodMatcher.create().typeDefinition(STRING).name("indexOf").addParameter(STRING).addParameter("int"),
       MethodMatcher.create().typeDefinition(STRING).name("lastIndexOf").addParameter(STRING),
@@ -68,12 +66,7 @@ public class StringMethodsOnSingleCharCheck extends AbstractMethodDetection {
     if (arg.is(Tree.Kind.STRING_LITERAL)) {
       String argValue = LiteralUtils.trimQuotes(((LiteralTree) arg).value());
       if (argValue.length() == 1) {
-        if (mit.symbol().name().endsWith("With")) {
-          reportIssue(arg, "Add a length check and use \"charAt(0)\" instead.");
-        } else {
-          reportIssue(arg, "Put single-quotes around '"+argValue+"' to use the faster \""+mit.symbol().name()+"(char)\" method.");
-
-        }
+        reportIssue(arg, "Put single-quotes around '" + argValue + "' to use the faster \"" + mit.symbol().name() + "(char)\" method.");
       }
     }
   }
