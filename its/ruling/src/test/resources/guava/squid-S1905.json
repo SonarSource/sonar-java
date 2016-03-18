@@ -5,6 +5,7 @@
 'com.google.guava:guava:src/com/google/common/collect/Maps.java':[
 107,
 112,
+3898,
 ],
 'com.google.guava:guava:src/com/google/common/collect/MultimapBuilder.java':[
 213,
@@ -14,6 +15,9 @@
 ],
 'com.google.guava:guava:src/com/google/common/collect/RegularImmutableSortedMultiset.java':[
 114,
+],
+'com.google.guava:guava:src/com/google/common/collect/Sets.java':[
+1674,
 ],
 'com.google.guava:guava:src/com/google/common/net/InetAddresses.java':[
 707,
