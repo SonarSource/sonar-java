@@ -75,3 +75,22 @@ interface MyInterface<T> {
 
 class C<T> {
 }
+
+class TypeParameterUsedInMethods<T, U> {
+  Function<? super T, ? extends U> getter;
+
+  void foo(T val, U wantedValue) {
+    getter.apply(val);
+    // these 2 calls do not compile but methods are resolved, as argument matching is based on erasure
+    getter.apply(new Object());
+    getter.apply(wantedValue);
+    // not valid call with different erasure, not resolved
+    getter.apply("hello");
+  }
+
+  static class Function<X, Y> {
+    Y apply(X from) {
+      return null;
+    }
+  }
+}

@@ -95,6 +95,10 @@ public class SymbolTableTest {
     //Inner class referenced as type parameter in super class/interface
     assertThat(result.reference(68,53)).isSameAs(result.symbol("B", 69));
 
+    JavaSymbol applyMethod = result.symbol("apply");
+    assertThat(result.reference(83, 12)).isSameAs(applyMethod);
+    // FIXME SONARJAVA-1606 should be 1, subtyping of type variable is wrong
+    assertThat(applyMethod.usages()).hasSize(3);
   }
 
   @Test

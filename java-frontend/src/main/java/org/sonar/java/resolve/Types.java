@@ -67,6 +67,7 @@ public class Types {
           break;
         case JavaType.CLASS:
         case JavaType.WILDCARD:
+        case JavaType.TYPEVAR:
           result = t.isSubtypeOf(s);
           break;
         case JavaType.BOT:
