@@ -1,0 +1,16 @@
+{
+'com.google.guava:guava:src/com/google/common/cache/LocalCache.java':[
+4276,
+],
+'com.google.guava:guava:src/com/google/common/collect/AbstractMapEntry.java':[
+35,
+38,
+],
+'com.google.guava:guava:src/com/google/common/collect/AbstractRangeSet.java':[
+32,
+79,
+],
+'com.google.guava:guava:src/com/google/common/collect/MapMakerInternalMap.java':[
+3608,
+],
+}

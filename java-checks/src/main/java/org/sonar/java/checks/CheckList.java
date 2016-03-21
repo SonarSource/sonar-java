@@ -428,6 +428,7 @@ public final class CheckList {
       .add(StringMethodsWithLocaleCheck.class)
       .add(StringMethodsOnSingleCharCheck.class)
       .add(ConfusingOverloadCheck.class)
+      .add(RedundantAbstractMethodCheck.class)
       .build();
   }
 
