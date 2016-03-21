@@ -349,6 +349,11 @@ public class JavaType implements Type {
     public String toString() {
       return resultType == null ? "constructor" : ("returns " + resultType.toString());
     }
+
+    @Nullable
+    public JavaType resultType() {
+      return resultType;
+    }
   }
 
   public static class TypeVariableJavaType extends JavaType {
