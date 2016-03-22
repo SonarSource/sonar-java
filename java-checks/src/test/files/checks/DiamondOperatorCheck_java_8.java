@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 class A {
   List<Object> myList1 = new ArrayList<>(); // Compliant
@@ -48,4 +49,11 @@ class A {
     }
     return new ArrayList<Object>(); // Noncompliant [[sc=25;ec=33]]
   }
+}
+
+enum SonarProblemCase {
+  MY_BUCKET(rp -> { return new ArrayList<Integer>(); }),
+  MY_BUCKET2(rp -> new ArrayList<Integer>());
+
+  SonarProblemCase(Function<Object, Object> bucketer) {}
 }

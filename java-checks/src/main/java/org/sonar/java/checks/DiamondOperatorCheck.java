@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -157,14 +158,19 @@ public class DiamondOperatorCheck extends IssuableSubscriptionVisitor implements
       type = getTypeFromExpression(tree.parent(), kinds);
     }
 
+    @CheckForNull
     private static TypeTree getMethodReturnType(ReturnStatementTree returnStatementTree) {
       MethodTree methodTree = getParentMethod(returnStatementTree);
-      return methodTree.returnType();
+      if (methodTree != null) {
+        return methodTree.returnType();
+      }
+      return null;
     }
 
+    @CheckForNull
     private static MethodTree getParentMethod(Tree tree) {
       Tree result = tree;
-      while (!result.is(Tree.Kind.METHOD)) {
+      while (result != null && !result.is(Tree.Kind.METHOD)) {
         result = result.parent();
       }
       return (MethodTree) result;
