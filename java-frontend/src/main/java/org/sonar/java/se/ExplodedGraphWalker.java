@@ -303,11 +303,15 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
     } else {
       for (CFG.Block successor : block.successors()) {
-        if (!block.isFinallyBlock() || successor != block.exitBlock()) {
+        if (!block.isFinallyBlock() || isDirectFlowSuccessorOf(successor, block)) {
           enqueue(new ExplodedGraph.ProgramPoint(successor, 0), programState, successor == block.exitBlock());
         }
       }
     }
+  }
+
+  private boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {
+    return successor != block.exitBlock() || successor.isMethodExitBlock();
   }
 
   /**

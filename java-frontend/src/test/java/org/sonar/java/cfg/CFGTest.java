@@ -350,6 +350,7 @@ public class CFGTest {
     final CFG cfg = buildCFG("void fun() {}");
     final CFGChecker cfgChecker = checker();
     cfgChecker.check(cfg);
+    assertThat(cfg.entry().isMethodExitBlock()).as("entry is an exit").isTrue();
   }
 
   @Test
@@ -360,6 +361,11 @@ public class CFGTest {
         element(Tree.Kind.IDENTIFIER, "bar"),
         element(Tree.Kind.METHOD_INVOCATION)).successors(0));
     cfgChecker.check(cfg);
+    CFG.Block entry = cfg.entry();
+    assertThat(entry.isMethodExitBlock()).as("1st block is not an exit").isFalse();
+    assertThat(entry.successors()).as("number of successors").hasSize(1);
+    CFG.Block exit = entry.successors().iterator().next();
+    assertThat(exit.isMethodExitBlock()).as("2nd block is an exit").isTrue();
   }
 
   @Test

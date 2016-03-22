@@ -226,6 +226,10 @@ public class CFG {
         exitBlock = inactiveBlock.successors.iterator().next();
       }
     }
+
+    public boolean isMethodExitBlock() {
+      return successors().isEmpty();
+    }
   }
 
   private static void computePredecessors(List<Block> blocks) {

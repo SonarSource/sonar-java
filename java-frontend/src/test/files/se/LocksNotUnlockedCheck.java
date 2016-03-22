@@ -3,8 +3,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MyClass {
 
-
-
   Lock l1 = new ReentrantLock();
   Lock l2 = new ReentrantLock();
   Object a = null;
@@ -231,6 +229,34 @@ public class MyClass {
       lock =  new ReentrantLock();
     }
     lock.unlock();
+  }
+
+  public void unlockingInTryCatch() {
+    Lock lock = new ReentrantLock();
+    try {
+      lock.lock(); // Noncompliant
+    } finally {
+      try {
+        lock.unlock();
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      }
+    }
+  }
+
+  public void unlockingInTryCatchButMissed() {
+    Lock lock = new ReentrantLock();
+    try {
+      lock.lock(); // Noncompliant
+    } finally {
+      try {
+        lock.unlock();
+      } catch (Exception ex) {
+        ex.printStackTrace();
+      } finally {
+        cleanUp();
+      }
+    }
   }
   
   private volatile ScheduledExecutorService executorService;
