@@ -310,7 +310,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     }
   }
 
-  private boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {
+  private static boolean isDirectFlowSuccessorOf(CFG.Block successor, CFG.Block block) {
     return successor != block.exitBlock() || successor.isMethodExitBlock();
   }
 
