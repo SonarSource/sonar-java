@@ -65,9 +65,13 @@ public class StringMethodsOnSingleCharCheck extends AbstractMethodDetection {
     ExpressionTree arg = mit.arguments().get(0);
     if (arg.is(Tree.Kind.STRING_LITERAL)) {
       String argValue = LiteralUtils.trimQuotes(((LiteralTree) arg).value());
-      if (argValue.length() == 1) {
+      if (argValue.length() == 1 || isEscapedChar(argValue)) {
         reportIssue(arg, "Put single-quotes around '" + argValue + "' to use the faster \"" + mit.symbol().name() + "(char)\" method.");
       }
     }
+  }
+
+  private static boolean isEscapedChar(String argValue) {
+    return argValue.length() == 2 && argValue.charAt(0) == '\\';
   }
 }
