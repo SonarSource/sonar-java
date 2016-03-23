@@ -1612,3 +1612,18 @@ public class TryCatchCFG {
   }
 }
 
+public class MultiThread {
+
+  private final Object monitor = new Object();
+  private boolean shutdown;
+
+  public void run() {
+    shutdown = false;
+    long delay = 1000L;
+    monitor.wait(delay);
+    if (shutdown) { // Compliant since shutdown could have been modified during wait()
+      System.out.println("Shutdown");
+    }
+  }
+}
+
