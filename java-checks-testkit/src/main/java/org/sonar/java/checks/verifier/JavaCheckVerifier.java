@@ -22,6 +22,7 @@ package org.sonar.java.checks.verifier;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Fail;
 import org.sonar.java.JavaConfiguration;
@@ -149,6 +150,19 @@ public class JavaCheckVerifier extends CheckVerifier {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectNoIssues();
     scanFile(filename, check, javaCheckVerifier);
+  }
+
+  public static void verifyNoIssueWithoutSemantic(String filename, JavaFileScanner check, int javaVersion) {
+    JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier() {
+      @Override
+      public String getExpectedIssueTrigger() {
+        return "// NOSEMANTIC_ISSUE";
+      }
+    };
+    javaCheckVerifier.expectNoIssues();
+    javaCheckVerifier.providedJavaVersion = true;
+    javaCheckVerifier.javaVersion = new JavaVersionImpl(javaVersion);
+    scanFile(filename, check, javaCheckVerifier, Collections.<File>emptyList(), false);
   }
 
   public static void verifyNoIssueWithoutSemantic(String filename, JavaFileScanner check) {

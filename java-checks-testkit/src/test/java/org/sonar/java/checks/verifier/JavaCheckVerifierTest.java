@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.java.AnalyzerMessage;
@@ -246,6 +247,20 @@ public class JavaCheckVerifierTest {
     JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor);
     try {
       JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues());
+      Fail.fail();
+    } catch (AssertionError e) {
+      assertThat(e.getMessage()).contains("No issues expected but got:");
+    }
+  }
+
+  @Test
+  public void test_with_no_semantic_and_java_version() throws Exception {
+    int java_8 = 8;
+    IssuableSubscriptionVisitor noIssueVisitor = new FakeVisitor();
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, noIssueVisitor, java_8);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_NO_ISSUE, noIssueVisitor, java_8);
+    try {
+      JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME_ISSUES, new FakeVisitor().withDefaultIssues(), java_8);
       Fail.fail();
     } catch (AssertionError e) {
       assertThat(e.getMessage()).contains("No issues expected but got:");
