@@ -430,6 +430,7 @@ public final class CheckList {
       .add(ConfusingOverloadCheck.class)
       .add(RedundantAbstractMethodCheck.class)
       .add(NonNullSetToNullCheck.class)
+      .add(ConstructorInjectionCheck.class)
       .build();
   }
 
