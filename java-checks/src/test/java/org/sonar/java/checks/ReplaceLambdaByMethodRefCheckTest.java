@@ -29,6 +29,7 @@ public class ReplaceLambdaByMethodRefCheckTest {
   @Test
   public void java8() {
     JavaCheckVerifier.verify(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic(FILENAME, new ReplaceLambdaByMethodRefCheck(), 8);
   }
 
   @Test

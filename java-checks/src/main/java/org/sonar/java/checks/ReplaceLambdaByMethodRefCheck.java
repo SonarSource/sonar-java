@@ -65,7 +65,9 @@ public class ReplaceLambdaByMethodRefCheck extends BaseTreeVisitor implements Ja
   @Override
   public void scanFile(JavaFileScannerContext context) {
     this.context = context;
-    scan(context.getTree());
+    if (context.getSemanticModel() != null) {
+      scan(context.getTree());
+    }
   }
 
   @Override
