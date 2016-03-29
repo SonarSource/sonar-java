@@ -434,6 +434,7 @@ public final class CheckList {
       .add(NonNullSetToNullCheck.class)
       .add(ConstructorInjectionCheck.class)
       .add(ExternalizableClassConstructorCheck.class)
+      .add(RedundantInterfaceCheck.class)
       .build();
   }
 
