@@ -69,6 +69,7 @@ import org.sonar.java.checks.xml.web.ValidationFiltersCheck;
 import org.sonar.java.se.checks.ConditionAlwaysTrueOrFalseCheck;
 import org.sonar.java.se.checks.CustomUnclosedResourcesCheck;
 import org.sonar.java.se.checks.LocksNotUnlockedCheck;
+import org.sonar.java.se.checks.NoWayOutLoopCheck;
 import org.sonar.java.se.checks.NonNullSetToNullCheck;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
@@ -433,6 +434,7 @@ public final class CheckList {
       .add(RedundantAbstractMethodCheck.class)
       .add(NonNullSetToNullCheck.class)
       .add(ConstructorInjectionCheck.class)
+      .add(NoWayOutLoopCheck.class)
       .add(ExternalizableClassConstructorCheck.class)
       .build();
   }

@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se;
 
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -121,9 +122,9 @@ public class CheckerDispatcher implements CheckerContext {
     }
   }
 
-  public void init(MethodTree methodTree) {
+  public void init(MethodTree methodTree, CFG cfg) {
     for (SECheck checker : checks) {
-      checker.init(methodTree);
+      checker.init(methodTree, cfg);
     }
   }
 

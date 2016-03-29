@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.Scope;
 import org.sonar.java.se.CheckerContext;
@@ -67,7 +68,7 @@ public class NonNullSetToNullCheck extends SECheck {
   private MethodTree methodTree;
 
   @Override
-  public void init(MethodTree tree) {
+  public void init(MethodTree tree, CFG cfg) {
     methodTree = tree;
   }
 

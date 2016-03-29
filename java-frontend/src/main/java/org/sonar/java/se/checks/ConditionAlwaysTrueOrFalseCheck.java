@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,7 +47,7 @@ public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
   private final Set<Tree> evaluatedToTrue = Sets.newHashSet();
 
   @Override
-  public void init(MethodTree methodTree) {
+  public void init(MethodTree methodTree, CFG cfg) {
     evaluatedToFalse.clear();
     evaluatedToTrue.clear();
   }

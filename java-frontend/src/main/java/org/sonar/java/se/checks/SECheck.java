@@ -19,6 +19,7 @@
  */
 package org.sonar.java.se.checks;
 
+import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -35,8 +36,9 @@ import java.util.Set;
 public abstract class SECheck implements JavaFileScanner {
 
   private Set<SEIssue> issues = new HashSet<>();
+  
+  public void init(MethodTree methodTree, CFG cfg){
 
-  public void init(MethodTree methodTree){
   }
 
   public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {

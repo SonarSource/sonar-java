@@ -67,6 +67,7 @@ class A0 {
     a = null;
     for (; a != null;) {
       a.toString();
+      break;
     }
   }
 
