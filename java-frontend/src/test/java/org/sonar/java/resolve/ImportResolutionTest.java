@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.java.test.ImportsResolutionCases.ImportInnerClass;
+import org.sonar.plugins.java.api.semantic.Symbol;
 
 import java.util.List;
 
@@ -85,8 +86,15 @@ public class ImportResolutionTest {
     assertThat(sort.type.tag).isEqualTo(JavaType.METHOD);
     assertThat(result.reference(46, 7).name).isEqualTo("sort");
     assertThat(result.reference(46, 7)).isEqualTo(sort);
-    assertThat(result.reference(47, 7).name).isEqualTo("sort");
-    assertThat(result.reference(47, 7)).isEqualTo(sort);
+    JavaSymbol sortMethod = result.reference(47, 7);
+    assertThat(sortMethod.name).isEqualTo("sort");
+    assertThat(sortMethod).isNotEqualTo(sort);
+    assertThat(sortMethod.isMethodSymbol()).isTrue();
+    assertThat(((Symbol.MethodSymbol) sortMethod).parameterTypes()).hasSize(2);
+
+    JavaSymbol nCopiesSymbol = result.symbol("nCopies");
+    assertThat(result.reference(67, 5)).isSameAs(nCopiesSymbol);
+    assertThat(result.reference(68, 5)).isSameAs(nCopiesSymbol);
   }
 
   @Test

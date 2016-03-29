@@ -10,7 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.io.*;
 import java.util.ArrayList; //Twice the same import should be ignored
-
+import static java.util.Collections.nCopies;
 import static java.util.List.*;
 import static java.net.HttpURLConnection.*;
 import static java.net.HttpURLConnection.HTTP_OK;
@@ -63,4 +63,8 @@ class ImportResolution {
   private class MyClass extends Example.Bar {
   }
 
+  void foo() {
+    nCopies(2, new Object());
+    nCopies(2, 2);
+  }
 }

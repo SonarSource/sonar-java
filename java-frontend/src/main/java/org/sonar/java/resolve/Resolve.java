@@ -22,11 +22,9 @@ package org.sonar.java.resolve;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,7 +136,7 @@ public class Resolve {
       env1 = env1.outer;
     }
 
-    JavaSymbol symbol = findInStaticImport(env, name, JavaSymbol.VAR);
+    JavaSymbol symbol = findVarInStaticImport(env, name);
     if (symbol.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
       return Resolution.resolution(symbol);
@@ -148,20 +146,15 @@ public class Resolve {
     return bestSoFar;
   }
 
-  /**
-   * @param kind subset of {@link JavaSymbol#VAR}, {@link JavaSymbol#MTH}
-   */
-  private JavaSymbol findInStaticImport(Env env, String name, int kind) {
+  private JavaSymbol findVarInStaticImport(Env env, String name) {
     JavaSymbol bestSoFar = symbolNotFound;
-    //imports
-    //Ok because clash of name between type and var/method result in compile error: JLS8 7.5.3
     for (JavaSymbol symbol : env.namedImports.lookup(name)) {
-      if ((kind & symbol.kind) != 0) {
+      if ((JavaSymbol.VAR & symbol.kind) != 0) {
         return symbol;
       }
     }
     for (JavaSymbol symbol : env.staticStarImports.lookup(name)) {
-      if ((kind & symbol.kind) != 0) {
+      if ((JavaSymbol.VAR & symbol.kind) != 0) {
         return symbol;
       }
     }
@@ -356,13 +349,35 @@ public class Resolve {
       }
       env1 = env1.outer;
     }
-    JavaSymbol sym = findInStaticImport(env, name, JavaSymbol.MTH);
-    if (sym.kind < JavaSymbol.ERRONEOUS) {
+    Resolution res = findMethodInStaticImport(env, name, argTypes, typeParamTypes);
+    if (res.symbol.kind < JavaSymbol.ERRONEOUS) {
       // symbol exists
-      return Resolution.resolution(sym);
-    } else if (sym.kind < bestSoFar.symbol.kind) {
-      bestSoFar = Resolution.resolution(sym);
+      return res;
+    } else if (res.symbol.kind < bestSoFar.symbol.kind) {
+      bestSoFar = res;
     }
+    return bestSoFar;
+  }
+
+  private Resolution findMethodInStaticImport(Env env, String name, List<JavaType> argTypes, List<JavaType> typeParamTypes) {
+    Resolution bestSoFar = unresolved();
+    JavaType enclosingType = env.enclosingClass.getType();
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, false, env.namedImports, bestSoFar);
+    if (bestSoFar.symbol.kind < JavaSymbol.ERRONEOUS) {
+      // symbol exists
+      return bestSoFar;
+    }
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, false, env.staticStarImports, bestSoFar);
+    if (bestSoFar.symbol.kind < JavaSymbol.ERRONEOUS) {
+      // symbol exists
+      return bestSoFar;
+    }
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, true, env.namedImports, bestSoFar);
+    if (bestSoFar.symbol.kind < JavaSymbol.ERRONEOUS) {
+      // symbol exists
+      return bestSoFar;
+    }
+    bestSoFar = lookupInScope(env, enclosingType, enclosingType, name, argTypes, typeParamTypes, true, env.staticStarImports, bestSoFar);
     return bestSoFar;
   }
 
@@ -394,15 +409,8 @@ public class Resolve {
       }
       return findConstructor(env, superclass, argTypes, typeParams, autoboxing);
     }
-    // look in site members
-    for (JavaSymbol symbol : site.getSymbol().members().lookup(name)) {
-      if (symbol.kind == JavaSymbol.MTH) {
-        Resolution best = selectBest(env, site, callSite, argTypes, typeParams, symbol, bestSoFar, autoboxing);
-        if (best.symbol == symbol) {
-          bestSoFar = best;
-        }
-      }
-    }
+    bestSoFar = lookupInScope(env, callSite, site, name, argTypes, typeParams, autoboxing, site.getSymbol().members(), bestSoFar);
+
     //look in supertypes for more specialized method (overloading).
     if (superclass != null) {
       Resolution method = findMethod(env, callSite, superclass, name, argTypes, typeParams);
@@ -422,6 +430,21 @@ public class Resolve {
     }
     if(bestSoFar.symbol.kind >= JavaSymbol.ERRONEOUS && !autoboxing) {
       bestSoFar = findMethod(env, callSite, site, name, argTypes, typeParams, true);
+    }
+    return bestSoFar;
+  }
+
+  private Resolution lookupInScope(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams,
+                                   boolean autoboxing, Scope scope, Resolution bestFound) {
+    Resolution bestSoFar = bestFound;
+    // look in site members
+    for (JavaSymbol symbol : scope.lookup(name)) {
+      if (symbol.kind == JavaSymbol.MTH) {
+        Resolution best = selectBest(env, site, callSite, argTypes, typeParams, symbol, bestSoFar, autoboxing);
+        if (best.symbol == symbol) {
+          bestSoFar = best;
+        }
+      }
     }
     return bestSoFar;
   }

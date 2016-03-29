@@ -13,6 +13,12 @@
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/es/EsUtilsTest.java':[
 68,
 ],
+'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/issue/AssignActionTest.java':[
+73,
+],
+'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/qualitygate/ws/QGatesWsTest.java':[
+440,
+],
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/rule/RegisterRulesMediumTest.java':[
 323,
 ],
