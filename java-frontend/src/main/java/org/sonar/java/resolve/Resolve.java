@@ -508,11 +508,26 @@ public class Resolve {
   }
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
+    if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
+      return subtypeOfTypeVar(arg, ((JavaType.TypeVariableJavaType) formal));
+    }
+
     if (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal)) {
       return types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal.erasure());
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
+  }
+
+  private static boolean subtypeOfTypeVar(JavaType arg, JavaType.TypeVariableJavaType formal) {
+    for (JavaType bound : formal.bounds()) {
+      if(bound.isTagged(JavaType.TYPEVAR) && !subtypeOfTypeVar(arg, ((JavaType.TypeVariableJavaType) bound))) {
+        return false;
+      } else if (!arg.isSubtypeOf(bound)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static boolean isWilcardType(JavaType type) {
