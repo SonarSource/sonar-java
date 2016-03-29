@@ -68,7 +68,7 @@ public class TypeSubstitutionSolver {
       resultType = applySiteSubstitution(resultType, callSite);
     }
     if (isRawTypeOfParametrizedType(callSite) && !parametrizedMethodCall) {
-      // JLS8 5.1.9 + JLS8 15.12.2.6
+      // JLS8 5.1.9 + JLS8 15.12.2.6 : unchecked conversion
       return resultType.erasure();
     }
     return applySubstitution(resultType, substitution);

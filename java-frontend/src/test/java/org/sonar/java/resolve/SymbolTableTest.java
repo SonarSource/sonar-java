@@ -96,7 +96,7 @@ public class SymbolTableTest {
 
     JavaSymbol applyMethod = result.symbol("apply");
     assertThat(result.reference(83, 12)).isSameAs(applyMethod);
-    // FIXME SONARJAVA-1606 should be 1, subtyping of type variable is wrong
+    assertThat(result.reference(89, 61)).isSameAs(applyMethod);
     assertThat(applyMethod.usages()).hasSize(2);
   }
 

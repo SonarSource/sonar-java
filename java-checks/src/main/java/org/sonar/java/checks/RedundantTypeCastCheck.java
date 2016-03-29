@@ -31,7 +31,6 @@ import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
-import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -42,7 +41,6 @@ import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 import java.util.Set;
 
@@ -76,22 +74,23 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
     }
     TypeCastTree typeCastTree = (TypeCastTree) tree;
     Type cast = typeCastTree.type().symbolType();
-    Type target = targetType(tree);
-    if(target != null && (isRedundantNumericalCast(cast, typeCastTree.expression().symbolType()) || isSubtype(typeCastTree.expression().symbolType(), target))) {
+    Type target = targetType(typeCastTree);
+    Type expressionType = typeCastTree.expression().symbolType();
+    if(target != null && (isRedundantNumericalCast(cast, expressionType) || isSubtype(expressionType, target))) {
       reportIssue(typeCastTree.type(), "Remove this unnecessary cast to \"" + cast + "\".");
     }
   }
 
   @CheckForNull
-  private Type targetType(Tree tree) {
+  private static Type targetType(TypeCastTree tree) {
     Tree parent = skipParentheses(tree.parent());
     Type target = null;
     if(parent.is(Tree.Kind.RETURN_STATEMENT)) {
       Tree method = parent;
-      while (!method.is(Tree.Kind.METHOD)) {
+      while (!method.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION)) {
         method = method.parent();
       }
-      target = ((JavaType.MethodJavaType) ((MethodTree) method).symbol().type()).resultType();
+      target = method.is(Tree.Kind.LAMBDA_EXPRESSION) ? null : ((JavaType.MethodJavaType) ((MethodTree) method).symbol().type()).resultType();
     } else if (parent.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) parent;
       target = variableTree.symbol().type();
@@ -102,9 +101,8 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
         int castArgIndex = mit.arguments().indexOf(tree);
         target = sym.parameterTypes().get(castArgIndex);
       }
-    } else if(parent.is(Tree.Kind.MEMBER_SELECT)) {
-      MemberSelectExpressionTree mse = (MemberSelectExpressionTree) parent;
-      target = mse.identifier().symbol().owner().type();
+    } else if(parent.is(Tree.Kind.MEMBER_SELECT, Tree.Kind.CONDITIONAL_EXPRESSION)) {
+      target = tree.type().symbolType();
     } else if(parent instanceof ExpressionTree) {
       target = ((ExpressionTree) parent).symbolType();
     }
@@ -112,10 +110,11 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
   }
 
   private static Tree skipParentheses(Tree parent) {
-    while (parent.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
-      parent = parent.parent();
+    Tree skip = parent;
+    while (skip.is(Tree.Kind.PARENTHESIZED_EXPRESSION)) {
+      skip = skip.parent();
     }
-    return parent;
+    return skip;
   }
 
   private static boolean isSubtype(Type expression, Type target) {

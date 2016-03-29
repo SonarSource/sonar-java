@@ -512,19 +512,17 @@ public class JavaType implements Type {
     public boolean isSubtypeOfBound(JavaType type) {
       switch (boundType) {
         case SUPER:
-          if(bound.isTagged(TYPEVAR) && !type.isTagged(TYPEVAR) && bound != type) {
-            return false;
-          }
-          return bound.isSubtypeOf(type);
+          return !boundIsTypeVarAndNotType(type) && bound.isSubtypeOf(type);
         case EXTENDS:
-          if(bound.isTagged(TYPEVAR) && !type.isTagged(TYPEVAR) && bound != type) {
-            return false;
-          }
-          return type.isSubtypeOf(bound);
+          return !boundIsTypeVarAndNotType(type) && type.isSubtypeOf(bound);
         case UNBOUNDED:
         default:
           return true;
       }
+    }
+
+    private boolean boundIsTypeVarAndNotType(JavaType type) {
+      return bound.isTagged(TYPEVAR) && !type.isTagged(TYPEVAR);
     }
   }
 

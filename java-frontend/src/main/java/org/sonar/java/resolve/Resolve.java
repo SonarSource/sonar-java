@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -453,7 +454,8 @@ public class Resolve {
    * @param candidate    candidate
    * @param bestSoFar previously found best match
    */
-  private Resolution selectBest(Env env, JavaType defSite, JavaType callSite, List<JavaType> argTypes, List<JavaType> typeParams, JavaSymbol candidate, Resolution bestSoFar, boolean autoboxing) {
+  private Resolution selectBest(Env env, JavaType defSite, JavaType callSite, List<JavaType> argTypes, List<JavaType> typeParams,
+                                JavaSymbol candidate, Resolution bestSoFar, boolean autoboxing) {
     JavaSymbol.TypeJavaSymbol siteSymbol = callSite.symbol;
     // TODO get rid of null check
     if (candidate.kind >= JavaSymbol.ERRONEOUS || !isInheritedIn(candidate, siteSymbol) || candidate.type == null) {
@@ -532,7 +534,7 @@ public class Resolve {
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
     if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
-      return subtypeOfTypeVar(arg, ((JavaType.TypeVariableJavaType) formal));
+      return subtypeOfTypeVar(arg, (JavaType.TypeVariableJavaType) formal);
     }
 
     if (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal)) {
@@ -544,9 +546,8 @@ public class Resolve {
 
   private static boolean subtypeOfTypeVar(JavaType arg, JavaType.TypeVariableJavaType formal) {
     for (JavaType bound : formal.bounds()) {
-      if(bound.isTagged(JavaType.TYPEVAR) && !subtypeOfTypeVar(arg, ((JavaType.TypeVariableJavaType) bound))) {
-        return false;
-      } else if (!arg.isSubtypeOf(bound)) {
+      if ((bound.isTagged(JavaType.TYPEVAR) && !subtypeOfTypeVar(arg, (JavaType.TypeVariableJavaType) bound))
+        || !arg.isSubtypeOf(bound)) {
         return false;
       }
     }

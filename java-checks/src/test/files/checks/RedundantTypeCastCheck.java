@@ -1,6 +1,7 @@
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 import java.util.Set;
 
 class Outer {
@@ -113,5 +114,38 @@ class F<T> {
     if (a.length > size)
       a[size] = null;
     return a;
+  }
+}
+class G<T> {
+
+  private G<?> resolveSupertype() {
+    return null;
+  }
+
+  void foo() {
+    G<? super T> plop = (G<? super T>) resolveSupertype(); // Noncompliant false positive due to bad return type resolved (raw type instead of G<?>)
+  }
+
+  private int unsafeCompare(Object k1, Object k2) {
+    Comparator<? super T> comparator = null;
+    if (comparator == null) {
+      return ((Comparable<Object>) k1).compareTo(k2);
+    } else {
+      return ((Comparator<Object>) comparator).compare(k1, k2);
+    }
+  }
+
+  String foo(Object a) {
+    return a == null ? (String) null : a.toString(); // Noncompliant
+  }
+
+  class H {
+    java.util.concurrent.Callable<H> c0 = () -> {
+      return (H) getValue();
+    };
+
+    private Object getValue() {
+      return null;
+    }
   }
 }
