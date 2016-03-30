@@ -440,13 +440,16 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitBinaryExpression(BinaryExpressionTree tree) {
-    resolveAs(tree.leftOperand(), JavaSymbol.VAR);
-    resolveAs(tree.rightOperand(), JavaSymbol.VAR);
+    super.visitBinaryExpression(tree);
     JavaType left = getType(tree.leftOperand());
     JavaType right = getType(tree.rightOperand());
     // TODO avoid nulls
     if (left == null || right == null) {
       registerType(tree, Symbols.unknownType);
+      return;
+    }
+    if("+".equals(tree.operatorToken().text()) && (left == symbols.stringType || right == symbols.stringType)) {
+      registerType(tree, symbols.stringType);
       return;
     }
     JavaSymbol symbol = resolve.findMethod(semanticModel.getEnv(tree), symbols.predefClass.type, tree.operatorToken().text(), ImmutableList.of(left, right)).symbol();

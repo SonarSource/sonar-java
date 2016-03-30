@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.fest.assertions.Fail;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
 import org.junit.Test;
@@ -116,6 +117,21 @@ public class TypeAndReferenceSolverTest {
     env.outer = compilationUnitEnv;
     env.enclosingClass = classSymbol;
     env.scope = classSymbol.members;
+  }
+
+
+  @Test
+  public void SOE_on_binary_expression() throws Exception {
+    String code = "class A { String foo() { return ";
+    for (int i = 0; i < 2300; i++) {
+      code += "\"i\"+";
+    }
+    code+="i; }}";
+    try {
+      treeOf(code);
+    } catch (StackOverflowError soe) {
+      throw Fail.fail("Stackoverflow error was thrown !");
+    }
   }
 
   @Test
