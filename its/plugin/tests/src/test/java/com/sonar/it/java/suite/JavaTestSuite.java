@@ -37,6 +37,7 @@ import java.io.File;
   SquidTest.class,
   Struts139Test.class,
   JavaClasspathTest.class,
+  JaCoCoControllerTest.class,
 })
 public class JavaTestSuite {
 
