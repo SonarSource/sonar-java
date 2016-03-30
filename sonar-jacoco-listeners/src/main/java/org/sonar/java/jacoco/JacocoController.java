@@ -19,16 +19,16 @@
  */
 package org.sonar.java.jacoco;
 
+import java.io.IOException;
+
 import org.jacoco.agent.rt.IAgent;
 import org.jacoco.agent.rt.RT;
-
-import java.io.IOException;
 
 class JacocoController {
 
   private static final String ERROR = "Unable to access JaCoCo Agent - make sure that you use JaCoCo and version not lower than 0.6.2.";
 
-  private final IAgent agent;
+  private IAgent agent;
 
   private boolean testStarted;
 
@@ -42,15 +42,23 @@ class JacocoController {
   }
 
   private JacocoController() {
-    try {
-      this.agent = RT.getAgent();
-    } catch (Exception e) {
-      throw new JacocoControllerError(ERROR, e);
-    }
+    super();
   }
 
   JacocoController(IAgent agent) {
     this.agent = agent;
+  }
+
+
+  private IAgent getAgent() {
+    if (agent == null) {
+      try {
+        agent = RT.getAgent();
+      } catch (final Exception e) {
+        throw new JacocoControllerError(ERROR, e);
+      }
+    }
+    return agent;
   }
 
   public synchronized void onTestStart(String name) {
@@ -69,9 +77,9 @@ class JacocoController {
   }
 
   private void dump(String sessionId) {
-    agent.setSessionId(sessionId);
+    getAgent().setSessionId(sessionId);
     try {
-      agent.dump(true);
+      getAgent().dump(true);
     } catch (IOException e) {
       throw new JacocoControllerError(e);
     }
