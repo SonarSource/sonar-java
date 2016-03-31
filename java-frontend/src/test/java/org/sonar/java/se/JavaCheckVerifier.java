@@ -43,6 +43,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -125,7 +126,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
    * @param filename The file to be analyzed
    * @param check The check to be used for the analysis
    */
-  public static void verify(String filename, JavaFileScanner check) {
+  public static void verify(String filename, JavaFileScanner... check) {
     scanFile(filename, check, new JavaCheckVerifier());
   }
 
@@ -138,7 +139,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
    * @param classpath The files to be used as classpath
    */
   public static void verify(String filename, JavaFileScanner check, Collection<File> classpath) {
-    scanFile(filename, check, new JavaCheckVerifier(), classpath);
+    scanFile(filename, new JavaFileScanner[] {check}, new JavaCheckVerifier(), classpath);
   }
 
   /**
@@ -152,7 +153,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   public static void verify(String filename, JavaFileScanner check, String testJarsDirectory) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.testJarsDirectory = testJarsDirectory;
-    scanFile(filename, check, javaCheckVerifier);
+    scanFile(filename, new JavaFileScanner[] {check}, javaCheckVerifier);
   }
 
   /**
@@ -164,7 +165,7 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
   public static void verifyNoIssue(String filename, JavaFileScanner check) {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectNoIssues = true;
-    scanFile(filename, check, javaCheckVerifier);
+    scanFile(filename, new JavaFileScanner[] {check}, javaCheckVerifier);
   }
 
   /**
@@ -178,10 +179,10 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
     JavaCheckVerifier javaCheckVerifier = new JavaCheckVerifier();
     javaCheckVerifier.expectFileIssue = message;
     javaCheckVerifier.expectFileIssueOnline = null;
-    scanFile(filename, check, javaCheckVerifier);
+    scanFile(filename, new JavaFileScanner[] {check}, javaCheckVerifier);
   }
 
-  private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier) {
+  private static void scanFile(String filename, JavaFileScanner[] checks, JavaCheckVerifier javaCheckVerifier) {
     Collection<File> classpath = Lists.newLinkedList();
     File testJars = new File(javaCheckVerifier.testJarsDirectory);
     if (testJars.exists()) {
@@ -190,11 +191,13 @@ public class JavaCheckVerifier extends SubscriptionVisitor {
       Fail.fail("The directory to be used to extend class path does not exists (" + testJars.getAbsolutePath() + ").");
     }
     classpath.add(new File("target/test-classes"));
-    scanFile(filename, check, javaCheckVerifier, classpath);
+    scanFile(filename, checks, javaCheckVerifier, classpath);
   }
 
-  private static void scanFile(String filename, JavaFileScanner check, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
-    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(Lists.newArrayList(check, javaCheckVerifier), Lists.newArrayList(classpath), null);
+  private static void scanFile(String filename, JavaFileScanner[] checks, JavaCheckVerifier javaCheckVerifier, Collection<File> classpath) {
+    List<JavaFileScanner> visitors = new ArrayList<>(Arrays.asList(checks));
+    visitors.add(javaCheckVerifier);
+    VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.newArrayList(classpath), null);
     JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
     VisitorsBridgeForTests.TestJavaFileScannerContext testJavaFileScannerContext = visitorsBridge.lastCreatedTestContext();
     checkIssues(testJavaFileScannerContext.getIssues(), javaCheckVerifier);

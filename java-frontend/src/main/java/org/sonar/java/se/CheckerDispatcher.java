@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se;
 
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -31,15 +30,13 @@ import java.util.List;
 
 public class CheckerDispatcher implements CheckerContext {
   private final ExplodedGraphWalker explodedGraphWalker;
-  private final JavaFileScannerContext context;
   private final List<SECheck> checks;
   private Tree syntaxNode;
   private int currentCheckerIndex = -1;
   private boolean transition = false;
 
-  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, JavaFileScannerContext context, List<SECheck> checks) {
+  public CheckerDispatcher(ExplodedGraphWalker explodedGraphWalker, List<SECheck> checks) {
     this.explodedGraphWalker = explodedGraphWalker;
-    this.context = context;
     this.checks = checks;
   }
 
@@ -74,7 +71,7 @@ public class CheckerDispatcher implements CheckerContext {
 
   @Override
   public void reportIssue(Tree tree, SECheck check, String message, List<JavaFileScannerContext.Location> locations) {
-    ((DefaultJavaFileScannerContext) context).reportSEIssue(check.getClass(), tree, message, locations);
+    check.reportIssue(tree, message, locations);
   }
 
   @Override

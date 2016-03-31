@@ -21,15 +21,10 @@ package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.SetMultimap;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -39,12 +34,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
-
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final CompilationUnitTree tree;
@@ -55,7 +46,6 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   private final File file;
   private final JavaVersion javaVersion;
   private final boolean fileParsed;
-  private final Map<Class<? extends SECheck>, SetMultimap<Tree, SEIssue>> seIssues = new HashMap<>();
 
   public DefaultJavaFileScannerContext(CompilationUnitTree tree, File file, SemanticModel semanticModel, boolean analyseAccessors,
                                        @Nullable SonarComponents sonarComponents, JavaVersion javaVersion, boolean fileParsed) {
@@ -163,63 +153,5 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
   @Override
   public List<Tree> getMethodComplexityNodes(ClassTree enclosingClass, MethodTree methodTree) {
     return complexityVisitor.scan(enclosingClass, methodTree);
-  }
-
-  public void reportSEIssue(Class<? extends SECheck> check, Tree tree, String message, List<Location> secondary) {
-    if (!seIssues.containsKey(check)) {
-      seIssues.put(check, LinkedHashMultimap.<Tree, SEIssue>create());
-    }
-    seIssues.get(check).put(tree, new SEIssue(tree, message, secondary));
-  }
-
-  public Multimap<Tree, SEIssue> getSEIssues(Class<? extends SECheck> check) {
-    if (seIssues.containsKey(check)) {
-      return seIssues.get(check);
-    } else {
-      return ImmutableMultimap.of();
-    }
-  }
-
-  public static class SEIssue {
-    private final Tree tree;
-    private final String message;
-    private final List<Location> secondary;
-
-    public SEIssue(Tree tree, String message, List<Location> secondary) {
-      this.tree = tree;
-      this.message = message;
-      this.secondary = secondary;
-    }
-
-    public Tree getTree() {
-      return tree;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-
-    public List<Location> getSecondary() {
-      return secondary;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      SEIssue seIssue = (SEIssue) o;
-      return Objects.equals(tree, seIssue.tree) &&
-        Objects.equals(message, seIssue.message) &&
-        Objects.equals(secondary, seIssue.secondary);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(tree, message, secondary);
-    }
   }
 }

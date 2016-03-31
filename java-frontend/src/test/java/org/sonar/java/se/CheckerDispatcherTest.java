@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public class CheckerDispatcherTest {
   @Test
   public void test_only_one_execution_of_post_statement_by_check() {
     List<SECheck> checks = Lists.newArrayList(new NullDereferenceCheck(), new CheckTest(), new CheckTest(), new CheckTest());
-    CheckerDispatcher checkerDispatcher = new CheckerDispatcher(mockExplodedGraphWalker(), mock(JavaFileScannerContext.class), checks);
+    CheckerDispatcher checkerDispatcher = new CheckerDispatcher(mockExplodedGraphWalker(), checks);
     checkerDispatcher.executeCheckPostStatement(mock(Tree.class));
     for (SECheck check : checks) {
       if(check instanceof CheckTest) {

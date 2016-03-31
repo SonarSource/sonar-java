@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import com.google.common.collect.Multimap;
-import org.sonar.java.model.DefaultJavaFileScannerContext;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.constraint.ConstraintManager;
@@ -29,9 +27,14 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import java.util.Map;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public abstract class SECheck implements JavaFileScanner {
+
+  private Set<SEIssue> issues = new HashSet<>();
 
   public void init(MethodTree methodTree){
   }
@@ -54,11 +57,56 @@ public abstract class SECheck implements JavaFileScanner {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    Multimap<Tree, DefaultJavaFileScannerContext.SEIssue> issues = ((DefaultJavaFileScannerContext) context).getSEIssues(getClass());
-    for (Map.Entry<Tree, DefaultJavaFileScannerContext.SEIssue> issue : issues.entries()) {
-      DefaultJavaFileScannerContext.SEIssue seIssue = issue.getValue();
+    for (SEIssue seIssue : issues) {
       context.reportIssue(this, seIssue.getTree(), seIssue.getMessage(), seIssue.getSecondary(), null);
     }
+    issues.clear();
   }
 
+  public void reportIssue(Tree tree, String message, List<JavaFileScannerContext.Location> secondary) {
+    issues.add(new SEIssue(tree, message, secondary));
+  }
+
+  private static class SEIssue {
+    private final Tree tree;
+    private final String message;
+    private final List<JavaFileScannerContext.Location> secondary;
+
+    public SEIssue(Tree tree, String message, List<JavaFileScannerContext.Location> secondary) {
+      this.tree = tree;
+      this.message = message;
+      this.secondary = secondary;
+    }
+
+    public Tree getTree() {
+      return tree;
+    }
+
+    public String getMessage() {
+      return message;
+    }
+
+    public List<JavaFileScannerContext.Location> getSecondary() {
+      return secondary;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      SEIssue seIssue = (SEIssue) o;
+      return Objects.equals(tree, seIssue.tree) &&
+        Objects.equals(message, seIssue.message) &&
+        Objects.equals(secondary, seIssue.secondary);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(tree, message, secondary);
+    }
+  }
 }

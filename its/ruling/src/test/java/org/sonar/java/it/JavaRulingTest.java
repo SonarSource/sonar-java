@@ -81,7 +81,10 @@ public class JavaRulingTest {
     instantiateTemplateRule("S124", "commentRegexTest", "regularExpression=\"(?i).*TODO\\(user\\).*\";message=\"bad user\"");
     instantiateTemplateRule("S3417", "doNotUseCommonsCollections", "dependencyName=\"commons-collections:*\";");
     instantiateTemplateRule("S3417", "doNotUseJunitBefore4", "dependencyName=\"junit:junit\";version=\"*-3.9.9\"");
-    instantiateTemplateRule("S3546", "InstancesOfNewControllerClosedWithDone", "constructors=\"org.sonar.api.server.ws.WebService.NewController\";closingMethods=\"org.sonar.api.server.ws.WebService.NewController#done\"");
+    instantiateTemplateRule("S3546", "InstancesOfNewControllerClosedWithDone",
+      "factoryMethod=\"org.sonar.api.server.ws.WebService$Context#createController\";closingMethod=\"org.sonar.api.server.ws.WebService$NewController#done\"");
+    instantiateTemplateRule("S3546", "JsonWriterNotClosed",
+      "factoryMethod=\"org.sonar.api.server.ws.Response#newJsonWriter\";closingMethod=\"org.sonar.api.utils.text.JsonWriter#close\"");
   }
 
   @Test

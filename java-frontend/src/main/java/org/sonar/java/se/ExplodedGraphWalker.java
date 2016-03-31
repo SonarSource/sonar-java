@@ -42,7 +42,6 @@ import org.sonar.java.se.constraint.ConstraintManager;
 import org.sonar.java.se.constraint.ObjectConstraint;
 import org.sonar.java.se.symbolicvalues.SymbolicValue;
 import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -70,7 +69,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.Iterator;
@@ -129,21 +127,21 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   @VisibleForTesting
-  ExplodedGraphWalker(JavaFileScannerContext context) {
+  ExplodedGraphWalker() {
     alwaysTrueOrFalseChecker = new ConditionAlwaysTrueOrFalseCheck();
-    this.checkerDispatcher = new CheckerDispatcher(this, context,
-      Lists.<SECheck>newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(), new LocksNotUnlockedCheck(), new NonNullSetToNullCheck()));
+    this.checkerDispatcher = new CheckerDispatcher(this, Lists.newArrayList(alwaysTrueOrFalseChecker, new NullDereferenceCheck(), new UnclosedResourcesCheck(),
+      new LocksNotUnlockedCheck(), new NonNullSetToNullCheck()));
   }
 
   @VisibleForTesting
-  ExplodedGraphWalker(JavaFileScannerContext context, boolean cleanup) {
-    this(context);
+  ExplodedGraphWalker(boolean cleanup) {
+    this();
     this.cleanup = cleanup;
   }
 
-  private ExplodedGraphWalker(JavaFileScannerContext context, ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks) {
+  private ExplodedGraphWalker(ConditionAlwaysTrueOrFalseCheck alwaysTrueOrFalseChecker, List<SECheck> seChecks) {
     this.alwaysTrueOrFalseChecker = alwaysTrueOrFalseChecker;
-    this.checkerDispatcher = new CheckerDispatcher(this, context, seChecks);
+    this.checkerDispatcher = new CheckerDispatcher(this, seChecks);
   }
 
   @Override
@@ -710,8 +708,8 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       seChecks.addAll(checks);
     }
 
-    public ExplodedGraphWalker createWalker(JavaFileScannerContext context) {
-      return new ExplodedGraphWalker(context, alwaysTrueOrFalseChecker, seChecks);
+    public ExplodedGraphWalker createWalker() {
+      return new ExplodedGraphWalker(alwaysTrueOrFalseChecker, seChecks);
     }
 
     @SuppressWarnings("unchecked")

@@ -80,6 +80,15 @@ public class MethodMatcherFactoryTest {
   }
 
   @Test
+  public void inner_classes() throws Exception {
+    MethodMatcher anyArg = MethodMatcherFactory.methodMatcher("org.sonar.test.Outer$Inner#foo");
+    MethodVisitor visitor = new MethodVisitor();
+    visitor.add(anyArg);
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/matcher/InnerClass.java"), new VisitorsBridge(visitor));
+    assertThat(visitor.count(anyArg)).isEqualTo(1);
+  }
+
+  @Test
   public void methodFactoryMatching() {
     MethodMatcher anyArg = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match");
     MethodMatcher stringOnly = MethodMatcherFactory.methodMatcher("org.sonar.test.Test#match(java.lang.String)");

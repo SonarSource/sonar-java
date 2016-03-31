@@ -46,7 +46,7 @@ public class SymbolicExecutionVisitor extends SubscriptionVisitor {
   @Override
   public void visitNode(Tree tree) {
     try {
-      tree.accept(egwFactory.createWalker(context));
+      tree.accept(egwFactory.createWalker());
     } catch (ExplodedGraphWalker.MaximumStepsReachedException | ExplodedGraphWalker.ExplodedGraphTooBigException | BinaryRelation.TransitiveRelationExceededException exception) {
       LOG.debug("Could not complete symbolic execution: ", exception);
     }

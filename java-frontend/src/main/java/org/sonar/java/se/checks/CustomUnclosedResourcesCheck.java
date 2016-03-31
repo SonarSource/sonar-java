@@ -50,9 +50,13 @@ import java.util.List;
 @NoSqale
 public class CustomUnclosedResourcesCheck extends SECheck {
 
-  enum Status {
-    OPENED, CLOSED
+  class Status {
+    Object OPENED = new Object();
+    Object CLOSED = new Object();
   }
+
+  private final Status status = new Status();
+
 
   @RuleProperty(
     key = "constructor",
@@ -64,7 +68,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
   @RuleProperty(
     key = "factoryMethod",
     description = "the fully-qualified name of a factory method that returns an open resource, with or without a parameter list."
-      + " E.G. \"org.assoc.res.ResourceFactory#create\" or \"org.assoc.res.SpecialResourceFactory #create(java.lang.String, int)\"")
+      + " E.G. \"org.assoc.res.ResourceFactory$Innerclass#create\" or \"org.assoc.res.SpecialResourceFactory#create(java.lang.String, int)\"")
   public String factoryMethod = "";
 
   @RuleProperty(
@@ -101,7 +105,7 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
   @Override
   public void checkEndOfExecutionPath(CheckerContext context, ConstraintManager constraintManager) {
-    List<ObjectConstraint> constraints = context.getState().getFieldConstraints(Status.OPENED);
+    List<ObjectConstraint> constraints = context.getState().getFieldConstraints(status.OPENED);
     for (ObjectConstraint constraint : constraints) {
       Tree syntaxNode = constraint.syntaxNode();
       String name = null;
@@ -132,16 +136,16 @@ public class CustomUnclosedResourcesCheck extends SECheck {
 
     protected void closeResource(@Nullable SymbolicValue target) {
       if (target != null) {
-        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, Status.OPENED);
+        ObjectConstraint oConstraint = programState.getConstraintWithStatus(target, status.OPENED);
         if (oConstraint != null) {
-          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(Status.CLOSED));
+          programState = programState.addConstraint(target.wrappedValue(), oConstraint.withStatus(status.CLOSED));
         }
       }
     }
 
     protected void openResource(Tree syntaxNode) {
       SymbolicValue sv = programState.peekValue();
-      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, syntaxNode, Status.OPENED));
+      programState = programState.addConstraint(sv, new ObjectConstraint(false, false, syntaxNode, status.OPENED));
     }
 
     protected boolean isClosingResource(MethodInvocationTree mit) {
