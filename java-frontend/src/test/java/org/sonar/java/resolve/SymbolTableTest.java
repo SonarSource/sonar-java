@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -115,6 +116,31 @@ public class SymbolTableTest {
     assertThat(ptt.typeSubstitution.substitutedTypes().iterator().next().getSymbol().getName()).isEqualTo("String");
 
     assertThat(result.reference(58, 25)).isSameAs(result.symbol("method_of_e"));
+  }
+
+  @Test
+  public void extended_type_variables() throws Exception {
+    String javaLangObject = "java.lang.Object";
+    Result result = Result.createFor("Generics");
+    Type MyClass = result.symbol("MyClass", 100).type();
+    Type i = result.symbol("I").type();
+    Type j = result.symbol("J").type();
+
+    JavaSymbol.TypeJavaSymbol w = (JavaSymbol.TypeJavaSymbol) result.symbol("W", 103);
+    assertThat(w.superClass().is(javaLangObject)).isTrue();
+    assertThat(w.interfaces()).isEmpty();
+
+    JavaSymbol.TypeJavaSymbol x = (JavaSymbol.TypeJavaSymbol) result.symbol("X", 103);
+    assertThat(x.superClass()).isSameAs(MyClass);
+    assertThat(x.interfaces()).isEmpty();
+
+    JavaSymbol.TypeJavaSymbol y = (JavaSymbol.TypeJavaSymbol) result.symbol("Y", 103);
+    assertThat(y.superClass().is(javaLangObject)).isTrue();
+    assertThat(y.interfaces()).containsExactly(i);
+
+    JavaSymbol.TypeJavaSymbol z = (JavaSymbol.TypeJavaSymbol) result.symbol("Z", 103);
+    assertThat(z.superClass()).isSameAs(MyClass);
+    assertThat(z.interfaces()).containsExactly(i, j);
   }
 
   @Test

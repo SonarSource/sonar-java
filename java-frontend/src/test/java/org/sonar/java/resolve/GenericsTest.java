@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -791,9 +792,19 @@ public class GenericsTest {
     List<String> lines = FileUtils.readLines(new File("src/test/files/resolve/GenericMethods.java"));
     List<Type> elementTypes = declaredTypes(lines.toArray(new String[lines.size()]));
 
-    JavaType type = (JavaType) elementTypes.get(0);
-    JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "cast");
+    JavaType aType = (JavaType) elementTypes.get(0);
+    JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(aType, "cast");
     assertThat(methodSymbol.usages()).hasSize(3);
+
+    JavaType bType = (JavaType) elementTypes.get(3);
+    JavaType objectType = (JavaType) bType.symbol.superClass();
+    JavaType cType = (JavaType) elementTypes.get(4);
+    JavaType i3Type = (JavaType) elementTypes.get(5);
+
+    assertThat(getMethodSymbol(cType, "bar").usages()).hasSize(2);
+    assertThat(getMethodSymbol(i3Type, "foo").usages()).hasSize(2);
+    assertThat(getMethodSymbol(objectType, "toString").usages()).hasSize(2);
+    assertThat(getMethodSymbol(bType, "print").usages()).hasSize(4);
   }
 
   @Test

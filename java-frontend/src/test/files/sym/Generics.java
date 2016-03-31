@@ -95,3 +95,10 @@ class TypeParameterUsedInMethods<T, U> {
     }
   }
 }
+
+class ExtendedTypeParam {
+  class MyClass {}
+  interface I {}
+  interface J {}
+  class ParametrizedClass<W, X extends MyClass, Y extends I, Z extends MyClass & I & J> {}
+}

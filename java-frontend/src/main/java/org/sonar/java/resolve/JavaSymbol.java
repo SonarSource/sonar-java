@@ -38,6 +38,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -640,14 +641,32 @@ public class JavaSymbol implements Symbol {
     @Override
     @Nullable
     public JavaType getSuperclass() {
-      // FIXME : should return upper bound or Object if no bound defined.
-      return null;
+      JavaType firstBound = bounds().get(0);
+      if (!firstBound.symbol().isInterface()) {
+        return firstBound;
+      }
+      return getObjectType(firstBound);
+    }
+
+    private static JavaType getObjectType(JavaType type) {
+      JavaType superClass = (JavaType) type.symbol().superClass();
+      if (superClass == null) {
+        return type;
+      }
+      return getObjectType(superClass);
+    }
+
+    private List<JavaType> bounds() {
+      return new ArrayList<>(((JavaType.TypeVariableJavaType) type).bounds);
     }
 
     @Override
     public List<JavaType> getInterfaces() {
-      // FIXME : should return upperbound
-      return ImmutableList.of();
+      List<JavaType> bounds = bounds();
+      if (bounds.get(0).symbol().isInterface()) {
+        return bounds;
+      }
+      return bounds.subList(1, bounds.size());
     }
 
     @Override
