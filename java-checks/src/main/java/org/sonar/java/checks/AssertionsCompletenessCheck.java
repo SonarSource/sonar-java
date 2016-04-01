@@ -48,8 +48,11 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 @SqaleConstantRemediation("5min")
 public class AssertionsCompletenessCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String FEST_ASSERT_SUPERTYPE = "org.fest.assertions.Assert";
+  private static final String ASSERTJ_SUPERTYPE = "org.assertj.core.api.AbstractAssert";
   private static final MethodMatcher MOCKITO_VERIFY = MethodMatcher.create()
     .typeDefinition("org.mockito.Mockito").name("verify").withNoParameterConstraint();
+
   private static final MethodMatcherCollection FEST_LIKE_ASSERT_THAT = MethodMatcherCollection.create(
     // Fest 1.X
     assertThatOnType("org.fest.assertions.Assertions"),
@@ -67,17 +70,21 @@ public class AssertionsCompletenessCheck extends BaseTreeVisitor implements Java
   private static MethodMatcher assertThatOnType(String type) {
     return MethodMatcher.create().typeDefinition(type).name("assertThat").addParameter(TypeCriteria.anyType());
   }
-
   private static final MethodMatcherCollection FEST_LIKE_EXCLUSIONS = MethodMatcherCollection.create(
-    methodWithName(NameCriteria.startsWith("as")),
-    methodWithName(NameCriteria.startsWith("using")),
-    methodWithName(NameCriteria.startsWith("with")),
-    methodWithName(NameCriteria.is("describedAs")),
-    methodWithName(NameCriteria.is("overridingErrorMessage"))
+    methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.startsWith("as")),
+    methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.startsWith("using")),
+    methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.startsWith("with")),
+    methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.is("describedAs")),
+    methodWithName(FEST_ASSERT_SUPERTYPE, NameCriteria.is("overridingErrorMessage")),
+    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.startsWith("as")),
+    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.startsWith("using")),
+    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.startsWith("with")),
+    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("describedAs")),
+    methodWithName(ASSERTJ_SUPERTYPE, NameCriteria.is("overridingErrorMessage"))
   );
 
-  private static MethodMatcher methodWithName(NameCriteria nameCriteria) {
-    return MethodMatcher.create().typeDefinition(TypeCriteria.anyType()).name(nameCriteria).withNoParameterConstraint();
+  private static MethodMatcher methodWithName(String superType, NameCriteria nameCriteria) {
+    return MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf(superType)).name(nameCriteria).withNoParameterConstraint();
   }
 
   private Boolean chainedToAnyMethodButFestExclusions = null;

@@ -41,7 +41,13 @@ class AssertionsCompleteness {
     mockedList.clear();
     Mockito.verify(mockedList).add("one"); // Compliant
     Mockito.verify(mockedList).clear(); // Compliant
+    ForMock forMock = new ForMock();
+    Mockito.verify(forMock).assign(""); // Compliant
   }
+  private static class ForMock {
+    void assign(String s){}
+  }
+
 
   private BooleanAssert check(String filename, String key) {
     // Compliant, no issue is raised for return statements and variable assignments to allow helper methods
