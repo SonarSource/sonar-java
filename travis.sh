@@ -37,6 +37,8 @@ CI)
     # http://docs.travis-ci.com/user/pull-requests/#Security-Restrictions-when-testing-Pull-Requests
     # That's why the analysis does not need to be executed if the variable GITHUB_TOKEN is not defined.
     strongEcho "Build and analyze pull request"
+    # Do not deploy a SNAPSHOT version but the release version related to this build
+    set_maven_build_version $TRAVIS_BUILD_NUMBER
     export MAVEN_OPTS="-Xmx1G -Xms128m"
     mvn deploy sonar:sonar -B -e -V \
         -Pdeploy-sonarsource \
