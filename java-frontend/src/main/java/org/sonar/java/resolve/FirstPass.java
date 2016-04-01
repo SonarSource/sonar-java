@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.sonar.java.ast.api.JavaPunctuator;
 import org.sonar.java.model.declaration.ClassTreeImpl;
 import org.sonar.java.model.declaration.MethodTreeImpl;
@@ -265,6 +266,20 @@ public class FirstPass extends BaseTreeVisitor {
       JavaType.MethodJavaType defaultConstructorType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
       classEnv.scope.enter(defaultConstructor);
+    } else if (tree.is(Tree.Kind.ENUM)) {
+      // implicit methods from enum: JLS8 : 8.9.2
+      // add 'public static E[] values()'
+      JavaSymbol.MethodJavaSymbol valuesMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "values", symbol);
+      JavaType.ArrayJavaType enumArrayType = new JavaType.ArrayJavaType(symbol.type, symbols.arrayClass);
+      JavaType.MethodJavaType valuesMethodType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), enumArrayType, ImmutableList.<JavaType>of(), symbol);
+      valuesMethod.setMethodType(valuesMethodType);
+      classEnv.scope.enter(valuesMethod);
+
+      // add 'public static E valueOf(String name)'
+      JavaSymbol.MethodJavaSymbol valueOfMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "valueOf", symbol);
+      JavaType.MethodJavaType valueOfMethodType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, ImmutableList.<JavaType>of(), symbol);
+      valueOfMethod.setMethodType(valueOfMethodType);
+      classEnv.scope.enter(valueOfMethod);
     }
     restoreEnvironment(tree);
     restoreEnvironment(tree);

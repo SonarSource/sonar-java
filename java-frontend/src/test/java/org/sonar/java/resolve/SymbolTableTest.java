@@ -371,6 +371,29 @@ public class SymbolTableTest {
     JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType) enumSymbol.getSuperclass();
     JavaSymbol.TypeJavaSymbol superclass = superType.symbol;
     assertThat(superclass.getName()).isEqualTo("Enum");
+
+    // usages of methods values() and valueOf(String s) from an enum when enum definition is in file
+    JavaSymbol.MethodJavaSymbol valuesMethod = (JavaSymbol.MethodJavaSymbol) enumSymbol.lookupSymbols("values").iterator().next();
+    assertThat(valuesMethod.declaration).isNull();
+    assertThat(valuesMethod.isStatic()).isTrue();
+    assertThat(valuesMethod.parameterTypes()).isEmpty();
+    assertThat(((JavaType.MethodJavaType) valuesMethod.type).resultType).isInstanceOf(JavaType.ArrayJavaType.class);
+    assertThat(((JavaType.ArrayJavaType) (((JavaType.MethodJavaType) valuesMethod.type).resultType)).elementType).isSameAs(enumSymbol.type);
+    assertThat(result.reference(9, 19)).isSameAs(valuesMethod);
+    assertThat(result.reference(9, 5)).isSameAs(result.symbol("useValues", 13));
+
+    JavaSymbol.MethodJavaSymbol valueOfMethod = (JavaSymbol.MethodJavaSymbol) enumSymbol.lookupSymbols("valueOf").iterator().next();
+    assertThat(valueOfMethod.declaration).isNull();
+    assertThat(valueOfMethod.isStatic()).isTrue();
+    assertThat(valueOfMethod.parameterTypes()).hasSize(1);
+    assertThat(valueOfMethod.parameterTypes().get(0).is("java.lang.String")).isTrue();
+    assertThat(((JavaType.MethodJavaType) valueOfMethod.type).resultType).isSameAs(enumSymbol.type);
+    assertThat(result.reference(10, 20)).isSameAs(valueOfMethod);
+    assertThat(result.reference(10, 5)).isSameAs(result.symbol("useValueOf", 14));
+
+    // usages of methods values() and valueOf(String s) from an enum when read from byte code
+    assertThat(result.reference(17, 5)).isSameAs(result.symbol("useValues", 21));
+    assertThat(result.reference(18, 5)).isSameAs(result.symbol("useValueOf", 22));
   }
 
   @Test
