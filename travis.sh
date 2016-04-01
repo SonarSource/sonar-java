@@ -38,7 +38,8 @@ CI)
     # That's why the analysis does not need to be executed if the variable GITHUB_TOKEN is not defined.
     strongEcho "Build and analyze pull request"
     export MAVEN_OPTS="-Xmx1G -Xms128m"
-    mvn verify sonar:sonar -B -e -V \
+    mvn deploy sonar:sonar -B -e -V \
+        -Pdeploy-sonarsource \
         -Dsonar.analysis.mode=issues \
         -Dsonar.github.pullRequest=$TRAVIS_PULL_REQUEST \
         -Dsonar.github.repository=$TRAVIS_REPO_SLUG \
