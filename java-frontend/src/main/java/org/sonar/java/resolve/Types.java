@@ -20,7 +20,6 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 

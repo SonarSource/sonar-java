@@ -384,7 +384,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     resolveAs(tree.condition(), JavaSymbol.VAR);
     resolveAs(tree.trueExpression(), JavaSymbol.VAR);
     resolveAs(tree.falseExpression(), JavaSymbol.VAR);
-    registerType(tree, Symbols.unknownType);
+
+    registerType(tree, resolve.conditionalExpressionType((JavaType) tree.trueExpression().symbolType(),(JavaType) tree.falseExpression().symbolType()));
   }
 
   @Override

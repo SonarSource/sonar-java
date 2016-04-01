@@ -475,9 +475,18 @@ public class TypeAndReferenceSolverTest {
 
   @Test
   public void conditional_expression() {
-
-    // FIXME implement
-    assertThat(typeOf("42 ? 42 : 42")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("true ? 42 : 42")).isSameAs(symbols.intType);
+    assertThat(typeOf("true ? null : 42")).isSameAs(symbols.intType.primitiveWrapperType());
+    assertThat(typeOf("true ? 42.0 : null")).isSameAs(symbols.doubleType.primitiveWrapperType());
+    assertThat(typeOf("true ? new Long(2) : new Long(2)")).isSameAs(symbols.longType.primitiveWrapperType());
+    assertThat(typeOf("true ? new MyClass() : new MyClass()")).isSameAs(classType);
+    assertThat(typeOf("true ? 1 : 3.0")).isSameAs(symbols.doubleType);
+    assertThat(typeOf("true ? new Long(2) : (short) 0")).isSameAs(symbols.longType);
+    assertThat(typeOf("true ? var[0][2] : (short) 0")).isSameAs(symbols.shortType); // should be int because var[0][2] is not a constant but we approximate to narrowest type
+    assertThat(typeOf("true ? (short) 0 : var[0][2]")).isSameAs(symbols.shortType); // should be int because var[0][2] is not a constant but we approximate to narrowest type
+    assertThat(typeOf("true ? 1 : (short) 0")).isSameAs(symbols.shortType);
+    assertThat(typeOf("true ? (short) 0 : 1")).isSameAs(symbols.shortType);
+    assertThat(typeOf("true ? null : new Integer(0)")).isSameAs(symbols.intType.primitiveWrapperType());
   }
 
   @Test

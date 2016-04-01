@@ -22,8 +22,10 @@ package org.sonar.java.resolve;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.sonar.plugins.java.api.semantic.Type;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
@@ -786,6 +788,50 @@ public class Resolve {
     Resolution resolution = new Resolution(symbolNotFound);
     resolution.type = Symbols.unknownType;
     return resolution;
+  }
+
+  public JavaType conditionalExpressionType(JavaType trueType, JavaType falseType) {
+    if (trueType == falseType) {
+      return trueType;
+    }
+    if (isNullAndPrimitive(trueType, falseType)) {
+      return falseType.isPrimitive() ? falseType.primitiveWrapperType() : falseType;
+    }
+    if (isNullAndPrimitive(falseType, trueType)) {
+      return trueType.isPrimitive() ? trueType.primitiveWrapperType() : trueType;
+    }
+    JavaType secondOperand = getPrimitive(trueType);
+    JavaType thirdOperand = getPrimitive(falseType);
+    if (secondOperand != null && thirdOperand != null && isNumericalConditionalExpression(secondOperand, thirdOperand)) {
+      // If operand is a constant int that can fits a narrow type it should be narrowed. We always narrow to approximate things properly for
+      // method resolution.
+      if ((secondOperand.tag < thirdOperand.tag || secondOperand.isTagged(JavaType.INT)) && !thirdOperand.isTagged(JavaType.INT)) {
+        return thirdOperand;
+      } else {
+        return secondOperand;
+      }
+    }
+    return (JavaType) leastUpperBound(Lists.<Type>newArrayList(trueType, falseType));
+  }
+
+  private static boolean isNumericalConditionalExpression(JavaType secondOperand, JavaType thirdOperand) {
+    return secondOperand.isNumerical() && thirdOperand.isNumerical();
+  }
+
+  @CheckForNull
+  private static JavaType getPrimitive(JavaType primitiveOrWrapper) {
+    if(primitiveOrWrapper.isPrimitiveWrapper()) {
+      return primitiveOrWrapper.primitiveType();
+    }
+    return primitiveOrWrapper.isPrimitive() ? primitiveOrWrapper : null;
+  }
+
+  private static boolean isNullAndPrimitive(JavaType isNull, JavaType isPrimitive) {
+    return isNull.isTagged(JavaType.BOT) && isPrimitiveOrWrapper(isPrimitive);
+  }
+
+  private static boolean isPrimitiveOrWrapper(JavaType isPrimitive) {
+    return isPrimitive.isPrimitive() || isPrimitive.isPrimitiveWrapper();
   }
 
   /**

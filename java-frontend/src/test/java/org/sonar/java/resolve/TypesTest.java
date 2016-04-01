@@ -24,7 +24,6 @@ import com.google.common.collect.Lists;
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
-import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -261,7 +260,7 @@ public class TypesTest {
     CompilationUnitTree tree = treeOf(lines);
     List<Type> results = Lists.newLinkedList();
     for (Tree classTree : tree.types()) {
-      Type type = ((TypeJavaSymbol) ((ClassTree) classTree).symbol()).type();
+      Type type = ((ClassTree) classTree).symbol().type();
       results.add(type);
     }
     return results;

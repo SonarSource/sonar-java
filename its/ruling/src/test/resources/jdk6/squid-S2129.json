@@ -73,6 +73,7 @@
 797,
 859,
 917,
+979,
 1070,
 ],
 'jdk6:java/net/PlainDatagramSocketImpl.java':[
@@ -134,6 +135,7 @@
 1282,
 ],
 'jdk6:java/util/Locale.java':[
+845,
 1008,
 ],
 'jdk6:java/util/logging/LogRecord.java':[
