@@ -236,7 +236,7 @@ public class JavaType implements Type {
       }
       if (superType.isClass()) {
         ClassJavaType superClassType = (ClassJavaType) superType;
-        return this.equals(superClassType) || this.equals(superClassType.erasure()) || superTypeIsSubTypeOf(superClassType);
+        return this.equals(superClassType) || superTypeIsSubTypeOf(superClassType);
       }
       return false;
     }

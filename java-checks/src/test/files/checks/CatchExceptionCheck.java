@@ -95,4 +95,14 @@ class ExceptionsWithParametrizedMethods {
     }
 
   }
+
+  class FOoBar {
+    void plop(Class type) {
+      try {
+        type.getMethod("getListeners", new Class[]{Class.class});
+      }catch (Exception e){ // Noncompliant
+
+      }
+    }
+  }
 }

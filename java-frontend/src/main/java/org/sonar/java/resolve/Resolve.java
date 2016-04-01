@@ -520,7 +520,7 @@ public class Resolve {
       JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
       JavaType argType = argTypes.get(argsSize - i);
       // check type of element of array or if we invoke with an array that it is a compatible array type
-      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !types.isSubtype(argType, lastFormal))) {
+      if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !isAcceptableType(argType, lastFormal, autoboxing))) {
         return false;
       }
     }
@@ -536,12 +536,22 @@ public class Resolve {
     if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
       return subtypeOfTypeVar(arg, (JavaType.TypeVariableJavaType) formal);
     }
+    if (formal.isArray() && arg.isArray()) {
+      return isAcceptableType(((JavaType.ArrayJavaType) arg).elementType(), ((JavaType.ArrayJavaType) formal).elementType(), autoboxing);
+    }
 
     if (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal)) {
+      if (callWithRawType(arg, formal)) {
+        return true;
+      }
       return types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal.erasure());
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
+  }
+
+  private boolean callWithRawType(JavaType arg, JavaType formal) {
+    return isParametrizedType(formal) && !isParametrizedType(arg) && types.isSubtype(arg, formal.erasure());
   }
 
   private static boolean subtypeOfTypeVar(JavaType arg, JavaType.TypeVariableJavaType formal) {

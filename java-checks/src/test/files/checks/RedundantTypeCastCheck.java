@@ -123,7 +123,7 @@ class G<T> {
   }
 
   void foo() {
-    G<? super T> plop = (G<? super T>) resolveSupertype(); // Noncompliant false positive due to bad return type resolved (raw type instead of G<?>)
+    G<? super T> plop = (G<? super T>) resolveSupertype(); // this works but there is an issue in the returned type of resolveSupertype which returns raw type G instead of G<?>
   }
 
   private int unsafeCompare(Object k1, Object k2) {
@@ -146,6 +146,11 @@ class G<T> {
 
     private Object getValue() {
       return null;
+    }
+
+    public <T> T getInstance(Ruby runtime, Object o, Class<T> clazz) {
+      String name = clazz.getName();
+      Class<T> c = (Class<T>) Class.forName(name, true, o.getClass().getClassLoader());
     }
   }
 }

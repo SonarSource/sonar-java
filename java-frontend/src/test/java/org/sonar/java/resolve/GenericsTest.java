@@ -516,7 +516,8 @@ public class GenericsTest {
     Type aSuperT = elementTypes.get(10);
 
     SubtypeAssert.assertThat(a)
-      .isSubtypeOf(a, aWc, aAnimal, aCat, aExtendsAnimal, aExtendsCat, aSuperAnimal, aSuperCat, aT, aExtendsT, aSuperT);
+      .isSubtypeOf(a)
+      .isNotSubtypeOf(aWc, aAnimal, aCat, aExtendsAnimal, aExtendsCat, aSuperAnimal, aSuperCat, aT, aExtendsT, aSuperT);
 
     SubtypeAssert.assertThat(aWc)
       .isSubtypeOf(a, aWc)
@@ -592,6 +593,9 @@ public class GenericsTest {
 
     SubtypeAssert.assertThat(xPredicateType).isNotSubtypeOf(objectPredicateType);
     SubtypeAssert.assertThat(objectPredicateType).isNotSubtypeOf(xPredicateType);
+    Type xPredicateRAWType = elementTypes.get(0).erasure();
+    SubtypeAssert.assertThat(xPredicateRAWType).isNotSubtypeOf(xPredicateType);
+    SubtypeAssert.assertThat(xPredicateType).isSubtypeOf(xPredicateRAWType);
   }
 
   @Test
@@ -739,6 +743,26 @@ public class GenericsTest {
     type = (JavaType) elementTypes.get(0);
     methodSymbol = getMethodSymbol(type, "foo");
     assertThat(methodSymbol.usages()).hasSize(0);
+  }
+
+  @Test
+  public void test_array_of_generics() throws Exception {
+    List<Type> elementTypes = declaredTypes(
+      "class Test<T> {"
+        + "  void foo(T[][]... ts) {}"
+        + "  void bar(Class<?>... ts) {}"
+        + "  void test(Class type) {"
+        + "    new Test<A>().foo(new A[12][14]);"
+        +"     bar(new Class[]{Class.class});"
+        + "  }"
+        + "}" +
+        "class A{}");
+
+    JavaType type = (JavaType) elementTypes.get(0);
+    JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "foo");
+    assertThat(methodSymbol.usages()).hasSize(1);
+    methodSymbol = getMethodSymbol(type, "bar");
+    assertThat(methodSymbol.usages()).hasSize(1);
   }
 
   @Test
