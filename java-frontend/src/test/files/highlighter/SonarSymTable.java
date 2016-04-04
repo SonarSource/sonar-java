@@ -18,4 +18,5 @@ class Example<T> {
     MyEnumWithLongName(){
     }
   }
+  <S> void method2(S s) {}
 }
