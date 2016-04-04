@@ -29,4 +29,9 @@ public class UselessExtendsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/UselessExtendsCheck.java", new UselessExtendsCheck());
   }
 
+  @Test
+  public void noSemantic() {
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UselessExtendsCheck.java", new UselessExtendsCheck());
+  }
+
 }
