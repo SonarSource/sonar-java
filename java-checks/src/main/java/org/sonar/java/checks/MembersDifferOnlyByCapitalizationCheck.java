@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
@@ -89,8 +90,8 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
               "Rename "
                 + getSymbolTypeName(symbol) + " \"" + name + "\" "
                 + "to prevent any misunderstanding/clash with "
-                + getSymbolTypeName(knownMemberSymbol) + " \"" + knownMemberName + "\" "
-                + "defined " + getDefinitionPlace(symbol, knownMemberSymbol) + ".");
+                + getSymbolTypeName(knownMemberSymbol) + " \"" + knownMemberName + "\""
+                + getDefinitionPlace(symbol, knownMemberSymbol) + ".");
             break;
           }
         }
@@ -99,7 +100,11 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
   }
 
   private static boolean isOverriding(Symbol symbol) {
-    return symbol.isMethodSymbol() && BooleanUtils.isTrue(((MethodTreeImpl) symbol.declaration()).isOverriding());
+    if (symbol.isMethodSymbol()) {
+      MethodTreeImpl methodDeclaration = (MethodTreeImpl) symbol.declaration();
+      return methodDeclaration != null && BooleanUtils.isTrue(methodDeclaration.isOverriding());
+    }
+    return false;
   }
 
   private static boolean isInvalidMember(Symbol currentMember, Symbol knownMember) {
@@ -147,12 +152,19 @@ public class MembersDifferOnlyByCapitalizationCheck extends IssuableSubscription
 
   private static String getDefinitionPlace(Symbol symbol, Symbol knownMemberSymbol) {
     if (sameOwner(symbol, knownMemberSymbol)) {
-      return "on line " + getDeclarationLine(knownMemberSymbol);
+      int declarationLine = getDeclarationLine(knownMemberSymbol);
+      if (declarationLine == -1) {
+        return "";
+      }
+      return " defined on line " + declarationLine;
     }
-    return "in " + (knownMemberSymbol.owner().isInterface() ? "interface" : "superclass") + " \"" + knownMemberSymbol.owner().type().fullyQualifiedName() + "\"";
+    return " defined in " + (knownMemberSymbol.owner().isInterface() ? "interface" : "superclass") + " \"" + knownMemberSymbol.owner().type().fullyQualifiedName() + "\"";
   }
 
   private static int getDeclarationLine(Symbol symbol) {
+    if (symbol.declaration() == null) {
+      return -1;
+    }
     if (symbol.isVariableSymbol()) {
       return ((Symbol.VariableSymbol) symbol).declaration().simpleName().identifierToken().line();
     }

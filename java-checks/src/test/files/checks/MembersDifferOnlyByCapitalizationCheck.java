@@ -80,4 +80,5 @@ public enum MyEnum {
   FOO;
   
   public void foo() {} // Compliant
+  public static MyEnum valueof(int i) { return FOO; } // Noncompliant {{Rename method "valueof" to prevent any misunderstanding/clash with method "valueOf".}}
 }
