@@ -487,6 +487,8 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("true ? 1 : (short) 0")).isSameAs(symbols.shortType);
     assertThat(typeOf("true ? (short) 0 : 1")).isSameAs(symbols.shortType);
     assertThat(typeOf("true ? null : new Integer(0)")).isSameAs(symbols.intType.primitiveWrapperType());
+    assertThat(typeOf("true ? null : new MyClass()")).isSameAs(classType);
+    assertThat(typeOf("true ? new MyClass() : null")).isSameAs(classType);
   }
 
   @Test

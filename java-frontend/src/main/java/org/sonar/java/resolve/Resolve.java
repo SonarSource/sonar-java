@@ -794,10 +794,10 @@ public class Resolve {
     if (trueType == falseType) {
       return trueType;
     }
-    if (isNullAndPrimitive(trueType, falseType)) {
+    if (trueType.isTagged(JavaType.BOT)) {
       return falseType.isPrimitive() ? falseType.primitiveWrapperType() : falseType;
     }
-    if (isNullAndPrimitive(falseType, trueType)) {
+    if (falseType.isTagged(JavaType.BOT)) {
       return trueType.isPrimitive() ? trueType.primitiveWrapperType() : trueType;
     }
     JavaType secondOperand = getPrimitive(trueType);
@@ -824,14 +824,6 @@ public class Resolve {
       return primitiveOrWrapper.primitiveType();
     }
     return primitiveOrWrapper.isPrimitive() ? primitiveOrWrapper : null;
-  }
-
-  private static boolean isNullAndPrimitive(JavaType isNull, JavaType isPrimitive) {
-    return isNull.isTagged(JavaType.BOT) && isPrimitiveOrWrapper(isPrimitive);
-  }
-
-  private static boolean isPrimitiveOrWrapper(JavaType isPrimitive) {
-    return isPrimitive.isPrimitive() || isPrimitive.isPrimitiveWrapper();
   }
 
   /**
