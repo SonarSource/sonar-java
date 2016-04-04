@@ -489,6 +489,12 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("true ? null : new Integer(0)")).isSameAs(symbols.intType.primitiveWrapperType());
     assertThat(typeOf("true ? null : new MyClass()")).isSameAs(classType);
     assertThat(typeOf("true ? new MyClass() : null")).isSameAs(classType);
+    assertThat(typeOf("true ? new MyClass() : new Object()")).isSameAs(symbols.objectType);
+    assertThat(typeOf("true ? new Object() : new MyClass()")).isSameAs(symbols.objectType);
+    JavaType.ParametrizedTypeJavaType expectedType = (JavaType.ParametrizedTypeJavaType) typeOf("new java.util.ArrayList<? extends String>()");
+    JavaType testedType = typeOf("true ? new java.util.ArrayList<? extends String>() : new java.util.ArrayList<String>()");
+    assertThat(testedType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+    assertThat(((JavaType.ParametrizedTypeJavaType) testedType).typeSubstitution).isEqualTo(expectedType.typeSubstitution);
   }
 
   @Test

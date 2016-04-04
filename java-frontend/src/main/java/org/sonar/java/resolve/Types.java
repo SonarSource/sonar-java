@@ -96,6 +96,17 @@ public class Types {
   public Type leastUpperBound(List<Type> types) {
     Preconditions.checkArgument(types.size() > 1);
 
+    if(types.size() == 2) {
+      Type type1 = types.get(0);
+      Type type2 = types.get(1);
+      if(type1.isSubtypeOf(type2)) {
+        return type2;
+      } else if(type2.isSubtypeOf(type1)) {
+        return type1;
+      }
+    }
+
+
     List<Set<Type>> supertypes = supertypes(types);
 
     List<Type> candidates = intersection(supertypes);
