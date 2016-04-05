@@ -74,6 +74,40 @@ public class TypeSubstitutionSolverTest {
   }
 
   @Test
+  public void applySubstitution_on_nested_parametrized_types() {
+    JavaType.TypeVariableJavaType k = getTypeVariable("K");
+
+    TypeSubstitution aSubs = new TypeSubstitution();
+    aSubs.add(k, T);
+    JavaSymbol.TypeJavaSymbol aSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", Symbols.rootPackage);
+    // A<{K=T}>
+    JavaType.ParametrizedTypeJavaType aRoot = new JavaType.ParametrizedTypeJavaType(aSymbol, aSubs);
+
+    // A<...n-1...<A<T>>...>
+    JavaType last = aRoot;
+    int n = 10;
+    for (int i = 0; i < n; i++) {
+      TypeSubstitution newSubs = new TypeSubstitution();
+      newSubs.add(k, last);
+      last = new JavaType.ParametrizedTypeJavaType(aSymbol, newSubs);
+    }
+
+    List<JavaType> formals = Lists.newArrayList(last);
+    TypeSubstitution substitution = new TypeSubstitution();
+    substitution.add(T, symbols.stringType);
+    List<JavaType> substitutedFormals = typeSubstitutionSolver.applySubstitutionToFormalParameters(formals, substitution);
+
+    JavaType type = substitutedFormals.get(0);
+    int nbNestedGenerics = 0;
+    while (type instanceof JavaType.ParametrizedTypeJavaType) {
+      type = ((JavaType.ParametrizedTypeJavaType) type).substitution(k);
+      nbNestedGenerics++;
+    }
+    assertThat(nbNestedGenerics).isEqualTo(n + 1);
+    assertThat(type).isEqualTo(symbols.stringType);
+  }
+
+  @Test
   public void getSubstitutionFromTypeParams_does_not_provide_substitution_if_arity_of_params_is_not_matching() {
     ArrayList<JavaType.TypeVariableJavaType> typeVariableTypes = Lists.newArrayList(T, T);
     ArrayList<JavaType> typeParams = Lists.newArrayList(symbols.stringType);

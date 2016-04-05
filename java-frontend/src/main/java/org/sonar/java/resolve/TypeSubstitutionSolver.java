@@ -145,6 +145,10 @@ public class TypeSubstitutionSolver {
     if (substitutedType != null) {
       return parametrizedTypeCache.getWildcardType(substitutedType, wildcard.boundType);
     }
+    JavaType newBound = applySubstitution(wildcard.bound, substitution);
+    if (newBound != wildcard.bound) {
+      return parametrizedTypeCache.getWildcardType(newBound, wildcard.boundType);
+    }
     return wildcard;
   }
 
@@ -228,7 +232,8 @@ public class TypeSubstitutionSolver {
         }
       }
     } else if (formalType.isTagged(JavaType.WILDCARD)) {
-      completeSubstitution(currentSubstitution, ((JavaType.WildCardType) formalType).bound, argType);
+      TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, isLastParam, ((JavaType.WildCardType) formalType).bound, argType);
+      return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
     } else {
       // nothing to infer for simple class types or primitive types
     }

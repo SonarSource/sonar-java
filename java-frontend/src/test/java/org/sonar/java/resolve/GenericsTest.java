@@ -767,25 +767,14 @@ public class GenericsTest {
 
   @Test
   public void test_method_resolution_for_parametrized_method_and_nested_Parametrized_types() {
-    List<Type> elementTypes = declaredTypes(
-      "class C {"
-        + "  <T> Child<A<T>> foo(Parent<? extends B<T>> b) { return null; }"
-
-        + "  void tst(Parent<B<String>> b) {"
-        // call to method not recognized
-        + "    Child<A<String>> result = foo(b);"
-        + "  }"
-        + "}"
-
-        + "interface A<X> { }"
-        + "interface B<Y> { }"
-        + "interface Parent<Z> { }"
-        + "interface Child<E> extends Parent<E> { }");
+    List<Type> elementTypes = declaredTypesFromFile("src/test/files/resolve/generics/parametrizedMethodWithTypeInferenceAndTypeInheritance.java");
 
     JavaType type = (JavaType) elementTypes.get(0);
     JavaSymbol.MethodJavaSymbol methodSymbol = getMethodSymbol(type, "foo");
-    // FIXME SONARJAVA-1580 should be 1
-    assertThat(methodSymbol.usages()).hasSize(0);
+    assertThat(methodSymbol.usages()).hasSize(2);
+
+    assertThat(getMethodSymbol(type, "usesInteger").usages()).hasSize(1);
+    assertThat(getMethodSymbol(type, "usesString").usages()).hasSize(1);
   }
 
   @Test
