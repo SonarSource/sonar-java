@@ -22,14 +22,14 @@ package org.sonar.java.resolve;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Routines for name resolution.
@@ -780,8 +780,8 @@ public class Resolve {
     return true;
   }
 
-  Type leastUpperBound(List<Type> typeAlternatives) {
-    return types.leastUpperBound(typeAlternatives);
+  Type leastUpperBound(Set<Type> refTypes) {
+    return types.leastUpperBound(refTypes);
   }
 
   Resolution unresolved() {
@@ -811,7 +811,7 @@ public class Resolve {
         return secondOperand;
       }
     }
-    return (JavaType) leastUpperBound(Lists.<Type>newArrayList(trueType, falseType));
+    return (JavaType) leastUpperBound(Sets.<Type>newHashSet(trueType, falseType));
   }
 
   private static boolean isNumericalConditionalExpression(JavaType secondOperand, JavaType thirdOperand) {

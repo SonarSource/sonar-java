@@ -20,10 +20,10 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
-import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,9 +93,10 @@ public class Types {
    * @param types
    * @return the least upper bound of the types
    */
-  public Type leastUpperBound(List<Type> types) {
+  public Type leastUpperBound(Set<Type> types) {
     Preconditions.checkArgument(!types.isEmpty());
-    Type first = types.get(0);
+    Iterator<Type> iterator = types.iterator();
+    Type first = iterator.next();
     //lub(U) = U
     if(types.size() == 1) {
       return first;
@@ -103,7 +104,7 @@ public class Types {
     // Handle particular case while generics are not properly supported if a type is subtype of another then lub is that type: solve some cases of conditional operator.
     // FIXME: should be removed when dealing with generics is properly supported.
     if(types.size() == 2) {
-      Type type2 = types.get(1);
+      Type type2 = iterator.next();
       if(first.isSubtypeOf(type2)) {
         return type2;
       } else if(type2.isSubtypeOf(first)) {
@@ -139,30 +140,17 @@ public class Types {
   }
 
   private static List<Set<Type>> supertypes(Iterable<Type> types) {
-    try {
-      List<Set<Type>> results = new LinkedList<>();
-      for (Type type : types) {
-        checkParametrizedType(type);
-        Set<Type> supertypes = new LinkedHashSet<>();
-        supertypes.add(type);
-        for (Type supertype : ((JavaType) type).symbol.superTypes()) {
-          checkParametrizedType(supertype);
-          supertypes.add(supertype);
-        }
-        results.add(supertypes);
+    List<Set<Type>> results = new LinkedList<>();
+    for (Type type : types) {
+      Set<Type> supertypes = new LinkedHashSet<>();
+      supertypes.add(type.erasure());
+      for (Type supertype : ((JavaType) type.erasure()).symbol.superTypes()) {
+        supertypes.add(supertype.erasure());
       }
-      return results;
-    } catch (UnsupportedOperationException e) {
-      // FIXME SONARJAVA-1569 generics should be handled for lub calculation
-      return Collections.emptyList();
+      results.add(supertypes);
     }
-  }
-
-  private static void checkParametrizedType(Type type) {
-    if (type instanceof ParametrizedTypeJavaType) {
-      throw new UnsupportedOperationException("Generics are not handled");
-    }
-  }
+    return results;
+}
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {
     if (supertypes.isEmpty()) {

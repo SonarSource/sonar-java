@@ -495,6 +495,10 @@ public class TypeAndReferenceSolverTest {
     JavaType testedType = typeOf("true ? new java.util.ArrayList<? extends String>() : new java.util.ArrayList<String>()");
     assertThat(testedType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
     assertThat(((JavaType.ParametrizedTypeJavaType) testedType).typeSubstitution).isEqualTo(expectedType.typeSubstitution);
+
+    testedType = typeOf("true ? new java.util.ArrayList<Integer>() : new java.util.ArrayList<String>()");
+    assertThat(testedType).isInstanceOf(JavaType.ClassJavaType.class);
+    assertThat(testedType.is("java.util.ArrayList")).isTrue();
   }
 
   @Test

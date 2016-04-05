@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
@@ -567,7 +568,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitUnionType(UnionTypeTree tree) {
     resolveAs((List<TypeTree>) tree.typeAlternatives(), JavaSymbol.TYP);
-    ImmutableList.Builder<Type> uniontype = ImmutableList.builder();
+    ImmutableSet.Builder<Type> uniontype = ImmutableSet.builder();
     for (TypeTree typeTree : tree.typeAlternatives()) {
       uniontype.add(typeTree.symbolType());
     }
