@@ -464,16 +464,21 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
-    if (tree.enclosingExpression() != null) {
-      resolveAs(tree.enclosingExpression(), JavaSymbol.VAR);
-    }
     Resolve.Env newClassEnv = semanticModel.getEnv(tree);
-    resolveAs(tree.identifier(), JavaSymbol.TYP, newClassEnv, false);
+    ExpressionTree enclosingExpression = tree.enclosingExpression();
+    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
+    if (enclosingExpression != null) {
+      resolveAs(enclosingExpression, JavaSymbol.VAR);
+      Resolve.Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(), newClassTreeImpl.getConstructorIdentifier().name(), JavaSymbol.TYP);
+      registerType(tree.identifier(), idType.type());
+    } else {
+      resolveAs(tree.identifier(), JavaSymbol.TYP, newClassEnv, false);
+    }
+
     if (tree.typeArguments() != null) {
       resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
     }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
-    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, getParameterTypes(tree.arguments()));
     ClassTree classBody = tree.classBody();
     if (classBody != null) {

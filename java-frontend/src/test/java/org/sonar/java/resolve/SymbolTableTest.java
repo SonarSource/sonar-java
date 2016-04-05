@@ -503,6 +503,10 @@ public class SymbolTableTest {
 
     assertThat(stringConstructor.usages()).hasSize(2);
     assertThat(ObjectConstructor.usages()).hasSize(1);
+
+    assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner")).members().scopeSymbols.get(0)).isSameAs(result.reference(36, 29));
+    assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner2")).members().scopeSymbols.get(0)).isSameAs(result.reference(48, 30));
+
   }
 
   @Test
