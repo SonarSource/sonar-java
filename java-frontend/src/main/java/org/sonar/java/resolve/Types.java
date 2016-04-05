@@ -94,15 +94,20 @@ public class Types {
    * @return the least upper bound of the types
    */
   public Type leastUpperBound(List<Type> types) {
-    Preconditions.checkArgument(types.size() > 1);
-
+    Preconditions.checkArgument(!types.isEmpty());
+    Type first = types.get(0);
+    //lub(U) = U
+    if(types.size() == 1) {
+      return first;
+    }
+    // Handle particular case while generics are not properly supported if a type is subtype of another then lub is that type: solve some cases of conditional operator.
+    // FIXME: should be removed when dealing with generics is properly supported.
     if(types.size() == 2) {
-      Type type1 = types.get(0);
       Type type2 = types.get(1);
-      if(type1.isSubtypeOf(type2)) {
+      if(first.isSubtypeOf(type2)) {
         return type2;
-      } else if(type2.isSubtypeOf(type1)) {
-        return type1;
+      } else if(type2.isSubtypeOf(first)) {
+        return first;
       }
     }
 

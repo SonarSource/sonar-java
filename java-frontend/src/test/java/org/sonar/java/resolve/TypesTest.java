@@ -28,6 +28,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Arrays;
@@ -114,16 +115,17 @@ public class TypesTest {
   }
 
   @Test
-  public void lub_only_works_with_lists_of_at_least_2_elements() {
-    List<Type> typesFromInput = declaredTypes("class A extends Exception {}");
-    Type a = typesFromInput.get(0);
-    try {
-      types.leastUpperBound(Lists.newArrayList(a));
-      Fail.fail("should have failed");
-    } catch (Exception e) {
-      assertThat(e).isInstanceOf(IllegalArgumentException.class);
-    }
+  public void lub_of_one_element_is_itself() {
+    CompilationUnitTree cut = treeOf("class A<T> { A<String> var; }");
+    ClassTree classA = (ClassTree) cut.types().get(0);
+    Type varType = ((VariableTree) classA.members().get(0)).type().symbolType();
+    Type a = classA.symbol().type();
+    assertThat(types.leastUpperBound(Lists.newArrayList(a))).isSameAs(a);
+    assertThat(types.leastUpperBound(Lists.newArrayList(varType))).isSameAs(varType);
+  }
 
+  @Test
+  public void lub_should_fail_if_no_type_provided() {
     try {
       types.leastUpperBound(Lists.<Type>newArrayList());
       Fail.fail("should have failed");
