@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -102,7 +103,7 @@ public class Types {
       return first;
     }
     // Handle particular case while generics are not properly supported if a type is subtype of another then lub is that type: solve some cases of conditional operator.
-    // FIXME: should be removed when dealing with generics is properly supported.
+    // FIXME: should be removed when dealing with generics is properly supported see SONARJAVA-1631
     if(types.size() == 2) {
       Type type2 = iterator.next();
       if(first.isSubtypeOf(type2)) {
@@ -124,19 +125,15 @@ public class Types {
     return best(minimalCandidates);
   }
 
-  private static Type best(List<Type> minimalCandidates) {
-    Type result = Symbols.unknownType;
-    for (Type type : minimalCandidates) {
-      if (!type.symbol().isInterface()) {
-        // first type which is not a interface
-        return type;
-      } else if (result.isUnknown()) {
-        // save first interface
-        result = type;
+  private Type best(List<Type> minimalCandidates) {
+    Collections.sort(minimalCandidates, new Comparator<Type>() {
+      // Sort minimal candidates to guarantee always the same type is returned when approximated.
+      @Override
+      public int compare(Type type, Type t1) {
+        return type.name().compareTo(t1.name());
       }
-    }
-    // huge approximation: should be the bound of all the minimalCandidates, not only the first type
-    return result;
+    });
+    return minimalCandidates.get(0);
   }
 
   private static List<Set<Type>> supertypes(Iterable<Type> types) {
@@ -144,7 +141,8 @@ public class Types {
     for (Type type : types) {
       Set<Type> supertypes = new LinkedHashSet<>();
       supertypes.add(type.erasure());
-      for (Type supertype : ((JavaType) type.erasure()).symbol.superTypes()) {
+      for (Type supertype : ((JavaType) type).symbol.superTypes()) {
+        // Rely on erasure as approximation for generic type
         supertypes.add(supertype.erasure());
       }
       results.add(supertypes);
