@@ -207,7 +207,8 @@ public class TypeSubstitutionSolver {
     } else if (formalType.isArray()) {
       JavaType formalElementType = ((JavaType.ArrayJavaType) formalType).elementType;
       if (argType.isArray()) {
-        completeSubstitution(currentSubstitution, formalElementType, ((JavaType.ArrayJavaType) argType).elementType);
+        TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, isLastParam, formalElementType, ((JavaType.ArrayJavaType) argType).elementType);
+        return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
       } else if (method.isVarArgs() && isLastParam) {
         completeSubstitution(currentSubstitution, formalElementType, argType);
       }
@@ -266,7 +267,7 @@ public class TypeSubstitutionSolver {
   }
 
   private void completeSubstitution(TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType) {
-    if (formalType.isTagged(JavaType.TYPEVAR) && currentSubstitution.substitutedType(formalType) == null) {
+    if (formalType.isTagged(JavaType.TYPEVAR)) {
       JavaType expectedType = argType;
       if (expectedType.isPrimitive()) {
         expectedType = expectedType.primitiveWrapperType;

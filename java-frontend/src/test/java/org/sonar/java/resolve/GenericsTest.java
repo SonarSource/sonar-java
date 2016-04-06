@@ -658,6 +658,7 @@ public class GenericsTest {
     methodHasUsagesWithSameTypeAs(aType, "f10", "integer");
     methodHasUsagesWithSameTypeAs(aType, "f11", "cStringA");
     methodHasUsagesWithSameTypeAs(aType, "f12", "aType");
+    methodHasUsagesWithSameTypeAs(aType, "f13", "integer");
   }
 
   @Test

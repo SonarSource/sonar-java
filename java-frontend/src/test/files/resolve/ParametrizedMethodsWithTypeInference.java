@@ -58,6 +58,10 @@ class ParametrizedMethodsWithTypeInference {
     return null;
   }
 
+  <T> T f13(T[][][][] a) {
+    return null;
+  }
+
   void test_resolution(B<?> bwc, B<A> ba, B<? extends A> bwcEa) {
     f1("String");
     f1(null);
@@ -80,6 +84,7 @@ class ParametrizedMethodsWithTypeInference {
     f10(42);
     f11("hello", ba);
     f12(new B<Integer>(), ba);
+    f13(new Integer[0][0][0][0]);
   }
 
   // reference types
