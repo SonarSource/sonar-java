@@ -26,6 +26,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -46,6 +47,12 @@ import java.util.List;
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("15min")
 public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVisitor {
+
+    private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
+            .add("lombok.EqualsAndHashCode")
+            .add("lombok.Data")
+            .add("lombok.Value")
+            .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -71,12 +78,22 @@ public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVi
         }
       }
 
-      if (compare != null && !hasEquals) {
+      if (compare != null && !hasEquals && !generatesEquals(classTree)) {
         reportIssue(compare.simpleName(), "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
       }
     }
   }
 
+  private static boolean generatesEquals(ClassTree classTree) {
+      SymbolMetadata metadata = classTree.symbol().metadata();
+      for (String annotation : EXCLUDED_ANNOTATIONS_TYPE) {
+        if (metadata.isAnnotatedWith(annotation)) {
+          return true;
+        }
+      }
+      return false;
+    }
+  
   private static boolean isCompareToMethod(MethodTree method) {
     String name = method.simpleName().name();
     return "compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1;

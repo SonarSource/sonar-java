@@ -125,4 +125,35 @@ public class Foo10 implements Comparable {
   public boolean typeEquals(ObjectStreamField other) {
     return false;
   }
+  
+  @lombok.EqualsAndHashCode
+  class Foo10 implements Comparable<Foo10> { // Compliant
+
+    @Override
+    public int compareTo(Foo10 o) {
+      return 0;
+    }
+
+  }
+
+  @lombok.Data
+  class Foo11 implements Comparable<Foo11> { // Compliant
+
+    @Override
+    public int compareTo(Foo11 o) {
+      return 0;
+    }
+
+  }
+
+  @lombok.Value
+  class Foo12 implements Comparable<Foo12> { // Compliant
+
+    @Override
+    public int compareTo(Foo12 o) {
+      return 0;
+    }
+
+  }  
+  
 }
