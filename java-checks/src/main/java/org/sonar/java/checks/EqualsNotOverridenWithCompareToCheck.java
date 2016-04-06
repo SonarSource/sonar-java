@@ -23,9 +23,10 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -47,6 +48,12 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVisitor {
 
+    private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
+            .add("lombok.EqualsAndHashCode")
+            .add("lombok.Data")
+            .add("lombok.Value")
+            .build();
+
   @Override
   public List<Tree.Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS, Tree.Kind.ENUM);
@@ -56,35 +63,58 @@ public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVi
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (isComparable(classTree)) {
-      boolean hasEquals = false;
       MethodTree compare = null;
 
       for (Tree member : classTree.members()) {
         if (member.is(Tree.Kind.METHOD)) {
           MethodTree method = (MethodTree) member;
-
-          if (isEqualsMethod(method)) {
-            hasEquals = true;
-          } else if (isCompareToMethod(method)) {
+          if (isCompareToMethod(method)) {
             compare = method;
           }
         }
       }
 
-      if (compare != null && !hasEquals) {
+      if (compare != null && !generatesEquals(classTree) && !implementsEquals(classTree)) {
         reportIssue(compare.simpleName(), "Override \"equals(Object obj)\" to comply with the contract of the \"compareTo(T o)\" method.");
       }
     }
   }
+
+  private static boolean implementsEquals(ClassTree classTree) {
+      return hasNotFinalEqualsMethod(classTree.symbol());
+    }
 
   private static boolean isCompareToMethod(MethodTree method) {
     String name = method.simpleName().name();
     return "compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1;
   }
 
-  private static boolean isEqualsMethod(MethodTree method) {
-    return ((MethodTreeImpl) method).isEqualsMethod();
-  }
+  private static boolean isEqualsMethod(Symbol symbol) {
+      if (symbol.isMethodSymbol()) {
+        List<Type> parameterTypes = ((Symbol.MethodSymbol) symbol).parameterTypes();
+        return !parameterTypes.isEmpty() && parameterTypes.get(0).is("java.lang.Object");
+      }
+      return false;
+    }
+
+  private static boolean hasNotFinalEqualsMethod(Symbol.TypeSymbol superClassSymbol) {
+      for (Symbol symbol : superClassSymbol.lookupSymbols("equals")) {
+        if (isEqualsMethod(symbol) && !symbol.isFinal()) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+  private static boolean generatesEquals(ClassTree classTree) {
+      SymbolMetadata metadata = classTree.symbol().metadata();
+      for (String annotation : EXCLUDED_ANNOTATIONS_TYPE) {
+        if (metadata.isAnnotatedWith(annotation)) {
+          return true;
+        }
+      }
+      return false;
+    }
 
   private static boolean isComparable(ClassTree tree) {
     for (Type type : tree.symbol().interfaces()) {
