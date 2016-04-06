@@ -39,6 +39,7 @@ import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
+import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidCheck;
 import org.sonar.java.checks.serialization.SerializableComparatorCheck;
 import org.sonar.java.checks.serialization.SerializableFieldInSerializableClassCheck;
@@ -436,6 +437,7 @@ public final class CheckList {
       .add(ConstructorInjectionCheck.class)
       .add(NoWayOutLoopCheck.class)
       .add(ExternalizableClassConstructorCheck.class)
+      .add(PrivateReadResolveCheck.class)
       .build();
   }
 
