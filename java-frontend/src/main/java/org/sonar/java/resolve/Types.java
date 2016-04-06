@@ -20,6 +20,8 @@
 package org.sonar.java.resolve;
 
 import com.google.common.base.Preconditions;
+
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.Collections;
@@ -94,7 +96,7 @@ public class Types {
    * @param types
    * @return the least upper bound of the types
    */
-  public Type leastUpperBound(Set<Type> types) {
+  public static Type leastUpperBound(Set<Type> types) {
     Preconditions.checkArgument(!types.isEmpty());
     Iterator<Type> iterator = types.iterator();
     Type first = iterator.next();
@@ -125,11 +127,20 @@ public class Types {
     return best(minimalCandidates);
   }
 
-  private Type best(List<Type> minimalCandidates) {
+  private static Type best(List<Type> minimalCandidates) {
     Collections.sort(minimalCandidates, new Comparator<Type>() {
-      // Sort minimal candidates to guarantee always the same type is returned when approximated.
+      // Sort minimal candidates by name with classes before interfaces, to guarantee always the same type is returned when approximated.
       @Override
       public int compare(Type type, Type t1) {
+        Symbol.TypeSymbol typeSymbol = type.symbol();
+        Symbol.TypeSymbol t1Symbol = t1.symbol();
+        if (typeSymbol.isInterface() && t1Symbol.isInterface()) {
+          return type.name().compareTo(t1.name());
+        } else if (typeSymbol.isInterface()) {
+          return 1;
+        } else if (t1Symbol.isInterface()) {
+          return -1;
+        }
         return type.name().compareTo(t1.name());
       }
     });

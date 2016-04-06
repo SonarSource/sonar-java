@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import org.junit.Before;
@@ -34,13 +35,14 @@ public class TypeSubstitutionSolverTest {
   private Symbols symbols;
   private TypeSubstitutionSolver typeSubstitutionSolver;
 
-  private static final JavaType.TypeVariableJavaType T = getTypeVariable("T");
+  private static JavaType.TypeVariableJavaType T;
 
   @Before
   public void setUp() {
     ParametrizedTypeCache ptc = new ParametrizedTypeCache();
     symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), ptc));
     typeSubstitutionSolver = new TypeSubstitutionSolver(ptc, symbols);
+    T = getTypeVariable("T");
   }
 
   @Test
@@ -117,6 +119,61 @@ public class TypeSubstitutionSolverTest {
   }
 
   @Test
+  public void getTypeSubstitution_always_return_first_type_match() {
+    JavaType.TypeVariableJavaType U = getTypeVariable("U");
+    List<JavaType> formals = Lists.<JavaType>newArrayList(T, T, U);
+
+    List<JavaType> args = Lists.newArrayList(symbols.stringType, symbols.objectType, symbols.intType.primitiveWrapperType);
+    TypeSubstitution substitution = typeSubstitutionForTypeParameters(formals, args, T, U);
+    assertThat(substitution.substitutedType(T)).isSameAs(symbols.stringType);
+    assertThat(substitution.substitutedType(U)).isSameAs(symbols.intType.primitiveWrapperType);
+
+    args = Lists.newArrayList(symbols.objectType, symbols.stringType, symbols.intType.primitiveWrapperType);
+    substitution = typeSubstitutionForTypeParameters(formals, args, T, U);
+    assertThat(substitution.substitutedType(T)).isSameAs(symbols.objectType);
+    assertThat(substitution.substitutedType(U)).isSameAs(symbols.intType.primitiveWrapperType);
+  }
+
+  @Test
+  public void getTypeSubstitution_missing_varargs() {
+    JavaType.TypeVariableJavaType U = getTypeVariable("U");
+    List<JavaType> formals = Lists.<JavaType>newArrayList(T, U);
+
+    // 2nd parameter not provided, U is infered as Object
+    List<JavaType> args = Lists.newArrayList(symbols.stringType);
+    TypeSubstitution substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T, U);
+    assertThat(substitution.substitutedType(T)).isSameAs(symbols.stringType);
+    assertThat(substitution.substitutedType(U)).isSameAs(symbols.objectType);
+
+    // 2nd parameter provided
+    args = Lists.newArrayList(symbols.stringType, symbols.intType.primitiveWrapperType);
+    substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T, U);
+    assertThat(substitution.substitutedType(T)).isSameAs(symbols.stringType);
+    assertThat(substitution.substitutedType(U)).isSameAs(symbols.intType.primitiveWrapperType);
+  }
+
+  private TypeSubstitution typeSubstitutionForTypeParametersWithVarargs(List<JavaType> formals, List<JavaType> args, JavaType.TypeVariableJavaType... typeParameters) {
+    return typeSubstitutionForTypeParameters(formals, args, true, typeParameters);
+  }
+
+  private TypeSubstitution typeSubstitutionForTypeParameters(List<JavaType> formals, List<JavaType> args, JavaType.TypeVariableJavaType... typeParameters) {
+    return typeSubstitutionForTypeParameters(formals, args, false, typeParameters);
+  }
+
+  private TypeSubstitution typeSubstitutionForTypeParameters(List<JavaType> formals, List<JavaType> args, boolean varargs, JavaType.TypeVariableJavaType... typeParameters) {
+    JavaType.MethodJavaType methodType = new JavaType.MethodJavaType(formals, symbols.voidType, ImmutableList.<JavaType>of(), symbols.objectType.symbol);
+    int flags = Flags.PUBLIC;
+    if (varargs) {
+      flags |= Flags.VARARGS;
+    }
+    JavaSymbol.MethodJavaSymbol methodSymbol = new JavaSymbol.MethodJavaSymbol(flags, "foo", methodType, symbols.objectType.symbol);
+    for (JavaType.TypeVariableJavaType typeParameter : typeParameters) {
+      methodSymbol.addTypeParameter(typeParameter);
+    }
+    return typeSubstitutionSolver.getTypeSubstitution(methodSymbol, symbols.objectType, ImmutableList.<JavaType>of(), args);
+  }
+
+  @Test
   public void getSubstitutionFromTypeParams_provide_substitution() {
     JavaType.TypeVariableJavaType j = getTypeVariable("J");
     JavaType.TypeVariableJavaType k = getTypeVariable("K");
@@ -129,7 +186,9 @@ public class TypeSubstitutionSolverTest {
     assertThat(substitution.substitutedType(k)).isSameAs(symbols.intType.primitiveWrapperType);
   }
 
-  private static JavaType.TypeVariableJavaType getTypeVariable(String variableName) {
-    return new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol(variableName, Symbols.unknownSymbol));
+  private JavaType.TypeVariableJavaType getTypeVariable(String variableName) {
+    JavaType.TypeVariableJavaType typeVariableJavaType = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol(variableName, Symbols.unknownSymbol));
+    typeVariableJavaType.bounds = ImmutableList.of(symbols.objectType);
+    return typeVariableJavaType;
   }
 }

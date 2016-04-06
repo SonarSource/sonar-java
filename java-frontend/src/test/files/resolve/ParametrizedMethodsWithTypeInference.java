@@ -62,6 +62,14 @@ class ParametrizedMethodsWithTypeInference {
     return null;
   }
 
+  <T> B<T> f14(T... a) {
+    return null;
+  }
+
+  <T, U> T f15(U u, T... t) {
+    return null;
+  }
+
   void test_resolution(B<?> bwc, B<A> ba, B<? extends A> bwcEa) {
     f1("String");
     f1(null);
@@ -82,9 +90,13 @@ class ParametrizedMethodsWithTypeInference {
     f9(new B());
     f9(new D());
     f10(42);
+    f10(1.0, 42);
+    f10(new E(), new F(), new G());
     f11("hello", ba);
     f12(new B<Integer>(), ba);
     f13(new Integer[0][0][0][0]);
+    f14("hello", "world");
+    f15(new A());
   }
 
   // reference types
@@ -92,6 +104,7 @@ class ParametrizedMethodsWithTypeInference {
   B<String> bString;
   B<Object> bObject;
   Integer integer;
+  Number number;
   String[] stringArray;
   C<String, Integer> cStringInteger;
   C<String, A> cStringA;
@@ -114,4 +127,8 @@ class ParametrizedMethodsWithTypeInference {
 
   class D extends B<String> implements I {
   }
+
+  class E extends A {}
+  class F extends E {}
+  class G extends A {}
 }

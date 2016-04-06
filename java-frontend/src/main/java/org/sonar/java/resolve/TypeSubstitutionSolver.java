@@ -19,12 +19,19 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
+
+import org.sonar.plugins.java.api.semantic.Type;
+
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TypeSubstitutionSolver {
 
@@ -64,7 +71,7 @@ public class TypeSubstitutionSolver {
       return returnType;
     }
     JavaType resultType = applySiteSubstitution(returnType, defSite);
-    if(callSite != defSite) {
+    if (callSite != defSite) {
       resultType = applySiteSubstitution(resultType, callSite);
     }
     if (isRawTypeOfParametrizedType(callSite) && !parametrizedMethodCall) {
@@ -184,13 +191,25 @@ public class TypeSubstitutionSolver {
   }
 
   private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
+    boolean isVarArgs = method.isVarArgs();
+    int numberFormals = formals.size();
+    int numberArgs = argTypes.size();
+    int numberParamToCheck = Math.min(numberFormals, numberArgs);
+    List<JavaType> newArgTypes = new ArrayList<>(argTypes);
     TypeSubstitution substitution = new TypeSubstitution();
-    for (int i = 0; i < Math.min(formals.size(), argTypes.size()); i++) {
-      JavaType formalType = formals.get(i);
-      JavaType argType = argTypes.get(i);
-      boolean isLastParam = i == formals.size() - 1;
 
-      substitution = inferTypeSubstitution(method, substitution, isLastParam, formalType, argType);
+    // method is varargs but parameter is not provided
+    if (isVarArgs && numberFormals == numberArgs + 1) {
+      numberParamToCheck += 1;
+      newArgTypes.add(symbols.objectType);
+    }
+    for (int i = 0; i < numberParamToCheck; i++) {
+      JavaType formalType = formals.get(i);
+      JavaType argType = newArgTypes.get(i);
+      boolean variableArity = isVarArgs && i == (numberFormals - 1);
+      List<JavaType> remainingArgTypes = new ArrayList<>(newArgTypes.subList(i, newArgTypes.size()));
+
+      substitution = inferTypeSubstitution(method, substitution, formalType, argType, variableArity, remainingArgTypes);
 
       if (substitution.typeVariables().containsAll(method.typeVariableTypes)) {
         // we found all the substitution
@@ -200,17 +219,21 @@ public class TypeSubstitutionSolver {
     return substitution;
   }
 
-  private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, TypeSubstitution currentSubstitution, boolean isLastParam, JavaType formalType,
-    JavaType argType) {
+  private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType,
+    boolean variableArity, List<JavaType> remainingArgTypes) {
     if (formalType.isTagged(JavaType.TYPEVAR)) {
       completeSubstitution(currentSubstitution, formalType, argType);
     } else if (formalType.isArray()) {
-      JavaType formalElementType = ((JavaType.ArrayJavaType) formalType).elementType;
+      JavaType newArgType = null;
       if (argType.isArray()) {
-        TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, isLastParam, formalElementType, ((JavaType.ArrayJavaType) argType).elementType);
+        newArgType = ((JavaType.ArrayJavaType) argType).elementType;
+      } else if (variableArity) {
+        newArgType = leastUpperBound(remainingArgTypes);
+      }
+      if (newArgType != null) {
+        JavaType formalElementType = ((JavaType.ArrayJavaType) formalType).elementType;
+        TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, formalElementType, newArgType, variableArity, remainingArgTypes);
         return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
-      } else if (method.isVarArgs() && isLastParam) {
-        completeSubstitution(currentSubstitution, formalElementType, argType);
       }
     } else if (isParametrizedType(formalType)) {
       List<JavaType> formalTypeSubstitutedTypes = ((JavaType.ParametrizedTypeJavaType) formalType).typeSubstitution.substitutedTypes();
@@ -228,17 +251,34 @@ public class TypeSubstitutionSolver {
       } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
         for (JavaType superType : ((JavaType.ClassJavaType) argType).symbol.superTypes()) {
           if (sameErasure(formalType, superType)) {
-            return inferTypeSubstitution(method, currentSubstitution, isLastParam, formalType, superType);
+            return inferTypeSubstitution(method, currentSubstitution, formalType, superType, variableArity, remainingArgTypes);
           }
         }
       }
     } else if (formalType.isTagged(JavaType.WILDCARD)) {
-      TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, isLastParam, ((JavaType.WildCardType) formalType).bound, argType);
+      TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, ((JavaType.WildCardType) formalType).bound, argType, variableArity,
+        remainingArgTypes);
       return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
     } else {
       // nothing to infer for simple class types or primitive types
     }
     return currentSubstitution;
+  }
+
+  private static JavaType leastUpperBound(List<JavaType> remainingArgTypes) {
+    return (JavaType) Types.leastUpperBound(mapToBoxedSet(remainingArgTypes));
+  }
+
+  private static Set<Type> mapToBoxedSet(List<JavaType> types) {
+    return Sets.newHashSet(Iterables.transform(Sets.<Type>newHashSet(types), new Function<Type, Type>() {
+      @Override
+      public Type apply(Type type) {
+        if (type.isPrimitive()) {
+          return ((JavaType) type).primitiveWrapperType;
+        }
+        return type;
+      }
+    }));
   }
 
   private static boolean sameErasure(JavaType formalType, JavaType superType) {
@@ -267,7 +307,7 @@ public class TypeSubstitutionSolver {
   }
 
   private void completeSubstitution(TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType) {
-    if (formalType.isTagged(JavaType.TYPEVAR)) {
+    if (formalType.isTagged(JavaType.TYPEVAR) && currentSubstitution.substitutedType(formalType) == null) {
       JavaType expectedType = argType;
       if (expectedType.isPrimitive()) {
         expectedType = expectedType.primitiveWrapperType;

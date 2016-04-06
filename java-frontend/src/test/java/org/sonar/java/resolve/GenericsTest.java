@@ -655,10 +655,13 @@ public class GenericsTest {
     methodHasUsagesWithSameTypeAs(aType, "f9", 0, "object", "object");
     methodHasUsagesWithSameTypeAs(aType, "f9", 1, "dType");
 
-    methodHasUsagesWithSameTypeAs(aType, "f10", "integer");
+    methodHasUsagesWithSameTypeAs(aType, "f10", "integer", "number", "aType");
+
     methodHasUsagesWithSameTypeAs(aType, "f11", "cStringA");
     methodHasUsagesWithSameTypeAs(aType, "f12", "aType");
     methodHasUsagesWithSameTypeAs(aType, "f13", "integer");
+    methodHasUsagesWithSameTypeAs(aType, "f14", "bString");
+    methodHasUsagesWithSameTypeAs(aType, "f15", "object");
   }
 
   @Test
