@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -470,7 +471,8 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     if (enclosingExpression != null) {
       resolveAs(enclosingExpression, JavaSymbol.VAR);
-      Resolve.Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(), newClassTreeImpl.getConstructorIdentifier().name(), JavaSymbol.TYP);
+      Resolve.Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(),
+        newClassTreeImpl.getConstructorIdentifier().name(), JavaSymbol.TYP);
       registerType(tree.identifier(), idType.type());
     } else {
       resolveAs(tree.identifier(), JavaSymbol.TYP, newClassEnv, false);

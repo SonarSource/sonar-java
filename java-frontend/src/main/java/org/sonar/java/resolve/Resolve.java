@@ -23,10 +23,12 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -781,7 +783,7 @@ public class Resolve {
   }
 
   Type leastUpperBound(Set<Type> refTypes) {
-    return types.leastUpperBound(refTypes);
+    return Types.leastUpperBound(refTypes);
   }
 
   Resolution unresolved() {
