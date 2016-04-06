@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
+import org.sonar.squidbridge.annotations.ActivatedByDefault;
 import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
 import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
@@ -57,6 +58,7 @@ import java.util.List;
   name = "\"@NonNull\" values should not be set to null",
   priority = Priority.CRITICAL,
   tags = {"bug", "misra"})
+@ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.RELIABILITY_COMPLIANCE)
 @SqaleConstantRemediation("15min")
 public class NonNullSetToNullCheck extends SECheck {
