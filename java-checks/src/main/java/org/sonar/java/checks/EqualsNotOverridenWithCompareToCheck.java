@@ -48,11 +48,11 @@ import java.util.List;
 @SqaleConstantRemediation("15min")
 public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVisitor {
 
-    private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
-            .add("lombok.EqualsAndHashCode")
-            .add("lombok.Data")
-            .add("lombok.Value")
-            .build();
+  private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
+    .add("lombok.EqualsAndHashCode")
+    .add("lombok.Data")
+    .add("lombok.Value")
+    .build();
 
   @Override
   public List<Tree.Kind> nodesToVisit() {
@@ -85,15 +85,15 @@ public class EqualsNotOverridenWithCompareToCheck extends IssuableSubscriptionVi
   }
 
   private static boolean generatesEquals(ClassTree classTree) {
-      SymbolMetadata metadata = classTree.symbol().metadata();
-      for (String annotation : EXCLUDED_ANNOTATIONS_TYPE) {
-        if (metadata.isAnnotatedWith(annotation)) {
-          return true;
-        }
+    SymbolMetadata metadata = classTree.symbol().metadata();
+    for (String annotation : EXCLUDED_ANNOTATIONS_TYPE) {
+      if (metadata.isAnnotatedWith(annotation)) {
+        return true;
       }
-      return false;
     }
-  
+    return false;
+  }
+
   private static boolean isCompareToMethod(MethodTree method) {
     String name = method.simpleName().name();
     return "compareTo".equals(name) && returnsInt(method) && method.parameters().size() == 1;
