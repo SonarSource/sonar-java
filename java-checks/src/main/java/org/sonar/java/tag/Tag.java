@@ -24,7 +24,6 @@ public final class Tag {
   public static final String BUG = "bug";
   public static final String JAVA_8 = "java8";
   public static final String CONVENTION = "convention";
-  public static final String JUNIT = "junit";
   public static final String PITFALL = "pitfall";
   public static final String CWE = "cwe";
   public static final String MISRA = "misra";

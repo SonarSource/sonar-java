@@ -38,7 +38,7 @@ import java.util.List;
   key = "S2925",
   name = "\"Thread.sleep\" should not be used in tests",
   priority = Priority.MAJOR,
-  tags = {Tag.BAD_PRACTICE})
+  tags = {Tag.BAD_PRACTICE, Tag.TESTS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTS)
 @SqaleConstantRemediation("20min")

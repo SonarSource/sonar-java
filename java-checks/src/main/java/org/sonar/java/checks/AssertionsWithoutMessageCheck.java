@@ -43,7 +43,7 @@ import java.util.Set;
   key = "S2698",
   name = "JUnit assertions should include messages",
   priority = Priority.MAJOR,
-  tags = {Tag.JUNIT})
+  tags = {Tag.TESTS})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
 public class AssertionsWithoutMessageCheck extends AbstractMethodDetection {

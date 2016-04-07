@@ -48,7 +48,7 @@ import java.util.List;
   key = "S2188",
   name = "JUnit test cases should call super methods",
   priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.JUNIT})
+  tags = {Tag.BUG, Tag.TESTS})
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
 @ActivatedByDefault

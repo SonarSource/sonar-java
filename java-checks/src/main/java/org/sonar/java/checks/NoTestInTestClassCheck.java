@@ -52,7 +52,7 @@ import java.util.List;
   key = "S2187",
   name = "TestCases should contain tests",
   priority = Priority.MAJOR,
-  tags = {Tag.CONFUSING, Tag.JUNIT, Tag.UNUSED})
+  tags = {Tag.CONFUSING, Tag.TESTS, Tag.UNUSED})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")

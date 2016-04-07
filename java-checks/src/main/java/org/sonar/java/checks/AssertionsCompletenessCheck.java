@@ -42,7 +42,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   key = "S2970",
   name = "Assertions should be complete",
   priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.TESTS, Tag.JUNIT})
+  tags = {Tag.BUG, Tag.TESTS})
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
 @SqaleConstantRemediation("5min")
