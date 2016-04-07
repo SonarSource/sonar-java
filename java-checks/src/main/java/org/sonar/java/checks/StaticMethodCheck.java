@@ -102,11 +102,16 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
       MemberSelectExpressionTree parent = (MemberSelectExpressionTree) tree.parent();
       // Exclude identifiers used in member select, except for instance creation
       // New class may use member select to denote an inner class
-      if (tree.equals(parent.identifier()) && !parentIs(parent, Tree.Kind.NEW_CLASS)) {
+      if (tree.equals(parent.identifier()) && !parentIs(parent, Tree.Kind.NEW_CLASS) && !refToEnclosingClass(tree)) {
         return;
       }
     }
     visitTerminalIdentifier(tree);
+  }
+
+  private static boolean refToEnclosingClass(IdentifierTree tree) {
+    String identifier = tree.name();
+    return "this".equals(identifier) || "super".equals(identifier);
   }
 
   private void visitTerminalIdentifier(IdentifierTree tree) {

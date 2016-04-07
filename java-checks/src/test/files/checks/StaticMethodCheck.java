@@ -22,10 +22,6 @@ class Utilities {
     otherWord = "";
   }
   
-  private void register( final Object converter, final Class<?> clazz) {
-    otherWord = "";
-  }
-
   private String getMagicWord() { // Noncompliant [[sc=18;ec=30]] {{Make "getMagicWord" a "static" method.}}
     return magicWord;
   }
@@ -206,5 +202,51 @@ static class FooBarQix {
 class Plop {
   Plop(){}
   void plop1(){}
+}
 
+class SuperClass {
+  public int bar;
+}
+
+class EnclosingInstance extends SuperClass {
+
+  interface I { boolean gul(); }
+
+  private int foo;
+
+  private void foo1() { // Compliant: use of 'EnclosingInstance.this'
+    new I() {
+      @Override
+      public boolean gul() {
+        return EnclosingInstance.this.foo == 0;
+      }
+    };
+  }
+
+  private void foo2() { // Compliant: use of 'EnclosingInstance.super'
+    new I() {
+      @Override
+      public boolean gul() {
+        return EnclosingInstance.super.bar == 0;
+      }
+    };
+  }
+
+  private void foo3() { // Compliant: use of 'EnclosingInstance.this' with fully qualified name
+    new I() {
+      @Override
+      public boolean gul() {
+        return foo.EnclosingInstance.this.foo == 0;
+      }
+    };
+  }
+
+  private void foo4() { // Compliant: use of 'EnclosingInstance.super' with fully qualified name
+    new I() {
+      @Override
+      public boolean gul() {
+        return foo.EnclosingInstance.super.bar == 0;
+      }
+    };
+  }
 }
