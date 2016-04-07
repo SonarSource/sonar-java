@@ -438,6 +438,7 @@ public final class CheckList {
       .add(NoWayOutLoopCheck.class)
       .add(ExternalizableClassConstructorCheck.class)
       .add(PrivateReadResolveCheck.class)
+      .add(RandomFloatToIntCheck.class)
       .build();
   }
 
