@@ -22,8 +22,8 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -212,10 +212,8 @@ public class StaticMethodCheck extends BaseTreeVisitor implements JavaFileScanne
         return true;
       }
       if (scope.isTypeSymbol() && symbol.isTypeSymbol()) {
-        // FIXME use erasure because Parameterized types are correctly supported!
-        // when SONARJAVA-1298 is completed, just remove ".erasure()" in the next 2 lines
-        Type scopeType = scope.type().erasure();
-        Type symbolType = symbol.type().erasure();
+        Type scopeType = scope.type();
+        Type symbolType = symbol.type();
         if (scopeType.isSubtypeOf(symbolType)) {
           return true;
         }
