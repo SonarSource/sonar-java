@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
@@ -121,14 +122,14 @@ public class TypesTest {
     ClassTree classA = (ClassTree) cut.types().get(0);
     Type varType = ((VariableTree) classA.members().get(0)).type().symbolType();
     Type a = classA.symbol().type();
-    assertThat(types.leastUpperBound(Sets.newHashSet(a))).isSameAs(a);
-    assertThat(types.leastUpperBound(Sets.newHashSet(varType))).isSameAs(varType);
+    assertThat(Types.leastUpperBound(Sets.newHashSet(a))).isSameAs(a);
+    assertThat(Types.leastUpperBound(Sets.newHashSet(varType))).isSameAs(varType);
   }
 
   @Test
   public void lub_should_fail_if_no_type_provided() {
     try {
-      types.leastUpperBound(Sets.<Type>newHashSet());
+      Types.leastUpperBound(Sets.<Type>newHashSet());
       Fail.fail("should have failed");
     } catch (Exception e) {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);
@@ -142,7 +143,7 @@ public class TypesTest {
       "class B extends Exception {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub.is("java.lang.Exception")).isTrue();
   }
@@ -157,7 +158,7 @@ public class TypesTest {
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
     Type c = typesFromInput.get(2);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b, c));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b, c));
 
     assertThat(lub.is("java.io.Serializable")).isTrue();
   }
@@ -169,7 +170,7 @@ public class TypesTest {
       "class B {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub.is("java.lang.Object")).isTrue();
   }
@@ -181,11 +182,11 @@ public class TypesTest {
       "class B extends A {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub).isSameAs(a);
 
-    lub = types.leastUpperBound(Sets.newHashSet(b, a));
+    lub = Types.leastUpperBound(Sets.newHashSet(b, a));
 
     assertThat(lub).isSameAs(a);
   }
@@ -198,7 +199,7 @@ public class TypesTest {
       "class C extends B {}");
     Type a = typesFromInput.get(0);
     Type c = typesFromInput.get(2);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, c));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, c));
 
     assertThat(lub.is("java.lang.Throwable")).isTrue();
   }
@@ -212,7 +213,7 @@ public class TypesTest {
       "interface I2 {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
 
     Type i1 = typesFromInput.get(2);
     // should be <I1 & I2>, not only i1 (first interface of first type analyzed)
@@ -228,7 +229,7 @@ public class TypesTest {
       "interface I2 {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
 
     // should be <Exception & I1 & I2>
     assertThat(lub.is("java.lang.Exception")).isTrue();
@@ -241,7 +242,7 @@ public class TypesTest {
       "class B extends UnknownException {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub.isUnknown()).isTrue();
   }
@@ -255,7 +256,7 @@ public class TypesTest {
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
 
-    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
     assertThat(lub).isSameAs(a.symbol().superClass());
 
     typesFromInput = declaredTypes(
@@ -263,12 +264,11 @@ public class TypesTest {
       "class B extends A<String> {}");
     a = typesFromInput.get(0);
     b = typesFromInput.get(1);
-    lub = types.leastUpperBound(Sets.newHashSet(a, b));
+    lub = Types.leastUpperBound(Sets.newHashSet(a, b));
     assertThat(lub).isSameAs(a);
     // FIXME : should be the other way around but we don't care about type parameter in lub for now.
     assertThat(lub).isSameAs(b.symbol().superClass().erasure());
     assertThat(lub).isNotSameAs(b.symbol().superClass());
-
   }
 
   private static List<Type> declaredTypes(String... lines) {

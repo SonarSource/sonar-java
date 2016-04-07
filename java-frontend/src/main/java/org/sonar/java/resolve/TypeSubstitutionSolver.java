@@ -148,13 +148,9 @@ public class TypeSubstitutionSolver {
   }
 
   private JavaType substituteInWildCardType(JavaType.WildCardType wildcard, TypeSubstitution substitution) {
-    JavaType substitutedType = substitution.substitutedType(wildcard.bound);
-    if (substitutedType != null) {
+    JavaType substitutedType = applySubstitution(wildcard.bound, substitution);
+    if (substitutedType != wildcard.bound) {
       return parametrizedTypeCache.getWildcardType(substitutedType, wildcard.boundType);
-    }
-    JavaType newBound = applySubstitution(wildcard.bound, substitution);
-    if (newBound != wildcard.bound) {
-      return parametrizedTypeCache.getWildcardType(newBound, wildcard.boundType);
     }
     return wildcard;
   }
@@ -166,8 +162,8 @@ public class TypeSubstitutionSolver {
       rootElementType = ((JavaType.ArrayJavaType) rootElementType).elementType;
       nbDimensions++;
     }
-    JavaType substitutedType = substitution.substitutedType(rootElementType);
-    if (substitutedType != null) {
+    JavaType substitutedType = applySubstitution(rootElementType, substitution);
+    if (substitutedType != rootElementType) {
       // FIXME SONARJAVA-1574 a new array type should not be created but reused if already existing for the current element type
       for (int i = 0; i < nbDimensions; i++) {
         substitutedType = new JavaType.ArrayJavaType(substitutedType, symbols.arrayClass);
