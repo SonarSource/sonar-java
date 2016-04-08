@@ -27,7 +27,7 @@ public class ConstructorInjectionCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/ConstructorInjectionCheck.java", new ConstructorInjectionCheck());
-    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ConstructorInjectionCheck.java", new CallOuterPrivateMethodCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/ConstructorInjectionCheck.java", new ConstructorInjectionCheck());
   }
 
 }

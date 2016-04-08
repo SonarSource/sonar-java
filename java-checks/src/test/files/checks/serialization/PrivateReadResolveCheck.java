@@ -35,3 +35,10 @@ public class Fruit5 {
   private Object readResolve() throws ObjectStreamException  // compliant, Fruit5 is not a subtype of Serializable
   {}
 }
+public class Fruit6 implements Serializable {
+  private static final long serialVersionUID = 1;
+
+  private Object readResolve(int a) throws ObjectStreamException  // compliant, not read resolve method
+  {}
+  void foo() {}
+}
