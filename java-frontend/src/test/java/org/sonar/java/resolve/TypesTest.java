@@ -236,6 +236,25 @@ public class TypesTest {
   }
 
   @Test
+  public void lub_select_best_return_first_classes_then_interfaces_ordered_alphabetically() {
+    List<Type> typesFromInput = declaredTypes(
+      "class A {}",
+      "class B {}",
+      "interface I1 {}",
+      "interface I2 {}");
+    Type a = typesFromInput.get(0);
+    Type b = typesFromInput.get(1);
+    Type i1 = typesFromInput.get(2);
+    Type i2 = typesFromInput.get(3);
+
+    Type best = Types.best(Lists.newArrayList(i1, a, b, i2));
+    assertThat(best.is("A")).isTrue();
+
+    best = Types.best(Lists.newArrayList(i2, i1));
+    assertThat(best.is("I1")).isTrue();
+  }
+
+  @Test
   public void lub_with_unknown_inheritance() {
     List<Type> typesFromInput = declaredTypes(
       "class A extends Exception {}",

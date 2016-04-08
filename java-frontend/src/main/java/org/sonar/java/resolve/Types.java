@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -115,7 +116,6 @@ public class Types {
       }
     }
 
-
     List<Set<Type>> supertypes = supertypes(types);
 
     List<Type> candidates = intersection(supertypes);
@@ -127,7 +127,8 @@ public class Types {
     return best(minimalCandidates);
   }
 
-  private static Type best(List<Type> minimalCandidates) {
+  @VisibleForTesting
+  static Type best(List<Type> minimalCandidates) {
     Collections.sort(minimalCandidates, new Comparator<Type>() {
       // Sort minimal candidates by name with classes before interfaces, to guarantee always the same type is returned when approximated.
       @Override
@@ -162,9 +163,6 @@ public class Types {
 }
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {
-    if (supertypes.isEmpty()) {
-      return Collections.emptyList();
-    }
     List<Type> results = new LinkedList<>(supertypes.get(0));
     for (int i = 1; i < supertypes.size(); i++) {
       results.retainAll(supertypes.get(i));
