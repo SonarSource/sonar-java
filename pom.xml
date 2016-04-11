@@ -12,9 +12,10 @@
   <artifactId>java</artifactId>
   <version>3.13-SNAPSHOT</version>
   <packaging>pom</packaging>
-
   <name>SonarQube Java</name>
   <inceptionYear>2012</inceptionYear>
+  <description>SonarQube Java Analyzer</description>
+  <url>http://redirect.sonarsource.com/plugins/java.html</url>
   <organization>
     <name>SonarSource</name>
     <url>http://www.sonarsource.com</url>
@@ -65,8 +66,8 @@
     <url>https://jira.sonarsource.com/browse/SONARJAVA</url>
   </issueManagement>
   <ciManagement>
-    <system>Cloudbees</system>
-    <url>https://sonarplugins.ci.cloudbees.com/job/sonar-java/</url>
+    <system>Travis</system>
+    <url>https://travis-ci.org/SonarSource/sonar-java</url>
   </ciManagement>
 
   <properties>
