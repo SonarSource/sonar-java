@@ -21,6 +21,7 @@ package org.sonar.java.ast.visitors;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
+
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -52,7 +53,17 @@ public class AccessorsUtilsTest {
 
   @Test
   public void boolean_method_named_properly_is_getter() {
-    assertThat(isAccessor("class T { private  boolean a; public boolean isA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private boolean a; public boolean isA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private Boolean a; public Boolean isA() { return a; } }")).isTrue();
+    assertThat(isAccessor("class T { private Boolean a; public java.lang.Boolean isA() { return a; } }")).isTrue();
+
+    assertThat(isAccessor("class T { private Boolean a; public foo.Boolean isA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private Boolean a; public org.foo.Boolean isA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private Integer a; public java.lang.Integer isA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private Boolean a; public org.lang.Boolean isA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private Boolean a; public java.foo.Boolean isA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private Boolean a; public Boolean<Integer> isA() { return a; } }")).isFalse();
+    assertThat(isAccessor("class T { private Boolean a; public void isA() { return a; } }")).isFalse();
   }
 
   @Test
@@ -127,6 +138,7 @@ public class AccessorsUtilsTest {
   public void accessor_should_be_public() {
     assertThat(isAccessor("class T { private int a; void setA(int a) { this.a=a; } }")).isFalse();
     assertThat(isAccessor("class T { private int a; public void setA(int a) { this.a=a; } }")).isTrue();
+    assertThat(isAccessor("class T { private Boolean a; public void setA(Boolean a) { this.a=a; } }")).isTrue();
   }
 
   private boolean isAccessor(String code) {

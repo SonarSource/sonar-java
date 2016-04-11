@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
@@ -71,7 +72,7 @@ public class AccessorsUtils {
 
   private static boolean isBooleanGetter(MethodTree methodTree) {
     return methodTree.simpleName().name().startsWith("is")
-        && returnTypeIs(methodTree, "boolean");
+        && (returnTypeIs(methodTree, "boolean") || returnTypeIsJavaLangBoolean(methodTree));
   }
 
   private static boolean isValidGetter(MethodTree methodTree) {
@@ -120,4 +121,27 @@ public class AccessorsUtils {
     Tree returnType = methodTree.returnType();
     return returnType != null && returnType.is(Tree.Kind.PRIMITIVE_TYPE) && expectedReturnType.equals(((PrimitiveTypeTree) returnType).keyword().text());
   }
+
+  private static boolean returnTypeIsJavaLangBoolean(MethodTree methodTree) {
+    TypeTree returnType = methodTree.returnType();
+    if (returnType != null) {
+      if (isIdentifierWithValue(returnType, "Boolean")) {
+        return true;
+      } else if (returnType.is(Tree.Kind.MEMBER_SELECT)) {
+        MemberSelectExpressionTree mset = (MemberSelectExpressionTree) returnType;
+        ExpressionTree expression = mset.expression();
+        return isIdentifierWithValue(mset.identifier(), "Boolean")
+          && expression.is(Tree.Kind.MEMBER_SELECT)
+          && isIdentifierWithValue(((MemberSelectExpressionTree) expression).expression(), "java")
+          && isIdentifierWithValue(((MemberSelectExpressionTree) expression).identifier(), "lang");
+
+      }
+    }
+    return false;
+  }
+
+  private static boolean isIdentifierWithValue(Tree tree, String value) {
+    return tree.is(Tree.Kind.IDENTIFIER) && value.equals(((IdentifierTree) tree).identifierToken().text());
+  }
+
 }
