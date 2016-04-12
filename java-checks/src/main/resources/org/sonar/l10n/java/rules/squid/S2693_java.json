@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "Synchronization related reliability",
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [
     "multi-threading",
     "pitfall"

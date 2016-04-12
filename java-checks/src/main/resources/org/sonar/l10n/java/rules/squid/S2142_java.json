@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "Exception handling",
+  "sqaleSubCharac": "EXCEPTION_HANDLING",
   "tags": [
     "multi-threading",
     "bug",

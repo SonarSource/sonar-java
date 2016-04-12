@@ -9,7 +9,7 @@
     "linearDesc": "per extra [\"break\" or \"continue\"|\"CONTINUE\", \"EXIT\", \"CHECK\"] statement",
     "linearFactor": "20min"
   },
-  "sqaleSubCharac": "Understandability",
+  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "brain-overload"
   ],

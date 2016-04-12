@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "20mn"
   },
-  "sqaleSubCharac": "Processor use",
+  "sqaleSubCharac": "CPU_EFFICIENCY",
   "tags": [
     "multi-threading",
     "performance"

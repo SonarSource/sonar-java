@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "Software related portability",
+  "sqaleSubCharac": "SOFTWARE_RELATED_PORTABILITY",
   "tags": [
     "cert",
     "obsolete",

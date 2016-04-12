@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "Instruction related reliability",
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
     "cert",
     "bug"

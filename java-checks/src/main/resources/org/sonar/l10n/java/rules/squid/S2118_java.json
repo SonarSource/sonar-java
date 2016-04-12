@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "Data related reliability",
+  "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [
     "serialization",
     "bug"

@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "Logic related reliability",
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [
     "bug"
   ],

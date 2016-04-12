@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "10mn"
   },
-  "sqaleSubCharac": "Architecture related reliability",
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [
     "cert",
     "pitfall"

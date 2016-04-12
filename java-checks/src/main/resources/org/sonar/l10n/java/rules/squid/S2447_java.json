@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "Instruction related reliability",
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
     "pitfall"
   ],

@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "Logic related changeability",
+  "sqaleSubCharac": "LOGIC_CHANGEABILITY",
   "tags": [
     "brain-overload"
   ],

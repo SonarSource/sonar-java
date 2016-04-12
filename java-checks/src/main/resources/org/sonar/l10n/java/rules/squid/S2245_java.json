@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "10mn"
   },
-  "sqaleSubCharac": "Security features",
+  "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [
     "cert",
     "security",

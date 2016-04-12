@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "2mn"
   },
-  "sqaleSubCharac": "Readability",
+  "sqaleSubCharac": "READABILITY",
   "tags": [
     "misra",
     "cwe"

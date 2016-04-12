@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "1h"
   },
-  "sqaleSubCharac": "Understandability",
+  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "error-handling"
   ],

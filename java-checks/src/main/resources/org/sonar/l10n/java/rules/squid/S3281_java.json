@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "Architecture related reliability",
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [
     "bug"
   ],

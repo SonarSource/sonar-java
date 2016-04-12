@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5mn"
   },
-  "sqaleSubCharac": "Processor use",
+  "sqaleSubCharac": "CPU_EFFICIENCY",
   "tags": [
     "cert",
     "error-handling",

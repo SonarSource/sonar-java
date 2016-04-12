@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "1min"
   },
-  "sqaleSubCharac": "Understandability",
+  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "clumsy"
   ],

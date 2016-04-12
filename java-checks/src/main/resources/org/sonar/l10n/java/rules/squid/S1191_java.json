@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "1h"
   },
-  "sqaleSubCharac": "Compiler related portability",
+  "sqaleSubCharac": "COMPILER_RELATED_PORTABILITY",
   "tags": [
     "lock-in",
     "pitfall"

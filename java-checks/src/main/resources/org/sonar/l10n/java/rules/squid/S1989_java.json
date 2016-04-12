@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "Errors",
+  "sqaleSubCharac": "ERRORS",
   "tags": [
     "cert",
     "error-handling",

@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "10mn"
   },
-  "sqaleSubCharac": "Logic related reliability",
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [
     "suspicious",
     "cert",

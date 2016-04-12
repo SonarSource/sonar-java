@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "30min"
   },
-  "sqaleSubCharac": "Instruction related reliability",
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
     "suspicious"
   ],

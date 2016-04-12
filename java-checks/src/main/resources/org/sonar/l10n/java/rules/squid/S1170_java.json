@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "2mn"
   },
-  "sqaleSubCharac": "Memory use",
+  "sqaleSubCharac": "MEMORY_EFFICIENCY",
   "tags": [
     "convention"
   ],

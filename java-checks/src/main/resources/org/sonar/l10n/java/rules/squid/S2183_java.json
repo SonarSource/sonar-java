@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "Understandability",
+  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "cert",
     "bug"

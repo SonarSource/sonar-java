@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "Readability",
+  "sqaleSubCharac": "READABILITY",
   "tags": [
     "tests",
     "unused"

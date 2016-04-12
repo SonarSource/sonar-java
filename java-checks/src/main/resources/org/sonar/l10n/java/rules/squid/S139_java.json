@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "1mn"
   },
-  "sqaleSubCharac": "Readability",
+  "sqaleSubCharac": "READABILITY",
   "tags": [
     "convention"
   ],

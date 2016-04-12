@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
@@ -27,15 +28,18 @@ import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Cardinality;
 import org.sonar.java.checks.CheckList;
+import org.sonar.squidbridge.annotations.RuleTemplate;
 import org.sonar.squidbridge.rules.ExternalDescriptionLoader;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -51,7 +55,9 @@ public class JavaRulesDefinition implements RulesDefinition {
     NewRepository repository = context
       .createRepository(CheckList.REPOSITORY_KEY, Java.KEY)
       .setName("SonarQube");
-    for (Class ruleClass : CheckList.getChecks()) {
+    List<Class> checks = CheckList.getChecks();
+    new RulesDefinitionAnnotationLoader().load(repository, Iterables.toArray(checks, Class.class));
+    for (Class ruleClass : checks) {
       newRule(ruleClass, repository);
     }
     repository.done();
@@ -67,10 +73,11 @@ public class JavaRulesDefinition implements RulesDefinition {
     if (StringUtils.isEmpty(ruleKey)) {
       throw new IllegalArgumentException("No key is defined in Rule annotation of " + ruleClass);
     }
-    NewRule rule = repository.createRule(ruleKey);
+    NewRule rule = repository.rule(ruleKey);
     if (rule == null) {
       throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository);
     }
+    rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
       throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead");
     }

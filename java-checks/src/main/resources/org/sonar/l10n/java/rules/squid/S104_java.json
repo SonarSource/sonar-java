@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "1h"
   },
-  "sqaleSubCharac": "Readability",
+  "sqaleSubCharac": "READABILITY",
   "tags": [
     "brain-overload"
   ],

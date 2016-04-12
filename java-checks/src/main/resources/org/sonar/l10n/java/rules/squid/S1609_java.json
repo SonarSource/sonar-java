@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "2mn"
   },
-  "sqaleSubCharac": "Understandability",
+  "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [
     "java8"
   ],

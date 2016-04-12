@@ -10,7 +10,7 @@
     "linearOffset": "2min",
     "linearFactor": "2min"
   },
-  "sqaleSubCharac": "Data related reliability",
+  "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [
     "design"
   ],

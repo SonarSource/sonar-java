@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "Security features",
+  "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [
     "owasp-a2",
     "security",

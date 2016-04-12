@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5mn"
   },
-  "sqaleSubCharac": "Synchronization related reliability",
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [
     "multi-threading",
     "cert",

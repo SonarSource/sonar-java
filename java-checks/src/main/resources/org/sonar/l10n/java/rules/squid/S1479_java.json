@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "30mn"
   },
-  "sqaleSubCharac": "Data related changeability",
+  "sqaleSubCharac": "DATA_CHANGEABILITY",
   "tags": [
     "brain-overload"
   ],

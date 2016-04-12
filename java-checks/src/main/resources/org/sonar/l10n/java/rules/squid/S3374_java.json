@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "Input validation and representation",
+  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
   "tags": [
     "bug",
     "cwe",

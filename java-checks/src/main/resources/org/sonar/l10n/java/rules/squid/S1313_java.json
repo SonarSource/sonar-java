@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "30mn"
   },
-  "sqaleSubCharac": "Architecture related changeability",
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [
     "cert",
     "security"

@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "Processor use",
+  "sqaleSubCharac": "CPU_EFFICIENCY",
   "tags": [
     "performance",
     "security"

@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5mn"
   },
-  "sqaleSubCharac": "API abuse",
+  "sqaleSubCharac": "API_ABUSE",
   "tags": [
     "security",
     "owasp-a9"

@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "Logic related reliability",
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [
     "pitfall",
     "misra"

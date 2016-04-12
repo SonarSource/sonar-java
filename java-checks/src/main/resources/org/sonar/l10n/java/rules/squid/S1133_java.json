@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "10min"
   },
-  "sqaleSubCharac": "Architecture related changeability",
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [
     "obsolete"
   ],

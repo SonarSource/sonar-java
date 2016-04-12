@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "20min"
   },
-  "sqaleSubCharac": "Unit tests",
+  "sqaleSubCharac": "UNIT_TESTS",
   "tags": [
     "bad-practice"
   ],

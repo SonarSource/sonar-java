@@ -10,7 +10,7 @@
     "linearOffset": "10min",
     "linearFactor": "1min"
   },
-  "sqaleSubCharac": "Unit level testability",
+  "sqaleSubCharac": "UNIT_TESTABILITY",
   "tags": [
     "brain-overload"
   ],

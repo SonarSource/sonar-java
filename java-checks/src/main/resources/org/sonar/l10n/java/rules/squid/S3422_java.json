@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "5min"
   },
-  "sqaleSubCharac": "OS related portability",
+  "sqaleSubCharac": "OS_RELATED_PORTABILITY",
   "tags": [
     "maven",
     "lock-in"

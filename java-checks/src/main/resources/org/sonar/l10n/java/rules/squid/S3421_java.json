@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "2min"
   },
-  "sqaleSubCharac": "Language related portability",
+  "sqaleSubCharac": "LANGUAGE_RELATED_PORTABILITY",
   "tags": [
     "maven",
     "obsolete"

@@ -9,7 +9,7 @@
     "func": "Constant\/Issue",
     "constantCost": "15min"
   },
-  "sqaleSubCharac": "API abuse",
+  "sqaleSubCharac": "API_ABUSE",
   "tags": [
     "cert",
     "unpredictable",

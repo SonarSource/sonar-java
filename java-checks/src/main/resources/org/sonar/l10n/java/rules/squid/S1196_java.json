@@ -8,7 +8,7 @@
     "func": "Constant\/Issue",
     "constantCost": "1d"
   },
-  "sqaleSubCharac": "Architecture related changeability",
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [
     "design"
   ],
