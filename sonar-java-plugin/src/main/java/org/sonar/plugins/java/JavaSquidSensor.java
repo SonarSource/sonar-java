@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.CoreProperties;
@@ -41,6 +42,8 @@ import org.sonar.java.Measurer;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.api.JavaUtils;
 import org.sonar.java.checks.CheckList;
+import org.sonar.java.filters.JavaIssueFilter;
+import org.sonar.java.filters.PostAnalysisIssueFilters;
 import org.sonar.java.model.JavaVersionImpl;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.bridges.DesignBridge;
@@ -63,15 +66,17 @@ public class JavaSquidSensor implements Sensor {
   private final DefaultJavaResourceLocator javaResourceLocator;
   private final Settings settings;
   private final NoSonarFilter noSonarFilter;
+  private final PostAnalysisIssueFilters javaIssueFilters;
 
   public JavaSquidSensor(JavaClasspath javaClasspath, SonarComponents sonarComponents, FileSystem fs,
-    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter) {
+    DefaultJavaResourceLocator javaResourceLocator, Settings settings, NoSonarFilter noSonarFilter, PostAnalysisIssueFilters javaIssueFilters) {
     this.noSonarFilter = noSonarFilter;
     this.javaClasspath = javaClasspath;
     this.sonarComponents = sonarComponents;
     this.fs = fs;
     this.javaResourceLocator = javaResourceLocator;
     this.settings = settings;
+    this.javaIssueFilters = javaIssueFilters;
   }
 
   @Override
@@ -84,6 +89,12 @@ public class JavaSquidSensor implements Sensor {
     javaResourceLocator.setSensorContext(context);
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
     sonarComponents.registerTestCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaTestChecks());
+
+    // register issue filters
+    Iterable<JavaIssueFilter> issueFilters = javaIssueFilters.getIssueFilters();
+    javaResourceLocator.registerIssueFilters(issueFilters);
+    sonarComponents.registerIssueFilters(issueFilters);
+
     JavaConfiguration configuration = createConfiguration();
     Measurer measurer = new Measurer(fs, context, configuration.separatesAccessorsFromMethods(), noSonarFilter);
     JavaSquid squid = new JavaSquid(configuration, sonarComponents, measurer, javaResourceLocator, sonarComponents.checkClasses());

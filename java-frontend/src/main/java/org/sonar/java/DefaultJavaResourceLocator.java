@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
@@ -31,6 +32,7 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.java.filters.JavaIssueFilter;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -52,6 +54,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   private final Map<String, Integer> methodStartLines;
   private final ResourceMapping resourceMapping;
   private SensorContext sensorContext;
+  private Iterable<JavaIssueFilter> issueFilters;
 
   public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
     this.fs = fs;
@@ -61,6 +64,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
     resourceMapping = new ResourceMapping();
+    issueFilters = ImmutableList.of();
   }
 
   public void setSensorContext(SensorContext sensorContext) {
@@ -126,19 +130,29 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     javaFilesCache.scanFile(context);
     InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));
     org.sonar.api.resources.File currentResource = (org.sonar.api.resources.File) sensorContext.getResource(inputFile);
+    String fileKey = context.getFileKey();
     if (currentResource == null) {
-      throw new IllegalStateException("resource not found : " + context.getFileKey());
+      throw new IllegalStateException("resource not found : " + fileKey);
     }
-    resourceMapping.addResource(currentResource, context.getFileKey());
+    resourceMapping.addResource(currentResource, fileKey);
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
       resourcesByClass.put(classIOFileEntry.getKey(), currentResource);
-      if (context.getFileKey() != null) {
-        sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
+      if (fileKey != null) {
+        sourceFileByClass.put(classIOFileEntry.getKey(), fileKey);
       }
     }
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
+    String componentKey = currentResource.getEffectiveKey();
     if (javaFilesCache.hasSuppressWarningLines()) {
-      suppressWarningsFilter.addComponent(currentResource.getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
+      suppressWarningsFilter.addComponent(componentKey, javaFilesCache.getSuppressWarningLines());
     }
+    for (JavaIssueFilter javaIssueFilter : issueFilters) {
+      javaIssueFilter.addComponent(fileKey, componentKey);
+      javaIssueFilter.scanFile(context);
+    }
+  }
+
+  public void registerIssueFilters(Iterable<JavaIssueFilter> issueFilters) {
+    this.issueFilters = issueFilters;
   }
 }

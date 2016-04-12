@@ -17,17 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java;
+package org.sonar.java.filters;
 
-import org.junit.Test;
+import org.sonar.api.issue.Issue;
+import org.sonar.plugins.java.api.JavaFileScanner;
 
-import static org.fest.assertions.Assertions.assertThat;
+public interface JavaIssueFilter extends JavaFileScanner {
 
-public class JavaPluginTest {
+  void addComponent(String fileKey, String componentKey);
 
-  @Test
-  public void test() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(31);
-  }
-
+  boolean accept(Issue issue);
 }

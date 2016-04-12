@@ -21,6 +21,7 @@ package org.sonar.plugins.java;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.CoreProperties;
@@ -43,6 +44,7 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.checks.naming.BadMethodNameCheck;
+import org.sonar.java.filters.PostAnalysisIssueFilters;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -65,7 +67,7 @@ public class JavaSquidSensorTest {
   public void setUp() {
     sensor = new JavaSquidSensor(new JavaClasspath(mock(Project.class),
       new Settings(), new DefaultFileSystem(null)), mock(SonarComponents.class), fileSystem,
-      mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
+      mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilters());
   }
 
   @Test
@@ -101,7 +103,8 @@ public class JavaSquidSensorTest {
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, noSonarFilter);
+    PostAnalysisIssueFilters postAnalysisIssueFilters = new PostAnalysisIssueFilters();
+    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilters);
     SensorContext context = mock(SensorContext.class);
     org.sonar.api.resources.File resource = org.sonar.api.resources.File.create(effectiveKey);
     resource.setEffectiveKey(effectiveKey);
@@ -110,7 +113,8 @@ public class JavaSquidSensorTest {
     jss.analyse(project, context);
 
     String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    verify(noSonarFilter, times(1)).addComponent(effectiveKey, Sets.newHashSet(87));
+    // method test_issues_creation_on_test_file from this test file
+    verify(noSonarFilter, times(1)).addComponent(effectiveKey, Sets.newHashSet(89));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);

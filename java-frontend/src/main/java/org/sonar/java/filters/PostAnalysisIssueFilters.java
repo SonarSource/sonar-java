@@ -17,17 +17,34 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java;
+package org.sonar.java.filters;
 
-import org.junit.Test;
+import com.google.common.collect.ImmutableList;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.sonar.api.issue.Issue;
+import org.sonar.api.issue.batch.IssueFilter;
+import org.sonar.api.issue.batch.IssueFilterChain;
 
-public class JavaPluginTest {
+public class PostAnalysisIssueFilters implements IssueFilter {
 
-  @Test
-  public void test() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(31);
+  private final Iterable<JavaIssueFilter> issueFitlers;
+
+  public PostAnalysisIssueFilters() {
+    issueFitlers = ImmutableList.<JavaIssueFilter>of(new EclipseI18NFilter());
+  }
+
+  public Iterable<JavaIssueFilter> getIssueFilters() {
+    return issueFitlers;
+  }
+
+  @Override
+  public boolean accept(Issue issue, IssueFilterChain chain) {
+    for (JavaIssueFilter javaIssueFilter : issueFitlers) {
+      if (!javaIssueFilter.accept(issue)) {
+        return false;
+      }
+    }
+    return chain.accept(issue);
   }
 
 }

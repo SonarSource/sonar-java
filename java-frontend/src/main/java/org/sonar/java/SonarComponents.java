@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
@@ -37,11 +38,13 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
+import org.sonar.java.filters.JavaIssueFilter;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +63,7 @@ public class SonarComponents implements BatchExtension {
   private final JavaClasspath javaClasspath;
   private final List<Checks<JavaCheck>> checks;
   private final List<Checks<JavaCheck>> testChecks;
+  private Iterable<JavaIssueFilter> issueFilters;
 
   public SonarComponents(FileLinesContextFactory fileLinesContextFactory, ResourcePerspectives resourcePerspectives, FileSystem fs,
     JavaClasspath javaClasspath, JavaTestClasspath javaTestClasspath, SensorContext context,
@@ -79,6 +83,7 @@ public class SonarComponents implements BatchExtension {
     this.context = context;
     this.checks = Lists.newArrayList();
     this.testChecks = Lists.newArrayList();
+    this.issueFilters = Lists.newArrayList();
 
     if (checkRegistrars != null) {
       CheckRegistrar.RegistrarContext registrarContext = new CheckRegistrar.RegistrarContext();
@@ -135,12 +140,21 @@ public class SonarComponents implements BatchExtension {
     return resourcePerspectives;
   }
 
+  public void registerIssueFilters(Iterable<JavaIssueFilter> issueFilters) {
+    this.issueFilters = issueFilters;
+  }
+
   public void registerCheckClasses(String repositoryKey, List<Class<? extends JavaCheck>> checkClasses) {
     checks.add(checkFactory.<JavaCheck>create(repositoryKey).addAnnotatedChecks(checkClasses));
   }
 
   public CodeVisitor[] checkClasses() {
     List<CodeVisitor> visitors = Lists.newArrayList();
+    // add issue filters BEFORE all the other checks
+    for (JavaIssueFilter issueFilter : issueFilters) {
+      visitors.add(issueFilter);
+    }
+
     for (Checks<JavaCheck> checksElement : checks) {
       Collection<JavaCheck> checksCollection = checksElement.all();
       if (!checksCollection.isEmpty()) {

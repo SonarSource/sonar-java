@@ -17,17 +17,30 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java;
+package org.sonar.java.filters;
 
-import org.junit.Test;
+import com.google.common.collect.ImmutableSet;
 
-import static org.fest.assertions.Assertions.assertThat;
+import org.sonar.plugins.java.api.tree.ClassTree;
 
-public class JavaPluginTest {
+import java.util.Set;
 
-  @Test
-  public void test() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(31);
+public class EclipseI18NFilter extends BaseTreeVisitorIssueFilter {
+
+  @Override
+  public Set<String> targetedRules() {
+    return ImmutableSet.of(
+      // "public static" fields should be constant
+      "S1444",
+      // Class variable fields should not have public accessibility (with legacy key)
+      "S1104", "ClassVariableVisibilityCheck");
   }
 
+  @Override
+  public void visitClass(ClassTree tree) {
+    if (tree.symbol().type().isSubtypeOf("org.eclipse.osgi.util.NLS")) {
+      ignoreIssuesInTree(tree);
+    }
+    super.visitClass(tree);
+  }
 }
