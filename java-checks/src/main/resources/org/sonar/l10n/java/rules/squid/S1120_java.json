@@ -1,0 +1,16 @@
+{
+  "title": "Source code should be indented consistently",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

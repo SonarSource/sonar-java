@@ -28,6 +28,7 @@ import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.model.PackageUtils;
 import org.sonar.java.tag.Tag;
@@ -56,6 +57,7 @@ import java.util.regex.Pattern;
   name = "Public types, methods and fields (API) should be documented with Javadoc",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
+@RspecKey("S1176")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("10min")
 public class UndocumentedApiCheck extends BaseTreeVisitor implements JavaFileScanner {

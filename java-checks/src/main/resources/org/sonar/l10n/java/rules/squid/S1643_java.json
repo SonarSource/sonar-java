@@ -1,0 +1,16 @@
+{
+  "title": "Strings should not be concatenated using '+' in a loop",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "Memory use",
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

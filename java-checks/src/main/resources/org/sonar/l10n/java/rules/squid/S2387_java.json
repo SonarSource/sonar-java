@@ -1,0 +1,16 @@
+{
+  "title": "Child class fields should not shadow parent class fields",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Data related reliability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

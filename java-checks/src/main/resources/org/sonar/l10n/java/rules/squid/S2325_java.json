@@ -1,0 +1,16 @@
+{
+  "title": "\"private\" methods that don't access instance data should be \"static\"",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Minor"
+}

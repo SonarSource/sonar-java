@@ -1,0 +1,17 @@
+{
+  "title": "Objects should be compared with \"equals()\"",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "cert",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

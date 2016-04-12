@@ -1,0 +1,18 @@
+{
+  "title": "Raw byte values should not be used in bitwise operations in combination with shifts",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

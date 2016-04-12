@@ -1,0 +1,16 @@
+{
+  "title": "Parentheses should be removed from a single lambda input parameter when its type is inferred",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Minor"
+}

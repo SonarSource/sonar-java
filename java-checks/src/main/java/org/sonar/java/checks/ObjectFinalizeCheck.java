@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -42,6 +43,7 @@ import java.util.List;
   name = "The Object.finalize() method should not be called",
   priority = Priority.CRITICAL,
   tags = {Tag.CERT, Tag.CWE, Tag.SECURITY})
+@RspecKey("S1111")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
 @SqaleConstantRemediation("20min")

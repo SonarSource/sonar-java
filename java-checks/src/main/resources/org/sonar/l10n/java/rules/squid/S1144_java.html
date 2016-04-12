@@ -1,0 +1,41 @@
+<p><code>private</code> methods that are never executed are dead code: unnecessary, inoperative code that should be removed. Cleaning out dead code decreases the size of the maintained codebase, making it easier to understand the program and preventing bugs from being introduced.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo implements Serializable
+{
+  private Foo(){}     //Compliant, private empty constructor intentionally used to prevent any direct instantiation of a class.
+  public static void doSomething(){
+    Foo foo = new Foo();
+    ...
+  }
+  private void unusedPrivateMethod(){...}
+  private void writeObject(ObjectOutputStream s){...}  //Compliant, relates to the java serialization mechanism
+  private void readObject(ObjectInputStream in){...}  //Compliant, relates to the java serialization mechanism
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo implements Serializable
+{
+  private Foo(){}     //Compliant, private empty constructor intentionally used to prevent any direct instantiation of a class.
+  public static void doSomething(){
+    Foo foo = new Foo();
+    ...
+  }
+
+  private void writeObject(ObjectOutputStream s){...}  //Compliant, relates to the java serialization mechanism
+
+  private void readObject(ObjectInputStream in){...}  //Compliant, relates to the java serialization mechanism
+}
+</pre>
+
+<h2>Exceptions</h2>
+<p>This rule doesn't raise any issue on annotated methods.</p>
+
+<h2>See</h2>
+<ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/x/OYIyAQ">CERT, MSC07-CPP.</a> - Detect and remove dead code
+</li></ul>
+

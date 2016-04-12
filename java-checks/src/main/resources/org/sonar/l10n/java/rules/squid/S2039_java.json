@@ -1,0 +1,16 @@
+{
+  "title": "Member variable visibility should be specified",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "security"
+  ],
+  "defaultSeverity": "Critical"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Child class methods named for parent class methods should be overrides",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "Architecture related reliability",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

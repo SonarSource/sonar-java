@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -37,6 +38,7 @@ import java.util.List;
   name = "Strings should be compared using \"equals()\"",
   priority = Priority.CRITICAL,
   tags = {Tag.CWE})
+@RspecKey("S1127")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")
 public class StringEqualityComparisonCheck extends IssuableSubscriptionVisitor {

@@ -1,0 +1,17 @@
+{
+  "title": "Unused \"private\" methods should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "cert",
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

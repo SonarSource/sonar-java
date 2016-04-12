@@ -1,0 +1,16 @@
+{
+  "title": "Array designators \"[]\" should be on the type, not the variable",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

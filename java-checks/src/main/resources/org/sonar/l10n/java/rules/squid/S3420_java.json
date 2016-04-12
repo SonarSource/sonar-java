@@ -1,0 +1,17 @@
+{
+  "title": "Artifact ids should follow a naming convention",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "maven",
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

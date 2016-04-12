@@ -1,0 +1,19 @@
+{
+  "title": "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15mn"
+  },
+  "sqaleSubCharac": "Security features",
+  "tags": [
+    "sans-top25-porous",
+    "security",
+    "cwe",
+    "owasp-a6"
+  ],
+  "defaultSeverity": "Blocker"
+}

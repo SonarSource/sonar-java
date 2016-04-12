@@ -25,6 +25,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
@@ -53,6 +54,7 @@ import java.util.List;
   name = "Source code should be indented consistently",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
+@RspecKey("S1120")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class IndentationCheck extends IssuableSubscriptionVisitor {

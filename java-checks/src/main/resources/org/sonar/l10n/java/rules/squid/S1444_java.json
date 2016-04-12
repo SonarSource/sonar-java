@@ -1,0 +1,19 @@
+{
+  "title": "\"public static\" fields should be constant",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "Security features",
+  "tags": [
+    "cert",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

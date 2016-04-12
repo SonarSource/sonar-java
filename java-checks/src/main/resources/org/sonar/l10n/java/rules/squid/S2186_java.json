@@ -1,0 +1,18 @@
+{
+  "title": "JUnit assertions should not be used in \"run\" methods",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "Unit level testability",
+  "tags": [
+    "tests",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

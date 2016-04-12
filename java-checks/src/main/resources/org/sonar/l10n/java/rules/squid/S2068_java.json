@@ -1,0 +1,21 @@
+{
+  "title": "Credentials should not be hard-coded",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "Security features",
+  "tags": [
+    "cert",
+    "sans-top25-porous",
+    "owasp-a2",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

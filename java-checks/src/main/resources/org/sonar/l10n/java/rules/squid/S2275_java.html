@@ -1,0 +1,40 @@
+<p>Because <code>printf</code>-style format strings are interpreted at runtime, rather than validated by the Java compiler, they can contain errors that lead to unexpected behavior or runtime errors. This rule statically validates the good behavior of <code>printf</code>-style formats when calling the <code>format(...)</code> methods of <code>java.util.Formatter</code>, <code>java.lang.String</code>, <code>java.io.PrintStream</code> and <code>java.io.PrintWriter</code> classes and the <code>printf(...)</code> methods of <code>java.io.PrintStream</code> or <code>java.io.PrintWriter</code> classes. </p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+String.format("The value of my integer is %d", "Hello World");  // Noncompliant; an 'int' is expected rather than a String
+String.format("First {0} and then {1}", "foo", "bar");  //Noncompliant. Looks like there is a confusion with the use of {{java.text.MessageFormat}}, parameters "foo" and "bar" will be simply ignored here
+String.format("Duke's Birthday year is %tX", c);  //Noncompliant; X is not a supported time conversion character
+String.format("Display %3$d and then %d", 1, 2, 3);   //Noncompliant; the second argument '2' is unused
+String.format("Display %0$d and then %d", 1);   //Noncompliant; arguments are numbered starting from 1
+String.format("Too many arguments %d and %d", 1, 2, 3);  //Noncompliant; the third argument '3' is unused
+String.format("Not enough arguments %d and %d", 1);  //Noncompliant; the second argument is missing
+String.format("First Line\n");   //Noncompliant; %n should be used in place of \n to produce the platform-specific line separator
+String.format("%&lt; is equals to %d", 2);   //Noncompliant; the argument index '&lt;' refers to the previous format specifier but there isn't one
+String.format("Is myObject null ? %b", myObject);   //Noncompliant; when a non-boolean argument is formatted with %b, it prints true for any nonnull value, and false for null. Even if intended, this is misleading. It's better to directly inject the boolean value (myObject == null in this case)
+String.format("value is " + value); // Noncompliant
+String s = String.format("string without arguments"); // Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+String.format("The value of my integer is %d", 3);
+String.format("First %s and then %s", "foo", "bar");
+String.format("Duke's Birthday year is %tY", c);
+String.format("Display %2$d and then %d", 1, 3);
+String.format("Display %1$d and then %d", 1);
+String.format("Too many arguments %d %d", 1, 2);
+String.format("Not enough arguments %d and %d", 1, 2);
+String.format("First Line%n");
+String.format("%d is equals to %&lt;", 2);
+String.format("Is myObject null ? %b", myObject == null);
+String.format("value is %d", value);
+String s = "string without arguments"; 
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/x/wQA1">CERT, FIO47-C.</a> - Use valid format strings
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/e4EyAQ">CERT, FIO00-CPP.</a> - Take care when creating format strings
+</li></ul>
+

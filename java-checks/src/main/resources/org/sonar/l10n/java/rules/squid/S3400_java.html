@@ -1,0 +1,17 @@
+<p>There's no point in forcing the overhead of a method call for a method that always returns the same constant value. Even worse, the fact that a method call must be made will likely mislead developers who call the method into thinking that something more is done. Declare a constant instead. This rule raises an issue if an only if the method contains only one  statement: the <code>return</code> statement and when the returned value is a constant. </p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public int getBestNumber() {
+  return 12;  // Noncompliant
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public static int bestNumber = 12;
+</pre>
+
+<h2>Exceptions</h2>
+<p><code>@Override</code> methods are ignored by this rule, since they may be required by an interface or needed to replace the value returned by a parent class.</p>
+

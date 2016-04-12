@@ -1,0 +1,16 @@
+{
+  "title": "Exception classes should be immutable",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Exception handling",
+  "tags": [
+    "error-handling"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Classes and enums with private members should have a constructor",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

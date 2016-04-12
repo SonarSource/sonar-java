@@ -1,0 +1,16 @@
+{
+  "title": "An abstract class should have both abstract and concrete methods",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Classes and methods that rely on the default system encoding should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Architecture related reliability",
+  "tags": [
+    "cert",
+    "unpredictable"
+  ],
+  "defaultSeverity": "Major"
+}

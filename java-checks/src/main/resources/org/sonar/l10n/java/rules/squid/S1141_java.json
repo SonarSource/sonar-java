@@ -1,0 +1,16 @@
+{
+  "title": "Try-catch blocks should not be nested",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

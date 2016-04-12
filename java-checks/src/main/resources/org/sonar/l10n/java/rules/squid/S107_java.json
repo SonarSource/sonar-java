@@ -1,0 +1,16 @@
+{
+  "title": "Methods should not have too many parameters",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Unit level testability",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

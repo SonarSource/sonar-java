@@ -1,0 +1,19 @@
+{
+  "title": "Equality operators should not be used in \"for\" loop termination conditions",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "suspicious",
+    "cert",
+    "misra",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

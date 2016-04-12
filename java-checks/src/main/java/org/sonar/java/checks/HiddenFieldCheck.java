@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
@@ -52,6 +53,7 @@ import java.util.List;
   name = "Local variables should not shadow class fields",
   priority = Priority.MAJOR,
   tags = {Tag.PITFALL})
+@RspecKey("S1117")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
 @SqaleConstantRemediation("5min")

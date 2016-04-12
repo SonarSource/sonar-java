@@ -1,0 +1,12 @@
+{
+  "title": "Custom resources should be closed",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "tags": [
+    "security",
+    "denial-of-service"
+  ],
+  "defaultSeverity": "Critical"
+}

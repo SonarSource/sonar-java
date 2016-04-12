@@ -1,0 +1,16 @@
+{
+  "title": "Classes with only \"static\" methods should not be instantiated",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

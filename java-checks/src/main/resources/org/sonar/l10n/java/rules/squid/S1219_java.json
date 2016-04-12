@@ -1,0 +1,17 @@
+{
+  "title": "\"switch\" statements should not contain non-case labels",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "suspicious",
+    "misra"
+  ],
+  "defaultSeverity": "Major"
+}

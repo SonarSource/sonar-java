@@ -1,0 +1,16 @@
+{
+  "title": "Lambdas should be replaced with method references",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Minor"
+}

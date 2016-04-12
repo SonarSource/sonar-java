@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.checks.AbstractBadFieldNameChecker;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.tag.Tag;
@@ -37,6 +38,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
   name = "Field names should comply with a naming convention",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
+@RspecKey("S116")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("2min")

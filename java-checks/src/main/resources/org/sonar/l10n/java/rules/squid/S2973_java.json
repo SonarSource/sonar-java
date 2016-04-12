@@ -1,0 +1,16 @@
+{
+  "title": "Escaped Unicode characters should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

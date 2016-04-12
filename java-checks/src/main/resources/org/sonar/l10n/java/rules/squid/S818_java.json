@@ -1,0 +1,19 @@
+{
+  "title": "Literal suffixes should be upper case",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "cert",
+    "pitfall",
+    "convention",
+    "misra"
+  ],
+  "defaultSeverity": "Minor"
+}

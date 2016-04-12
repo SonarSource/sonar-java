@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.server.rule.RulesDefinitionAnnotationLoader;
+import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -33,7 +34,9 @@ import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -99,9 +102,20 @@ public class CheckListTest {
   @Test
   public void test() {
     List<Class> checks = CheckList.getChecks();
+    Map<String, String> keyMap = new HashMap<>();
     for (Class cls : checks) {
       String testName = '/' + cls.getName().replace('.', '/') + "Test.class";
       String simpleName = cls.getSimpleName();
+      // Handle legacy keys.
+      org.sonar.java.RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(cls, org.sonar.java.RspecKey.class);
+      org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, org.sonar.check.Rule.class);
+      String key = ruleAnnotation.key();
+      if (rspecKeyAnnotation != null) {
+        System.out.println(key);
+        key = rspecKeyAnnotation.value();
+        System.out.println(key);
+      }
+      keyMap.put(ruleAnnotation.key(), key);
       if (SE_CHEKS.contains(simpleName)) {
         continue;
       }
@@ -121,9 +135,8 @@ public class CheckListTest {
       assertThat(names).as("Duplicate name " + rule.key() + " : " + rule.name()).excludes(rule.name());
       keys.add(rule.key());
       names.add(rule.name());
-
-      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + rule.key() + ".html"))
-        .overridingErrorMessage("No description for " + rule.key())
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.html"))
+        .overridingErrorMessage("No description for " + rule.key()+ " " +keyMap.get(rule.key()))
         .isNotNull();
 
       assertThat(rule.htmlDescription()).isNull();

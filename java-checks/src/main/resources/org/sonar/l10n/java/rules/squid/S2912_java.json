@@ -1,0 +1,16 @@
+{
+  "title": "\"indexOf\" checks should use a start position",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

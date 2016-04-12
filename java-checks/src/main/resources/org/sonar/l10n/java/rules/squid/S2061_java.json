@@ -1,0 +1,18 @@
+{
+  "title": "Custom serialization method signatures should meet requirements",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Data related reliability",
+  "tags": [
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

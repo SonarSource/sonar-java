@@ -1,0 +1,17 @@
+{
+  "title": "Collections.emptyList(), emptyMap() and emptySet() should be used instead of Collections.EMPTY_LIST, EMPTY_MAP and EMPTY_SET",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "obsolete",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

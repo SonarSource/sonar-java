@@ -1,0 +1,20 @@
+{
+  "title": "Classes should not be compared by name",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "cert",
+    "bug",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

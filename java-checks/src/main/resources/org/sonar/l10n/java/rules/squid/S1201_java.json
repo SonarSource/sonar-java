@@ -1,0 +1,16 @@
+{
+  "title": "Methods named \"equals\" should override Object.equals(Object)",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "Architecture related reliability",
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major"
+}

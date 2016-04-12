@@ -1,0 +1,16 @@
+{
+  "title": "Labels should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

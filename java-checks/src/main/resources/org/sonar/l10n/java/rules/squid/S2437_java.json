@@ -1,0 +1,16 @@
+{
+  "title": "Silly bit operations should not be performed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major"
+}

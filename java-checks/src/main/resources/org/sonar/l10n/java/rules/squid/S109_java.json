@@ -1,0 +1,16 @@
+{
+  "title": "Magic numbers should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Data related changeability",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Minor"
+}

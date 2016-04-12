@@ -1,0 +1,72 @@
+<p>Applications that execute SQL commands should neutralize any externally-provided values used in those commands. Failure to do so could allow an attacker to include input that changes the query so that unintended commands are executed, or sensitive data is exposed.</p>
+<p>This rule checks that method parameters are not used directly in non-Hibernate SQL statements, and that parameter binding, rather than concatenation is used in Hibernate statements.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public User getUser(Connection con, String user) throws SQLException {
+
+  Statement stmt1 = null;
+  Statement stmt2 = null;
+  PreparedStatement pstmt;
+  try {
+    stmt1 = con.createStatement();
+    ResultSet rs1 = stmt1.executeQuery("GETDATE()"); // Compliant; parameters not used here
+
+    stmt2 = con.createStatement();
+    ResultSet rs2 = stmt2.executeQuery("select FNAME, LNAME, SSN " +
+                 "from USERS where UNAME=" + user);  // Noncompliant; parameter concatenated directly into query
+
+    pstmt = con.prepareStatement("select FNAME, LNAME, SSN " +
+                 "from USERS where UNAME=" + user);  // Noncompliant; parameter concatenated directly into query
+    ResultSet rs3 = pstmt.executeQuery();
+
+    //...
+}
+
+public User getUserHibernate(org.hibernate.Session session, String userInput) {
+
+  org.hibernate.Query query = session.createQuery(  // Compliant
+            "FROM students where fname = " + userInput);  // Noncompliant; parameter binding should be used instead
+  // ...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public User getUser(Connection con, String user) throws SQLException {
+
+  Statement stmt1 = null;
+  PreparedStatement pstmt = null;
+  String query = "select FNAME, LNAME, SSN " +
+                 "from USERS where UNAME=?"
+  try {
+    stmt1 = con.createStatement();
+    ResultSet rs1 = stmt1.executeQuery("GETDATE()");
+
+    pstmt = con.prepareStatement(query);
+    pstmt.setString(1, user);  // Compliant; PreparedStatements escape their inputs.
+    ResultSet rs2 = pstmt.executeQuery();
+
+    //...
+  }
+}
+
+public User getUserHibernate(org.hibernate.Session session, String userInput) {
+
+  org.hibernate.Query query =  session.createQuery("FROM students where fname = ?");
+  query = query.setParameter(0,userInput);  // Parameter binding escapes all input
+  // ...
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/89">MITRE, CWE-89</a> - Improper Neutralization of Special Elements used in an SQL Command
+</li><li> <a href="http://cwe.mitre.org/data/definitions/564.html">MITRE, CWE-564</a> - SQL Injection: Hibernate
+</li><li> <a href="http://cwe.mitre.org/data/definitions/20.html">MITRE, CWE-20</a> - Improper Input Validation
+</li><li> <a href="http://cwe.mitre.org/data/definitions/943.html">MITRE, CWE-943</a> - Improper Neutralization of Special Elements in Data Query Logic
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/PgIRAg">CERT, IDS00-J.</a> - Prevent SQL injection
+</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A1-Injection">OWASP Top Ten 2013 Category A1</a> - Injection
+</li><li> <a href="http://www.sans.org/top25-software-errors/">SANS Top 25</a> - Insecure Interaction Between Components
+</li><li> Derived from FindSecBugs rules <a href="http://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JPA">Potential SQL/JPQL Injection (JPA)</a>, <a href="http://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_JDO">Potential SQL/JDOQL Injection (JDO)</a>, <a href="http://h3xstream.github.io/find-sec-bugs/bugs.htm#SQL_INJECTION_HIBERNATE">Potential SQL/HQL Injection (Hibernate)</a>
+</li></ul>
+

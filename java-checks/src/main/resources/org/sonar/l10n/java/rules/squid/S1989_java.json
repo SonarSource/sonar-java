@@ -1,0 +1,21 @@
+{
+  "title": "Exceptions should not be thrown from servlet methods",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Errors",
+  "tags": [
+    "cert",
+    "error-handling",
+    "security",
+    "cwe",
+    "owasp-a6"
+  ],
+  "defaultSeverity": "Critical"
+}

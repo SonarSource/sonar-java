@@ -1,0 +1,16 @@
+{
+  "title": "\"indexOf\" checks should not be for positive numbers",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major"
+}

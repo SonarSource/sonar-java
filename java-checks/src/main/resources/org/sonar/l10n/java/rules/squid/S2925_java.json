@@ -1,0 +1,16 @@
+{
+  "title": "\"Thread.sleep\" should not be used in tests",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Unit tests",
+  "tags": [
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major"
+}

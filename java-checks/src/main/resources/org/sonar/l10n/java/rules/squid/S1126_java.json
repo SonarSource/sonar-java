@@ -1,0 +1,16 @@
+{
+  "title": "Return of boolean expressions should not be wrapped into an \"if-then-else\" statement",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

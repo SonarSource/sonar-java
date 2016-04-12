@@ -1,0 +1,16 @@
+{
+  "title": "Nested blocks of code should not be left empty",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major"
+}

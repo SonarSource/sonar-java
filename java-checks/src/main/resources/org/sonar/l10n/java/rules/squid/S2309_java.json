@@ -1,0 +1,16 @@
+{
+  "title": "Files should not be empty",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

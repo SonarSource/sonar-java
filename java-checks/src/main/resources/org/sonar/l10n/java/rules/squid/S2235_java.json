@@ -1,0 +1,18 @@
+{
+  "title": "IllegalMonitorStateException should not be caught",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "Architecture related reliability",
+  "tags": [
+    "multi-threading",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

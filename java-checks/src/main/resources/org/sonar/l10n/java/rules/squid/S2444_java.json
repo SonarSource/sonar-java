@@ -1,0 +1,17 @@
+{
+  "title": "Lazy initialization of \"static\" fields should be \"synchronized\"",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "Synchronization related reliability",
+  "tags": [
+    "multi-threading",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

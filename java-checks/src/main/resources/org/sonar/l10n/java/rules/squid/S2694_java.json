@@ -1,0 +1,16 @@
+{
+  "title": "Inner classes which do not reference their owning classes should be \"static\"",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Memory use",
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -23,6 +23,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.CharsetAwareVisitor;
+import org.sonar.java.RspecKey;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -42,6 +43,7 @@ import java.util.List;
   name = "Files should contain an empty new line at the end",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
+@RspecKey("S113")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")
 public class MissingNewLineAtEndOfFileCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {

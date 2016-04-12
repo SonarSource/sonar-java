@@ -1,0 +1,19 @@
+{
+  "title": "Silly equality checks should not be made",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "cert",
+    "bug",
+    "unused"
+  ],
+  "defaultSeverity": "Critical"
+}

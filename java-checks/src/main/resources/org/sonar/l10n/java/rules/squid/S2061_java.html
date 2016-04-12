@@ -1,0 +1,51 @@
+<p>Writers of <code>Serializable</code> classes can choose to let Java's automatic mechanisms handle serialization and deserialization, or they can choose to handle it themselves by implementing specific methods. However, if the signatures of those methods are not exactly what is expected, they will be ignored and the default serialization mechanisms will kick back in. </p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Watermelon implements Serializable {
+  // ...
+  void writeObject(java.io.ObjectOutputStream out)// Noncompliant; not private
+        throws IOException  
+  {...}
+
+  private void readObject(java.io.ObjectInputStream in)
+  {...}
+
+  public void readObjectNoData()  // Noncompliant; not private 
+  {...}
+
+  static Object readResolve() throws ObjectStreamException  // Noncompliant; this method may have any access modifier, may not be static
+
+  Watermelon writeReplace() throws ObjectStreamException // Noncompliant; this method may have any access modifier, but must return Object
+  {...}
+} 
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Watermelon implements Serializable {
+  // ...
+  private void writeObject(java.io.ObjectOutputStream out) 
+        throws IOException 
+  {...}
+
+  private void readObject(java.io.ObjectInputStream in)
+        throws IOException, ClassNotFoundException
+  {...}
+
+  private void readObjectNoData()
+        throws ObjectStreamException
+  {...}
+
+  protected Object readResolve() throws ObjectStreamException
+  {...}
+
+  private Object writeReplace() throws ObjectStreamException
+  {...}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/x/4gAMAg">CERT, SER01-J.</a> - Do not deviate from the proper signatures of serialization methods
+</li></ul>
+

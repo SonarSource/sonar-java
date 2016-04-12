@@ -1,0 +1,18 @@
+{
+  "title": "Methods should not be named \"hashcode\" or \"equal\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "Architecture related reliability",
+  "tags": [
+    "pitfall",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

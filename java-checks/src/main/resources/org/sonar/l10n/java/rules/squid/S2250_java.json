@@ -1,0 +1,18 @@
+{
+  "title": "\"ConcurrentLinkedQueue.size()\" should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Processor use",
+  "tags": [
+    "performance",
+    "security"
+  ],
+  "defaultSeverity": "Critical"
+}

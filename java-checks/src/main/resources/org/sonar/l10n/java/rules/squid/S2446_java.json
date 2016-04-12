@@ -1,0 +1,18 @@
+{
+  "title": "\"notifyAll\" should be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Synchronization related reliability",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

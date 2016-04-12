@@ -1,0 +1,16 @@
+{
+  "title": "Unused protected methods should be removed",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

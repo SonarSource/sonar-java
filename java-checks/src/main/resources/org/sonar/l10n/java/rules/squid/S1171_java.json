@@ -1,0 +1,16 @@
+{
+  "title": "Only static class initializers should be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,22 @@
+<p>The "secure" attribute prevents cookies from being sent over plaintext connections such as HTTP, where they would be easily eavesdropped upon. Instead, cookies with the secure attribute are only sent over encrypted HTTPS connections.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+Cookie c = new Cookie(SECRET, secret);  // Noncompliant; cookie is not secure
+response.addCookie(c);
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+Cookie c = new Cookie(SECRET, secret);
+c.setSecure(true);
+response.addCookie(c);
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/614">MITRE, CWE-614</a> - Sensitive Cookie in HTTPS Session Without 'Secure' Attribute
+</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A2-Broken_Authentication_and_Session_Management">OWASP Top Ten 2013 Category A2</a> - Broken Authentication and Session Management
+</li><li> <a href="https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure">OWASP Top Ten 2013 Category A6</a> - Sensitive Data Exposure
+</li></ul>
+

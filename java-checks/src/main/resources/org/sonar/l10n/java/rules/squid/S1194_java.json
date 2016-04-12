@@ -1,0 +1,16 @@
+{
+  "title": "\"java.lang.Error\" should not be extended",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "Exception handling",
+  "tags": [
+    "error-handling"
+  ],
+  "defaultSeverity": "Minor"
+}

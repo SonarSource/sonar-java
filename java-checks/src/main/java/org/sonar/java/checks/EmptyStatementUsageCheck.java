@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -36,6 +37,7 @@ import java.util.List;
   name = "Empty statements should be removed",
   priority = Priority.MINOR,
   tags = {Tag.CERT, Tag.MISRA, Tag.UNUSED})
+@RspecKey("S1116")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("2min")
 public class EmptyStatementUsageCheck extends IssuableSubscriptionVisitor {

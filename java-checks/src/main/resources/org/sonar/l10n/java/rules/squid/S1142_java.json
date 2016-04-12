@@ -1,0 +1,16 @@
+{
+  "title": "Methods should not have too many return statements",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

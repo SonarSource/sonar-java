@@ -1,0 +1,16 @@
+{
+  "title": "Abstract methods should not be redundant",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

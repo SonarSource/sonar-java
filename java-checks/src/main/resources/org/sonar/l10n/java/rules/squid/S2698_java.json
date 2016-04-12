@@ -1,0 +1,16 @@
+{
+  "title": "JUnit assertions should include messages",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Unit level testability",
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Major"
+}

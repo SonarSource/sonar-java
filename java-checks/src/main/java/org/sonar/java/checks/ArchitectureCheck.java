@@ -25,6 +25,7 @@ import org.sonar.api.utils.WildcardPattern;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -45,6 +46,7 @@ import java.util.Set;
   key = "ArchitecturalConstraint",
   name = "Architectural constraints should be followed",
   priority = Priority.MAJOR)
+@RspecKey("S1212")
 @RuleTemplate
 @NoSqale
 public class ArchitectureCheck extends IssuableSubscriptionVisitor {

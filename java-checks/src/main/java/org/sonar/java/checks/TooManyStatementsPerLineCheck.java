@@ -26,6 +26,7 @@ import com.google.common.collect.Multiset.Entry;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -63,6 +64,7 @@ import java.util.List;
   name = "Statements should be on separate lines",
   priority = Priority.MINOR,
   tags = {Tag.CONVENTION})
+@RspecKey("S122")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1min")

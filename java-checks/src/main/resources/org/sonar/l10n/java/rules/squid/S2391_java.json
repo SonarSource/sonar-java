@@ -1,0 +1,18 @@
+{
+  "title": "JUnit framework methods should be declared properly",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Unit level testability",
+  "tags": [
+    "tests",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

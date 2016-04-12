@@ -1,0 +1,18 @@
+{
+  "title": "Classes should not be loaded dynamically",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "45min"
+  },
+  "sqaleSubCharac": "API abuse",
+  "tags": [
+    "owasp-a1",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

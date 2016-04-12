@@ -1,0 +1,17 @@
+{
+  "title": "\"finalize\" should not set fields to \"null\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Processor use",
+  "tags": [
+    "performance",
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

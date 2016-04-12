@@ -1,0 +1,16 @@
+{
+  "title": "String.valueOf() should not be appended to a String",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

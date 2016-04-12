@@ -1,0 +1,16 @@
+{
+  "title": "Maps with keys that are enum values should be replaced with EnumMap",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Processor use",
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,18 @@
+{
+  "title": "\"action\" mappings should not have too many \"forward\" entries",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Linear",
+    "linearDesc": "per extra forward",
+    "linearFactor": "20min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "brain-overload",
+    "struts"
+  ],
+  "defaultSeverity": "Major"
+}

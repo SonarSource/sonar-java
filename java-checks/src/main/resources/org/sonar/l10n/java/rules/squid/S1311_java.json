@@ -1,0 +1,18 @@
+{
+  "title": "Classes should not be too complex",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Linear with offset",
+    "linearDesc": "per complexity point over the threshold",
+    "linearOffset": "10min",
+    "linearFactor": "1min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

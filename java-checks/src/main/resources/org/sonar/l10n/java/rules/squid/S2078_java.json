@@ -1,0 +1,19 @@
+{
+  "title": "Values passed to LDAP queries should be sanitized",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "Input validation and representation",
+  "tags": [
+    "cert",
+    "owasp-a1",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

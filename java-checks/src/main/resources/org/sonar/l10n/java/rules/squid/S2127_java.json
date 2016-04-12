@@ -1,0 +1,17 @@
+{
+  "title": "\"Double.longBitsToDouble\" should not be used for \"int\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}

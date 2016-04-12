@@ -1,0 +1,16 @@
+{
+  "title": "Tests should include assertions",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "Unit level testability",
+  "tags": [
+    "tests"
+  ],
+  "defaultSeverity": "Critical"
+}

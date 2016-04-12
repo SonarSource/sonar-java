@@ -25,6 +25,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -50,6 +51,7 @@ import java.util.Set;
   name = "Generic exceptions should never be thrown",
   priority = Priority.CRITICAL,
   tags = {Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
+@RspecKey("S112")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
 @SqaleConstantRemediation("20min")

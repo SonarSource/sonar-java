@@ -1,0 +1,16 @@
+{
+  "title": "\"private\" methods called only by inner classes should be moved to those classes",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

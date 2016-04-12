@@ -1,0 +1,18 @@
+{
+  "title": "\"Exception\" should not be caught when not required by called methods",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Exception handling",
+  "tags": [
+    "error-handling",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

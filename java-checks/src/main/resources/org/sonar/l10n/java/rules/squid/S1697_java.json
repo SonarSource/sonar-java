@@ -1,0 +1,16 @@
+{
+  "title": "Short-circuit logic should be used to prevent null pointer dereferences in conditionals",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}

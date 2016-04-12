@@ -1,0 +1,19 @@
+{
+  "title": "\"catch\" clauses should do more than rethrow",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "cert",
+    "finding",
+    "unused",
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

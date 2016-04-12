@@ -1,0 +1,17 @@
+{
+  "title": "Useless \"if(true) {...}\" and \"if(false){...}\" blocks should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "misra",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

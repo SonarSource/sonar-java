@@ -1,0 +1,17 @@
+{
+  "title": "Inappropriate regular expressions should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

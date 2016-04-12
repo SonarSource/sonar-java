@@ -1,0 +1,18 @@
+{
+  "title": "Unused labels should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "cert",
+    "misra",
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

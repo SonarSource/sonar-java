@@ -22,6 +22,7 @@ package org.sonar.java.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -38,6 +39,7 @@ import java.util.LinkedList;
   name = "Deprecated elements should have both the annotation and the Javadoc tag",
   priority = Priority.MAJOR,
   tags = {Tag.BAD_PRACTICE, Tag.OBSOLETE})
+@RspecKey("S1123")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
 @SqaleConstantRemediation("5min")

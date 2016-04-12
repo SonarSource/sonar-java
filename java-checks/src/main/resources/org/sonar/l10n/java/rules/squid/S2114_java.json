@@ -1,0 +1,17 @@
+{
+  "title": "Collections should not be passed as arguments to their own methods",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

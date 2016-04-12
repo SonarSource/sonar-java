@@ -23,6 +23,7 @@ import com.google.common.collect.ImmutableList;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
@@ -40,6 +41,7 @@ import java.util.List;
   name = "\"NOSONAR\" should not be used to switch off issues",
   priority = Priority.MAJOR,
   tags = {Tag.BAD_PRACTICE})
+@RspecKey("S1291")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
 @SqaleConstantRemediation("1min")
 public class NoSonarCheck extends IssuableSubscriptionVisitor {

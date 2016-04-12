@@ -1,0 +1,16 @@
+{
+  "title": "Catches should be combined",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

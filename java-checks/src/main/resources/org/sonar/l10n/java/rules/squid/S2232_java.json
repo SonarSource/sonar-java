@@ -1,0 +1,18 @@
+{
+  "title": "\"ResultSet.isLast()\" should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "sql",
+    "performance",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

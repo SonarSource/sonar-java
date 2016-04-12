@@ -1,0 +1,20 @@
+{
+  "title": "Throwable and Error should not be caught",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "Exception handling",
+  "tags": [
+    "cert",
+    "error-handling",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Blocker"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Execution of the Garbage Collector should be triggered only by the JVM",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30mn"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "unpredictable",
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major"
+}

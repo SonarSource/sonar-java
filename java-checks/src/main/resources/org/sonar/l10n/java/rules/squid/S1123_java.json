@@ -1,0 +1,17 @@
+{
+  "title": "Deprecated elements should have both the annotation and the Javadoc tag",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "obsolete",
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Case insensitive string comparisons should be made without intermediate upper or lower casing",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Processor use",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

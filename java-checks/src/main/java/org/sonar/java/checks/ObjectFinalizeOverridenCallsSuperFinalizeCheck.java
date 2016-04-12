@@ -24,6 +24,7 @@ import com.google.common.collect.Iterables;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -51,6 +52,7 @@ import java.util.List;
   name = "super.finalize() should be called at the end of Object.finalize() implementations",
   priority = Priority.BLOCKER,
   tags = {Tag.BUG, Tag.CERT, Tag.CWE})
+@RspecKey("S1114")
 @ActivatedByDefault
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
 @SqaleConstantRemediation("5min")

@@ -1,0 +1,18 @@
+{
+  "title": "\"Lock\" objects should not be \"synchronized\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

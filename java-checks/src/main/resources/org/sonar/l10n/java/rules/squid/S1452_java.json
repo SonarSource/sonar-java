@@ -1,0 +1,16 @@
+{
+  "title": "Generic wildcard types should not be used in return parameters",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "Architecture related reliability",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

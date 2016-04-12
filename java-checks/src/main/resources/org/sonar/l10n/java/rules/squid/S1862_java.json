@@ -1,0 +1,20 @@
+{
+  "title": "Related \"if\/else if\" statements should not have the same condition",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "cert",
+    "pitfall",
+    "bug",
+    "unused"
+  ],
+  "defaultSeverity": "Critical"
+}

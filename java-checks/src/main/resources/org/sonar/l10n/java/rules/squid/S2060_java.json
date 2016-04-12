@@ -1,0 +1,17 @@
+{
+  "title": "\"Externalizable\" classes should have a no-arguments constructor",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Data related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

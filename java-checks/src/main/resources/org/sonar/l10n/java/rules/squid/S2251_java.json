@@ -1,0 +1,18 @@
+{
+  "title": "A \"for\" loop update clause should move the counter in the right direction",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}

@@ -1,0 +1,38 @@
+<p>If a lock is acquired and released within a method, then it must be released along all execution paths of that method.</p>
+<p>Failing to do so will expose the conditional locking logic to the method's callers and hence be deadlock-prone.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class MyClass {
+  private Lock lock = new Lock();
+
+  public void doSomething() {
+    lock.lock(); // Noncompliant
+    if (isInitialized()) {
+      // ...
+      lock.unlock();
+    }
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class MyClass {
+  private Lock lock = new Lock();
+
+  public void doSomething() {
+    if (isInitialized()) {
+      lock.lock();
+      // ...
+      lock.unlock();
+    }
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="https://cwe.mitre.org/data/definitions/459.html">MITRE, CWE-459</a> - Incomplete Cleanup
+</li></ul>
+

@@ -1,0 +1,17 @@
+{
+  "title": "Locale should be used in String operations",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "cert",
+    "unpredictable"
+  ],
+  "defaultSeverity": "Major"
+}

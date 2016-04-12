@@ -1,0 +1,70 @@
+<p><code>Cloneable</code> is the marker <code>Interface</code> that indicates that <code>clone()</code> may be called on an object. Overriding <code>clone()</code> without implementing <code>Cloneable</code> can be useful if you want to control how subclasses clone themselves, but otherwise, it's probably a mistake.</p>
+<p>The usual convention for <code>Object.clone()</code> according to Oracle's Javadoc is:</p>
+<ol>
+<li> <code>x.clone() != x</code>
+</li><li> <code>x.clone().getClass() == x.getClass()</code>
+</li><li> <code>x.clone().equals\(x\)</code>
+</li></ol>
+<p>Obtaining the object that will be returned by calling <code>super.clone()</code> helps to satisfy those invariants:</p>
+<ol>
+<li> <code>super.clone()</code> returns a new object instance
+</li><li> <code>super.clone()</code> returns an object of the same type as the one <code>clone()</code> was called on
+</li><li> <code>Object.clone()</code> performs a shallow copy of the object's state
+</li></ol>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class BaseClass {  // Noncompliant; should implement Cloneable
+  @Override
+  public Object clone() throws CloneNotSupportedException {    // Noncompliant; should return the super.clone() instance
+    return new BaseClass();
+  }
+}
+
+class DerivedClass extends BaseClass implements Cloneable {
+  /* Does not override clone() */
+
+  public void sayHello() {
+    System.out.println("Hello, world!");
+  }
+}
+
+class Application {
+  public static void main(String[] args) throws Exception {
+    DerivedClass instance = new DerivedClass();
+    ((DerivedClass) instance.clone()).sayHello();              // Throws a ClassCastException because invariant #2 is violated
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class BaseClass implements Cloneable {
+  @Override
+  public Object clone() throws CloneNotSupportedException {    // Compliant
+    return super.clone();
+  }
+}
+
+class DerivedClass extends BaseClass implements Cloneable {
+  /* Does not override clone() */
+
+  public void sayHello() {
+    System.out.println("Hello, world!");
+  }
+}
+
+class Application {
+  public static void main(String[] args) throws Exception {
+    DerivedClass instance = new DerivedClass();
+    ((DerivedClass) instance.clone()).sayHello();              // Displays "Hello, world!" as expected. Invariant #2 is satisfied
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/580.html">MITRE, CWE-580</a> - clone() Method Without super.clone()
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/CQHEAw">CERT, MET53-J.</a> - Ensure that the clone() method calls super.clone()
+</li></ul>
+

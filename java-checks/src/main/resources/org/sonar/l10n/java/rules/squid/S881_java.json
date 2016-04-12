@@ -1,0 +1,17 @@
+{
+  "title": "Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "cert",
+    "misra"
+  ],
+  "defaultSeverity": "Major"
+}

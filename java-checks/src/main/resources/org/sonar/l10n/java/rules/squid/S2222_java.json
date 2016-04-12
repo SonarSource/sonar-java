@@ -1,0 +1,19 @@
+{
+  "title": "Locks should be released",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Synchronization related reliability",
+  "tags": [
+    "multi-threading",
+    "bug",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

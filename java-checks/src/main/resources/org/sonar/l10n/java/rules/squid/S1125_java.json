@@ -1,0 +1,16 @@
+{
+  "title": "Boolean literals should not be redundant",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

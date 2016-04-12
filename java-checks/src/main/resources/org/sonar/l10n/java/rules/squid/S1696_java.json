@@ -1,0 +1,18 @@
+{
+  "title": "\"NullPointerException\" should not be caught",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Processor use",
+  "tags": [
+    "cert",
+    "error-handling",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

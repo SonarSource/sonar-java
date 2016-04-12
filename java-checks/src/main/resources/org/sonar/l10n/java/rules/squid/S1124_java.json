@@ -1,0 +1,16 @@
+{
+  "title": "Modifiers should be declared in the correct order",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

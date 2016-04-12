@@ -1,0 +1,31 @@
+<p>The purpose of the Java Collections API is to provide a well defined hierarchy of interfaces in order to hide implementation details.</p>
+<p>Implementing classes must be used to instantiate new collections, but the result of an instantiation should ideally be stored in a variable whose type is a Java Collection interface.</p>
+<p>This rule raises an issue when an implementation class:</p>
+<ul>
+<li> is returned from a <code>public</code> method.
+</li><li> is accepted as an argument to a <code>public</code> method.
+</li><li> is exposed as a <code>public</code> member.
+</li></ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Employees {
+  private HashSet&lt;Employee&gt; employees = new HashSet&lt;Employee&gt;();  // Noncompliant - "employees" should have type "Set" rather than "HashSet"
+
+  public HashSet&lt;Employee&gt; getEmployees() {                       // Noncompliant
+    return employees;
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Employees {
+  private Set&lt;Employee&gt; employees = new HashSet&lt;Employee&gt;();      // Compliant
+
+  public Set&lt;Employee&gt; getEmployees() {                           // Compliant
+    return employees;
+  }
+}
+</pre>
+

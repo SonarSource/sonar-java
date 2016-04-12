@@ -1,0 +1,16 @@
+{
+  "title": "Public methods should throw at most one checked exception",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "error-handling"
+  ],
+  "defaultSeverity": "Major"
+}

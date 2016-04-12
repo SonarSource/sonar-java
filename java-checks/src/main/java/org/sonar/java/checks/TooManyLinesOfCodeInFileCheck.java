@@ -24,6 +24,7 @@ import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -40,6 +41,7 @@ import java.util.List;
   name = "Files should not have too many lines",
   priority = Priority.MAJOR,
   tags = {Tag.BRAIN_OVERLOAD})
+@RspecKey("S104")
 @SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
 @SqaleConstantRemediation("1h")
 public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {

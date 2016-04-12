@@ -1,0 +1,46 @@
+<p>Public arrays, even ones declared <code>static final</code> can have their contents edited by malicious programs. The <code>final</code> keyword on an array declaration means that the array object itself may only be assigned once, but its contents are still mutable. Therefore making arrays <code>public</code> is a security risk.</p>
+<p>Instead, arrays should be private and accessed through methods.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Estate {
+  // Noncompliant; array contents can be modified
+  public static final String [] HEIRS = new String [] { 
+    "Betty", "Suzy" };
+}
+
+public class Malicious {
+  public void changeWill() {
+    Estate.HEIRS[0] = "Biff";
+    if (Estate.HEIRS.length &gt; 1) {
+      for (int i = 1; i &lt; Estate.HEIRS.length; i++) {
+        Estate.HEIRS[i] = "";
+      }
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Estate {
+  private static final String [] HEIRS = new String [] { 
+    "Betty", "Suzy" };
+
+  public String [] getHeirs() {
+    // return copy of HEIRS
+  }
+}
+
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/582.html">MITRE, CWE-582</a> - Array Declared Public, Final, and Static
+</li><li> <a href="http://cwe.mitre.org/data/definitions/607.html">MITRE, CWE-607</a> - Public Static Final Field References Mutable Object
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/rwBc">CERT, OBJ01-J.</a> - Limit accessibility of fields
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/JQLEAw">CERT, OBJ13-J.</a> - Ensure that references to mutable objects are not exposed
+</li></ul>
+
+<h2>Deprecated</h2>
+<p>This rule is deprecated, use {rule:squid:S2385} instead.</p>
+

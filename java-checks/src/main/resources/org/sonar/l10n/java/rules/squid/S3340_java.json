@@ -1,0 +1,16 @@
+{
+  "title": "Annotation arguments should appear in the order in which they were declared",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

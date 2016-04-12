@@ -1,0 +1,17 @@
+{
+  "title": "\"hashCode\" and \"toString\" should not be called on array instances",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

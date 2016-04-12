@@ -1,0 +1,18 @@
+{
+  "title": "Instance methods should not write to \"static\" fields",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Synchronization related reliability",
+  "tags": [
+    "multi-threading",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

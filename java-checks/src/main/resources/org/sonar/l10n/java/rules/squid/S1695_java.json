@@ -1,0 +1,16 @@
+{
+  "title": "\"NullPointerException\" should not be explicitly thrown",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

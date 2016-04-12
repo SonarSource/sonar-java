@@ -1,0 +1,20 @@
+{
+  "title": "\"wait(...)\" should be used instead of \"Thread.sleep(...)\" when a lock is held",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Synchronization related reliability",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "performance",
+    "security"
+  ],
+  "defaultSeverity": "Critical"
+}

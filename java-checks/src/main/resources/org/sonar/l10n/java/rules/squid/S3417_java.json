@@ -1,0 +1,11 @@
+{
+  "title": "Disallowed dependencies should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "tags": [
+    "maven"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "\"DateUtils.truncate\" from Apache Commons Lang library should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "Processor use",
+  "tags": [
+    "performance",
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}

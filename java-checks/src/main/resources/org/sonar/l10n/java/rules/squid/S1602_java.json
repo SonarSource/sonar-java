@@ -1,0 +1,16 @@
+{
+  "title": "Lamdbas containing only one statement should not nest this statement in a block",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}

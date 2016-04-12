@@ -1,0 +1,35 @@
+<p>All classes extend <code>Object</code> implicitly. Doing so explicitly is redundant.</p>
+<p>Further, declaring the implementation of an interface <em>and</em> one if its parents is also redundant. If you implement the interface, you also implicitly implement its parents and there's no need to do so explicitly.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public interface MyFace {
+  // ...
+}
+
+public interface MyOtherFace extends MyFace {
+  // ...
+}
+
+public class Foo 
+    extends Object // Noncompliant
+    implements MyFace, MyOtherFace {  // Noncompliant
+  //...
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public interface MyFace {
+  // ...
+}
+
+public interface MyOtherFace extends MyFace {
+  // ...
+}
+
+public class Foo implements MyOtherFace {
+  //...
+}
+</pre>
+

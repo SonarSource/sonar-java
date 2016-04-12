@@ -1,0 +1,16 @@
+{
+  "title": "Tabulation characters should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "Readability",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

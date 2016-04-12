@@ -1,0 +1,17 @@
+{
+  "title": "Multiple variables should not be declared on the same line",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "Instruction related reliability",
+  "tags": [
+    "cert",
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

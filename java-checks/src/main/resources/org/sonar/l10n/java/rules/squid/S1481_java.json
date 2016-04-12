@@ -1,0 +1,16 @@
+{
+  "title": "Unused local variables should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

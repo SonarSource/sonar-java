@@ -1,0 +1,18 @@
+{
+  "title": "Inheritance tree of classes should not be too deep",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Linear with offset",
+    "linearDesc": "Number of parents above the defined threshold",
+    "linearOffset": "4h",
+    "linearFactor": "30mn"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "\"compareTo\" should not return \"Integer.MIN_VALUE\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

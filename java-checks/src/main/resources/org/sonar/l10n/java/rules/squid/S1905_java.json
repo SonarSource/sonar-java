@@ -1,0 +1,16 @@
+{
+  "title": "Redundant casts should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "Understandability",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

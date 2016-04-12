@@ -1,0 +1,17 @@
+{
+  "title": "\"ScheduledThreadPoolExecutor\" should not have 0 core threads",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "Logic related reliability",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}
