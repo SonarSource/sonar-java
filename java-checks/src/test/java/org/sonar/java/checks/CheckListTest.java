@@ -86,6 +86,7 @@ public class CheckListTest {
 
       for (NewRule rule : repository.rules()) {
         try {
+          rule.setName("Artificial Name (set via JSON files, no need to test it)");
           rule.setMarkdownDescription(ARTIFICIAL_DESCRIPTION);
         } catch (IllegalStateException e) {
           // it means that the html description was already set in Rule annotation
@@ -111,9 +112,7 @@ public class CheckListTest {
       org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(cls, org.sonar.check.Rule.class);
       String key = ruleAnnotation.key();
       if (rspecKeyAnnotation != null) {
-        System.out.println(key);
         key = rspecKeyAnnotation.value();
-        System.out.println(key);
       }
       keyMap.put(ruleAnnotation.key(), key);
       if (SE_CHEKS.contains(simpleName)) {
@@ -132,11 +131,13 @@ public class CheckListTest {
     List<RulesDefinition.Rule> rules = context.repository(CheckList.REPOSITORY_KEY).rules();
     for (RulesDefinition.Rule rule : rules) {
       assertThat(keys).as("Duplicate key " + rule.key()).excludes(rule.key());
-      assertThat(names).as("Duplicate name " + rule.key() + " : " + rule.name()).excludes(rule.name());
       keys.add(rule.key());
       names.add(rule.name());
       assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.html"))
         .overridingErrorMessage("No description for " + rule.key()+ " " +keyMap.get(rule.key()))
+        .isNotNull();
+      assertThat(getClass().getResource("/org/sonar/l10n/java/rules/" + CheckList.REPOSITORY_KEY + "/" + keyMap.get(rule.key()) + "_java.json"))
+        .overridingErrorMessage("No json metadata file for " + rule.key()+ " " +keyMap.get(rule.key()))
         .isNotNull();
 
       assertThat(rule.htmlDescription()).isNull();
