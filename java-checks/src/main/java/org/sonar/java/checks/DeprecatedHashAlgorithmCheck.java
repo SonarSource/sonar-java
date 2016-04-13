@@ -22,8 +22,6 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableMap;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.JavaPropertiesHelper;
 import org.sonar.java.checks.helpers.MethodsHelper;
@@ -31,24 +29,15 @@ import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Map;
 
-@Rule(
-  key = "S2070",
-  name = "SHA-1 and Message-Digest hash algorithms should not be used",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("30min")
+@Rule(key = "S2070")
 public class DeprecatedHashAlgorithmCheck extends AbstractMethodDetection {
 
   private static final String JAVA_LANG_STRING = "java.lang.String";

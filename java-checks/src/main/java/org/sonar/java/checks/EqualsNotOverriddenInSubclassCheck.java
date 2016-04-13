@@ -41,14 +41,7 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2160",
-  name = "Subclasses that add fields should override \"equals\"",
-  priority = Priority.MAJOR,
-  tags = {Tag.SUSPICIOUS})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@Rule(key = "S2160")
 public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()

@@ -20,11 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -35,21 +32,11 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Set;
 
-@Rule(
-  key = "ForLoopCounterChangedCheck",
-  name = "\"for\" loop stop conditions should be invariant",
-  priority = Priority.MAJOR,
-  tags = {Tag.MISRA, Tag.PITFALL})
+@Rule(key = "ForLoopCounterChangedCheck")
 @RspecKey("S127")
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("10min")
 public class ForLoopCounterChangedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Set<String> loopCounters = Sets.newHashSet();
