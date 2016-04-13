@@ -21,30 +21,14 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.batch.IssueFilter;
-import org.sonar.api.issue.batch.IssueFilterChain;
+import java.util.List;
 
-public class PostAnalysisIssueFilters implements IssueFilter {
+public final class FilterList {
 
-  private Iterable<JavaIssueFilter> issueFilters = ImmutableList.of();
-
-  public Iterable<JavaIssueFilter> getIssueFilters() {
-    return issueFilters;
+  private FilterList() {
   }
 
-  public void setIssueFilters(Iterable<JavaIssueFilter> javaIssueFilters) {
-    this.issueFilters = javaIssueFilters;
+  public static List<JavaIssueFilter> getIssueFilters() {
+    return ImmutableList.<JavaIssueFilter>of(new EclipseI18NFilter());
   }
-
-  @Override
-  public boolean accept(Issue issue, IssueFilterChain chain) {
-    for (JavaIssueFilter javaIssueFilter : issueFilters) {
-      if (!javaIssueFilter.accept(issue)) {
-        return false;
-      }
-    }
-    return chain.accept(issue);
-  }
-
 }

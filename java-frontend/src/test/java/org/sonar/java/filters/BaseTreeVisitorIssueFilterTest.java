@@ -27,9 +27,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
+import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -134,8 +136,8 @@ public class BaseTreeVisitorIssueFilterTest {
 
   private static class FakeJavaIssueFilterOnClassAndVariable extends BaseTreeVisitorIssueFilter {
     @Override
-    public Set<String> targetedRules() {
-      return ImmutableSet.of(RULE_KEY);
+    public Set<Class<? extends JavaFileScanner>> filteredRules() {
+      return ImmutableSet.<Class<? extends JavaFileScanner>>of(FakeRule.class, FakeRuleWithoutAnnotation.class);
     }
 
     @Override
@@ -153,6 +155,20 @@ public class BaseTreeVisitorIssueFilterTest {
       }
       super.visitClass(tree);
     }
+  }
+
+  private abstract static class FakeAbstractRule implements JavaFileScanner {
+    @Override
+    public void scanFile(JavaFileScannerContext context) {
+      // do nothing
+    }
+  }
+
+  @Rule(key = RULE_KEY)
+  private static class FakeRule extends FakeAbstractRule {
+  }
+
+  private static class FakeRuleWithoutAnnotation extends FakeAbstractRule {
   }
 
   private static void scanFile(JavaIssueFilter filter) {

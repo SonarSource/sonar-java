@@ -21,6 +21,9 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableSet;
 
+import org.sonar.java.checks.ClassVariableVisibilityCheck;
+import org.sonar.java.checks.PublicStaticFieldShouldBeFinalCheck;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 import java.util.Set;
@@ -28,12 +31,10 @@ import java.util.Set;
 public class EclipseI18NFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
-  public Set<String> targetedRules() {
-    return ImmutableSet.of(
-      // "public static" fields should be constant
-      "S1444",
-      // Class variable fields should not have public accessibility (with legacy key)
-      "S1104", "ClassVariableVisibilityCheck");
+  public Set<Class<? extends JavaFileScanner>> filteredRules() {
+    return ImmutableSet.<Class<? extends JavaFileScanner>>of(
+      PublicStaticFieldShouldBeFinalCheck.class,
+      ClassVariableVisibilityCheck.class);
   }
 
   @Override

@@ -17,34 +17,8 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
+@ParametersAreNonnullByDefault
 package org.sonar.java.filters;
 
-import com.google.common.collect.ImmutableList;
+import javax.annotation.ParametersAreNonnullByDefault;
 
-import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.batch.IssueFilter;
-import org.sonar.api.issue.batch.IssueFilterChain;
-
-public class PostAnalysisIssueFilters implements IssueFilter {
-
-  private Iterable<JavaIssueFilter> issueFilters = ImmutableList.of();
-
-  public Iterable<JavaIssueFilter> getIssueFilters() {
-    return issueFilters;
-  }
-
-  public void setIssueFilters(Iterable<JavaIssueFilter> javaIssueFilters) {
-    this.issueFilters = javaIssueFilters;
-  }
-
-  @Override
-  public boolean accept(Issue issue, IssueFilterChain chain) {
-    for (JavaIssueFilter javaIssueFilter : issueFilters) {
-      if (!javaIssueFilter.accept(issue)) {
-        return false;
-      }
-    }
-    return chain.accept(issue);
-  }
-
-}

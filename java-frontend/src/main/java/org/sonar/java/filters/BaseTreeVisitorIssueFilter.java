@@ -25,8 +25,11 @@ import com.google.common.collect.Ranges;
 import com.google.common.collect.Sets;
 
 import org.sonar.api.issue.Issue;
+import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
+import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -34,6 +37,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,6 +46,24 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   @Nullable
   private String componentKey;
   private final Map<String, Set<Integer>> ignoredLinesByComponent = Maps.newHashMap();
+  private final Set<String> filteredRulesKeys;
+
+  public BaseTreeVisitorIssueFilter() {
+    filteredRulesKeys = ruleKeys(filteredRules());
+  }
+
+  public abstract Set<Class<? extends JavaFileScanner>> filteredRules();
+
+  private static Set<String> ruleKeys(Set<Class<? extends JavaFileScanner>> rules) {
+    Set<String> results = new HashSet<>();
+    for (Class<? extends JavaFileScanner> ruleClass : rules) {
+      Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, Rule.class);
+      if (ruleAnnotation != null) {
+        results.add(ruleAnnotation.key());
+      }
+    }
+    return results;
+  }
 
   @Override
   public void setComponentKey(String componentKey) {
@@ -55,13 +77,11 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
 
   @Override
   public boolean accept(Issue issue) {
-    if (targetedRules().contains(issue.ruleKey().rule()) && isIgnoredLine(issue.componentKey(), issue.line())) {
+    if (filteredRulesKeys.contains(issue.ruleKey().rule()) && isIgnoredLine(issue.componentKey(), issue.line())) {
       return false;
     }
     return true;
   }
-
-  public abstract Set<String> targetedRules();
 
   public void ignoreIssuesInTree(Tree tree) {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
