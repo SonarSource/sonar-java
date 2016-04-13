@@ -22,20 +22,14 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
@@ -43,14 +37,7 @@ import java.util.Set;
 import static org.sonar.plugins.java.api.semantic.Symbol.MethodSymbol;
 import static org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 
-@Rule(
-  key = "S2177",
-  name = "Child class methods named for parent class methods should be overrides",
-  priority = Priority.MAJOR,
-  tags = {Tag.PITFALL})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@Rule(key = "S2177")
 public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
   private static final Set<String> SERIALIZATION_METHOD_NAME = Sets.newHashSet("writeObject", "readObject", "readObjectNoData", "writeReplace", "readResolve");
 

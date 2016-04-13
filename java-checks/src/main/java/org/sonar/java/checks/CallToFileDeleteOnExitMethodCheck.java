@@ -20,28 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "CallToFileDeleteOnExitMethod",
-  name = "\"deleteOnExit\" should not be used",
-  priority = Priority.MAJOR,
-  tags = {Tag.PERFORMANCE})
+@Rule(key = "CallToFileDeleteOnExitMethod")
 @RspecKey("S2308")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation("30min")
 public class CallToFileDeleteOnExitMethodCheck extends AbstractMethodDetection {
 
   @Override

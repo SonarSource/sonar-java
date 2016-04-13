@@ -22,32 +22,19 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.recognizer.CodeRecognizer;
 
 import java.util.Collections;
 import java.util.List;
 
-@Rule(
-  key = "CommentedOutCodeLine",
-  name = "Sections of code should not be \"commented out\"",
-  priority = Priority.MAJOR,
-  tags = {Tag.MISRA, Tag.UNUSED})
+@Rule(key = "CommentedOutCodeLine")
 @RspecKey("S125")
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("5min")
 public class CommentedOutCodeLineCheck extends IssuableSubscriptionVisitor {
 
   private static final double THRESHOLD = 0.9;

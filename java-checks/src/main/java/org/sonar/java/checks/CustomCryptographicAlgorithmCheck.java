@@ -20,28 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2257",
-  name = "Only standard cryptographic algorithms should be used",
-  priority = Priority.BLOCKER,
-  tags = {Tag.CWE, Tag.OWASP_A6, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("1d")
+@Rule(key = "S2257")
 public class CustomCryptographicAlgorithmCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE_DIGEST_QUALIFIED_NAME = "java.security.MessageDigest";

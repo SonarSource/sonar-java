@@ -34,14 +34,8 @@ import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
  *
  * @since 3.2
  */
-@Rule(
-  key = CycleBetweenPackagesCheck.KEY,
-  name = "Cycles between packages should be removed",
-  priority = Priority.MAJOR,
-  tags = {Tag.DESIGN})
+@Rule(key = CycleBetweenPackagesCheck.KEY)
 @RspecKey("S1196")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation("1d")
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
 

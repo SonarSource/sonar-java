@@ -19,12 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -34,23 +31,13 @@ import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 
-@Rule(
-  key = "ClassVariableVisibilityCheck",
-  name = "Class variable fields should not have public accessibility",
-  priority = Priority.MAJOR,
-  tags = {Tag.CWE})
+@Rule(key = "ClassVariableVisibilityCheck")
 @RspecKey("S1104")
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation("10min")
 public class ClassVariableVisibilityCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private Deque<Boolean> isClassStack = new ArrayDeque<>();
