@@ -41,17 +41,15 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
 
   @Nullable
   private String componentKey;
-  private final Map<String, String> fileToComponentMap = Maps.newHashMap();
   private final Map<String, Set<Integer>> ignoredLinesByComponent = Maps.newHashMap();
 
   @Override
-  public void addComponent(String fileKey, String componentKey) {
-    fileToComponentMap.put(fileKey, componentKey);
+  public void setComponentKey(String componentKey) {
+    this.componentKey = componentKey;
   }
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    this.componentKey = fileToComponentMap.get(context.getFileKey());
     scan(context.getTree());
   }
 

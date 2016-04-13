@@ -59,12 +59,10 @@ public class BaseTreeVisitorIssueFilterTest {
     when(issue.componentKey()).thenReturn(COMPONENT_KEY);
     when(issue.ruleKey()).thenReturn(RuleKey.of(REPOSITORY_KEY, RULE_KEY));
 
-    File f = new File(FILE_KEY);
-
     filter = new FakeJavaIssueFilterOnClassAndVariable();
-    filter.addComponent(f.getAbsolutePath(), COMPONENT_KEY);
 
-    scanFile(FILE_KEY, filter);
+    filter.setComponentKey(COMPONENT_KEY);
+    scanFile(filter);
   }
 
   @Test
@@ -116,7 +114,7 @@ public class BaseTreeVisitorIssueFilterTest {
   public void filter_do_not_suppress_lines_on_unknown_components() {
     // component is not added
     filter = new FakeJavaIssueFilterOnClassAndVariable();
-    scanFile(FILE_KEY, filter);
+    scanFile(filter);
 
     // issue on file accepted
     assertThatIssueWillBeAccepted(null).isTrue();
@@ -157,9 +155,9 @@ public class BaseTreeVisitorIssueFilterTest {
     }
   }
 
-  private static void scanFile(String filename, JavaIssueFilter filter) {
+  private static void scanFile(JavaIssueFilter filter) {
     List<JavaFileScanner> visitors = Lists.<JavaFileScanner>newArrayList(filter);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.<File>newLinkedList(), null);
-    JavaAstScanner.scanSingleFileForTests(new File(filename), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(new File(FILE_KEY), visitorsBridge);
   }
 }

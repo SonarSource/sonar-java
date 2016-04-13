@@ -67,7 +67,7 @@ public class JavaSquidSensorTest {
   public void setUp() {
     sensor = new JavaSquidSensor(new JavaClasspath(mock(Project.class),
       new Settings(), new DefaultFileSystem(null)), mock(SonarComponents.class), fileSystem,
-      mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilters());
+      mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class));
   }
 
   @Test
@@ -101,10 +101,9 @@ public class JavaSquidSensorTest {
     JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
 
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class));
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath, mock(SuppressWarningsFilter.class), new PostAnalysisIssueFilters());
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
-    PostAnalysisIssueFilters postAnalysisIssueFilters = new PostAnalysisIssueFilters();
-    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, noSonarFilter, postAnalysisIssueFilters);
+    JavaSquidSensor jss = new JavaSquidSensor(javaClasspath, sonarComponents, fs, javaResourceLocator, settings, noSonarFilter);
     SensorContext context = mock(SensorContext.class);
     org.sonar.api.resources.File resource = org.sonar.api.resources.File.create(effectiveKey);
     resource.setEffectiveKey(effectiveKey);
@@ -113,7 +112,6 @@ public class JavaSquidSensorTest {
     jss.analyse(project, context);
 
     String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    // method test_issues_creation_on_test_file from this test file
     verify(noSonarFilter, times(1)).addComponent(effectiveKey, Sets.newHashSet(89));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 

@@ -24,7 +24,7 @@ import org.sonar.plugins.java.api.JavaFileScanner;
 
 public interface JavaIssueFilter extends JavaFileScanner {
 
-  void addComponent(String fileKey, String componentKey);
+  void setComponentKey(String componentKey);
 
   boolean accept(Issue issue);
 }

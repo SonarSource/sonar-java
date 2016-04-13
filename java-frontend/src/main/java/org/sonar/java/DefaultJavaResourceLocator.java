@@ -33,6 +33,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.java.filters.JavaIssueFilter;
+import org.sonar.java.filters.PostAnalysisIssueFilters;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -56,7 +57,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   private SensorContext sensorContext;
   private Iterable<JavaIssueFilter> issueFilters;
 
-  public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
+  public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter, PostAnalysisIssueFilters postAnalysisIssueFilters) {
     this.fs = fs;
     this.javaClasspath = javaClasspath;
     this.suppressWarningsFilter = suppressWarningsFilter;
@@ -64,7 +65,7 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
     resourceMapping = new ResourceMapping();
-    issueFilters = ImmutableList.of();
+    issueFilters = postAnalysisIssueFilters.getIssueFilters();
   }
 
   public void setSensorContext(SensorContext sensorContext) {
@@ -147,12 +148,8 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
       suppressWarningsFilter.addComponent(componentKey, javaFilesCache.getSuppressWarningLines());
     }
     for (JavaIssueFilter javaIssueFilter : issueFilters) {
-      javaIssueFilter.addComponent(fileKey, componentKey);
+      javaIssueFilter.setComponentKey(componentKey);
       javaIssueFilter.scanFile(context);
     }
-  }
-
-  public void registerIssueFilters(Iterable<JavaIssueFilter> issueFilters) {
-    this.issueFilters = issueFilters;
   }
 }
