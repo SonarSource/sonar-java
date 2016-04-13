@@ -42,6 +42,8 @@ public class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule).isNotNull();
     assertThat(unusedLabelRule.internalKey()).isNull();
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
+    RulesDefinition.Rule magicNumber = repository.rule("S109");
+    assertThat(magicNumber.params()).isNotEmpty();
   }
 
 }

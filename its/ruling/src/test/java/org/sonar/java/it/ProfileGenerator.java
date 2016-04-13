@@ -65,8 +65,8 @@ public class ProfileGenerator {
       @SuppressWarnings("unchecked")
       List<Map> jsonRules = (List<Map>) ((Map) JSONValue.parse(json)).get("rules");
       for (Map jsonRule : jsonRules) {
-        String key = (String) jsonRule.get("internalKey");
-        ruleKeys.add(key);
+        String key = (String) jsonRule.get("key");
+        ruleKeys.add(key.split(":")[1]);
       }
 
       for (String key : ruleKeys) {
