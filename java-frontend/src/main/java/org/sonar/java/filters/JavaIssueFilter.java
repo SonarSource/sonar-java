@@ -22,9 +22,13 @@ package org.sonar.java.filters;
 import org.sonar.api.issue.Issue;
 import org.sonar.plugins.java.api.JavaFileScanner;
 
+import java.util.Set;
+
 public interface JavaIssueFilter extends JavaFileScanner {
 
   void setComponentKey(String componentKey);
 
   boolean accept(Issue issue);
+
+  Set<Class<? extends JavaFileScanner>> filteredRules();
 }

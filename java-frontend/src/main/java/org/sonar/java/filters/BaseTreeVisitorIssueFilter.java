@@ -52,8 +52,6 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     filteredRulesKeys = ruleKeys(filteredRules());
   }
 
-  public abstract Set<Class<? extends JavaFileScanner>> filteredRules();
-
   private static Set<String> ruleKeys(Set<Class<? extends JavaFileScanner>> rules) {
     Set<String> results = new HashSet<>();
     for (Class<? extends JavaFileScanner> ruleClass : rules) {
