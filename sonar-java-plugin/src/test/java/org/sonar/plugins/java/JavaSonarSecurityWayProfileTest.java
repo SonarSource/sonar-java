@@ -30,22 +30,22 @@ import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 
-public class JavaSonarWayProfileTest {
+public class JavaSonarSecurityWayProfileTest {
 
   @Test
-  public void should_create_sonar_way_profile() {
+  public void should_create_sonar_security_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
     JavaRulesDefinition rulesDefinition = new JavaRulesDefinition();
     RulesDefinition.Context context = new RulesDefinition.Context();
     rulesDefinition.define(context);
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(rulesDefinition);
+    JavaSonarSecurityWayProfile profileDef = new JavaSonarSecurityWayProfile(rulesDefinition);
     RulesProfile profile = profileDef.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     List<ActiveRule> activeRules = profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY);
-    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(260);
-    assertThat(profile.getName()).isEqualTo("Sonar way");
+    assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(94);
+    assertThat(profile.getName()).isEqualTo("Sonar security way");
     assertThat(validation.hasErrors()).isFalse();
   }
 

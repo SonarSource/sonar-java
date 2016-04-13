@@ -19,15 +19,23 @@
  */
 package org.sonar.plugins.java;
 
-import org.junit.Test;
+import org.sonar.api.profiles.ProfileDefinition;
+import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.utils.ValidationMessages;
 
-import static org.fest.assertions.Assertions.assertThat;
+/**
+ * Replacement for org.sonar.plugins.squid.SonarWayProfile
+ */
+public class JavaSonarSecurityWayProfile extends ProfileDefinition {
 
-public class JavaPluginTest {
+  private final JavaRulesDefinition rulesDefinition;
 
-  @Test
-  public void test() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(31);
+  public JavaSonarSecurityWayProfile(JavaRulesDefinition rulesDefinition) {
+    this.rulesDefinition = rulesDefinition;
   }
 
+  @Override
+  public RulesProfile createProfile(ValidationMessages messages) {
+    return rulesDefinition.getProfile("Sonar security way");
+  }
 }
