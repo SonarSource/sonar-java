@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -37,23 +34,13 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-@Rule(
-  key = "S134",
-  name = "Control flow statements \"if\", \"for\", \"while\", \"switch\" and \"try\" should not be nested too deeply",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_CHANGEABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S134")
 public class NestedIfStatementsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_MAX = 3;

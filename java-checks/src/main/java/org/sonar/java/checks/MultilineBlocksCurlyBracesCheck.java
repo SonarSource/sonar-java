@@ -19,11 +19,8 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -35,20 +32,10 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Locale;
 
-@Rule(
-  key = "S2681",
-  name = "Multiline blocks should be enclosed in curly braces",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2681")
 public class MultilineBlocksCurlyBracesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String LOOP_MESSAGE = "Only the first line of this %d-line block will be executed in a loop. The rest will execute only once.";

@@ -20,11 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.DoWhileStatementTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
@@ -34,19 +31,11 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S00121",
-  name = "Control structures should use curly braces",
-  priority = Priority.MAJOR,
-  tags = {Tag.CERT, Tag.MISRA, Tag.PITFALL})
+@Rule(key = "S00121")
 @RspecKey("S121")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
 public class MissingCurlyBracesCheck extends IssuableSubscriptionVisitor {
 
   @Override

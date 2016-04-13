@@ -20,14 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -36,22 +33,13 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Rule(
-  key = "S3047",
-  name = "Multiple loops over the same set should be combined",
-  priority = Priority.MAJOR,
-  tags = {Tag.PERFORMANCE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S3047")
 public class LoopsOnSameSetCheck extends IssuableSubscriptionVisitor {
 
   @Override

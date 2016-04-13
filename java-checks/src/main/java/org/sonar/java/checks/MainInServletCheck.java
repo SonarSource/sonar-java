@@ -22,33 +22,20 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.SyntaxNodePredicates;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
 
-@Rule(
-  key = "S2653",
-  name = "Web applications should not have a \"main\" method",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.JEE, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2653")
 public class MainInServletCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<String> SERVLET_AND_EJB_CLASSES = ImmutableSet.of(
