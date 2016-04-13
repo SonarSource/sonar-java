@@ -19,22 +19,11 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
 import org.sonar.maven.model.maven2.MavenProject;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = GroupIdNamingConventionCheck.KEY,
-  name = "Group ids should follow a naming convention",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION, Tag.MAVEN})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = GroupIdNamingConventionCheck.KEY)
 public class GroupIdNamingConventionCheck extends AbstractNamingConvention {
 
   public static final String KEY = "S3419";

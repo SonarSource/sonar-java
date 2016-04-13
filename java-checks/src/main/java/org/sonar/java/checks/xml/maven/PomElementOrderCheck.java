@@ -19,30 +19,19 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.java.xml.maven.PomCheckContext.Location;
 import org.sonar.maven.model.LocatedTree;
 import org.sonar.maven.model.maven2.MavenProject;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "S3423",
-  name = "pom elements should be in the recommended order",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION, Tag.MAVEN})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S3423")
 public class PomElementOrderCheck implements PomCheck {
 
   private static final Comparator<LocatedTree> LINE_COMPARATOR = new LineComparator();

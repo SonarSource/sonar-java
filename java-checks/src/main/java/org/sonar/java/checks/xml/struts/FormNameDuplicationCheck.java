@@ -20,30 +20,18 @@
 package org.sonar.java.checks.xml.struts;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.java.xml.XmlCheckUtils;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.annotation.CheckForNull;
 import javax.xml.xpath.XPathExpression;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@Rule(
-  key = "S3374",
-  name = "Struts validation forms should have unique names",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.CWE, Tag.STRUTS})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S3374")
 public class FormNameDuplicationCheck extends XPathXmlCheck {
 
   private XPathExpression formsetsExpression;

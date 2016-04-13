@@ -20,27 +20,14 @@
 package org.sonar.java.checks.xml.maven;
 
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
 
-@Rule(
-  key = "S3421",
-  name = "Deprecated \"${pom}\" properties should not be used",
-  priority = Priority.MAJOR,
-  tags = {Tag.OBSOLETE, Tag.MAVEN})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LANGUAGE_RELATED_PORTABILITY)
-@ActivatedByDefault
-@SqaleConstantRemediation("2min")
+@Rule(key = "S3421")
 public class DeprecatedPomPropertiesCheck extends XPathXmlCheck {
   private static final String POM_PROPERTY_PREFIX = "${pom.";
   private static final String POM_PROPERTY_SUFFIX = "}";
