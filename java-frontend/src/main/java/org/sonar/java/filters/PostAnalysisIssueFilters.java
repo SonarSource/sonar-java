@@ -27,19 +27,19 @@ import org.sonar.api.issue.batch.IssueFilterChain;
 
 public class PostAnalysisIssueFilters implements IssueFilter {
 
-  private final Iterable<JavaIssueFilter> issueFitlers;
+  private final Iterable<JavaIssueFilter> issueFilters;
 
   public PostAnalysisIssueFilters() {
-    issueFitlers = ImmutableList.<JavaIssueFilter>of(new EclipseI18NFilter());
+    issueFilters = ImmutableList.<JavaIssueFilter>of(new EclipseI18NFilter());
   }
 
   public Iterable<JavaIssueFilter> getIssueFilters() {
-    return issueFitlers;
+    return issueFilters;
   }
 
   @Override
   public boolean accept(Issue issue, IssueFilterChain chain) {
-    for (JavaIssueFilter javaIssueFilter : issueFitlers) {
+    for (JavaIssueFilter javaIssueFilter : issueFilters) {
       if (!javaIssueFilter.accept(issue)) {
         return false;
       }
