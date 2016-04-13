@@ -21,26 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
 
-@Rule(
-  key = "S818",
-  name = "Literal suffixes should be upper case",
-  priority = Priority.MINOR,
-  tags = {Tag.CERT, Tag.CONVENTION, Tag.MISRA, Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "S818")
 public class UppercaseSuffixesCheck extends IssuableSubscriptionVisitor {
 
   private static final Set<Character> LITERAL_SUFFIXES = ImmutableSet.of('f', 'd', 'l');

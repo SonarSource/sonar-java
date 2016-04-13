@@ -21,13 +21,10 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -35,8 +32,6 @@ import org.sonar.plugins.java.api.tree.EmptyStatementTree;
 import org.sonar.plugins.java.api.tree.ImportClauseTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,14 +41,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-@Rule(
-  key = "S00103",
-  name = "Lines should not be too long",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
+@Rule(key = "S00103")
 @RspecKey("S103")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1min")
 public class TooLongLineCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
 
   private static final int DEFAULT_MAXIMUM_LINE_LENHGTH = 120;

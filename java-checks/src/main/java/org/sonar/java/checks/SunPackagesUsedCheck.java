@@ -19,32 +19,19 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Rule(
-  key = "S1191",
-  name = "Classes from \"sun.*\" packages should not be used",
-  priority = Priority.MAJOR,
-  tags = {Tag.LOCK_IN, Tag.PITFALL})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
-@SqaleConstantRemediation("1h")
+@Rule(key = "S1191")
 public class SunPackagesUsedCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private Set<Integer> reportedLines = new HashSet<>();

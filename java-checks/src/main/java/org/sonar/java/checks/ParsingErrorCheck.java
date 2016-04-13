@@ -20,28 +20,17 @@
 package org.sonar.java.checks;
 
 import com.sonar.sslr.api.RecognitionException;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.squidbridge.AstScannerExceptionHandler;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-@Rule(
-    key = "ParsingError",
-    name = "Java parser failure",
-    priority = Priority.MAJOR,
-    tags = {Tag.SUSPICIOUS})
+@Rule(key = "ParsingError")
 @RspecKey("S2260")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("30min")
 public class ParsingErrorCheck implements AstScannerExceptionHandler, JavaFileScanner {
 
   private JavaFileScannerContext context;

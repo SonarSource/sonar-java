@@ -20,17 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Files;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,14 +33,8 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(
-  key = "S00105",
-  name = "Tabulation characters should not be used",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
+@Rule(key = "S00105")
 @RspecKey("S105")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
 public class TabCharacterCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
 
   private Charset charset;

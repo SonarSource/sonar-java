@@ -20,30 +20,19 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
 import org.sonar.java.model.InternalSyntaxToken;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.text.MessageFormat;
 import java.util.List;
 
-@Rule(
-  key = "S00104",
-  name = "Files should not have too many lines",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
+@Rule(key = "S00104")
 @RspecKey("S104")
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1h")
 public class TooManyLinesOfCodeInFileCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAXIMUM = 1000;

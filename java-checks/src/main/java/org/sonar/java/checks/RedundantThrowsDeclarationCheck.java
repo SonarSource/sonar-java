@@ -20,34 +20,21 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ListTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Rule(
-  key = "RedundantThrowsDeclarationCheck",
-  name = "Throws declarations should not be superfluous",
-  priority = Priority.MINOR,
-  tags = {Tag.CLUMSY, Tag.UNUSED})
+@Rule(key = "RedundantThrowsDeclarationCheck")
 @RspecKey("S1130")
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("5min")
 public class RedundantThrowsDeclarationCheck extends IssuableSubscriptionVisitor {
 
   @Override
