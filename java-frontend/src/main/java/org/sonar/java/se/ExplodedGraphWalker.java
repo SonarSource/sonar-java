@@ -147,7 +147,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
 
   @Override
   public void visitMethod(MethodTree tree) {
-    super.visitMethod(tree);
     BlockTree body = tree.block();
     if (body != null) {
       execute(tree);

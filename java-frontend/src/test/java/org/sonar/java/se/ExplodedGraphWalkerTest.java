@@ -28,6 +28,7 @@ import org.sonar.java.se.checks.NullDereferenceCheck;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.java.se.checks.UnclosedResourcesCheck;
 import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.Collections;
@@ -118,6 +119,24 @@ public class ExplodedGraphWalkerTest {
   @Test
   public void system_exit() throws Exception {
     JavaCheckVerifier.verify("src/test/files/se/SystemExit.java", seChecks());
+  }
+  static class MethodAsInstruction extends SECheck {
+    int toStringCall = 0;
+    @Override
+    public ProgramState checkPreStatement(CheckerContext context, Tree syntaxNode) {
+      if(syntaxNode.is(Tree.Kind.METHOD_INVOCATION)) {
+        if(((MethodInvocationTree) syntaxNode).symbol().name().equals("toString")) {
+          toStringCall++;
+        }
+      }
+      return super.checkPreStatement(context, syntaxNode);
+    }
+  }
+  @Test
+  public void methods_should_be_evaluated_only_once() throws Exception {
+    MethodAsInstruction check = new MethodAsInstruction();
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/EvaluateMethodOnce.java", check);
+    assertThat(check.toStringCall).isEqualTo(1);
   }
 
   private static SECheck[] seChecks() {
