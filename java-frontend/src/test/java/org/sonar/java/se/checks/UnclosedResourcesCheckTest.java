@@ -33,4 +33,9 @@ public class UnclosedResourcesCheckTest {
   public void jdbcTests() {
     JavaCheckVerifier.verify("src/test/files/se/JdbcResourcesTestFile.java", new UnclosedResourcesCheck());
   }
+
+  @Test
+  public void streams() {
+    JavaCheckVerifier.verifyNoIssue("src/test/files/se/StreamResource.java", new UnclosedResourcesCheck());
+  }
 }
