@@ -85,7 +85,6 @@ public class JavaPlugin extends SonarPlugin {
 
         JavaRulesDefinition.class,
         JavaSonarWayProfile.class,
-        JavaSonarSecurityWayProfile.class,
         SonarComponents.class,
         DefaultJavaResourceLocator.class,
         JavaSquidSensor.class,
