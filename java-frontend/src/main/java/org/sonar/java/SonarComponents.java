@@ -37,16 +37,12 @@ import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
-import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
-import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -205,7 +201,6 @@ public class SonarComponents implements BatchExtension {
       return;
     }
     Double cost = analyzerMessage.getCost();
-    assertEffortToFixIsNotRequired(check, cost);
     if (IS_SONARQUBE_52) {
       reportIssueAfterSQ52(analyzerMessage, key, inputPath, cost);
     } else {
@@ -240,16 +235,6 @@ public class SonarComponents implements BatchExtension {
         .line(line)
         .effortToFix(cost);
       issuable.addIssue(newIssueBuilder.build());
-    }
-  }
-
-  private static void assertEffortToFixIsNotRequired(JavaCheck check, @Nullable Double cost) {
-    if (cost == null) {
-      Annotation linear = AnnotationUtils.getAnnotation(check, SqaleLinearRemediation.class);
-      Annotation linearWithOffset = AnnotationUtils.getAnnotation(check, SqaleLinearWithOffsetRemediation.class);
-      if (linear != null || linearWithOffset != null) {
-        throw new IllegalStateException("A check annotated with a linear sqale function should provide an effort to fix");
-      }
     }
   }
 

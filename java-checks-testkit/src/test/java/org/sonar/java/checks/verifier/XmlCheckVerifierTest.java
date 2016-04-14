@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.sonar.check.Rule;
 import org.sonar.java.checks.verifier.XmlCheckVerifier.FakeXmlCheckContext;
 import org.sonar.java.xml.XmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
@@ -36,7 +37,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -50,9 +50,12 @@ public class XmlCheckVerifierTest {
   private static final String XML_PARSING_ISSUE = "src/test/files/xml/XmlCheckVerifierParsingIssue.xml";
   private static XmlCheckContext fakeContext;
 
+  @Rule(key = "ConstantJSON")
+  private interface TestXmlCheck extends XmlCheck {}
+
   @Test
   public void should_detect_issues() {
-    XmlCheckVerifier.verify(XML_WITH_ISSUES, new XmlCheck() {
+    XmlCheckVerifier.verify(XML_WITH_ISSUES, new TestXmlCheck() {
       @Override
       public void scanFile(XmlCheckContext context) {
         fakeContext = context;
@@ -65,7 +68,7 @@ public class XmlCheckVerifierTest {
 
   @Test
   public void should_detect_issues_using_nodes() {
-    XmlCheckVerifier.verify(XML_WITH_ISSUES, new XmlCheck() {
+    XmlCheckVerifier.verify(XML_WITH_ISSUES, new TestXmlCheck() {
       @Override
       public void scanFile(XmlCheckContext context) {
         try {
@@ -80,7 +83,7 @@ public class XmlCheckVerifierTest {
 
   @Test
   public void should_detect_issues_using_secondaries() {
-    XmlCheckVerifier.verify(XML_WITH_SECONDARIES, new XmlCheck() {
+    XmlCheckVerifier.verify(XML_WITH_SECONDARIES, new TestXmlCheck() {
       @Override
       public void scanFile(XmlCheckContext context) {
         try {
@@ -108,7 +111,7 @@ public class XmlCheckVerifierTest {
   @Test
   public void should_fail_when_adding_issues_on_unknown_node() {
     try {
-      XmlCheckVerifier.verify(XML_WITH_ISSUES, new XmlCheck() {
+      XmlCheckVerifier.verify(XML_WITH_ISSUES, new TestXmlCheck() {
         @Override
         public void scanFile(XmlCheckContext context) {
           try {
@@ -127,7 +130,7 @@ public class XmlCheckVerifierTest {
 
   @Test
   public void should_detect_issue_on_file() {
-    XmlCheckVerifier.verifyIssueOnFile(XML_NO_ISSUE, "Message", new XmlCheck() {
+    XmlCheckVerifier.verifyIssueOnFile(XML_NO_ISSUE, "Message", new TestXmlCheck() {
       @Override
       public void scanFile(XmlCheckContext context) {
         context.reportIssueOnFile(this, "Message");
@@ -137,7 +140,7 @@ public class XmlCheckVerifierTest {
 
   @Test
   public void should_not_detect_issue() {
-    XmlCheckVerifier.verifyNoIssue(XML_NO_ISSUE, new XmlCheck() {
+    XmlCheckVerifier.verifyNoIssue(XML_NO_ISSUE, new TestXmlCheck() {
       @Override
       public void scanFile(XmlCheckContext context) {
         // do nothing
@@ -147,7 +150,7 @@ public class XmlCheckVerifierTest {
 
   @Test(expected = AssertionError.class)
   public void should_fail_when_parsing_issue() {
-    XmlCheckVerifier.verifyNoIssue(XML_PARSING_ISSUE, new XmlCheck() {
+    XmlCheckVerifier.verifyNoIssue(XML_PARSING_ISSUE, new TestXmlCheck() {
       @Override
       public void scanFile(XmlCheckContext context) {
         // do nothing

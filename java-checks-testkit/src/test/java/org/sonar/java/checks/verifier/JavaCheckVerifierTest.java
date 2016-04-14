@@ -26,6 +26,7 @@ import com.google.common.collect.Multimap;
 
 import org.fest.assertions.Fail;
 import org.junit.Test;
+import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
@@ -267,13 +268,28 @@ public class JavaCheckVerifierTest {
     }
   }
 
+  @Test
+  public void should_fail_when_no_cost() throws Exception {
+    IssuableSubscriptionVisitor visitor = new LinearFakeVisitor().withDefaultIssues();
+    try {
+      JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
+      Fail.fail();
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("A cost should be provided for a rule with linear remediation function");
+    }
+  }
+
+  @Rule(key = "LinearJSON")
+  private static class LinearFakeVisitor extends FakeVisitor {}
+
+  @Rule(key = "ConstantJSON")
   private static class FakeVisitor extends IssuableSubscriptionVisitor {
 
     Multimap<Integer, String> issues = LinkedListMultimap.create();
     Multimap<Integer, AnalyzerMessage> preciseIssues = LinkedListMultimap.create();
     List<String> issuesOnFile = Lists.newLinkedList();
 
-    private FakeVisitor withDefaultIssues() {
+    protected FakeVisitor withDefaultIssues() {
       AnalyzerMessage withMultipleLocation = new AnalyzerMessage(this, new File("a"), new AnalyzerMessage.TextSpan(10, 9, 10, 10), "message4", 3);
       withMultipleLocation.secondaryLocations.add(new AnalyzerMessage(this, new File("a"), 3, "no message", 0));
       withMultipleLocation.secondaryLocations.add(new AnalyzerMessage(this, new File("a"), 4, "no message", 0));

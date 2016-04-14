@@ -19,6 +19,7 @@
  */
 package org.sonar.java.checks.verifier;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
@@ -28,16 +29,22 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import com.google.common.io.Resources;
 import org.apache.commons.lang.StringUtils;
 import org.fest.assertions.Fail;
+import org.sonar.api.utils.AnnotationUtils;
+import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.RspecKey;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -55,6 +62,7 @@ public abstract class CheckVerifier {
     .put("endColumn", IssueAttribute.END_COLUMN)
     .put("secondary", IssueAttribute.SECONDARY_LOCATIONS)
     .build();
+  private static final Pattern LINEAR_FUNC_PATTERN = Pattern.compile("\\\"func\\\"\\s*:\\s*\\\"Linear");
 
   public enum IssueAttribute {
     MESSAGE,
@@ -165,8 +173,9 @@ public abstract class CheckVerifier {
   private void assertMultipleIssue(Set<AnalyzerMessage> issues) throws AssertionError {
     Preconditions.checkState(!issues.isEmpty(), "At least one issue expected");
     List<Integer> unexpectedLines = Lists.newLinkedList();
+    boolean isLinear = isLinear(issues.iterator().next());
     for (AnalyzerMessage issue : issues) {
-      validateIssue(expected, unexpectedLines, issue);
+      validateIssue(expected, unexpectedLines, issue, isLinear);
     }
     if (!expected.isEmpty() || !unexpectedLines.isEmpty()) {
       Collections.sort(unexpectedLines);
@@ -176,7 +185,24 @@ public abstract class CheckVerifier {
     }
   }
 
-  private static void validateIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, List<Integer> unexpectedLines, AnalyzerMessage issue) {
+  private boolean isLinear(AnalyzerMessage issue) {
+    String ruleKey;
+    RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), RspecKey.class);
+    if(rspecKeyAnnotation != null) {
+      ruleKey = rspecKeyAnnotation.value();
+    } else {
+      ruleKey = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class).key();
+    }
+    try {
+      String json = Resources.toString(CheckVerifier.class.getResource("/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json"), Charsets.UTF_8);
+      return LINEAR_FUNC_PATTERN.matcher(json).find();
+    } catch (IOException e) {
+      Fail.fail("Failed to open json file for rule "+ruleKey+" ", e);
+    }
+    return false;
+  }
+
+  private static void validateIssue(Multimap<Integer, Map<IssueAttribute, String>> expected, List<Integer> unexpectedLines, AnalyzerMessage issue, boolean isLinear) {
     int line = issue.getLine();
     if (expected.containsKey(line)) {
       Map<IssueAttribute, String> attrs = Iterables.getLast(expected.get(line));
@@ -184,6 +210,8 @@ public abstract class CheckVerifier {
       Double cost = issue.getCost();
       if (cost != null) {
         assertEquals(Integer.toString(cost.intValue()), attrs, IssueAttribute.EFFORT_TO_FIX);
+      } else if(isLinear){
+        Fail.fail("A cost should be provided for a rule with linear remediation function");
       }
       validateAnalyzerMessage(attrs, issue);
       expected.remove(line, attrs);

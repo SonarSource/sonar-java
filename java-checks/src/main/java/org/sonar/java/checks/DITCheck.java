@@ -31,6 +31,8 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
+import java.util.ArrayList;
+
 @Rule(key = "MaximumInheritanceDepth")
 @RspecKey("S110")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
@@ -67,7 +69,8 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       if(tree.parent().is(Tree.Kind.NEW_CLASS)) {
         reportTree = ((NewClassTree) tree.parent()).newKeyword();
       }
-      context.reportIssue(this, reportTree, "This class has "+dit+" parents which is greater than "+max+" authorized.");
+      context.reportIssue(this, reportTree, "This class has "+dit+" parents which is greater than "+max+" authorized.",
+        new ArrayList<JavaFileScannerContext.Location>(), dit - max);
     }
     super.visitClass(tree);
   }

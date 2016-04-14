@@ -1,0 +1,17 @@
+{
+  "title": "Files should contain only one top-level class or interface each",
+  "status": "ready",
+  "profiles": [
+
+  ],
+  "remediation": {
+    "func": "Linear",
+    "linearDesc": "per extra type",
+    "linearFactor": "10min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}
