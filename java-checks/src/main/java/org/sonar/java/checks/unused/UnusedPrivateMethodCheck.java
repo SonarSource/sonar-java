@@ -19,58 +19,39 @@
  */
 package org.sonar.java.checks.unused;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
+import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.RspecKey;
-import org.sonar.java.bytecode.asm.AsmClass;
-import org.sonar.java.bytecode.asm.AsmMethod;
-import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.signature.MethodSignatureScanner;
-import org.sonar.java.signature.Parameter;
+import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import java.util.List;
 
 @Rule(key = "UnusedPrivateMethod")
 @RspecKey("S1144")
-public class UnusedPrivateMethodCheck extends BytecodeVisitor {
-
-  private AsmClass asmClass;
+public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
-  public void visitClass(AsmClass asmClass) {
-    this.asmClass = asmClass;
+  public List<Tree.Kind> nodesToVisit() {
+    return ImmutableList.of(Tree.Kind.METHOD, Tree.Kind.CONSTRUCTOR);
   }
 
   @Override
-  public void visitMethod(AsmMethod asmMethod) {
-    if (isPrivateUnused(asmMethod) && !isExcludedFromCheck(asmMethod)) {
-      String messageStr = "Private method '" + asmMethod.getName() + "' is never used.";
-      if ("<init>".equals(asmMethod.getName())) {
-        messageStr = "Private constructor '" + asmClass.getDisplayName() + "(";
-        List<String> params = Lists.newArrayList();
-        for (Parameter param : MethodSignatureScanner.scan(asmMethod.getGenericKey()).getArgumentTypes()) {
-          String paramName = param.getClassName();
-          if (StringUtils.isEmpty(paramName)) {
-            paramName = MethodSignatureScanner.getReadableType(param.getJvmJavaType());
-          }
-          params.add(paramName + (param.isArray() ? "[]" : ""));
+  public void visitNode(Tree tree) {
+    MethodTree node = (MethodTree) tree;
+    Symbol symbol = node.symbol();
+    if (symbol.isPrivate() && symbol.usages().isEmpty()) {
+      if (node.is(Tree.Kind.CONSTRUCTOR)) {
+        if (!node.parameters().isEmpty()) {
+          reportIssue(node.simpleName(), "Remove this unused private \"" + node.simpleName().name() + "\" constructor.");
         }
-        messageStr += Joiner.on(",").join(params) + ")' is never used.";
+      } else if (!SerializableContract.SERIALIZABLE_CONTRACT_METHODS.contains(symbol.name())) {
+        reportIssue(node.simpleName(), "Remove this unused private \"" + symbol.name() + "\" method.");
       }
-      int line = getMethodLineNumber(asmMethod);
-      getContext().reportIssue(this, getSourceFile(asmClass), messageStr, line);
     }
-  }
-
-  private static boolean isPrivateUnused(AsmMethod asmMethod) {
-    return !asmMethod.isUsed() && asmMethod.isPrivate();
-  }
-
-  private static boolean isExcludedFromCheck(AsmMethod asmMethod) {
-    return asmMethod.isSynthetic() || asmMethod.isDefaultConstructor() || SerializableContract.methodMatch(asmMethod);
   }
 
 }

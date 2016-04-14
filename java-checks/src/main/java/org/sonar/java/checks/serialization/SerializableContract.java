@@ -26,7 +26,7 @@ import java.util.Set;
 
 public final class SerializableContract {
 
-  static final Set<String> SERIALIZABLE_CONTRACT_METHODS = ImmutableSet.of(
+  public static final Set<String> SERIALIZABLE_CONTRACT_METHODS = ImmutableSet.of(
     "writeObject",
     "readObject",
     "writeReplace",

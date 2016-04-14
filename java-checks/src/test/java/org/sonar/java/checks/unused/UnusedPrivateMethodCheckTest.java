@@ -20,51 +20,14 @@
 package org.sonar.java.checks.unused;
 
 import org.junit.Test;
-import org.sonar.java.AnalyzerMessage;
-import org.sonar.java.checks.BytecodeFixture;
-
-import java.util.List;
-
-import static org.fest.assertions.Assertions.assertThat;
+import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class UnusedPrivateMethodCheckTest {
 
-  private final UnusedPrivateMethodCheck check = new UnusedPrivateMethodCheck();
-
   @Test
   public void test() {
-    List<AnalyzerMessage> messages = BytecodeFixture.scan("src/test/java/org/sonar/java/checks/targets/UnusedPrivateMethod.java", check);
-    assertThat(messages).hasSize(4);
-    for (AnalyzerMessage message : messages) {
-      Integer line = message.getLine();
-      if (line == null) {
-        checkMessage(message, "Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$A(UnusedPrivateMethod)' is never used.");
-        continue;
-      }
-      switch (line) {
-        case 54:
-          checkMessage(message, "Private method 'unusedPrivateMethod' is never used.");
-          break;
-        case 57:
-          checkMessage(message, "Private method 'unusedPrivateMethod' is never used.");
-          break;
-        case 67:
-          checkMessage(message, "Private constructor 'org.sonar.java.checks.targets.UnusedPrivateMethod$Attribute(String,String[],int)' is never used.");
-          break;
-        default:
-          throw new IllegalStateException("Unexpected " + line);
-      }
-    }
+    JavaCheckVerifier.verify("src/test/files/checks/UnusedPrivateMethod.java", new UnusedPrivateMethodCheck());
   }
 
-  private static void checkMessage(AnalyzerMessage analyzerMessage, String message) {
-    assertThat(analyzerMessage.getMessage()).as("on: " + analyzerMessage).isEqualTo(message);
-  }
-
-  @Test
-  public void lambdas_should_not_raise_issue() throws Exception {
-    List<AnalyzerMessage> issues = BytecodeFixture.scan("src/test/resources/Lambdas.java", check);
-    assertThat(issues).isEmpty();
-  }
 
 }
