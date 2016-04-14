@@ -43,7 +43,7 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
   public void visitNode(Tree tree) {
     MethodTree node = (MethodTree) tree;
     Symbol symbol = node.symbol();
-    if (symbol.isPrivate() && symbol.usages().isEmpty()) {
+    if (node.modifiers().annotations().isEmpty() && symbol.isPrivate() && symbol.usages().isEmpty()) {
       if (node.is(Tree.Kind.CONSTRUCTOR)) {
         if (!node.parameters().isEmpty()) {
           reportIssue(node.simpleName(), "Remove this unused private \"" + node.simpleName().name() + "\" constructor.");
