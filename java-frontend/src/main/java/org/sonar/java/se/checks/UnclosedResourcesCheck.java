@@ -69,6 +69,7 @@ public class UnclosedResourcesCheck extends SECheck {
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
   private static final String[] JDBC_RESOURCE_CREATIONS = {"java.sql.Connection", JAVA_SQL_STATEMENT};
+  private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
   private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
     "java.io.ByteArrayOutputStream",
     "java.io.ByteArrayInputStream",
@@ -76,10 +77,6 @@ public class UnclosedResourcesCheck extends SECheck {
     "java.io.CharArrayWriter",
     "java.io.StringReader",
     "java.io.StringWriter",
-    "java.util.stream.Stream",
-    "java.util.stream.IntStream",
-    "java.util.stream.DoubleStream",
-    "java.util.stream.LongStream",
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
   };
 
@@ -115,6 +112,9 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private static boolean needsClosing(Type type) {
+    if (type.isSubtypeOf(STREAM_TOP_HIERARCHY)) {
+      return false;
+    }
     for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
       if (type.is(ignoredTypes)) {
         return false;
