@@ -23,24 +23,28 @@ import com.google.common.collect.ImmutableSet;
 
 import org.sonar.java.checks.ClassVariableVisibilityCheck;
 import org.sonar.java.checks.PublicStaticFieldShouldBeFinalCheck;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 
 import java.util.Set;
 
 public class EclipseI18NFilter extends BaseTreeVisitorIssueFilter {
 
+  private static final Set<Class<? extends JavaCheck>> FILTERED_RULES = ImmutableSet.<Class<? extends JavaCheck>>of(
+    PublicStaticFieldShouldBeFinalCheck.class,
+    ClassVariableVisibilityCheck.class);
+
   @Override
-  public Set<Class<? extends JavaFileScanner>> filteredRules() {
-    return ImmutableSet.<Class<? extends JavaFileScanner>>of(
-      PublicStaticFieldShouldBeFinalCheck.class,
-      ClassVariableVisibilityCheck.class);
+  public Set<Class<? extends JavaCheck>> filteredRules() {
+    return FILTERED_RULES;
   }
 
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.symbol().type().isSubtypeOf("org.eclipse.osgi.util.NLS")) {
-      ignoreIssuesInTree(tree);
+      for (Class<? extends JavaCheck> rule : FILTERED_RULES) {
+        ignoreIssuesInTree(tree, rule);
+      }
     }
     super.visitClass(tree);
   }

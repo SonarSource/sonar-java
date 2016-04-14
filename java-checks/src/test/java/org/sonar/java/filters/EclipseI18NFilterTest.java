@@ -35,7 +35,7 @@ import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.model.VisitorsBridgeForTests;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.squidbridge.api.CodeVisitor;
@@ -87,9 +87,9 @@ public class EclipseI18NFilterTest {
     }
   }
 
-  private static Set<JavaFileScanner> instantiateRules(Set<Class<? extends JavaFileScanner>> filteredRules) {
-    Set<JavaFileScanner> rules = new HashSet<>();
-    for (Class<? extends JavaFileScanner> rule : filteredRules) {
+  private static Set<JavaCheck> instantiateRules(Set<Class<? extends JavaCheck>> filteredRules) {
+    Set<JavaCheck> rules = new HashSet<>();
+    for (Class<? extends JavaCheck> rule : filteredRules) {
       try {
         rules.add(rule.newInstance());
       } catch (InstantiationException | IllegalAccessException e) {

@@ -30,8 +30,7 @@ import org.sonar.api.rule.RuleKey;
 import org.sonar.check.Rule;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridgeForTests;
-import org.sonar.plugins.java.api.JavaFileScanner;
-import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
@@ -50,7 +49,6 @@ public class BaseTreeVisitorIssueFilterTest {
 
   private static final String REPOSITORY_KEY = "octopus";
   private static final String COMPONENT_KEY = "test:test.MyTest";
-  private static final String FILE_KEY = "src/test/files/filter/BaseTreeVisitorIssueFilter.java";
   private static final String RULE_KEY = "S42";
   private BaseTreeVisitorIssueFilter filter;
   private Issue issue;
@@ -112,23 +110,6 @@ public class BaseTreeVisitorIssueFilterTest {
     assertThatIssueWillBeAccepted(5).isTrue();
   }
 
-  @Test
-  public void filter_do_not_suppress_lines_on_unknown_components() {
-    // component is not added
-    filter = new FakeJavaIssueFilterOnClassAndVariable();
-    scanFile(filter);
-
-    // issue on file accepted
-    assertThatIssueWillBeAccepted(null).isTrue();
-
-    // issue on class accepted
-    assertThatIssueWillBeAccepted(3).isTrue();
-
-    // issue on variable accepted
-    assertThatIssueWillBeAccepted(4).isTrue();
-    assertThatIssueWillBeAccepted(5).isTrue();
-  }
-
   private BooleanAssert assertThatIssueWillBeAccepted(@Nullable Integer line) {
     when(issue.line()).thenReturn(line);
     return assertThat(filter.accept(issue));
@@ -136,13 +117,13 @@ public class BaseTreeVisitorIssueFilterTest {
 
   private static class FakeJavaIssueFilterOnClassAndVariable extends BaseTreeVisitorIssueFilter {
     @Override
-    public Set<Class<? extends JavaFileScanner>> filteredRules() {
-      return ImmutableSet.<Class<? extends JavaFileScanner>>of(FakeRule.class, FakeRuleWithoutAnnotation.class);
+    public Set<Class<? extends JavaCheck>> filteredRules() {
+      return ImmutableSet.<Class<? extends JavaCheck>>of(FakeRule.class, FakeRuleWithoutKey.class);
     }
 
     @Override
     public void visitVariable(VariableTree tree) {
-      ignoreIssuesInTree(tree);
+      ignoreIssuesInTree(tree, FakeRule.class);
       super.visitVariable(tree);
     }
 
@@ -151,29 +132,22 @@ public class BaseTreeVisitorIssueFilterTest {
       IdentifierTree simpleName = tree.simpleName();
       if (simpleName == null) {
         // force check on null tree
-        ignoreIssuesInTree(simpleName);
+        ignoreIssuesInTree(simpleName, FakeRuleWithoutKey.class);
       }
       super.visitClass(tree);
     }
   }
 
-  private abstract static class FakeAbstractRule implements JavaFileScanner {
-    @Override
-    public void scanFile(JavaFileScannerContext context) {
-      // do nothing
-    }
-  }
-
   @Rule(key = RULE_KEY)
-  private static class FakeRule extends FakeAbstractRule {
+  private static class FakeRule implements JavaCheck {
   }
 
-  private static class FakeRuleWithoutAnnotation extends FakeAbstractRule {
+  private static class FakeRuleWithoutKey implements JavaCheck {
   }
 
   private static void scanFile(JavaIssueFilter filter) {
-    List<JavaFileScanner> visitors = Lists.<JavaFileScanner>newArrayList(filter);
+    List<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.<File>newLinkedList(), null);
-    JavaAstScanner.scanSingleFileForTests(new File(FILE_KEY), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/filter/BaseTreeVisitorIssueFilter.java"), visitorsBridge);
   }
 }

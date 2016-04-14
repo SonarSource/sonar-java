@@ -20,7 +20,9 @@
 package org.sonar.java.filters;
 
 import com.google.common.collect.DiscreteDomains;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Ranges;
 import com.google.common.collect.Sets;
 
@@ -29,35 +31,34 @@ import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
-import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 
-import javax.annotation.Nullable;
-
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor implements JavaIssueFilter {
 
-  @Nullable
   private String componentKey;
-  private final Map<String, Set<Integer>> ignoredLinesByComponent = Maps.newHashMap();
+  private final Map<String, Multimap<String, Integer>> ignoredLinesByComponentAndRule;
+  private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
   private final Set<String> filteredRulesKeys;
 
   public BaseTreeVisitorIssueFilter() {
-    filteredRulesKeys = ruleKeys(filteredRules());
+    ignoredLinesByComponentAndRule = Maps.newHashMap();
+    rulesKeysByRulesClass = rulesKeysByRulesClass(filteredRules());
+    filteredRulesKeys = Sets.newHashSet(rulesKeysByRulesClass.values());
   }
 
-  private static Set<String> ruleKeys(Set<Class<? extends JavaFileScanner>> rules) {
-    Set<String> results = new HashSet<>();
-    for (Class<? extends JavaFileScanner> ruleClass : rules) {
+  private static Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass(Set<Class<? extends JavaCheck>> rules) {
+    Map<Class<? extends JavaCheck>, String> results = Maps.newHashMap();
+    for (Class<? extends JavaCheck> ruleClass : rules) {
       Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, Rule.class);
       if (ruleAnnotation != null) {
-        results.add(ruleAnnotation.key());
+        results.put(ruleClass, ruleAnnotation.key());
       }
     }
     return results;
@@ -75,31 +76,32 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
 
   @Override
   public boolean accept(Issue issue) {
-    if (filteredRulesKeys.contains(issue.ruleKey().rule()) && isIgnoredLine(issue.componentKey(), issue.line())) {
+    String ruleKey = issue.ruleKey().rule();
+    if (filteredRulesKeys.contains(ruleKey) && isIgnoredLine(issue.componentKey(), ruleKey, issue.line())) {
       return false;
     }
     return true;
   }
 
-  public void ignoreIssuesInTree(Tree tree) {
+  public void ignoreIssuesInTree(Tree tree, Class<? extends JavaCheck> filteredRule) {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(tree);
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      Set<Integer> newIgnoredlines = Sets.newHashSet(Ranges.closed(firstSyntaxToken.line(), lastSyntaxToken.line()).asSet(DiscreteDomains.integers()));
-      if (componentKey == null) {
-        return;
+      if (!ignoredLinesByComponentAndRule.containsKey(componentKey)) {
+        ignoredLinesByComponentAndRule.put(componentKey, HashMultimap.<String, Integer>create());
       }
-      if (!ignoredLinesByComponent.containsKey(componentKey)) {
-        ignoredLinesByComponent.put(componentKey, newIgnoredlines);
-      } else {
-        ignoredLinesByComponent.get(componentKey).addAll(newIgnoredlines);
-      }
+      Set<Integer> filteredlines = Sets.newHashSet(Ranges.closed(firstSyntaxToken.line(), lastSyntaxToken.line()).asSet(DiscreteDomains.integers()));
+      String ruleKey = rulesKeysByRulesClass.get(filteredRule);
+      ignoredLinesByComponentAndRule.get(componentKey).putAll(ruleKey, filteredlines);
     }
   }
 
-  private boolean isIgnoredLine(String componentKey, Integer line) {
-    Set<Integer> ignoredLines = ignoredLinesByComponent.get(componentKey);
-    return ignoredLines != null && ignoredLines.contains(line);
+  private boolean isIgnoredLine(String componentKey, String ruleKey, Integer line) {
+    Multimap<String, Integer> ignoredLinesByRule = ignoredLinesByComponentAndRule.get(componentKey);
+    if (ignoredLinesByRule == null) {
+      return false;
+    }
+    return ignoredLinesByRule.get(ruleKey).contains(line);
   }
 
 }
