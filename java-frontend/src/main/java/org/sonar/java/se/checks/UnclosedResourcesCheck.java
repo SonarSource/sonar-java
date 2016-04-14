@@ -22,6 +22,7 @@ package org.sonar.java.se.checks;
 import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
 import org.sonar.java.se.SymbolicValueFactory;
@@ -69,6 +70,7 @@ public class UnclosedResourcesCheck extends SECheck {
   private static final String JAVA_IO_CLOSEABLE = "java.io.Closeable";
   private static final String JAVA_SQL_STATEMENT = "java.sql.Statement";
   private static final String[] JDBC_RESOURCE_CREATIONS = {"java.sql.Connection", JAVA_SQL_STATEMENT};
+  private static final String STREAM_TOP_HIERARCHY = "java.util.stream.BaseStream";
   private static final String[] IGNORED_CLOSEABLE_SUBTYPES = {
     "java.io.ByteArrayOutputStream",
     "java.io.ByteArrayInputStream",
@@ -77,6 +79,9 @@ public class UnclosedResourcesCheck extends SECheck {
     "java.io.StringReader",
     "java.io.StringWriter",
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
+  };
+  private static final MethodMatcher[] CLOSEABLE_EXCEPTIONS = new MethodMatcher[] {
+    MethodMatcher.create().typeDefinition("java.nio.file.FileSystems").name("getDefault")
   };
 
   @Override
@@ -111,6 +116,9 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private static boolean needsClosing(Type type) {
+    if (type.isSubtypeOf(STREAM_TOP_HIERARCHY)) {
+      return false;
+    }
     for (String ignoredTypes : IGNORED_CLOSEABLE_SUBTYPES) {
       if (type.is(ignoredTypes)) {
         return false;
@@ -356,6 +364,11 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
+      for (MethodMatcher matcher : CLOSEABLE_EXCEPTIONS) {
+        if (matcher.matches(syntaxNode)) {
+          return;
+        }
+      }
       if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && needsClosing(syntaxNode.symbolType())) {
         final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
         if (targetExpression.is(Tree.Kind.IDENTIFIER) && !isWithinTryHeader(syntaxNode)
