@@ -76,6 +76,10 @@ public class UnclosedResourcesCheck extends SECheck {
     "java.io.CharArrayWriter",
     "java.io.StringReader",
     "java.io.StringWriter",
+    "java.util.stream.Stream",
+    "java.util.stream.IntStream",
+    "java.util.stream.DoubleStream",
+    "java.util.stream.LongStream",
     "com.sun.org.apache.xml.internal.security.utils.UnsyncByteArrayOutputStream"
   };
 
