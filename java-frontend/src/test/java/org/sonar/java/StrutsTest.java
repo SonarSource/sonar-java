@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
+
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -67,7 +68,7 @@ public class StrutsTest {
     }
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
+    JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 

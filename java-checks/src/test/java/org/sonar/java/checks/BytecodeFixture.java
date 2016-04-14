@@ -36,7 +36,6 @@ import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
-import org.sonar.java.filters.PostAnalysisIssueFilters;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaCheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -67,11 +66,11 @@ public class BytecodeFixture {
     when(sensorContext.getResource(Matchers.any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
     DefaultFileSystem fs = new DefaultFileSystem(null);
     fs.add(new DefaultInputFile(file.getPath()));
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter(), new PostAnalysisIssueFilters());
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
     javaResourceLocator.setSensorContext(sensorContext);
     final List<AnalyzerMessage> analyzerMessages = new ArrayList<>();
     BytecodeVisitor visitorWithFakeContext = new ByteCodeVisitorWithFakeContext(visitor, file, javaResourceLocator, analyzerMessages);
-    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), null, null, javaResourceLocator, visitorWithFakeContext);
+    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), null, null, javaResourceLocator, null, visitorWithFakeContext);
     javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));
 
     return analyzerMessages;

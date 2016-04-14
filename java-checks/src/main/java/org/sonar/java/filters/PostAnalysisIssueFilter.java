@@ -21,30 +21,50 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableList;
 
+import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.FileSystem;
+import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.issue.batch.IssueFilter;
 import org.sonar.api.issue.batch.IssueFilterChain;
+import org.sonar.plugins.java.api.JavaFileScanner;
+import org.sonar.plugins.java.api.JavaFileScannerContext;
 
-public class PostAnalysisIssueFilters implements IssueFilter {
+public class PostAnalysisIssueFilter implements IssueFilter, JavaFileScanner {
 
-  private Iterable<JavaIssueFilter> issueFilters = ImmutableList.of();
+  private final FileSystem fs;
+  private SensorContext sensorContext;
+  private static final Iterable<JavaIssueFilter> ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
+    new EclipseI18NFilter());
 
-  public Iterable<JavaIssueFilter> getIssueFilters() {
-    return issueFilters;
+  public PostAnalysisIssueFilter(FileSystem fs) {
+    this.fs = fs;
   }
 
-  public void setIssueFilters(Iterable<JavaIssueFilter> javaIssueFilters) {
-    this.issueFilters = javaIssueFilters;
+  public void setSensorContext(SensorContext sensorContext) {
+    this.sensorContext = sensorContext;
   }
 
   @Override
   public boolean accept(Issue issue, IssueFilterChain chain) {
-    for (JavaIssueFilter javaIssueFilter : issueFilters) {
+    for (JavaIssueFilter javaIssueFilter : ISSUE_FILTERS) {
       if (!javaIssueFilter.accept(issue)) {
         return false;
       }
     }
     return chain.accept(issue);
+  }
+
+  @Override
+  public void scanFile(JavaFileScannerContext context) {
+    InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));
+    org.sonar.api.resources.File currentResource = (org.sonar.api.resources.File) sensorContext.getResource(inputFile);
+
+    String componentKey = currentResource.getEffectiveKey();
+    for (JavaIssueFilter javaIssueFilter : ISSUE_FILTERS) {
+      javaIssueFilter.setComponentKey(componentKey);
+      javaIssueFilter.scanFile(context);
+    }
   }
 
 }

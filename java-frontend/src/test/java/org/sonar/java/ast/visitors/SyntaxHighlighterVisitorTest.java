@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -104,7 +105,7 @@ public class SyntaxHighlighterVisitorTest {
   }
 
   private void scan(File file) {
-    JavaSquid squid = new JavaSquid(new JavaConfiguration(Charsets.UTF_8), null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
+    JavaSquid squid = new JavaSquid(new JavaConfiguration(Charsets.UTF_8), null, null, null, null, new CodeVisitor[] {syntaxHighlighterVisitor});
     squid.scan(Lists.newArrayList(file), Collections.<File>emptyList(), Collections.<File>emptyList());
   }
 

@@ -21,6 +21,7 @@ package org.sonar.java;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.Test;
@@ -119,7 +120,7 @@ public class SquidUserGuideTest {
         }
       }
     };
-    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
+    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 

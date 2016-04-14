@@ -148,6 +148,6 @@ public class BaseTreeVisitorIssueFilterTest {
   private static void scanFile(JavaIssueFilter filter) {
     List<JavaCheck> visitors = Lists.<JavaCheck>newArrayList(filter);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(visitors, Lists.<File>newLinkedList(), null);
-    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/filter/BaseTreeVisitorIssueFilter.java"), visitorsBridge);
+    JavaAstScanner.scanSingleFileForTests(new File("src/test/files/filters/BaseTreeVisitorIssueFilter.java"), visitorsBridge);
   }
 }

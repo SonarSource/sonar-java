@@ -22,6 +22,7 @@ package org.sonar.java;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
@@ -62,9 +64,15 @@ public class JavaSquid {
 
   public JavaSquid(JavaConfiguration conf,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
-    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Collections.singletonList(javaResourceLocator), Arrays.asList(visitors));
-    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+    JavaResourceLocator javaResourceLocator, @Nullable CodeVisitor postAnalysisIssueFilter, CodeVisitor... visitors) {
+
+    List<CodeVisitor> commonVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+    if (postAnalysisIssueFilter != null) {
+      commonVisitors.add(postAnalysisIssueFilter);
+    }
+
+    Iterable<CodeVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
+    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(commonVisitors);
     if (measurer != null) {
       Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);
