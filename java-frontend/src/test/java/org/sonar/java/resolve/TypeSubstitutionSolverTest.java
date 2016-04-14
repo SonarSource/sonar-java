@@ -83,9 +83,6 @@ public class TypeSubstitutionSolverTest {
   public void applySubstitution_on_array_with_generic() {
     JavaType.TypeVariableJavaType X = getTypeVariable("X");
     JavaSymbol.TypeJavaSymbol aSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", symbols.defaultPackage);
-    JavaType.ClassJavaType aType = (ClassJavaType) aSymbol.type;
-    // aType.interfaces = ImmutableList.of();
-    // aType.supertype = symbols.objectType;
 
     // A<{X=T}>
     JavaType aXT = parametrizedTypeCache.getParametrizedTypeType(aSymbol, new TypeSubstitution().add(X, T));

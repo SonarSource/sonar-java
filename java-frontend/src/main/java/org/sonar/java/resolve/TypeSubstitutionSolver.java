@@ -329,6 +329,9 @@ public class TypeSubstitutionSolver {
       JavaType currentBound = applySubstitution(bound, candidate);
       while (currentBound.isTagged(JavaType.TYPEVAR)) {
         JavaType newBound = candidate.substitutedType(currentBound);
+        if (currentBound.equals(newBound)) {
+          break;
+        }
         if (newBound == null && isParametrizedType(site)) {
           newBound = ((JavaType.ParametrizedTypeJavaType) site).typeSubstitution.substitutedType(currentBound);
         }

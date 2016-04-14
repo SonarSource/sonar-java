@@ -74,6 +74,10 @@ class ParametrizedMethodsWithTypeInference {
     return null;
   }
 
+  <X, T, V extends T> Object f17(C<X, T> c, B<V> b) {
+    return f17(c, b);
+  }
+
   void test_resolution(B<?> bwc, B<A> ba, B<? extends A> bwcEa) {
     f1("String");
     f1(null);
