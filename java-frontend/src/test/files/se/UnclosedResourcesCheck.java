@@ -22,6 +22,8 @@ import java.util.Formatter;
 import java.util.jar.JarFile;
 import java.io.DataInputStream;
 import java.io.File;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 
 public class A {
   private final static int MAX_LOOP = 42;
@@ -360,5 +362,10 @@ public class A {
     } catch (Exception e) {
       // Handle exception
     }
+  }
+  
+  public void useFileSystem() {
+    final FileSystem defSystem = FileSystems.getDefault(); // Compliant - default file system cannot be closed
+    defSystem.getRootDirectories();
   }
 }
