@@ -64,6 +64,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
@@ -417,6 +418,31 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       super.visitLambdaExpression(tree);
     } else {
       registerType(tree, symbols.deferedType(lambdaExpressionTree));
+    }
+  }
+
+  @Override
+  public void visitReturnStatement(ReturnStatementTree tree) {
+    super.visitReturnStatement(tree);
+    ExpressionTree expression = tree.expression();
+    if (expression != null && ((JavaType) expression.symbolType()).isTagged(JavaType.DEFERRED)) {
+      // get owner of return (method or lambda)
+      Tree parent = tree.parent();
+      while (!parent.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION)) {
+        parent = parent.parent();
+        if(parent == null) {
+          throw new IllegalStateException("Return statement was unexpected here");
+        }
+      }
+      Type infered = null;
+      if(parent.is(Tree.Kind.METHOD)) {
+        infered = ((MethodTree) parent).returnType().symbolType();
+      } else {
+        infered = ((LambdaExpressionTree) parent).symbolType();
+      }
+      AbstractTypedTree inferedExpression = ((DeferredType) expression.symbolType()).tree();
+      inferedExpression.setInferedType(infered);
+      inferedExpression.accept(this);
     }
   }
 

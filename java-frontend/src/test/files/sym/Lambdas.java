@@ -10,9 +10,18 @@ class A {
     bar(t -> t + "");
   }
 
-  void bar(F f){}
+  F bar(F f){
+    return s -> this.toString() + s;
+  }
+
+  F2 qix() {
+    return s -> { return s -> s;};
+  }
 }
 
 interface F {
   String apply(String s);
+}
+interface F2 {
+  F apply(String s);
 }

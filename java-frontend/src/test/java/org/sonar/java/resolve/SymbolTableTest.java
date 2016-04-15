@@ -26,10 +26,15 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.StatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
@@ -755,8 +760,16 @@ public class SymbolTableTest {
   @Test
   public void Lambdas() throws Exception {
     Result result = Result.createFor("Lambdas");
-    assertThat(result.symbol("bar").usages()).hasSize(1);
-    JavaSymbol sym = result.symbol("o");
+    JavaSymbol barMethod = result.symbol("bar");
+    assertThat(barMethod.usages()).hasSize(1);
+    MethodTree methodTree = (MethodTree) barMethod.declaration();
+    assertThat(((ReturnStatementTree) methodTree.block().body().get(0)).expression().symbolType()).isSameAs(result.symbol("F").type());
+
+    JavaSymbol qixMethod = result.symbol("qix");
+    LambdaExpressionTree lamdba = ((LambdaExpressionTree) ((ReturnStatementTree) ((MethodTree) qixMethod.declaration()).block().body().get(0)).expression());
+    assertThat(((ReturnStatementTree) ((BlockTree) lamdba.body()).body().get(0)).expression().symbolType()).isSameAs(result.symbol("F2").type());
+
+        JavaSymbol sym = result.symbol("o");
     assertThat(sym.type.toString()).isEqualTo("!unknown!");
     assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));
     assertThat(result.reference(9, 16)).isEqualTo(result.symbol("v", 9));
