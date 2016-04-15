@@ -27,16 +27,16 @@ import static org.fest.assertions.Assertions.assertThat;
 public class TypeSubstitutionTest {
 
   TypeSubstitution substitution;
-  JavaType.TypeVariableJavaType k;
-  JavaType.TypeVariableJavaType v;
+  TypeVariableJavaType k;
+  TypeVariableJavaType v;
   JavaType c1;
   JavaType c2;
 
   @Before
   public void setUp() {
     JavaSymbol.PackageJavaSymbol packageJavaSymbol = new JavaSymbol.PackageJavaSymbol(null, null);
-    k = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("K", packageJavaSymbol));
-    v = new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("V", packageJavaSymbol));
+    k = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("K", packageJavaSymbol));
+    v = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("V", packageJavaSymbol));
     c1 = new JavaType(JavaType.CLASS, null);
     c2 = new JavaType(JavaType.CLASS, null);
 

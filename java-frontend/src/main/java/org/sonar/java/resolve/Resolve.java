@@ -473,7 +473,7 @@ public class Resolve {
     if (substitution == null) {
       return bestSoFar;
     }
-    List<JavaType> formals = ((JavaType.MethodJavaType) methodJavaSymbol.type).argTypes;
+    List<JavaType> formals = ((MethodJavaType) methodJavaSymbol.type).argTypes;
     formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, callSite);
     if(defSite != callSite) {
       formals = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(formals, defSite);
@@ -495,7 +495,7 @@ public class Resolve {
     }
 
     Resolution resolution = new Resolution(mostSpecific);
-    JavaType returnType = ((JavaType.MethodJavaType) ((JavaSymbol.MethodJavaSymbol) mostSpecific).type).resultType;
+    JavaType returnType = ((MethodJavaType) ((JavaSymbol.MethodJavaSymbol) mostSpecific).type).resultType;
     resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, !typeParams.isEmpty(), substitution);
 
     return resolution;
@@ -521,7 +521,7 @@ public class Resolve {
       nbArgToCheck++;
     }
     for (int i = 1; i <= nbArgToCheck; i++) {
-      JavaType.ArrayJavaType lastFormal = (JavaType.ArrayJavaType) formals.get(formalsSize - 1);
+      ArrayJavaType lastFormal = (ArrayJavaType) formals.get(formalsSize - 1);
       JavaType argType = argTypes.get(argsSize - i);
       // check type of element of array or if we invoke with an array that it is a compatible array type
       if (!isAcceptableType(argType, lastFormal.elementType, autoboxing) && (nbArgToCheck != 1 || !isAcceptableType(argType, lastFormal, autoboxing))) {
@@ -538,10 +538,10 @@ public class Resolve {
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
     if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
-      return subtypeOfTypeVar(arg, (JavaType.TypeVariableJavaType) formal);
+      return subtypeOfTypeVar(arg, (TypeVariableJavaType) formal);
     }
     if (formal.isArray() && arg.isArray()) {
-      return isAcceptableType(((JavaType.ArrayJavaType) arg).elementType(), ((JavaType.ArrayJavaType) formal).elementType(), autoboxing);
+      return isAcceptableType(((ArrayJavaType) arg).elementType(), ((ArrayJavaType) formal).elementType(), autoboxing);
     }
 
     if (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal)) {
@@ -558,9 +558,9 @@ public class Resolve {
     return isParametrizedType(formal) && !isParametrizedType(arg) && types.isSubtype(arg, formal.erasure());
   }
 
-  private static boolean subtypeOfTypeVar(JavaType arg, JavaType.TypeVariableJavaType formal) {
+  private static boolean subtypeOfTypeVar(JavaType arg, TypeVariableJavaType formal) {
     for (JavaType bound : formal.bounds()) {
-      if ((bound.isTagged(JavaType.TYPEVAR) && !subtypeOfTypeVar(arg, (JavaType.TypeVariableJavaType) bound))
+      if ((bound.isTagged(JavaType.TYPEVAR) && !subtypeOfTypeVar(arg, (TypeVariableJavaType) bound))
         || !arg.isSubtypeOf(bound)) {
         return false;
       }
@@ -573,7 +573,7 @@ public class Resolve {
   }
 
   private static boolean isParametrizedType(JavaType type) {
-    return type instanceof JavaType.ParametrizedTypeJavaType;
+    return type instanceof ParametrizedTypeJavaType;
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {
@@ -612,8 +612,8 @@ public class Resolve {
    * @return true, if signature of m1 is more specific than signature of m2
    */
   private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, TypeSubstitution substitution) {
-    List<JavaType> m1ArgTypes = ((JavaType.MethodJavaType) m1.type).argTypes;
-    List<JavaType> m2ArgTypes = ((JavaType.MethodJavaType) m2.type).argTypes;
+    List<JavaType> m1ArgTypes = ((MethodJavaType) m1.type).argTypes;
+    List<JavaType> m2ArgTypes = ((MethodJavaType) m2.type).argTypes;
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
     boolean m1VarArity = methodJavaSymbol.isVarArgs();
     boolean m2VarArity = ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs();
@@ -855,7 +855,7 @@ public class Resolve {
     public JavaType type() {
       if (type == null) {
         if(symbol.isKind(JavaSymbol.MTH)) {
-          return ((JavaType.MethodJavaType)symbol.type).resultType;
+          return ((MethodJavaType)symbol.type).resultType;
         }
         if(symbol.isUnknown() || symbol.isKind(JavaSymbol.PCK)) {
           return Symbols.unknownType;

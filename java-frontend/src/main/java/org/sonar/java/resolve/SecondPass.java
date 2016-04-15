@@ -68,7 +68,7 @@ public class SecondPass implements JavaSymbol.Completer {
 
   private void complete(JavaSymbol.TypeJavaSymbol symbol) {
     Resolve.Env env = semanticModel.getEnv(symbol);
-    JavaType.ClassJavaType type = (JavaType.ClassJavaType) symbol.type;
+    ClassJavaType type = (ClassJavaType) symbol.type;
 
     if ((symbol.flags() & Flags.ANNOTATION) == 0) {
       // JLS8 15.8.3 If this is a class or interface (default methods), enter symbol for "this"
@@ -115,7 +115,7 @@ public class SecondPass implements JavaSymbol.Completer {
     }
   }
 
-  private void populateSuperclass(JavaSymbol.TypeJavaSymbol symbol, Resolve.Env env, JavaType.ClassJavaType type) {
+  private void populateSuperclass(JavaSymbol.TypeJavaSymbol symbol, Resolve.Env env, ClassJavaType type) {
     ClassTree tree = symbol.declaration;
     Tree superClassTree = tree.superClass();
     if (superClassTree != null) {
@@ -124,7 +124,7 @@ public class SecondPass implements JavaSymbol.Completer {
     } else if (tree.is(Tree.Kind.ENUM)) {
       // JLS8 8.9: The direct superclass of an enum type E is Enum<E>.
       Scope enumParameters = ((JavaSymbol.TypeJavaSymbol) symbols.enumType.symbol()).typeParameters();
-      JavaType.TypeVariableJavaType enumParameter = (JavaType.TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
+      TypeVariableJavaType enumParameter = (TypeVariableJavaType) enumParameters.lookup("E").get(0).type();
       type.supertype = parametrizedTypeCache.getParametrizedTypeType(symbols.enumType.symbol, new TypeSubstitution().add(enumParameter, type));
     } else if (tree.is(Tree.Kind.CLASS, Tree.Kind.INTERFACE)) {
       // For CLASS JLS8 8.1.4: the direct superclass of the class type C<F1,...,Fn> is
@@ -147,18 +147,18 @@ public class SecondPass implements JavaSymbol.Completer {
           bounds.add(resolveType(env, boundTree));
         }
       }
-      ((JavaType.TypeVariableJavaType) semanticModel.getSymbol(typeParameterTree).type()).bounds = bounds;
+      ((TypeVariableJavaType) semanticModel.getSymbol(typeParameterTree).type()).bounds = bounds;
     }
   }
 
   private static void checkHierarchyCycles(JavaType baseType) {
-    Set<JavaType.ClassJavaType> types = Sets.newHashSet();
-    JavaType.ClassJavaType type = (JavaType.ClassJavaType) baseType;
+    Set<ClassJavaType> types = Sets.newHashSet();
+    ClassJavaType type = (ClassJavaType) baseType;
     while (type != null) {
       if (!types.add(type)) {
         throw new IllegalStateException("Cycling class hierarchy detected with symbol : " + baseType.symbol.name + ".");
       }
-      type = (JavaType.ClassJavaType) type.symbol.getSuperclass();
+      type = (ClassJavaType) type.symbol.getSuperclass();
     }
   }
 
@@ -196,7 +196,7 @@ public class SecondPass implements JavaSymbol.Completer {
         symbol.flags |= Flags.VARARGS;
       }
     }
-    JavaType.MethodJavaType methodType = new JavaType.MethodJavaType(argTypes, returnType, thrownTypes.build(), (JavaSymbol.TypeJavaSymbol) symbol.owner);
+    MethodJavaType methodType = new MethodJavaType(argTypes, returnType, thrownTypes.build(), (JavaSymbol.TypeJavaSymbol) symbol.owner);
     symbol.setMethodType(methodType);
   }
 

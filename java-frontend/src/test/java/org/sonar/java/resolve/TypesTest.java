@@ -73,17 +73,17 @@ public class TypesTest {
     // TODO test void
 
     // null
-    JavaType.ArrayJavaType arrayTypeInt = new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass);
-    JavaType.ArrayJavaType arrayTypeShort = new JavaType.ArrayJavaType(symbols.shortType, symbols.arrayClass);
+    ArrayJavaType arrayTypeInt = new ArrayJavaType(symbols.intType, symbols.arrayClass);
+    ArrayJavaType arrayTypeShort = new ArrayJavaType(symbols.shortType, symbols.arrayClass);
     shouldBeSubtype(arrayTypeShort, Arrays.<JavaType>asList(arrayTypeShort, arrayTypeInt));
     shouldNotBeSubtype(symbols.nullType, Arrays.asList(symbols.booleanType, symbols.byteType, symbols.charType, symbols.shortType, symbols.intType, symbols.longType, symbols.floatType, symbols.doubleType));
     shouldBeSubtype(symbols.nullType, Arrays.asList(symbols.nullType, arrayTypeInt, symbols.objectType));
     shouldBeSubtype(arrayTypeInt, Arrays.asList(symbols.objectType));
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", symbols.defaultPackage);
-    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
+    ClassJavaType classType = (ClassJavaType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
     JavaSymbol.TypeJavaSymbol subtypeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MySubtype", symbols.defaultPackage);
-    JavaType.ClassJavaType subClassType = (JavaType.ClassJavaType) subtypeSymbol.type;
+    ClassJavaType subClassType = (ClassJavaType) subtypeSymbol.type;
     subClassType.supertype = classType;
     subClassType.interfaces = Lists.newArrayList();
     shouldBeSubtype(subClassType, Arrays.<JavaType>asList(classType, subClassType));
@@ -92,9 +92,9 @@ public class TypesTest {
 
   @Test
   public void array_types_equality() throws Exception {
-    JavaType.ArrayJavaType arrayInt= new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass);
-    JavaType.ArrayJavaType arrayInt2= new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass);
-    JavaType.ArrayJavaType arrayBoolean = new JavaType.ArrayJavaType(symbols.booleanType, symbols.arrayClass);
+    ArrayJavaType arrayInt= new ArrayJavaType(symbols.intType, symbols.arrayClass);
+    ArrayJavaType arrayInt2= new ArrayJavaType(symbols.intType, symbols.arrayClass);
+    ArrayJavaType arrayBoolean = new ArrayJavaType(symbols.booleanType, symbols.arrayClass);
     assertThat(arrayInt.equals(arrayInt2)).isTrue();
     assertThat(arrayInt2.equals(arrayInt)).isTrue();
     assertThat(arrayInt2.equals(arrayBoolean)).isFalse();

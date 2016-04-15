@@ -59,7 +59,7 @@ public class TypeAndReferenceSolverTest {
   private Resolve.Env env;
 
   private JavaSymbol.TypeJavaSymbol classSymbol;
-  private JavaType.ClassJavaType classType;
+  private ClassJavaType classType;
 
   private JavaSymbol variableSymbol;
   private JavaSymbol methodSymbol;
@@ -74,14 +74,14 @@ public class TypeAndReferenceSolverTest {
     p.members = new Scope(p);
     // class MyClass
     classSymbol = new JavaSymbol.TypeJavaSymbol(0, "MyClass", p);
-    classType = (JavaType.ClassJavaType) classSymbol.type;
+    classType = (ClassJavaType) classSymbol.type;
     classType.supertype = symbols.objectType;
     classType.interfaces = ImmutableList.of();
     classSymbol.members = new Scope(classSymbol);
     p.members.enter(classSymbol);
     // int[][] var;
     variableSymbol = new JavaSymbol.VariableJavaSymbol(0, "var", classSymbol);
-    variableSymbol.type = new JavaType.ArrayJavaType(new JavaType.ArrayJavaType(symbols.intType, symbols.arrayClass), symbols.arrayClass);
+    variableSymbol.type = new ArrayJavaType(new ArrayJavaType(symbols.intType, symbols.arrayClass), symbols.arrayClass);
     classSymbol.members.enter(variableSymbol);
 
     // MyClass var2;
@@ -89,12 +89,12 @@ public class TypeAndReferenceSolverTest {
 
     // int method()
     methodSymbol = new JavaSymbol.MethodJavaSymbol(0, "method", classSymbol);
-    ((JavaSymbol.MethodJavaSymbol)methodSymbol).setMethodType(new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
+    ((JavaSymbol.MethodJavaSymbol)methodSymbol).setMethodType(new MethodJavaType(ImmutableList.<JavaType>of(), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
     classSymbol.members.enter(methodSymbol);
 
     // int method()
     argMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "argMethod", classSymbol);
-    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new JavaType.MethodJavaType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
+    ((JavaSymbol.MethodJavaSymbol)argMethodSymbol).setMethodType(new MethodJavaType(ImmutableList.of(symbols.intType), symbols.intType, ImmutableList.<JavaType>of(), classSymbol));
     classSymbol.members.enter(argMethodSymbol);
 
     classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "this", classType, classSymbol));
@@ -251,9 +251,9 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("new MyClass() {}")).isSameAs(symbols.unknownType);
 
     // TODO proper implementation of this test requires definition of equality for types
-    assertThat(typeOf("new MyClass[]{}")).isInstanceOf(JavaType.ArrayJavaType.class);
-    assertThat(typeOf("new int[]{}")).isInstanceOf(JavaType.ArrayJavaType.class);
-    assertThat(typeOf("new int[][]{}")).isInstanceOf(JavaType.ArrayJavaType.class);
+    assertThat(typeOf("new MyClass[]{}")).isInstanceOf(ArrayJavaType.class);
+    assertThat(typeOf("new int[]{}")).isInstanceOf(ArrayJavaType.class);
+    assertThat(typeOf("new int[][]{}")).isInstanceOf(ArrayJavaType.class);
   }
 
   @Test
@@ -265,8 +265,8 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOfExpression("MyClass.var")).isSameAs(variableSymbol.type);
 
     // qualified_identifier[expression]
-    assertThat(typeOf("var[42] = 12")).isSameAs(((JavaType.ArrayJavaType) variableSymbol.type).elementType);
-    assertThat(typeOfExpression("var[42]")).isSameAs(((JavaType.ArrayJavaType) variableSymbol.type).elementType);
+    assertThat(typeOf("var[42] = 12")).isSameAs(((ArrayJavaType) variableSymbol.type).elementType);
+    assertThat(typeOfExpression("var[42]")).isSameAs(((ArrayJavaType) variableSymbol.type).elementType);
 
     // qualified_identifier[].class
     assertThat(typeOfExpression("id[].class").erasure()).isSameAs(symbols.classType);
@@ -280,8 +280,8 @@ public class TypeAndReferenceSolverTest {
     // qualified_identifier.class
     JavaType idClassType = typeOfExpression("id.class");
     assertThat(idClassType.erasure()).isSameAs(symbols.classType);
-    assertThat(idClassType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    JavaType.ParametrizedTypeJavaType idClassTypeParameterized = (JavaType.ParametrizedTypeJavaType) idClassType;
+    assertThat(idClassType).isInstanceOf(ParametrizedTypeJavaType.class);
+    ParametrizedTypeJavaType idClassTypeParameterized = (ParametrizedTypeJavaType) idClassType;
     assertThat(idClassTypeParameterized.typeSubstitution.substitutedType(idClassTypeParameterized.typeParameters().get(0))).isSameAs(Symbols.unknownType);
     // TODO id.<...>...
     assertThat(typeOfExpression("MyClass.this")).isSameAs(classSymbol.type);
@@ -293,15 +293,15 @@ public class TypeAndReferenceSolverTest {
   public void primary_basic_type() {
     JavaType intClassType = typeOfExpression("int.class");
     assertThat(intClassType.erasure()).isSameAs(symbols.classType);
-    assertThat(intClassType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    JavaType.ParametrizedTypeJavaType intClassTypeParameterized = (JavaType.ParametrizedTypeJavaType) intClassType;
+    assertThat(intClassType).isInstanceOf(ParametrizedTypeJavaType.class);
+    ParametrizedTypeJavaType intClassTypeParameterized = (ParametrizedTypeJavaType) intClassType;
     assertThat(intClassTypeParameterized.typeSubstitution.substitutedType(intClassTypeParameterized.typeParameters().get(0))).isSameAs(symbols.intType.primitiveWrapperType());
 
 
     JavaType stringClassType = typeOfExpression("java.lang.String.class");
     assertThat(stringClassType.erasure()).isSameAs(symbols.classType);
-    assertThat(stringClassType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    JavaType.ParametrizedTypeJavaType StringClassTypeParameterized = (JavaType.ParametrizedTypeJavaType) stringClassType;
+    assertThat(stringClassType).isInstanceOf(ParametrizedTypeJavaType.class);
+    ParametrizedTypeJavaType StringClassTypeParameterized = (ParametrizedTypeJavaType) stringClassType;
     assertThat(StringClassTypeParameterized.typeSubstitution.substitutedType(StringClassTypeParameterized.typeParameters().get(0))).isSameAs(symbols.stringType);
 
     assertThat(typeOfExpression("int[].class").erasure()).isSameAs(symbols.classType);
@@ -355,7 +355,7 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOfExpression("var[42].length")).isSameAs(symbols.intType);
 
     // array access
-    assertThat(typeOfExpression("var[42][42]")).isSameAs(((JavaType.ArrayJavaType) ((JavaType.ArrayJavaType) variableSymbol.type).elementType).elementType);
+    assertThat(typeOfExpression("var[42][42]")).isSameAs(((ArrayJavaType) ((ArrayJavaType) variableSymbol.type).elementType).elementType);
   }
 
   @Test
@@ -491,13 +491,13 @@ public class TypeAndReferenceSolverTest {
     assertThat(typeOf("true ? new MyClass() : null")).isSameAs(classType);
     assertThat(typeOf("true ? new MyClass() : new Object()")).isSameAs(symbols.objectType);
     assertThat(typeOf("true ? new Object() : new MyClass()")).isSameAs(symbols.objectType);
-    JavaType.ParametrizedTypeJavaType expectedType = (JavaType.ParametrizedTypeJavaType) typeOf("new java.util.ArrayList<? extends String>()");
+    ParametrizedTypeJavaType expectedType = (ParametrizedTypeJavaType) typeOf("new java.util.ArrayList<? extends String>()");
     JavaType testedType = typeOf("true ? new java.util.ArrayList<? extends String>() : new java.util.ArrayList<String>()");
-    assertThat(testedType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    assertThat(((JavaType.ParametrizedTypeJavaType) testedType).typeSubstitution).isEqualTo(expectedType.typeSubstitution);
+    assertThat(testedType).isInstanceOf(ParametrizedTypeJavaType.class);
+    assertThat(((ParametrizedTypeJavaType) testedType).typeSubstitution).isEqualTo(expectedType.typeSubstitution);
 
     testedType = typeOf("true ? new java.util.ArrayList<Integer>() : new java.util.ArrayList<String>()");
-    assertThat(testedType).isInstanceOf(JavaType.ClassJavaType.class);
+    assertThat(testedType).isInstanceOf(ClassJavaType.class);
     assertThat(testedType.is("java.util.ArrayList")).isTrue();
   }
 
@@ -516,7 +516,7 @@ public class TypeAndReferenceSolverTest {
   public void parametrized_method_return_type_is_array() {
     Type arrayType = returnTypeOf("<T> T[] foo(T t) { return null; }", "this.<String>foo(\"hello\");");
     assertThat(arrayType.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
+    assertThat(((ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
   }
 
   @Test
@@ -526,7 +526,7 @@ public class TypeAndReferenceSolverTest {
       assertThat(arrayType.isArray()).isTrue();
       arrayType = ((Type.ArrayType) arrayType).elementType();
     }
-    assertThat(((JavaType.ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
+    assertThat(((ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
   }
 
   private Type returnTypeOf(String method, String invocation) {

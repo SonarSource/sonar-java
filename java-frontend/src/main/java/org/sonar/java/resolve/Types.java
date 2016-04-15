@@ -66,7 +66,7 @@ public class Types {
             result = t.getSymbol().getSuperclass() == s;
             break;
           }
-          result = isSubtype(((JavaType.ArrayJavaType) t).elementType(), ((JavaType.ArrayJavaType) s).elementType());
+          result = isSubtype(((ArrayJavaType) t).elementType(), ((ArrayJavaType) s).elementType());
           break;
         case JavaType.CLASS:
         case JavaType.WILDCARD:

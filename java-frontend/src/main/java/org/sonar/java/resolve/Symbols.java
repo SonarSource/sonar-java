@@ -43,7 +43,7 @@ public class Symbols {
   /**
    * Type, which can't be modelled for the moment.
    */
-  static final JavaType.UnknownType unknownType;
+  static final UnknownType unknownType;
   public static final JavaSymbol.TypeJavaSymbol unknownSymbol;
   public static final JavaSymbol.MethodJavaSymbol unknownMethodSymbol;
 
@@ -78,7 +78,7 @@ public class Symbols {
   final JavaType classType;
   final JavaType stringType;
 
-  final JavaType.WildCardType unboundedWildcard;
+  final WildCardType unboundedWildcard;
 
   /**
    * {@link java.lang.annotation.Annotation}
@@ -115,7 +115,7 @@ public class Symbols {
       }
 
     };
-    unknownType = new JavaType.UnknownType(unknownSymbol);
+    unknownType = new UnknownType(unknownSymbol);
     unknownSymbol.type = unknownType;
     unknownMethodSymbol = new JavaSymbol.MethodJavaSymbol(0, "!unknown!", unknownSymbol) {
       @Override
@@ -145,7 +145,7 @@ public class Symbols {
 
     predefClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "", rootPackage);
     predefClass.members = new Scope(predefClass);
-    ((JavaType.ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) predefClass.type).interfaces = ImmutableList.of();
 
     // TODO should have type "noType":
     noSymbol = new JavaSymbol.TypeJavaSymbol(0, "", rootPackage);
@@ -180,7 +180,7 @@ public class Symbols {
     annotationType = bytecodeCompleter.loadClass("java.lang.annotation.Annotation").type;
     enumType = bytecodeCompleter.loadClass("java.lang.Enum").type;
 
-    unboundedWildcard = new JavaType.WildCardType(objectType, JavaType.WildCardType.BoundType.UNBOUNDED);
+    unboundedWildcard = new WildCardType(objectType, WildCardType.BoundType.UNBOUNDED);
 
     // Associate boxed types
     boxedTypes = HashBiMap.create();
@@ -200,7 +200,7 @@ public class Symbols {
 
     // TODO comment me
     arrayClass = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "Array", noSymbol);
-    JavaType.ClassJavaType arrayClassType = (JavaType.ClassJavaType) arrayClass.type;
+    ClassJavaType arrayClassType = (ClassJavaType) arrayClass.type;
     arrayClassType.supertype = objectType;
     arrayClassType.interfaces = ImmutableList.of(cloneableType, serializableType);
     arrayClass.members = new Scope(arrayClass);
@@ -217,7 +217,7 @@ public class Symbols {
     JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, name, rootPackage);
     symbol.members = new Scope(symbol);
     predefClass.members.enter(symbol);
-    ((JavaType.ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+    ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
     symbol.type.tag = tag;
     return symbol.type;
   }
@@ -264,7 +264,7 @@ public class Symbols {
   }
 
   private void enterBinop(String name, JavaType left, JavaType right, JavaType result) {
-    JavaType type = new JavaType.MethodJavaType(ImmutableList.of(left, right), result, ImmutableList.<JavaType>of(), methodClass);
+    JavaType type = new MethodJavaType(ImmutableList.of(left, right), result, ImmutableList.<JavaType>of(), methodClass);
     JavaSymbol symbol = new JavaSymbol.MethodJavaSymbol(Flags.PUBLIC | Flags.STATIC, name, type, predefClass);
     predefClass.members.enter(symbol);
   }

@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 import org.sonar.check.Rule;
 import org.sonar.java.model.LiteralUtils;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.java.resolve.JavaType.ClassJavaType;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;

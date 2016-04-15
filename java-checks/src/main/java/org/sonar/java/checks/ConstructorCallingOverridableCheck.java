@@ -22,7 +22,7 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.java.resolve.JavaType.ClassJavaType;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.SemanticModel;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;

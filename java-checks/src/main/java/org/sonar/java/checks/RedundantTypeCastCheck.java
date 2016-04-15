@@ -23,7 +23,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.MethodJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -77,7 +77,7 @@ public class RedundantTypeCastCheck extends IssuableSubscriptionVisitor {
       while (!method.is(Tree.Kind.METHOD, Tree.Kind.LAMBDA_EXPRESSION)) {
         method = method.parent();
       }
-      target = method.is(Tree.Kind.LAMBDA_EXPRESSION) ? null : ((JavaType.MethodJavaType) ((MethodTree) method).symbol().type()).resultType();
+      target = method.is(Tree.Kind.LAMBDA_EXPRESSION) ? null : ((MethodJavaType) ((MethodTree) method).symbol().type()).resultType();
     } else if (parent.is(Tree.Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) parent;
       target = variableTree.symbol().type();

@@ -24,6 +24,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.MethodJavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.SymbolMetadataResolve;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -83,7 +85,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static JavaType resultType(JavaSymbol.MethodJavaSymbol method) {
-    return ((JavaType.MethodJavaType) method.type()).resultType();
+    return ((MethodJavaType) method.type()).resultType();
   }
 
   private static boolean specializationOfReturnType(JavaType methodResultType, JavaType overrideeResultType) {
@@ -106,7 +108,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean useRawTypeOfParametrizedType(Type methodParam, Type overrideeParam) {
-    return overrideeParam instanceof JavaType.ParametrizedTypeJavaType && methodParam.equals(overrideeParam.erasure());
+    return overrideeParam instanceof ParametrizedTypeJavaType && methodParam.equals(overrideeParam.erasure());
   }
 
   private static boolean differentAnnotations(List<JavaSymbol> methodParamSymbols, List<JavaSymbol> overrideeParamSymbols) {

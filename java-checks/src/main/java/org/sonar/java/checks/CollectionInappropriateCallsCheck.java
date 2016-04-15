@@ -28,6 +28,8 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
@@ -92,9 +94,9 @@ public class CollectionInappropriateCallsCheck extends AbstractMethodDetection {
 
   @Nullable
   private static Type getTypeParameter(Type collectionType) {
-    if (collectionType instanceof JavaType.ParametrizedTypeJavaType) {
-      JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) collectionType;
-      JavaType.TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
+    if (collectionType instanceof ParametrizedTypeJavaType) {
+      ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) collectionType;
+      TypeVariableJavaType first = Iterables.getFirst(parametrizedType.typeParameters(), null);
       if (first != null) {
         return parametrizedType.substitution(first);
       }

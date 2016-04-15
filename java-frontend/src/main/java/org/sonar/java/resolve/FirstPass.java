@@ -245,7 +245,7 @@ public class FirstPass extends BaseTreeVisitor {
     semanticModel.saveEnv(symbol, env);
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
-      symbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
+      symbol.addTypeParameter((TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
     }
     symbol.typeParameters = env.scope;
@@ -263,21 +263,21 @@ public class FirstPass extends BaseTreeVisitor {
     //Register default constructor
     if(tree.is(Tree.Kind.CLASS) && classEnv.scope.lookup(CONSTRUCTOR_NAME).isEmpty()) {
       JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
-      JavaType.MethodJavaType defaultConstructorType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType defaultConstructorType = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), symbol);
       defaultConstructor.setMethodType(defaultConstructorType);
       classEnv.scope.enter(defaultConstructor);
     } else if (tree.is(Tree.Kind.ENUM)) {
       // implicit methods from enum: JLS8 : 8.9.2
       // add 'public static E[] values()'
       JavaSymbol.MethodJavaSymbol valuesMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "values", symbol);
-      JavaType.ArrayJavaType enumArrayType = new JavaType.ArrayJavaType(symbol.type, symbols.arrayClass);
-      JavaType.MethodJavaType valuesMethodType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), enumArrayType, ImmutableList.<JavaType>of(), symbol);
+      ArrayJavaType enumArrayType = new ArrayJavaType(symbol.type, symbols.arrayClass);
+      MethodJavaType valuesMethodType = new MethodJavaType(ImmutableList.<JavaType>of(), enumArrayType, ImmutableList.<JavaType>of(), symbol);
       valuesMethod.setMethodType(valuesMethodType);
       classEnv.scope.enter(valuesMethod);
 
       // add 'public static E valueOf(String name)'
       JavaSymbol.MethodJavaSymbol valueOfMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "valueOf", symbol);
-      JavaType.MethodJavaType valueOfMethodType = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, ImmutableList.<JavaType>of(), symbol);
+      MethodJavaType valueOfMethodType = new MethodJavaType(ImmutableList.<JavaType>of(symbols.stringType), symbol.type, ImmutableList.<JavaType>of(), symbol);
       valueOfMethod.setMethodType(valueOfMethodType);
       classEnv.scope.enter(valueOfMethod);
     }
@@ -315,7 +315,7 @@ public class FirstPass extends BaseTreeVisitor {
     createNewEnvironment(tree.typeParameters());
     for (TypeParameterTree typeParameterTree : tree.typeParameters()) {
       JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol(typeParameterTree.identifier().name(), symbol);
-      symbol.addTypeParameter((JavaType.TypeVariableJavaType) typeVariableSymbol.type);
+      symbol.addTypeParameter((TypeVariableJavaType) typeVariableSymbol.type);
       enterSymbol(typeParameterTree, typeVariableSymbol);
     }
     // Save current environment to be able to complete method later

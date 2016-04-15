@@ -28,18 +28,18 @@ import java.util.List;
 import java.util.Map;
 
 public class TypeSubstitution {
-  private Map<JavaType.TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
+  private Map<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
 
   @CheckForNull
   public JavaType substitutedType(JavaType javaType) {
     return substitutions.get(javaType);
   }
 
-  public List<JavaType.TypeVariableJavaType> typeVariables() {
+  public List<TypeVariableJavaType> typeVariables() {
     return Lists.newArrayList(substitutions.keySet());
   }
 
-  public List<Map.Entry<JavaType.TypeVariableJavaType, JavaType>> substitutionEntries() {
+  public List<Map.Entry<TypeVariableJavaType, JavaType>> substitutionEntries() {
     return Lists.newArrayList(substitutions.entrySet());
   }
 
@@ -47,7 +47,7 @@ public class TypeSubstitution {
     return Lists.newArrayList(substitutions.values());
   }
 
-  public TypeSubstitution add(JavaType.TypeVariableJavaType typeVariableType, JavaType javaType) {
+  public TypeSubstitution add(TypeVariableJavaType typeVariableType, JavaType javaType) {
     substitutions.put(typeVariableType, javaType);
     return this;
   }

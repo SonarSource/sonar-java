@@ -26,6 +26,8 @@ import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -57,7 +59,7 @@ public class GenericsSubstitutionFromBytecode {
       if(tree.is(Tree.Kind.CLASS)) {
         ClassTree classTree = (ClassTree) tree;
         JavaSymbol QSymbol = ((JavaType) classTree.superClass().symbolType()).getSymbol().typeParameters().lookup("Q").iterator().next();
-        substitution = ((JavaType.ParametrizedTypeJavaType) classTree.superClass().symbolType()).substitution((JavaType.TypeVariableJavaType) QSymbol.type());
+        substitution = ((ParametrizedTypeJavaType) classTree.superClass().symbolType()).substitution((TypeVariableJavaType) QSymbol.type());
         assertThat(substitution).isNotNull();
       } else {
         AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) tree;

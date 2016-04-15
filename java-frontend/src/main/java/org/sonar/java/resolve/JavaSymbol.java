@@ -300,14 +300,14 @@ public class JavaSymbol implements Symbol {
     private String fullyQualifiedName;
     Scope members;
     Scope typeParameters;
-    List<JavaType.TypeVariableJavaType> typeVariableTypes;
+    List<TypeVariableJavaType> typeVariableTypes;
     ClassTree declaration;
     private final String internalName;
     private final Multiset<String> internalNames = HashMultiset.create();
 
     public TypeJavaSymbol(int flags, String name, JavaSymbol owner) {
       super(TYP, flags, name, owner);
-      this.type = new JavaType.ClassJavaType(this);
+      this.type = new ClassJavaType(this);
       this.typeVariableTypes = Lists.newArrayList();
       if (owner.isMethodSymbol()) {
         // declaration of a class or an anonymous class in a method
@@ -329,19 +329,19 @@ public class JavaSymbol implements Symbol {
       return internalName;
     }
 
-    public void addTypeParameter(JavaType.TypeVariableJavaType typeVariableType) {
+    public void addTypeParameter(TypeVariableJavaType typeVariableType) {
       typeVariableTypes.add(typeVariableType);
     }
 
     @Nullable
     public JavaType getSuperclass() {
       complete();
-      return ((JavaType.ClassJavaType) type).supertype;
+      return ((ClassJavaType) type).supertype;
     }
 
     public List<JavaType> getInterfaces() {
       complete();
-      return ((JavaType.ClassJavaType) type).interfaces;
+      return ((ClassJavaType) type).interfaces;
     }
 
     public Scope members() {
@@ -377,23 +377,23 @@ public class JavaSymbol implements Symbol {
      * Includes superclass and super interface hierarchy.
      * @return list of classTypes.
      */
-    public Set<JavaType.ClassJavaType> superTypes() {
-      ImmutableSet.Builder<JavaType.ClassJavaType> types = ImmutableSet.builder();
-      JavaType.ClassJavaType superClassType = (JavaType.ClassJavaType) this.superClass();
+    public Set<ClassJavaType> superTypes() {
+      ImmutableSet.Builder<ClassJavaType> types = ImmutableSet.builder();
+      ClassJavaType superClassType = (ClassJavaType) this.superClass();
       types.addAll(this.interfacesOfType());
       while (superClassType != null) {
         types.add(superClassType);
         TypeJavaSymbol superClassSymbol = superClassType.getSymbol();
         types.addAll(superClassSymbol.interfacesOfType());
-        superClassType = (JavaType.ClassJavaType) superClassSymbol.superClass();
+        superClassType = (ClassJavaType) superClassSymbol.superClass();
       }
       return types.build();
     }
 
-    private Set<JavaType.ClassJavaType> interfacesOfType() {
-      ImmutableSet.Builder<JavaType.ClassJavaType> builder = ImmutableSet.builder();
+    private Set<ClassJavaType> interfacesOfType() {
+      ImmutableSet.Builder<ClassJavaType> builder = ImmutableSet.builder();
       for (JavaType interfaceType : getInterfaces()) {
-        JavaType.ClassJavaType classType = (JavaType.ClassJavaType) interfaceType;
+        ClassJavaType classType = (ClassJavaType) interfaceType;
         builder.add(classType);
         builder.addAll(classType.getSymbol().interfacesOfType());
       }
@@ -466,13 +466,13 @@ public class JavaSymbol implements Symbol {
     TypeJavaSymbol returnType;
     Scope parameters;
     Scope typeParameters;
-    List<JavaType.TypeVariableJavaType> typeVariableTypes;
+    List<TypeVariableJavaType> typeVariableTypes;
     MethodTree declaration;
 
     public MethodJavaSymbol(int flags, String name, JavaType type, JavaSymbol owner) {
       super(MTH, flags, name, owner);
       super.type = type;
-      this.returnType = ((JavaType.MethodJavaType) type).resultType.symbol;
+      this.returnType = ((MethodJavaType) type).resultType.symbol;
       this.typeVariableTypes = Lists.newArrayList();
     }
 
@@ -491,14 +491,14 @@ public class JavaSymbol implements Symbol {
 
     private List<JavaType> getParametersTypes() {
       Preconditions.checkState(super.type != null);
-      return ((JavaType.MethodJavaType) super.type).argTypes;
+      return ((MethodJavaType) super.type).argTypes;
     }
 
     public Scope typeParameters() {
       return typeParameters;
     }
 
-    public void setMethodType(JavaType.MethodJavaType methodType) {
+    public void setMethodType(MethodJavaType methodType) {
       super.type = methodType;
       if (methodType.resultType != null) {
         this.returnType = methodType.resultType.symbol;
@@ -512,7 +512,7 @@ public class JavaSymbol implements Symbol {
       }
       TypeJavaSymbol enclosingClass = enclosingClass();
       boolean unknownFound = false;
-      for (JavaType.ClassJavaType superType : enclosingClass.superTypes()) {
+      for (ClassJavaType superType : enclosingClass.superTypes()) {
         MethodJavaSymbol overridden = overriddenSymbolFrom(superType);
         if (overridden != null) {
           if (!overridden.isUnknown()) {
@@ -529,7 +529,7 @@ public class JavaSymbol implements Symbol {
     }
 
     @Nullable
-    private MethodJavaSymbol overriddenSymbolFrom(JavaType.ClassJavaType classType) {
+    private MethodJavaSymbol overriddenSymbolFrom(ClassJavaType classType) {
       if (classType.isUnknown()) {
         return Symbols.unknownMethodSymbol;
       }
@@ -567,7 +567,7 @@ public class JavaSymbol implements Symbol {
     }
 
     @CheckForNull
-    public Boolean checkOverridingParameters(MethodJavaSymbol overridee, JavaType.ClassJavaType classType) {
+    public Boolean checkOverridingParameters(MethodJavaSymbol overridee, ClassJavaType classType) {
       // same number and type of formal parameters
       if (getParametersTypes().size() != overridee.getParametersTypes().size()) {
         return false;
@@ -581,8 +581,8 @@ public class JavaSymbol implements Symbol {
         // Generics type should have same erasure see JLS8 8.4.2
 
         JavaType overrideeType = overridee.getParametersTypes().get(i);
-        if (classType instanceof JavaType.ParametrizedTypeJavaType) {
-          overrideeType = ((JavaType.ParametrizedTypeJavaType) classType).typeSubstitution.substitutedType(overrideeType);
+        if (classType instanceof ParametrizedTypeJavaType) {
+          overrideeType = ((ParametrizedTypeJavaType) classType).typeSubstitution.substitutedType(overrideeType);
           if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
           }
@@ -599,7 +599,7 @@ public class JavaSymbol implements Symbol {
       return isFlag(Flags.VARARGS);
     }
 
-    public void addTypeParameter(JavaType.TypeVariableJavaType typeVariableType) {
+    public void addTypeParameter(TypeVariableJavaType typeVariableType) {
       typeVariableTypes.add(typeVariableType);
     }
 
@@ -615,7 +615,7 @@ public class JavaSymbol implements Symbol {
 
     @Override
     public List<org.sonar.plugins.java.api.semantic.Type> thrownTypes() {
-      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((JavaType.MethodJavaType) super.type).thrown);
+      return Lists.<org.sonar.plugins.java.api.semantic.Type>newArrayList(((MethodJavaType) super.type).thrown);
     }
 
     @Override
@@ -634,7 +634,7 @@ public class JavaSymbol implements Symbol {
   public static class TypeVariableJavaSymbol extends TypeJavaSymbol {
     public TypeVariableJavaSymbol(String name, JavaSymbol owner) {
       super(0, name, owner);
-      this.type = new JavaType.TypeVariableJavaType(this);
+      this.type = new TypeVariableJavaType(this);
       this.members = new Scope(this);
     }
 
@@ -657,7 +657,7 @@ public class JavaSymbol implements Symbol {
     }
 
     private List<JavaType> bounds() {
-      return new ArrayList<>(((JavaType.TypeVariableJavaType) type).bounds);
+      return new ArrayList<>(((TypeVariableJavaType) type).bounds);
     }
 
     @Override

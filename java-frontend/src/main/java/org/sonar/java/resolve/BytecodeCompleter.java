@@ -173,8 +173,8 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
         symbol.completer = this;
       } else {
         LOG.warn("Class not found: " + bytecodeName);
-        ((JavaType.ClassJavaType) symbol.type).interfaces = ImmutableList.of();
-        ((JavaType.ClassJavaType) symbol.type).supertype = Symbols.unknownType;
+        ((ClassJavaType) symbol.type).interfaces = ImmutableList.of();
+        ((ClassJavaType) symbol.type).supertype = Symbols.unknownType;
       }
 
       classes.put(flatName, symbol);

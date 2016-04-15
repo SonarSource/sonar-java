@@ -22,7 +22,8 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.resolve.JavaType;
+import org.sonar.java.resolve.ParametrizedTypeJavaType;
+import org.sonar.java.resolve.TypeVariableJavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -58,13 +59,13 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
   }
 
   private void checkIssue(Type type, Tree reportTree, TypeTree typeTree) {
-    if (type.isSubtypeOf("java.util.Set") && !callToImmutableEnumSet(reportTree) && !type.isSubtypeOf("java.util.EnumSet") && type instanceof JavaType.ParametrizedTypeJavaType) {
-      JavaType.ParametrizedTypeJavaType parametrizedType = (JavaType.ParametrizedTypeJavaType) type;
-      List<JavaType.TypeVariableJavaType> typeParameters = parametrizedType.typeParameters();
+    if (type.isSubtypeOf("java.util.Set") && !callToImmutableEnumSet(reportTree) && !type.isSubtypeOf("java.util.EnumSet") && type instanceof ParametrizedTypeJavaType) {
+      ParametrizedTypeJavaType parametrizedType = (ParametrizedTypeJavaType) type;
+      List<TypeVariableJavaType> typeParameters = parametrizedType.typeParameters();
       Type variableType = typeTree.symbolType();
-      if(typeParameters.isEmpty() && variableType instanceof JavaType.ParametrizedTypeJavaType) {
+      if(typeParameters.isEmpty() && variableType instanceof ParametrizedTypeJavaType) {
         // for java 7 diamond operator lookup declaration.
-        parametrizedType = (JavaType.ParametrizedTypeJavaType) variableType;
+        parametrizedType = (ParametrizedTypeJavaType) variableType;
         typeParameters = parametrizedType.typeParameters();
       }
       if(!typeParameters.isEmpty()) {

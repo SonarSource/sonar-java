@@ -24,8 +24,8 @@ import com.google.common.collect.Sets;
 import org.apache.commons.lang.BooleanUtils;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -99,7 +99,7 @@ public class ConfusingOverloadCheck extends IssuableSubscriptionVisitor {
   private static boolean hideStaticMethod(MethodSymbol methodSymbol, Type superClass, Symbol symbolWithSameName) {
     return symbolWithSameName.isStatic()
       && !methodSymbol.isStatic()
-      && ((MethodJavaSymbol) methodSymbol).checkOverridingParameters((MethodJavaSymbol) symbolWithSameName, (JavaType.ClassJavaType) superClass);
+      && ((MethodJavaSymbol) methodSymbol).checkOverridingParameters((MethodJavaSymbol) symbolWithSameName, (ClassJavaType) superClass);
   }
 
   private static boolean confusingOverload(MethodSymbol methodSymbol, MethodSymbol methodWithSameName) {

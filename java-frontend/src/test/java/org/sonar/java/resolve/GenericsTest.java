@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
-import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
@@ -613,11 +612,11 @@ public class GenericsTest {
 
     Type stringArray = getMethodInvocationType(getMethodSymbol(type, "f4", 0), 0);
     assertThat(stringArray.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) stringArray).elementType.is("java.lang.String")).isTrue();
+    assertThat(((ArrayJavaType) stringArray).elementType.is("java.lang.String")).isTrue();
     stringArray = getMethodInvocationType(getMethodSymbol(type, "f4", 1), 0);
     assertThat(stringArray.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) stringArray).elementType.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) ((JavaType.ArrayJavaType) stringArray).elementType).elementType.is("java.lang.String")).isTrue();
+    assertThat(((ArrayJavaType) stringArray).elementType.isArray()).isTrue();
+    assertThat(((ArrayJavaType) ((ArrayJavaType) stringArray).elementType).elementType.is("java.lang.String")).isTrue();
 
     methodHasUsagesWithSameTypeAs(type, "f5", "cStringInteger", "cStringInteger", "cAB");
     methodHasUsagesWithSameTypeAs(type, "f6", "wcSuperA");
@@ -643,7 +642,7 @@ public class GenericsTest {
 
     Type arrayType = getMethodInvocationType(getMethodSymbol(aType, "f4"), 0);
     assertThat(arrayType.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
+    assertThat(((ArrayJavaType) arrayType).elementType.is("java.lang.String")).isTrue();
 
     methodHasUsagesWithSameTypeAs(aType, "f5", "cStringInteger", "cStringInteger");
     methodHasUsagesWithSameTypeAs(aType, "f6", "wcSuperA", null, null);
@@ -676,13 +675,13 @@ public class GenericsTest {
     MethodJavaSymbol foo = getMethodSymbol(bType, "foo");
     Type type = getMethodInvocationType(foo, 0);
     assertThat(type.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) type).elementType.is("java.lang.Object")).isTrue();
+    assertThat(((ArrayJavaType) type).elementType.is("java.lang.Object")).isTrue();
     type = getMethodInvocationType(foo, 1);
     assertThat(type.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) type).elementType.is("org.foo.A")).isTrue();
+    assertThat(((ArrayJavaType) type).elementType.is("org.foo.A")).isTrue();
     type = getMethodInvocationType(foo, 2);
     assertThat(type.isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType) type).elementType.is("org.foo.A")).isTrue();
+    assertThat(((ArrayJavaType) type).elementType.is("org.foo.A")).isTrue();
 
     methodHasUsagesWithSameTypeAs(bType, "bar", "objectType", "aType", "aType");
     methodHasUsagesWithSameTypeAs(bType, "qix", "bRawType", "bAType", "bAType");
@@ -804,7 +803,7 @@ public class GenericsTest {
     Type methodInvocationType = getMethodInvocationType(methodSymbol, 0);
     assertThat(methodInvocationType.erasure().is("A")).isTrue();
     // FIXME SONARJAVA-1581 should be A<String> instead of the raw type A
-    assertThat(methodInvocationType instanceof JavaType.ParametrizedTypeJavaType).isFalse();
+    assertThat(methodInvocationType instanceof ParametrizedTypeJavaType).isFalse();
     // assertThat(((JavaType.ParametrizedTypeJavaType) methodInvocationType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
   }
 
@@ -1010,13 +1009,13 @@ public class GenericsTest {
     private static String prettyPrint(Type actual) {
       String result = actual.toString();
       JavaType javaType = (JavaType) actual;
-      if (javaType instanceof JavaType.ParametrizedTypeJavaType) {
-        result += "<" + getParameters((JavaType.ParametrizedTypeJavaType) javaType) + ">";
+      if (javaType instanceof ParametrizedTypeJavaType) {
+        result += "<" + getParameters((ParametrizedTypeJavaType) javaType) + ">";
       }
       return result;
     }
 
-    private static String getParameters(JavaType.ParametrizedTypeJavaType javaType) {
+    private static String getParameters(ParametrizedTypeJavaType javaType) {
       List<JavaType> substitutedTypes = javaType.typeSubstitution.substitutedTypes();
       List<String> names = new ArrayList<>(substitutedTypes.size());
       for (JavaType type : substitutedTypes) {

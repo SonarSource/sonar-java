@@ -114,7 +114,7 @@ public class SymbolsTest {
     assertThat(lengthSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.FINAL);
     assertThat(lengthSymbol.type).isSameAs(symbols.intType);
 
-    JavaType.ClassJavaType arrayClassType = ((JavaType.ClassJavaType) symbols.arrayClass.type);
+    ClassJavaType arrayClassType = ((ClassJavaType) symbols.arrayClass.type);
     assertThat(arrayClassType.supertype).isSameAs(symbols.objectType);
     assertThat(arrayClassType.interfaces).containsOnly(symbols.cloneableType, symbols.serializableType);
   }

@@ -76,7 +76,7 @@ public class JavaTypeTest {
   @Test
   public void to_string_on_type() throws Exception {
     assertThat(new JavaType(JavaType.VOID, null).toString()).isEmpty();
-    String methodToString = new JavaType.MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
+    String methodToString = new MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
       ImmutableList.<JavaType>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
   }
@@ -86,8 +86,8 @@ public class JavaTypeTest {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
     JavaSymbol.TypeJavaSymbol typeSymbol2 = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", symbols.rootPackage);
-    JavaType.ArrayJavaType arrayType = new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass);
-    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
+    ArrayJavaType arrayType = new ArrayJavaType(typeSymbol.type, symbols.arrayClass);
+    ClassJavaType classType = (ClassJavaType) typeSymbol.type;
     classType.interfaces = Lists.newArrayList();
     assertThat(symbols.byteType.is("byte")).isTrue();
     assertThat(symbols.byteType.is("int")).isFalse();
@@ -127,10 +127,10 @@ public class JavaTypeTest {
   public void erasure_of_type_variable() {
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", new JavaSymbol.PackageJavaSymbol("org.foo.bar", null));
     TypeSubstitution typeSubstitution = new TypeSubstitution();
-    typeSubstitution.add((JavaType.TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("T", typeSymbol).type, typeSymbol.type);
-    JavaType.ParametrizedTypeJavaType parametrizedType = new JavaType.ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
+    typeSubstitution.add((TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("T", typeSymbol).type, typeSymbol.type);
+    ParametrizedTypeJavaType parametrizedType = new ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
 
-    JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("X", typeSymbol).type;
+    TypeVariableJavaType typeVariableType = (TypeVariableJavaType) new JavaSymbol.TypeVariableJavaSymbol("X", typeSymbol).type;
     typeVariableType.bounds = ImmutableList.<JavaType>of(parametrizedType);
 
     assertThat(typeVariableType.erasure()).isNotEqualTo(parametrizedType);
@@ -142,9 +142,9 @@ public class JavaTypeTest {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
     JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol("T", typeSymbol);
-    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
-    JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) typeVariableSymbol.type;
-    JavaType.ArrayJavaType arrayType = new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass);
+    ClassJavaType classType = (ClassJavaType) typeSymbol.type;
+    TypeVariableJavaType typeVariableType = (TypeVariableJavaType) typeVariableSymbol.type;
+    ArrayJavaType arrayType = new ArrayJavaType(typeSymbol.type, symbols.arrayClass);
     typeVariableType.bounds = Lists.newArrayList(symbols.objectType);
 
     classType.supertype = symbols.objectType;
@@ -163,13 +163,13 @@ public class JavaTypeTest {
     assertThat(new JavaType(JavaType.BYTE, null).isSubtypeOf("java.lang.Object")).isFalse();
 
     assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType[]")).isTrue();
-    assertThat(arrayType.isSubtypeOf(new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass))).isTrue();
+    assertThat(arrayType.isSubtypeOf(new ArrayJavaType(typeSymbol.type, symbols.arrayClass))).isTrue();
 
     assertThat(arrayType.isSubtypeOf("org.foo.bar.MyType")).isFalse();
     assertThat(arrayType.isSubtypeOf(typeSymbol.type)).isFalse();
 
     assertThat(arrayType.isSubtypeOf("java.lang.Object[]")).isTrue();
-    assertThat(arrayType.isSubtypeOf(new JavaType.ArrayJavaType(symbols.objectType, symbols.arrayClass))).isTrue();
+    assertThat(arrayType.isSubtypeOf(new ArrayJavaType(symbols.objectType, symbols.arrayClass))).isTrue();
 
     assertThat(arrayType.isSubtypeOf("java.lang.Object")).isTrue();
     assertThat(arrayType.isSubtypeOf(symbols.objectType)).isTrue();
@@ -221,18 +221,18 @@ public class JavaTypeTest {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
     JavaSymbol.TypeVariableJavaSymbol typeVariableSymbol = new JavaSymbol.TypeVariableJavaSymbol("E", typeSymbol);
-    JavaType.ClassJavaType classType = (JavaType.ClassJavaType) typeSymbol.type;
-    JavaType.TypeVariableJavaType typeVariableType = (JavaType.TypeVariableJavaType) typeVariableSymbol.type;
+    ClassJavaType classType = (ClassJavaType) typeSymbol.type;
+    TypeVariableJavaType typeVariableType = (TypeVariableJavaType) typeVariableSymbol.type;
     TypeSubstitution typeSubstitution = new TypeSubstitution();
     typeSubstitution.add(typeVariableType, classType);
 
-    JavaType.ParametrizedTypeJavaType ptt = new JavaType.ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
+    ParametrizedTypeJavaType ptt = new ParametrizedTypeJavaType(typeSymbol, typeSubstitution);
     assertThat(ptt.substitution(typeVariableType)).isEqualTo(classType);
-    assertThat(ptt.substitution(new JavaType.TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("F", typeSymbol)))).isNull();
+    assertThat(ptt.substitution(new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol("F", typeSymbol)))).isNull();
     assertThat(ptt.typeParameters()).hasSize(1);
     assertThat(ptt.typeParameters()).contains(typeVariableType);
 
-    ptt = new JavaType.ParametrizedTypeJavaType(typeSymbol, null);
+    ptt = new ParametrizedTypeJavaType(typeSymbol, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
   }
@@ -290,7 +290,7 @@ public class JavaTypeTest {
   public void is_class_is_array() throws Exception {
     JavaSymbol.PackageJavaSymbol packageSymbol = new JavaSymbol.PackageJavaSymbol("org.foo.bar", null);
     JavaSymbol.TypeJavaSymbol typeSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "MyType", packageSymbol);
-    JavaType.ArrayJavaType arrayType = new JavaType.ArrayJavaType(typeSymbol.type, symbols.arrayClass);
+    ArrayJavaType arrayType = new ArrayJavaType(typeSymbol.type, symbols.arrayClass);
 
     assertThat(typeSymbol.type.isClass()).isTrue();
     assertThat(typeSymbol.type.isArray()).isFalse();

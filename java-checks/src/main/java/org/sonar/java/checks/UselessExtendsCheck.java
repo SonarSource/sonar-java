@@ -22,8 +22,8 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 import org.sonar.check.Rule;
 import org.sonar.java.model.SyntacticEquivalence;
+import org.sonar.java.resolve.ClassJavaType;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -61,7 +61,7 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
       return;
     }
 
-    Set<JavaType.ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) classTree.symbol()).superTypes();
+    Set<ClassJavaType> superTypes = ((JavaSymbol.TypeJavaSymbol) classTree.symbol()).superTypes();
     List<Type> superInterfacesTypes = getTypes(superInterfaces);
     Set<String> reportedNames = new HashSet<>();
     for (TypeTree superInterface : superInterfaces) {
@@ -100,9 +100,9 @@ public class UselessExtendsCheck extends IssuableSubscriptionVisitor {
     return types;
   }
 
-  private void checkRedundancy(TypeTree currentInterface, List<Type> superInterfacesTypes, Set<JavaType.ClassJavaType> superTypes) {
+  private void checkRedundancy(TypeTree currentInterface, List<Type> superInterfacesTypes, Set<ClassJavaType> superTypes) {
     Type interfaceType = currentInterface.symbolType();
-    for (JavaType.ClassJavaType superType : superTypes) {
+    for (ClassJavaType superType : superTypes) {
       TypeSymbol superTypeSymbol = superType.symbol();
       if (superTypeSymbol.interfaces().contains(interfaceType)) {
         String typeOfParentMsg = "implemented by a super class";

@@ -59,26 +59,26 @@ public class SymbolTableTest {
     assertThat(result.reference(13, 5)).isSameAs(result.symbol("foo", 9));
 
     // Check erasure
-    JavaType.TypeVariableJavaType STypeVariableType = (JavaType.TypeVariableJavaType) typeSymbol.typeParameters.lookup("S").get(0).type;
+    TypeVariableJavaType STypeVariableType = (TypeVariableJavaType) typeSymbol.typeParameters.lookup("S").get(0).type;
     assertThat(STypeVariableType.erasure().getSymbol().getName()).isEqualTo("CharSequence");
     JavaType arrayErasure = typeSymbol.members().lookup("arrayErasure").get(0).type;
     assertThat(arrayErasure.isTagged(JavaType.ARRAY)).isTrue();
     assertThat(arrayErasure.erasure().isTagged(JavaType.ARRAY)).isTrue();
-    assertThat(((JavaType.ArrayJavaType) arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
+    assertThat(((ArrayJavaType) arrayErasure.erasure()).elementType().symbol.getName()).isEqualTo("CharSequence");
 
     IdentifierTree tree = result.referenceTree(20, 7);
     JavaType symbolType = (JavaType) tree.symbolType();
-    assertThat(symbolType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) symbolType;
+    assertThat(symbolType).isInstanceOf(ParametrizedTypeJavaType.class);
+    ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) symbolType;
     assertThat(ptt.symbol.getName()).isEqualTo("C");
     assertThat(ptt.typeSubstitution.size()).isEqualTo(1);
     assertThat(ptt.typeSubstitution.substitutedType(ptt.typeSubstitution.typeVariables().iterator().next()).symbol.getName()).isEqualTo("String");
 
     JavaSymbol.MethodJavaSymbol method1 = (JavaSymbol.MethodJavaSymbol) typeSymbol.members().lookup("method1").get(0);
-    assertThat(((JavaType.MethodJavaType) method1.type).resultType).isSameAs(STypeVariableType);
+    assertThat(((MethodJavaType) method1.type).resultType).isSameAs(STypeVariableType);
 
     JavaSymbol.MethodJavaSymbol method2 = (JavaSymbol.MethodJavaSymbol) typeSymbol.members().lookup("method2").get(0);
-    JavaType.TypeVariableJavaType PTypeVariableType = (JavaType.TypeVariableJavaType) method2.typeParameters().lookup("P").get(0).type;
+    TypeVariableJavaType PTypeVariableType = (TypeVariableJavaType) method2.typeParameters().lookup("P").get(0).type;
     assertThat(method2.getReturnType().type).isSameAs(PTypeVariableType);
     assertThat(method2.parameterTypes().get(0)).isSameAs(PTypeVariableType);
 
@@ -111,8 +111,8 @@ public class SymbolTableTest {
     MethodTree method4 = (MethodTree) result.getTree(result.symbol("method4"));
     variable = (VariableTree) method4.block().body().get(0);
     Type symbolType = variable.initializer().symbolType();
-    assertThat(symbolType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    JavaType.ParametrizedTypeJavaType ptt = (JavaType.ParametrizedTypeJavaType) symbolType;
+    assertThat(symbolType).isInstanceOf(ParametrizedTypeJavaType.class);
+    ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) symbolType;
     assertThat(ptt.typeSubstitution.substitutedTypes().iterator().next().getSymbol().getName()).isEqualTo("String");
 
     assertThat(result.reference(58, 25)).isSameAs(result.symbol("method_of_e"));
@@ -308,13 +308,13 @@ public class SymbolTableTest {
     assertThat(enumSymbol.owner()).isSameAs(result.symbol("EnumDeclaration"));
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.ENUM | Flags.STATIC);
 
-    JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType) enumSymbol.getSuperclass();
+    ParametrizedTypeJavaType superType = (ParametrizedTypeJavaType) enumSymbol.getSuperclass();
     JavaSymbol.TypeJavaSymbol superclass = superType.symbol;
     assertThat(superclass.getName()).isEqualTo("Enum");
     assertThat(superclass.owner).isInstanceOf(JavaSymbol.PackageJavaSymbol.class);
     assertThat(superclass.owner.getName()).isEqualTo("java.lang");
     assertThat(superType.typeSubstitution.size()).isEqualTo(1);
-    Map.Entry<JavaType.TypeVariableJavaType, JavaType> entry = superType.typeSubstitution.substitutionEntries().iterator().next();
+    Map.Entry<TypeVariableJavaType, JavaType> entry = superType.typeSubstitution.substitutionEntries().iterator().next();
     assertThat(entry.getKey()).isSameAs(superclass.typeParameters.lookup("E").get(0).type);
     assertThat(entry.getValue()).isSameAs(enumSymbol.type);
     assertThat(enumSymbol.superClass()).isSameAs(result.symbol("parameterizedDeclaration").type);
@@ -368,7 +368,7 @@ public class SymbolTableTest {
     JavaSymbol.TypeJavaSymbol enumSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Foo");
     assertThat(enumSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ENUM);
 
-    JavaType.ParametrizedTypeJavaType superType = (JavaType.ParametrizedTypeJavaType) enumSymbol.getSuperclass();
+    ParametrizedTypeJavaType superType = (ParametrizedTypeJavaType) enumSymbol.getSuperclass();
     JavaSymbol.TypeJavaSymbol superclass = superType.symbol;
     assertThat(superclass.getName()).isEqualTo("Enum");
 
@@ -377,8 +377,8 @@ public class SymbolTableTest {
     assertThat(valuesMethod.declaration).isNull();
     assertThat(valuesMethod.isStatic()).isTrue();
     assertThat(valuesMethod.parameterTypes()).isEmpty();
-    assertThat(((JavaType.MethodJavaType) valuesMethod.type).resultType).isInstanceOf(JavaType.ArrayJavaType.class);
-    assertThat(((JavaType.ArrayJavaType) (((JavaType.MethodJavaType) valuesMethod.type).resultType)).elementType).isSameAs(enumSymbol.type);
+    assertThat(((MethodJavaType) valuesMethod.type).resultType).isInstanceOf(ArrayJavaType.class);
+    assertThat(((ArrayJavaType) (((MethodJavaType) valuesMethod.type).resultType)).elementType).isSameAs(enumSymbol.type);
     assertThat(result.reference(9, 19)).isSameAs(valuesMethod);
     assertThat(result.reference(9, 5)).isSameAs(result.symbol("useValues", 13));
 
@@ -387,7 +387,7 @@ public class SymbolTableTest {
     assertThat(valueOfMethod.isStatic()).isTrue();
     assertThat(valueOfMethod.parameterTypes()).hasSize(1);
     assertThat(valueOfMethod.parameterTypes().get(0).is("java.lang.String")).isTrue();
-    assertThat(((JavaType.MethodJavaType) valueOfMethod.type).resultType).isSameAs(enumSymbol.type);
+    assertThat(((MethodJavaType) valueOfMethod.type).resultType).isSameAs(enumSymbol.type);
     assertThat(result.reference(10, 20)).isSameAs(valueOfMethod);
     assertThat(result.reference(10, 5)).isSameAs(result.symbol("useValueOf", 14));
 
@@ -521,7 +521,7 @@ public class SymbolTableTest {
   public void type_accessibility() throws Exception {
     Result result = Result.createForJavaFile("src/test/java/org/sonar/java/test/AccessibilityTestCase");
     JavaSymbol reference = result.reference(26, 7);
-    JavaType.MethodJavaType type = (JavaType.MethodJavaType) reference.type;
+    MethodJavaType type = (MethodJavaType) reference.type;
     assertThat(type.resultType.symbol.name).isEqualTo("int");
   }
 

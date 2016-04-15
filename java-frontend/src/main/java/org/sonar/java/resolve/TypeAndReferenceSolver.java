@@ -376,7 +376,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     } else {
       resolveAs(tree.bound(), JavaSymbol.TYP);
       JavaType bound = getType(tree.bound());
-      JavaType.WildCardType.BoundType boundType = tree.is(Tree.Kind.SUPER_WILDCARD) ? JavaType.WildCardType.BoundType.SUPER : JavaType.WildCardType.BoundType.EXTENDS;
+      WildCardType.BoundType boundType = tree.is(Tree.Kind.SUPER_WILDCARD) ? WildCardType.BoundType.SUPER : WildCardType.BoundType.EXTENDS;
       registerType(tree, parametrizedTypeCache.getWildcardType(bound, boundType));
     }
   }
@@ -410,9 +410,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaType type = getType(tree.type());
     int dimensions = tree.dimensions().size();
     // TODO why?
-    type = new JavaType.ArrayJavaType(type, symbols.arrayClass);
+    type = new ArrayJavaType(type, symbols.arrayClass);
     for (int i = 1; i < dimensions; i++) {
-      type = new JavaType.ArrayJavaType(type, symbols.arrayClass);
+      type = new ArrayJavaType(type, symbols.arrayClass);
     }
     registerType(tree, type);
   }
@@ -429,7 +429,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.dimension());
     JavaType type = getType(tree.expression());
     if (type != null && type.tag == JavaType.ARRAY) {
-      registerType(tree, ((JavaType.ArrayJavaType) type).elementType);
+      registerType(tree, ((ArrayJavaType) type).elementType);
     } else {
       registerType(tree, Symbols.unknownType);
     }
@@ -461,7 +461,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       registerType(tree, Symbols.unknownType);
       return;
     }
-    registerType(tree, ((JavaType.MethodJavaType) symbol.type).resultType);
+    registerType(tree, ((MethodJavaType) symbol.type).resultType);
   }
 
   @Override
@@ -486,7 +486,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       JavaType type = (JavaType) tree.identifier().symbolType();
-      JavaType.ClassJavaType anonymousClassType = (JavaType.ClassJavaType) classBody.symbol().type();
+      ClassJavaType anonymousClassType = (ClassJavaType) classBody.symbol().type();
       if (type.getSymbol().isFlag(Flags.INTERFACE)) {
         anonymousClassType.interfaces = ImmutableList.of(type);
         anonymousClassType.supertype = symbols.objectType;
@@ -557,7 +557,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       resolveAs(tree.type(), JavaSymbol.TYP);
     }
     scan(tree.annotations());
-    registerType(tree, new JavaType.ArrayJavaType(getType(tree.type()), symbols.arrayClass));
+    registerType(tree, new ArrayJavaType(getType(tree.type()), symbols.arrayClass));
   }
 
   @Override
@@ -589,7 +589,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     ClassTree classBody = newClassTree.classBody();
     if(classBody != null) {
       scan(classBody);
-      ((JavaType.ClassJavaType) classBody.symbol().type()).supertype = getType(newClassTree.identifier());
+      ((ClassJavaType) classBody.symbol().type()).supertype = getType(newClassTree.identifier());
     }
     resolveConstructorSymbol(tree.simpleName(), newClassTree.identifier().symbolType(), semanticModel.getEnv(tree), getParameterTypes(newClassTree.arguments()));
   }

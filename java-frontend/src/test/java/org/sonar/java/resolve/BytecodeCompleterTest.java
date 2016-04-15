@@ -147,8 +147,8 @@ public class BytecodeCompleterTest {
     symbols = symbol.getType().symbol.members().lookup("voidMethod");
     assertThat(symbols).hasSize(1);
     JavaSymbol method = symbols.get(0);
-    assertThat(method.type).isInstanceOf(JavaType.MethodJavaType.class);
-    assertThat(((JavaType.MethodJavaType) method.type).resultType.symbol.name).isEqualTo("void");
+    assertThat(method.type).isInstanceOf(MethodJavaType.class);
+    assertThat(((MethodJavaType) method.type).resultType.symbol.name).isEqualTo("void");
   }
 
   @Test
@@ -237,32 +237,32 @@ public class BytecodeCompleterTest {
     assertThat(typeParametersSymbol.typeParameters.scopeSymbols()).hasSize(2);
     assertThat(typeParametersSymbol.typeVariableTypes).hasSize(2);
 
-    JavaType.TypeVariableJavaType TtypeVariableType = typeParametersSymbol.typeVariableTypes.get(0);
+    TypeVariableJavaType TtypeVariableType = typeParametersSymbol.typeVariableTypes.get(0);
     assertThat(TtypeVariableType.erasure().getSymbol().getName()).isEqualTo("Object");
     assertThat(typeParametersSymbol.typeVariableTypes.get(1).erasure().getSymbol().getName()).isEqualTo("CharSequence");
 
-    assertThat(typeParametersSymbol.getSuperclass()).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    assertThat(((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.typeVariables()).hasSize(1);
-    JavaType.TypeVariableJavaType keyTypeVariable = ((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.typeVariables().iterator().next();
+    assertThat(typeParametersSymbol.getSuperclass()).isInstanceOf(ParametrizedTypeJavaType.class);
+    assertThat(((ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.typeVariables()).hasSize(1);
+    TypeVariableJavaType keyTypeVariable = ((ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.typeVariables().iterator().next();
     assertThat(keyTypeVariable.symbol.getName()).isEqualTo("S");
-    JavaType actual = ((JavaType.ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.substitutedType(keyTypeVariable);
-    assertThat(actual).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    assertThat(((JavaType.ParametrizedTypeJavaType) actual).typeSubstitution.typeVariables()).hasSize(1);
+    JavaType actual = ((ParametrizedTypeJavaType) typeParametersSymbol.getSuperclass()).typeSubstitution.substitutedType(keyTypeVariable);
+    assertThat(actual).isInstanceOf(ParametrizedTypeJavaType.class);
+    assertThat(((ParametrizedTypeJavaType) actual).typeSubstitution.typeVariables()).hasSize(1);
 
     assertThat(typeParametersSymbol.getInterfaces()).hasSize(2);
-    assertThat(typeParametersSymbol.getInterfaces().get(0)).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+    assertThat(typeParametersSymbol.getInterfaces().get(0)).isInstanceOf(ParametrizedTypeJavaType.class);
 
     JavaSymbol.MethodJavaSymbol funMethod = (JavaSymbol.MethodJavaSymbol) typeParametersSymbol.members().lookup("fun").get(0);
     assertThat(funMethod.getReturnType().type).isSameAs(TtypeVariableType);
     assertThat(funMethod.parameterTypes().get(0)).isSameAs(TtypeVariableType);
 
     JavaSymbol.MethodJavaSymbol fooMethod = (JavaSymbol.MethodJavaSymbol) typeParametersSymbol.members().lookup("foo").get(0);
-    JavaType.TypeVariableJavaType WtypeVariableType = fooMethod.typeVariableTypes.get(0);
+    TypeVariableJavaType WtypeVariableType = fooMethod.typeVariableTypes.get(0);
     assertThat(fooMethod.parameterTypes().get(0).isArray()).isTrue();
-    assertThat(((JavaType.ArrayJavaType)fooMethod.parameterTypes().get(0)).elementType()).isSameAs(WtypeVariableType);
-    JavaType resultType = ((JavaType.MethodJavaType) fooMethod.type).resultType;
-    assertThat(resultType).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
-    JavaType.ParametrizedTypeJavaType actualResultType = (JavaType.ParametrizedTypeJavaType) resultType;
+    assertThat(((ArrayJavaType)fooMethod.parameterTypes().get(0)).elementType()).isSameAs(WtypeVariableType);
+    JavaType resultType = ((MethodJavaType) fooMethod.type).resultType;
+    assertThat(resultType).isInstanceOf(ParametrizedTypeJavaType.class);
+    ParametrizedTypeJavaType actualResultType = (ParametrizedTypeJavaType) resultType;
     assertThat(actualResultType.typeSubstitution.typeVariables()).hasSize(1);
     assertThat(actualResultType.typeSubstitution.substitutedTypes().iterator().next()).isSameAs(WtypeVariableType);
 
@@ -272,7 +272,7 @@ public class BytecodeCompleterTest {
 
     //read field.
     JavaSymbol.VariableJavaSymbol field = (JavaSymbol.VariableJavaSymbol) typeParametersSymbol.members().lookup("field").get(0);
-    assertThat(field.type).isInstanceOf(JavaType.TypeVariableJavaType.class);
+    assertThat(field.type).isInstanceOf(TypeVariableJavaType.class);
     assertThat(field.type).isSameAs(TtypeVariableType);
   }
 
@@ -281,7 +281,7 @@ public class BytecodeCompleterTest {
     JavaSymbol.TypeJavaSymbol innerClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.ParametrizedExtend$InnerClass");
     innerClass.complete();
     JavaSymbol.MethodJavaSymbol symbol = (JavaSymbol.MethodJavaSymbol) innerClass.members().lookup("innerMethod").get(0);
-    assertThat(symbol.getReturnType().type).isInstanceOf(JavaType.TypeVariableJavaType.class);
+    assertThat(symbol.getReturnType().type).isInstanceOf(TypeVariableJavaType.class);
     assertThat(symbol.getReturnType().getName()).isEqualTo("S");
   }
 
@@ -347,9 +347,9 @@ public class BytecodeCompleterTest {
     JavaSymbol.VariableJavaSymbol extendsItems = getVariable(clazz, "extendsItems");
     JavaSymbol.VariableJavaSymbol superItems = getVariable(clazz, "superItems");
 
-    assertThatWildcardIs(unboudedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
-    assertThatWildcardIs(extendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
-    assertThatWildcardIs(superItems, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+    assertThatWildcardIs(unboudedItems, WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardIs(extendsItems, WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardIs(superItems, WildCardType.BoundType.SUPER, "java.lang.Number");
   }
 
   @Test
@@ -359,13 +359,13 @@ public class BytecodeCompleterTest {
     JavaSymbol.MethodJavaSymbol returnsExtendsItems = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("returnsExtendsItems").get(0);
     JavaSymbol.MethodJavaSymbol returnsSuperItems = (JavaSymbol.MethodJavaSymbol) clazz.members().lookup("returnsSuperItems").get(0);
 
-    assertThatWildcardIs(returnsUnboundedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
-    assertThatWildcardIs(returnsExtendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
-    assertThatWildcardIs(returnsSuperItems, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+    assertThatWildcardIs(returnsUnboundedItems, WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardIs(returnsExtendsItems, WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardIs(returnsSuperItems, WildCardType.BoundType.SUPER, "java.lang.Number");
 
-    assertThatWildcardInFirstParamIs(returnsUnboundedItems, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
-    assertThatWildcardInFirstParamIs(returnsExtendsItems, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
-    assertThatWildcardInFirstParamIs(returnsSuperItems, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+    assertThatWildcardInFirstParamIs(returnsUnboundedItems, WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardInFirstParamIs(returnsExtendsItems, WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardInFirstParamIs(returnsSuperItems, WildCardType.BoundType.SUPER, "java.lang.Number");
   }
 
   @Test
@@ -374,36 +374,36 @@ public class BytecodeCompleterTest {
     JavaSymbol.TypeJavaSymbol WildcardExtendsClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.WildcardExtendsClass");
     JavaSymbol.TypeJavaSymbol WildcardSuperClass = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.WildcardSuperClass");
 
-    assertThatWildcardInTypeParamIs(wildcardUnboundedClass, JavaType.WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
-    assertThatWildcardInTypeParamIs(WildcardExtendsClass, JavaType.WildCardType.BoundType.EXTENDS, "java.lang.String");
-    assertThatWildcardInTypeParamIs(WildcardSuperClass, JavaType.WildCardType.BoundType.SUPER, "java.lang.Number");
+    assertThatWildcardInTypeParamIs(wildcardUnboundedClass, WildCardType.BoundType.UNBOUNDED, "java.lang.Object");
+    assertThatWildcardInTypeParamIs(WildcardExtendsClass, WildCardType.BoundType.EXTENDS, "java.lang.String");
+    assertThatWildcardInTypeParamIs(WildcardSuperClass, WildCardType.BoundType.SUPER, "java.lang.Number");
   }
 
-  private static void assertThatWildcardInTypeParamIs(JavaSymbol.TypeJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
-    JavaType javaType = ((JavaType.TypeVariableJavaType) symbol.typeParameters().lookup("X").iterator().next().getType()).bounds.get(0);
+  private static void assertThatWildcardInTypeParamIs(JavaSymbol.TypeJavaSymbol symbol, WildCardType.BoundType wildcard, String bound) {
+    JavaType javaType = ((TypeVariableJavaType) symbol.typeParameters().lookup("X").iterator().next().getType()).bounds.get(0);
     assertThatWildcardIs(javaType, wildcard, bound);
   }
 
-  private static void assertThatWildcardInFirstParamIs(JavaSymbol.MethodJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
+  private static void assertThatWildcardInFirstParamIs(JavaSymbol.MethodJavaSymbol symbol, WildCardType.BoundType wildcard, String bound) {
     assertThatWildcardIs(symbol.parameterTypes().get(0), wildcard, bound);
   }
 
-  private static void assertThatWildcardIs(JavaSymbol.MethodJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
-    assertThatWildcardIs(((JavaType.MethodJavaType) symbol.type).resultType, wildcard, bound);
+  private static void assertThatWildcardIs(JavaSymbol.MethodJavaSymbol symbol, WildCardType.BoundType wildcard, String bound) {
+    assertThatWildcardIs(((MethodJavaType) symbol.type).resultType, wildcard, bound);
   }
 
-  private static void assertThatWildcardIs(JavaSymbol.VariableJavaSymbol symbol, JavaType.WildCardType.BoundType wildcard, String bound) {
+  private static void assertThatWildcardIs(JavaSymbol.VariableJavaSymbol symbol, WildCardType.BoundType wildcard, String bound) {
     assertThatWildcardIs(symbol.type, wildcard, bound);
   }
 
-  private static void assertThatWildcardIs(Type type, JavaType.WildCardType.BoundType wildcard, String bound) {
-    assertThat(type).isInstanceOf(JavaType.ParametrizedTypeJavaType.class);
+  private static void assertThatWildcardIs(Type type, WildCardType.BoundType wildcard, String bound) {
+    assertThat(type).isInstanceOf(ParametrizedTypeJavaType.class);
     
-    JavaType.ParametrizedTypeJavaType ptjt = (JavaType.ParametrizedTypeJavaType) type;
+    ParametrizedTypeJavaType ptjt = (ParametrizedTypeJavaType) type;
     JavaType substitutedType = ptjt.typeSubstitution.substitutedTypes().get(0);
-    assertThat(substitutedType).isInstanceOf(JavaType.WildCardType.class);
+    assertThat(substitutedType).isInstanceOf(WildCardType.class);
     
-    JavaType.WildCardType wildcardType = (JavaType.WildCardType) substitutedType;
+    WildCardType wildcardType = (WildCardType) substitutedType;
     assertThat(wildcardType.boundType).isEqualTo(wildcard);
     assertThat(wildcardType.bound.is(bound)).isTrue();
   }
@@ -431,10 +431,10 @@ public class BytecodeCompleterTest {
     assertThat(typeParameters).hasSize(2);
     JavaSymbol xSymbol = ((JavaSymbol.MethodJavaSymbol) method).typeParameters().lookup("X").iterator().next();
     JavaSymbol ySymbol = ((JavaSymbol.MethodJavaSymbol) method).typeParameters().lookup("Y").iterator().next();
-    assertThat(((JavaType.TypeVariableJavaType) xSymbol.type).bounds).hasSize(1);
-    JavaType bound = ((JavaType.TypeVariableJavaType) xSymbol.type).bounds.get(0);
-    assertThat(((JavaType.ParametrizedTypeJavaType)bound).typeParameters()).hasSize(1);
-    assertThat(((JavaType.ParametrizedTypeJavaType)bound).substitution(((JavaType.ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
+    assertThat(((TypeVariableJavaType) xSymbol.type).bounds).hasSize(1);
+    JavaType bound = ((TypeVariableJavaType) xSymbol.type).bounds.get(0);
+    assertThat(((ParametrizedTypeJavaType)bound).typeParameters()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType)bound).substitution(((ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
   }
 
   @Test
@@ -447,10 +447,10 @@ public class BytecodeCompleterTest {
     assertThat(typeParameters).hasSize(2);
     JavaSymbol xSymbol = ((JavaSymbol.TypeJavaSymbol) clazz).typeParameters().lookup("X").iterator().next();
     JavaSymbol ySymbol = ((JavaSymbol.TypeJavaSymbol) clazz).typeParameters().lookup("Y").iterator().next();
-    assertThat(((JavaType.TypeVariableJavaType) xSymbol.type).bounds).hasSize(1);
-    JavaType bound = ((JavaType.TypeVariableJavaType) xSymbol.type).bounds.get(0);
-    assertThat(((JavaType.ParametrizedTypeJavaType)bound).typeParameters()).hasSize(1);
-    assertThat(((JavaType.ParametrizedTypeJavaType)bound).substitution(((JavaType.ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
+    assertThat(((TypeVariableJavaType) xSymbol.type).bounds).hasSize(1);
+    JavaType bound = ((TypeVariableJavaType) xSymbol.type).bounds.get(0);
+    assertThat(((ParametrizedTypeJavaType)bound).typeParameters()).hasSize(1);
+    assertThat(((ParametrizedTypeJavaType)bound).substitution(((ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
 
   }
 }
