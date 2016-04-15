@@ -148,7 +148,7 @@ public class MeasurerTest {
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
-    squid = new JavaSquid(conf, null, measurer, null, new CodeVisitor[0]);
+    squid = new JavaSquid(conf, null, measurer, null, null, new CodeVisitor[0]);
     squid.scan(Lists.newArrayList(new File(baseDir, filename)), Collections.<File>emptyList(), Collections.<File>emptyList());
     ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
     ArgumentCaptor<InputFile> sonarFilescaptor = ArgumentCaptor.forClass(InputFile.class);

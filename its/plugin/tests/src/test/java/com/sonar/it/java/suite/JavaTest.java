@@ -26,6 +26,8 @@ import com.sonar.orchestrator.build.SonarRunner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
 import com.sonar.orchestrator.version.Version;
+
+import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -33,11 +35,15 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.CoreProperties;
 import org.sonar.wsclient.Sonar;
+import org.sonar.wsclient.issue.Issue;
+import org.sonar.wsclient.issue.IssueClient;
+import org.sonar.wsclient.issue.IssueQuery;
 import org.sonar.wsclient.services.Measure;
 import org.sonar.wsclient.services.Resource;
 import org.sonar.wsclient.services.ResourceQuery;
 
 import java.io.File;
+import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assume.assumeTrue;
@@ -169,6 +175,33 @@ public class JavaTest {
     orchestrator.executeBuild(build);
 
     assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(2);
+  }
+
+  /**
+   * SONARJAVA-1615
+   */
+  @Test
+  public void filtered_issues() throws Exception {
+    MavenBuild build = MavenBuild.create(TestUtils.projectPom("filtered-issues"))
+      .setCleanPackageSonarGoals()
+      .setProperty("sonar.profile", "filtered-issues")
+      .setProperty("sonar.dynamicAnalysis", "false");
+    orchestrator.executeBuild(build);
+
+    assertThat(getMeasure("org.example:example", "violations").getValue()).isEqualTo(2);
+
+    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
+    List<Issue> issues = issueClient.find(IssueQuery.create().components("org.example:example:src/main/java/EclispeI18NFiltered.java")).list();
+    assertThat(issues).hasSize(2);
+    for (Issue issue : issues) {
+      assertThat(issue.ruleKey()).satisfies(new Condition<String>() {
+        @Override
+        public boolean matches(String value) {
+          return "squid:S1444".equals(value) || "squid:ClassVariableVisibilityCheck".equals(value);
+        }
+      });
+      assertThat(issue.line()).isEqualTo(17);
+    }
   }
 
   private static Measure getMeasure(String resourceKey, String metricKey) {

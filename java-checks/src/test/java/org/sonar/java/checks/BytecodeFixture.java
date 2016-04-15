@@ -70,7 +70,7 @@ public class BytecodeFixture {
     javaResourceLocator.setSensorContext(sensorContext);
     final List<AnalyzerMessage> analyzerMessages = new ArrayList<>();
     BytecodeVisitor visitorWithFakeContext = new ByteCodeVisitorWithFakeContext(visitor, file, javaResourceLocator, analyzerMessages);
-    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), null, null, javaResourceLocator, visitorWithFakeContext);
+    JavaSquid javaSquid = new JavaSquid(new JavaConfiguration(Charset.forName("UTF-8")), null, null, javaResourceLocator, null, visitorWithFakeContext);
     javaSquid.scan(Collections.singleton(file), Collections.<File>emptyList(), Collections.singleton(bytecodeFile));
 
     return analyzerMessages;

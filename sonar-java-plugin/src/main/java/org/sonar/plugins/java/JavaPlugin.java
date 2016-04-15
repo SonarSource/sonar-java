@@ -20,6 +20,7 @@
 package org.sonar.plugins.java;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.api.CoreProperties;
 import org.sonar.api.PropertyType;
 import org.sonar.api.SonarPlugin;
@@ -30,6 +31,7 @@ import org.sonar.java.JavaClasspath;
 import org.sonar.java.JavaClasspathProperties;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
+import org.sonar.java.filters.PostAnalysisIssueFilter;
 import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
@@ -89,6 +91,7 @@ public class JavaPlugin extends SonarPlugin {
         DefaultJavaResourceLocator.class,
         JavaSquidSensor.class,
         SuppressWarningsFilter.class,
+        PostAnalysisIssueFilter.class,
         XmlFileSensor.class);
     return builder.build();
   }

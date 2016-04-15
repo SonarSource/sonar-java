@@ -67,7 +67,7 @@ public class StrutsTest {
     }
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);
-    JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
+    JavaSquid squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 

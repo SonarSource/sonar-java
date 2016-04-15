@@ -119,7 +119,7 @@ public class SquidUserGuideTest {
         }
       }
     };
-    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, new CodeVisitor[0]);
+    squid = new JavaSquid(conf, null, measurer, javaResourceLocator, null, new CodeVisitor[0]);
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
   }
 

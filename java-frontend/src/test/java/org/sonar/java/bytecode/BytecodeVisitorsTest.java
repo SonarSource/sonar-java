@@ -89,7 +89,7 @@ public class BytecodeVisitorsTest {
     }
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
     javaResourceLocator.setSensorContext(sensorContext);
-    JavaSquid squid = new JavaSquid(conf, null, null, javaResourceLocator);
+    JavaSquid squid = new JavaSquid(conf, null, null, javaResourceLocator, null);
     File binDir = new File("src/test/files/bytecode/bin");
     squid.scan(files, Collections.<File>emptyList(), Collections.singleton(binDir));
     graph = squid.getGraph();

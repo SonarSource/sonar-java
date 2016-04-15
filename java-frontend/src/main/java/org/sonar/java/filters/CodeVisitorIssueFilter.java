@@ -17,17 +17,14 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java;
+package org.sonar.java.filters;
 
-import org.junit.Test;
+import org.sonar.api.issue.batch.IssueFilter;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
+import org.sonar.squidbridge.api.CodeVisitor;
 
-import static org.fest.assertions.Assertions.assertThat;
+public interface CodeVisitorIssueFilter extends CodeVisitor, IssueFilter {
 
-public class JavaPluginTest {
-
-  @Test
-  public void test() {
-    assertThat(new JavaPlugin().getExtensions().size()).isEqualTo(31);
-  }
+  void setResourceMapping(ResourceMapping resourceMapping);
 
 }

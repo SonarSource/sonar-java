@@ -37,6 +37,7 @@ import org.sonar.java.bytecode.BytecodeScanner;
 import org.sonar.java.bytecode.visitor.BytecodeContext;
 import org.sonar.java.bytecode.visitor.DefaultBytecodeContext;
 import org.sonar.java.bytecode.visitor.DependenciesVisitor;
+import org.sonar.java.filters.CodeVisitorIssueFilter;
 import org.sonar.java.model.VisitorsBridge;
 import org.sonar.java.se.checks.SECheck;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -62,9 +63,15 @@ public class JavaSquid {
 
   public JavaSquid(JavaConfiguration conf,
                    @Nullable SonarComponents sonarComponents, @Nullable Measurer measurer,
-                   JavaResourceLocator javaResourceLocator, CodeVisitor... visitors) {
-    Iterable<CodeVisitor> codeVisitors = Iterables.concat(Collections.singletonList(javaResourceLocator), Arrays.asList(visitors));
-    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+                   JavaResourceLocator javaResourceLocator, @Nullable CodeVisitorIssueFilter postAnalysisIssueFilter, CodeVisitor... visitors) {
+
+    List<CodeVisitor> commonVisitors = Lists.<CodeVisitor>newArrayList(javaResourceLocator);
+    if (postAnalysisIssueFilter != null) {
+      commonVisitors.add(postAnalysisIssueFilter);
+    }
+
+    Iterable<CodeVisitor> codeVisitors = Iterables.concat(commonVisitors, Arrays.asList(visitors));
+    Collection<CodeVisitor> testCodeVisitors = Lists.<CodeVisitor>newArrayList(commonVisitors);
     if (measurer != null) {
       Iterable<CodeVisitor> measurers = Collections.singletonList((CodeVisitor) measurer);
       codeVisitors = Iterables.concat(measurers, codeVisitors);

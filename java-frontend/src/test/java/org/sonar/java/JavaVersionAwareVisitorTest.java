@@ -92,7 +92,7 @@ public class JavaVersionAwareVisitorTest {
     messages.clear();
     ArrayList<File> files = Lists.newArrayList(new File("src/test/files/JavaVersionAwareChecks.java"));
 
-    JavaSquid squid = new JavaSquid(conf, null, null, null, javaChecks);
+    JavaSquid squid = new JavaSquid(conf, null, null, null, null, javaChecks);
     squid.scan(files, Collections.<File>emptyList(), Collections.<File>emptyList());
   }
 
