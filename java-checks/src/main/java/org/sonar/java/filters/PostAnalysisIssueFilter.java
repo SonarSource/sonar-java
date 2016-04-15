@@ -19,6 +19,7 @@
  */
 package org.sonar.java.filters;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.api.issue.Issue;
@@ -29,18 +30,32 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 
 public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 
-  private static final Iterable<JavaIssueFilter> ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
+  private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter());
   private ResourceMapping resourceMapping;
+  private Iterable<JavaIssueFilter> issueFilers;
 
   @Override
   public void setResourceMapping(ResourceMapping resourceMapping) {
     this.resourceMapping = resourceMapping;
   }
 
+  @VisibleForTesting
+  void setIssueFilters(Iterable<? extends JavaIssueFilter> issueFilters) {
+    this.issueFilers = ImmutableList.<JavaIssueFilter>builder().addAll(issueFilters).build();
+  }
+
+  @VisibleForTesting
+  Iterable<JavaIssueFilter> getIssueFilters() {
+    if (issueFilers == null) {
+      issueFilers = DEFAULT_ISSUE_FILTERS;
+    }
+    return issueFilers;
+  }
+
   @Override
   public boolean accept(Issue issue, IssueFilterChain chain) {
-    for (JavaIssueFilter javaIssueFilter : ISSUE_FILTERS) {
+    for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
       if (!javaIssueFilter.accept(issue)) {
         return false;
       }
@@ -51,7 +66,7 @@ public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssu
   @Override
   public void scanFile(JavaFileScannerContext context) {
     String componentKey = resourceMapping.getComponentKeyByFileKey(context.getFileKey());
-    for (JavaIssueFilter javaIssueFilter : ISSUE_FILTERS) {
+    for (JavaIssueFilter javaIssueFilter : getIssueFilters()) {
       javaIssueFilter.setComponentKey(componentKey);
       javaIssueFilter.scanFile(context);
     }
