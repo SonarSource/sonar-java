@@ -61,6 +61,7 @@
         <configuration>
           <includes>
             <include>org.sonar.java.checks.*</include>
+            <include>org.sonar.java.filters.*</include>
             <include>org.sonar.java.tag.*</include>
           </includes>
         </configuration>
