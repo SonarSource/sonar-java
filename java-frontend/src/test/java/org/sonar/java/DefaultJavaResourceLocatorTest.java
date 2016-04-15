@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;

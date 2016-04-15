@@ -24,7 +24,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
@@ -127,21 +126,19 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
     javaFilesCache.scanFile(context);
     InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));
     org.sonar.api.resources.File currentResource = (org.sonar.api.resources.File) sensorContext.getResource(inputFile);
-    String fileKey = context.getFileKey();
     if (currentResource == null) {
-      throw new IllegalStateException("resource not found : " + fileKey);
+      throw new IllegalStateException("resource not found : " + context.getFileKey());
     }
-    resourceMapping.addResource(currentResource, fileKey);
+    resourceMapping.addResource(currentResource, context.getFileKey());
     for (Map.Entry<String, File> classIOFileEntry : javaFilesCache.getResourcesCache().entrySet()) {
       resourcesByClass.put(classIOFileEntry.getKey(), currentResource);
-      if (fileKey != null) {
-        sourceFileByClass.put(classIOFileEntry.getKey(), fileKey);
+      if (context.getFileKey() != null) {
+        sourceFileByClass.put(classIOFileEntry.getKey(), context.getFileKey());
       }
     }
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
-    String componentKey = currentResource.getEffectiveKey();
     if (javaFilesCache.hasSuppressWarningLines()) {
-      suppressWarningsFilter.addComponent(componentKey, javaFilesCache.getSuppressWarningLines());
+      suppressWarningsFilter.addComponent(currentResource.getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
     }
   }
 }
