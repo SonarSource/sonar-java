@@ -20,7 +20,6 @@
 package org.sonar.java;
 
 import com.google.common.base.Charsets;
-
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;

@@ -21,7 +21,6 @@ package org.sonar.java;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.Maps;
-
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.Test;

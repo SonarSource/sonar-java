@@ -21,28 +21,21 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableList;
 
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.FileSystem;
-import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.issue.Issue;
-import org.sonar.api.issue.batch.IssueFilter;
 import org.sonar.api.issue.batch.IssueFilterChain;
+import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 
-public class PostAnalysisIssueFilter implements IssueFilter, JavaFileScanner {
+public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 
-  private final FileSystem fs;
-  private SensorContext sensorContext;
   private static final Iterable<JavaIssueFilter> ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
     new EclipseI18NFilter());
+  private ResourceMapping resourceMapping;
 
-  public PostAnalysisIssueFilter(FileSystem fs) {
-    this.fs = fs;
-  }
-
-  public void setSensorContext(SensorContext sensorContext) {
-    this.sensorContext = sensorContext;
+  @Override
+  public void setResourceMapping(ResourceMapping resourceMapping) {
+    this.resourceMapping = resourceMapping;
   }
 
   @Override
@@ -57,10 +50,7 @@ public class PostAnalysisIssueFilter implements IssueFilter, JavaFileScanner {
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
-    InputFile inputFile = fs.inputFile(fs.predicates().is(context.getFile()));
-    org.sonar.api.resources.File currentResource = (org.sonar.api.resources.File) sensorContext.getResource(inputFile);
-
-    String componentKey = currentResource.getEffectiveKey();
+    String componentKey = resourceMapping.getComponentKeyByFileKey(context.getFileKey());
     for (JavaIssueFilter javaIssueFilter : ISSUE_FILTERS) {
       javaIssueFilter.setComponentKey(componentKey);
       javaIssueFilter.scanFile(context);
