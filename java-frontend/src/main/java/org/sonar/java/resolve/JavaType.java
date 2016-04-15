@@ -42,6 +42,7 @@ public class JavaType implements Type {
   public static final int UNKNOWN = 14;
   public static final int TYPEVAR = 15;
   public static final int WILDCARD = 16;
+  public static final int DEFERRED = 17;
 
   int tag;
 

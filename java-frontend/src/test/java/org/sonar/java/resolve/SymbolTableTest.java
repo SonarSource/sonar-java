@@ -755,6 +755,7 @@ public class SymbolTableTest {
   @Test
   public void Lambdas() throws Exception {
     Result result = Result.createFor("Lambdas");
+    assertThat(result.symbol("bar").usages()).hasSize(1);
     JavaSymbol sym = result.symbol("o");
     assertThat(sym.type.toString()).isEqualTo("!unknown!");
     assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));

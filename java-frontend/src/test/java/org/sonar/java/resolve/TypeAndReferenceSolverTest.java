@@ -503,8 +503,7 @@ public class TypeAndReferenceSolverTest {
 
   @Test
   public void lambda_expression() {
-    // FIXME implement
-    assertThat(typeOf("a -> a+1")).isSameAs(symbols.unknownType);
+    assertThat(typeOf("a -> a+1").isTagged(JavaType.DEFERRED)).isTrue();
   }
 
   @Test

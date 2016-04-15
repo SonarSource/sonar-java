@@ -20,6 +20,7 @@
 package org.sonar.java.model;
 
 import com.google.common.base.Preconditions;
+import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.sslr.grammar.GrammarRuleKey;
 
@@ -52,6 +53,11 @@ public abstract class AbstractTypedTree extends JavaTree {
   public void setType(Type type) {
     // type are computed and set only once
     Preconditions.checkState(this.type == null);
+    this.type = type;
+  }
+
+  public void setInferedType(Type type) {
+    Preconditions.checkState(((JavaType) this.type).isTagged(JavaType.DEFERRED));
     this.type = type;
   }
 

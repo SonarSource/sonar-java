@@ -24,11 +24,11 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
+import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -207,6 +207,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaSymbol symbol = resolution.symbol();
     ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
     registerType(tree, resolution.type());
+    Type formal = Symbols.unknownType;
+    for (int i = 0; i < argTypes.size(); i++) {
+      if (symbol.isMethodSymbol()) {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+        int size = methodSymbol.parameterTypes().size();
+        formal = methodSymbol.parameterTypes().get(i < size ? i : size - 1);
+      }
+      JavaType arg = argTypes.get(i);
+      if (arg.isTagged(JavaType.DEFERRED)) {
+        AbstractTypedTree inferedExpression = ((DeferredType) arg).tree();
+        inferedExpression.setInferedType(formal);
+        inferedExpression.accept(this);
+      }
+    }
   }
 
   private static List<JavaType> getParameterTypes(List<? extends Tree> args) {
@@ -397,9 +411,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitLambdaExpression(LambdaExpressionTree tree) {
-    //TODO resolve variables
-    super.visitLambdaExpression(tree);
-    registerType(tree, Symbols.unknownType);
+    LambdaExpressionTreeImpl lambdaExpressionTree = (LambdaExpressionTreeImpl) tree;
+    if(lambdaExpressionTree.isTypeSet()) {
+      //FIXME Based on set type get correct type of lambda var if required.
+      super.visitLambdaExpression(tree);
+    } else {
+      registerType(tree, symbols.deferedType(lambdaExpressionTree));
+    }
   }
 
   @Override

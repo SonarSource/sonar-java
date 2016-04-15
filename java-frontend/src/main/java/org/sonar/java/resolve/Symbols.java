@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
+import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 
 import java.util.Arrays;
@@ -292,5 +293,9 @@ public class Symbols {
       default:
         throw new IllegalStateException("Descriptor '" + descriptor + "' cannot be mapped to a primitive type");
     }
+  }
+
+  public JavaType deferedType(AbstractTypedTree tree) {
+    return new DeferredType(tree);
   }
 }

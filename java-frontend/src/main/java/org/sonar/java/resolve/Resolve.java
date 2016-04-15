@@ -537,6 +537,10 @@ public class Resolve {
   }
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
+    if(arg.isTagged(JavaType.DEFERRED)) {
+      // we accept all deferred type as we will resolve this later.
+      return true;
+    }
     if(formal.isTagged(JavaType.TYPEVAR) && !arg.isTagged(JavaType.TYPEVAR)) {
       return subtypeOfTypeVar(arg, (TypeVariableJavaType) formal);
     }

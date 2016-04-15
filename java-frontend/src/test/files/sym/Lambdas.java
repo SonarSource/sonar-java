@@ -7,5 +7,12 @@ class A {
     Stream<Object> s = objs.stream();
     s.map(v -> v.toString());
     s.map(v -> v.toString());
+    bar(t -> t + "");
   }
+
+  void bar(F f){}
+}
+
+interface F {
+  String apply(String s);
 }
