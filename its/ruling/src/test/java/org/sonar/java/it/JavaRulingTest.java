@@ -69,8 +69,6 @@ public class JavaRulingTest {
           " * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms."))
       .build();
     ImmutableSet<String> disabledRules = ImmutableSet.of(
-      // disable bytecodeVisitor rules
-      "UnusedPrivateMethod",
       "CallToDeprecatedMethod",
       "CycleBetweenPackages",
       // disable because it generates too many issues, performance reasons

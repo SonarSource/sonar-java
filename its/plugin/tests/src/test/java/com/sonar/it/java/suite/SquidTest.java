@@ -59,12 +59,4 @@ public class SquidTest {
     assertThat(issues).isEmpty();
   }
 
-  @Test
-  public void should_not_fail_on_bytecode_visitor_issue_on_file() throws Exception {
-    IssueClient issueClient = orchestrator.getServer().wsClient().issueClient();
-    List<Issue> issues = issueClient.find(IssueQuery.create().components(JavaTestSuite.keyFor("com.sonarsource.it.samples:squid", "package2/", "Class2.java"))).list();
-    assertThat(issues).hasSize(1);
-    assertThat(issues.get(0).ruleKey()).isEqualTo("squid:UnusedPrivateMethod");
-    assertThat(issues.get(0).line()).isNull();
-  }
 }

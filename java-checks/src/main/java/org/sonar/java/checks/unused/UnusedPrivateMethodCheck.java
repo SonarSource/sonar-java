@@ -41,6 +41,9 @@ public class UnusedPrivateMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void visitNode(Tree tree) {
+    if(!hasSemantic()) {
+      return;
+    }
     MethodTree node = (MethodTree) tree;
     Symbol symbol = node.symbol();
     if (node.modifiers().annotations().isEmpty() && symbol.isPrivate() && symbol.usages().isEmpty()) {

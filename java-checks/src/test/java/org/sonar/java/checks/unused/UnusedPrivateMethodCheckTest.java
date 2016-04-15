@@ -27,6 +27,7 @@ public class UnusedPrivateMethodCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/UnusedPrivateMethod.java", new UnusedPrivateMethodCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/UnusedPrivateMethod.java", new UnusedPrivateMethodCheck());
   }
 
 
