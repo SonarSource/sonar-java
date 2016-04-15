@@ -185,7 +185,7 @@ public abstract class CheckVerifier {
     }
   }
 
-  private boolean isLinear(AnalyzerMessage issue) {
+  private static boolean isLinear(AnalyzerMessage issue) {
     String ruleKey;
     RspecKey rspecKeyAnnotation = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), RspecKey.class);
     if(rspecKeyAnnotation != null) {
