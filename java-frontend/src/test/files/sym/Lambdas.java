@@ -22,7 +22,13 @@ class A {
 
   void fun() {
     field = s -> s;
+    B b = new B(s->s);
   }
+}
+
+
+class B {
+  B(F f){}
 }
 
 interface F {

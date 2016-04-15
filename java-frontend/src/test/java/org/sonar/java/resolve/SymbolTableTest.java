@@ -33,6 +33,7 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
+import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -774,6 +775,9 @@ public class SymbolTableTest {
     assertThat(((VariableTree) fieldSymbol.declaration()).initializer().symbolType()).isSameAs(fieldSymbol.type());
 
     assertThat(((AssignmentExpressionTree) fieldSymbol.usages().get(0).parent()).expression().symbolType()).isSameAs(fieldSymbol.type());
+
+    JavaSymbol bSymbol = result.symbol("b");
+    assertThat(((NewClassTree) ((VariableTree) bSymbol.declaration()).initializer()).arguments().get(0).symbolType()).isSameAs(result.symbol("F").type());
 
     JavaSymbol sym = result.symbol("o");
     assertThat(sym.type.toString()).isEqualTo("!unknown!");

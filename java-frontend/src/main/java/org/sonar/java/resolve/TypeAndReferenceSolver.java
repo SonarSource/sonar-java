@@ -208,18 +208,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaSymbol symbol = resolution.symbol();
     ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
     registerType(tree, resolution.type());
-    Type formal = Symbols.unknownType;
-    for (int i = 0; i < argTypes.size(); i++) {
-      if (symbol.isMethodSymbol()) {
-        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
-        int size = methodSymbol.parameterTypes().size();
-        formal = methodSymbol.parameterTypes().get(i < size ? i : size - 1);
-      }
-      JavaType arg = argTypes.get(i);
-      if (arg.isTagged(JavaType.DEFERRED)) {
-        setInferedType(formal, (DeferredType) arg);
-      }
-    }
+    inferArgumentTypes(argTypes, symbol);
   }
 
   private void setInferedType(Type infered, DeferredType deferredType) {
@@ -549,8 +538,24 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   private JavaSymbol resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes) {
     JavaSymbol symbol = resolve.findMethod(methodEnv, (JavaType) type, "<init>", argTypes).symbol();
+    inferArgumentTypes(argTypes, symbol);
     associateReference(identifier, symbol);
     return symbol;
+  }
+
+  private void inferArgumentTypes(List<JavaType> argTypes, JavaSymbol symbol) {
+    Type formal = Symbols.unknownType;
+    for (int i = 0; i < argTypes.size(); i++) {
+      if (symbol.isMethodSymbol()) {
+        Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
+        int size = methodSymbol.parameterTypes().size();
+        formal = methodSymbol.parameterTypes().get(i < size ? i : size - 1);
+      }
+      JavaType arg = argTypes.get(i);
+      if (arg.isTagged(JavaType.DEFERRED)) {
+        setInferedType(formal, (DeferredType) arg);
+      }
+    }
   }
 
   @Override
