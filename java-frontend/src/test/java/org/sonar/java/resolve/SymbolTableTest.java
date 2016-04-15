@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
@@ -769,7 +770,12 @@ public class SymbolTableTest {
     LambdaExpressionTree lamdba = ((LambdaExpressionTree) ((ReturnStatementTree) ((MethodTree) qixMethod.declaration()).block().body().get(0)).expression());
     assertThat(((ReturnStatementTree) ((BlockTree) lamdba.body()).body().get(0)).expression().symbolType()).isSameAs(result.symbol("F2").type());
 
-        JavaSymbol sym = result.symbol("o");
+    JavaSymbol fieldSymbol = result.symbol("field");
+    assertThat(((VariableTree) fieldSymbol.declaration()).initializer().symbolType()).isSameAs(fieldSymbol.type());
+
+    assertThat(((AssignmentExpressionTree) fieldSymbol.usages().get(0).parent()).expression().symbolType()).isSameAs(fieldSymbol.type());
+
+    JavaSymbol sym = result.symbol("o");
     assertThat(sym.type.toString()).isEqualTo("!unknown!");
     assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));
     assertThat(result.reference(9, 16)).isEqualTo(result.symbol("v", 9));

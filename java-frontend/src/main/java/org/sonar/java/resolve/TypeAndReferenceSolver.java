@@ -217,11 +217,15 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       }
       JavaType arg = argTypes.get(i);
       if (arg.isTagged(JavaType.DEFERRED)) {
-        AbstractTypedTree inferedExpression = ((DeferredType) arg).tree();
-        inferedExpression.setInferedType(formal);
-        inferedExpression.accept(this);
+        setInferedType(formal, (DeferredType) arg);
       }
     }
+  }
+
+  private void setInferedType(Type infered, DeferredType deferredType) {
+    AbstractTypedTree inferedExpression = deferredType.tree();
+    inferedExpression.setInferedType(infered);
+    inferedExpression.accept(this);
   }
 
   private static List<JavaType> getParameterTypes(List<? extends Tree> args) {
@@ -434,15 +438,13 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
           throw new IllegalStateException("Return statement was unexpected here");
         }
       }
-      Type infered = null;
+      Type infered;
       if(parent.is(Tree.Kind.METHOD)) {
         infered = ((MethodTree) parent).returnType().symbolType();
       } else {
         infered = ((LambdaExpressionTree) parent).symbolType();
       }
-      AbstractTypedTree inferedExpression = ((DeferredType) expression.symbolType()).tree();
-      inferedExpression.setInferedType(infered);
-      inferedExpression.accept(this);
+      setInferedType(infered, (DeferredType) expression.symbolType());
     }
   }
 
@@ -565,8 +567,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     scan(tree.modifiers());
     completeMetadata(((VariableTreeImpl) tree).getSymbol(), tree.modifiers().annotations());
     //skip type, it has been resolved in second pass
-    if (tree.initializer() != null) {
-      resolveAs(tree.initializer(), JavaSymbol.VAR);
+    ExpressionTree initializer = tree.initializer();
+    if (initializer != null) {
+      resolveAs(initializer, JavaSymbol.VAR);
+      if(((JavaType) initializer.symbolType()).isTagged(JavaType.DEFERRED)) {
+        setInferedType(tree.type().symbolType(), (DeferredType) initializer.symbolType());
+      }
     }
   }
 
@@ -579,6 +585,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     resolveAs(tree.variable(), JavaSymbol.VAR);
     resolveAs(tree.expression(), JavaSymbol.VAR);
     JavaType type = getType(tree.variable());
+    if(((JavaType) tree.expression().symbolType()).isTagged(JavaType.DEFERRED)) {
+      setInferedType(type, (DeferredType) tree.expression().symbolType());
+    }
     registerType(tree, type);
   }
 

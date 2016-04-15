@@ -17,6 +17,12 @@ class A {
   F2 qix() {
     return s -> { return s -> s;};
   }
+
+  F field = s -> s;
+
+  void fun() {
+    field = s -> s;
+  }
 }
 
 interface F {
