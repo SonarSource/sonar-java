@@ -1,40 +1,40 @@
 language: java
 sudo: false
-
 jdk:
-  - oraclejdk7
-
+- oraclejdk7
 git:
   submodules: false
-
 install: true
-script: ./travis.sh
+script: "./travis.sh"
 env:
-  - TEST=CI
-  - TEST=plugin
-    SQ_VERSION=LTS
+- TEST=CI
+- TEST=plugin SQ_VERSION=LTS
 matrix:
   fast_finish: true
   include:
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
-    - jdk: oraclejdk8
-      env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
-
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=fluent_http SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=apache_commons_beanutils SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=guava SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=java_squid SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=sonarqube_server SQ_VERSION=LATEST_RELEASE
+  - jdk: oraclejdk8
+    env: TEST=ruling PROJECT=jboss_ejb3_tutorial SQ_VERSION=LATEST_RELEASE
 cache:
   directories:
-    - '$HOME/.m2/repository'
-
+  - "$HOME/.m2/repository"
 notifications:
   email: false
+  hipchat:
+    rooms:
+      secure: eZCNoMOh1nR+aTJsnroK7DWHgurwtQoOunNeC0pIAURne4Y7Rlztcn2uOGgqCzSZfn0ucV8Z7RSMp2ANOW7tiAYoF86/an/JoP5wnEyLo3aQFg6Dakw5gdFBfnQpVMatNAVgJDVcqhsjCR0WJy6vo0Re8y1Cm1409hJb+lCjhsM=
+    template:
+      - '<a href="https://github.com/%{repository_slug}/tree/%{branch}">%{branch}</a> - <a href="%{compare_url}">%{commit}</a> %{commit_message} by %{author} <br/><a href="%{build_url}">%{repository}#%{build_number}</a> <br/>%{message}'
+    format: html  
+    notify: true
   webhooks:
-   # URL to QA hook, including credentials
-      - secure: "jioMmc06IBRAgbWiyUP8T0ZsWPn+QhAf/UoGocYo5la20RMMb0M5A5Lpl7yvyGFv+PmC2SIlG3FHf61nRvHNaq1zSWGwOgmGZUrhz/tCD3caSB+BJoba46pcYL/W/V7X2nXMzhJiCbU3U4JoGwVUYqt3Ug1Jl/oLBk2IUp2U0zg="
+  - secure: jioMmc06IBRAgbWiyUP8T0ZsWPn+QhAf/UoGocYo5la20RMMb0M5A5Lpl7yvyGFv+PmC2SIlG3FHf61nRvHNaq1zSWGwOgmGZUrhz/tCD3caSB+BJoba46pcYL/W/V7X2nXMzhJiCbU3U4JoGwVUYqt3Ug1Jl/oLBk2IUp2U0zg=
