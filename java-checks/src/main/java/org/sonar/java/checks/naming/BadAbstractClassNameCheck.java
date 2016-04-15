@@ -19,12 +19,10 @@
  */
 package org.sonar.java.checks.naming;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -32,18 +30,11 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.regex.Pattern;
 
-@Rule(
-  key = "S00118",
-  name = "Abstract class names should comply with a naming convention",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S00118")
+@RspecKey("S118")
 public class BadAbstractClassNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FORMAT = "^Abstract[A-Z][a-zA-Z0-9]*$";

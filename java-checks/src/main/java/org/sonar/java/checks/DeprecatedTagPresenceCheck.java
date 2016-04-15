@@ -19,23 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "S1133",
-  name = "Deprecated code should be removed eventually",
-  priority = Priority.INFO,
-  tags = {Tag.OBSOLETE})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S1133")
 public class DeprecatedTagPresenceCheck extends AbstractDeprecatedChecker {
 
   @Override

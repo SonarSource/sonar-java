@@ -19,11 +19,9 @@
  */
 package org.sonar.java.checks.naming;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -32,20 +30,11 @@ import org.sonar.plugins.java.api.tree.ForEachStatement;
 import org.sonar.plugins.java.api.tree.ForStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.regex.Pattern;
 
-@Rule(
-  key = "S00117",
-  name = "Local variable and method parameter names should comply with a naming convention",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "S00117")
+@RspecKey("S117")
 public class BadLocalVariableNameCheck  extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FORMAT = "^[a-z][a-zA-Z0-9]*$";

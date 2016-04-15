@@ -1,0 +1,22 @@
+<p>An exception in a <code>throws</code> declaration in Java is superfluous if it is:</p>
+<ul>
+<li> listed multiple times
+</li><li> a subclass of another listed exception
+</li><li> a <code>RuntimeException</code>, or one of its descendants
+</li><li> completely unnecessary because the declared exception type cannot actually be thrown
+</li></ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+void foo() throws MyException, MyException {}  // Noncompliant; should be listed once
+void bar() throws Throwable, Exception {}  // Noncompliant; Exception is a subclass of Throwable
+void baz() throws RuntimeException {}  // Noncompliant; RuntimeException can always be thrown
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+void foo() throws MyException {}
+void bar() throws Throwable {}
+void baz() {}
+</pre>
+

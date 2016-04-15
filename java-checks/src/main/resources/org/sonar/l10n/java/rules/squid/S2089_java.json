@@ -1,0 +1,19 @@
+{
+  "title": "HTTP referers should not be relied on",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
+  "tags": [
+    "sans-top25-porous",
+    "owasp-a2",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

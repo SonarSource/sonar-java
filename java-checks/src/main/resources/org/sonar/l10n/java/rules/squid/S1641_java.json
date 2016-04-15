@@ -1,0 +1,16 @@
+{
+  "title": "Sets with elements that are enum values should be replaced with EnumSet",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "CPU_EFFICIENCY",
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

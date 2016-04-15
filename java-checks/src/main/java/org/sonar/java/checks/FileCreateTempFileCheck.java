@@ -19,14 +19,11 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
@@ -40,9 +37,6 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
 import java.util.Deque;
@@ -50,14 +44,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-@Rule(
-  key = "S2976",
-  name = "\"File.createTempFile\" should not be used to create a directory",
-  priority = Priority.CRITICAL,
-  tags = {Tag.OWASP_A9, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2976")
 public class FileCreateTempFileCheck extends BaseTreeVisitor implements JavaFileScanner, JavaVersionAwareVisitor {
 
   private enum State {

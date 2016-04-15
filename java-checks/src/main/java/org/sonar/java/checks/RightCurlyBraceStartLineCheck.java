@@ -20,29 +20,20 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "RightCurlyBraceStartLineCheck",
-  name = "A close curly brace should be located at the beginning of a line",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1min")
+@Rule(key = "RightCurlyBraceStartLineCheck")
+@RspecKey("S1109")
 public class RightCurlyBraceStartLineCheck extends IssuableSubscriptionVisitor {
 
   @Override

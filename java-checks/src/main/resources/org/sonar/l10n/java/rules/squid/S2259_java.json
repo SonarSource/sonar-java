@@ -1,0 +1,23 @@
+{
+  "title": "Null pointers should not be dereferenced",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "cert",
+    "owasp-a1",
+    "owasp-a2",
+    "bug",
+    "security",
+    "cwe",
+    "owasp-a6"
+  ],
+  "defaultSeverity": "Blocker"
+}

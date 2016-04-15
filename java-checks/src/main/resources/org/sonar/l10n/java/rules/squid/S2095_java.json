@@ -1,0 +1,22 @@
+{
+  "title": "Resources should be closed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "cert",
+    "leak",
+    "bug",
+    "security",
+    "cwe",
+    "denial-of-service"
+  ],
+  "defaultSeverity": "Blocker"
+}

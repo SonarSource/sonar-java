@@ -1,0 +1,17 @@
+{
+  "title": "Neither \"Math.abs\" nor negation should be used on numbers that could be \"MIN_VALUE\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

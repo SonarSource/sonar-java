@@ -1,0 +1,18 @@
+{
+  "title": "Unused method parameters should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "cert",
+    "misra",
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

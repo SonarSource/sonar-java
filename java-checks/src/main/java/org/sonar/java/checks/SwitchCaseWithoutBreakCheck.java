@@ -20,10 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
@@ -32,21 +29,11 @@ import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.SwitchStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-@Rule(
-  key = "S128",
-  name = "Switch cases should end with an unconditional \"break\" statement",
-  priority = Priority.MAJOR,
-  tags = {Tag.CERT, Tag.CWE, Tag.MISRA, Tag.SUSPICIOUS})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S128")
 public class SwitchCaseWithoutBreakCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

@@ -19,26 +19,15 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "S2078",
-  name = "Values passed to LDAP queries should be sanitized",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.OWASP_A1, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
-@SqaleConstantRemediation("30min")
+@Rule(key = "S2078")
 public class LDAPInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodMatcher LDAP_SEARCH_MATCHER = MethodMatcher.create()

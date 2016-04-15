@@ -1,0 +1,16 @@
+{
+  "title": "\"NOPMD\" suppression comments should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "bad-practice"
+  ],
+  "defaultSeverity": "Minor"
+}

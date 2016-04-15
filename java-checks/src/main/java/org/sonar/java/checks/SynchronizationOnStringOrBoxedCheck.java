@@ -20,29 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1860",
-  name = "Synchronization should not be based on Strings or boxed primitives",
-  priority = Priority.BLOCKER,
-  tags = {Tag.BUG, Tag.CERT, Tag.MULTI_THREADING})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S1860")
 public class SynchronizationOnStringOrBoxedCheck extends IssuableSubscriptionVisitor {
 
   private static final List<String> FORBIDDEN_TYPES = ImmutableList.of(

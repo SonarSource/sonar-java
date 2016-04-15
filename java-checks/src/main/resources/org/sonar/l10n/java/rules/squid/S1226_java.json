@@ -1,0 +1,17 @@
+{
+  "title": "Method parameters, caught exceptions and foreach variables should not be reassigned",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "pitfall",
+    "misra"
+  ],
+  "defaultSeverity": "Major"
+}

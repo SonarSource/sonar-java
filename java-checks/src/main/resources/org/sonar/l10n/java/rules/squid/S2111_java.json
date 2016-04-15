@@ -1,0 +1,18 @@
+{
+  "title": "\"BigDecimal(double)\" should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

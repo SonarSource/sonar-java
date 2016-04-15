@@ -20,12 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -37,20 +33,10 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S3066",
-  name = "\"enum\" fields should not be publicly mutable",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BAD_PRACTICE, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S3066")
 public class EnumMutableFieldCheck extends IssuableSubscriptionVisitor {
 
   @Override

@@ -20,34 +20,21 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.JavaVersionAwareVisitor;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaVersion;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-    key = "S2093",
-    name = "Try-with-resources should be used",
-    priority = Priority.MAJOR,
-    tags = {Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("15min")
-@ActivatedByDefault
+@Rule(key = "S2093")
 public class TryWithResourcesCheck extends IssuableSubscriptionVisitor implements JavaVersionAwareVisitor {
 
   private final Deque<TryStatementTree> withinTry = new LinkedList<>();

@@ -20,11 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AssignmentExpressionTree;
@@ -35,20 +32,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SynchronizedStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
-@Rule(
-  key = "S2445",
-  name = "Blocks synchronized on fields should not contain assignments of new objects to those fields",
-  priority = Priority.BLOCKER,
-  tags = {Tag.BUG, Tag.MULTI_THREADING})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S2445")
 public class SynchronizedFieldAssignmentCheck extends IssuableSubscriptionVisitor {
 
   @Override

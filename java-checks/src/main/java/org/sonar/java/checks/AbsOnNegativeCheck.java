@@ -20,13 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -37,22 +34,11 @@ import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
-@Rule(
-  key = "S2676",
-  name = "Neither \"Math.abs\" nor negation should be used on numbers that could be \"MIN_VALUE\"",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2676")
 public class AbsOnNegativeCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcherCollection MATH_ABS_METHODS = MethodMatcherCollection.create(

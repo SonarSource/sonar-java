@@ -1,0 +1,17 @@
+{
+  "title": "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "pitfall",
+    "convention"
+  ],
+  "defaultSeverity": "Major"
+}

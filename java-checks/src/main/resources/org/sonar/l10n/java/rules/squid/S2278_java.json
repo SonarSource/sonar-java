@@ -1,0 +1,20 @@
+{
+  "title": "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "SECURITY_FEATURES",
+  "tags": [
+    "cert",
+    "sans-top25-porous",
+    "security",
+    "cwe",
+    "owasp-a6"
+  ],
+  "defaultSeverity": "Critical"
+}

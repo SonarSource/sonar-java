@@ -1,0 +1,19 @@
+{
+  "title": "\"equals(Object obj)\" and \"hashCode()\" should be overridden in pairs",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug",
+    "cwe"
+  ],
+  "defaultSeverity": "Blocker"
+}

@@ -42,8 +42,6 @@ import org.sonar.api.source.Highlightable;
 import org.sonar.api.source.Symbolizable;
 import org.sonar.plugins.java.api.CheckRegistrar;
 import org.sonar.plugins.java.api.JavaCheck;
-import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
-import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
 import org.sonar.squidbridge.api.CodeVisitor;
 
 import java.io.File;
@@ -278,20 +276,6 @@ public class SonarComponentsTest {
     verify(issuable, times(3)).addIssue(any(Issue.class));
 
     try {
-      sonarComponents.addIssue(file, new CustomCheckWithSqaleLinear(), 42, "message on line", null);
-      fail("IllegalStateException expected");
-    } catch (IllegalStateException e) {
-      assertThat(e.getMessage()).isEqualTo("A check annotated with a linear sqale function should provide an effort to fix");
-    }
-
-    try {
-      sonarComponents.addIssue(file, new CustomCheckWithSqaleOffset(), 42, "message on line", null);
-      fail("IllegalStateException expected");
-    } catch (IllegalStateException e) {
-      assertThat(e.getMessage()).isEqualTo("A check annotated with a linear sqale function should provide an effort to fix");
-    }
-
-    try {
       sonarComponents.reportIssueAfterSQ52(mock(AnalyzerMessage.class), RuleKey.of("squid", "S109"), inputFile, null);
       fail("NoClassDefFoundError expected");
     } catch (NoClassDefFoundError e) {
@@ -312,16 +296,6 @@ public class SonarComponentsTest {
   }
 
   private static class CustomCheck implements JavaCheck {
-
-  }
-
-  @SqaleLinearRemediation(coeff = "coeff", effortToFixDescription = "effortToFixDescription")
-  private static class CustomCheckWithSqaleLinear implements JavaCheck {
-
-  }
-
-  @SqaleLinearWithOffsetRemediation(coeff = "coeff", offset = "offset", effortToFixDescription = "effortToFixDescription")
-  private static class CustomCheckWithSqaleOffset implements JavaCheck {
 
   }
 

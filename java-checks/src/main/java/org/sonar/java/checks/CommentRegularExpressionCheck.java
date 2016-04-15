@@ -21,26 +21,19 @@ package org.sonar.java.checks;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.NoSqale;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Rule(
-  key = "S124",
-  name = "Comments matching a regular expression should be handled",
-  priority = Priority.MAJOR)
+@Rule(key = "S124")
 @RuleTemplate
-@NoSqale
 public class CommentRegularExpressionCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_REGULAR_EXPRESSION = "";

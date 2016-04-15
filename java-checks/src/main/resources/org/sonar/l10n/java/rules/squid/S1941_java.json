@@ -1,0 +1,16 @@
+{
+  "title": "Variables should not be declared before they are relevant",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

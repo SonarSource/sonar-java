@@ -19,10 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -33,19 +30,11 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
-@Rule(
-  key = "S2694",
-  name = "Inner classes which do not reference their owning classes should be \"static\"",
-  priority = Priority.MAJOR,
-  tags = {Tag.PERFORMANCE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S2694")
 public class InnerStaticClassesCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

@@ -1,0 +1,19 @@
+{
+  "title": "\"runFinalizersOnExit\" should not be called",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug",
+    "security"
+  ],
+  "defaultSeverity": "Blocker"
+}

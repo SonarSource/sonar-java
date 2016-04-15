@@ -1,0 +1,17 @@
+{
+  "title": "\"assert\" should only be used with boolean variables",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "suspicious",
+    "cert"
+  ],
+  "defaultSeverity": "Major"
+}

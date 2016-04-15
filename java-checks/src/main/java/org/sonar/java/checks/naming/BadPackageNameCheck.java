@@ -19,30 +19,19 @@
  */
 package org.sonar.java.checks.naming;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.PackageUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.regex.Pattern;
 
-@Rule(
-  key = "S00120",
-  name = "Package names should comply with a naming convention",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S00120")
+@RspecKey("S120")
 public class BadPackageNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_FORMAT = "^[a-z]+(\\.[a-z][a-z0-9]*)*$";

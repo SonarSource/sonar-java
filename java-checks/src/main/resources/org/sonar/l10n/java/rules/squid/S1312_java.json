@@ -1,0 +1,16 @@
+{
+  "title": "Loggers should be \"private static final\" and should share a naming convention",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

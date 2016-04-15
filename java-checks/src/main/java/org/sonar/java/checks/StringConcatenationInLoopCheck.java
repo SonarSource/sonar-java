@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.model.SyntacticEquivalence;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -41,19 +38,11 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.WhileStatementTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
-@Rule(
-  key = "S1643",
-  name = "Strings should not be concatenated using '+' in a loop",
-  priority = Priority.MAJOR,
-  tags = {Tag.PERFORMANCE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.MEMORY_EFFICIENCY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S1643")
 public class StringConcatenationInLoopCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

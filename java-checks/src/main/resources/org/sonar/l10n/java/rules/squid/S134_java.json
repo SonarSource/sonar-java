@@ -1,0 +1,16 @@
+{
+  "title": "Control flow statements \"if\", \"for\", \"while\", \"switch\" and \"try\" should not be nested too deeply",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "LOGIC_CHANGEABILITY",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

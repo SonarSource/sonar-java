@@ -20,11 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -32,18 +30,11 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "MaximumInheritanceDepth",
-  name = "Inheritance tree of classes should not be too deep",
-  priority = Priority.MAJOR,
-  tags = {Tag.DESIGN})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("4h")
+import java.util.ArrayList;
+
+@Rule(key = "MaximumInheritanceDepth")
+@RspecKey("S110")
 public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   public static final int DEFAULT_MAX = 5;
@@ -78,7 +69,8 @@ public class DITCheck extends BaseTreeVisitor implements JavaFileScanner {
       if(tree.parent().is(Tree.Kind.NEW_CLASS)) {
         reportTree = ((NewClassTree) tree.parent()).newKeyword();
       }
-      context.reportIssue(this, reportTree, "This class has "+dit+" parents which is greater than "+max+" authorized.");
+      context.reportIssue(this, reportTree, "This class has "+dit+" parents which is greater than "+max+" authorized.",
+        new ArrayList<JavaFileScannerContext.Location>(), dit - max);
     }
     super.visitClass(tree);
   }

@@ -20,32 +20,19 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2639",
-  name = "Inappropriate regular expressions should not be used",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("15min")
-@ActivatedByDefault
+@Rule(key = "S2639")
 public class InappropriateRegexpCheck extends AbstractMethodDetection {
 
   private static final String INAPPROPRIATE_REGEXPS = "\\.|\\|";

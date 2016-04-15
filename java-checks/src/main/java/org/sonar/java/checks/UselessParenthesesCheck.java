@@ -20,10 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayAccessExpressionTree;
@@ -31,23 +29,14 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "UselessParenthesesCheck",
-  name = "Useless parentheses around expressions should be removed to prevent any misunderstanding",
-  priority = Priority.MAJOR,
-  tags = {Tag.CONFUSING})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1min")
+@Rule(key = "UselessParenthesesCheck")
+@RspecKey("S1110")
 public class UselessParenthesesCheck extends IssuableSubscriptionVisitor {
 
   private final Deque<Tree> parent = new LinkedList<>();

@@ -20,13 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableSet;
-
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -38,21 +35,12 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Rule(
-  key = "S00112",
-  name = "Generic exceptions should never be thrown",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S00112")
+@RspecKey("S112")
 public class RawExceptionCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Set<String> RAW_EXCEPTIONS = ImmutableSet.of("java.lang.Throwable", "java.lang.Error", "java.lang.Exception", "java.lang.RuntimeException");

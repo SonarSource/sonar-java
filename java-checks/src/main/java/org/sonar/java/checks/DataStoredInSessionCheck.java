@@ -21,18 +21,15 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -40,19 +37,11 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.Set;
 
-@Rule(
-  key = "S3318",
-  name = "Untrusted data should not be stored in sessions",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S3318")
 public class DataStoredInSessionCheck extends AbstractMethodDetection {
 
   private Set<IdentifierTree> identifiersUsedToSetAttribute;

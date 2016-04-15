@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks.xml.ejb;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
 
-@Rule(
-  key = "S3281",
-  name = "Default EJB interceptors should be declared in \"ejb-jar.xml\"",
-  priority = Priority.MAJOR,
-  tags = {Tag.BUG})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("5min")
-@ActivatedByDefault
+@Rule(key = "S3281")
 public class DefaultInterceptorsLocationCheck extends XPathXmlCheck {
 
   private XPathExpression defaultInterceptorClassesExpression;

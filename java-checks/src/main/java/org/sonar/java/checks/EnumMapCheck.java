@@ -19,13 +19,10 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.resolve.JavaType.ParametrizedTypeJavaType;
 import org.sonar.java.resolve.JavaType.TypeVariableJavaType;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,20 +32,10 @@ import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1640",
-  name = "Maps with keys that are enum values should be replaced with EnumMap",
-  priority = Priority.MAJOR,
-  tags = {Tag.PERFORMANCE})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S1640")
 public class EnumMapCheck extends BaseTreeVisitor implements JavaFileScanner {
   private JavaFileScannerContext context;
 

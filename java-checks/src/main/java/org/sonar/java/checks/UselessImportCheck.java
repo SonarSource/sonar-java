@@ -21,11 +21,9 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -38,9 +36,6 @@ import org.sonar.plugins.java.api.tree.ImportTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -48,14 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Rule(
-  key = "UselessImportCheck",
-  name = "Useless imports should be removed",
-  priority = Priority.MINOR,
-  tags = {Tag.UNUSED})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "UselessImportCheck")
+@RspecKey("S1128")
 public class UselessImportCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private final Map<String, ImportTree> lineByImportReference = new HashMap<>();

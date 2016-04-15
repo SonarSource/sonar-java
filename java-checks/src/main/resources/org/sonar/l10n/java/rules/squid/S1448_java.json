@@ -1,0 +1,16 @@
+{
+  "title": "Classes should not have too many methods",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1h"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

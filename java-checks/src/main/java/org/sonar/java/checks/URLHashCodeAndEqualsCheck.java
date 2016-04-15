@@ -20,34 +20,20 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.util.List;
 
-@Rule(
-  key = "S2112",
-  name = "\"URL.hashCode\" and \"URL.equals\" should be avoided",
-  priority = Priority.MAJOR,
-  tags = {Tag.PERFORMANCE})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S2112")
 public class URLHashCodeAndEqualsCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_NET_URL = "java.net.URL";

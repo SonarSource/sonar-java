@@ -22,30 +22,17 @@ package org.sonar.java.checks;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1160",
-  name = "Public methods should throw at most one checked exception",
-  priority = Priority.MAJOR,
-  tags = {Tag.ERROR_HANDLING})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S1160")
 public class ThrowsSeveralCheckedExceptionCheck extends IssuableSubscriptionVisitor {
 
   @Override

@@ -20,26 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1996",
-  name = "Files should contain only one top-level class or interface each",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleLinearRemediation(coeff = "10min", effortToFixDescription = "per extra \"class\" or \"interface\"")
+@Rule(key = "S1996")
 public class OneClassInterfacePerFileCheck extends IssuableSubscriptionVisitor {
 
   @Override

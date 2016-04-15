@@ -1,0 +1,16 @@
+{
+  "title": "Wildcard imports should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

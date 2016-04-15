@@ -1,0 +1,19 @@
+<p>As stated per effective java : </p>
+<blockquote><p>Varargs methods are a convenient way to define methods that require a variable number of arguments, but they should not be overused. They can produce confusing results if used innapropriately.<blockquote></p>
+</blockquote>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+void fun ( String... strings )	// Noncompliant
+{
+  // ...
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> MISRA C:2004, 16.1 - Functions shall not be defined with a variable number of arguments.
+</li><li> MISRA C++:2008, 8-4-1 - Functions shall not be defined using the ellipsis notation.
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/i4CW">CERT, DCL50-CPP.</a> - Do not define a C-style variadic function
+</li></ul>
+

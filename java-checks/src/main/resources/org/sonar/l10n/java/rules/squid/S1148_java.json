@@ -1,0 +1,18 @@
+{
+  "title": "Throwable.printStackTrace(...) should not be called",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "EXCEPTION_HANDLING",
+  "tags": [
+    "error-handling",
+    "security"
+  ],
+  "defaultSeverity": "Critical"
+}

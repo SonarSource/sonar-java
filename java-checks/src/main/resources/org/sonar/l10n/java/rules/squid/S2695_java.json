@@ -1,0 +1,18 @@
+{
+  "title": "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "sql",
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}

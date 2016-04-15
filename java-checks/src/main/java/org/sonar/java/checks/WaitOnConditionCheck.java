@@ -20,29 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1844",
-  name = "\"Object.wait(...)\" should never be called on objects that implement \"java.util.concurrent.locks.Condition\"",
-  priority = Priority.BLOCKER,
-  tags = {Tag.BUG, Tag.PITFALL})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S1844")
 public class WaitOnConditionCheck extends AbstractMethodDetection {
 
   @Override

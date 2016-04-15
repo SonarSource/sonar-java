@@ -21,8 +21,6 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.checks.helpers.ReassignmentFinder;
@@ -31,7 +29,6 @@ import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
@@ -41,22 +38,12 @@ import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@Rule(
-  key = "S2695",
-  name = "\"PreparedStatement\" and \"ResultSet\" methods should be called with valid indices",
-  priority = Priority.BLOCKER,
-  tags = {Tag.BUG, Tag.SQL})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "S2695")
 public class PreparedStatementAndResultSetCheck extends AbstractMethodDetection {
 
   private static final String INT = "int";

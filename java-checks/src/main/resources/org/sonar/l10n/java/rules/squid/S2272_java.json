@@ -1,0 +1,16 @@
+{
+  "title": "\"Iterator.next()\" methods should throw \"NoSuchElementException\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "unpredictable"
+  ],
+  "defaultSeverity": "Major"
+}

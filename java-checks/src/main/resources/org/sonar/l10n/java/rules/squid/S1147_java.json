@@ -1,0 +1,18 @@
+{
+  "title": "Exit methods should not be called",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30mn"
+  },
+  "sqaleSubCharac": "SECURITY_FEATURES",
+  "tags": [
+    "suspicious",
+    "cert",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

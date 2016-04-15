@@ -20,30 +20,17 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2062",
-  name = "\"readResolve\" methods should be inheritable",
-  priority = Priority.MAJOR,
-  tags = {Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation("5min")
-@ActivatedByDefault
+@Rule(key = "S2062")
 public class PrivateReadResolveCheck extends IssuableSubscriptionVisitor {
   @Override
   public List<Tree.Kind> nodesToVisit() {

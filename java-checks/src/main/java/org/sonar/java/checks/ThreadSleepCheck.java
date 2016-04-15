@@ -20,27 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2276",
-  name = "\"wait(...)\" should be used instead of \"Thread.sleep(...)\" when a lock is held",
-  priority = Priority.CRITICAL,
-  tags = {Tag.MULTI_THREADING, Tag.PERFORMANCE, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2276")
 public class ThreadSleepCheck extends AbstractInSynchronizeChecker {
 
   @Override

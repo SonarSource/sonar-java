@@ -1,0 +1,16 @@
+{
+  "title": "Annotation repetitions should not be wrapped",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}

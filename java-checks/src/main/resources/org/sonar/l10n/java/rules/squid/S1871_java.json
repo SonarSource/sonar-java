@@ -1,0 +1,17 @@
+{
+  "title": "Two branches in the same conditional structure should not have exactly the same implementation",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "suspicious",
+    "design"
+  ],
+  "defaultSeverity": "Major"
+}

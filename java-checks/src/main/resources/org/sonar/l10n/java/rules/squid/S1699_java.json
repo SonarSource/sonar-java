@@ -1,0 +1,17 @@
+{
+  "title": "Constructors should only call non-overridable methods",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "cert",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

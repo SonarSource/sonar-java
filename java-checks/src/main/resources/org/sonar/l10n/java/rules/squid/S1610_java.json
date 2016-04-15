@@ -1,0 +1,16 @@
+{
+  "title": "Abstract classes without fields should be converted to interfaces",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
+  "tags": [
+    "java8"
+  ],
+  "defaultSeverity": "Major"
+}

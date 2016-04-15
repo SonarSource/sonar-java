@@ -20,30 +20,19 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleLinearWithOffsetRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Rule(
-  key = "MethodCyclomaticComplexity",
-  name = "Methods should not be too complex",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleLinearWithOffsetRemediation(coeff = "1min", offset = "10min", effortToFixDescription = "per complexity point above the threshold")
+@Rule(key = "MethodCyclomaticComplexity")
+@RspecKey("S1541")
 public class MethodComplexityCheck extends IssuableSubscriptionVisitor {
 
   private static final int DEFAULT_MAX = 10;

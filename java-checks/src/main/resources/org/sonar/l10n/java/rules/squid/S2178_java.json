@@ -1,0 +1,18 @@
+{
+  "title": "Short-circuit logic should be used in boolean contexts",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

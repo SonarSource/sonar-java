@@ -20,32 +20,21 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-@Rule(
-  key = "S00119",
-  name = "Type parameter names should comply with a naming convention",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S00119")
+@RspecKey("S119")
 public class BadTypeParameterNameCheck extends IssuableSubscriptionVisitor {
 
   private static final String DEFAULT_FORMAT = "^[A-Z][0-9]?$";

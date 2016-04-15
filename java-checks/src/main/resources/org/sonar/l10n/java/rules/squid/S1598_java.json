@@ -1,0 +1,16 @@
+{
+  "title": "Package declaration should match source file directory",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

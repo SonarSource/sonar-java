@@ -1,0 +1,19 @@
+{
+  "title": "Values passed to OS commands should be sanitized",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
+  "tags": [
+    "sans-top25-insecure",
+    "owasp-a1",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

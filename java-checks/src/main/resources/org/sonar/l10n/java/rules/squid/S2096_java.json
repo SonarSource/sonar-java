@@ -1,0 +1,17 @@
+{
+  "title": "\"main\" should not \"throw\" anything",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "EXCEPTION_HANDLING",
+  "tags": [
+    "error-handling",
+    "security"
+  ],
+  "defaultSeverity": "Critical"
+}

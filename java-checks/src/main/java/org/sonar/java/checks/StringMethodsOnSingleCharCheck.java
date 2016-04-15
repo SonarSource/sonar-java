@@ -20,32 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.LiteralUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.LiteralTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S3027",
-  name = "String function use should be optimized for single characters",
-  priority = Priority.MINOR,
-  tags = {Tag.CLUMSY, Tag.PERFORMANCE})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.CPU_EFFICIENCY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S3027")
 public class StringMethodsOnSingleCharCheck extends AbstractMethodDetection {
 
   private static final String STRING = "java.lang.String";

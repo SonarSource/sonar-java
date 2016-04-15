@@ -1,0 +1,16 @@
+{
+  "title": "The signature of \"finalize()\" should match that of \"Object.finalize()\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

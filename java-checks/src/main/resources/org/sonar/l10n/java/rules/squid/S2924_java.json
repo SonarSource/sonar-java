@@ -1,0 +1,17 @@
+{
+  "title": "JUnit rules should be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "tests",
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

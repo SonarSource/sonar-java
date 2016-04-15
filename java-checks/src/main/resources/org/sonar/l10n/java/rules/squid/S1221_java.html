@@ -1,0 +1,22 @@
+<p>Naming a method <code>hashcode()</code> or <code>equal</code> is either:</p>
+<ul>
+<li> A bug in the form of a typo. Overriding <code>Object.hashCode()</code> (note the camelCasing) or <code>Object.equals</code> (note the 's' on the end) was meant, and the application does not behave as expected.
+</li><li> Done on purpose. The name however will confuse every other developer, who may not notice the naming difference, or who will think it is a bug.
+</li></ul>
+<p>In both cases, the method should be renamed.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public int hashcode() { /* ... */ }  // Noncompliant
+
+public boolean equal(Object obj) { /* ... */ }  // Noncompliant
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+@Override
+public int hashCode() { /* ... */ }
+
+public boolean equals(Object obj) { /* ... */ } 
+</pre>
+

@@ -20,28 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.NameCriteria;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2701",
-  name = "Literal boolean values should not be used in assertions",
-  priority = Priority.MAJOR,
-  tags = {Tag.TESTS})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2701")
 public class BooleanLiteralInAssertionsCheck extends AbstractMethodDetection {
 
   private static final String ASSERT = "assert";

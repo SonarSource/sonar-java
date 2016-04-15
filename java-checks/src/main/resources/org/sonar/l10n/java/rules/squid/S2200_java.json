@@ -1,0 +1,16 @@
+{
+  "title": "\"compareTo\" results should not be checked for specific values",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "unpredictable"
+  ],
+  "defaultSeverity": "Major"
+}

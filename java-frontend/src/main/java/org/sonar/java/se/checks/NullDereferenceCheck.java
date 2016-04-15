@@ -20,8 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Lists;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
@@ -33,21 +31,11 @@ import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Rule(
-  key = "S2259",
-  name = "Null pointers should not be dereferenced",
-  priority = Priority.BLOCKER,
-  tags = {"bug", "cert", "cwe", "owasp-a1", "owasp-a2", "owasp-a6", "security"})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("10min")
-@ActivatedByDefault
+@Rule(key = "S2259")
 public class NullDereferenceCheck extends SECheck {
 
   @Override

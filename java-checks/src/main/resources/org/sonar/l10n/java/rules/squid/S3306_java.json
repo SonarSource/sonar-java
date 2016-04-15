@@ -1,0 +1,17 @@
+{
+  "title": "Constructor injection should be used instead of field injection",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "pitfall",
+    "design"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -20,27 +20,16 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1449",
-  name = "Locale should be used in String operations",
-  priority = Priority.MAJOR,
-  tags = {Tag.CERT, Tag.UNPREDICTABLE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INSTRUCTION_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S1449")
 public class StringMethodsWithLocaleCheck extends AbstractMethodDetection {
 
 

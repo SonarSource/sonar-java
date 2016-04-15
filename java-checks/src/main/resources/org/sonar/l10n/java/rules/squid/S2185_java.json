@@ -1,0 +1,16 @@
+{
+  "title": "Silly math should not be performed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

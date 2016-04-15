@@ -1,0 +1,16 @@
+{
+  "title": "The default unnamed package should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

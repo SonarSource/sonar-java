@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks.naming;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.AbstractBadFieldNameChecker;
 import org.sonar.java.model.ModifiersUtils;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "S3008",
-  name = "Static non-final field names should comply with a naming convention",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "S3008")
 public class BadFieldNameStaticNonFinalCheck extends AbstractBadFieldNameChecker {
 
   @RuleProperty(

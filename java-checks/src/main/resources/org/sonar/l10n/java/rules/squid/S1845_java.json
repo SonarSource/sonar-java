@@ -1,0 +1,16 @@
+{
+  "title": "Methods and field names should not be the same or differ only by capitalization",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

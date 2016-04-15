@@ -21,14 +21,12 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.JavaTree;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
 import org.sonar.java.syntaxtoken.LastSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BlockTree;
@@ -40,21 +38,14 @@ import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "IndentationCheck",
-  name = "Source code should be indented consistently",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1min")
+@Rule(key = "IndentationCheck")
+@RspecKey("S1120")
 public class IndentationCheck extends IssuableSubscriptionVisitor {
 
   private static final List<Kind> BLOCK_TYPES = ImmutableList.of(

@@ -1,0 +1,18 @@
+{
+  "title": "Non-serializable objects should not be stored in \"HttpSession\" objects",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "bug",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

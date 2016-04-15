@@ -1,0 +1,17 @@
+{
+  "title": "Redundant modifiers should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "finding",
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

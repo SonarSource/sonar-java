@@ -20,28 +20,15 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2254",
-  name = "\"HttpServletRequest.getRequestedSessionId()\" should not be used",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.OWASP_A2, Tag.SANS_TOP_25_POROUS, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S2254")
 public class GetRequestedSessionIdCheck extends AbstractMethodDetection {
 
   @Override

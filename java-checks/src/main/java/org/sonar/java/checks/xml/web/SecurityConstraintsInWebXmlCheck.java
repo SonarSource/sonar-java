@@ -20,23 +20,12 @@
 package org.sonar.java.checks.xml.web;
 
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.xml.xpath.XPathExpression;
 
-@Rule(
-  key = "S3369",
-  name = "Security constraints should be defined",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.JEE, Tag.OWASP_A7, Tag.SECURITY, Tag.WEBSPHERE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("3h")
+@Rule(key = "S3369")
 public class SecurityConstraintsInWebXmlCheck extends WebXmlCheckTemplate {
 
   private XPathExpression securityConstraintExpression;

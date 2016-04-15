@@ -20,12 +20,8 @@
 package org.sonar.java.checks.naming;
 
 import com.google.common.collect.Lists;
-
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -34,20 +30,10 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collection;
 
-@Rule(
-  key = "S1700",
-  name = "A field should not duplicate the name of its containing class",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S1700")
 public class FieldNameMatchingTypeNameCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

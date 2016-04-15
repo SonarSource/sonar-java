@@ -1,0 +1,18 @@
+{
+  "title": "\"Serializable\" inner classes of \"Serializable\" classes should be static",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "MEMORY_EFFICIENCY",
+  "tags": [
+    "cert",
+    "serialization",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

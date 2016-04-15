@@ -1,0 +1,17 @@
+{
+  "title": "Unused type parameters should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "cert",
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

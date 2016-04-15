@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.resolve.JavaSymbol;
@@ -42,25 +40,14 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.CheckForNull;
-
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Rule(
-  key = "S2637",
-  name = "\"@NonNull\" values should not be set to null",
-  priority = Priority.CRITICAL,
-  tags = {"bug", "misra"})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.RELIABILITY_COMPLIANCE)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S2637")
 public class NonNullSetToNullCheck extends SECheck {
 
   private static final String[] ANNOTATIONS = {"javax.annotation.Nonnull", "javax.validation.constraints.NotNull",

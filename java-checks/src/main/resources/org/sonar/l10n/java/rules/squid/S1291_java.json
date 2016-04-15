@@ -1,0 +1,16 @@
+{
+  "title": "\"NOSONAR\" should not be used to switch off issues",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "1min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major"
+}

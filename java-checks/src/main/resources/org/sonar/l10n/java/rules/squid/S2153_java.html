@@ -1,0 +1,28 @@
+<p>Boxing is the process of putting a primitive value into an analogous object, such as creating an <code>Integer</code> to hold an <code>int</code> value. Unboxing is the process of retrieving the primitive value from such an object.</p>
+<p>Since the original value is unchanged during boxing and unboxing, there's no point in doing either when not needed. This also applies to autoboxing and auto-unboxing (when Java implicitly handles the primitive/object transition for you).</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void examineInt(int a) { 
+  //... 
+}
+
+public void examineInteger(Integer a) { 
+  // ...
+}
+
+public void func() {
+  int i = 0;
+  Integer iger1 = Integer.valueOf(0);
+  double d = 1.0;
+
+  int dIntValue = new Double(d).intValue(); // Noncompliant
+
+  examineInt(new Integer(i).intValue()); // Noncompliant; explicit box/unbox
+  examineInt(Integer.valueOf(i));  // Noncompliant; boxed int will be auto-unboxed
+
+  examineInteger(i); // Compliant; value is boxed but not then unboxed
+  examineInteger(iger1.intValue()); // Noncompliant; unboxed int will be autoboxed
+}
+</pre>
+

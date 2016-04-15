@@ -1,0 +1,17 @@
+{
+  "title": "Modulus results should not be checked for direct equality",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "suspicious",
+    "cert"
+  ],
+  "defaultSeverity": "Major"
+}

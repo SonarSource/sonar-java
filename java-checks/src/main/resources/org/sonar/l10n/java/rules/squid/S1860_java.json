@@ -1,0 +1,19 @@
+{
+  "title": "Synchronization should not be based on Strings or boxed primitives",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}

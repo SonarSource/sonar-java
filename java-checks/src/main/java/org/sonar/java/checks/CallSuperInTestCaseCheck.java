@@ -21,10 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -35,23 +32,12 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 
-@Rule(
-  key = "S2188",
-  name = "JUnit test cases should call super methods",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.TESTS})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNIT_TESTABILITY)
-@SqaleConstantRemediation("5min")
-@ActivatedByDefault
+@Rule(key = "S2188")
 public class CallSuperInTestCaseCheck extends IssuableSubscriptionVisitor {
 
   public static final String JUNIT_FRAMEWORK_TEST_CASE = "junit.framework.TestCase";

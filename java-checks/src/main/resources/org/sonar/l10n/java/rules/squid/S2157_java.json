@@ -1,0 +1,17 @@
+{
+  "title": "\"Cloneables\" should implement \"clone\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

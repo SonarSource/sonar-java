@@ -1,0 +1,17 @@
+{
+  "title": "Exception types should not be tested using \"instanceof\" in catch blocks",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "cert",
+    "error-handling"
+  ],
+  "defaultSeverity": "Major"
+}

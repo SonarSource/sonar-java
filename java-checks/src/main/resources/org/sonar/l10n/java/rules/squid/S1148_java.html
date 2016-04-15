@@ -1,0 +1,25 @@
+<p><code>Throwable.printStackTrace(...)</code> prints a throwable and its stack trace to some stream.</p>
+<p>Loggers should be used instead to print throwables, as they have many advantages:</p>
+<ul>
+<li> Users are able to easily retrieve the logs.
+</li><li> The format of log messages is uniform and allow users to browse the logs easily.
+</li></ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+try {
+  /* ... */
+} catch(Exception e) {
+  e.printStackTrace();        // Noncompliant
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+try {
+  /* ... */
+} catch(Exception e) {
+  LOGGER.log("context", e);
+}
+</pre>
+

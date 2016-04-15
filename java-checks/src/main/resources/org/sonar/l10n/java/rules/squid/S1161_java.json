@@ -1,0 +1,16 @@
+{
+  "title": "\"@Override\" annotation should be used on any method overriding (since Java 5) or implementing (since Java 6) another one",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major"
+}

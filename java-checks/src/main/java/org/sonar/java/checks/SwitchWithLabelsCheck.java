@@ -20,33 +20,20 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LabeledStatementTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 import static org.sonar.plugins.java.api.tree.Tree.Kind.CASE_GROUP;
 import static org.sonar.plugins.java.api.tree.Tree.Kind.LABELED_STATEMENT;
 
-@Rule(
-  key = "S1219",
-  name = "\"switch\" statements should not contain non-case labels",
-  priority = Priority.MAJOR,
-  tags = {Tag.MISRA, Tag.SUSPICIOUS})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S1219")
 public class SwitchWithLabelsCheck extends IssuableSubscriptionVisitor {
 
   @Override

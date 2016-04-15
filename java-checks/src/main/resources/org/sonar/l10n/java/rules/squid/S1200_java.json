@@ -1,0 +1,16 @@
+{
+  "title": "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2h"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

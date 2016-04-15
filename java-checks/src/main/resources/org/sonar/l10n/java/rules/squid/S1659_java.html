@@ -1,0 +1,34 @@
+<p>Declaring multiple variable on one line is difficult to read.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+class MyClass {
+
+  private int a, b;
+
+  public void method(){
+    int c; int d;
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class MyClass {
+
+  private int a;
+  private int b;
+
+  public void method(){
+    int c;
+    int d;
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/x/7wHEAw">CERT, DCL52-J.</a> - Do not declare more than one variable per declaration
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/fAAhAQ">CERT, DCL04-CPP.</a> - Do not declare more than one variable per declaration
+</li></ul>
+

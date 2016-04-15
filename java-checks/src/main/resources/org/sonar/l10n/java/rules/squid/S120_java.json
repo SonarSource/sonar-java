@@ -1,0 +1,16 @@
+{
+  "title": "Package names should comply with a naming convention",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

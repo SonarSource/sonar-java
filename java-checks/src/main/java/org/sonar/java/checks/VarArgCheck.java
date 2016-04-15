@@ -19,10 +19,7 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -30,19 +27,11 @@ import org.sonar.plugins.java.api.tree.SyntaxToken;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Collections;
 import java.util.List;
 
-@Rule(
-  key = "S923",
-  name = "Functions should not be defined with a variable number of arguments",
-  priority = Priority.INFO,
-  tags = {Tag.CERT, Tag.MISRA, Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("1min")
+@Rule(key = "S923")
 public class VarArgCheck extends IssuableSubscriptionVisitor {
 
   @Override

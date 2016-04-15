@@ -20,29 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2076",
-  name = "Values passed to OS commands should be sanitized",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CWE, Tag.OWASP_A1, Tag.SANS_TOP_25_INSECURE, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.INPUT_VALIDATION_AND_REPRESENTATION)
-@SqaleConstantRemediation("30min")
+@Rule(key = "S2076")
 public class OSCommandInjectionCheck extends AbstractInjectionChecker {
 
   private static final MethodMatcher RUNTIME_EXEC_MATCHER = MethodMatcher.create()

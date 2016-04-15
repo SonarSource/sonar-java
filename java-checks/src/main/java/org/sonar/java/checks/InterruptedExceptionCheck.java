@@ -20,10 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -35,24 +32,13 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "S2142",
-  name = "\"InterruptedException\" should not be ignored",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.CWE, Tag.MULTI_THREADING})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S2142")
 public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
   private Deque<Boolean> withinInterruptingFinally = new LinkedList<>();

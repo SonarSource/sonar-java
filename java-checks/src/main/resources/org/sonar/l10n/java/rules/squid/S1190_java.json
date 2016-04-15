@@ -1,0 +1,17 @@
+{
+  "title": "Future keywords should not be used as names",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "COMPILER_RELATED_PORTABILITY",
+  "tags": [
+    "obsolete",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

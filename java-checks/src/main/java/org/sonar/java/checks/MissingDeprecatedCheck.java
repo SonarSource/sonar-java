@@ -19,28 +19,17 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.ast.visitors.PublicApiChecker;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
 
-@Rule(
-  key = "MissingDeprecatedCheck",
-  name = "Deprecated elements should have both the annotation and the Javadoc tag",
-  priority = Priority.MAJOR,
-  tags = {Tag.BAD_PRACTICE, Tag.OBSOLETE})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "MissingDeprecatedCheck")
+@RspecKey("S1123")
 public class MissingDeprecatedCheck extends AbstractDeprecatedChecker {
 
   private static final Kind[] CLASS_KINDS = PublicApiChecker.classKinds();

@@ -1,0 +1,17 @@
+{
+  "title": "Synchronized classes Vector, Hashtable, Stack and StringBuffer should not be used",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "CPU_EFFICIENCY",
+  "tags": [
+    "multi-threading",
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "Math operands should be cast before assignment",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "sans-top25-risky",
+    "cert",
+    "bug",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

@@ -19,25 +19,14 @@
  */
 package org.sonar.java.checks.xml.ejb;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
 
-@Rule(
-  key = "S3282",
-  name = "EJB interceptor exclusions should be declared as annotations",
-  priority = Priority.MAJOR,
-  tags = {Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S3282")
 public class InterceptorExclusionsCheck extends XPathXmlCheck {
 
   private XPathExpression notDefaultInterceptorBindingsExpression;

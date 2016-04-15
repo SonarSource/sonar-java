@@ -1,0 +1,17 @@
+{
+  "title": "\"Object.finalize()\" should remain protected (versus public) when overriding",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "cert",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

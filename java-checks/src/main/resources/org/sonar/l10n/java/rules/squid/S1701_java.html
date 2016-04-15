@@ -1,0 +1,42 @@
+<p>It's confusing to have a class field with the same name as a method in the class. It's also confusing to have multiple fields that differ only in capitalization</p>
+<p>Typically this situation indicates poor naming. Method names should be action-oriented, and thus contain a verb, which is unlikely in the case where both a method and a member have the same name. However, renaming a public method could be disruptive to callers. Therefore renaming the member is the recommended action.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo {
+
+  public static final String QUERY = "Select name from person";
+  private String query;  // Noncompliant
+  public String query() { // Noncompliant
+    // do something...
+  }
+
+  private void doSomething() {
+
+    String tmp = query; // is this what was intended? Should this have been a call to query()?
+
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo {
+
+  public static final String NAME_QUERY = "Select name from person";
+  private String queryString; // member has been renamed
+  public String query() { 
+    // do something...
+  }
+
+  private void doSomething() {
+
+    String tmp = query; // results in a compile error
+    String tmp2 = query(); // no question now what was intended
+  }
+}
+</pre>
+
+<h2>Deprecated</h2>
+<p>This rule is deprecated, use {rule:squid:S1845} instead.</p>
+

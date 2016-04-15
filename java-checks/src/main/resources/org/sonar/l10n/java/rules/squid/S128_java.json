@@ -1,0 +1,19 @@
+{
+  "title": "Switch cases should end with an unconditional \"break\" statement",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "suspicious",
+    "cert",
+    "misra",
+    "cwe"
+  ],
+  "defaultSeverity": "Major"
+}

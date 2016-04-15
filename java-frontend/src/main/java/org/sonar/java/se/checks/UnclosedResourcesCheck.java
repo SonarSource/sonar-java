@@ -19,8 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.se.CheckerContext;
@@ -42,24 +40,13 @@ import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-@Rule(
-  key = "S2095",
-  name = "Resources should be closed",
-  priority = Priority.BLOCKER,
-  tags = {"bug", "cert", "cwe", "denial-of-service", "leak", "security"})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2095")
 public class UnclosedResourcesCheck extends SECheck {
 
   private enum Status {

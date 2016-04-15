@@ -1,0 +1,18 @@
+{
+  "title": "Methods \"wait(...)\", \"notify()\" and \"notifyAll()\" should not be called on Thread instances",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30mn"
+  },
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
+  "tags": [
+    "multi-threading",
+    "bug"
+  ],
+  "defaultSeverity": "Blocker"
+}

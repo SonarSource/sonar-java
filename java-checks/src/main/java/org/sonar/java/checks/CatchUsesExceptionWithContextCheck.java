@@ -22,13 +22,10 @@ package org.sonar.java.checks;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.helpers.ExpressionsHelper;
 import org.sonar.java.resolve.SemanticModel;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -40,9 +37,6 @@ import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -50,14 +44,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
-@Rule(
-  key = "S1166",
-  name = "Exception handlers should preserve the original exception",
-  priority = Priority.CRITICAL,
-  tags = {Tag.ERROR_HANDLING})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S1166")
 public class CatchUsesExceptionWithContextCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String EXCLUDED_EXCEPTION_TYPE = "java.lang.InterruptedException, " +

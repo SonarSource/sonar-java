@@ -1,0 +1,47 @@
+<p>Having a variable with the same name in two unrelated classes is fine, but do the same thing within a class hierarchy and you'll get confusion at best, chaos at worst. Perhaps even worse is the case where a child class field varies from the name of a parent class only by case.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Fruit {
+  protected Season ripe;
+  protected Color flesh;
+
+  // ...
+}
+
+public class Raspberry extends Fruit {
+  private boolean ripe;  // Noncompliant
+  private static Color FLESH; // Noncompliant
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Fruit {
+  protected Season ripe;
+  protected Color flesh;
+
+  // ...
+}
+
+public class Raspberry extends Fruit {
+  private boolean ripened;
+  private static Color FLESH_COLOR;
+
+}
+</pre>
+
+<h2>Exceptions</h2>
+<p>This rule ignores <code>private</code> parent class fields, but in all other such cases, the child class field should be renamed.</p>
+<pre>
+public class Fruit {
+  private Season ripe;
+  // ...
+}
+
+public class Raspberry extends Fruit {
+  private Season ripe;  // Compliant as parent field 'ripe' is anyway not visible from Raspberry
+  // ...
+}
+</pre>
+

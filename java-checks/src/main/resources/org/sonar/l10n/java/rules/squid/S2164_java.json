@@ -1,0 +1,17 @@
+{
+  "title": "Math should not be performed on floats",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

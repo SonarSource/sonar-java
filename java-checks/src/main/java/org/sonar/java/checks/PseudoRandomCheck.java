@@ -20,28 +20,17 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2245",
-  name = "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CERT, Tag.CWE, Tag.OWASP_A6, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("10min")
+@Rule(key = "S2245")
 public class PseudoRandomCheck extends IssuableSubscriptionVisitor {
 
   private static final String MESSAGE = "Use a cryptographically strong random number generator (RNG) like \"java.security.SecureRandom\" in place of this PRNG";

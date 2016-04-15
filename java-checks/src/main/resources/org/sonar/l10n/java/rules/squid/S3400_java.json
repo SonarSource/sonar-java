@@ -1,0 +1,16 @@
+{
+  "title": "Methods should not return constants",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "confusing"
+  ],
+  "defaultSeverity": "Major"
+}

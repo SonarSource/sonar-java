@@ -1,0 +1,16 @@
+{
+  "title": "Deprecated code should be removed eventually",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
+  "tags": [
+    "obsolete"
+  ],
+  "defaultSeverity": "Info"
+}

@@ -20,28 +20,15 @@
 package org.sonar.java.checks.xml.spring;
 
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
 import org.sonar.java.xml.XmlCheckUtils;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
 
-@Rule(
-  key = "S3438",
-  name = "\"SingleConnectionFactory\" instances should be set to \"reconnectOnException\"",
-  priority = Priority.CRITICAL,
-  tags = {Tag.BUG, Tag.SPRING})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_RELIABILITY)
-@SqaleConstantRemediation("2min")
-@ActivatedByDefault
+@Rule(key = "S3438")
 public class SingleConnectionFactoryCheck extends XPathXmlCheck {
 
   private XPathExpression singleConnectionFactoryBeansExpression;

@@ -23,11 +23,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Table;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.syntaxtoken.FirstSyntaxTokenFinder;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -45,8 +42,6 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.EnumSet;
@@ -54,13 +49,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-@Rule(
-  key = "S864",
-  name = "Limited dependence should be placed on operator precedence rules in expressions",
-  priority = Priority.MAJOR,
-  tags = {Tag.CERT, Tag.CWE, Tag.MISRA})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "S864")
 public class OperatorPrecedenceCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final Table<Tree.Kind, Tree.Kind, Boolean> OPERATORS_RELATION_TABLE;

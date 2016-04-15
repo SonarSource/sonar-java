@@ -1,0 +1,16 @@
+{
+  "title": "The @SuppressWarnings annotation should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Info"
+}

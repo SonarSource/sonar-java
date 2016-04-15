@@ -1,0 +1,16 @@
+{
+  "title": "A \"while\" loop should be used instead of a \"for\" loop",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}

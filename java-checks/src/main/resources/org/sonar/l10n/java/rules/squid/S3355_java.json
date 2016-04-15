@@ -1,0 +1,19 @@
+{
+  "title": "Web applications should use validation filters",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "SECURITY_FEATURES",
+  "tags": [
+    "owasp-a1",
+    "injection",
+    "security"
+  ],
+  "defaultSeverity": "Critical"
+}

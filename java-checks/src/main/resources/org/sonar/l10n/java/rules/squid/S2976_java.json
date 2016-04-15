@@ -1,0 +1,18 @@
+{
+  "title": "\"File.createTempFile\" should not be used to create a directory",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "API_ABUSE",
+  "tags": [
+    "security",
+    "owasp-a9"
+  ],
+  "defaultSeverity": "Critical"
+}

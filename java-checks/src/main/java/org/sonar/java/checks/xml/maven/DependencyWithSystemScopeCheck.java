@@ -21,33 +21,18 @@ package org.sonar.java.checks.xml.maven;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.xml.maven.helpers.MavenDependencyCollector;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.maven.model.LocatedAttribute;
 import org.sonar.maven.model.maven2.Dependency;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
-
 import java.util.List;
 
-@Rule(
-  key = "S3422",
-  name = "Dependencies should not have \"system\" scope",
-  priority = Priority.MAJOR,
-  tags = {Tag.LOCK_IN, Tag.MAVEN})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.OS_RELATED_PORTABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S3422")
 public class DependencyWithSystemScopeCheck implements PomCheck {
 
   @Override

@@ -1,0 +1,16 @@
+{
+  "title": "\"entrySet()\" should be iterated when both the key and value are needed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "CPU_EFFICIENCY",
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

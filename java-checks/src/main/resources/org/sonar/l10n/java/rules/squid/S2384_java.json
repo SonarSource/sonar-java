@@ -1,0 +1,19 @@
+{
+  "title": "Mutable members should not be stored or returned directly",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "cert",
+    "unpredictable",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

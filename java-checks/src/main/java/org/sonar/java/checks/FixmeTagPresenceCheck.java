@@ -20,22 +20,14 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.NoSqale;
 
 import java.util.List;
 
-@Rule(
-  key = "S1134",
-  name = "\"FIXME\" tags should be handled",
-  priority = Priority.MAJOR)
-@ActivatedByDefault
-@NoSqale
+@Rule(key = "S1134")
 public class FixmeTagPresenceCheck extends IssuableSubscriptionVisitor {
 
   private static final String PATTERN = "FIXME";

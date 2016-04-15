@@ -19,25 +19,17 @@
  */
 package org.sonar.java.checks.xml.maven;
 
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.checks.xml.maven.helpers.MavenDependencyCollector;
 import org.sonar.java.checks.xml.maven.helpers.MavenDependencyMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.maven.model.maven2.Dependency;
-import org.sonar.squidbridge.annotations.NoSqale;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
-@Rule(
-  key = DisallowedDependenciesCheck.KEY,
-  name = "Disallowed dependencies should not be used",
-  priority = Priority.MAJOR,
-  tags = {Tag.MAVEN})
+@Rule(key = DisallowedDependenciesCheck.KEY)
 @RuleTemplate
-@NoSqale
 public class DisallowedDependenciesCheck implements PomCheck {
 
   public static final String KEY = "S3417";

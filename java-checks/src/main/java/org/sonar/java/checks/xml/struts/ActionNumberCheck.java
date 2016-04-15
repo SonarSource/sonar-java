@@ -20,29 +20,17 @@
 package org.sonar.java.checks.xml.struts;
 
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XPathXmlCheck;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.squidbridge.annotations.SqaleLinearRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
-
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "S3373",
-  name = "\"action\" mappings should not have too many \"forward\" entries",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD, Tag.STRUTS})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleLinearRemediation(coeff = "20min", effortToFixDescription = "per extra \"<forward/>\"")
+@Rule(key = "S3373")
 public class ActionNumberCheck extends XPathXmlCheck {
 
   private static final int DEFAULT_MAXIMUM_NUMBER_FORWARDS = 4;

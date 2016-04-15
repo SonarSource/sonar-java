@@ -1,0 +1,17 @@
+{
+  "title": "Untrusted data should not be stored in sessions",
+  "status": "ready",
+  "profiles": [
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20min"
+  },
+  "sqaleSubCharac": "INPUT_VALIDATION_AND_REPRESENTATION",
+  "tags": [
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

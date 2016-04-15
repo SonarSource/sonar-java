@@ -20,10 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -37,21 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "S2384",
-  name = "Mutable members should not be stored or returned directly",
-  priority = Priority.CRITICAL,
-  tags = {Tag.CERT, Tag.CWE, Tag.SECURITY, Tag.UNPREDICTABLE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_RELIABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S2384")
 public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final List<String> MUTABLE_TYPES = ImmutableList.of(

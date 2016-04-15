@@ -19,27 +19,14 @@
  */
 package org.sonar.java.checks.naming;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "S1190",
-  name = "Future keywords should not be used as names",
-  priority = Priority.MAJOR,
-  tags = {Tag.OBSOLETE, Tag.PITFALL})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.COMPILER_RELATED_PORTABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S1190")
 public class EnumAsIdentifierCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private JavaFileScannerContext context;

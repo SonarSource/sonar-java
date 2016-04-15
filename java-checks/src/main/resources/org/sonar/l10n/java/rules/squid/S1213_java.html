@@ -1,0 +1,27 @@
+<p>According to the Java Code Conventions as defined by Oracle, the members of a class or interface declaration should appear in the following order in the source files:</p>
+<ul>
+<li> Class and instance variables
+</li><li> Constructors
+</li><li> Methods
+</li></ul>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Foo{ 
+   private int field = 0;
+   public boolean isTrue() {...}     
+   public Foo() {...}                         // Noncompliant, constructor defined after methods
+   public static final int OPEN = 4;  //Noncompliant, variable defined after constructors and methods
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Foo{ 
+   public static final int OPEN = 4;
+   private int field = 0;
+   public Foo() {...}
+   public boolean isTrue() {...}
+}
+</pre>
+

@@ -1,0 +1,17 @@
+{
+  "title": "Comparators should be \"Serializable\"",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "serialization",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

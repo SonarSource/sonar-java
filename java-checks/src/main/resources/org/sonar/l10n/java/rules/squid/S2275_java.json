@@ -1,0 +1,19 @@
+{
+  "title": "Printf-style format strings should not lead to unexpected behavior at runtime",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "cert",
+    "pitfall",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

@@ -1,0 +1,11 @@
+{
+  "title": "Comments matching a regular expression should be handled",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Classes without \"public\" constructors should be \"final\"",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Major"
+}

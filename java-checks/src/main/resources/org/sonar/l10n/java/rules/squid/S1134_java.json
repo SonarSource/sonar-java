@@ -1,0 +1,11 @@
+{
+  "title": "\"FIXME\" tags should be handled",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major"
+}

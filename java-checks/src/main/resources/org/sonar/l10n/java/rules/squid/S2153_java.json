@@ -1,0 +1,16 @@
+{
+  "title": "Boxing and unboxing should not be immediately reversed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "MEMORY_EFFICIENCY",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

@@ -1,0 +1,16 @@
+{
+  "title": "Copyright and license headers should be defined",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "SECURITY_FEATURES",
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Blocker"
+}

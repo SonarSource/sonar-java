@@ -21,25 +21,21 @@ package org.sonar.plugins.java;
 
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
-import org.sonar.api.rules.RuleFinder;
 import org.sonar.api.utils.ValidationMessages;
-import org.sonar.java.checks.CheckList;
-import org.sonar.squidbridge.annotations.AnnotationBasedProfileBuilder;
 
 /**
  * Replacement for org.sonar.plugins.squid.SonarWayProfile
  */
 public class JavaSonarWayProfile extends ProfileDefinition {
 
-  private final RuleFinder ruleFinder;
+  private final JavaRulesDefinition rulesDefinition;
 
-  public JavaSonarWayProfile(RuleFinder ruleFinder) {
-    this.ruleFinder = ruleFinder;
+  public JavaSonarWayProfile(JavaRulesDefinition rulesDefinition) {
+    this.rulesDefinition = rulesDefinition;
   }
 
   @Override
   public RulesProfile createProfile(ValidationMessages messages) {
-    AnnotationBasedProfileBuilder annotationBasedProfileBuilder = new AnnotationBasedProfileBuilder(ruleFinder);
-    return annotationBasedProfileBuilder.build(CheckList.REPOSITORY_KEY, "Sonar way", Java.KEY, CheckList.getChecks(), messages);
+    return rulesDefinition.getProfile("Sonar way");
   }
 }

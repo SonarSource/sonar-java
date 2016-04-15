@@ -1,0 +1,16 @@
+{
+  "title": "Java parser failure",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "suspicious"
+  ],
+  "defaultSeverity": "Major"
+}

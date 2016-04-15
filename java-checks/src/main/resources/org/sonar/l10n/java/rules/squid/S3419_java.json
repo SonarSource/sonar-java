@@ -1,0 +1,17 @@
+{
+  "title": "Group ids should follow a naming convention",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "maven",
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

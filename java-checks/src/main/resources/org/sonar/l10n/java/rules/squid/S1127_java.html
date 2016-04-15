@@ -1,0 +1,23 @@
+<p>Strings, just like any other <code>Object</code>, should be compared using the <code>equals()</code> method.</p>
+<p>Using <code>==</code> or <code>!=</code> compares references rather than values, and usually does not work.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+if (variable == "foo") { /* ... */ }
+if (variable != "foo") { /* ... */ }
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+if ("foo".equals(variable)) { /* ... */ }
+if (!"foo".equals(variable)) { /* ... */ }
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/597.html">MITRE, CWE-597</a> - Use of Wrong Operator in String Comparison
+</li></ul>
+
+<h2>Deprecated</h2>
+<p>This rule is deprecated, use {rule:squid:S1698} instead.</p>
+

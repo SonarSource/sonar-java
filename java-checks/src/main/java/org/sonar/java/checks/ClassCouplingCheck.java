@@ -20,11 +20,8 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.ArrayTypeTree;
@@ -45,8 +42,6 @@ import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import javax.annotation.Nullable;
 import java.util.Deque;
@@ -54,13 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-@Rule(
-  key = "S1200",
-  name = "Classes should not be coupled to too many other classes (Single Responsibility Principle)",
-  priority = Priority.MAJOR,
-  tags = {Tag.BRAIN_OVERLOAD})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation("2h")
+@Rule(key = "S1200")
 public class ClassCouplingCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final int DEFAULT_MAX = 20;

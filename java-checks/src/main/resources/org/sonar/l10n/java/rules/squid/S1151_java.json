@@ -1,0 +1,16 @@
+{
+  "title": "\"switch case\" clauses should not have too many lines",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "brain-overload"
+  ],
+  "defaultSeverity": "Major"
+}

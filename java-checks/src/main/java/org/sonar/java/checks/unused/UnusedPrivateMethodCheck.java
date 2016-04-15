@@ -22,30 +22,19 @@ package org.sonar.java.checks.unused;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.checks.serialization.SerializableContract;
 import org.sonar.java.signature.MethodSignatureScanner;
 import org.sonar.java.signature.Parameter;
-import org.sonar.java.tag.Tag;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "UnusedPrivateMethod",
-  name = "Unused private method should be removed",
-  priority = Priority.MAJOR,
-  tags = {Tag.UNUSED})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "UnusedPrivateMethod")
+@RspecKey("S1144")
 public class UnusedPrivateMethodCheck extends BytecodeVisitor {
 
   private AsmClass asmClass;

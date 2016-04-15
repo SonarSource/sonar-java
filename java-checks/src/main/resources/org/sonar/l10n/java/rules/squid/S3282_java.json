@@ -1,0 +1,16 @@
+{
+  "title": "EJB interceptor exclusions should be declared as annotations",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

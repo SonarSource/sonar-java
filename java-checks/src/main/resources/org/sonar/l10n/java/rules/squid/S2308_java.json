@@ -1,0 +1,16 @@
+{
+  "title": "\"deleteOnExit\" should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "MEMORY_EFFICIENCY",
+  "tags": [
+    "performance"
+  ],
+  "defaultSeverity": "Major"
+}

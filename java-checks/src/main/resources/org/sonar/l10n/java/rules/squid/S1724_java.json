@@ -1,0 +1,16 @@
+{
+  "title": "Deprecated classes and interfaces should not be extended\/implemented",
+  "status": "deprecated",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    
+  ],
+  "defaultSeverity": "Major"
+}

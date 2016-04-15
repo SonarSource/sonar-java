@@ -20,16 +20,12 @@
 package org.sonar.java.checks;
 
 import com.google.common.io.Files;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
@@ -41,13 +37,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Rule(
-  key = "S1451",
-  name = "Copyright and license headers should be defined",
-  priority = Priority.BLOCKER,
-  tags = {})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S1451")
 public class FileHeaderCheck extends IssuableSubscriptionVisitor implements CharsetAwareVisitor {
 
   private static final String DEFAULT_HEADER_FORMAT = "";

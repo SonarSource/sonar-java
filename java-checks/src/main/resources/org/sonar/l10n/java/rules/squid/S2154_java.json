@@ -1,0 +1,17 @@
+{
+  "title": "Dissimilar primitive wrappers should not be used with the ternary operator without explicit casting",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

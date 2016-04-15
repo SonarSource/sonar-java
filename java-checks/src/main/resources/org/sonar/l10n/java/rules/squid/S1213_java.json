@@ -1,0 +1,16 @@
+{
+  "title": "The members of an interface declaration or class should appear in a pre-defined order",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

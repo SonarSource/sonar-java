@@ -1,0 +1,18 @@
+{
+  "title": "Return values should not be ignored when function calls don't have any side effects",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug",
+    "misra"
+  ],
+  "defaultSeverity": "Critical"
+}

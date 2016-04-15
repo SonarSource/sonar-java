@@ -19,21 +19,12 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "LeftCurlyBraceStartLineCheck",
-  name = "An open curly brace should be located at the beginning of a line",
-  priority = Priority.MINOR,
-  tags = {Tag.CONVENTION})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.READABILITY)
-@SqaleConstantRemediation("1min")
+@Rule(key = "LeftCurlyBraceStartLineCheck")
+@RspecKey("S1106")
 public class LeftCurlyBraceStartLineCheck extends LeftCurlyBraceBaseTreeVisitor {
 
   @Override

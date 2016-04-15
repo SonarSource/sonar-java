@@ -1,0 +1,18 @@
+{
+  "title": "Octal values should not be used",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "cert",
+    "pitfall",
+    "misra"
+  ],
+  "defaultSeverity": "Major"
+}

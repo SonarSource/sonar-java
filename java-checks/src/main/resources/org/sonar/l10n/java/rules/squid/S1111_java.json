@@ -1,0 +1,19 @@
+{
+  "title": "The Object.finalize() method should not be called",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "cert",
+    "security",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

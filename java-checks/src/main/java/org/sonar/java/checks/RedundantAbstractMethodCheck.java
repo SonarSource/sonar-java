@@ -20,35 +20,21 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
 import org.apache.commons.collections.CollectionUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.java.resolve.SymbolMetadataResolve;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata.AnnotationInstance;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S3038",
-  name = "Abstract methods should not be redundant",
-  priority = Priority.MAJOR,
-  tags = {Tag.CONFUSING})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("2min")
+@Rule(key = "S3038")
 public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override

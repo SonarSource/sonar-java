@@ -1,0 +1,20 @@
+{
+  "title": "Thread.run() and Runnable.run() should not be called directly",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "bug",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

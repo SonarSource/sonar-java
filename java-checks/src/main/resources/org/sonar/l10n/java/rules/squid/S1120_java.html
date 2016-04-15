@@ -1,0 +1,36 @@
+<p>Proper indentation is a simple and effective way to improve the code's readability. Consistent indentation among the developers on a team also reduces the differences that are committed to source control systems, making code reviews easier. </p>
+<p>By default this rule checks that each block of code is indented but not the size of this indent. The parameter "indentSize" allows the expected indent size to be defined. Only the first line of a badly indented section is reported.</p>
+
+<h2>Noncompliant Code Example</h2>
+<p>With an indent size of 2:</p>
+<pre>
+class Foo {
+  public int a; 
+   public int b;   // Noncompliant, expected to start at column 4
+
+...
+
+  public void doSomething() {
+    if(something) {
+          doSomethingElse();  // Noncompliant, expected to start at column 6
+  }   // Noncompliant, expected to start at column 4
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+class Foo {
+  public int a; 
+  public int b; 
+
+...
+
+  public void doSomething() {
+    if(something) {
+        doSomethingElse();
+    } 
+  }
+}
+</pre>
+

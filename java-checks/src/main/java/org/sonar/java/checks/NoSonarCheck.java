@@ -20,28 +20,19 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.RspecKey;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.SyntaxTrivia;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
 /**
  * Note that {@link org.sonar.squidbridge.checks.AbstractNoSonarCheck} can't be used because of bug SSLRSQBR-16.
  */
-@Rule(
-  key = "NoSonar",
-  name = "\"NOSONAR\" should not be used to switch off issues",
-  priority = Priority.MAJOR,
-  tags = {Tag.BAD_PRACTICE})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.API_ABUSE)
-@SqaleConstantRemediation("1min")
+@Rule(key = "NoSonar")
+@RspecKey("S1291")
 public class NoSonarCheck extends IssuableSubscriptionVisitor {
 
   private static final String PATTERN = "NOSONAR";

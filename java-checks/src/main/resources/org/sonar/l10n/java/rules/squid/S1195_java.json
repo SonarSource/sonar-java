@@ -1,0 +1,16 @@
+{
+  "title": "Array designators \"[]\" should be located after the type in method signatures",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5mn"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "convention"
+  ],
+  "defaultSeverity": "Minor"
+}

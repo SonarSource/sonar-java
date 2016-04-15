@@ -20,12 +20,9 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
+import org.sonar.java.matcher.MethodMatcherCollection;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,20 +37,10 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.UnionTypeTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S1181",
-  name = "Throwable and Error should not be caught",
-  priority = Priority.BLOCKER,
-  tags = {Tag.CERT, Tag.CWE, Tag.ERROR_HANDLING, Tag.SECURITY})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.EXCEPTION_HANDLING)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S1181")
 public class CatchOfThrowableOrErrorCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVA_LANG_THROWABLE = "java.lang.Throwable";

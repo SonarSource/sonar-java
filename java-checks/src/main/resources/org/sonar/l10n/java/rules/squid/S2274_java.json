@@ -1,0 +1,19 @@
+{
+  "title": "\"Object.wait(...)\" and \"Condition.await(...)\" should be called inside a \"while\" loop",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}

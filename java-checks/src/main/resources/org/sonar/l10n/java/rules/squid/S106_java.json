@@ -1,0 +1,17 @@
+{
+  "title": "Standard outputs should not be used directly to log anything",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "10mn"
+  },
+  "sqaleSubCharac": "ERRORS",
+  "tags": [
+    "cert",
+    "bad-practice"
+  ],
+  "defaultSeverity": "Major"
+}

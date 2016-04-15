@@ -1,0 +1,16 @@
+{
+  "title": "Nested \"enum\"s should not be declared static",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Major"
+}

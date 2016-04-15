@@ -38,6 +38,7 @@ import org.sonar.java.checks.naming.FieldNameMatchingTypeNameCheck;
 import org.sonar.java.checks.naming.MethodNameSameAsClassCheck;
 import org.sonar.java.checks.naming.MethodNamedEqualsCheck;
 import org.sonar.java.checks.naming.MethodNamedHashcodeOrEqualCheck;
+import org.sonar.java.checks.serialization.CustomSerializationMethodCheck;
 import org.sonar.java.checks.serialization.ExternalizableClassConstructorCheck;
 import org.sonar.java.checks.serialization.PrivateReadResolveCheck;
 import org.sonar.java.checks.serialization.SerialVersionUidCheck;

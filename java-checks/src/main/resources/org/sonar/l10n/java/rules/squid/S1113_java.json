@@ -1,0 +1,17 @@
+{
+  "title": "The Object.finalize() method should not be overriden",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "20mn"
+  },
+  "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
+  "tags": [
+    "cert",
+    "unpredictable"
+  ],
+  "defaultSeverity": "Major"
+}

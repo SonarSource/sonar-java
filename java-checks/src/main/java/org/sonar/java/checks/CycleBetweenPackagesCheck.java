@@ -20,26 +20,17 @@
 package org.sonar.java.checks;
 
 import org.sonar.api.rule.RuleKey;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
-import org.sonar.java.tag.Tag;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 /**
  * Companion of {@link org.sonar.plugins.javang.bridges.DesignBridge} which actually does the job on finding cycles and creation of issues.
  *
  * @since 3.2
  */
-@Rule(
-  key = CycleBetweenPackagesCheck.KEY,
-  name = "Cycles between packages should be removed",
-  priority = Priority.MAJOR,
-  tags = {Tag.DESIGN})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.ARCHITECTURE_CHANGEABILITY)
-@SqaleConstantRemediation("1d")
+@Rule(key = CycleBetweenPackagesCheck.KEY)
+@RspecKey("S1196")
 public class CycleBetweenPackagesCheck extends BytecodeVisitor {
 
 

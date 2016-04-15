@@ -19,12 +19,9 @@
  */
 package org.sonar.java.checks;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.model.declaration.MethodTreeImpl;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -37,8 +34,6 @@ import org.sonar.plugins.java.api.tree.NewArrayTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -48,13 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@Rule(
-  key = "S109",
-  name = "Magic numbers should not be used",
-  priority = Priority.MINOR,
-  tags = {Tag.BRAIN_OVERLOAD})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.DATA_CHANGEABILITY)
-@SqaleConstantRemediation("5min")
+@Rule(key = "S109")
 public class MagicNumberCheck extends BaseTreeVisitor implements JavaFileScanner {
 
   private static final String DEFAULT_AUTHORIZED_NUMBERS = "-1,0,1";

@@ -20,8 +20,6 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.java.se.ProgramState;
@@ -36,20 +34,10 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2222",
-  name = "Locks should be released",
-  priority = Priority.CRITICAL,
-  tags = {"bug", "cwe", "multi-threading"})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("20min")
+@Rule(key = "S2222")
 public class LocksNotUnlockedCheck extends SECheck {
 
   private enum Status {

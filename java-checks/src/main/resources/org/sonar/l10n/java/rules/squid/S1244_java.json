@@ -1,0 +1,18 @@
+{
+  "title": "Floating point numbers should not be tested for equality",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "bug",
+    "misra"
+  ],
+  "defaultSeverity": "Critical"
+}

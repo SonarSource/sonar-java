@@ -1,0 +1,16 @@
+{
+  "title": "Useless imports should be removed",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2min"
+  },
+  "sqaleSubCharac": "READABILITY",
+  "tags": [
+    "unused"
+  ],
+  "defaultSeverity": "Minor"
+}

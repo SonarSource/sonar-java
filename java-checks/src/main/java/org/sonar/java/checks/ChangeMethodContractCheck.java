@@ -20,32 +20,18 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.java.resolve.JavaSymbol;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.List;
 
-@Rule(
-  key = "S2638",
-  name = "Method overrides should not change contracts",
-  priority = Priority.MAJOR,
-  tags = {Tag.SUSPICIOUS})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("15min")
-@ActivatedByDefault
+@Rule(key = "S2638")
 public class ChangeMethodContractCheck extends IssuableSubscriptionVisitor {
 
   private static final String JAVAX_ANNOTATION_CHECK_FOR_NULL = "javax.annotation.CheckForNull";

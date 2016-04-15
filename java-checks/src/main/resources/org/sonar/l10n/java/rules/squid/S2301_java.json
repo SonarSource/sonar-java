@@ -1,0 +1,16 @@
+{
+  "title": "Public methods should not contain selector arguments",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "SOFTWARE_RELATED_PORTABILITY",
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Major"
+}

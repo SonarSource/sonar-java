@@ -19,24 +19,15 @@
  */
 package org.sonar.java.checks.unused;
 
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
+import org.sonar.java.RspecKey;
 import org.sonar.java.bytecode.asm.AsmClass;
 import org.sonar.java.bytecode.asm.AsmMethod;
 import org.sonar.java.bytecode.visitor.BytecodeVisitor;
 import org.sonar.java.checks.serialization.SerializableContract;
-import org.sonar.java.tag.Tag;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
-@Rule(
-  key = "UnusedProtectedMethod",
-  name = "Unused protected methods should be removed",
-  priority = Priority.MAJOR,
-  tags = {Tag.UNUSED})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.UNDERSTANDABILITY)
-@SqaleConstantRemediation("10min")
+@Rule(key = "UnusedProtectedMethod")
+@RspecKey("S1815")
 public class UnusedProtectedMethodCheck extends BytecodeVisitor {
 
   private AsmClass asmClass;

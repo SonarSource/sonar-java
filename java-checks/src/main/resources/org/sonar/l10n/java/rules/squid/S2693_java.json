@@ -1,0 +1,17 @@
+{
+  "title": "Threads should not be started in constructors",
+  "status": "ready",
+  "profiles": [
+    
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
+  "tags": [
+    "multi-threading",
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

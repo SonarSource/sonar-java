@@ -21,31 +21,20 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.BooleanUtils;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.matcher.MethodMatcher;
-import org.sonar.java.tag.Tag;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
-@Rule(
-  key = "S2693",
-  name = "Threads should not be started in constructors",
-  priority = Priority.MAJOR,
-  tags = {Tag.MULTI_THREADING, Tag.PITFALL})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SYNCHRONIZATION_RELIABILITY)
-@SqaleConstantRemediation("30min")
+@Rule(key = "S2693")
 public class ThreadStartedInConstructorCheck extends IssuableSubscriptionVisitor {
 
   private static final MethodMatcher THREAD_START = MethodMatcher.create()

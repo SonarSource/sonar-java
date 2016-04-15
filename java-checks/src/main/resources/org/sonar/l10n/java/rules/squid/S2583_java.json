@@ -1,0 +1,20 @@
+{
+  "title": "Conditions should not unconditionally evaluate to \"TRUE\" or to \"FALSE\"",
+  "status": "ready",
+  "profiles": [
+    "Sonar way",
+    "Sonar security way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "LOGIC_RELIABILITY",
+  "tags": [
+    "cert",
+    "bug",
+    "misra",
+    "cwe"
+  ],
+  "defaultSeverity": "Critical"
+}

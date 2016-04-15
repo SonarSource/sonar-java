@@ -1,0 +1,22 @@
+<p><code>Throwable</code> is the superclass of all errors and exceptions in Java.</p>
+<p><code>Error</code> is the superclass of all errors, which are not meant to be caught by applications.</p>
+<p>Catching either <code>Throwable</code> or <code>Error</code> will also catch <code>OutOfMemoryError</code> and <code>InternalError</code>, from which an application should not attempt to recover.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+try { /* ... */ } catch (Throwable t) { /* ... */ }  
+try { /* ... */ } catch (Error e) { /* ... */ }   
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+try { /* ... */ } catch (RuntimeException e) { /* ... */ }
+try { /* ... */ } catch (MyException e) { /* ... */ }
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="http://cwe.mitre.org/data/definitions/396.html">MITRE, CWE-396</a> - Declaration of Catch for Generic Exception
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/BIB3AQ">CERT, ERR08-J.</a> - Do not catch NullPointerException or any of its ancestors
+</li></ul>
+

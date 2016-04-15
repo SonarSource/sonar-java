@@ -22,6 +22,7 @@ package org.sonar.java.checks.verifier;
 import com.google.common.collect.Lists;
 import org.fest.assertions.Fail;
 import org.junit.Test;
+import org.sonar.check.Rule;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
 import org.sonar.maven.model.maven2.Dependency;
@@ -36,9 +37,12 @@ public class PomCheckVerifierTest {
   private static final String POM_PARSE_ISSUE = "src/test/files/xml/PomCheckVerifierParseIssue.xml";
   private static final String NOT_A_POM = "src/test/files/xml/PomCheckVerifierNotAPom.xml";
 
+  @Rule(key = "ConstantJSON")
+  private interface TestPomCheck extends PomCheck {}
+
   @Test
   public void should_detect_issues() {
-    PomCheckVerifier.verify(POM_WITH_ISSUES, new PomCheck() {
+    PomCheckVerifier.verify(POM_WITH_ISSUES, new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
         context.reportIssue(this, 7, "Message1");
@@ -50,7 +54,7 @@ public class PomCheckVerifierTest {
 
   @Test
   public void should_detect_issues_using_trees() {
-    PomCheckVerifier.verify(POM_WITH_ISSUES, new PomCheck() {
+    PomCheckVerifier.verify(POM_WITH_ISSUES, new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
         MavenProject mavenProject = context.getMavenProject();
@@ -63,7 +67,7 @@ public class PomCheckVerifierTest {
 
   @Test
   public void should_detect_issues_using_secondaries() {
-    PomCheckVerifier.verify(POM_WITH_ISSUES_AND_SECONDARIES, new PomCheck() {
+    PomCheckVerifier.verify(POM_WITH_ISSUES_AND_SECONDARIES, new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
         Dependency dependency = context.getMavenProject().getDependencies().getDependencies().get(0);
@@ -77,7 +81,7 @@ public class PomCheckVerifierTest {
 
   @Test
   public void should_get_MavenProject() {
-    PomCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new PomCheck() {
+    PomCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
         assertThat(context.getMavenProject()).isNotNull();
@@ -87,7 +91,7 @@ public class PomCheckVerifierTest {
 
   @Test
   public void should_detect_issue_on_file() {
-    PomCheckVerifier.verifyIssueOnFile(POM_WITH_NO_ISSUE, "Message", new PomCheck() {
+    PomCheckVerifier.verifyIssueOnFile(POM_WITH_NO_ISSUE, "Message", new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
         context.reportIssueOnFile(this, "Message");
@@ -98,7 +102,7 @@ public class PomCheckVerifierTest {
   @Test
   public void should_fail_when_not_a_pom() {
     try {
-      PomCheckVerifier.verify(NOT_A_POM, new PomCheck() {
+      PomCheckVerifier.verify(NOT_A_POM, new TestPomCheck() {
         @Override
         public void scanFile(PomCheckContext context) {
         }
@@ -110,7 +114,7 @@ public class PomCheckVerifierTest {
 
   @Test(expected = AssertionError.class)
   public void should_fail_when_cannot_parse() {
-    PomCheckVerifier.verify(POM_PARSE_ISSUE, new PomCheck() {
+    PomCheckVerifier.verify(POM_PARSE_ISSUE, new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
       }
@@ -120,7 +124,7 @@ public class PomCheckVerifierTest {
   @Test
   public void should_fail_when_file_does_not_exist() {
     try {
-      PomCheckVerifier.verify("", new PomCheck() {
+      PomCheckVerifier.verify("", new TestPomCheck() {
         @Override
         public void scanFile(PomCheckContext context) {
         }
@@ -133,7 +137,7 @@ public class PomCheckVerifierTest {
   @Test
   public void should_fail_if_detect_issues_but_not_in_file() {
     try {
-      PomCheckVerifier.verify(POM_WITH_NO_ISSUE, new PomCheck() {
+      PomCheckVerifier.verify(POM_WITH_NO_ISSUE, new TestPomCheck() {
         @Override
         public void scanFile(PomCheckContext context) {
           context.reportIssue(this, 7, "Message1");
@@ -149,7 +153,7 @@ public class PomCheckVerifierTest {
   @Test
   public void should_fail_if_check_raise_no_issue_when_issues_are_expected() {
     try {
-      PomCheckVerifier.verify(POM_WITH_ISSUES, new PomCheck() {
+      PomCheckVerifier.verify(POM_WITH_ISSUES, new TestPomCheck() {
         @Override
         public void scanFile(PomCheckContext context) {
           // do nothing
@@ -164,7 +168,7 @@ public class PomCheckVerifierTest {
   @Test
   public void should_fail_if_check_raise_more_issues_than_expected() {
     try {
-      PomCheckVerifier.verify(POM_WITH_ISSUES, new PomCheck() {
+      PomCheckVerifier.verify(POM_WITH_ISSUES, new TestPomCheck() {
         @Override
         public void scanFile(PomCheckContext context) {
           context.reportIssue(this, 7, "Message1");
@@ -181,7 +185,7 @@ public class PomCheckVerifierTest {
 
   @Test
   public void should_not_detect_issue() {
-    PomCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new PomCheck() {
+    PomCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new TestPomCheck() {
       @Override
       public void scanFile(PomCheckContext context) {
         // do nothing
@@ -192,7 +196,7 @@ public class PomCheckVerifierTest {
   @Test
   public void should_fail_if_issue_reported_when_checking_for_no_issue() {
     try {
-      PomCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new PomCheck() {
+      PomCheckVerifier.verifyNoIssue(POM_WITH_NO_ISSUE, new TestPomCheck() {
         @Override
         public void scanFile(PomCheckContext context) {
           context.reportIssue(this, 2, "Message");

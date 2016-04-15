@@ -1,0 +1,16 @@
+{
+  "title": "Utility classes should not have public constructors",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "30min"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "design"
+  ],
+  "defaultSeverity": "Major"
+}

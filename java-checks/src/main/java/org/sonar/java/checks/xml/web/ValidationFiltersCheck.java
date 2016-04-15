@@ -20,29 +20,15 @@
 package org.sonar.java.checks.xml.web;
 
 import com.google.common.collect.Iterables;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
-import org.sonar.java.tag.Tag;
 import org.sonar.java.xml.XmlCheckContext;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathExpression;
-
 import java.util.HashSet;
 import java.util.Set;
 
-@Rule(
-  key = "S3355",
-  name = "Web applications should use validation filters",
-  priority = Priority.CRITICAL,
-  tags = {Tag.INJECTION, Tag.OWASP_A1, Tag.SECURITY})
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.SECURITY_FEATURES)
-@SqaleConstantRemediation("30min")
-@ActivatedByDefault
+@Rule(key = "S3355")
 public class ValidationFiltersCheck extends WebXmlCheckTemplate {
   private XPathExpression filterNamesFromFilterExpression;
   private XPathExpression filterNamesFromFilterMappingExpression;

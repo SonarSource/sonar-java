@@ -1,0 +1,16 @@
+{
+  "title": "\"readResolve\" methods should be inheritable",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "DATA_RELIABILITY",
+  "tags": [
+    "pitfall"
+  ],
+  "defaultSeverity": "Major"
+}

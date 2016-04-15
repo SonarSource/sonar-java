@@ -20,27 +20,15 @@
 package org.sonar.java.se.checks;
 
 import com.google.common.collect.Sets;
-import org.sonar.api.server.rule.RulesDefinition;
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.se.CheckerContext;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.ActivatedByDefault;
-import org.sonar.squidbridge.annotations.SqaleConstantRemediation;
-import org.sonar.squidbridge.annotations.SqaleSubCharacteristic;
 
 import java.util.Set;
 
-@Rule(
-  key = "S2583",
-  name = "Conditions should not unconditionally evaluate to \"TRUE\" or to \"FALSE\"",
-  priority = Priority.BLOCKER,
-  tags = {"bug", "cwe", "misra"})
-@ActivatedByDefault
-@SqaleSubCharacteristic(RulesDefinition.SubCharacteristics.LOGIC_RELIABILITY)
-@SqaleConstantRemediation("15min")
+@Rule(key = "S2583")
 public class ConditionAlwaysTrueOrFalseCheck extends SECheck {
 
   private final Set<Tree> evaluatedToFalse = Sets.newHashSet();

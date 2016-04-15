@@ -19,7 +19,6 @@
  */
 package org.sonar.java.se.checks;
 
-import org.sonar.check.Priority;
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.matcher.MethodMatcherCollection;
@@ -35,19 +34,13 @@ import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.squidbridge.annotations.NoSqale;
 import org.sonar.squidbridge.annotations.RuleTemplate;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-@Rule(
-  key = "S3546",
-  name = "Resources as defined by user should be closed",
-  priority = Priority.CRITICAL,
-  tags = {"denial-of-service", "security"})
+@Rule(key = "S3546")
 @RuleTemplate
-@NoSqale
 public class CustomUnclosedResourcesCheck extends SECheck {
 
   class Status {

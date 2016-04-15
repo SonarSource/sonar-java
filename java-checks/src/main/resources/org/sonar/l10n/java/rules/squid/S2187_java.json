@@ -1,0 +1,18 @@
+{
+  "title": "TestCases should contain tests",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "UNIT_TESTABILITY",
+  "tags": [
+    "tests",
+    "confusing",
+    "unused"
+  ],
+  "defaultSeverity": "Major"
+}

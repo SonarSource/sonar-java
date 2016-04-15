@@ -1,0 +1,27 @@
+<p>Sharing some naming conventions is a key point to make it possible for a team to efficiently collaborate. This rule allows to check that all local variable and function parameter names match a provided regular expression.</p>
+
+<h2>Noncompliant Code Example</h2>
+<p>With the default regular expression <code>^[a-z][a-zA-Z0-9]*$</code>:</p>
+<pre>
+public void doSomething(int my_param) { 
+  int LOCAL;    
+  ...             
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public void doSomething(int myParam) { 
+  int local;  
+  ...               
+}
+</pre>
+
+<h2>Exceptions</h2>
+<p>Loop counters are ignored by this rule.</p>
+<pre>
+for (int i = 0; i &lt; limit; i++) {  // Compliant
+  // ...
+}
+</pre>
+

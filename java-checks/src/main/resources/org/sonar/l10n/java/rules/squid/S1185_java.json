@@ -1,0 +1,16 @@
+{
+  "title": "Overriding methods should do more than simply call the same method in the super class ",
+  "status": "ready",
+  "profiles": [
+    "Sonar way"
+  ],
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "2mn"
+  },
+  "sqaleSubCharac": "UNDERSTANDABILITY",
+  "tags": [
+    "clumsy"
+  ],
+  "defaultSeverity": "Minor"
+}
