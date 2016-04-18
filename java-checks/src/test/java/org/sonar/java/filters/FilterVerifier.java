@@ -54,7 +54,7 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class FilterVerifier {
 
-  public static void verify(String filename, JavaIssueFilter filter) {
+  public static void verify(String filename, JavaIssueFilter filter, CodeVisitor... extraCodeVisitors) {
     // set the component to the filter
     filter.setComponentKey(filename);
 
@@ -63,6 +63,10 @@ public class FilterVerifier {
 
     // instantiate the rules filtered by the filter
     codeVisitors.addAll(instantiateRules(filter.filteredRules()));
+
+    for (CodeVisitor codeVisitor : extraCodeVisitors) {
+      codeVisitors.add(codeVisitor);
+    }
 
     Collection<File> classpath = FileUtils.listFiles(new File("target/test-jars"), new String[] {"jar", "zip"}, true);
     VisitorsBridgeForTests visitorsBridge = new VisitorsBridgeForTests(codeVisitors, Lists.newArrayList(classpath), null);

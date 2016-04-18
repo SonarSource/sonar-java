@@ -21,6 +21,7 @@ package org.sonar.java.filters;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 import org.fest.assertions.BooleanAssert;
 import org.junit.Before;
@@ -94,6 +95,32 @@ public class BaseTreeVisitorIssueFilterTest {
     // issue on variable accepted
     assertThatIssueWillBeAccepted(4).isTrue();
     assertThatIssueWillBeAccepted(5).isTrue();
+  }
+
+  @Test
+  public void excluded_lines_are_correct() {
+    Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
+    assertThat(excludedLinesByRule).isNotNull();
+    assertThat(excludedLinesByRule.isEmpty()).isFalse();
+    assertThat(excludedLinesByRule.keySet()).containsOnly(RULE_KEY);
+    assertThat(excludedLinesByRule.get(RULE_KEY)).containsOnly(3, 4, 5, 6, 7, 8, 9, 10, 11, 15);
+  }
+
+  @Test
+  public void excluded_lines_by_rule_never_returns_null() {
+    // no effect filter
+    filter = new BaseTreeVisitorIssueFilter() {
+      @Override
+      public Set<Class<? extends JavaCheck>> filteredRules() {
+        return ImmutableSet.of();
+      }
+    };
+    // no component is set
+    scanFile(filter);
+
+    Multimap<String, Integer> excludedLinesByRule = filter.excludedLinesByRule();
+    assertThat(excludedLinesByRule).isNotNull();
+    assertThat(excludedLinesByRule.isEmpty()).isTrue();
   }
 
   @Test
