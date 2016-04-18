@@ -32,6 +32,7 @@ import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
+import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -465,8 +466,19 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitParenthesized(ParenthesizedTree tree) {
-    resolveAs(tree.expression(), JavaSymbol.VAR);
-    registerType(tree, getType(tree.expression()));
+    if(((ParenthesizedTreeImpl) tree).isTypeSet()) {
+      JavaType expType = getType(tree.expression());
+      if(expType.isTagged(JavaType.DEFERRED)) {
+        setInferedType(tree.symbolType(), (DeferredType) expType);
+      }
+    } else {
+      resolveAs(tree.expression(), JavaSymbol.VAR);
+      JavaType parenthesizedExpressionType = getType(tree.expression());
+      if(parenthesizedExpressionType.isTagged(JavaType.DEFERRED)) {
+        parenthesizedExpressionType = symbols.deferedType((AbstractTypedTree) tree);
+      }
+      registerType(tree, parenthesizedExpressionType);
+    }
   }
 
   @Override
@@ -560,7 +572,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       if (symbol.isMethodSymbol()) {
         Symbol.MethodSymbol methodSymbol = (Symbol.MethodSymbol) symbol;
         int size = methodSymbol.parameterTypes().size();
-        formal = methodSymbol.parameterTypes().get(i < size ? i : size - 1);
+        formal = methodSymbol.parameterTypes().get((i < size) ? i : (size - 1));
       }
       JavaType arg = argTypes.get(i);
       if (arg.isTagged(JavaType.DEFERRED)) {

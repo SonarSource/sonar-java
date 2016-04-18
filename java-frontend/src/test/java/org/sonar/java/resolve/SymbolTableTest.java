@@ -34,6 +34,7 @@ import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
+import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -782,6 +783,9 @@ public class SymbolTableTest {
     ConditionalExpressionTree conditionalExpression = (ConditionalExpressionTree) ((ReturnStatementTree) ((MethodTree) condMethod.declaration()).block().body().get(0)).expression();
     assertThat(conditionalExpression.symbolType()).isSameAs(Ftype);
 
+    JavaSymbol parenthMethod = result.symbol("parenth");
+    ParenthesizedTree parenthesizedTree = (ParenthesizedTree) ((ReturnStatementTree) ((MethodTree) parenthMethod.declaration()).block().body().get(0)).expression();
+    assertThat(parenthesizedTree.symbolType()).isSameAs(Ftype);
 
     JavaSymbol sym = result.symbol("o");
     assertThat(sym.type.toString()).isEqualTo("!unknown!");

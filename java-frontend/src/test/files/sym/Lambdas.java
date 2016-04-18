@@ -28,6 +28,10 @@ class A {
   F cond(boolean a) {
     return a ? s->"" : s->s;
   }
+
+  F parenth() {
+    return (((s->s)));
+  }
 }
 
 
