@@ -49,28 +49,28 @@ class A {
 
   Object foo4(List<Foo> bar) {
     bar.sort((o1, o2)-> {
-      return o2;
-      return o1;
-      return o2;
-      return o1;
+      if(a) return o2;
+      if(a) return o1;
+      if(a) return o2;
+      if(a) return o1;
     });
     bar.sort((o1, o2)-> { // Noncompliant [[sc=22;ec=24]] {{Reduce the number of returns of this method 6, down to the maximum allowed 4.}}
-      return o2;
-      return o1;
-      return o2;
-      return o1;
-      return o1;
-      return o1;
+      if(a) return o2;
+      if(a) return o1;
+      if(a) return o2;
+      if(a) return o1;
+      if(a) return o1;
+      if(a) return o1;
     });
     return null;
   }
 }
 interface B {
   default void method() { // Noncompliant {{Reduce the number of returns of this method 5, down to the maximum allowed 4.}}
-    return;
-    return;
-    return;
-    return;
-    return;
+    if(a) return;
+    if(a) return;
+    if(a) return;
+    if(a) return;
+    if(a) return;
   }
 }

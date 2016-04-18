@@ -302,7 +302,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     tree.accept(this);
     JavaType type = getType(tree);
     if (tree.is(Tree.Kind.INFERED_TYPE)) {
-      type = Symbols.unknownType;
+      type = symbols.deferedType((AbstractTypedTree) tree);
       registerType(tree, type);
     }
     if (type == null) {
@@ -427,7 +427,22 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   public void visitLambdaExpression(LambdaExpressionTree tree) {
     LambdaExpressionTreeImpl lambdaExpressionTree = (LambdaExpressionTreeImpl) tree;
     if(lambdaExpressionTree.isTypeSet()) {
-      //FIXME Based on set type get correct type of lambda var if required.
+      // type should be tied to a SAM interface
+      Symbol.MethodSymbol target = null;
+      for (Symbol member : lambdaExpressionTree.symbolType().symbol().memberSymbols()) {
+        if(member.isMethodSymbol() && member.isAbstract()) {
+          target = (Symbol.MethodSymbol) member;
+          break;
+        }
+      }
+      if(target != null) {
+        for (int i = 0; i < lambdaExpressionTree.parameters().size(); i++) {
+          VariableTree param = lambdaExpressionTree.parameters().get(i);
+          if(param.type().is(Tree.Kind.INFERED_TYPE) && ((JavaType) param.type().symbolType()).isTagged(JavaType.DEFERRED)) {
+            ((AbstractTypedTree) param.type()).setInferedType(target.parameterTypes().get(i));
+          }
+        }
+      }
       super.visitLambdaExpression(tree);
     } else {
       registerType(tree, symbols.deferedType(lambdaExpressionTree));
