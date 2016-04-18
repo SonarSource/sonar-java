@@ -83,7 +83,27 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     return true;
   }
 
-  public void ignoreIssuesInTree(Tree tree, Class<? extends JavaCheck> filteredRule) {
+  public void acceptLines(Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
+    for (Class<? extends JavaCheck> rule : rules) {
+      acceptLines(tree, rule);
+    }
+  }
+
+  public void acceptLines(Tree tree, Class<? extends JavaCheck> filteredRule) {
+    computeFilteredLinesForRule(tree, filteredRule, false);
+  }
+
+  public void excludeLines(Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
+    for (Class<? extends JavaCheck> rule : rules) {
+      excludeLines(tree, rule);
+    }
+  }
+
+  public void excludeLines(Tree tree, Class<? extends JavaCheck> filteredRule) {
+    computeFilteredLinesForRule(tree, filteredRule, true);
+  }
+
+  private void computeFilteredLinesForRule(Tree tree, Class<? extends JavaCheck> filteredRule, boolean excludeLine) {
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(tree);
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
@@ -92,7 +112,12 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
       }
       Set<Integer> filteredlines = Sets.newHashSet(Ranges.closed(firstSyntaxToken.line(), lastSyntaxToken.line()).asSet(DiscreteDomains.integers()));
       String ruleKey = rulesKeysByRulesClass.get(filteredRule);
-      ignoredLinesByComponentAndRule.get(componentKey).putAll(ruleKey, filteredlines);
+      Multimap<String, Integer> excludedLinesByRule = ignoredLinesByComponentAndRule.get(componentKey);
+      if (excludeLine) {
+        excludedLinesByRule.putAll(ruleKey, filteredlines);
+      } else {
+        excludedLinesByRule.get(ruleKey).removeAll(filteredlines);
+      }
     }
   }
 

@@ -10,6 +10,8 @@ class A {
       return null;
     }
   };
+
+  class AllowedClassName {}
 }
 
 interface I {

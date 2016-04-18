@@ -70,8 +70,9 @@ public class BaseTreeVisitorIssueFilterTest {
     // issue on file
     assertThatIssueWillBeAccepted(null).isTrue();
 
-    // issue on class accepted
-    assertThatIssueWillBeAccepted(3).isTrue();
+    // issue on class ignored only if class is called "AllowedClassName"
+    assertThatIssueWillBeAccepted(3).isFalse();
+    assertThatIssueWillBeAccepted(14).isTrue();
 
     // issue on variable filtered
     assertThatIssueWillBeAccepted(4).isFalse();
@@ -88,6 +89,7 @@ public class BaseTreeVisitorIssueFilterTest {
 
     // issue on class accepted
     assertThatIssueWillBeAccepted(3).isTrue();
+    assertThatIssueWillBeAccepted(14).isTrue();
 
     // issue on variable accepted
     assertThatIssueWillBeAccepted(4).isTrue();
@@ -104,6 +106,7 @@ public class BaseTreeVisitorIssueFilterTest {
 
     // issue on class accepted
     assertThatIssueWillBeAccepted(3).isTrue();
+    assertThatIssueWillBeAccepted(14).isTrue();
 
     // issue on variable accepted
     assertThatIssueWillBeAccepted(4).isTrue();
@@ -123,7 +126,7 @@ public class BaseTreeVisitorIssueFilterTest {
 
     @Override
     public void visitVariable(VariableTree tree) {
-      ignoreIssuesInTree(tree, FakeRule.class);
+      excludeLines(tree, FakeRule.class);
       super.visitVariable(tree);
     }
 
@@ -132,7 +135,11 @@ public class BaseTreeVisitorIssueFilterTest {
       IdentifierTree simpleName = tree.simpleName();
       if (simpleName == null) {
         // force check on null tree
-        ignoreIssuesInTree(simpleName, FakeRuleWithoutKey.class);
+        excludeLines(simpleName, FakeRuleWithoutKey.class);
+      } else if ("AllowedClassName".equals(simpleName.name())) {
+        acceptLines(simpleName, FakeRule.class);
+      } else {
+        excludeLines(simpleName, FakeRule.class);
       }
       super.visitClass(tree);
     }

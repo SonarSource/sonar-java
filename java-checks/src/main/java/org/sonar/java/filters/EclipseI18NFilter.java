@@ -42,9 +42,9 @@ public class EclipseI18NFilter extends BaseTreeVisitorIssueFilter {
   @Override
   public void visitClass(ClassTree tree) {
     if (tree.symbol().type().isSubtypeOf("org.eclipse.osgi.util.NLS")) {
-      for (Class<? extends JavaCheck> rule : FILTERED_RULES) {
-        ignoreIssuesInTree(tree, rule);
-      }
+      excludeLines(tree, FILTERED_RULES);
+    } else {
+      acceptLines(tree, FILTERED_RULES);
     }
     super.visitClass(tree);
   }
