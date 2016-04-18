@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
@@ -31,7 +32,6 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
-import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 
@@ -45,7 +45,6 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;
-  private final SuppressWarningsFilter suppressWarningsFilter;
   @VisibleForTesting
   Map<String, Resource> resourcesByClass;
   private final Map<String, String> sourceFileByClass;
@@ -53,10 +52,9 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
   private final ResourceMapping resourceMapping;
   private SensorContext sensorContext;
 
-  public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath, SuppressWarningsFilter suppressWarningsFilter) {
+  public DefaultJavaResourceLocator(FileSystem fs, JavaClasspath javaClasspath) {
     this.fs = fs;
     this.javaClasspath = javaClasspath;
-    this.suppressWarningsFilter = suppressWarningsFilter;
     resourcesByClass = Maps.newHashMap();
     sourceFileByClass = Maps.newHashMap();
     methodStartLines = Maps.newHashMap();
@@ -137,8 +135,5 @@ public class DefaultJavaResourceLocator implements JavaResourceLocator {
       }
     }
     methodStartLines.putAll(javaFilesCache.getMethodStartLines());
-    if (javaFilesCache.hasSuppressWarningLines()) {
-      suppressWarningsFilter.addComponent(currentResource.getEffectiveKey(), javaFilesCache.getSuppressWarningLines());
-    }
   }
 }

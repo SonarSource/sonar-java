@@ -32,7 +32,6 @@ import org.sonar.java.JavaClasspathProperties;
 import org.sonar.java.JavaTestClasspath;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.filters.PostAnalysisIssueFilter;
-import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.plugins.jacoco.JaCoCoExtensions;
 import org.sonar.plugins.surefire.SurefireExtensions;
 
@@ -90,7 +89,6 @@ public class JavaPlugin extends SonarPlugin {
         SonarComponents.class,
         DefaultJavaResourceLocator.class,
         JavaSquidSensor.class,
-        SuppressWarningsFilter.class,
         PostAnalysisIssueFilter.class,
         XmlFileSensor.class);
     return builder.build();

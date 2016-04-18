@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Ranges;
-import com.google.common.collect.Sets;
 
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
@@ -63,16 +62,13 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
   @Override
   public boolean accept(Issue issue) {
-    if (issueShouldNotBeReported(issue, excludedLinesByRule())) {
-      return false;
-    }
-    return true;
+    return !issueShouldNotBeReported(issue, excludedLinesByRule());
   }
 
   private static boolean issueShouldNotBeReported(Issue issue, Multimap<String, Integer> excludedLineByRule) {
     RuleKey issueRuleKey = issue.ruleKey();
     for (String excludedRule : excludedLineByRule.keySet()) {
-      if (("all".equals(excludedRule) || isRuleKEy(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
+      if (("all".equals(excludedRule) || isRuleKey(excludedRule, issueRuleKey)) && !isSuppressWarningRule(issueRuleKey)) {
         Collection<Integer> excludedLines = excludedLineByRule.get(excludedRule);
         if (excludedLines.contains(issue.line())) {
           return true;
@@ -82,7 +78,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
     return false;
   }
 
-  private static boolean isRuleKEy(String rule, RuleKey ruleKey) {
+  private static boolean isRuleKey(String rule, RuleKey ruleKey) {
     try {
       // format of the rules requires a repository: "repo:key"
       return ruleKey.equals(RuleKey.parse(rule));
@@ -126,7 +122,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
     if (startLine != -1) {
       int endLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
-      Set<Integer> filteredlines = Sets.newHashSet(Ranges.closed(startLine, endLine).asSet(DiscreteDomains.integers()));
+      Set<Integer> filteredlines = Ranges.closed(startLine, endLine).asSet(DiscreteDomains.integers());
       for (String rule : rules) {
         excludeLines(filteredlines, rule);
       }

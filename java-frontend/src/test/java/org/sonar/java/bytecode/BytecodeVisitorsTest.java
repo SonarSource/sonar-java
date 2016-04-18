@@ -37,7 +37,6 @@ import org.sonar.java.DefaultJavaResourceLocator;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
-import org.sonar.java.filters.SuppressWarningsFilter;
 
 import java.io.File;
 import java.nio.charset.Charset;
@@ -87,7 +86,7 @@ public class BytecodeVisitorsTest {
       DefaultInputFile inputFile = new DefaultInputFile(javaFile.getPath());
       fs.add(inputFile);
     }
-    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null, new SuppressWarningsFilter());
+    DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, null);
     javaResourceLocator.setSensorContext(sensorContext);
     JavaSquid squid = new JavaSquid(conf, null, null, javaResourceLocator, null);
     File binDir = new File("src/test/files/bytecode/bin");

@@ -20,13 +20,13 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
-import org.sonar.java.filters.SuppressWarningsFilter;
 import org.sonar.java.model.VisitorsBridge;
 
 import java.io.File;
@@ -50,7 +50,7 @@ public class DefaultJavaResourceLocatorTest {
     when(sensorContext.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     fs.add(new DefaultInputFile(file.getPath()));
-    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(fs, javaClasspath, new SuppressWarningsFilter());
+    DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(fs, javaClasspath);
     jrl.setSensorContext(sensorContext);
     org.sonar.java.ast.JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(jrl));
     javaResourceLocator = jrl;
