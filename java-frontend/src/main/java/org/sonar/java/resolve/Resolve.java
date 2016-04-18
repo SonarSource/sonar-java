@@ -23,8 +23,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
-
+import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Type;
+import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -796,7 +797,10 @@ public class Resolve {
     return resolution;
   }
 
-  public JavaType conditionalExpressionType(JavaType trueType, JavaType falseType) {
+  public JavaType conditionalExpressionType(ConditionalExpressionTree tree, JavaType trueType, JavaType falseType) {
+    if (trueType.isTagged(JavaType.DEFERRED) || falseType.isTagged(JavaType.DEFERRED)) {
+      return symbols.deferedType((ConditionalExpressionTreeImpl) tree);
+    }
     if (trueType == falseType) {
       return trueType;
     }

@@ -24,6 +24,10 @@ class A {
     field = s -> s;
     B b = new B(s->s);
   }
+
+  F cond(boolean a) {
+    return a ? s->"" : s->s;
+  }
 }
 
 

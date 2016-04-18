@@ -27,6 +27,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
+import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
@@ -76,7 +77,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -391,11 +391,22 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitConditionalExpression(ConditionalExpressionTree tree) {
-    resolveAs(tree.condition(), JavaSymbol.VAR);
-    resolveAs(tree.trueExpression(), JavaSymbol.VAR);
-    resolveAs(tree.falseExpression(), JavaSymbol.VAR);
+    if(((ConditionalExpressionTreeImpl) tree).isTypeSet()) {
+      JavaType trueType = getType(tree.trueExpression());
+      if(trueType.isTagged(JavaType.DEFERRED)) {
+        setInferedType(tree.symbolType(), (DeferredType) trueType);
+      }
+      JavaType falseType = getType(tree.falseExpression());
+      if(falseType.isTagged(JavaType.DEFERRED)) {
+        setInferedType(tree.symbolType(), (DeferredType) falseType);
+      }
+    } else {
+      resolveAs(tree.condition(), JavaSymbol.VAR);
+      resolveAs(tree.trueExpression(), JavaSymbol.VAR);
+      resolveAs(tree.falseExpression(), JavaSymbol.VAR);
 
-    registerType(tree, resolve.conditionalExpressionType((JavaType) tree.trueExpression().symbolType(),(JavaType) tree.falseExpression().symbolType()));
+      registerType(tree, resolve.conditionalExpressionType(tree, (JavaType) tree.trueExpression().symbolType(),(JavaType) tree.falseExpression().symbolType()));
+    }
   }
 
   @Override
