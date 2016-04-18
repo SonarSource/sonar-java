@@ -196,6 +196,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
+    MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
+    if((mit).isTypeSet()) {
+      // nothing special to deduce once we have set type of expression
+      return;
+    }
     Tree methodSelect = tree.methodSelect();
     Resolve.Env methodEnv = semanticModel.getEnv(tree);
     scan(tree.arguments());
@@ -207,7 +212,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     Resolve.Resolution resolution = resolveMethodSymbol(methodSelect, methodEnv, argTypes, typeParamTypes);
     JavaSymbol symbol = resolution.symbol();
-    ((MethodInvocationTreeImpl) tree).setSymbol(symbol);
+    mit.setSymbol(symbol);
+    if(resolution.type() != null && resolution.type().isTagged(JavaType.DEFERRED)) {
+      ((DeferredType) resolution.type()).setTree(mit);
+    }
     registerType(tree, resolution.type());
     inferArgumentTypes(argTypes, symbol);
   }

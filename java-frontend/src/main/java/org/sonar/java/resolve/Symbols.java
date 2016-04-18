@@ -298,4 +298,8 @@ public class Symbols {
   public JavaType deferedType(AbstractTypedTree tree) {
     return new DeferredType(tree);
   }
+
+  public JavaType deferedType() {
+    return new DeferredType();
+  }
 }

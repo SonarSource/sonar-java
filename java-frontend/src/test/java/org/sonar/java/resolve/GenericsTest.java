@@ -791,7 +791,6 @@ public class GenericsTest {
         + "  static <T> A<T> foo() { return new A<T>(); }"
 
         + "  void tst() {"
-        // call to method not recognized
         + "    A<String> a = A.foo();"
         + "  }"
         + "}");
@@ -802,9 +801,8 @@ public class GenericsTest {
 
     Type methodInvocationType = getMethodInvocationType(methodSymbol, 0);
     assertThat(methodInvocationType.erasure().is("A")).isTrue();
-    // FIXME SONARJAVA-1581 should be A<String> instead of the raw type A
-    assertThat(methodInvocationType instanceof ParametrizedTypeJavaType).isFalse();
-    // assertThat(((JavaType.ParametrizedTypeJavaType) methodInvocationType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
+    assertThat(methodInvocationType instanceof ParametrizedTypeJavaType).isTrue();
+    assertThat(((ParametrizedTypeJavaType) methodInvocationType).typeSubstitution.substitutedTypes().get(0).is("java.lang.String")).isTrue();
   }
 
   @Test

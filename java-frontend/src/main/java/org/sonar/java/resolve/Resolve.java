@@ -496,8 +496,13 @@ public class Resolve {
     }
 
     Resolution resolution = new Resolution(mostSpecific);
-    JavaType returnType = ((MethodJavaType) ((JavaSymbol.MethodJavaSymbol) mostSpecific).type).resultType;
-    resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, !typeParams.isEmpty(), substitution);
+    JavaSymbol.MethodJavaSymbol mostSpecificMethod = (JavaSymbol.MethodJavaSymbol) mostSpecific;
+    if(substitution.isComplete(mostSpecificMethod)) {
+      JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
+      resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, !typeParams.isEmpty(), substitution);
+    } else {
+      resolution.type = symbols.deferedType();
+    }
 
     return resolution;
   }
