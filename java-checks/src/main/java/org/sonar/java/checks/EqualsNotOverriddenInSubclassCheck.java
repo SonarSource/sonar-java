@@ -20,11 +20,11 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
-import org.sonar.plugins.java.api.semantic.SymbolMetadata;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
@@ -37,12 +37,6 @@ import java.util.List;
 
 @Rule(key = "S2160")
 public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisitor {
-
-  private static final List<String> EXCLUDED_ANNOTATIONS_TYPE = ImmutableList.<String>builder()
-    .add("lombok.EqualsAndHashCode")
-    .add("lombok.Data")
-    .add("lombok.Value")
-    .build();
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -58,17 +52,7 @@ public class EqualsNotOverriddenInSubclassCheck extends IssuableSubscriptionVisi
   }
 
   private static boolean shouldImplementEquals(ClassTree classTree) {
-    return !generatesEquals(classTree) && hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree);
-  }
-
-  private static boolean generatesEquals(ClassTree classTree) {
-    SymbolMetadata metadata = classTree.symbol().metadata();
-    for (String annotation : EXCLUDED_ANNOTATIONS_TYPE) {
-      if (metadata.isAnnotatedWith(annotation)) {
-        return true;
-      }
-    }
-    return false;
+    return hasAtLeastOneField(classTree) && !implementsEquals(classTree) && parentClassImplementsEquals(classTree);
   }
 
   private static boolean hasAtLeastOneField(ClassTree classTree) {

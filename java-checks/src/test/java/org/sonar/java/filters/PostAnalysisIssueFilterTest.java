@@ -58,7 +58,7 @@ public class PostAnalysisIssueFilterTest {
 
   @Test
   public void number_of_issue_filters() {
-    assertThat(postAnalysisIssueFilter.getIssueFilters()).hasSize(1);
+    assertThat(postAnalysisIssueFilter.getIssueFilters()).hasSize(2);
   }
 
   @Test
@@ -122,7 +122,6 @@ public class PostAnalysisIssueFilterTest {
     public Set<Class<? extends JavaCheck>> filteredRules() {
       return null;
     }
-
   }
 
 }

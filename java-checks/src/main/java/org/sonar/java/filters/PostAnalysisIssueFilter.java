@@ -31,7 +31,8 @@ import org.sonar.plugins.java.api.JavaFileScannerContext;
 public class PostAnalysisIssueFilter implements JavaFileScanner, CodeVisitorIssueFilter {
 
   private static final Iterable<JavaIssueFilter> DEFAULT_ISSUE_FILTERS = ImmutableList.<JavaIssueFilter>of(
-    new EclipseI18NFilter());
+    new EclipseI18NFilter(),
+    new LombokFilter());
   private ResourceMapping resourceMapping;
   private Iterable<JavaIssueFilter> issueFilers;
 

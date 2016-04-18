@@ -73,47 +73,6 @@ class SpecialAnnotations {
   private int foo2; // Compliant
 }
 
-@lombok.Getter
-class ClassLevelAnnotations {
-  private int foo; // Compliant
-}
-@lombok.Setter
-class ClassLevelAnnotations2 {
-  private int foo; // Compliant
-}
-@lombok.Data
-class ClassLevelAnnotations3 {
-  private int foo; // Compliant
-}
-@lombok.Value
-class ClassLevelAnnotations4 {
-  private int foo; // Compliant
-}
-@lombok.Builder
-class ClassLevelAnnotations5 {
-  private int foo; // Compliant
-}
-@lombok.ToString
-class ClassLevelAnnotations6 {
-  private int foo; // Compliant
-}
-@lombok.RequiredArgsConstructor
-class ClassLevelAnnotations7 {
-  private int foo; // Compliant
-}
-@lombok.AllArgsConstructor
-class ClassLevelAnnotations8 {
-  private int foo; // Compliant
-}
-@lombok.NoArgsConstructor
-class ClassLevelAnnotations9 {
-  private int foo; // Compliant
-}
-@lombok.EqualsAndHashCode
-class ClassLevelAnnotations10 {
-  private int foo; // Compliant
-}
-
 class TestSonar {
   private static Transformer TRANSFORMER = new Transformer();
 

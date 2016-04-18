@@ -18,21 +18,6 @@ class B extends A { // Noncompliant [[sc=7;ec=8]]  {{Override this superclass' "
   String s2;
 }
 
-@lombok.EqualsAndHashCode
-class B2 extends A { // Compliant
-  String s2;
-}
-
-@lombok.Data
-class B3 extends A { // Compliant
-  String s2;
-}
-
-@lombok.Value
-class B4 extends A { // Compliant
-  String s2;
-}
-
 abstract class C {
   boolean equals;
   
