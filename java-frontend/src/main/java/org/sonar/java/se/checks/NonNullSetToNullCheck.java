@@ -42,6 +42,8 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -222,7 +224,10 @@ public class NonNullSetToNullCheck extends SECheck {
       }
     }
 
-    private boolean isLocalExpression(ExpressionTree expression) {
+    private boolean isLocalExpression(@Nullable ExpressionTree expression) {
+      if (expression == null) {
+        return false;
+      }
       if (expression.is(Tree.Kind.IDENTIFIER)) {
         final Symbol symbol = ((IdentifierTree) expression).symbol().owner();
         return symbol.isMethodSymbol();

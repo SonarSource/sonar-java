@@ -122,6 +122,13 @@ public class MainClass {
       secondary = colors[1];
     }
   }
+  
+  @Nonnull
+  public void noReturnMethod() {
+    if (secondary == null) {
+      return;
+    }
+  }
 }
 
 public class Coverage {
