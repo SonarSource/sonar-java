@@ -92,7 +92,7 @@ public class NullDereferenceCheck extends SECheck {
 
   @Override
   public ProgramState checkPostStatement(CheckerContext context, Tree syntaxNode) {
-    if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
+    if (syntaxNode.is(Tree.Kind.SWITCH_STATEMENT, Tree.Kind.THROW_STATEMENT) && context.getConstraintManager().isNull(context.getState(), context.getState().peekValue())) {
       context.reportIssue(syntaxNode, this, "NullPointerException might be thrown as '" + SyntaxTreeNameFinder.getName(syntaxNode) + "' is nullable here");
       context.createSink();
       return context.getState();
