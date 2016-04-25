@@ -1,9 +1,6 @@
 {
   "title": "Member variable visibility should be specified",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

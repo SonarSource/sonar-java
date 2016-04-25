@@ -1,9 +1,6 @@
 {
   "title": "Public methods should not contain selector arguments",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

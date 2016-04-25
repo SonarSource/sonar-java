@@ -1,9 +1,6 @@
 {
   "title": "Strings literals should be placed on the left side when checking for equality",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

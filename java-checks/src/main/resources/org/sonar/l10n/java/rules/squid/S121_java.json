@@ -1,9 +1,6 @@
 {
   "title": "Control structures should use curly braces",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

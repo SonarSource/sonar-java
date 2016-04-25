@@ -1,12 +1,9 @@
 {
   "title": "Primitive wrappers should not be instantiated only for \"toString\" or \"compareTo\" calls",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "CPU_EFFICIENCY",
   "tags": [

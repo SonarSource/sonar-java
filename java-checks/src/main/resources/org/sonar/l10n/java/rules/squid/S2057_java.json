@@ -1,9 +1,6 @@
 {
   "title": "\"Serializable\" classes should have a version id",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

@@ -1,9 +1,6 @@
 {
   "title": "\"action\" mappings should not have too many \"forward\" entries",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Linear",
     "linearDesc": "per extra forward",

@@ -1,9 +1,6 @@
 {
   "title": "\"static\" members should be accessed statically",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

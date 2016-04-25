@@ -1,10 +1,6 @@
 {
   "title": "Resources should be closed",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

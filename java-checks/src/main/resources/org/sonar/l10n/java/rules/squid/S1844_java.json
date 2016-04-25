@@ -1,12 +1,9 @@
 {
   "title": "\"Object.wait(...)\" should never be called on objects that implement \"java.util.concurrent.locks.Condition\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "20mn"
+    "constantCost": "20min"
   },
   "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "Constants should not be defined in interfaces",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

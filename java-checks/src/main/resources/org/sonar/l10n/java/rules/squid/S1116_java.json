@@ -1,12 +1,9 @@
 {
   "title": "Empty statements should be removed",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2mn"
+    "constantCost": "2min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

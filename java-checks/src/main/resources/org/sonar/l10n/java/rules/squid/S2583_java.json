@@ -1,10 +1,6 @@
 {
   "title": "Conditions should not unconditionally evaluate to \"TRUE\" or to \"FALSE\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

@@ -1,12 +1,9 @@
 {
   "title": "Dead stores should be removed",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "15mn"
+    "constantCost": "15min"
   },
   "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [

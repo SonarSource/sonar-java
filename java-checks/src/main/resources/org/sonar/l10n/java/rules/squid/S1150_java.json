@@ -1,9 +1,6 @@
 {
   "title": "Enumeration should not be implemented",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"

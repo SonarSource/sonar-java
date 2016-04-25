@@ -1,10 +1,6 @@
 {
   "title": "Fields in a \"Serializable\" class should either be transient or serializable",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"

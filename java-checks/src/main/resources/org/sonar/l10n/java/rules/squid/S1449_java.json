@@ -1,12 +1,9 @@
 {
   "title": "Locale should be used in String operations",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

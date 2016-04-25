@@ -1,9 +1,6 @@
 {
   "title": "Equality operators should not be used in \"for\" loop termination conditions",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

@@ -1,13 +1,9 @@
 {
-  "title": "Thread.run() and Runnable.run() should not be called directly",
+  "title": "Thread.run() should not be called directly",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "20mn"
+    "constantCost": "20min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

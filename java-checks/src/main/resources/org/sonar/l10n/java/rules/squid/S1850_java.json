@@ -1,12 +1,9 @@
 {
   "title": "\"instanceof\" operators that always return \"true\" or \"false\" should be removed",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [

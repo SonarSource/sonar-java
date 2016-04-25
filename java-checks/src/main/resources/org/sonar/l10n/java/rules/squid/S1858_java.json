@@ -1,9 +1,6 @@
 {
   "title": "\"toString()\" should never be called on a String object",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

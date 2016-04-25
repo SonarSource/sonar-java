@@ -1,9 +1,6 @@
 {
   "title": "\"switch\" statements should end with \"default\" clauses",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

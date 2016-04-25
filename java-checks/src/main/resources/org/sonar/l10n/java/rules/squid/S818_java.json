@@ -1,9 +1,6 @@
 {
   "title": "Literal suffixes should be upper case",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

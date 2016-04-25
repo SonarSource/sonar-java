@@ -1,13 +1,9 @@
 {
   "title": "Jump statements should not occur in \"finally\" blocks",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "30mn"
+    "constantCost": "30min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

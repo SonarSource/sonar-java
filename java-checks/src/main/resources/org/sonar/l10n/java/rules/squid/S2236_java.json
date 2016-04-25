@@ -1,13 +1,9 @@
 {
   "title": "Methods \"wait(...)\", \"notify()\" and \"notifyAll()\" should not be called on Thread instances",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "30mn"
+    "constantCost": "30min"
   },
   "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
   "tags": [

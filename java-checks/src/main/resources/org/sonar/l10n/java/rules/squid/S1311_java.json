@@ -1,9 +1,6 @@
 {
   "title": "Classes should not be too complex",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Linear with offset",
     "linearDesc": "per complexity point over the threshold",

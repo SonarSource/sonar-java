@@ -1,12 +1,9 @@
 {
   "title": "A close curly brace should be located at the beginning of a line",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "1mn"
+    "constantCost": "1min"
   },
   "sqaleSubCharac": "READABILITY",
   "tags": [

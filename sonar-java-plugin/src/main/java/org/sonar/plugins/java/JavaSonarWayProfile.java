@@ -19,23 +19,48 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import com.google.gson.Gson;
 import org.sonar.api.profiles.ProfileDefinition;
 import org.sonar.api.profiles.RulesProfile;
+import org.sonar.api.rules.Rule;
 import org.sonar.api.utils.ValidationMessages;
+import org.sonar.java.checks.CheckList;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
 
 /**
  * Replacement for org.sonar.plugins.squid.SonarWayProfile
  */
 public class JavaSonarWayProfile extends ProfileDefinition {
 
-  private final JavaRulesDefinition rulesDefinition;
-
-  public JavaSonarWayProfile(JavaRulesDefinition rulesDefinition) {
-    this.rulesDefinition = rulesDefinition;
-  }
+  private final Gson gson = new Gson();
 
   @Override
   public RulesProfile createProfile(ValidationMessages messages) {
-    return rulesDefinition.getProfile("Sonar way");
+    RulesProfile profile = RulesProfile.create("Sonar way", Java.KEY);
+    URL resource = JavaRulesDefinition.class.getResource("/org/sonar/l10n/java/rules/squid/Sonar_way_profile.json");
+    Profile jsonProfile = gson.fromJson(readResource(resource), Profile.class);
+    for (String key : jsonProfile.ruleKeys) {
+      profile.activateRule(Rule.create(CheckList.REPOSITORY_KEY, key), null);
+    }
+    return profile;
   }
+
+  private static String readResource(URL resource) {
+    try {
+      return Resources.toString(resource, Charsets.UTF_8);
+    } catch (IOException e) {
+      throw new IllegalStateException("Failed to read: " + resource, e);
+    }
+  }
+
+  private static class Profile {
+    String name;
+    List<String> ruleKeys;
+  }
+
 }

@@ -1,9 +1,6 @@
 {
   "title": "\"Threads\" should not be used where \"Runnables\" are expected",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

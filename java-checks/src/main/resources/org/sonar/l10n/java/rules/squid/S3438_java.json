@@ -1,10 +1,6 @@
 {
   "title": "\"SingleConnectionFactory\" instances should be set to \"reconnectOnException\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

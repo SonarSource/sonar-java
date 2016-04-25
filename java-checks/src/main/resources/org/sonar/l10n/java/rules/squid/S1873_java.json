@@ -1,9 +1,6 @@
 {
   "title": "\"static final\" arrays should be \"private\"",
   "status": "deprecated",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"
