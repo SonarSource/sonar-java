@@ -197,7 +197,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitMethodInvocation(MethodInvocationTree tree) {
     MethodInvocationTreeImpl mit = (MethodInvocationTreeImpl) tree;
-    if((mit).isTypeSet()) {
+    if(mit.isTypeSet()) {
       // nothing special to deduce once we have set type of expression
       return;
     }

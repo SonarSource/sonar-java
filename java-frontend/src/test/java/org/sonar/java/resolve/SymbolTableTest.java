@@ -644,6 +644,11 @@ public class SymbolTableTest {
     assertThat(result.reference(startLine + 1, 5)).isSameAs(funMethod);
     assertThat(result.reference(startLine + 2, 5)).isSameAs(funMethod);
     assertThat(result.reference(startLine + 3, 5)).isSameAs(funMethod);
+    JavaSymbol gulInt = result.symbol("gul", 34);
+    JavaSymbol gulString = result.symbol("gul", 36);
+    assertThat(((JavaSymbol.MethodJavaSymbol) gulInt).parameterTypes().get(0).is("java.lang.Integer")).isTrue();
+    assertThat(gulString.usages()).hasSize(1);
+    assertThat(gulInt.usages()).isEmpty();
   }
 
   @Test

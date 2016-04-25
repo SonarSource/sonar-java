@@ -22,12 +22,10 @@ package org.sonar.java.resolve;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
-
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +63,7 @@ public class TypeSubstitutionSolver {
     return substitution;
   }
 
-  JavaType getReturnType(@Nullable JavaType returnType, JavaType defSite, JavaType callSite, boolean parametrizedMethodCall, TypeSubstitution substitution) {
+  JavaType getReturnType(@Nullable JavaType returnType, JavaType defSite, JavaType callSite, TypeSubstitution substitution, List<TypeVariableJavaType> typeVariableTypes) {
     if (returnType == null) {
       // case of constructors
       return returnType;
@@ -74,16 +72,34 @@ public class TypeSubstitutionSolver {
     if (callSite != defSite) {
       resultType = applySiteSubstitution(resultType, callSite);
     }
-    if (isRawTypeOfParametrizedType(callSite) && !parametrizedMethodCall) {
-      // JLS8 5.1.9 + JLS8 15.12.2.6 : unchecked conversion
-      return resultType.erasure();
+    resultType = applySubstitution(resultType, substitution);
+    if(!isReturnTypeCompletelySubstituted(resultType, typeVariableTypes)) {
+      resultType = symbols.deferedType();
     }
-    return applySubstitution(resultType, substitution);
+    return resultType;
   }
 
-  private static boolean isRawTypeOfParametrizedType(JavaType site) {
-    return !isParametrizedType(site) && !site.symbol.typeVariableTypes.isEmpty();
+  private static boolean isReturnTypeCompletelySubstituted(JavaType resultType, List<TypeVariableJavaType> typeVariables){
+    if(typeVariables.contains(resultType)) {
+      return false;
+    }
+    if(resultType.isArray()) {
+      return isReturnTypeCompletelySubstituted(((ArrayJavaType) resultType).elementType, typeVariables);
+    }
+    if(resultType.isTagged(JavaType.WILDCARD)) {
+      return isReturnTypeCompletelySubstituted(((WildCardType) resultType).bound, typeVariables);
+    }
+    if(resultType instanceof ParametrizedTypeJavaType) {
+      for (JavaType substitutedType : ((ParametrizedTypeJavaType) resultType).typeSubstitution.substitutedTypes()) {
+        if(!isReturnTypeCompletelySubstituted(substitutedType, typeVariables)) {
+          return false;
+        }
+      }
+      
+    }
+    return true;
   }
+
 
   List<JavaType> applySiteSubstitutionToFormalParameters(List<JavaType> formals, JavaType site) {
     if (isParametrizedType(site)) {

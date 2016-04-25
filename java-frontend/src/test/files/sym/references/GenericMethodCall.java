@@ -28,3 +28,14 @@ class Test {
     fun(bar.bar().get());
   }
 }
+abstract class NotDefered {
+  abstract <T, U> T plop(T t);
+
+  void gul(Integer i) {}
+
+  void gul(String s) {}
+
+  void test() {
+    gul(plop("hello"));
+  }
+}

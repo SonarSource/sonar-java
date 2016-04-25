@@ -497,14 +497,19 @@ public class Resolve {
 
     Resolution resolution = new Resolution(mostSpecific);
     JavaSymbol.MethodJavaSymbol mostSpecificMethod = (JavaSymbol.MethodJavaSymbol) mostSpecific;
-    if(substitution.isComplete(mostSpecificMethod)) {
-      JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
-      resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, !typeParams.isEmpty(), substitution);
-    } else {
-      resolution.type = symbols.deferedType();
+    JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
+    resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, substitution, mostSpecificMethod.typeVariableTypes);
+    if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && returnType != null) {
+      resolution.type = returnType.erasure();
     }
-
     return resolution;
+  }
+
+  private static boolean applicableWithUncheckedConversion(JavaSymbol.MethodJavaSymbol candidate, JavaType callSite, List<JavaType> typeParams) {
+    return !candidate.isStatic() && isRawTypeOfParametrizedType(callSite) && typeParams.isEmpty();
+  }
+  private static boolean isRawTypeOfParametrizedType(JavaType site) {
+    return !(site instanceof ParametrizedTypeJavaType) && !site.symbol.typeVariableTypes.isEmpty();
   }
 
   private static boolean hasCompatibleArity(int formalArgSize, int argSize, boolean isVarArgs) {
