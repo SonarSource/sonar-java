@@ -1,6 +1,7 @@
 @SomeAnnotation(name = value)
 package javax.annotation;
 
+import java.text.ParseException;
 import java.util.List;
 
 @interface CheckForNull {}
@@ -76,7 +77,7 @@ class NullPointerTest {
     i = checkForNullField.length; // False negative, instance and static fields are not checked
 
     Object[] array2 = checkForNullMethod();
-    i = array2.length; // Noncompliant [[secondary=78]] {{NullPointerException might be thrown as 'array2' is nullable here}}
+    i = array2.length; // Noncompliant [[secondary=79]] {{NullPointerException might be thrown as 'array2' is nullable here}}
   }
   public void testCheckNotNull(@CheckForNull Object parameter) {
     int i;
@@ -629,5 +630,19 @@ class NullPointerTest {
       System.out.println(nonNullString);
     }
     int n = nonNullString.length();  // Compliant!
+  }
+
+  Object parseNullException(String object) throws Exception {
+    Object result = null;
+    Exception ex = null;
+    try {
+      result = parseObject(object);
+    } catch (ParseException e) {
+      ex = e;
+    }
+    if (result == null) {
+      throw ex; // Noncompliant {{NullPointerException might be thrown as 'ex' is nullable here}}
+    }
+    return result;
   }
 }

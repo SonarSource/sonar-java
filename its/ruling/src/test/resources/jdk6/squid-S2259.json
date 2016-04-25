@@ -65,6 +65,12 @@
 'jdk6:java/security/CodeSource.java':[
 531,
 ],
+'jdk6:java/security/KeyPairGenerator.java':[
+197,
+613,
+644,
+664,
+],
 'jdk6:java/security/UnresolvedPermission.java':[
 558,
 ],

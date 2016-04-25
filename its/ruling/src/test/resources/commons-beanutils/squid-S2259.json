@@ -2,4 +2,7 @@
 'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/MappedPropertyDescriptor.java':[
 366,
 ],
+'commons-beanutils:commons-beanutils:src/main/java/org/apache/commons/beanutils/converters/DateTimeConverter.java':[
+538,
+],
 }
