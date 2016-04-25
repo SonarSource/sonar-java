@@ -1,10 +1,6 @@
 {
   "title": "\"@NonNull\" values should not be set to null",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

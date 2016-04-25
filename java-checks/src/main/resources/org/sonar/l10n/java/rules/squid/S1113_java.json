@@ -1,12 +1,9 @@
 {
   "title": "The Object.finalize() method should not be overriden",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "20mn"
+    "constantCost": "20min"
   },
   "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [

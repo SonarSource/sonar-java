@@ -24,7 +24,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rule.RuleStatus;
 import org.sonar.api.server.debt.DebtRemediationFunction;
 import org.sonar.api.server.rule.RulesDefinition;
@@ -38,9 +37,7 @@ import org.sonar.squidbridge.rules.ExternalDescriptionLoader;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Definition of rules.
@@ -48,7 +45,6 @@ import java.util.Map;
 public class JavaRulesDefinition implements RulesDefinition {
 
   private static final String RESOURCE_BASE_PATH = "/org/sonar/l10n/java/rules/squid";
-  private final Map<String, RulesProfile> profiles = new HashMap<>();
   private final Gson gson = new Gson();
   @Override
   public void define(Context context) {
@@ -109,23 +105,11 @@ public class JavaRulesDefinition implements RulesDefinition {
         rule.setDebtRemediationFunction(metatada.remediation.remediationFunction(rule.debtRemediationFunctions()));
         rule.setEffortToFixDescription(metatada.remediation.linearDesc);
       }
-      addToProfile(rule, metatada);
-    }
-  }
-
-  private void addToProfile(NewRule rule, RuleMetatada metatada) {
-    for (String profileName : metatada.profiles) {
-      RulesProfile rulesProfile = profiles.get(profileName);
-      if(rulesProfile == null) {
-        rulesProfile = RulesProfile.create(profileName, Java.KEY);
-        profiles.put(profileName, rulesProfile);
-      }
-      rulesProfile.activateRule(org.sonar.api.rules.Rule.create(CheckList.REPOSITORY_KEY, rule.key()), null);
     }
   }
 
   private static void addHtmlDescription(NewRule rule, String metadataKey) {
-    URL resource = ExternalDescriptionLoader.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.html");
+    URL resource = JavaRulesDefinition.class.getResource(RESOURCE_BASE_PATH + "/" + metadataKey + "_java.html");
     if (resource != null) {
       rule.setHtmlDescription(readResource(resource));
     }
@@ -139,14 +123,9 @@ public class JavaRulesDefinition implements RulesDefinition {
     }
   }
 
-  public RulesProfile getProfile(String profileName) {
-    return profiles.get(profileName);
-  }
-
   private static class RuleMetatada {
     String title;
     String status;
-    String[] profiles;
     @Nullable
     Remediation remediation;
 

@@ -1,13 +1,9 @@
 {
   "title": "\"Iterator.hasNext()\" should not call \"Iterator.next()\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "20mn"
+    "constantCost": "20min"
   },
   "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [

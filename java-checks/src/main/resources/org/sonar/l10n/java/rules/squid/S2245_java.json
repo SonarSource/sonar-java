@@ -1,12 +1,9 @@
 {
   "title": "Pseudorandom number generators (PRNGs) should not be used in secure contexts",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10mn"
+    "constantCost": "10min"
   },
   "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [

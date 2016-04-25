@@ -1,9 +1,6 @@
 {
   "title": "Values passed to LDAP queries should be sanitized",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"

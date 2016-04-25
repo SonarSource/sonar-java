@@ -1,9 +1,6 @@
 {
   "title": "Classes should not have too many methods",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "1h"

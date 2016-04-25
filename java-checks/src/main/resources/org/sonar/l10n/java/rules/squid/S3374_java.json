@@ -1,9 +1,6 @@
 {
   "title": "Struts validation forms should have unique names",
   "status": "ready",
-  "profiles": [
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"

@@ -1,10 +1,6 @@
 {
   "title": "\"@Deprecated\" code should not be used",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

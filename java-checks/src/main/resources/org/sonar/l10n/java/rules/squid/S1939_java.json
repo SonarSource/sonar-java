@@ -1,9 +1,6 @@
 {
   "title": "Extensions and implementations should not be redundant",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "1min"

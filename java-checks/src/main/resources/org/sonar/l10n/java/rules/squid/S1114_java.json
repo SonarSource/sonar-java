@@ -1,10 +1,6 @@
 {
   "title": "super.finalize() should be called at the end of Object.finalize() implementations",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

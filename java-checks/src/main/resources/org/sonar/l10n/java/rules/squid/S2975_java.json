@@ -1,9 +1,6 @@
 {
   "title": "\"clone\" should not be overridden",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"

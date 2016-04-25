@@ -1,9 +1,6 @@
 {
   "title": "SHA-1 and Message-Digest hash algorithms should not be used",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "30min"

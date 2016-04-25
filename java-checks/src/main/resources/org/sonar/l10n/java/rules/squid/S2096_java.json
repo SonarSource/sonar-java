@@ -1,9 +1,6 @@
 {
   "title": "\"main\" should not \"throw\" anything",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

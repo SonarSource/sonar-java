@@ -1,9 +1,6 @@
 {
   "title": "String function use should be optimized for single characters",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

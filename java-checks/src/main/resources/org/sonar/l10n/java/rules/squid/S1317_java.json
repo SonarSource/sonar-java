@@ -1,12 +1,9 @@
 {
   "title": "\"StringBuilder\" and \"StringBuffer\" should not be instantiated with a character ",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5 mn"
+    "constantCost": "5 min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

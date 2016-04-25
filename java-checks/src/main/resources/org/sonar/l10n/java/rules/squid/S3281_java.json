@@ -1,10 +1,6 @@
 {
   "title": "Default EJB interceptors should be declared in \"ejb-jar.xml\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

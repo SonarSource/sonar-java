@@ -1,12 +1,9 @@
 {
   "title": "Strings should not be concatenated using '+' in a loop",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10mn"
+    "constantCost": "10min"
   },
   "sqaleSubCharac": "MEMORY_EFFICIENCY",
   "tags": [

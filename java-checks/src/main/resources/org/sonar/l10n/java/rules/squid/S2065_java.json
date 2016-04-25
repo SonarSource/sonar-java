@@ -1,9 +1,6 @@
 {
   "title": "Fields in non-serializable classes should not be \"transient\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

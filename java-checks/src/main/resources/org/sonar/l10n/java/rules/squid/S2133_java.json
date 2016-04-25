@@ -1,9 +1,6 @@
 {
   "title": "Objects should not be created only to \"getClass\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

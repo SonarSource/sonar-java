@@ -1,9 +1,6 @@
 {
   "title": "Classes should not be empty",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

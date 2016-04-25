@@ -1,9 +1,6 @@
 {
   "title": "Constructors should not be used to instantiate \"String\" and primitive-wrapper classes",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

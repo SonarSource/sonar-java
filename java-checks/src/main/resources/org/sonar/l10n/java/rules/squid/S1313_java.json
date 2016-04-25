@@ -1,13 +1,9 @@
 {
   "title": "IP addresses should not be hardcoded",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "30mn"
+    "constantCost": "30min"
   },
   "sqaleSubCharac": "ARCHITECTURE_CHANGEABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "Public types, methods and fields (API) should be documented with Javadoc",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

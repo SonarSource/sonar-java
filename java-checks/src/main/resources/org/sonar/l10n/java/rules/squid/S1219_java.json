@@ -1,12 +1,9 @@
 {
   "title": "\"switch\" statements should not contain non-case labels",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10mn"
+    "constantCost": "10min"
   },
   "sqaleSubCharac": "READABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "\"notifyAll\" should be used",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

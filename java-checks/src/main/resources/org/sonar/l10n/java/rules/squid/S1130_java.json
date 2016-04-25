@@ -1,9 +1,6 @@
 {
   "title": "Throws declarations should not be superfluous",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

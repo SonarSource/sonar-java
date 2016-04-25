@@ -1,12 +1,9 @@
 {
   "title": "Multiple variables should not be declared on the same line",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2mn"
+    "constantCost": "2min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

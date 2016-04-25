@@ -1,12 +1,9 @@
 {
   "title": "\"CHECKSTYLE:OFF\" suppression comments should not be used",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [

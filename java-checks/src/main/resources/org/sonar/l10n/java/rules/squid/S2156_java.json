@@ -1,9 +1,6 @@
 {
   "title": "\"final\" classes should not have \"protected\" members",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

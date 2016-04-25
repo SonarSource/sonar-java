@@ -22,7 +22,6 @@ package org.sonar.plugins.java;
 import org.junit.Test;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.java.checks.CheckList;
 
@@ -35,11 +34,8 @@ public class JavaSonarWayProfileTest {
   @Test
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
-    JavaRulesDefinition rulesDefinition = new JavaRulesDefinition();
-    RulesDefinition.Context context = new RulesDefinition.Context();
-    rulesDefinition.define(context);
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(rulesDefinition);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     RulesProfile profile = profileDef.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);

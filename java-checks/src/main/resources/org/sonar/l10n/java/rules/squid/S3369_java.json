@@ -1,9 +1,6 @@
 {
   "title": "Security constraints should be defined",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "3h"

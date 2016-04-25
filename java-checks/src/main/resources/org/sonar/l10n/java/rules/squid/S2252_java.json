@@ -1,10 +1,6 @@
 {
   "title": "Loop conditions should be true at least once",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

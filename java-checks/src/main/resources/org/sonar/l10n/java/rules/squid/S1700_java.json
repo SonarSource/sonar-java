@@ -1,12 +1,9 @@
 {
   "title": "A field should not duplicate the name of its containing class",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10mn"
+    "constantCost": "10min"
   },
   "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "Method overrides should not change contracts",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

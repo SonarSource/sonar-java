@@ -1,12 +1,9 @@
 {
   "title": "The Array.equals(Object obj) method should not be used",
   "status": "deprecated",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [
