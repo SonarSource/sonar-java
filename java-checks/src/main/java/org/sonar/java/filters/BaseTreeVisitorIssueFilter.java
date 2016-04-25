@@ -43,14 +43,12 @@ import java.util.Set;
 public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor implements JavaIssueFilter {
 
   private String componentKey;
-  private final Map<String, Multimap<String, Integer>> ignoredLinesByComponentAndRule;
+  private final Multimap<String, Integer> excludedLinesByRule;
   private final Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass;
-  private final Set<String> filteredRulesKeys;
 
   public BaseTreeVisitorIssueFilter() {
-    ignoredLinesByComponentAndRule = Maps.newHashMap();
+    excludedLinesByRule = HashMultimap.create();
     rulesKeysByRulesClass = rulesKeysByRulesClass(filteredRules());
-    filteredRulesKeys = Sets.newHashSet(rulesKeysByRulesClass.values());
   }
 
   private static Map<Class<? extends JavaCheck>, String> rulesKeysByRulesClass(Set<Class<? extends JavaCheck>> rules) {
@@ -71,23 +69,17 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
 
   @Override
   public void scanFile(JavaFileScannerContext context) {
+    excludedLinesByRule.clear();
     scan(context.getTree());
   }
 
   @Override
   public boolean accept(Issue issue) {
-    String ruleKey = issue.ruleKey().rule();
-    if (filteredRulesKeys.contains(ruleKey) && isIgnoredLine(issue.componentKey(), ruleKey, issue.line())) {
-      return false;
-    }
-    return true;
+    return !(issue.componentKey().equals(componentKey) && excludedLinesByRule.get(issue.ruleKey().rule()).contains(issue.line()));
   }
 
   public Multimap<String, Integer> excludedLinesByRule() {
-    if (ignoredLinesByComponentAndRule.containsKey(componentKey)) {
-      return ignoredLinesByComponentAndRule.get(componentKey);
-    }
-    return HashMultimap.create();
+    return excludedLinesByRule;
   }
 
   public void acceptLines(Tree tree, Iterable<Class<? extends JavaCheck>> rules) {
@@ -124,22 +116,10 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
   }
 
   private void computeFilteredLinesForRule(Set<Integer> lines, String ruleKey, boolean excludeLine) {
-    if (!ignoredLinesByComponentAndRule.containsKey(componentKey)) {
-      ignoredLinesByComponentAndRule.put(componentKey, HashMultimap.<String, Integer>create());
-    }
-    Multimap<String, Integer> excludedLinesByRule = ignoredLinesByComponentAndRule.get(componentKey);
     if (excludeLine) {
       excludedLinesByRule.putAll(ruleKey, lines);
     } else {
       excludedLinesByRule.get(ruleKey).removeAll(lines);
     }
-  }
-
-  private boolean isIgnoredLine(String componentKey, String ruleKey, Integer line) {
-    Multimap<String, Integer> ignoredLinesByRule = ignoredLinesByComponentAndRule.get(componentKey);
-    if (ignoredLinesByRule == null) {
-      return false;
-    }
-    return ignoredLinesByRule.get(ruleKey).contains(line);
   }
 }
