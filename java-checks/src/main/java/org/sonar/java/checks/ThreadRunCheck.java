@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.checks.helpers.MethodsHelper;
 import org.sonar.java.checks.methods.AbstractMethodDetection;
@@ -33,12 +34,12 @@ import java.util.List;
 
 @Rule(key = "S1217")
 public class ThreadRunCheck extends AbstractMethodDetection {
-  private static final MethodMatcher RUNNABLE_RUN_METHOD_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Runnable")).name("run")
+  private static final MethodMatcher THREAD_RUN_METHOD_MATCHER = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.lang.Thread")).name("run")
     .withNoParameterConstraint();
 
   @Override
   protected List<MethodMatcher> getMethodInvocationMatchers() {
-    return ImmutableList.of(RUNNABLE_RUN_METHOD_MATCHER);
+    return ImmutableList.of(THREAD_RUN_METHOD_MATCHER);
   }
 
   @Override
@@ -47,7 +48,7 @@ public class ThreadRunCheck extends AbstractMethodDetection {
     while (parent != null && !parent.is(Tree.Kind.METHOD)) {
       parent = parent.parent();
     }
-    if (parent != null && RUNNABLE_RUN_METHOD_MATCHER.matches((MethodTree) parent)) {
+    if (parent != null && THREAD_RUN_METHOD_MATCHER.matches((MethodTree) parent)) {
       return;
     }
     reportIssue(MethodsHelper.methodName(mit), "Call the method Thread.start() to execute the content of the run() method in a dedicated thread.");
