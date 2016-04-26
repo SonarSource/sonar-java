@@ -44,6 +44,8 @@ public class JavaRulesDefinitionTest {
     assertThat(unusedLabelRule.name()).isEqualTo("Unused labels should be removed");
     RulesDefinition.Rule magicNumber = repository.rule("S109");
     assertThat(magicNumber.params()).isNotEmpty();
+    // Calling definition multiple time should not lead to failure: thanks C# plugin !
+    definition.define(new RulesDefinition.Context());
   }
 
 }
