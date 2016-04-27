@@ -1,12 +1,9 @@
 {
   "title": "Collection.isEmpty() should be used to test for emptiness",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2mn"
+    "constantCost": "2min"
   },
   "sqaleSubCharac": "READABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "\"readObject\" should not be \"synchronized\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

@@ -1,12 +1,9 @@
 {
   "title": "Non-constructor methods should not have the same name as the enclosing class",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [

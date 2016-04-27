@@ -1,13 +1,9 @@
 {
   "title": "Variables should not be self-assigned",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "3mn"
+    "constantCost": "3min"
   },
   "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "Lines should not be too long",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "1min"

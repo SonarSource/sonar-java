@@ -1,13 +1,9 @@
 {
   "title": "\"equals(Object obj)\" should be overridden along with the \"compareTo(T obj)\" method",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "15mn"
+    "constantCost": "15min"
   },
   "sqaleSubCharac": "ARCHITECTURE_RELIABILITY",
   "tags": [

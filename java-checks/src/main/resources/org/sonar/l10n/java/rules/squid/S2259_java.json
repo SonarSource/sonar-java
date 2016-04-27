@@ -1,10 +1,6 @@
 {
   "title": "Null pointers should not be dereferenced",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

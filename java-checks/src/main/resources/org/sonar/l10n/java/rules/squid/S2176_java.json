@@ -1,9 +1,6 @@
 {
   "title": "Class names should not shadow interfaces or superclasses",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

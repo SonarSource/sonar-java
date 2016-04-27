@@ -1,12 +1,9 @@
 {
   "title": "Fields and methods should not have conflicting names",
   "status": "deprecated",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "10mn"
+    "constantCost": "10min"
   },
   "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [

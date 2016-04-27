@@ -1,12 +1,9 @@
 {
   "title": "\"object == null\" should be used instead of \"object.equals(null)\"",
   "status": "deprecated",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

@@ -1,10 +1,6 @@
 {
   "title": "\"enum\" fields should not be publicly mutable",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"

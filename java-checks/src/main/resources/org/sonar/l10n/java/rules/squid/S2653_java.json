@@ -1,10 +1,6 @@
 {
   "title": "Web applications should not have a \"main\" method",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

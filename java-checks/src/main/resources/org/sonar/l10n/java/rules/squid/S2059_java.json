@@ -1,9 +1,6 @@
 {
   "title": "\"Serializable\" inner classes of \"Serializable\" classes should be static",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

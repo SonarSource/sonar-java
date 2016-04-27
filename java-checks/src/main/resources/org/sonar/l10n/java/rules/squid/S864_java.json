@@ -1,12 +1,9 @@
 {
   "title": "Limited dependence should be placed on operator precedence rules in expressions",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2mn"
+    "constantCost": "2min"
   },
   "sqaleSubCharac": "READABILITY",
   "tags": [

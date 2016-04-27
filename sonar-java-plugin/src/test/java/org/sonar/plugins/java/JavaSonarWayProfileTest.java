@@ -22,11 +22,12 @@ package org.sonar.plugins.java;
 import org.junit.Test;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
-import org.sonar.api.server.rule.RulesDefinition;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.java.checks.CheckList;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -35,17 +36,21 @@ public class JavaSonarWayProfileTest {
   @Test
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
-    JavaRulesDefinition rulesDefinition = new JavaRulesDefinition();
-    RulesDefinition.Context context = new RulesDefinition.Context();
-    rulesDefinition.define(context);
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(rulesDefinition);
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
     RulesProfile profile = profileDef.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
     List<ActiveRule> activeRules = profile.getActiveRulesByRepository(CheckList.REPOSITORY_KEY);
     assertThat(activeRules.size()).as("Expected number of rules in profile").isGreaterThanOrEqualTo(260);
     assertThat(profile.getName()).isEqualTo("Sonar way");
+    Set<String> keys = new HashSet<>();
+    for (ActiveRule activeRule : activeRules) {
+      keys.add(activeRule.getRuleKey());
+    }
+    //Check that we store active rule with legacy keys, not RSPEC keys
+    assertThat(keys.contains("S116")).isFalse();
+    assertThat(keys).contains("S00116");
     assertThat(validation.hasErrors()).isFalse();
   }
 

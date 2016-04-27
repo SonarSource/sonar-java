@@ -1,9 +1,6 @@
 {
   "title": "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be located on the same line",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "1min"

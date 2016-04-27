@@ -1,12 +1,9 @@
 {
   "title": "\"javax.crypto.NullCipher\" should not be used for anything other than testing",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "15mn"
+    "constantCost": "15min"
   },
   "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [

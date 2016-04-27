@@ -1,9 +1,6 @@
 {
   "title": "\"for\" loop stop conditions should be invariant",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

@@ -1,9 +1,6 @@
 {
   "title": "Tests should not be ignored",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

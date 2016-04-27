@@ -1,12 +1,9 @@
 {
   "title": "Empty arrays and collections should be returned instead of null",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "30mn"
+    "constantCost": "30min"
   },
   "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [

@@ -1,9 +1,6 @@
 {
   "title": "Close curly brace and the next \"else\", \"catch\" and \"finally\" keywords should be on two different lines",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "1min"

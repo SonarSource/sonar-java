@@ -1,12 +1,9 @@
 {
   "title": "Objects should not be created to be dropped immediately without being used",
   "status": "deprecated",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
   "tags": [

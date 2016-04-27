@@ -1,12 +1,9 @@
 {
   "title": "Objects should be compared with \"equals()\"",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2mn"
+    "constantCost": "2min"
   },
   "sqaleSubCharac": "LOGIC_RELIABILITY",
   "tags": [

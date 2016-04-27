@@ -1,10 +1,6 @@
 {
   "title": "JUnit test cases should call super methods",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

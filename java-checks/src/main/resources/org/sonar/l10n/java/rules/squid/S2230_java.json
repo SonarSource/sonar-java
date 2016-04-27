@@ -1,10 +1,6 @@
 {
   "title": "Non-public methods should not be \"@Transactional\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way",
-    "Sonar security way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"

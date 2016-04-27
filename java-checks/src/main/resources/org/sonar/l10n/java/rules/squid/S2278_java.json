@@ -1,12 +1,9 @@
 {
   "title": "Neither DES (Data Encryption Standard) nor DESede (3DES) should be used",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "20mn"
+    "constantCost": "20min"
   },
   "sqaleSubCharac": "SECURITY_FEATURES",
   "tags": [

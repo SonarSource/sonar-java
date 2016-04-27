@@ -1,9 +1,6 @@
 {
   "title": "Only standard cryptographic algorithms should be used",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "1d"

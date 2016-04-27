@@ -1,9 +1,6 @@
 {
   "title": "Annotation repetitions should not be wrapped",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "2min"

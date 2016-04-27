@@ -1,9 +1,6 @@
 {
   "title": "Classes should not be loaded dynamically",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "45min"

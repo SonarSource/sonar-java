@@ -1,12 +1,9 @@
 {
   "title": "Public constants and fields initialized at declaration should be \"static final\" rather than merely \"final\"",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "2mn"
+    "constantCost": "2min"
   },
   "sqaleSubCharac": "MEMORY_EFFICIENCY",
   "tags": [

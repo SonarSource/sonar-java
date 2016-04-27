@@ -1,12 +1,9 @@
 {
   "title": "Unused \"private\" fields should be removed",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "UNDERSTANDABILITY",
   "tags": [

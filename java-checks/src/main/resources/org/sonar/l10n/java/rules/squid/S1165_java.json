@@ -1,9 +1,6 @@
 {
   "title": "Exception classes should be immutable",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "15min"

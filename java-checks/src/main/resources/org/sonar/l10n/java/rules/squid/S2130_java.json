@@ -1,9 +1,6 @@
 {
   "title": "Parsing should be used to convert \"Strings\" to primitives",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "5min"

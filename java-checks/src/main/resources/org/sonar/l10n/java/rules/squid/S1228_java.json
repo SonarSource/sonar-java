@@ -1,9 +1,6 @@
 {
   "title": "Packages should have a javadoc file 'package-info.java'",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"

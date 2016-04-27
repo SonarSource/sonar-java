@@ -1,9 +1,6 @@
 {
   "title": "pom elements should be in the recommended order",
   "status": "ready",
-  "profiles": [
-    
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "10min"

@@ -1,9 +1,6 @@
 {
   "title": "\"URL.hashCode\" and \"URL.equals\" should be avoided",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
     "constantCost": "20min"

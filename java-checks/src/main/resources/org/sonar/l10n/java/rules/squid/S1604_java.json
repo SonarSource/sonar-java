@@ -1,12 +1,9 @@
 {
   "title": "Anonymous inner classes containing only one method should become lambdas",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "READABILITY",
   "tags": [

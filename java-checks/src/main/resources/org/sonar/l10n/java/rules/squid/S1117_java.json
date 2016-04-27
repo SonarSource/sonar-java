@@ -1,12 +1,9 @@
 {
   "title": "Local variables should not shadow class fields",
   "status": "ready",
-  "profiles": [
-    "Sonar way"
-  ],
   "remediation": {
     "func": "Constant\/Issue",
-    "constantCost": "5mn"
+    "constantCost": "5min"
   },
   "sqaleSubCharac": "DATA_RELIABILITY",
   "tags": [
