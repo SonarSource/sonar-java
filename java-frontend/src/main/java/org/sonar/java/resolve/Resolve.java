@@ -23,6 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
+
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -82,6 +83,19 @@ public class Resolve {
 
   public JavaType resolveTypeSubstitution(JavaType type, JavaType definition) {
     return typeSubstitutionSolver.applySiteSubstitution(type, definition);
+  }
+
+  public JavaType resolveTypeSubstitutionWithDiamondOperator(ParametrizedTypeJavaType type, JavaType definition) {
+    ParametrizedTypeJavaType result = type;
+    if (isParametrizedType(definition)) {
+      TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(type, (ParametrizedTypeJavaType) definition);
+      result = (ParametrizedTypeJavaType) typeSubstitutionSolver.applySubstitution(type, substitution);
+    }
+    return typeSubstitutionSolver.erasureSubstitution(result);
+  }
+
+  public JavaType parametrizedTypeWithErasure(ParametrizedTypeJavaType type) {
+    return typeSubstitutionSolver.erasureSubstitution(type);
   }
 
   /**
@@ -500,18 +514,22 @@ public class Resolve {
     JavaSymbol.MethodJavaSymbol mostSpecificMethod = (JavaSymbol.MethodJavaSymbol) mostSpecific;
     List<JavaType> thrownTypes = ((MethodJavaType) mostSpecific.type).thrown;
     JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
-    if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && returnType != null) {
+    if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && !"<init>".equals(mostSpecificMethod.name)) {
       returnType = returnType.erasure();
-      List<JavaType> erasedThrown = new ArrayList<>();
-      for (JavaType thrownType : thrownTypes) {
-        erasedThrown.add(thrownType.erasure());
-      }
-      thrownTypes = erasedThrown;
+      thrownTypes = erasure(thrownTypes);
     } else {
-      returnType = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, substitution, mostSpecificMethod.typeVariableTypes);
+      returnType = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, substitution, mostSpecificMethod);
     }
     resolution.type = new MethodJavaType(formals, returnType, thrownTypes, defSite.symbol);
     return resolution;
+  }
+
+  private static List<JavaType> erasure(List<JavaType> types) {
+    List<JavaType> erasedTypes = new ArrayList<>(types.size());
+    for (JavaType type : types) {
+      erasedTypes.add(type.erasure());
+    }
+    return erasedTypes;
   }
 
   private static boolean applicableWithUncheckedConversion(JavaSymbol.MethodJavaSymbol candidate, JavaType callSite, List<JavaType> typeParams) {
@@ -978,5 +996,4 @@ public class Resolve {
       this.type = type;
     }
   }
-
 }

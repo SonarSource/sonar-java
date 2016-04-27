@@ -24,9 +24,6 @@ class A {
     
     pb = new ProcessBuilder("", argument); // Noncompliant
     
-    pb = new ProcessBuilder(new String[]{" ", command}, // Noncompliant
-                            argument); // Noncompliant
-    
     pb.command(argument); // Noncompliant
     
     pb.command(command, // Noncompliant

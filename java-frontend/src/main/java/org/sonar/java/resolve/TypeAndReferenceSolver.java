@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.sonar.java.ast.api.JavaKeyword;
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
@@ -35,6 +36,7 @@ import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
+import org.sonar.java.resolve.Resolve.Resolution;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.AnnotationTree;
@@ -50,6 +52,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
+import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
@@ -78,6 +81,7 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -220,7 +224,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   private void setInferedType(Type infered, DeferredType deferredType) {
     AbstractTypedTree inferedExpression = deferredType.tree();
-    inferedExpression.setInferedType(infered);
+    Type newType = infered;
+    if (inferedExpression.is(Tree.Kind.NEW_CLASS)) {
+      newType = resolve.resolveTypeSubstitutionWithDiamondOperator((ParametrizedTypeJavaType) ((NewClassTree) inferedExpression).identifier().symbolType(), (JavaType) infered);
+    }
+    inferedExpression.setInferedType(newType);
     inferedExpression.accept(this);
   }
 
@@ -539,9 +547,12 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitNewClass(NewClassTree tree) {
+    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
+    if (newClassTreeImpl.isTypeSet()) {
+      return;
+    }
     Resolve.Env newClassEnv = semanticModel.getEnv(tree);
     ExpressionTree enclosingExpression = tree.enclosingExpression();
-    NewClassTreeImpl newClassTreeImpl = (NewClassTreeImpl) tree;
     if (enclosingExpression != null) {
       resolveAs(enclosingExpression, JavaSymbol.VAR);
       Resolve.Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(),
@@ -555,7 +566,9 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
     }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
-    resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, getParameterTypes(tree.arguments()));
+    // FIXME SONARJAVA-1667 type arguments should not be ignored for the resolution of the constructor
+    Resolution resolution =
+      resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, getParameterTypes(tree.arguments()));
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       JavaType type = (JavaType) tree.identifier().symbolType();
@@ -570,16 +583,41 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       scan(classBody);
       registerType(tree, anonymousClassType);
     } else {
-      registerType(tree, getType(tree.identifier()));
+      JavaType returnType;
+      if (resolution.symbol().isMethodSymbol()) {
+        returnType = ((MethodJavaType) resolution.type()).resultType;
+        if (returnType.isTagged(JavaType.DEFERRED)) {
+          Tree parent = newClassTreeImpl.parent();
+          if (parent.is(Tree.Kind.MEMBER_SELECT)) {
+            returnType = resolve.parametrizedTypeWithErasure((ParametrizedTypeJavaType) getType(tree.identifier()));
+          } else {
+            // will be resolved by type inference
+            ((DeferredType) returnType).setTree(newClassTreeImpl);
+          }
+        }
+      } else {
+        returnType = getType(tree.identifier());
+      }
+      registerType(tree, returnType);
     }
   }
 
-  private JavaSymbol resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes) {
+  @Override
+  public void visitExpressionStatement(ExpressionStatementTree tree) {
+    super.visitExpressionStatement(tree);
+    ExpressionTree expression = tree.expression();
+    if (((JavaType) expression.symbolType()).isTagged(JavaType.DEFERRED) && expression.is(Tree.Kind.NEW_CLASS)) {
+      JavaType parametrizedTypeWithObject = resolve.parametrizedTypeWithErasure((ParametrizedTypeJavaType) getType(((NewClassTree) expression).identifier()));
+      setInferedType(parametrizedTypeWithObject, (DeferredType) expression.symbolType());
+    }
+  }
+
+  private Resolve.Resolution resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes) {
     Resolve.Resolution resolution = resolve.findMethod(methodEnv, (JavaType) type, "<init>", argTypes);
     JavaSymbol symbol = resolution.symbol();
     inferArgumentTypes(argTypes, resolution);
     associateReference(identifier, symbol);
-    return symbol;
+    return resolution;
   }
 
   private void inferArgumentTypes(List<JavaType> argTypes, Resolve.Resolution resolution) {
