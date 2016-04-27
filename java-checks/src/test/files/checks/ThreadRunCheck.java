@@ -1,6 +1,12 @@
 import java.io.Serializable;
 
 class A {
+
+  {
+    Thread t = new Thread(new B());
+    t.run(); // Noncompliant
+  }
+
   public static void main(String[] args) {
     Runnable runnable = null;
 
@@ -18,7 +24,7 @@ class A {
     b.run(); // Noncompliant
 
     C c = new C();
-    c.run(); // Noncompliant
+    c.run(); // Compliant
 
     D d = new D();
     d.run(); // Noncompliant
@@ -29,7 +35,7 @@ class A {
     F f = new F();
     f.run();
 
-    runnable.run(); // Noncompliant
+    runnable.run(); // Compliant
   }
 
   public static void run() {
@@ -46,12 +52,12 @@ class A {
 
   }
 
-  static class D extends C {
+  static class D extends B {
     @Override
     public void run() {
       C c = new C();
-      c.run(); // compliant, withing run method
-      super.run(); // compliant, withing run method
+      c.run(); // compliant, within run method
+      super.run(); // compliant, within run method
     }
   }
 
