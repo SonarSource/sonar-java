@@ -27,5 +27,6 @@ public class CallToDeprecatedMethodCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/CallToDeprecatedMethod.java", new CallToDeprecatedMethodCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/CallToDeprecatedMethod.java", new CallToDeprecatedMethodCheck());
   }
 }
