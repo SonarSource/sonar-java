@@ -791,11 +791,17 @@ public class SymbolTableTest {
     JavaSymbol parenthMethod = result.symbol("parenth");
     ParenthesizedTree parenthesizedTree = (ParenthesizedTree) ((ReturnStatementTree) ((MethodTree) parenthMethod.declaration()).block().body().get(0)).expression();
     assertThat(parenthesizedTree.symbolType()).isSameAs(Ftype);
+    assertThat(result.symbol("s", 33).type().is("java.lang.String")).isTrue();
+
 
     JavaSymbol sym = result.symbol("o");
-    assertThat(sym.type.toString()).isEqualTo("!unknown!");
+    assertThat(sym.type.toString()).isEqualTo("!Defered type!"); // unknown while we do the analysis with java 7
     assertThat(result.reference(8, 16)).isEqualTo(result.symbol("v", 8));
     assertThat(result.reference(9, 16)).isEqualTo(result.symbol("v", 9));
+
+    JavaSymbol operations = result.symbol("operations");
+    MethodInvocationTree mit = (MethodInvocationTree) operations.usages().get(0).parent().parent();
+    assertThat(((ParametrizedTypeJavaType) operations.type).typeSubstitution.substitutedTypes().get(0)).isSameAs(mit.arguments().get(0).symbolType());
   }
 
   @Test

@@ -57,7 +57,7 @@ public abstract class AbstractTypedTree extends JavaTree {
   }
 
   public void setInferedType(Type type) {
-    Preconditions.checkState(((JavaType) this.type).isTagged(JavaType.DEFERRED));
+    Preconditions.checkState(((JavaType) this.type).isTagged(JavaType.DEFERRED) || type == this.type, "Expected to have a deferred type but got "+this.type);
     this.type = type;
   }
 

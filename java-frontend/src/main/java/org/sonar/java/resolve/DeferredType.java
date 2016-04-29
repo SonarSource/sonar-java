@@ -40,4 +40,9 @@ public class DeferredType extends JavaType {
   public void setTree(AbstractTypedTree tree) {
     this.tree = tree;
   }
+
+  @Override
+  public String toString() {
+    return "!Defered type!";
+  }
 }
