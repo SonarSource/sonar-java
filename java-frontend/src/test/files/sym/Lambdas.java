@@ -1,5 +1,5 @@
 import java.util.Stream;
-
+import java.util.List;
 class A {
   void foo(){
     List<Object> objs = Lists.asList(new Object());
@@ -44,4 +44,23 @@ interface F {
 }
 interface F2 {
   F apply(String s);
+}
+class test {
+  interface BiFunction<T, U, R> {
+    R apply(T t, U u);
+
+    default <V> BiFunction<T,U,V> andThen(Function<? super R,? extends V> after){
+      return null;
+    }
+
+    interface Function<T,R> {
+      R apply(T t);
+    }
+  }
+
+  private final List<BiFunction<String, Function<String, Integer>, Integer>> operations;
+  void addAfterOperation(BiFunction<String, Integer, Integer> operation) {
+    operations.add((context, payloadSupplier) -> operation.apply(context, payloadSupplier.apply(context)));
+  }
+
 }

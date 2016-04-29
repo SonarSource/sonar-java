@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 
@@ -497,11 +498,19 @@ public class Resolve {
 
     Resolution resolution = new Resolution(mostSpecific);
     JavaSymbol.MethodJavaSymbol mostSpecificMethod = (JavaSymbol.MethodJavaSymbol) mostSpecific;
+    List<JavaType> thrownTypes = ((MethodJavaType) mostSpecific.type).thrown;
     JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
-    resolution.type = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, substitution, mostSpecificMethod.typeVariableTypes);
     if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && returnType != null) {
-      resolution.type = returnType.erasure();
+      returnType = returnType.erasure();
+      List<JavaType> erasedThrown = new ArrayList<>();
+      for (JavaType thrownType : thrownTypes) {
+        erasedThrown.add(thrownType.erasure());
+      }
+      thrownTypes = erasedThrown;
+    } else {
+      returnType = typeSubstitutionSolver.getReturnType(returnType, defSite, callSite, substitution, mostSpecificMethod.typeVariableTypes);
     }
+    resolution.type = new MethodJavaType(formals, returnType, thrownTypes, defSite.symbol);
     return resolution;
   }
 
@@ -844,6 +853,18 @@ public class Resolve {
       return primitiveOrWrapper.primitiveType();
     }
     return primitiveOrWrapper.isPrimitive() ? primitiveOrWrapper : null;
+  }
+
+  public List<JavaType> findSamMethodArgs(Type type) {
+    for (Symbol member : type.symbol().memberSymbols()) {
+      if(member.isMethodSymbol() && member.isAbstract()) {
+        JavaSymbol.MethodJavaSymbol target = (JavaSymbol.MethodJavaSymbol) member;
+        List<JavaType> argTypes = ((MethodJavaType) target.type).argTypes;
+        argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(argTypes, (JavaType) type);
+        return argTypes;
+      }
+    }
+    return new ArrayList<>();
   }
 
   /**

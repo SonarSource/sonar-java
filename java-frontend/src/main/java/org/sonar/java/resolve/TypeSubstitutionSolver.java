@@ -21,6 +21,7 @@ package org.sonar.java.resolve;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -120,6 +121,16 @@ public class TypeSubstitutionSolver {
       // case of constructors
       return null;
     }
+    if(resolvedType.isTagged(JavaType.METHOD)) {
+      MethodJavaType methodType = (MethodJavaType) resolvedType;
+      JavaType resultType = applySiteSubstitution(methodType.resultType, callSite, resolvedTypeDefinition);
+      List<JavaType> argTypes = Lists.newArrayList();
+      for (JavaType argType : methodType.argTypes) {
+        argTypes.add(applySiteSubstitution(argType, callSite, resolvedTypeDefinition));
+      }
+      return new MethodJavaType(argTypes, resultType, methodType.thrown, methodType.symbol);
+    }
+
     return applySiteSubstitution(applySiteSubstitution(resolvedType, resolvedTypeDefinition), callSite);
   }
 
