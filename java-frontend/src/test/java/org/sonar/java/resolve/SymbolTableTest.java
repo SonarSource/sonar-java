@@ -791,7 +791,7 @@ public class SymbolTableTest {
     JavaSymbol parenthMethod = result.symbol("parenth");
     ParenthesizedTree parenthesizedTree = (ParenthesizedTree) ((ReturnStatementTree) ((MethodTree) parenthMethod.declaration()).block().body().get(0)).expression();
     assertThat(parenthesizedTree.symbolType()).isSameAs(Ftype);
-    assertThat(result.symbol("s", 33).type().is("java.lang.String"));
+    assertThat(result.symbol("s", 33).type().is("java.lang.String")).isTrue();
 
 
     JavaSymbol sym = result.symbol("o");
