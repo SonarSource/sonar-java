@@ -43,7 +43,6 @@ import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.fest.assertions.Fail.fail;
-import static org.fest.assertions.Fail.failure;
 
 public class SymbolTableTest {
 
@@ -807,14 +806,26 @@ public class SymbolTableTest {
   @Test
   public void MethodReference() throws Exception {
     Result result = Result.createFor("MethodReferences");
-    assertThatReferenceNotFound(result, 11, 27);
-    assertThatReferenceNotFound(result, 12, 30);
-    assertThatReferenceNotFound(result, 13, 24);
-    assertThatReferenceNotFound(result, 14, 17);
+    JavaSymbol methodReference = result.symbol("methodReference");
+    assertThat(methodReference.usages()).hasSize(3);
+
+    JavaSymbol bar = result.symbol("bar");
+    assertThat(bar.usages()).hasSize(3);
+    JavaSymbol qix = result.symbol("qix");
+    assertThat(result.reference(11, 27)).isSameAs(bar);
+    assertThat(result.reference(12, 30)).isSameAs(bar);
+    assertThat(result.reference(13, 24)).isSameAs(qix);
+    assertThat(result.reference(14, 17)).isSameAs(bar);
     assertThat(result.reference(11, 21).owner).isSameAs(result.symbol("A"));
     assertThat(result.reference(11, 21).getName()).isEqualTo("this");
     assertThat(result.reference(12, 25).owner).isSameAs(result.symbol("A"));
     assertThat(result.reference(13, 21)).isSameAs(result.symbol("A"));
+
+    JavaSymbol methodRefConstructor = result.symbol("methodRefConstructor");
+    assertThat(methodRefConstructor.usages()).hasSize(1);
+    assertThat(methodRefConstructor.isMethodSymbol()).isTrue();
+    assertThat(((Symbol.MethodSymbol) methodRefConstructor).parameterTypes().get(0)).isSameAs(result.symbol("AProducer").type);
+
   }
 
   @Test
@@ -895,11 +906,4 @@ public class SymbolTableTest {
 
   }
 
-  public void assertThatReferenceNotFound(Result result, int line, int column) {
-    try {
-      JavaSymbol reference = result.reference(line, column);
-      failure("reference was found whereas it is not expected");
-    } catch (IllegalArgumentException iae) {
-    }
-  }
 }

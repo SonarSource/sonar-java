@@ -12,6 +12,7 @@ class A {
     methodReference(new A()::bar);
     methodReference(A::qix);
     new A(this::bar);
+    methodRefConstructor(A::new);
   }
 
   int bar(A a1, A a2) {
@@ -22,7 +23,16 @@ class A {
   }
 
 
-  void methodReference(Comparator<A> comp) {
+  void methodReference(Function<A> comp) {
+  }
+
+  void methodRefConstructor(AProducer producer){}
+
+  interface Function<T> {
+    int func(A a1, A a2);
+  }
+  interface AProducer {
+    A func();
   }
 
 
