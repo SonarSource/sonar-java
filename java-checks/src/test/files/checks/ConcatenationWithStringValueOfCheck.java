@@ -20,6 +20,9 @@ class A {
     "" + ("" + String.valueOf('a')); // Noncompliant
 
     0 + String.valueOf('a'); // Compliant
+    int position = 1;
     buf = buf + "tab @" + String.valueOf(position); // Noncompliant
+    char[] chars = new char[] {'a', 'b'};
+    System.out.println(""+String.valueOf(chars)); // compliant char[].toString != String.valueOf(char[])
   }
 }
