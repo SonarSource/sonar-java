@@ -49,7 +49,6 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
 import org.sonar.plugins.java.api.tree.ContinueStatementTree;
 import org.sonar.plugins.java.api.tree.EnumConstantTree;
-import org.sonar.plugins.java.api.tree.ExpressionStatementTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.ImportTree;
@@ -78,7 +77,6 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -186,13 +184,6 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   @Override
   public void visitContinueStatement(ContinueStatementTree tree) {
     //Ignore continue (dedicated visitor)
-  }
-
-  @Override
-  public void visitExpressionStatement(ExpressionStatementTree tree) {
-    super.visitExpressionStatement(tree);
-    // TODO(Godin): strictly speaking statement can't have type
-    registerType(tree, getType(tree.expression()));
   }
 
   @Override

@@ -563,7 +563,7 @@ public class TypeAndReferenceSolverTest {
 
     TestedNodeExtractor testedNodeExtractor = new TestedNodeExtractor(false);
     testedNodeExtractor.visitCompilationUnit(tree);
-    return visitor.getType(testedNodeExtractor.testedNode);
+    return visitor.getType(((ExpressionStatementTree) testedNodeExtractor.testedNode).expression());
   }
   private JavaType typeOfExpression(String input) {
     SemanticModel semanticModel = mock(SemanticModel.class);
