@@ -23,6 +23,7 @@ import com.google.common.collect.Sets;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
+import org.sonar.plugins.java.api.tree.Arguments;
 import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.BinaryExpressionTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
@@ -80,7 +81,11 @@ public class ConcatenationWithStringValueOfCheck extends BaseTreeVisitor impleme
   }
 
   private static boolean isStringValueOf(MethodInvocationTree tree) {
-    return tree.methodSelect().is(Kind.MEMBER_SELECT) && tree.arguments().size() == 1 && isStringValueOf((MemberSelectExpressionTree) tree.methodSelect());
+    return tree.methodSelect().is(Kind.MEMBER_SELECT) && isStringValueOf((MemberSelectExpressionTree) tree.methodSelect()) && matchArgument(tree.arguments());
+  }
+
+  private static boolean matchArgument(Arguments args) {
+    return args.size() == 1 && !args.get(0).symbolType().isUnknown() && !args.get(0).symbolType().is("char[]");
   }
 
   private static boolean isStringValueOf(MemberSelectExpressionTree tree) {
