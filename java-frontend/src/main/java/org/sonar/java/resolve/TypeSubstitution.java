@@ -76,7 +76,4 @@ public class TypeSubstitution {
     return this.substitutionEntries().hashCode();
   }
 
-  public boolean isComplete(JavaSymbol.MethodJavaSymbol mostSpecificMethod) {
-    return typeVariables().containsAll(mostSpecificMethod.typeVariableTypes);
-  }
 }
