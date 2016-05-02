@@ -1,0 +1,15 @@
+{
+  "title": "Getters and setters should be synchronized in pairs",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "SYNCHRONIZATION_RELIABILITY",
+  "tags": [
+    "multi-threading",
+    "cert",
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}
