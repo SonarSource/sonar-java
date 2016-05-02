@@ -31,6 +31,7 @@ import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.java.model.expression.IdentifierTreeImpl;
 import org.sonar.java.model.expression.LambdaExpressionTreeImpl;
 import org.sonar.java.model.expression.MethodInvocationTreeImpl;
+import org.sonar.java.model.expression.MethodReferenceTreeImpl;
 import org.sonar.java.model.expression.NewClassTreeImpl;
 import org.sonar.java.model.expression.ParenthesizedTreeImpl;
 import org.sonar.java.model.expression.TypeArgumentListTreeImpl;
@@ -737,12 +738,23 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
 
   @Override
   public void visitMethodReference(MethodReferenceTree methodReferenceTree) {
-    resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
-    //TODO resolve which method it is refered to
-    registerType(methodReferenceTree.method(), Symbols.unknownType);
-    registerType(methodReferenceTree, Symbols.unknownType);
-    scan(methodReferenceTree.typeArguments());
-    scan(methodReferenceTree.method());
+    MethodReferenceTreeImpl methodRefTree = (MethodReferenceTreeImpl) methodReferenceTree;
+    if(methodRefTree.isTypeSet()) {
+      resolveAs(methodReferenceTree.expression(), JavaSymbol.VAR | JavaSymbol.TYP);
+      scan(methodReferenceTree.typeArguments());
+      // TODO : SONARJAVA-1663 : consider type arguments for method resolution and substitution
+      Resolve.Env methodEnv = semanticModel.getEnv(methodReferenceTree);
+      List<JavaType> samMethodArgs = resolve.findSamMethodArgs(methodReferenceTree.symbolType());
+      Resolve.Resolution resolution;
+      if("new".equals(methodReferenceTree.method().name())) {
+        resolution = resolve.findMethod(methodEnv, getType(methodReferenceTree.expression()), "<init>", samMethodArgs);
+        associateReference(methodReferenceTree.method(), resolution.symbol());
+      } else {
+        resolveMethodSymbol(methodReferenceTree.method(), methodEnv, samMethodArgs, ImmutableList.<JavaType>of());
+      }
+    } else {
+      registerType(methodRefTree, symbols.deferedType(methodRefTree));
+    }
   }
 
   @Override
