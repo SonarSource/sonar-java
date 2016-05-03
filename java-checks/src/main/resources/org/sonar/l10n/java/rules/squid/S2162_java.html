@@ -1,5 +1,5 @@
 <p>A key facet of the <code>equals</code> contract is that if <code>a.equals(b)</code> then <code>b.equals(a)</code>, i.e. that the relationship is symmetric. </p>
-<p>Using <code>instanceof</code> breaks the contract when there are subclasses, because while the child is an <code>instanceof</code> the parent, the parent is not an <code>intanceof</code> the child. For instance, assume that <code>Raspberry extends Fruit</code> and adds some fields (requiring a new implementation of <code>equals</code>):</p>
+<p>Using <code>instanceof</code> breaks the contract when there are subclasses, because while the child is an <code>instanceof</code> the parent, the parent is not an <code>instanceof</code> the child. For instance, assume that <code>Raspberry extends Fruit</code> and adds some fields (requiring a new implementation of <code>equals</code>):</p>
 <pre>
 Fruit fruit = new Fruit();
 Raspberry raspberry = new Raspberry();
