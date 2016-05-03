@@ -38,6 +38,7 @@ import java.util.List;
 @Rule(key = "S1641")
 public class EnumSetCheck extends IssuableSubscriptionVisitor {
 
+  private static final MethodMatcher COLLECTIONS_UNMODIFIABLE = MethodMatcher.create().typeDefinition("java.util.Collections").name("unmodifiableSet").withNoParameterConstraint();
   private static final MethodMatcher GUAVA_IMMUTABLE_ENUM_SET = MethodMatcher.create().typeDefinition("com.google.common.collect.Sets").name("immutableEnumSet")
     .withNoParameterConstraint();
 
@@ -54,6 +55,9 @@ public class EnumSetCheck extends IssuableSubscriptionVisitor {
     VariableTree variableTree = (VariableTree) tree;
     ExpressionTree initializer = variableTree.initializer();
     if (initializer != null) {
+      if(initializer.is(Kind.METHOD_INVOCATION) && COLLECTIONS_UNMODIFIABLE.matches((MethodInvocationTree) initializer)) {
+        initializer = ((MethodInvocationTree) initializer).arguments().get(0);
+      }
       checkIssue(initializer.symbolType(), initializer, variableTree.type());
     }
   }
