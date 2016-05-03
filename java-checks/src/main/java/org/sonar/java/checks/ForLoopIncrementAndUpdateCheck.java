@@ -50,7 +50,7 @@ public class ForLoopIncrementAndUpdateCheck extends IssuableSubscriptionVisitor 
   public void visitNode(Tree tree) {
     if (hasSemantic()) {
       ForStatementTree forStatementTree = (ForStatementTree) tree;
-      if (!forStatementTree.update().isEmpty()) {
+      if (!forStatementTree.update().isEmpty() && forStatementTree.condition() != null) {
         Collection<Symbol> updateSymbols = getUpdatedSymbols(forStatementTree);
         ConditionVisitor conditionVisitor = new ConditionVisitor(updateSymbols);
         forStatementTree.accept(conditionVisitor);
