@@ -1,0 +1,62 @@
+<p>When one part of a getter/setter pair is <code>synchronized</code> the other part should be too. Failure to synchronize both sides of a pair may result in inconsistent behavior at runtime as callers access an inconsistent method state.</p>
+<p>This rule raises an issue when either the method of the contents of one method in a getter/setter pair are synchrnoized but the other is not.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public class Person {
+  String name;
+  int age; 
+
+  public synchronized void setName(String name) {
+    this.name = name;
+  }
+
+  public String getName() {  // Noncompliant
+    return this.name;
+  }
+
+  public void setAge(int age) {  // Noncompliant
+    this.age = age;
+  }
+
+  public int getAge() {
+    synchronized (this) {
+      return this.age;
+    }
+  }
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public class Person {
+  String name;
+  int age; 
+
+  public synchronized void setName(String name) {
+    this.name = name;
+  }
+
+  public synchronized String getName() {
+    return this.name;
+  }
+
+  public void setAge(int age) {
+    synchronized (this) {
+      this.age = age;
+   }
+  }
+
+  public int getAge() {
+    synchronized (this) {
+      return this.age;
+    }
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> <a href="https://www.securecoding.cert.org/confluence/x/I4BoAg">CERT, VNA01-J.</a> - Ensure visibility of shared references to immutable objects
+</li></ul>
+

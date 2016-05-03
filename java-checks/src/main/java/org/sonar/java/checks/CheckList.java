@@ -440,6 +440,7 @@ public final class CheckList {
       .add(ExternalizableClassConstructorCheck.class)
       .add(PrivateReadResolveCheck.class)
       .add(RandomFloatToIntCheck.class)
+      .add(SyncGetterAndSetterCheck.class)
       .build();
   }
 
