@@ -31,4 +31,29 @@ class A {
   boolean coolerThan(int i, A a) {
     return true;
   }
+
+  Collection<Number> values = transform(
+    input -> getValueProvider().apply(input).getValue() //cannot be replaced by  a method reference.
+  );
+
+  Collection<Number> values2 = transform2((input, input2) -> getValueProvider().apply(input)); //cannot be replaced by  a method reference.
+
+  A getValueProvider() {
+    return null;
+  }
+  A getValue() {
+    return null;
+  }
+  A apply(A a) {
+
+  }
+
+  Collection transform(F f) {return null;}
+  Collection transform2(F2 f) {return null;}
+  interface F2 {
+    A apply(A a1, A a2);
+  }
+  interface F {
+    A apply(A a1);
+  }
 }
