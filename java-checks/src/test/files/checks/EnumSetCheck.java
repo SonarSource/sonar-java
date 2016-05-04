@@ -38,5 +38,7 @@ class A {
     Set<COLOR> ports4 = Sets.immutableEnumSet(COLOR.RED); // Compliant - guava use an enum set with constraint of immutability
     Set<COLOR> ports5 = Sets.immutableEnumSet(Lists.newArrayList(COLOR.RED)); // Compliant - guava use an enum set with constraint of immutability
     Collection<COLOR> col = new ArrayList<>();
+    Set<COLOR> col2 = java.util.Collections.unmodifiableSet(EnumSet.of(COLOR.RED, COLOR.ORANGE));
+    Set<COLOR> col3 = java.util.Collections.unmodifiableSet(new HashSet<COLOR>()); // Noncompliant
   }
 }
