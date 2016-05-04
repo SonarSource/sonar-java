@@ -801,7 +801,14 @@ public class SymbolTableTest {
     JavaSymbol operations = result.symbol("operations");
     MethodInvocationTree mit = (MethodInvocationTree) operations.usages().get(0).parent().parent();
     assertThat(((ParametrizedTypeJavaType) operations.type).typeSubstitution.substitutedTypes().get(0)).isSameAs(mit.arguments().get(0).symbolType());
+
+    JavaSymbol myStringParam = result.symbol("myStringParam");
+    Symbol.MethodSymbol stringParamMethod = (Symbol.MethodSymbol) result.symbol("stringParamMethod");
+    assertThat(stringParamMethod.usages()).hasSize(1);
+    assertThat(myStringParam.type.is("java.lang.String")).isTrue();
+
   }
+  void plop(String s) {}
 
   @Test
   public void MethodReference() throws Exception {

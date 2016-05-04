@@ -858,7 +858,17 @@ public class Resolve {
         JavaSymbol.MethodJavaSymbol target = (JavaSymbol.MethodJavaSymbol) member;
         List<JavaType> argTypes = ((MethodJavaType) target.type).argTypes;
         argTypes = typeSubstitutionSolver.applySiteSubstitutionToFormalParameters(argTypes, (JavaType) type);
-        return argTypes;
+        List<JavaType> result = new ArrayList();
+        for (JavaType argType : argTypes) {
+          if(argType.isTagged(JavaType.WILDCARD)) {
+            // JLS8 9.9 Function types : this is approximated for ? extends X types (cf JLS)
+            result.add(((WildCardType) argType).bound);
+          } else {
+            result.add(argType);
+          }
+
+        }
+        return result;
       }
     }
     return new ArrayList<>();
