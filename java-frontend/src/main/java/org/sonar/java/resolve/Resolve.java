@@ -569,10 +569,7 @@ public class Resolve {
     }
 
     if (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal)) {
-      if (callWithRawType(arg, formal)) {
-        return true;
-      }
-      return types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal.erasure());
+      return callWithRawType(arg, formal) || types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal.erasure());
     }
     // fall back to behavior based on erasure
     return types.isSubtype(arg.erasure(), formal.erasure()) || (autoboxing && isAcceptableByAutoboxing(arg, formal.erasure()));
