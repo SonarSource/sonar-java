@@ -20,8 +20,6 @@
 package org.sonar.java.bytecode.visitor;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Multimap;
@@ -32,31 +30,29 @@ import org.sonar.api.resources.Resource;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class ResourceMapping {
 
   private Multimap<Directory, File> directories;
   private Multimap<Dependency, Dependency> subDependencies;
-  private BiMap<File, String> fileKeyByResource;
+  private Map<String, File> resourceByfileKey;
 
   public ResourceMapping() {
     directories = ArrayListMultimap.create();
     subDependencies = ArrayListMultimap.create();
-    fileKeyByResource = HashBiMap.create();
+    resourceByfileKey = new HashMap<>();
   }
 
   public void addResource(File resource, String fileKey) {
     directories.put(resource.getParent(), resource);
-    fileKeyByResource.put(resource, fileKey);
-  }
-
-  public String getFileKeyByResource(File resource) {
-    return fileKeyByResource.get(resource);
+    resourceByfileKey.put(fileKey, resource);
   }
 
   public String getComponentKeyByFileKey(String fileKey) {
-    return fileKeyByResource.inverse().get(fileKey).getEffectiveKey();
+    return resourceByfileKey.get(fileKey).getEffectiveKey();
   }
 
   public Set<Resource> directories() {
