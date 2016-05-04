@@ -1,7 +1,4 @@
 {
-'com.google.guava:guava:src/com/google/common/collect/AbstractBiMap.java':[
-62,
-],
 'com.google.guava:guava:src/com/google/common/collect/AbstractMapBasedMultimap.java':[
 607,
 1135,
@@ -60,9 +57,6 @@
 ],
 'com.google.guava:guava:src/com/google/common/eventbus/SubscriberRegistry.java':[
 184,
-],
-'com.google.guava:guava:src/com/google/common/reflect/TypeToken.java':[
-147,
 ],
 'com.google.guava:guava:src/com/google/common/reflect/Types.java':[
 507,
