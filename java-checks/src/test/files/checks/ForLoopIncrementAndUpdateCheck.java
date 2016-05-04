@@ -37,6 +37,11 @@ class A {
     for (Enumeration serverIds = db.serverTable.keys(); serverIds.hasMoreElements();){} // Compliant
     for (ExecutionState current = state; !current.equals(this); current = current.parentState) {} // Compliant
     for (Integer integer = 0; integer.longValue() < 100L ; integer += 1) {} // Compliant
+    for (int i = 2; ; i++) { // Compliant
+      if (someCondition(i)) {
+        return something;
+      }
+    }
   }
   
   int myField;
