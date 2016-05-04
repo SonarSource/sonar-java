@@ -36,6 +36,7 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.TypeTree;
 
 import javax.annotation.Nullable;
+
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
@@ -84,13 +85,18 @@ public class ClassWithOnlyStaticMethodsInstantiationCheck extends IssuableSubscr
         return false;
       }
     }
-    return superClassHasOnlyStaticMethods(newClassTypeSymbol);
+    return superTypesHaveOnlyStaticMethods(newClassTypeSymbol);
   }
 
-  private static boolean superClassHasOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
+  private static boolean superTypesHaveOnlyStaticMethods(Symbol.TypeSymbol newClassTypeSymbol) {
     Type superClass = newClassTypeSymbol.superClass();
-    if (superClass != null && !superClass.is("java.lang.Object")) {
-      return hasOnlyStaticMethodsAndFields(superClass.symbol());
+    if (superClass != null && !superClass.is("java.lang.Object") && !hasOnlyStaticMethodsAndFields(superClass.symbol())) {
+      return false;
+    }
+    for (Type superInterface : newClassTypeSymbol.interfaces()) {
+      if (!hasOnlyStaticMethodsAndFields(superInterface.symbol())) {
+        return false;
+      }
     }
     return true;
   }

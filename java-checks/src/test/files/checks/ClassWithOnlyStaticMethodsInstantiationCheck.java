@@ -105,3 +105,34 @@ public class OuterClass {
   }
 
 }
+
+class UsageOfInterface {
+  void bar() {
+    (new MyInterface2() { // should be compliant
+      @Override
+      public void foo(String s) {
+      };
+    }).foo("hello");
+    new TestCase();
+  }
+}
+
+interface MyInterface1 {
+  void foo(String s);
+}
+
+interface MyInterface2 extends MyInterface1 {
+  String FOO = "BOO!!";
+}
+
+
+interface MyInterface3 {
+  default void foo(String s) {
+
+  }
+}
+class TestCase implements MyInterface3 {
+  static void plop() {
+
+  }
+}
