@@ -167,6 +167,12 @@ public class AssertionsInTestsCheckTest {
     compliant1();
   }
 
+  @Test
+  public void test() { // compliant with verifyZeroInteractions
+    Mockito.verifyZeroInteractions(new Object());
+  }
+
+
 }
 
 abstract class AbstractTest {
