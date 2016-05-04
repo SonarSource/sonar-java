@@ -211,7 +211,7 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     @Override
     public void visitTryStatement(TryStatementTree tree) {
       BlockTree finallyBlock = tree.finallyBlock();
-      hasTryFinally |= finallyBlock != null && !getUsedLocalVarInSubTree(finallyBlock, methodSymbol).isEmpty();
+      hasTryFinally |= (finallyBlock != null && !getUsedLocalVarInSubTree(finallyBlock, methodSymbol).isEmpty()) || !tree.resources().isEmpty();
       if (!hasTryFinally) {
         super.visitTryStatement(tree);
       }

@@ -188,5 +188,11 @@ class A {
       br.readLine();
     }
 
+    try ( FileInputStream in = new FileInputStream( storageFile );
+          FileLock lock = in.getChannel().lock(0, Long.MAX_VALUE, true) ) // compliant, this will be closed in the implicit finally
+    {
+      in.read();
+    }
+
   }
 }
