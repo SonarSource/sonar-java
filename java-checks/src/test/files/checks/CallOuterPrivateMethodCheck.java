@@ -29,3 +29,30 @@ class A {
   };
 
 }
+class DumpElement {
+  private final String filename;
+  private final Parser<MSG> parser;
+
+  private DumpElement(String filename, Parser<MSG> parser) { // Compliant this is a constructor
+    this.filename = filename;
+    this.parser = parser;
+  }
+
+  public String filename() {
+    return filename;
+  }
+
+  public Parser<MSG> parser() {
+    return parser;
+  }
+
+  public static class IssueDumpElement extends DumpElement<ProjectDump.Issue> {
+    public final int NO_LINE = 0;
+    public final double NO_GAP = -1;
+    public final long NO_EFFORT = -1;
+
+    public IssueDumpElement() {
+      super("issues.pb", ProjectDump.Issue.parser());
+    }
+  }
+}
