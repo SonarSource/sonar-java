@@ -1,7 +1,4 @@
 {
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/core/computation/dbcleaner/ProjectCleanerTest.java':[
-74,
-],
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/batch/GlobalRepositoryActionTest.java':[
 72,
 83,
@@ -248,9 +245,6 @@
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/issue/filter/ShowActionTest.java':[
 57,
 ],
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/issue/notification/DoNotFixNotificationDispatcherTest.java':[
-84,
-],
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/issue/ws/ComponentTagsActionTest.java':[
 88,
 ],
@@ -488,9 +482,6 @@
 ],
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/startup/JdbcDriverDeployerTest.java':[
 67,
-],
-'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/startup/RegisterDebtModelTest.java':[
-63,
 ],
 'org.codehaus.sonar:sonar-server:src/test/java/org/sonar/server/startup/RegisterMetricsTest.java':[
 42,
