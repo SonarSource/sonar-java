@@ -31,3 +31,26 @@ public class A extends TestCase{
 public class B {
   void tearDown() {  }
 }
+
+
+public class FpS2391 extends TestCase {
+  @Override
+  protected void setUp() {   // Compliant - protected
+    System.out.println("setUp");
+  }
+
+  @Override
+  protected void tearDown() {// Compliant - protected
+  }
+
+  public void testMe() {
+    System.out.println("testMe");
+  }
+  public void init() {}   // Compliant
+  public void get() {}    // Compliant
+  public void twice() {}  // Compliant
+  public void sleep() {}  // Compliant
+  public void purge() {}  // Compliant
+  public void set() {}    // Noncompliant {{This method should be named "setUp" not "set".}} might be a false positive
+  public void split() {}  // Compliant
+}
