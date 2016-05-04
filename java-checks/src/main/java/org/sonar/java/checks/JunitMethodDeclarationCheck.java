@@ -75,7 +75,8 @@ public class JunitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
   @VisibleForTesting
   protected boolean areVerySimilarStrings(String expected, String actual) {
     // cut complexity when the strings length difference is bigger than the accepted threshold
-    return (Math.abs(expected.length() - actual.length()) <= MAX_STRING_DISTANCE) && StringUtils.getLevenshteinDistance(expected, actual) <= MAX_STRING_DISTANCE;
+    return (Math.abs(expected.length() - actual.length()) <= MAX_STRING_DISTANCE)
+      && StringUtils.getLevenshteinDistance(expected, actual) < MAX_STRING_DISTANCE;
   }
 
   private void checkSuiteSignature(MethodTree methodTree) {
@@ -96,7 +97,7 @@ public class JunitMethodDeclarationCheck extends IssuableSubscriptionVisitor {
 
   private void checkSetupTearDownSignature(MethodTree methodTree) {
     Symbol.MethodSymbol symbol = methodTree.symbol();
-    if (!symbol.isPublic()) {
+    if (!symbol.isPublic() && !symbol.isProtected()) {
       reportIssue(methodTree, "Make this method \"public\".");
     } else if (!methodTree.parameters().isEmpty()) {
       reportIssue(methodTree, "This method does not accept parameters.");

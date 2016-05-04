@@ -31,3 +31,26 @@ public class A extends TestCase{
 public class B {
   void tearDown() {  }
 }
+
+
+public class FpS2391 extends TestCase {
+  @Override
+  protected void setUp() {   // <--- Make this method public
+    System.out.println("setUp");
+  }
+
+  @Override
+  protected void tearDown() {// <--- Make this method public
+  }
+
+  public void testMe() {
+    System.out.println("testMe");
+  }
+  public void init() {}   // <--- This method should be named "suite" not "init"
+  public void get() {}    // <--- This method should be named "setUp" not "get"
+  public void twice() {}  // <--- This method should be named "suite" not "twice"
+  public void sleep() {}  // <--- This method should be named "setUp" not "sleep".
+  public void purge() {}  // <--- This method should be named "suite" not "purge"
+  public void set() {}    // Noncompliant {{This method should be named "setUp" not "set".}} might be a false positive
+  public void split() {}  // <--- This method should be named "suite" not "split"
+}
