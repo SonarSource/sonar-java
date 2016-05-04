@@ -35,22 +35,22 @@ public class B {
 
 public class FpS2391 extends TestCase {
   @Override
-  protected void setUp() {   // <--- Make this method public
+  protected void setUp() {   // Compliant - protected
     System.out.println("setUp");
   }
 
   @Override
-  protected void tearDown() {// <--- Make this method public
+  protected void tearDown() {// Compliant - protected
   }
 
   public void testMe() {
     System.out.println("testMe");
   }
-  public void init() {}   // <--- This method should be named "suite" not "init"
-  public void get() {}    // <--- This method should be named "setUp" not "get"
-  public void twice() {}  // <--- This method should be named "suite" not "twice"
-  public void sleep() {}  // <--- This method should be named "setUp" not "sleep".
-  public void purge() {}  // <--- This method should be named "suite" not "purge"
+  public void init() {}   // Compliant
+  public void get() {}    // Compliant
+  public void twice() {}  // Compliant
+  public void sleep() {}  // Compliant
+  public void purge() {}  // Compliant
   public void set() {}    // Noncompliant {{This method should be named "setUp" not "set".}} might be a false positive
-  public void split() {}  // <--- This method should be named "suite" not "split"
+  public void split() {}  // Compliant
 }
