@@ -20,6 +20,7 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Iterables;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,6 +37,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.ParenthesizedTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
+import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.util.List;
@@ -511,7 +513,106 @@ public class SymbolTableTest {
 
     assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner")).members().scopeSymbols.get(0)).isSameAs(result.reference(36, 29));
     assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner2")).members().scopeSymbols.get(0)).isSameAs(result.reference(48, 30));
+  }
 
+  @Test
+  public void ConstructorWithInference() throws Exception {
+    Result result = Result.createFor("ConstructorWithInference");
+
+    JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("A");
+
+    List<JavaSymbol> constructors = classSymbol.members.lookup("<init>");
+    JavaSymbol noParamConstructor = constructors.get(0);
+    JavaSymbol parametrizedConstructor = constructors.get(1);
+    JavaSymbol wildcardConstructor = constructors.get(2);
+
+    Type aObjectType = result.symbol("aObject").type();
+    Type aStringType = result.symbol("aString").type();
+
+    IdentifierTree constStringNoArg = result.referenceTree(14, 9);
+    assertThat(constStringNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constStringNoArg)).isSameAs(aStringType);
+
+    IdentifierTree constDiamondNoArg = result.referenceTree(16, 9);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(aObjectType);
+
+    constDiamondNoArg = result.referenceTree(17, 9);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(aObjectType);
+    assertThat(result.reference(17, 15)).isSameAs(result.symbol("foo", 10));
+
+    constDiamondNoArg = result.referenceTree(18, 13);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(aObjectType);
+
+    constDiamondNoArg = result.referenceTree(20, 25);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(aStringType);
+
+    constDiamondNoArg = result.referenceTree(21, 18);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(aObjectType);
+
+    constDiamondNoArg = result.referenceTree(23, 13);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(aStringType);
+    assertThat(result.reference(23, 5)).isSameAs(result.symbol("bar", 11));
+
+    IdentifierTree constDiamondObject = result.referenceTree(25, 9);
+    assertThat(constDiamondObject.symbol()).isSameAs(parametrizedConstructor);
+    assertThat(getNewClassTreeType(constDiamondObject)).isSameAs(aObjectType);
+
+    IdentifierTree constDiamondString = result.referenceTree(26, 9);
+    assertThat(constDiamondString.symbol()).isSameAs(parametrizedConstructor);
+    assertThat(getNewClassTreeType(constDiamondString)).isSameAs(aStringType);
+
+    IdentifierTree constWildcardDiamond = result.referenceTree(28, 9);
+    assertThat(constWildcardDiamond.symbol()).isSameAs(wildcardConstructor);
+    assertThat(getNewClassTreeType(constWildcardDiamond)).isSameAs(aStringType);
+
+    IdentifierTree returnConstDiamondNoArg = result.referenceTree(30, 16);
+    assertThat(returnConstDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(returnConstDiamondNoArg)).isSameAs(aStringType);
+
+    // inference allowing to deduce only partially the type parameters
+    classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("B");
+    noParamConstructor = classSymbol.members.lookup("<init>").get(0);
+    ParametrizedTypeJavaType type;
+
+    constDiamondNoArg = result.referenceTree(42, 13);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    type = (ParametrizedTypeJavaType) getNewClassTreeType(constDiamondNoArg);
+    assertThat(type.erasure()).isSameAs(classSymbol.type().erasure());
+    assertThat(type.substitution(type.typeParameters().get(0)).is("java.lang.String")).isTrue();
+    assertThat(type.substitution(type.typeParameters().get(1)).is("java.lang.Object")).isTrue();
+    assertThat(type.substitution(type.typeParameters().get(2)).is("java.lang.Object")).isTrue();
+    assertThat(result.reference(42, 5)).isSameAs(result.symbol("qix", 46));
+
+    constDiamondNoArg = result.referenceTree(43, 13);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    type = (ParametrizedTypeJavaType) getNewClassTreeType(constDiamondNoArg);
+    assertThat(type.erasure()).isSameAs(classSymbol.type().erasure());
+    assertThat(type.substitution(type.typeParameters().get(0)).is("java.lang.Object")).isTrue();
+    assertThat(type.substitution(type.typeParameters().get(1)).is("java.lang.String")).isTrue();
+    assertThat(type.substitution(type.typeParameters().get(2)).is("java.lang.Integer")).isTrue();
+    assertThat(result.reference(43, 5)).isSameAs(result.symbol("bar", 47));
+
+    // erasure of bounded type parameters
+    classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("D");
+    noParamConstructor = classSymbol.members.lookup("<init>").get(0);
+    constDiamondNoArg = result.referenceTree(60, 9);
+    assertThat(constDiamondNoArg.symbol()).isSameAs(noParamConstructor);
+    assertThat(getNewClassTreeType(constDiamondNoArg)).isSameAs(result.symbol("dC").type());
+    assertThat(result.reference(60, 15)).isSameAs(result.symbol("foo", 55));
+  }
+
+  private static Type getNewClassTreeType(IdentifierTree constructorId) {
+    Tree tree = constructorId;
+    while (!tree.is(Tree.Kind.NEW_CLASS)) {
+      tree = tree.parent();
+    }
+    return ((NewClassTree) tree).symbolType();
   }
 
   @Test

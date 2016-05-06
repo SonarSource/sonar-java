@@ -24,6 +24,7 @@ import com.google.common.collect.Maps;
 import org.sonar.java.resolve.WildCardType.BoundType;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
 
 public class ParametrizedTypeCache {
@@ -39,10 +40,22 @@ public class ParametrizedTypeCache {
       Map<TypeSubstitution, ParametrizedTypeJavaType> map = Maps.newHashMap();
       typeCache.put(symbol, map);
     }
-    if (typeCache.get(symbol).get(typeSubstitution) == null) {
-      typeCache.get(symbol).put(typeSubstitution, new ParametrizedTypeJavaType(symbol, typeSubstitution));
+    TypeSubstitution newSubstitution = typeSubstitution;
+    if (newSubstitution.size() == 0) {
+      newSubstitution = identitySubstitution(symbol.typeVariableTypes);
     }
-    return typeCache.get(symbol).get(typeSubstitution);
+    if (typeCache.get(symbol).get(newSubstitution) == null) {
+      typeCache.get(symbol).put(newSubstitution, new ParametrizedTypeJavaType(symbol, newSubstitution));
+    }
+    return typeCache.get(symbol).get(newSubstitution);
+  }
+
+  private static TypeSubstitution identitySubstitution(List<TypeVariableJavaType> typeVariables) {
+    TypeSubstitution result = new TypeSubstitution();
+    for (TypeVariableJavaType typeVar : typeVariables) {
+      result.add(typeVar, typeVar);
+    }
+    return result;
   }
 
   public JavaType getWildcardType(JavaType bound, BoundType boundType) {

@@ -30,6 +30,15 @@ import java.util.Map;
 public class TypeSubstitution {
   private Map<TypeVariableJavaType, JavaType> substitutions = Maps.newLinkedHashMap();
 
+  public TypeSubstitution() {
+    // default behavior
+  }
+
+  public TypeSubstitution(TypeSubstitution typeSubstitution) {
+    // copy the substitution
+    this.substitutions = Maps.newLinkedHashMap(typeSubstitution.substitutions);
+  }
+
   @CheckForNull
   public JavaType substitutedType(JavaType javaType) {
     return substitutions.get(javaType);
@@ -76,4 +85,26 @@ public class TypeSubstitution {
     return this.substitutionEntries().hashCode();
   }
 
+  public boolean isIdentity() {
+    for (Map.Entry<TypeVariableJavaType, JavaType> substitution : this.substitutionEntries()) {
+      if (substitution.getKey() != substitution.getValue()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  public TypeSubstitution combine(TypeSubstitution source) {
+    TypeSubstitution result = new TypeSubstitution();
+    for (Map.Entry<TypeVariableJavaType, JavaType> substitution : substitutionEntries()) {
+      TypeVariableJavaType typeVar = substitution.getKey();
+      JavaType targetType = substitution.getValue();
+      if (source.substitutedType(typeVar) != null && targetType.isTagged(JavaType.TYPEVAR)) {
+        result.add((TypeVariableJavaType) targetType, source.substitutedType(typeVar));
+      } else {
+        result.add(typeVar, targetType);
+      }
+    }
+    return result;
+  }
 }

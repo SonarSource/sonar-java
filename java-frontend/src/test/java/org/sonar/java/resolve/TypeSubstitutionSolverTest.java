@@ -25,6 +25,7 @@ import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.resolve.WildCardType.BoundType;
+import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,9 @@ public class TypeSubstitutionSolverTest {
 
   @Before
   public void setUp() {
-    ParametrizedTypeCache ptc = new ParametrizedTypeCache();
-    symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), ptc));
-    typeSubstitutionSolver = new TypeSubstitutionSolver(ptc, symbols);
     parametrizedTypeCache = new ParametrizedTypeCache();
+    symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), parametrizedTypeCache));
+    typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
     T = getTypeVariable("T");
   }
 
@@ -252,5 +252,123 @@ public class TypeSubstitutionSolverTest {
     TypeVariableJavaType typeVariableJavaType = new TypeVariableJavaType(new JavaSymbol.TypeVariableJavaSymbol(variableName, Symbols.unknownSymbol));
     typeVariableJavaType.bounds = ImmutableList.of(symbols.objectType);
     return typeVariableJavaType;
+  }
+
+  @Test
+  public void substitutionFromSuperType_from_same_type() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    Type stringType = result.symbol("string").type();
+    ParametrizedTypeJavaType aString = (ParametrizedTypeJavaType) result.symbol("aString").type();
+
+    ParametrizedTypeJavaType aX = (ParametrizedTypeJavaType) result.symbol("aX").type();
+    TypeVariableJavaType x = aX.typeParameters().get(0);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(aX, aString);
+    assertThat(substitution.size()).isEqualTo(1);
+    assertThat(substitution.typeVariables()).containsExactly(x);
+    assertThat(substitution.substitutedTypes()).containsExactly(stringType);
+  }
+
+  @Test
+  public void substitutionFromSuperType_direct_inheritance() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    Type stringType = result.symbol("string").type();
+    ParametrizedTypeJavaType iString = (ParametrizedTypeJavaType) result.symbol("iString").type();
+
+    ParametrizedTypeJavaType aX = (ParametrizedTypeJavaType) result.symbol("aX").type();
+    TypeVariableJavaType x = aX.typeParameters().get(0);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(aX, iString);
+    assertThat(substitution.size()).isEqualTo(1);
+    assertThat(substitution.typeVariables()).containsExactly(x);
+    assertThat(substitution.substitutedTypes()).containsExactly(stringType);
+  }
+
+  @Test
+  public void substitutionFromSuperType_concrete_type() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    Type stringType = result.symbol("string").type();
+    ParametrizedTypeJavaType lNumber = (ParametrizedTypeJavaType) result.symbol("lNumber").type();
+
+    ParametrizedTypeJavaType aX = (ParametrizedTypeJavaType) result.symbol("aX").type();
+    TypeVariableJavaType x = aX.typeParameters().get(0);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(aX, lNumber);
+    assertThat(substitution.size()).isEqualTo(1);
+    assertThat(substitution.typeVariables()).containsExactly(x);
+    assertThat(substitution.substitutedTypes()).containsExactly(x);
+  }
+
+  @Test
+  public void substitutionFromSuperType_from_non_related_types_does_nothing() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    ParametrizedTypeJavaType jStringInteger = (ParametrizedTypeJavaType) result.symbol("jStringInteger").type();
+
+    ParametrizedTypeJavaType bXY = (ParametrizedTypeJavaType) result.symbol("bXY").type();
+    TypeVariableJavaType x = bXY.typeParameters().get(0);
+    TypeVariableJavaType y = bXY.typeParameters().get(1);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(bXY, jStringInteger);
+    assertThat(substitution.size()).isEqualTo(2);
+    assertThat(substitution.typeVariables()).containsExactly(x, y);
+    assertThat(substitution.substitutedTypes()).containsExactly(x, y);
+  }
+
+  @Test
+  public void substitutionFromSuperType_with_multiple_variables() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    Type stringType = result.symbol("string").type();
+    Type integerType = result.symbol("integer").type();
+    ParametrizedTypeJavaType jStringInteger = (ParametrizedTypeJavaType) result.symbol("jStringInteger").type();
+
+    ParametrizedTypeJavaType cXY = (ParametrizedTypeJavaType) result.symbol("cXY").type();
+    TypeVariableJavaType x = cXY.typeParameters().get(0);
+    TypeVariableJavaType y = cXY.typeParameters().get(1);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(cXY, jStringInteger);
+    assertThat(substitution.size()).isEqualTo(2);
+    assertThat(substitution.typeVariables()).containsExactly(x, y);
+    assertThat(substitution.substitutedType(x)).isSameAs(stringType);
+    assertThat(substitution.substitutedType(y)).isSameAs(integerType);
+  }
+
+  @Test
+  public void substitutionFromSuperType_with_2_level_inheritance() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    Type stringType = result.symbol("string").type();
+    ParametrizedTypeJavaType iString = (ParametrizedTypeJavaType) result.symbol("iString").type();
+
+    ParametrizedTypeJavaType dV = (ParametrizedTypeJavaType) result.symbol("dX").type();
+    TypeVariableJavaType v = dV.typeParameters().get(0);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(dV, iString);
+    assertThat(substitution.size()).isEqualTo(1);
+    assertThat(substitution.typeVariables()).containsExactly(v);
+    assertThat(substitution.substitutedTypes()).containsExactly(stringType);
+  }
+
+  @Test
+  public void substitutionFromSuperType_complex_inheritance_and_multiple_variables() {
+    Result result = Result.createForJavaFile("src/test/files/sym/TypeSubstitutionSolver");
+    Type stringType = result.symbol("string").type();
+    Type integerType = result.symbol("integer").type();
+    Type numberType = result.symbol("number").type();
+    ParametrizedTypeJavaType jStringInteger = (ParametrizedTypeJavaType) result.symbol("jStringInteger").type();
+    ParametrizedTypeJavaType LNumber = (ParametrizedTypeJavaType) result.symbol("lNumber").type();
+    ParametrizedTypeJavaType aString = (ParametrizedTypeJavaType) result.symbol("aString").type();
+
+    ParametrizedTypeJavaType fWXYZ = (ParametrizedTypeJavaType) result.symbol("fWXYZ").type();
+    TypeVariableJavaType w = fWXYZ.typeParameters().get(0);
+    TypeVariableJavaType x = fWXYZ.typeParameters().get(1);
+    TypeVariableJavaType y = fWXYZ.typeParameters().get(2);
+    TypeVariableJavaType z = fWXYZ.typeParameters().get(3);
+
+    TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(fWXYZ, jStringInteger);
+    assertThat(substitution.size()).isEqualTo(4);
+    assertThat(substitution.typeVariables()).containsExactly(w, x, y, z);
+    assertThat(substitution.substitutedType(w)).isSameAs(stringType);
+    assertThat(substitution.substitutedType(x)).isSameAs(x);
+    assertThat(substitution.substitutedType(y)).isSameAs(y);
+    assertThat(substitution.substitutedType(z)).isSameAs(integerType);
   }
 }

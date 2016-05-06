@@ -100,6 +100,11 @@ public class TypeAndReferenceSolverTest {
     classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "this", classType, classSymbol));
     classSymbol.members.enter(new JavaSymbol.VariableJavaSymbol(0, "super", classType.supertype, classSymbol));
 
+    JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(classSymbol.flags & Flags.ACCESS_FLAGS, "<init>", classSymbol);
+    MethodJavaType defaultConstructorType = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), classSymbol);
+    defaultConstructor.setMethodType(defaultConstructorType);
+    classSymbol.members.enter(defaultConstructor);
+
     // FIXME figure out why top is mandatory
     Resolve.Env top = new Resolve.Env();
     top.scope = new Scope((JavaSymbol) null);
