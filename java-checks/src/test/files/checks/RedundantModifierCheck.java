@@ -28,3 +28,13 @@ final class MyClass {
 class NonFinalClass {
   final void method2() {}
 }
+enum Foo {
+  FoO("");
+
+  private Foo(String s) {} // Noncompliant {{"private" is redundant in this context.}}
+}
+enum Foo2 {
+  FoO("");
+
+  Foo(String s) {}
+}

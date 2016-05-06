@@ -656,6 +656,9 @@
 613,
 621,
 ],
+'jdk6:java/lang/management/MemoryType.java':[
+43,
+],
 'jdk6:java/lang/management/OperatingSystemMXBean.java':[
 56,
 71,
@@ -727,6 +730,9 @@
 53,
 64,
 74,
+],
+'jdk6:java/math/RoundingMode.java':[
+296,
 ],
 'jdk6:java/net/CookiePolicy.java':[
 25,
