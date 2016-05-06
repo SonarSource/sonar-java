@@ -60,3 +60,19 @@ class D<X extends C> {
     new D<>().foo(null);
   }
 }
+
+class E {
+  class F<X> {
+    F() {}
+    F(X x) {}
+  }
+
+  F<String> fString;
+
+  void foo(F<String> f) {}
+
+  void method(E e) {
+    foo(e.new F<String>());
+    foo(e.new F<>("test"));
+  }
+}
