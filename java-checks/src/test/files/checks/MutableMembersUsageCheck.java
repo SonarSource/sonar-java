@@ -3,6 +3,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.LinkedList;
 import com.google.common.collect.ImmutableCollection;
+import java.util.Collections;
 
 class A {
   private String[] strings;
@@ -36,6 +37,15 @@ class A {
   public void setImmutableCollection(ImmutableCollection ic) {
     this.ic = ic;
   }
+
+  public List<String> foo() {
+    return list; // Noncompliant
+  }
+  public List<String> foo2() {
+    List<String> plop = Collections.unmodifiableList(list);
+    return plop;
+  }
+
 }
 
 class C {
