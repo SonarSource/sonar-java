@@ -5,4 +5,7 @@
 156,
 156,
 ],
+'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/measure/MeasureFilterCondition.java':[
+33,
+],
 }

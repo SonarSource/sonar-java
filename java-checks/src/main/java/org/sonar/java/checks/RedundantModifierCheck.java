@@ -40,7 +40,7 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public List<Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.CLASS);
+    return ImmutableList.of(Tree.Kind.INTERFACE, Tree.Kind.ANNOTATION_TYPE, Tree.Kind.CLASS, Kind.ENUM);
   }
 
   @Override
@@ -62,6 +62,8 @@ public class RedundantModifierCheck extends IssuableSubscriptionVisitor {
         checkRedundantModifier(modifiers, Modifier.PUBLIC);
         checkRedundantModifier(modifiers, Modifier.STATIC);
         checkRedundantModifier(modifiers, Modifier.FINAL);
+      } else if(member.is(Kind.CONSTRUCTOR) && tree.is(Kind.ENUM)) {
+        checkRedundantModifier(((MethodTree) member).modifiers(), Modifier.PRIVATE);
       }
     }
   }
