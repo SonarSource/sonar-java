@@ -19,6 +19,7 @@
  */
 package org.sonar.plugins.java;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Resources;
@@ -59,7 +60,8 @@ public class JavaRulesDefinition implements RulesDefinition {
     repository.done();
   }
 
-  private void newRule(Class<?> ruleClass, NewRepository repository) {
+  @VisibleForTesting
+  protected void newRule(Class<?> ruleClass, NewRepository repository) {
 
     org.sonar.check.Rule ruleAnnotation = AnnotationUtils.getAnnotation(ruleClass, org.sonar.check.Rule.class);
     if (ruleAnnotation == null) {
@@ -71,11 +73,11 @@ public class JavaRulesDefinition implements RulesDefinition {
     }
     NewRule rule = repository.rule(ruleKey);
     if (rule == null) {
-      throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository);
+      throw new IllegalStateException("No rule was created for " + ruleClass + " in " + repository.key());
     }
     rule.setTemplate(AnnotationUtils.getAnnotation(ruleClass, RuleTemplate.class) != null);
     if (ruleAnnotation.cardinality() == Cardinality.MULTIPLE) {
-      throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead");
+      throw new IllegalArgumentException("Cardinality is not supported, use the RuleTemplate annotation instead for " + ruleClass);
     }
     ruleMetadata(ruleClass, rule);
   }

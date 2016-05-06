@@ -21,7 +21,10 @@ package org.sonar.plugins.java;
 
 import org.junit.Test;
 import org.sonar.api.server.rule.RulesDefinition;
+import org.sonar.check.Cardinality;
+import org.sonar.check.Rule;
 import org.sonar.java.checks.CheckList;
+import org.sonar.plugins.java.api.JavaCheck;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -46,6 +49,59 @@ public class JavaRulesDefinitionTest {
     assertThat(magicNumber.params()).isNotEmpty();
     // Calling definition multiple time should not lead to failure: thanks C# plugin !
     definition.define(new RulesDefinition.Context());
+  }
+
+  @Test
+  public void test_invalid_checks() throws Exception {
+    RulesDefinition.Context context = new RulesDefinition.Context();
+    RulesDefinition.NewRepository newRepository = context.createRepository("test", "java");
+    newRepository.createRule("myCardinality");
+    newRepository.createRule("correctRule");
+    JavaRulesDefinition definition = new JavaRulesDefinition();
+    try {
+      definition.newRule(CheckWithNoAnnotation.class, newRepository);
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae).hasMessage("No Rule annotation was found on class "+CheckWithNoAnnotation.class.getName());
+    }
+
+    try {
+      definition.newRule(EmptyRuleKey.class, newRepository);
+    } catch (IllegalArgumentException iae) {
+      assertThat(iae).hasMessage("No key is defined in Rule annotation of class "+EmptyRuleKey.class.getName());
+    }
+
+    try {
+      definition.newRule(UnregisteredRule.class, newRepository);
+    } catch (IllegalStateException ise) {
+      assertThat(ise).hasMessage("No rule was created for class "+UnregisteredRule.class.getName()+" in test");
+    }
+    try {
+      definition.newRule(CardinalityRule.class, newRepository);
+    } catch (IllegalArgumentException ise) {
+      assertThat(ise).hasMessage("Cardinality is not supported, use the RuleTemplate annotation instead for class "+CardinalityRule.class.getName());
+    }
+    // no metadata defined, does not fail on registration of rule
+    definition.newRule(CorrectRule.class, newRepository);
+
+  }
+
+  private class CheckWithNoAnnotation implements JavaCheck {
+  }
+
+  @Rule(key = "")
+  private class EmptyRuleKey implements JavaCheck {
+  }
+
+  @Rule(key = "myKey")
+  private class UnregisteredRule implements JavaCheck {
+  }
+
+  @Rule(key = "myCardinality", cardinality = Cardinality.MULTIPLE)
+  private class CardinalityRule implements JavaCheck {
+  }
+
+  @Rule(key = "correctRule")
+  private class CorrectRule implements JavaCheck {
   }
 
 }
