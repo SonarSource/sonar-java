@@ -720,6 +720,9 @@ public class SymbolTableTest {
 
     assertThat(result.reference(277, 5)).isSameAs(result.symbol("foo", 274));
     assertThat(result.reference(278, 13)).isSameAs(result.symbol("foo", 274));
+
+    assertThat(result.reference(295, 5)).isSameAs(result.symbol("to", 290));
+    assertThat(result.reference(296, 5)).isSameAs(result.symbol("to", 289));
   }
 
   @Test
