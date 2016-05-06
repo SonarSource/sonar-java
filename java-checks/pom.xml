@@ -163,6 +163,12 @@
                   <type>jar</type>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-api</artifactId>
+                  <version>1.6.2</version>
+                  <type>jar</type>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.hibernate</groupId>
                   <artifactId>hibernate-core</artifactId>
                   <version>5.0.2.Final</version>
