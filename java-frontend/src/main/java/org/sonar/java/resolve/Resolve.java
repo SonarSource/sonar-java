@@ -490,7 +490,7 @@ public class Resolve {
       resolution.type = Symbols.unknownType;
       return resolution;
     }
-    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar.symbol, substitution);
+    JavaSymbol mostSpecific = selectMostSpecific(candidate, bestSoFar.symbol, argTypes, substitution);
     if (mostSpecific.isKind(JavaSymbol.AMBIGUOUS)) {
       // same signature, we keep the first symbol found (overrides the other one).
       return bestSoFar;
@@ -612,13 +612,13 @@ public class Resolve {
   /**
    * JLS7 15.12.2.5. Choosing the Most Specific Method
    */
-  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, TypeSubstitution substitution) {
+  private JavaSymbol selectMostSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution substitution) {
     // FIXME get rig of null check
     if (m2.type == null || !m2.isKind(JavaSymbol.MTH)) {
       return m1;
     }
-    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, substitution);
-    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, substitution);
+    boolean m1SignatureMoreSpecific = isSignatureMoreSpecific(m1, m2, argTypes, substitution);
+    boolean m2SignatureMoreSpecific = isSignatureMoreSpecific(m2, m1, argTypes, substitution);
     if (m1SignatureMoreSpecific && m2SignatureMoreSpecific) {
       return new AmbiguityErrorJavaSymbol();
     } else if (m1SignatureMoreSpecific) {
@@ -632,14 +632,14 @@ public class Resolve {
   /**
    * @return true, if signature of m1 is more specific than signature of m2
    */
-  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, TypeSubstitution substitution) {
+  private boolean isSignatureMoreSpecific(JavaSymbol m1, JavaSymbol m2, List<JavaType> argTypes, TypeSubstitution substitution) {
     List<JavaType> m1ArgTypes = ((MethodJavaType) m1.type).argTypes;
     List<JavaType> m2ArgTypes = ((MethodJavaType) m2.type).argTypes;
     JavaSymbol.MethodJavaSymbol methodJavaSymbol = (JavaSymbol.MethodJavaSymbol) m1;
     boolean m1VarArity = methodJavaSymbol.isVarArgs();
     boolean m2VarArity = ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs();
     if (m1VarArity != m2VarArity) {
-      return m2VarArity;
+      return m2VarArity && !(argTypes.size() == m2ArgTypes.size() && argTypes.get(argTypes.size() -1).isArray());
     }
     if (m1VarArity) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());

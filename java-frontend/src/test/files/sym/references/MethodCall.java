@@ -281,3 +281,18 @@ class ParametrizedCall {
   static class B {}
   static class C extends B {}
 }
+
+class variadicGenericMethods {
+  class S<T> {
+
+  }
+  static <T> S<T> to(T... values) {return null;}
+  static <T> S<T> to(T t) {return null;}
+
+  void fun() {
+    String[] strings = new String[12];
+    String string = "";
+    to(string);
+    to(strings);
+  }
+}
