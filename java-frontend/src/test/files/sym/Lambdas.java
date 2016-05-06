@@ -53,14 +53,28 @@ class test {
       return null;
     }
 
-    interface Function<T,R> {
-      R apply(T t);
-    }
+  }
+  interface Function<T,R> {
+    R apply(T t);
   }
 
   private final List<BiFunction<String, Function<String, Integer>, Integer>> operations;
   void addAfterOperation(BiFunction<String, Integer, Integer> operation) {
     operations.add((context, payloadSupplier) -> operation.apply(context, payloadSupplier.apply(context)));
+  }
+
+
+  private class MyMap<K, V> {
+    V computeIfAbsent(K key, Function<? super K,? extends V> mappingFunction) {
+      return null;
+    }
+  }
+  void stringParamMethod(String s) {
+
+  }
+  void test() {
+    MyMap<String, Integer> stringIntegerMyMap = new MyMap<>();
+    stringIntegerMyMap.computeIfAbsent("foo", myStringParam -> {stringParamMethod(myStringParam);return 1;});
   }
 
 }
