@@ -46,133 +46,131 @@ import org.sonar.plugins.java.api.tree.Tree.Kind;
 @Rule(key = "Methods4logmsg")
 public class Slf4jLogMessageCheck extends IssuableSubscriptionVisitor {
 
-	private static final String STRING_CLASSNAME = "java.lang.String";
-	private static final String SLF4J_LOGGER_CLASSNAME = "org.slf4j.Logger";
-	private static final String SLF4J_MARKER_CLASSNAME = "org.slf4j.Marker";
+  private static final String STRING_CLASSNAME = "java.lang.String";
+  private static final String SLF4J_LOGGER_CLASSNAME = "org.slf4j.Logger";
+  private static final String SLF4J_MARKER_CLASSNAME = "org.slf4j.Marker";
 
-	/**
-	 * Only looking for Method Invocation.
-	 */
-	@Override
-	public List<Kind> nodesToVisit() {
-		return Arrays.asList(Kind.METHOD_INVOCATION);
-	}
+  /**
+   * Only looking for Method Invocation.
+   */
+  @Override
+  public List<Kind> nodesToVisit() {
+    return Arrays.asList(Kind.METHOD_INVOCATION);
+  }
 
-	/**
-	 * Matchers that match for a call on the {@link Logger}.
-	 * 
-	 * @return
-	 */
-	private static boolean isLoggingInvocation(MethodInvocationTree tree) {
-		return MethodMatcherCollection.create(
-				MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(TypeCriteria.anyType()),
-				MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(STRING_CLASSNAME) .addParameter(TypeCriteria.anyType()),
-				MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(TypeCriteria.anyType()),
-				MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(STRING_CLASSNAME).addParameter(TypeCriteria.anyType())
-			).anyMatch(tree);
-	}
+  /**
+   * Matchers that match for a call on the {@link Logger}.
+   * 
+   * @return
+   */
+  private static boolean isLoggingInvocation(MethodInvocationTree tree) {
+    return MethodMatcherCollection.create(
+      MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(TypeCriteria.anyType()),
+      MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(STRING_CLASSNAME).addParameter(TypeCriteria.anyType()),
+      MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(TypeCriteria.anyType()),
+      MethodMatcher.create().typeDefinition(SLF4J_LOGGER_CLASSNAME).name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(STRING_CLASSNAME)
+        .addParameter(TypeCriteria.anyType()))
+      .anyMatch(tree);
+  }
 
-	/**
-	 * Log invocation that start with the {@link Marker} class. This means the
-	 * log message is the 2nd argument, instead of the 1st.
-	 * 
-	 * @return
-	 */
-	private static boolean logInvocationStartsWithMarker(MethodInvocationTree tree) {
-		return MethodMatcherCollection.create(
-				MethodMatcher.create().name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(TypeCriteria.anyType()),
-				MethodMatcher.create().name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(STRING_CLASSNAME).addParameter(TypeCriteria.anyType())
-			).anyMatch(tree);
-	}
+  /**
+   * Log invocation that start with the {@link Marker} class. This means the
+   * log message is the 2nd argument, instead of the 1st.
+   * 
+   * @return
+   */
+  private static boolean logInvocationStartsWithMarker(MethodInvocationTree tree) {
+    return MethodMatcherCollection.create(
+      MethodMatcher.create().name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(TypeCriteria.anyType()),
+      MethodMatcher.create().name(NameCriteria.any()).addParameter(SLF4J_MARKER_CLASSNAME).addParameter(STRING_CLASSNAME).addParameter(TypeCriteria.anyType())).anyMatch(tree);
+  }
 
-	/**
-	 * Matchers that match for a call to {@link String#format(String, Object...)}.
-	 * 
-	 * @return
-	 */
-	private static boolean isStringFormatInvocation(MethodInvocationTree tree) {
-		return MethodMatcherCollection.create(
-				MethodMatcher.create().typeDefinition(STRING_CLASSNAME).name(NameCriteria.is("format")).addParameter(STRING_CLASSNAME).addParameter(TypeCriteria.anyType()),
-				MethodMatcher.create().typeDefinition(STRING_CLASSNAME).name(NameCriteria.is("format")).addParameter(TypeCriteria.anyType())
-			).anyMatch(tree);
-	}
+  /**
+   * Matchers that match for a call to {@link String#format(String, Object...)}.
+   * 
+   * @return
+   */
+  private static boolean isStringFormatInvocation(MethodInvocationTree tree) {
+    return MethodMatcherCollection.create(
+      MethodMatcher.create().typeDefinition(STRING_CLASSNAME).name(NameCriteria.is("format")).addParameter(STRING_CLASSNAME).addParameter(TypeCriteria.anyType()),
+      MethodMatcher.create().typeDefinition(STRING_CLASSNAME).name(NameCriteria.is("format")).addParameter(TypeCriteria.anyType())).anyMatch(tree);
+  }
 
+  @Override
+  public void visitNode(Tree tree) {
+    if (isLoggingInvocation((MethodInvocationTree) tree)) {
+      final ExpressionTree logMessageArgument = getLogMessageArgument((MethodInvocationTree) tree);
 
-	@Override
-	public void visitNode(Tree tree) {
-		if (isLoggingInvocation((MethodInvocationTree) tree)) {
-			final ExpressionTree logMessageArgument = getLogMessageArgument((MethodInvocationTree) tree);
+      switch (logMessageArgument.kind()) {
+        case PLUS:
+          checkPlus(logMessageArgument);
+          break;
+        case METHOD_INVOCATION:
+        case METHOD_REFERENCE:
+          checkMethod(logMessageArgument);
+          break;
+        case STRING_LITERAL:
+        case IDENTIFIER:
+        default:
+          break;
+      }
+    }
+  }
 
-			switch (logMessageArgument.kind()) {
-			case PLUS:
-				checkPlus(logMessageArgument);
-				break;
-			case METHOD_INVOCATION:
-			case METHOD_REFERENCE:
-				checkMethod(logMessageArgument);
-				break;
-			case STRING_LITERAL:
-			case IDENTIFIER:
-			default:
-				break;
-			}
-		}
-	}
+  /**
+   * Retrieve the argument containing the Log message.
+   * If a {@link Marker} is also provided, this is the 2nd argument and not the 1st.
+   * @param methodInvocationTree The method invocation tree
+   * @return The argument expression tree
+   */
+  private static final ExpressionTree getLogMessageArgument(MethodInvocationTree methodInvocationTree) {
+    if (logInvocationStartsWithMarker(methodInvocationTree)) {
+      return methodInvocationTree.arguments().get(1);
+    }
+    return methodInvocationTree.arguments().get(0);
+  }
 
-	/**
-	 * Retrieve the argument containing the Log message.
-	 * If a {@link Marker} is also provided, this is the 2nd argument and not the 1st.
-	 * @param methodInvocationTree The method invocation tree
-	 * @return The argument expression tree
-	 */
-	private static final ExpressionTree getLogMessageArgument(MethodInvocationTree methodInvocationTree) {
-		if (logInvocationStartsWithMarker(methodInvocationTree)) {
-			return methodInvocationTree.arguments().get(1);
-		}
-		return methodInvocationTree.arguments().get(0);
-	}
+  /**
+   * Warn about the concatenating in the log message.
+   * @param tree
+   */
+  private void checkPlus(ExpressionTree tree) {
+    BinaryExpressionTree plusArgument = (BinaryExpressionTree) tree;
+    if (!isOnlyStringConcatenate(plusArgument)) {
+      reportIssue(tree, "Avoid Object concatenating in log messages.");
+    }
+  }
 
-	/**
-	 * Warn about the concatenating in the log message.
-	 * @param tree
-	 */
-	private void checkPlus(ExpressionTree tree) {
-		BinaryExpressionTree plusArgument = (BinaryExpressionTree) tree;
-		if (!isOnlyStringConcatenate(plusArgument)) {
-			reportIssue(tree, "Avoid Object concatenating in log messages.");
-		}
-	}
+  /**
+   * Check if the {@link BinaryExpressionTree} exists of only String literals.
+   * @param tree
+   * @return <code>true</code> if only String literals are concatenated. Otherwise <code>false</code>
+   */
+  private static boolean isOnlyStringConcatenate(BinaryExpressionTree tree) {
+    boolean left = tree.leftOperand().is(Kind.STRING_LITERAL)
+      || (tree.leftOperand().is(Kind.PLUS) && isOnlyStringConcatenate((BinaryExpressionTree) tree.leftOperand()));
 
-	/**
-	 * Check if the {@link BinaryExpressionTree} exists of only String literals.
-	 * @param tree
-	 * @return <code>true</code> if only String literals are concatenated. Otherwise <code>false</code>
-	 */
-	private static boolean isOnlyStringConcatenate(BinaryExpressionTree tree) {
-		boolean left = tree.leftOperand().is(Kind.STRING_LITERAL)
-				|| (tree.leftOperand().is(Kind.PLUS) && isOnlyStringConcatenate((BinaryExpressionTree) tree.leftOperand()));
+    if (left) {
+      return tree.rightOperand().is(Kind.STRING_LITERAL)
+        || (tree.rightOperand().is(Kind.PLUS) && isOnlyStringConcatenate((BinaryExpressionTree) tree.rightOperand()));
+    }
+    return false;
+  }
 
-		if (left) {
-			return tree.rightOperand().is(Kind.STRING_LITERAL)
-					|| (tree.rightOperand().is(Kind.PLUS) && isOnlyStringConcatenate((BinaryExpressionTree) tree.rightOperand()));
-		}
-		return false;
-	}
+  /**
+   * Warn about the method invocation for the log message
+   * @param tree
+   */
+  private void checkMethod(ExpressionTree tree) {
+    MethodInvocationTree methodArgument = (MethodInvocationTree) tree;
 
-	/**
-	 * Warn about the method invocation for the log message
-	 * @param tree
-	 */
-	private void checkMethod(ExpressionTree tree) {
-		MethodInvocationTree methodArgument = (MethodInvocationTree) tree;
+    if (isStringFormatInvocation(methodArgument)) {
+      // error
+      reportIssue(tree, "String.format() should not be used as a log message.");
+      return;
+    }
 
-		if (isStringFormatInvocation(methodArgument)) {
-			// error
-			reportIssue(tree, "String.format() should not be used as a log message.");
-			return;
-		}
-
-		reportIssue(tree, "A method call should not be used as a log messages.");
-	}
+    reportIssue(tree, "A method call should not be used as a log messages.");
+  }
 
 }

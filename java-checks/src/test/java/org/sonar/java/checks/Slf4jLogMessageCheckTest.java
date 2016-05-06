@@ -23,8 +23,8 @@ import org.junit.Test;
 import org.sonar.java.checks.verifier.JavaCheckVerifier;
 
 public class Slf4jLogMessageCheckTest {
-	@Test
-	public void test() {
-		JavaCheckVerifier.verify("src/test/files/checks/Slf4jLogMessageCheck.java", new Slf4jLogMessageCheck());
-	}
+  @Test
+  public void test() {
+    JavaCheckVerifier.verify("src/test/files/checks/Slf4jLogMessageCheck.java", new Slf4jLogMessageCheck());
+  }
 }
