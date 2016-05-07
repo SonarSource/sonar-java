@@ -1,0 +1,13 @@
+{
+  "title": "Log messages should not use \"String.format()\" or method calls",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "EFFICIENCY_COMPLIANCE",
+  "tags": [
+    "bad-practice", "convention", "suspicious", "performance"
+  ],
+  "defaultSeverity": "Major"
+}

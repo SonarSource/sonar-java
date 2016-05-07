@@ -441,6 +441,7 @@ public final class CheckList {
       .add(PrivateReadResolveCheck.class)
       .add(RandomFloatToIntCheck.class)
       .add(SyncGetterAndSetterCheck.class)
+      .add(Slf4jLogMessageCheck.class)
       .build();
   }
 
