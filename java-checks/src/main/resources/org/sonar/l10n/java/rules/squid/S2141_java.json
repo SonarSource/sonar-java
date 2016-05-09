@@ -1,0 +1,13 @@
+{
+  "title": "Classes that don't define \"hashCode()\" should not be used in hashes",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "15min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}
