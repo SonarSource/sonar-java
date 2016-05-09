@@ -184,6 +184,11 @@
                   <artifactId>org.eclipse.osgi</artifactId>
                   <version>3.7.1</version>
                 </artifactItem>
+                <artifactItem>
+                  <groupId>org.easymock</groupId>
+                  <artifactId>easymock</artifactId>
+                  <version>3.4</version>
+                </artifactItem>
               </artifactItems>
               <outputDirectory>${project.build.directory}/test-jars</outputDirectory>
             </configuration>

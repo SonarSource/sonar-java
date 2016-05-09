@@ -51,4 +51,9 @@ public class AssertionsInTestsCheckTest {
     JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckSpring.java", check);
   }
 
+  @Test
+  public void easyMock() {
+    JavaCheckVerifier.verify("src/test/files/checks/AssertionsInTestsCheckEasyMock.java", check);
+  }
+
 }
