@@ -44,11 +44,14 @@ import java.util.List;
 @Rule(key = "S2699")
 public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileScanner {
 
+  private static final String VERIFY = "verify";
+  private static final String ORG_MOCKITO_MOCKITO = "org.mockito.Mockito";
+
   private static final TypeCriteria ANY_TYPE = TypeCriteria.anyType();
   private static final NameCriteria ANY_NAME = NameCriteria.any();
   private static final NameCriteria STARTS_WITH_FAIL = NameCriteria.startsWith("fail");
 
-  private static final MethodMatcher MOCKITO_VERIFY = methodWithoutParameter("org.mockito.Mockito", "verify");
+  private static final MethodMatcher MOCKITO_VERIFY = methodWithoutParameter(ORG_MOCKITO_MOCKITO, VERIFY);
   private static final MethodMatcher ASSERTJ_ASSERT_ALL = methodWithParameters("org.assertj.core.api.SoftAssertions", "assertAll");
   private static final MethodMatcher ASSERT_THAT = methodWithParameters(ANY_TYPE, "assertThat").addParameter(ANY_TYPE);
   private static final MethodMatcher FEST_AS_METHOD = methodWithoutParameter(ANY_TYPE, "as");
@@ -77,10 +80,14 @@ public class AssertionsInTestsCheck extends BaseTreeVisitor implements JavaFileS
     // hamcrest
     methodWithParameters("org.hamcrest.MatcherAssert", "assertThat").addParameter(ANY_TYPE).addParameter(ANY_TYPE),
     // Mockito
-    methodWithoutParameter("org.mockito.Mockito", "verifyNoMoreInteractions"),
-    methodWithoutParameter("org.mockito.Mockito", "verifyZeroInteractions"),
+    methodWithoutParameter(ORG_MOCKITO_MOCKITO, "verifyNoMoreInteractions"),
+    methodWithoutParameter(ORG_MOCKITO_MOCKITO, "verifyZeroInteractions"),
     // spring
-    methodWithParameters("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE)
+    methodWithParameters("org.springframework.test.web.servlet.ResultActions", "andExpect").addParameter(ANY_TYPE),
+    // EasyMock
+    methodWithoutParameter("org.easymock.EasyMock", VERIFY),
+    methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.IMocksControl"), VERIFY),
+    methodWithoutParameter(TypeCriteria.subtypeOf("org.easymock.EasyMockSupport"), "verifyAll")
   );
 
   private final Deque<Boolean> methodContainsAssertion = new ArrayDeque<>();
