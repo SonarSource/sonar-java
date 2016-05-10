@@ -22,10 +22,10 @@ package org.sonar.java.checks;
 import com.google.common.collect.ImmutableList;
 
 import org.sonar.check.Rule;
+import org.sonar.java.checks.methods.AbstractMethodDetection;
 import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.matcher.TypeCriteria;
 import org.sonar.java.resolve.JavaType;
-import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -34,26 +34,20 @@ import org.sonar.plugins.java.api.tree.TypeCastTree;
 import java.util.List;
 
 @Rule(key = "S3020")
-public class ToArrayCheck extends IssuableSubscriptionVisitor {
+public class ToArrayCheck extends AbstractMethodDetection {
 
   private static final MethodMatcher COLLECTION_TO_ARRAY = MethodMatcher.create().typeDefinition(TypeCriteria.subtypeOf("java.util.Collection")).name("toArray");
 
   @Override
-  public List<Tree.Kind> nodesToVisit() {
-    return ImmutableList.of(Tree.Kind.METHOD_INVOCATION);
+  protected List<MethodMatcher> getMethodInvocationMatchers() {
+    return ImmutableList.of(COLLECTION_TO_ARRAY);
   }
 
   @Override
-  public void visitNode(Tree tree) {
-    if (!hasSemantic()) {
-      return;
-    }
-    MethodInvocationTree mit = (MethodInvocationTree) tree;
-    if (COLLECTION_TO_ARRAY.matches(mit)) {
-      Tree parent = tree.parent();
-      if (parent.is(Tree.Kind.TYPE_CAST)) {
-        checkCast(((TypeCastTree) parent).symbolType(), mit);
-      }
+  protected void onMethodInvocationFound(MethodInvocationTree mit) {
+    Tree parent = mit.parent();
+    if (parent.is(Tree.Kind.TYPE_CAST)) {
+      checkCast(((TypeCastTree) parent).symbolType(), mit);
     }
   }
 
@@ -65,5 +59,4 @@ public class ToArrayCheck extends IssuableSubscriptionVisitor {
       }
     }
   }
-
 }
