@@ -1,0 +1,13 @@
+{
+  "title": "\"toArray\" should be passed an array of the proper type",
+  "status": "ready",
+  "remediation": {
+    "func": "Constant\/Issue",
+    "constantCost": "5min"
+  },
+  "sqaleSubCharac": "INSTRUCTION_RELIABILITY",
+  "tags": [
+    "bug"
+  ],
+  "defaultSeverity": "Critical"
+}
