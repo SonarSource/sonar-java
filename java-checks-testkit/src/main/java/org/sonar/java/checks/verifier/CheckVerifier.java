@@ -38,6 +38,7 @@ import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.RspecKey;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -194,7 +195,11 @@ public abstract class CheckVerifier {
       ruleKey = AnnotationUtils.getAnnotation(issue.getCheck().getClass(), Rule.class).key();
     }
     try {
-      String json = Resources.toString(CheckVerifier.class.getResource("/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json"), Charsets.UTF_8);
+      URL resource = CheckVerifier.class.getResource("/org/sonar/l10n/java/rules/squid/" + ruleKey + "_java.json");
+      if(resource == null) {
+        throw new IOException();
+      }
+      String json = Resources.toString(resource, Charsets.UTF_8);
       return LINEAR_FUNC_PATTERN.matcher(json).find();
     } catch (IOException e) {
       Fail.fail("Failed to open json file for rule "+ruleKey+" ", e);

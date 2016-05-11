@@ -28,6 +28,7 @@ import org.fest.assertions.Fail;
 import org.junit.Test;
 import org.sonar.check.Rule;
 import org.sonar.java.AnalyzerMessage;
+import org.sonar.java.RspecKey;
 import org.sonar.java.model.InternalSyntaxToken;
 import org.sonar.java.model.statement.ReturnStatementTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -278,6 +279,21 @@ public class JavaCheckVerifierTest {
       assertThat(e).hasMessage("A cost should be provided for a rule with linear remediation function");
     }
   }
+
+  @Test
+  public void test_rpec_key_with_no_json() throws Exception {
+    IssuableSubscriptionVisitor visitor = new NoJsonVisitor().withDefaultIssues();
+    try {
+      JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
+      Fail.fail();
+    } catch (AssertionError e) {
+      assertThat(e).hasMessage("Failed to open json file for rule Dummy_fake_JSON ");
+    }
+  }
+
+  @RspecKey("Dummy_fake_JSON")
+  private static class NoJsonVisitor extends FakeVisitor {}
+
 
   @Rule(key = "LinearJSON")
   private static class LinearFakeVisitor extends FakeVisitor {}
