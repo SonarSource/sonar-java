@@ -19,6 +19,7 @@
  */
 package org.sonar.java.resolve;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 import org.junit.Before;
@@ -28,6 +29,7 @@ import org.sonar.java.resolve.targets.Annotations;
 import org.sonar.java.resolve.targets.AnonymousClass;
 import org.sonar.java.resolve.targets.HasInnerClass;
 import org.sonar.java.resolve.targets.InnerClassBeforeOuter;
+import org.sonar.java.resolve.targets.InnerClassConstructors;
 import org.sonar.java.resolve.targets.NamedClassWithinMethod;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.SymbolMetadata;
@@ -109,6 +111,41 @@ public class BytecodeCompleterTest {
   public void outer_class_before_inner() {
     JavaSymbol.TypeJavaSymbol outerClass = bytecodeCompleter.getClassSymbol(HasInnerClass.class.getName());
     assertThat(outerClass.members().lookup(HasInnerClass.InnerClass.class.getSimpleName())).hasSize(1);
+  }
+
+  @Test
+  public void inner_classes_constructors_have_outerclass_as_implicit_first_parameter() {
+    JavaSymbol.TypeJavaSymbol outerClass = bytecodeCompleter.getClassSymbol(InnerClassConstructors.class.getName());
+    List<JavaSymbol> constructors;
+    JavaSymbol.MethodJavaSymbol defaultConstructor;
+
+    JavaSymbol.TypeJavaSymbol privateInnerClass = (JavaSymbol.TypeJavaSymbol) Iterables.getFirst(outerClass.lookupSymbols("PrivateInnerClass"), null);
+    constructors = privateInnerClass.members().lookup("<init>");
+    assertThat(constructors).hasSize(1);
+    defaultConstructor = (JavaSymbol.MethodJavaSymbol) constructors.get(0);
+    assertThat(defaultConstructor.parameterTypes()).hasSize(1);
+    assertThat(defaultConstructor.parameterTypes().get(0)).isSameAs(outerClass.type());
+
+    JavaSymbol.TypeJavaSymbol staticInnerClass = bytecodeCompleter.getClassSymbol(InnerClassConstructors.StaticInnerClass.class.getName());
+    constructors = staticInnerClass.members().lookup("<init>");
+    assertThat(constructors).hasSize(1);
+    defaultConstructor = (JavaSymbol.MethodJavaSymbol) constructors.get(0);
+    assertThat(defaultConstructor.parameterTypes()).isEmpty();
+
+    JavaSymbol.TypeJavaSymbol innerClass = bytecodeCompleter.getClassSymbol(InnerClassConstructors.InnerClass.class.getName());
+    constructors = innerClass.members().lookup("<init>");
+    assertThat(constructors).hasSize(1);
+    defaultConstructor = (JavaSymbol.MethodJavaSymbol) constructors.get(0);
+    assertThat(defaultConstructor.parameterTypes()).hasSize(1);
+    assertThat(defaultConstructor.parameterTypes().get(0)).isSameAs(outerClass.type());
+
+    JavaSymbol.TypeJavaSymbol innerClassWithConstructor = bytecodeCompleter.getClassSymbol(InnerClassConstructors.InnerClassWithConstructor.class.getName());
+    constructors = innerClassWithConstructor.members().lookup("<init>");
+    assertThat(constructors).hasSize(1);
+    JavaSymbol.MethodJavaSymbol constructor = (JavaSymbol.MethodJavaSymbol) constructors.get(0);
+    assertThat(constructor.parameterTypes()).hasSize(2);
+    assertThat(constructor.parameterTypes().get(0)).isSameAs(outerClass.type());
+    assertThat(constructor.parameterTypes().get(1).isPrimitive(Type.Primitives.INT)).isTrue();
   }
 
   @Test

@@ -23,6 +23,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import org.sonar.java.model.AbstractTypedTree;
 import org.sonar.java.model.declaration.VariableTreeImpl;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -40,6 +41,8 @@ import java.util.Set;
  * Completes hierarchy of types.
  */
 public class SecondPass implements JavaSymbol.Completer {
+
+  private static final String CONSTRUCTOR_NAME = "<init>";
 
   private final SemanticModel semanticModel;
   private final Symbols symbols;
@@ -113,6 +116,22 @@ public class SecondPass implements JavaSymbol.Completer {
     if ((symbol.flags() & Flags.INTERFACE) == 0) {
       symbol.members.enter(new JavaSymbol.VariableJavaSymbol(Flags.FINAL, "super", type.supertype, symbol));
     }
+
+    // Register default constructor
+    if (tree.is(Tree.Kind.CLASS) && symbol.lookupSymbols(CONSTRUCTOR_NAME).isEmpty()) {
+      List<JavaType> argTypes = ImmutableList.of();
+      if (!symbol.isStatic()) {
+        // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
+        JavaSymbol owner = symbol.owner();
+        if (!owner.isPackageSymbol()) {
+          argTypes = ImmutableList.of(owner.enclosingClass().type);
+        }
+      }
+      JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
+      MethodJavaType defaultConstructorType = new MethodJavaType(argTypes, null, ImmutableList.<JavaType>of(), symbol);
+      defaultConstructor.setMethodType(defaultConstructorType);
+      symbol.members.enter(defaultConstructor);
+    }
   }
 
   private void populateSuperclass(JavaSymbol.TypeJavaSymbol symbol, Resolve.Env env, ClassJavaType type) {
@@ -175,15 +194,21 @@ public class SecondPass implements JavaSymbol.Completer {
     }
 
     JavaType returnType = null;
+    List<JavaType> argTypes = Lists.newArrayList();
     // no return type for constructor
-    if (!"<init>".equals(symbol.name)) {
+    if (!CONSTRUCTOR_NAME.equals(symbol.name)) {
       returnType = resolveType(env, methodTree.returnType());
       if (returnType != null) {
         symbol.returnType = returnType.symbol;
       }
+    } else if (!symbol.enclosingClass().isStatic()) {
+      JavaSymbol owner = symbol.enclosingClass().owner();
+      if (!owner.isPackageSymbol()) {
+        // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
+        argTypes.add(owner.enclosingClass().type);
+      }
     }
     List<VariableTree> parametersTree = methodTree.parameters();
-    List<JavaType> argTypes = Lists.newArrayList();
     List<JavaSymbol> scopeSymbols = symbol.parameters.scopeSymbols();
     for(int i = 0; i < parametersTree.size(); i += 1) {
       VariableTree variableTree = parametersTree.get(i);

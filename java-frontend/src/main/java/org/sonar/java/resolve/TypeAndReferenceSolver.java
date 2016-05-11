@@ -576,9 +576,19 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
     }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
+    List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
+    if (enclosingExpression != null) {
+      parameterTypes = ImmutableList.<JavaType>builder().add((JavaType) enclosingExpression.symbolType()).addAll(parameterTypes).build();
+    } else {
+      JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol = (JavaSymbol.TypeJavaSymbol) newClassTreeImpl.identifier().symbolType().symbol();
+      JavaSymbol owner = constructorIdentifierSymbol.owner();
+      if (!owner.isPackageSymbol() && !constructorIdentifierSymbol.isStatic()) {
+        parameterTypes = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(parameterTypes).build();
+      }
+    }
     // FIXME SONARJAVA-1667 type arguments should not be ignored for the resolution of the constructor
     Resolution resolution =
-      resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, getParameterTypes(tree.arguments()));
+      resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, parameterTypes);
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
       JavaType type = (JavaType) identifier.symbolType();

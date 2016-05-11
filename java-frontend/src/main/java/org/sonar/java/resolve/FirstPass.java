@@ -260,13 +260,8 @@ public class FirstPass extends BaseTreeVisitor {
     scan(tree.superClass());
     scan(tree.superInterfaces());
     scan(tree.members());
-    //Register default constructor
-    if(tree.is(Tree.Kind.CLASS) && classEnv.scope.lookup(CONSTRUCTOR_NAME).isEmpty()) {
-      JavaSymbol.MethodJavaSymbol defaultConstructor = new JavaSymbol.MethodJavaSymbol(symbol.flags & Flags.ACCESS_FLAGS, CONSTRUCTOR_NAME, symbol);
-      MethodJavaType defaultConstructorType = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), symbol);
-      defaultConstructor.setMethodType(defaultConstructorType);
-      classEnv.scope.enter(defaultConstructor);
-    } else if (tree.is(Tree.Kind.ENUM)) {
+
+    if (tree.is(Tree.Kind.ENUM)) {
       // implicit methods from enum: JLS8 : 8.9.2
       // add 'public static E[] values()'
       JavaSymbol.MethodJavaSymbol valuesMethod = new JavaSymbol.MethodJavaSymbol((symbol.flags & Flags.ACCESS_FLAGS) | Flags.STATIC, "values", symbol);

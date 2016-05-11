@@ -522,6 +522,11 @@ public class SymbolTableTest {
     assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner3")).members().scopeSymbols.get(0)).isSameAs(result.reference(34, 19));
     assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner3")).members().scopeSymbols.get(1)).isSameAs(result.reference(34, 36));
     assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Foo3")).members().scopeSymbols.get(1)).isSameAs(result.reference(34, 5));
+
+    JavaSymbol.MethodJavaSymbol defaultConstructor = (JavaSymbol.MethodJavaSymbol) Iterables
+      .getOnlyElement(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner3")).lookupSymbols("<init>"));
+    assertThat(defaultConstructor).isSameAs(result.reference(34, 19));
+    assertThat(defaultConstructor.parameterTypes()).containsExactly(result.symbol("Outer3").type);
   }
 
   @Test
