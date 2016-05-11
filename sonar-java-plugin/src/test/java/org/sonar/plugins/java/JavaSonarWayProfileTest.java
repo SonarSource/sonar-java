@@ -20,8 +20,13 @@
 package org.sonar.plugins.java;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.sonar.api.profiles.RulesProfile;
 import org.sonar.api.rules.ActiveRule;
+import org.sonar.api.rules.Rule;
+import org.sonar.api.rules.RuleFinder;
+import org.sonar.api.rules.RulePriority;
 import org.sonar.api.utils.ValidationMessages;
 import org.sonar.java.checks.CheckList;
 
@@ -30,6 +35,9 @@ import java.util.List;
 import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class JavaSonarWayProfileTest {
 
@@ -37,7 +45,7 @@ public class JavaSonarWayProfileTest {
   public void should_create_sonar_way_profile() {
     ValidationMessages validation = ValidationMessages.create();
 
-    JavaSonarWayProfile profileDef = new JavaSonarWayProfile();
+    JavaSonarWayProfile profileDef = new JavaSonarWayProfile(ruleFinder());
     RulesProfile profile = profileDef.createProfile(validation);
 
     assertThat(profile.getLanguage()).isEqualTo(Java.KEY);
@@ -52,6 +60,20 @@ public class JavaSonarWayProfileTest {
     assertThat(keys.contains("S116")).isFalse();
     assertThat(keys).contains("S00116");
     assertThat(validation.hasErrors()).isFalse();
+
+    // Check that we use severity from the read rule and not default one.
+    assertThat(activeRules.get(0).getSeverity()).isSameAs(RulePriority.MINOR);
   }
 
+
+  static RuleFinder ruleFinder() {
+    return when(mock(RuleFinder.class).findByKey(anyString(), anyString())).thenAnswer(new Answer<Rule>() {
+      @Override
+      public Rule answer(InvocationOnMock invocation) {
+        Object[] arguments = invocation.getArguments();
+        Rule rule = Rule.create((String) arguments[0], (String) arguments[1], (String) arguments[1]);
+        return rule.setSeverity(RulePriority.MINOR);
+      }
+    }).getMock();
+  }
 }
