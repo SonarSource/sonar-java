@@ -442,6 +442,7 @@ public final class CheckList {
       .add(RandomFloatToIntCheck.class)
       .add(SyncGetterAndSetterCheck.class)
       .add(ToArrayCheck.class)
+      .add(ClassWithoutHashCodeInHashStructureCheck.class)
       .build();
   }
 
