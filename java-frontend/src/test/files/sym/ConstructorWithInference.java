@@ -64,7 +64,7 @@ class D<X extends C> {
 class E {
   class F<X> {
     F() {}
-    F(X x) {}
+    F(int i, X x, C c) {}
   }
 
   F<String> fString;
@@ -73,6 +73,6 @@ class E {
 
   void method(E e) {
     foo(e.new F<String>());
-    foo(e.new F<>("test"));
+    foo(e.new F<>(42, "test", new C()));
   }
 }

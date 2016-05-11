@@ -250,7 +250,7 @@ public class TypeSubstitutionSolver {
 
       substitution = inferTypeSubstitution(method, substitution, formalType, argType, variableArity, remainingArgTypes);
 
-      if (substitution.typeVariables().containsAll(method.typeVariableTypes)) {
+      if (!isConstructor(method) && substitution.typeVariables().containsAll(method.typeVariableTypes)) {
         // we found all the substitution
         break;
       }
