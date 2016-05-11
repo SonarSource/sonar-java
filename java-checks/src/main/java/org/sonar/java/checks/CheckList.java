@@ -443,6 +443,7 @@ public final class CheckList {
       .add(SyncGetterAndSetterCheck.class)
       .add(ToArrayCheck.class)
       .add(ClassWithoutHashCodeInHashStructureCheck.class)
+      .add(IgnoredOperationStatusCheck.class)
       .build();
   }
 
