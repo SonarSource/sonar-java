@@ -72,6 +72,7 @@ import org.sonar.plugins.java.api.tree.PrimitiveTypeTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.ThrowStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
+import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeCastTree;
 import org.sonar.plugins.java.api.tree.TypeParameterTree;
 import org.sonar.plugins.java.api.tree.TypeTree;
@@ -382,15 +383,17 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     resolveAs(tree.type(), JavaSymbol.TYP);
     resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
 
-    JavaType type = getType(tree.type());
-    //Type substitution for parametrized type.
+    registerType(tree, parametrizedTypeWithTypeArguments(getType(tree.type()).getSymbol(), tree.typeArguments()));
+  }
+
+  private JavaType parametrizedTypeWithTypeArguments(JavaSymbol.TypeJavaSymbol symbol, TypeArguments typeArguments) {
     TypeSubstitution typeSubstitution = new TypeSubstitution();
-    if (tree.typeArguments().size() <= type.getSymbol().typeVariableTypes.size()) {
-      for (int i = 0; i < tree.typeArguments().size(); i++) {
-        typeSubstitution.add(type.getSymbol().typeVariableTypes.get(i), getType(tree.typeArguments().get(i)));
+    if (typeArguments.size() <= symbol.typeVariableTypes.size()) {
+      for (int i = 0; i < typeArguments.size(); i++) {
+        typeSubstitution.add(symbol.typeVariableTypes.get(i), getType(typeArguments.get(i)));
       }
     }
-    registerType(tree, parametrizedTypeCache.getParametrizedTypeType(type.getSymbol(), typeSubstitution));
+    return parametrizedTypeCache.getParametrizedTypeType(symbol, typeSubstitution);
   }
 
   @Override
@@ -553,13 +556,20 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     }
     Resolve.Env newClassEnv = semanticModel.getEnv(tree);
     ExpressionTree enclosingExpression = tree.enclosingExpression();
+    TypeTree identifier = tree.identifier();
     if (enclosingExpression != null) {
       resolveAs(enclosingExpression, JavaSymbol.VAR);
       Resolve.Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(),
         newClassTreeImpl.getConstructorIdentifier().name(), JavaSymbol.TYP);
-      registerType(tree.identifier(), idType.type());
+      JavaType type = idType.type();
+      if (identifier.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+        TypeArguments typeArguments = ((ParameterizedTypeTree) identifier).typeArguments();
+        scan(typeArguments);
+        type = parametrizedTypeWithTypeArguments(type.symbol, typeArguments);
+      }
+      registerType(identifier, type);
     } else {
-      resolveAs(tree.identifier(), JavaSymbol.TYP, newClassEnv, false);
+      resolveAs(identifier, JavaSymbol.TYP, newClassEnv, false);
     }
 
     if (tree.typeArguments() != null) {
@@ -571,7 +581,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
       resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, getParameterTypes(tree.arguments()));
     ClassTree classBody = tree.classBody();
     if (classBody != null) {
-      JavaType type = (JavaType) tree.identifier().symbolType();
+      JavaType type = (JavaType) identifier.symbolType();
       ClassJavaType anonymousClassType = (ClassJavaType) classBody.symbol().type();
       if (type.getSymbol().isFlag(Flags.INTERFACE)) {
         anonymousClassType.interfaces = ImmutableList.of(type);
@@ -589,14 +599,14 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
         if (returnType.isTagged(JavaType.DEFERRED)) {
           Tree parent = newClassTreeImpl.parent();
           if (parent.is(Tree.Kind.MEMBER_SELECT)) {
-            returnType = resolve.parametrizedTypeWithErasure((ParametrizedTypeJavaType) getType(tree.identifier()));
+            returnType = resolve.parametrizedTypeWithErasure((ParametrizedTypeJavaType) getType(identifier));
           } else {
             // will be resolved by type inference
             ((DeferredType) returnType).setTree(newClassTreeImpl);
           }
         }
       } else {
-        returnType = getType(tree.identifier());
+        returnType = getType(identifier);
       }
       registerType(tree, returnType);
     }
