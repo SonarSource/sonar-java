@@ -37,7 +37,7 @@ public abstract class AsmClassProvider {
 
     private int internalLevel;
 
-    private DETAIL_LEVEL(int level) {
+    DETAIL_LEVEL(int level) {
       this.internalLevel = level;
     }
 
