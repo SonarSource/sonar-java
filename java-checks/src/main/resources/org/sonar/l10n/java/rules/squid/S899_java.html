@@ -1,0 +1,39 @@
+<p>When the return value of a function call contain the operation status code, this value should be tested to make sure the operation completed successfully.</p>
+<p>This rule raises an issue when the return values of <code>java.io.File.delete()</code> or <code>java.util.concurrent.locks.Lock.tryLock()</code> are ignored.</p>
+
+<h2>Noncompliant Code Example</h2>
+<pre>
+public void doSomething(File file, Lock lock) {
+  file.delete();  // Noncompliant
+  // ...
+  lock.tryLock(); // Noncompliant
+}
+</pre>
+
+<h2>Compliant Solution</h2>
+<pre>
+public void doSomething(File file, Lock lock) {
+  if (!lock.tryLock()) {
+    // lock failed; take appropriate action
+  }
+  if (!file.delete()) {
+    // file delete failed; take appropriate action
+  }
+}
+</pre>
+
+<h2>See</h2>
+<ul>
+<li> MISRA C:2004, 16.10 - If a function returns error information, then that error information shall be tested 
+</li><li> MISRA C++:2008, 0-1-7 - The value returned by a function having a non-void return type that is not an overloaded operator shall always be used. 
+</li><li> MISRA C:2012, Dir. 4.7 - If a function returns error information, then that error information shall be tested 
+</li><li> MISRA C:2012, 17.7 - The value returned by a function having non-void return type shall be used 
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/w4C4Ag">CERT, ERR33-C.</a> - Detect and handle standard library errors
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/iIBfBw">CERT, POS54-C.</a> - Detect and handle POSIX library errors
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/9gEqAQ">CERT, EXP00-J.</a> - Do not ignore values returned by methods
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/9YIRAQ">CERT, EXP12-C.</a> - Do not ignore values returned by functions
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/eoAyAQ">CERT, EXP12-CPP.</a> - Do not ignore values returned by functions or methods
+</li><li> <a href="https://www.securecoding.cert.org/confluence/x/toHWAw">CERT, FIO02-J.</a> - Detect and handle file-related errors
+</li><li> <a href="http://cwe.mitre.org/data/definitions/754">MITRE, CWE-754</a> - Improper Check for Unusual Exceptional Conditions
+</li></ul>
+
