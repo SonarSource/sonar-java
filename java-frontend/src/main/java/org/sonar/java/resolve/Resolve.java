@@ -657,7 +657,10 @@ public class Resolve {
     boolean m1VarArity = methodJavaSymbol.isVarArgs();
     boolean m2VarArity = ((JavaSymbol.MethodJavaSymbol) m2).isVarArgs();
     if (m1VarArity != m2VarArity) {
-      return m2VarArity && !(argTypes.size() == m2ArgTypes.size() && argTypes.get(argTypes.size() -1).isArray());
+      // last arg is an array
+      boolean lastArgIsArray = !argTypes.isEmpty() && argTypes.get(argTypes.size() -1).isArray() && (argTypes.size() == m2ArgTypes.size() || argTypes.size() == m1ArgTypes.size());
+      // general case : prefer strict arity invocation over varArity, so if m2 is variadic, m1 is most specific, but not if last arg of invocation is an array
+      return lastArgIsArray ^ m2VarArity;
     }
     if (m1VarArity) {
       m1ArgTypes = expandVarArgsToFitSize(m1ArgTypes, m2ArgTypes.size());

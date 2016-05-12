@@ -427,7 +427,7 @@ public class SymbolTableTest {
     assertThat(variableSymbol.owner()).isSameAs(annotationSymbol);
     assertThat(variableSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.STATIC | Flags.FINAL);
 
-    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("value");
+    JavaSymbol.MethodJavaSymbol methodSymbol = (JavaSymbol.MethodJavaSymbol) result.symbol("value", 15);
     assertThat(methodSymbol.owner()).isSameAs(annotationSymbol);
     assertThat(methodSymbol.flags()).isEqualTo(Flags.PUBLIC | Flags.ABSTRACT);
 
@@ -854,6 +854,9 @@ public class SymbolTableTest {
 
     assertThat(result.reference(295, 5)).isSameAs(result.symbol("to", 290));
     assertThat(result.reference(296, 5)).isSameAs(result.symbol("to", 289));
+
+    assertThat(result.reference(298, 5)).isSameAs(result.symbol("from", 302));
+    assertThat(result.reference(297, 5)).isSameAs(result.symbol("from", 301));
   }
 
   @Test

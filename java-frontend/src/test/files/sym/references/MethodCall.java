@@ -294,5 +294,11 @@ class variadicGenericMethods {
     String string = "";
     to(string);
     to(strings);
+    from(string);
+    from(strings);
   }
+
+  static <T> S<T> from(T t) {return null;}
+  static <T> S<T> from(T... values) {return null;}
+
 }
