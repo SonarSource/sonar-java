@@ -295,8 +295,11 @@ public class TypeSubstitutionSolver {
         }
       }
     } else if (formalType.isTagged(JavaType.WILDCARD)) {
-      TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, ((WildCardType) formalType).bound, argType, variableArity,
-        remainingArgTypes);
+      JavaType inferedFromArg = argType;
+      if(argType.isTagged(JavaType.WILDCARD)) {
+        inferedFromArg = ((WildCardType) argType).bound;
+      }
+      TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, ((WildCardType) formalType).bound, inferedFromArg, variableArity, remainingArgTypes);
       return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
     } else {
       // nothing to infer for simple class types or primitive types
@@ -383,7 +386,7 @@ public class TypeSubstitutionSolver {
         }
         currentBound = newBound;
       }
-      if (!typeParam.isSubtypeOf(currentBound)) {
+      if (!(typeParam.isTagged(JavaType.WILDCARD) && ((WildCardType) typeParam).boundType == WildCardType.BoundType.UNBOUNDED) && !typeParam.isSubtypeOf(currentBound)) {
         return false;
       }
     }
