@@ -1075,4 +1075,11 @@ public class SymbolTableTest {
     assertThat(result.symbol("fun")).isSameAs(result.reference(11, 5));
     assertThat(result.symbol("foo")).isSameAs(result.reference(20, 5));
   }
+
+  @Test
+  public void inference_on_parameterized_method_with_no_arg() {
+    Result result = Result.createFor("ParameterizedMethodInvocation");
+    assertThat(result.symbol("method")).isSameAs(result.reference(3, 9));
+    assertThat(result.symbol("fun")).isSameAs(result.reference(3, 5));
+  }
 }

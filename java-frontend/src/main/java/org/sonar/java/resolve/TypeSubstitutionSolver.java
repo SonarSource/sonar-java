@@ -91,7 +91,7 @@ public class TypeSubstitutionSolver {
     resultType = applySubstitution(resultType, substitution);
     if (!isReturnTypeCompletelySubstituted(resultType, method.typeVariableTypes)
       || (isConstructor(method) && !isReturnTypeCompletelySubstituted(resultType, defSite.symbol.typeVariableTypes))) {
-      resultType = symbols.deferedType();
+      resultType = symbols.deferedType(resultType.erasure());
     }
     return resultType;
   }
@@ -258,8 +258,12 @@ public class TypeSubstitutionSolver {
     return substitution;
   }
 
-  private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType,
+  private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, TypeSubstitution currentSubstitution, JavaType formalType, JavaType argumentType,
     boolean variableArity, List<JavaType> remainingArgTypes) {
+    JavaType argType = argumentType;
+    if(argType.isTagged(JavaType.DEFERRED) && ((DeferredType) argType).getUninferedType() != null) {
+      argType = ((DeferredType) argType).getUninferedType();
+    }
     if (formalType.isTagged(JavaType.TYPEVAR)) {
       completeSubstitution(currentSubstitution, formalType, argType);
     } else if (formalType.isArray()) {
