@@ -103,7 +103,7 @@ public class SecondPass implements JavaSymbol.Completer {
       interfaces.add(symbols.annotationType);
     }
 
-    if (tree.is(Tree.Kind.ENUM) && symbol.owner.isKind(JavaSymbol.TYP)) {
+    if (tree.is(Tree.Kind.ENUM, Tree.Kind.INTERFACE) && symbol.owner.isKind(JavaSymbol.TYP)) {
       // JSL8 8.9: A nested enum type is implicitly static. It is permitted for the declaration of a nested 
       // enum type to redundantly specify the static modifier.
       symbol.flags |= Flags.STATIC;

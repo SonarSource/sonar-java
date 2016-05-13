@@ -67,4 +67,7 @@
 'com.google.guava:guava:src/com/google/common/primitives/Shorts.java':[
 356,
 ],
+'com.google.guava:guava:src/com/google/common/util/concurrent/CycleDetectingLockFactory.java':[
+773,
+],
 }
