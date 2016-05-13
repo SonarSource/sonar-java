@@ -530,6 +530,25 @@ public class SymbolTableTest {
   }
 
   @Test
+  public void SuperConstructorOfInnerClass() {
+    Result result = Result.createFor("SuperConstructorOfInnerClass");
+
+    assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("StaticInner")).members().lookup("<init>").get(0)).isSameAs(result.reference(7, 7));
+    assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("ChildInner")).members().lookup("<init>").get(1)).isSameAs(result.reference(16, 7));
+    assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("Inner")).members().lookup("<init>").get(0)).isSameAs(result.reference(20, 7));
+  }
+
+  @Test
+  public void SuperConstructorOfExternalInnerClass() {
+    Result result = Result.createFor("SuperConstructorOfExternalInnerClass");
+
+    // FIXME SONARJAVA-1678 the constructor of the inner class is used
+    assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("InnerA")).members().lookup("<init>").get(0).usages()).isEmpty();
+    // assertThat(((JavaSymbol.TypeJavaSymbol) result.symbol("InnerA")).members().lookup("<init>").get(0))
+    // .isEqualTo(result.reference(10, 9));
+  }
+
+  @Test
   public void ConstructorWithInference() throws Exception {
     Result result = Result.createFor("ConstructorWithInference");
 
