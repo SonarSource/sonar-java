@@ -1069,4 +1069,10 @@ public class SymbolTableTest {
 
   }
 
+  @Test
+  public void wildcard_invocation_inference() {
+    Result result = Result.createFor("WildcardsInvocation");
+    assertThat(result.symbol("fun")).isSameAs(result.reference(11, 5));
+    assertThat(result.symbol("foo")).isSameAs(result.reference(20, 5));
+  }
 }
