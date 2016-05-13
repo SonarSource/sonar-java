@@ -415,7 +415,13 @@ public class Resolve {
   }
 
   private Resolution findConstructor(Env env, JavaType site, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
-    return findMethod(env, site, site, "<init>", argTypes, typeParams, autoboxing);
+    List<JavaType> newArgTypes = argTypes;
+    JavaSymbol owner = site.symbol.owner();
+    if (!owner.isPackageSymbol() && !site.symbol.isStatic()) {
+      // JLS8 - 8.8.1 & 8.8.9 : constructors of inner class have an implicit first arg of its directly enclosing class type
+      newArgTypes = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(argTypes).build();
+    }
+    return findMethod(env, site, site, "<init>", newArgTypes, typeParams, autoboxing);
   }
 
   private Resolution findMethod(Env env, JavaType callSite, JavaType site, String name, List<JavaType> argTypes, List<JavaType> typeParams, boolean autoboxing) {
