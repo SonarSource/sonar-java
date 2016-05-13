@@ -22,15 +22,19 @@ package org.sonar.java.resolve;
 import org.sonar.java.model.AbstractTypedTree;
 
 public class DeferredType extends JavaType {
+  private final JavaType uninferedType;
   private AbstractTypedTree tree;
 
   public DeferredType(AbstractTypedTree tree) {
     super(JavaType.DEFERRED, Symbols.unknownSymbol);
     this.tree = tree;
+    uninferedType = null;
   }
 
-  public DeferredType() {
-    this(null);
+  public DeferredType(JavaType uninferedType) {
+    super(JavaType.DEFERRED, Symbols.unknownSymbol);
+    this.tree = null;
+    this.uninferedType = uninferedType;
   }
 
   public AbstractTypedTree tree() {
@@ -44,5 +48,9 @@ public class DeferredType extends JavaType {
   @Override
   public String toString() {
     return "!Defered type!";
+  }
+
+  public JavaType getUninferedType() {
+    return uninferedType;
   }
 }

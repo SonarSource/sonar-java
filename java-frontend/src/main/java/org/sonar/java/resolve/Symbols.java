@@ -299,7 +299,7 @@ public class Symbols {
     return new DeferredType(tree);
   }
 
-  public JavaType deferedType() {
-    return new DeferredType();
+  public JavaType deferedType(JavaType uninferedType) {
+    return new DeferredType(uninferedType);
   }
 }
