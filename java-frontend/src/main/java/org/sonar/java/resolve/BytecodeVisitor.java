@@ -177,6 +177,7 @@ public class BytecodeVisitor extends ClassVisitor {
     JavaSymbol.TypeJavaSymbol outerClassSymbol = getClassSymbol(outerName, flags);
     Preconditions.checkState(outerClassSymbol.completer == null || outerClassSymbol.completer instanceof BytecodeCompleter);
     classSymbol.name = innerName;
+    classSymbol.flags = flags | bytecodeCompleter.filterBytecodeFlags(classSymbol.flags & ~Flags.ACCESS_FLAGS);
     classSymbol.owner = outerClassSymbol;
   }
 
