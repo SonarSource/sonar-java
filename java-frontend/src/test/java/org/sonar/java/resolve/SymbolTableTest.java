@@ -266,7 +266,7 @@ public class SymbolTableTest {
 
     JavaSymbol.TypeJavaSymbol interfaceSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("Declaration");
     assertThat(interfaceSymbol.owner()).isSameAs(result.symbol("InterfaceDeclaration"));
-    assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE);
+    assertThat(interfaceSymbol.flags()).isEqualTo(Flags.PRIVATE | Flags.INTERFACE | Flags.STATIC);
     assertThat(interfaceSymbol.getSuperclass().getSymbol().getName()).isEqualTo("Object");
     assertThat(interfaceSymbol.getInterfaces()).containsExactly(
       result.symbol("FirstInterface").type,
