@@ -43,6 +43,7 @@ public class JavaType implements Type {
   public static final int TYPEVAR = 15;
   public static final int WILDCARD = 16;
   public static final int DEFERRED = 17;
+  public static final int PARAMETERIZED = 18;
 
   int tag;
 
@@ -170,9 +171,13 @@ public class JavaType implements Type {
     return isTagged(ARRAY);
   }
 
+  public boolean isParameterized() {
+    return isTagged(PARAMETERIZED);
+  }
+
   @Override
   public boolean isClass() {
-    return isTagged(CLASS);
+    return isTagged(CLASS) || isTagged(PARAMETERIZED);
   }
 
   @Override

@@ -68,16 +68,12 @@ public class TypeSubstitutionSolver {
   }
 
   private static boolean constructParametrizedTypeWithoutSubstitution(JavaSymbol.MethodJavaSymbol method, JavaType site) {
-    return isConstructor(method) && isParametrizedType(site) && ((ParametrizedTypeJavaType) site).typeSubstitution.isIdentity();
-  }
-
-  private static boolean isConstructor(JavaSymbol.MethodJavaSymbol method) {
-    return "<init>".equals(method.name);
+    return method.isConstructor() && site.isParameterized() && ((ParametrizedTypeJavaType) site).typeSubstitution.isIdentity();
   }
 
   JavaType getReturnType(@Nullable JavaType returnType, JavaType defSite, JavaType callSite, TypeSubstitution substitution, JavaSymbol.MethodJavaSymbol method) {
     JavaType resultType = returnType;
-    if (isConstructor(method)) {
+    if (method.isConstructor()) {
       if (constructParametrizedTypeWithoutSubstitution(method, defSite)) {
         resultType = applySubstitution(defSite, substitution);
       } else {
@@ -90,7 +86,7 @@ public class TypeSubstitutionSolver {
     }
     resultType = applySubstitution(resultType, substitution);
     if (!isReturnTypeCompletelySubstituted(resultType, method.typeVariableTypes)
-      || (isConstructor(method) && !isReturnTypeCompletelySubstituted(resultType, defSite.symbol.typeVariableTypes))) {
+      || (method.isConstructor() && !isReturnTypeCompletelySubstituted(resultType, defSite.symbol.typeVariableTypes))) {
       resultType = symbols.deferedType(resultType.erasure());
     }
     return resultType;
@@ -106,7 +102,7 @@ public class TypeSubstitutionSolver {
     if(resultType.isTagged(JavaType.WILDCARD)) {
       return isReturnTypeCompletelySubstituted(((WildCardType) resultType).bound, typeVariables);
     }
-    if(resultType instanceof ParametrizedTypeJavaType) {
+    if (resultType.isParameterized()) {
       for (JavaType substitutedType : ((ParametrizedTypeJavaType) resultType).typeSubstitution.substitutedTypes()) {
         if(!isReturnTypeCompletelySubstituted(substitutedType, typeVariables)) {
           return false;
@@ -119,14 +115,14 @@ public class TypeSubstitutionSolver {
 
 
   List<JavaType> applySiteSubstitutionToFormalParameters(List<JavaType> formals, JavaType site) {
-    if (isParametrizedType(site)) {
+    if (site.isParameterized()) {
       return applySubstitutionToFormalParameters(formals, ((ParametrizedTypeJavaType) site).typeSubstitution);
     }
     return formals;
   }
 
   JavaType applySiteSubstitution(JavaType type, JavaType site) {
-    if (isParametrizedType(site)) {
+    if (site.isParameterized()) {
       return applySubstitution(type, ((ParametrizedTypeJavaType) site).typeSubstitution);
     }
     return type;
@@ -166,7 +162,7 @@ public class TypeSubstitutionSolver {
     if (substitutedType != null) {
       return substitutedType;
     }
-    if (isParametrizedType(type)) {
+    if (type.isParameterized()) {
       return substituteInParametrizedType((ParametrizedTypeJavaType) type, substitution);
     }
     if (type.isTagged(JavaType.WILDCARD)) {
@@ -176,10 +172,6 @@ public class TypeSubstitutionSolver {
       return substituteInArrayType((ArrayJavaType) type, substitution);
     }
     return type;
-  }
-
-  private static boolean isParametrizedType(Type type) {
-    return type instanceof ParametrizedTypeJavaType;
   }
 
   private JavaType substituteInParametrizedType(ParametrizedTypeJavaType type, TypeSubstitution substitution) {
@@ -250,7 +242,7 @@ public class TypeSubstitutionSolver {
 
       substitution = inferTypeSubstitution(method, substitution, formalType, argType, variableArity, remainingArgTypes);
 
-      if (!isConstructor(method) && substitution.typeVariables().containsAll(method.typeVariableTypes)) {
+      if (!method.isConstructor() && substitution.typeVariables().containsAll(method.typeVariableTypes)) {
         // we found all the substitution
         break;
       }
@@ -278,9 +270,9 @@ public class TypeSubstitutionSolver {
         TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, formalElementType, newArgType, variableArity, remainingArgTypes);
         return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
       }
-    } else if (isParametrizedType(formalType)) {
+    } else if (formalType.isParameterized()) {
       List<JavaType> formalTypeSubstitutedTypes = ((ParametrizedTypeJavaType) formalType).typeSubstitution.substitutedTypes();
-      if (isParametrizedType(argType)) {
+      if (argType.isParameterized()) {
         List<JavaType> argTypeSubstitutedTypes = ((ParametrizedTypeJavaType) argType).typeSubstitution.substitutedTypes();
         TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
         return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
@@ -382,7 +374,7 @@ public class TypeSubstitutionSolver {
         if (currentBound.equals(newBound)) {
           break;
         }
-        if (newBound == null && isParametrizedType(site)) {
+        if (newBound == null && site.isParameterized()) {
           newBound = ((ParametrizedTypeJavaType) site).typeSubstitution.substitutedType(currentBound);
         }
         if (newBound == null) {
@@ -415,12 +407,12 @@ public class TypeSubstitutionSolver {
     if (target.rawType != source.rawType) {
       TypeJavaSymbol targetSymbol = target.symbol;
       Type superClass = targetSymbol.superClass();
-      if (superClass != null && isParametrizedType(superClass)) {
+      if (superClass != null && ((JavaType) superClass).isParameterized()) {
         TypeSubstitution newSub = substitutionFromSuperType((ParametrizedTypeJavaType) superClass, source);
         result = result.combine(newSub);
       }
       for (Type superInterface : targetSymbol.interfaces()) {
-        if (isParametrizedType(superInterface)) {
+        if (((JavaType) superInterface).isParameterized()) {
           TypeSubstitution newSub = substitutionFromSuperType((ParametrizedTypeJavaType) superInterface, source);
           result = result.combine(newSub);
         }

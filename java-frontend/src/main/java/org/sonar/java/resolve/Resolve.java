@@ -87,7 +87,7 @@ public class Resolve {
 
   public JavaType resolveTypeSubstitutionWithDiamondOperator(ParametrizedTypeJavaType type, JavaType definition) {
     ParametrizedTypeJavaType result = type;
-    if (isParametrizedType(definition)) {
+    if (definition.isParameterized()) {
       TypeSubstitution substitution = TypeSubstitutionSolver.substitutionFromSuperType(type, (ParametrizedTypeJavaType) definition);
       result = (ParametrizedTypeJavaType) typeSubstitutionSolver.applySubstitution(type, substitution);
     }
@@ -520,7 +520,7 @@ public class Resolve {
     JavaSymbol.MethodJavaSymbol mostSpecificMethod = (JavaSymbol.MethodJavaSymbol) mostSpecific;
     List<JavaType> thrownTypes = ((MethodJavaType) mostSpecific.type).thrown;
     JavaType returnType = ((MethodJavaType) mostSpecificMethod.type).resultType;
-    if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && !"<init>".equals(mostSpecificMethod.name)) {
+    if(applicableWithUncheckedConversion(mostSpecificMethod, callSite, typeParams) && !mostSpecificMethod.isConstructor()) {
       returnType = returnType.erasure();
       thrownTypes = erasure(thrownTypes);
     } else {
@@ -542,7 +542,7 @@ public class Resolve {
     return !candidate.isStatic() && isRawTypeOfParametrizedType(callSite) && typeParams.isEmpty();
   }
   private static boolean isRawTypeOfParametrizedType(JavaType site) {
-    return !(site instanceof ParametrizedTypeJavaType) && !site.symbol.typeVariableTypes.isEmpty();
+    return !site.isParameterized() && !site.symbol.typeVariableTypes.isEmpty();
   }
 
   private static boolean hasCompatibleArity(int formalArgSize, int argSize, boolean isVarArgs) {
@@ -592,7 +592,7 @@ public class Resolve {
       return isAcceptableType(((ArrayJavaType) arg).elementType(), ((ArrayJavaType) formal).elementType(), autoboxing);
     }
 
-    if (isParametrizedType(arg) || isParametrizedType(formal) || isWilcardType(arg) || isWilcardType(formal)) {
+    if (arg.isParameterized() || formal.isParameterized() || isWilcardType(arg) || isWilcardType(formal)) {
       return callWithRawType(arg, formal) || types.isSubtype(arg, formal) || isAcceptableByAutoboxing(arg, formal.erasure());
     }
     // fall back to behavior based on erasure
@@ -600,7 +600,7 @@ public class Resolve {
   }
 
   private boolean callWithRawType(JavaType arg, JavaType formal) {
-    return isParametrizedType(formal) && !isParametrizedType(arg) && types.isSubtype(arg, formal.erasure());
+    return formal.isParameterized() && !arg.isParameterized() && types.isSubtype(arg, formal.erasure());
   }
 
   private static boolean subtypeOfTypeVar(JavaType arg, TypeVariableJavaType formal) {
@@ -615,10 +615,6 @@ public class Resolve {
 
   private static boolean isWilcardType(JavaType type) {
     return type.isTagged(JavaType.WILDCARD);
-  }
-
-  private static boolean isParametrizedType(JavaType type) {
-    return type instanceof ParametrizedTypeJavaType;
   }
 
   private boolean isAcceptableByAutoboxing(JavaType expressionType, JavaType formalType) {

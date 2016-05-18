@@ -581,7 +581,7 @@ public class JavaSymbol implements Symbol {
         // Generics type should have same erasure see JLS8 8.4.2
 
         JavaType overrideeType = overridee.getParametersTypes().get(i);
-        if (classType instanceof ParametrizedTypeJavaType) {
+        if (classType.isParameterized()) {
           overrideeType = ((ParametrizedTypeJavaType) classType).typeSubstitution.substitutedType(overrideeType);
           if (overrideeType == null) {
             overrideeType = overridee.getParametersTypes().get(i);
@@ -597,6 +597,10 @@ public class JavaSymbol implements Symbol {
 
     public boolean isVarArgs() {
       return isFlag(Flags.VARARGS);
+    }
+
+    public boolean isConstructor() {
+      return "<init>".equals(name);
     }
 
     public void addTypeParameter(TypeVariableJavaType typeVariableType) {

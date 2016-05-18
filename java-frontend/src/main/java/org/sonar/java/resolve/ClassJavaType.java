@@ -36,7 +36,11 @@ public class ClassJavaType extends JavaType {
   List<JavaType> interfaces;
 
   public ClassJavaType(JavaSymbol.TypeJavaSymbol symbol) {
-    super(CLASS, symbol);
+    this(CLASS, symbol);
+  }
+
+  protected ClassJavaType(int tag, JavaSymbol.TypeJavaSymbol symbol) {
+    super(tag, symbol);
   }
 
   @Override
