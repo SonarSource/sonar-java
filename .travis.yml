@@ -33,7 +33,7 @@ notifications:
     rooms:
       secure: eZCNoMOh1nR+aTJsnroK7DWHgurwtQoOunNeC0pIAURne4Y7Rlztcn2uOGgqCzSZfn0ucV8Z7RSMp2ANOW7tiAYoF86/an/JoP5wnEyLo3aQFg6Dakw5gdFBfnQpVMatNAVgJDVcqhsjCR0WJy6vo0Re8y1Cm1409hJb+lCjhsM=
     template:
-      - '<a href="%{build_url}">%{repository_slug}#%{build_number}</a> - <a href="https://github.com/%{repository_slug}/tree/%{branch}">%{branch}</a> - <a href="%{compare_url}">%{commit}</a> %{commit_message} by %{author}'
+      - '<a href="%{build_url}">SonarJava#%{build_number}</a> - <a href="https://github.com/%{repository_slug}/tree/%{branch}">%{branch}</a> - <a href="%{compare_url}">%{commit}</a> %{commit_message} by %{author}'
     format: html  
     notify: true
   webhooks:
