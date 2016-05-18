@@ -79,10 +79,6 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
   @Override
   public void complete(JavaSymbol symbol) {
     LOG.debug("Completing symbol : " + symbol.name);
-    //complete outer class to set flags for inner class properly.
-    if (symbol.owner.isKind(JavaSymbol.TYP)) {
-      symbol.owner.complete();
-    }
     String bytecodeName = formFullName(symbol);
     JavaSymbol.TypeJavaSymbol classSymbol = getClassSymbol(bytecodeName);
     Preconditions.checkState(classSymbol == symbol);
