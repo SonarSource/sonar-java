@@ -490,4 +490,16 @@ public class BytecodeCompleterTest {
     assertThat(((ParametrizedTypeJavaType)bound).substitution(((ParametrizedTypeJavaType)bound).typeParameters().get(0))).isSameAs(ySymbol.type);
 
   }
+
+  @Test
+  public void test_completion_of_generic_inner_class() throws Exception {
+    Symbol.TypeSymbol clazz = bytecodeCompleter.getClassSymbol("org.sonar.java.resolve.targets.UseGenericInnerClass");
+    Symbol builder = clazz.lookupSymbols("builder").iterator().next();
+    Symbol.TypeSymbol genericInnerClass = (Symbol.TypeSymbol) builder.type().symbol().owner();
+    Symbol methodBuilder = genericInnerClass.lookupSymbols("builder").iterator().next();
+
+    JavaType resultType = ((MethodJavaType) methodBuilder.type()).resultType;
+    assertThat(resultType).isInstanceOf(ParametrizedTypeJavaType.class);
+
+  }
 }
