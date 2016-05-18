@@ -79,6 +79,9 @@ public class JavaTypeTest {
     String methodToString = new MethodJavaType(ImmutableList.<JavaType>of(), new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType,
       ImmutableList.<JavaType>of(), null).toString();
     assertThat(methodToString).isEqualTo("returns int");
+
+    String constructorToString = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null).toString();
+    assertThat(constructorToString).isEqualTo("constructor");
   }
 
   @Test
@@ -235,6 +238,17 @@ public class JavaTypeTest {
     ptt = new ParametrizedTypeJavaType(typeSymbol, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
+  }
+
+  @Test
+  public void methodJavaType_return_type() {
+    JavaType intType = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache())).intType;
+
+    MethodJavaType methodJavaType = new MethodJavaType(ImmutableList.<JavaType>of(), intType, ImmutableList.<JavaType>of(), null);
+    assertThat(methodJavaType.resultType()).isSameAs(intType);
+
+    MethodJavaType constructor = new MethodJavaType(ImmutableList.<JavaType>of(), null, ImmutableList.<JavaType>of(), null);
+    assertThat(constructor.resultType()).isNull();
   }
 
   @Test
