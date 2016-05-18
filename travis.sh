@@ -61,8 +61,8 @@ CI)
   ;;
 
 plugin|ruling)
-  if [ "$TRAVIS_BRANCH" != "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-   strongEcho "We do not run plugin or ruling tests on branches, open a pull request to run those!"
+  if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+   strongEcho "plugin or ruling tests are only run on pull requests!"
    exit 0;
   fi
 
