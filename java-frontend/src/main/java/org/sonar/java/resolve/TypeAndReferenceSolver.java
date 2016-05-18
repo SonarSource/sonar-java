@@ -554,72 +554,73 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (newClassTreeImpl.isTypeSet()) {
       return;
     }
-    Resolve.Env newClassEnv = semanticModel.getEnv(tree);
-    ExpressionTree enclosingExpression = tree.enclosingExpression();
-    TypeTree identifier = tree.identifier();
-    if (enclosingExpression != null) {
-      resolveAs(enclosingExpression, JavaSymbol.VAR);
-      Resolve.Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(),
-        newClassTreeImpl.getConstructorIdentifier().name(), JavaSymbol.TYP);
-      JavaType type = idType.type();
-      if (identifier.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-        TypeArguments typeArguments = ((ParameterizedTypeTree) identifier).typeArguments();
-        scan(typeArguments);
-        type = parametrizedTypeWithTypeArguments(type.symbol, typeArguments);
-      }
-      registerType(identifier, type);
-    } else {
-      resolveAs(identifier, JavaSymbol.TYP, newClassEnv, false);
-    }
-
     if (tree.typeArguments() != null) {
       resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
     }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
     List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
-    if (enclosingExpression != null) {
-      parameterTypes = ImmutableList.<JavaType>builder().add((JavaType) enclosingExpression.symbolType()).addAll(parameterTypes).build();
-    } else {
-      JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol = (JavaSymbol.TypeJavaSymbol) newClassTreeImpl.identifier().symbolType().symbol();
-      JavaSymbol owner = constructorIdentifierSymbol.owner();
-      if (!owner.isPackageSymbol() && !constructorIdentifierSymbol.isStatic()) {
-        parameterTypes = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(parameterTypes).build();
-      }
-    }
+    Resolve.Env newClassEnv = semanticModel.getEnv(tree);
+    ExpressionTree enclosingExpression = tree.enclosingExpression();
+
+    TypeTree typeTree = tree.identifier();
+    IdentifierTree constructorIdentifier = newClassTreeImpl.getConstructorIdentifier();
+    JavaType identifierType = resolveIdentifierType(newClassEnv, enclosingExpression, typeTree, constructorIdentifier.name());
+    JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol = (JavaSymbol.TypeJavaSymbol) identifierType.symbol();
+    parameterTypes = addImplicitOuterClassParameter(parameterTypes, constructorIdentifierSymbol);
     // FIXME SONARJAVA-1667 type arguments should not be ignored for the resolution of the constructor
-    Resolution resolution =
-      resolveConstructorSymbol(newClassTreeImpl.getConstructorIdentifier(), newClassTreeImpl.identifier().symbolType(), newClassEnv, parameterTypes);
+    Resolution resolution = resolveConstructorSymbol(constructorIdentifier, identifierType, newClassEnv, parameterTypes);
     ClassTree classBody = tree.classBody();
+    JavaType constructedType = identifierType;
     if (classBody != null) {
-      JavaType type = (JavaType) identifier.symbolType();
       ClassJavaType anonymousClassType = (ClassJavaType) classBody.symbol().type();
-      if (type.getSymbol().isFlag(Flags.INTERFACE)) {
-        anonymousClassType.interfaces = ImmutableList.of(type);
+      if (identifierType.getSymbol().isInterface()) {
+        anonymousClassType.interfaces = ImmutableList.of(identifierType);
         anonymousClassType.supertype = symbols.objectType;
       } else {
-        anonymousClassType.supertype = type;
+        anonymousClassType.supertype = identifierType;
         anonymousClassType.interfaces = ImmutableList.of();
       }
       scan(classBody);
-      registerType(tree, anonymousClassType);
-    } else {
-      JavaType returnType;
-      if (resolution.symbol().isMethodSymbol()) {
-        returnType = ((MethodJavaType) resolution.type()).resultType;
-        if (returnType.isTagged(JavaType.DEFERRED)) {
-          Tree parent = newClassTreeImpl.parent();
-          if (parent.is(Tree.Kind.MEMBER_SELECT)) {
-            returnType = resolve.parametrizedTypeWithErasure((ParametrizedTypeJavaType) getType(identifier));
-          } else {
-            // will be resolved by type inference
-            ((DeferredType) returnType).setTree(newClassTreeImpl);
-          }
+      constructedType = anonymousClassType;
+    } else if (resolution.symbol().isMethodSymbol()) {
+      constructedType = ((MethodJavaType) resolution.type()).resultType;
+      if (constructedType.isTagged(JavaType.DEFERRED)) {
+        Tree parent = newClassTreeImpl.parent();
+        if (parent.is(Tree.Kind.MEMBER_SELECT)) {
+          constructedType = resolve.parametrizedTypeWithErasure((ParametrizedTypeJavaType) identifierType);
+        } else {
+          // will be resolved by type inference
+          ((DeferredType) constructedType).setTree(newClassTreeImpl);
         }
-      } else {
-        returnType = getType(identifier);
       }
-      registerType(tree, returnType);
     }
+    registerType(tree, constructedType);
+  }
+
+  private JavaType resolveIdentifierType(Resolve.Env newClassEnv, @Nullable ExpressionTree enclosingExpression, TypeTree typeTree, String typeName) {
+    if (enclosingExpression != null) {
+      resolveAs(enclosingExpression, JavaSymbol.VAR);
+      Resolution idType = resolve.findIdentInType(newClassEnv, (JavaSymbol.TypeJavaSymbol) enclosingExpression.symbolType().symbol(), typeName, JavaSymbol.TYP);
+      JavaType type = idType.type();
+      if (typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+        TypeArguments typeArguments = ((ParameterizedTypeTree) typeTree).typeArguments();
+        scan(typeArguments);
+        type = parametrizedTypeWithTypeArguments(type.symbol, typeArguments);
+      }
+      registerType(typeTree, type);
+    } else {
+      resolveAs(typeTree, JavaSymbol.TYP, newClassEnv, false);
+    }
+    return (JavaType) typeTree.symbolType();
+  }
+
+  private static List<JavaType> addImplicitOuterClassParameter(List<JavaType> parameterTypes, JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol) {
+    List<JavaType> result = parameterTypes;
+    JavaSymbol owner = constructorIdentifierSymbol.owner();
+    if (!owner.isPackageSymbol() && !constructorIdentifierSymbol.isStatic()) {
+      result = ImmutableList.<JavaType>builder().add(owner.enclosingClass().type).addAll(parameterTypes).build();
+    }
+    return result;
   }
 
   @Override
