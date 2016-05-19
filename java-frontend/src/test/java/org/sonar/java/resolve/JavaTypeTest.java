@@ -238,6 +238,11 @@ public class JavaTypeTest {
     ptt = new ParametrizedTypeJavaType(typeSymbol, null);
     assertThat(ptt.substitution(typeVariableType)).isNull();
     assertThat(ptt.typeParameters()).isEmpty();
+
+    assertThat(ptt.isClass()).isTrue();
+    assertThat(ptt.isParameterized()).isTrue();
+    assertThat(ptt.rawType.isClass()).isTrue();
+    assertThat(ptt.rawType.isParameterized()).isFalse();
   }
 
   @Test

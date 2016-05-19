@@ -110,10 +110,22 @@ public class JavaSymbolTest {
     assertTrue(methodSymbol.isMethodSymbol());
     assertThat(methodSymbol.flags()).isEqualTo(42);
     assertThat(methodSymbol.owner()).isSameAs(typeSymbol);
+    assertThat(methodSymbol.isConstructor()).isFalse();
 
     assertThat(methodSymbol.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
     assertThat(methodSymbol.outermostClass()).isSameAs(outermostClass);
     assertThat(methodSymbol.enclosingClass()).isSameAs(typeSymbol);
+
+    JavaSymbol.MethodJavaSymbol constructor = new JavaSymbol.MethodJavaSymbol(42, "<init>", typeSymbol);
+    assertThat(constructor.kind).isEqualTo(JavaSymbol.MTH);
+    assertTrue(constructor.isMethodSymbol());
+    assertThat(constructor.flags()).isEqualTo(42);
+    assertThat(constructor.owner()).isSameAs(typeSymbol);
+    assertThat(constructor.isConstructor()).isTrue();
+
+    assertThat(constructor.packge()).isSameAs(P_PACKAGE_JAVA_SYMBOL);
+    assertThat(constructor.outermostClass()).isSameAs(outermostClass);
+    assertThat(constructor.enclosingClass()).isSameAs(typeSymbol);
   }
 
   @Test

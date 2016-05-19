@@ -69,6 +69,7 @@ public class Types {
           result = isSubtype(((ArrayJavaType) t).elementType(), ((ArrayJavaType) s).elementType());
           break;
         case JavaType.CLASS:
+        case JavaType.PARAMETERIZED:
         case JavaType.WILDCARD:
         case JavaType.TYPEVAR:
           result = t.isSubtypeOf(s);

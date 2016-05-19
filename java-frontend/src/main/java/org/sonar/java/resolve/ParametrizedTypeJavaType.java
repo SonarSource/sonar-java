@@ -20,9 +20,11 @@
 package org.sonar.java.resolve;
 
 import com.google.common.collect.Lists;
+
 import org.sonar.plugins.java.api.semantic.Type;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 public class ParametrizedTypeJavaType extends ClassJavaType {
@@ -31,11 +33,10 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
   final JavaType rawType;
 
   ParametrizedTypeJavaType(JavaSymbol.TypeJavaSymbol symbol, TypeSubstitution typeSubstitution) {
-    super(symbol);
+    super(PARAMETERIZED, symbol);
     this.rawType = symbol.getType();
     this.typeSubstitution = typeSubstitution;
   }
-
 
   @Override
   public JavaType erasure() {
@@ -64,9 +65,9 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
       return false;
     }
     if (erasure().isSubtypeOf(superType.erasure())) {
-      boolean superTypeIsParametrizedJavaType = superType instanceof org.sonar.java.resolve.ParametrizedTypeJavaType;
+      boolean superTypeIsParametrizedJavaType = ((JavaType) superType).isParameterized();
       if (superTypeIsParametrizedJavaType) {
-        return checkSubstitutedTypesCompatibility((org.sonar.java.resolve.ParametrizedTypeJavaType) superType);
+        return checkSubstitutedTypesCompatibility((ParametrizedTypeJavaType) superType);
       }
       return !superTypeIsParametrizedJavaType;
     }
@@ -76,7 +77,7 @@ public class ParametrizedTypeJavaType extends ClassJavaType {
     return false;
   }
 
-  private boolean checkSubstitutedTypesCompatibility(org.sonar.java.resolve.ParametrizedTypeJavaType superType) {
+  private boolean checkSubstitutedTypesCompatibility(ParametrizedTypeJavaType superType) {
     List<JavaType> myTypes = typeSubstitution.substitutedTypes();
     List<JavaType> itsTypes = superType.typeSubstitution.substitutedTypes();
     if (itsTypes.size() != myTypes.size()) {
