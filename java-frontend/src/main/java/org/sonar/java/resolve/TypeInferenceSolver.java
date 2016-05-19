@@ -23,6 +23,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class TypeInferenceSolver {
     this.symbols = symbols;
   }
 
-  TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
+  TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
     boolean isVarArgs = method.isVarArgs();
     int numberFormals = formals.size();
     int numberArgs = argTypes.size();
@@ -67,69 +68,40 @@ public class TypeInferenceSolver {
     return substitution;
   }
 
-  private TypeSubstitution inferTypeSubstitution(JavaSymbol.MethodJavaSymbol method, TypeSubstitution currentSubstitution, JavaType formalType, JavaType argumentType,
+  private TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, TypeSubstitution substitution, JavaType formalType, JavaType argumentType,
     boolean variableArity, List<JavaType> remainingArgTypes) {
     JavaType argType = argumentType;
     if (argType.isTagged(JavaType.DEFERRED) && ((DeferredType) argType).getUninferedType() != null) {
       argType = ((DeferredType) argType).getUninferedType();
     }
+    TypeSubstitution result = substitution;
     if (formalType.isTagged(JavaType.TYPEVAR)) {
-      completeSubstitution(currentSubstitution, formalType, argType);
+      result = completeSubstitution(substitution, formalType, argType);
     } else if (formalType.isArray()) {
-      JavaType newArgType = null;
-      if (argType.isArray()) {
-        newArgType = ((ArrayJavaType) argType).elementType;
-      } else if (variableArity) {
-        newArgType = leastUpperBound(remainingArgTypes);
-      }
-      if (newArgType != null) {
-        JavaType formalElementType = ((ArrayJavaType) formalType).elementType;
-        TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, formalElementType, newArgType, variableArity, remainingArgTypes);
-        return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
-      }
+      result = inferTypeSubstitutionInArrayType(method, substitution, (ArrayJavaType) formalType, argType, variableArity, remainingArgTypes);
     } else if (formalType.isParameterized()) {
-      List<JavaType> formalTypeSubstitutedTypes = ((ParametrizedTypeJavaType) formalType).typeSubstitution.substitutedTypes();
-      if (argType.isParameterized()) {
-        List<JavaType> argTypeSubstitutedTypes = ((ParametrizedTypeJavaType) argType).typeSubstitution.substitutedTypes();
-        TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
-        return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
-      } else if (isRawTypeOfType(argType, formalType) || isNullType(argType)) {
-        List<JavaType> fakeTypes = new ArrayList<>(formalTypeSubstitutedTypes.size());
-        for (int j = 0; j < formalTypeSubstitutedTypes.size(); j++) {
-          fakeTypes.add(symbols.objectType);
-        }
-        TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, fakeTypes);
-        return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
-      } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
-        for (JavaType superType : ((ClassJavaType) argType).symbol.superTypes()) {
-          if (sameErasure(formalType, superType)) {
-            return inferTypeSubstitution(method, currentSubstitution, formalType, superType, variableArity, remainingArgTypes);
-          }
-        }
-      }
+      result = inferTypeSubstitutionInParameterizedType(method, substitution, (ParametrizedTypeJavaType) formalType, argType, variableArity, remainingArgTypes);
     } else if (formalType.isTagged(JavaType.WILDCARD)) {
-      JavaType inferedFromArg = argType;
-      if (argType.isTagged(JavaType.WILDCARD)) {
-        inferedFromArg = ((WildCardType) argType).bound;
-      }
-      TypeSubstitution newSubstitution = inferTypeSubstitution(method, currentSubstitution, ((WildCardType) formalType).bound, inferedFromArg, variableArity, remainingArgTypes);
-      return mergeTypeSubstitutions(currentSubstitution, newSubstitution);
+      result = inferTypeSubstitutionInWildcardType(method, substitution, (WildCardType) formalType, argType, variableArity, remainingArgTypes);
     } else {
       // nothing to infer for simple class types or primitive types
     }
-    return currentSubstitution;
+    return result;
   }
 
-  private static boolean sameErasure(JavaType formalType, JavaType superType) {
-    return formalType.erasure() == superType.erasure();
-  }
-
-  private boolean isNullType(JavaType argType) {
-    return argType == symbols.nullType;
-  }
-
-  private static boolean isRawTypeOfType(JavaType argType, JavaType formalType) {
-    return argType == formalType.erasure();
+  private TypeSubstitution inferTypeSubstitutionInArrayType(MethodJavaSymbol method, TypeSubstitution substitution, ArrayJavaType formalType, JavaType argType,
+    boolean variableArity, List<JavaType> remainingArgTypes) {
+    JavaType newArgType = null;
+    if (argType.isArray()) {
+      newArgType = ((ArrayJavaType) argType).elementType;
+    } else if (variableArity) {
+      newArgType = leastUpperBound(remainingArgTypes);
+    }
+    if (newArgType != null) {
+      TypeSubstitution newSubstitution = inferTypeSubstitution(method, substitution, formalType.elementType, newArgType, variableArity, remainingArgTypes);
+      return mergeTypeSubstitutions(substitution, newSubstitution);
+    }
+    return substitution;
   }
 
   private static JavaType leastUpperBound(List<JavaType> remainingArgTypes) {
@@ -148,6 +120,60 @@ public class TypeInferenceSolver {
     }));
   }
 
+  private TypeSubstitution inferTypeSubstitutionInParameterizedType(MethodJavaSymbol method, TypeSubstitution substitution, ParametrizedTypeJavaType formalType, JavaType argType,
+    boolean variableArity, List<JavaType> remainingArgTypes) {
+    List<JavaType> formalTypeSubstitutedTypes = formalType.typeSubstitution.substitutedTypes();
+    TypeSubstitution result = substitution;
+    if (argType.isParameterized()) {
+      List<JavaType> argTypeSubstitutedTypes = ((ParametrizedTypeJavaType) argType).typeSubstitution.substitutedTypes();
+      TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, argTypeSubstitutedTypes);
+      result = mergeTypeSubstitutions(substitution, newSubstitution);
+    } else if (isRawTypeOfType(argType, formalType) || isNullType(argType)) {
+      List<JavaType> objectTypes = listOfTypes(symbols.objectType, formalTypeSubstitutedTypes.size());
+      TypeSubstitution newSubstitution = inferTypeSubstitution(method, formalTypeSubstitutedTypes, objectTypes);
+      result = mergeTypeSubstitutions(substitution, newSubstitution);
+    } else if (argType.isSubtypeOf(formalType.erasure()) && argType.isClass()) {
+      for (JavaType superType : ((ClassJavaType) argType).symbol.superTypes()) {
+        if (sameErasure(formalType, superType)) {
+          TypeSubstitution newSubstitution = inferTypeSubstitution(method, substitution, formalType, superType, variableArity, remainingArgTypes);
+          result = mergeTypeSubstitutions(substitution, newSubstitution);
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  private static boolean isRawTypeOfType(JavaType rawType, JavaType type) {
+    return rawType == type.erasure();
+  }
+
+  private static List<JavaType> listOfTypes(JavaType type, int size) {
+    List<JavaType> result = new ArrayList<>(size);
+    for (int j = 0; j < size; j++) {
+      result.add(type);
+    }
+    return result;
+  }
+
+  private static boolean sameErasure(JavaType type1, JavaType type2) {
+    return type1.erasure() == type2.erasure();
+  }
+
+  private boolean isNullType(JavaType type) {
+    return type == symbols.nullType;
+  }
+
+  private TypeSubstitution inferTypeSubstitutionInWildcardType(MethodJavaSymbol method, TypeSubstitution substitution, WildCardType formalType, JavaType argType,
+    boolean variableArity, List<JavaType> remainingArgTypes) {
+    JavaType newArgType = argType;
+    if (argType.isTagged(JavaType.WILDCARD)) {
+      newArgType = ((WildCardType) argType).bound;
+    }
+    TypeSubstitution newSubstitution = inferTypeSubstitution(method, substitution, formalType.bound, newArgType, variableArity, remainingArgTypes);
+    return mergeTypeSubstitutions(substitution, newSubstitution);
+  }
+
   private static TypeSubstitution mergeTypeSubstitutions(TypeSubstitution currentSubstitution, TypeSubstitution newSubstitution) {
     TypeSubstitution result = new TypeSubstitution();
     for (Map.Entry<TypeVariableJavaType, JavaType> substitution : currentSubstitution.substitutionEntries()) {
@@ -161,8 +187,9 @@ public class TypeInferenceSolver {
     return result;
   }
 
-  private void completeSubstitution(TypeSubstitution currentSubstitution, JavaType formalType, JavaType argType) {
-    if (formalType.isTagged(JavaType.TYPEVAR) && currentSubstitution.substitutedType(formalType) == null) {
+  private TypeSubstitution completeSubstitution(TypeSubstitution substitution, JavaType formalType, JavaType argType) {
+    TypeSubstitution result = new TypeSubstitution(substitution);
+    if (formalType.isTagged(JavaType.TYPEVAR) && substitution.substitutedType(formalType) == null) {
       JavaType expectedType = argType;
       if (expectedType.isPrimitive()) {
         expectedType = expectedType.primitiveWrapperType;
@@ -170,7 +197,8 @@ public class TypeInferenceSolver {
         expectedType = symbols.objectType;
       }
       TypeVariableJavaType typeVar = (TypeVariableJavaType) formalType;
-      currentSubstitution.add(typeVar, expectedType);
+      result.add(typeVar, expectedType);
     }
+    return result;
   }
 }
