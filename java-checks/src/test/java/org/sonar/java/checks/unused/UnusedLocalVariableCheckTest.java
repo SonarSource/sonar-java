@@ -27,6 +27,7 @@ public class UnusedLocalVariableCheckTest {
   @Test
   public void test() {
     JavaCheckVerifier.verify("src/test/files/checks/unused/UnusedLocalVariableCheck.java", new UnusedLocalVariableCheck());
+    JavaCheckVerifier.verifyNoIssueWithoutSemantic("src/test/files/checks/unused/UnusedLocalVariableCheck.java", new UnusedLocalVariableCheck());
   }
 
 }

@@ -23,6 +23,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -36,7 +37,6 @@ import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
-import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.UnaryExpressionTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
@@ -74,7 +74,7 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(
       Tree.Kind.BLOCK, Tree.Kind.STATIC_INITIALIZER,
-      Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT, Tree.Kind.TRY_STATEMENT,
+      Tree.Kind.FOR_STATEMENT, Tree.Kind.FOR_EACH_STATEMENT,
       Tree.Kind.EXPRESSION_STATEMENT, Tree.Kind.COMPILATION_UNIT);
   }
 
@@ -90,14 +90,9 @@ public class UnusedLocalVariableCheck extends IssuableSubscriptionVisitor {
       } else if (tree.is(Tree.Kind.FOR_EACH_STATEMENT)) {
         ForEachStatement forEachStatement = (ForEachStatement) tree;
         addVariable(forEachStatement.variable());
-      } else if (tree.is(Tree.Kind.TRY_STATEMENT)) {
-        TryStatementTree tryStatementTree = (TryStatementTree) tree;
-        for (VariableTree resource : tryStatementTree.resources()) {
-          addVariable(resource);
-        }
       } else if (tree.is(Tree.Kind.EXPRESSION_STATEMENT)) {
         leaveExpressionStatement((ExpressionStatementTree) tree);
-      } else if (tree.is(Tree.Kind.COMPILATION_UNIT)) {
+      } else {
         checkVariableUsages();
         variables.clear();
         assignments.clear();
