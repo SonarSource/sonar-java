@@ -12,7 +12,7 @@ class Foo {
     } catch (Exception e) {
     }
 
-    try (Stream foo = new Stream()) { // Noncompliant {{Remove this unused "foo" local variable.}}
+    try (Stream foo = new Stream()) { // Compliant
     }
 
     for (int a: new int[]{ 0, 1, 2 }) { // Noncompliant
