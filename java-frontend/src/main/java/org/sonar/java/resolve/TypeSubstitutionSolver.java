@@ -243,11 +243,15 @@ public class TypeSubstitutionSolver {
         }
         currentBound = newBound;
       }
-      if (!(typeParam.isTagged(JavaType.WILDCARD) && ((WildCardType) typeParam).boundType == WildCardType.BoundType.UNBOUNDED) && !typeParam.isSubtypeOf(currentBound)) {
+      if (!isUnboundedWildcard(typeParam) && !typeParam.isSubtypeOf(currentBound)) {
         return false;
       }
     }
     return true;
+  }
+
+  private static boolean isUnboundedWildcard(JavaType type) {
+    return type.isTagged(JavaType.WILDCARD) && ((WildCardType) type).boundType == WildCardType.BoundType.UNBOUNDED;
   }
 
   JavaType erasureSubstitution(ParametrizedTypeJavaType type) {
