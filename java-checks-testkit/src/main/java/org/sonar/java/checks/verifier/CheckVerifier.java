@@ -202,7 +202,7 @@ public abstract class CheckVerifier {
       String json = Resources.toString(resource, Charsets.UTF_8);
       return LINEAR_FUNC_PATTERN.matcher(json).find();
     } catch (IOException e) {
-      Fail.fail("Failed to open json file for rule "+ruleKey+" ", e);
+      // Failed to open json file, as this is not part of API yet, we should not fail because of this
     }
     return false;
   }
