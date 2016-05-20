@@ -281,13 +281,12 @@ public class JavaCheckVerifierTest {
   }
 
   @Test
-  public void test_rpec_key_with_no_json() throws Exception {
+  public void test_rspec_key_with_no_json_should_not_fail() throws Exception {
     IssuableSubscriptionVisitor visitor = new NoJsonVisitor().withDefaultIssues();
     try {
       JavaCheckVerifier.verify(FILENAME_ISSUES, visitor);
+    } catch (Exception e) {
       Fail.fail();
-    } catch (AssertionError e) {
-      assertThat(e).hasMessage("Failed to open json file for rule Dummy_fake_JSON ");
     }
   }
 
