@@ -30,6 +30,32 @@ CI)
        -Dsonar.host.url=$SONAR_HOST_URL \
        -Dsonar.projectVersion=$SONAR_PROJECT_VERSION \
        -Dsonar.login=$SONAR_TOKEN
+  
+  elif [[ "${TRAVIS_BRANCH}" == "branch-"* ]] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
+  # no dory analysis on release branch
+
+  # Fetch all commit history so that SonarQube has exact blame information
+  # for issue auto-assignment
+  # This command can fail with "fatal: --unshallow on a complete repository does not make sense" 
+  # if there are not enough commits in the Git repository (even if Travis executed git clone --depth 50).
+  # For this reason errors are ignored with "|| true"
+  git fetch --unshallow || true 
+
+  # get current version from pom
+  CURRENT_VERSION=`maven_expression "project.version"`
+  
+  if [[ $CURRENT_VERSION =~ "-SNAPSHOT" ]]; then
+    echo "======= Found SNAPSHOT version ======="
+    # Do not deploy a SNAPSHOT version but the release version related to this build
+    set_maven_build_version $TRAVIS_BUILD_NUMBER
+  else
+    echo "======= Found RELEASE version ======="
+  fi
+
+  export MAVEN_OPTS="-Xmx1536m -Xms128m"
+  mvn deploy \
+        -Pdeploy-sonarsource,release \
+        -B -e -V $*
 
   elif [ "$TRAVIS_PULL_REQUEST" != "false" ] && [ -n "${GITHUB_TOKEN-}" ]; then
     # For security reasons environment variables are not available on the pull requests
