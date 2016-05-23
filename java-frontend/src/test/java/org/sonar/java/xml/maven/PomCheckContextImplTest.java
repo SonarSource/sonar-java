@@ -138,6 +138,7 @@ public class PomCheckContextImplTest {
     LocatedTreeImpl tree = new LocatedTreeImpl() {
     };
     tree.setStartLocation(new XmlLocation(line, 0));
+    tree.setEndLocation(new XmlLocation(line, 0));
     return tree;
   }
 
@@ -145,6 +146,7 @@ public class PomCheckContextImplTest {
     LocatedTreeImpl tree = new LocatedTreeImpl() {
     };
     tree.setStartLocation(new XmlLocation(line, column, 0));
+    tree.setEndLocation(new XmlLocation(line, column+2, 2));
     return tree;
   }
 }
