@@ -20,6 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.TryStatementTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,7 +111,8 @@ public class InterruptedExceptionCheck extends IssuableSubscriptionVisitor {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree tree) {
-      if(tree.symbol().owner().type().isSubtypeOf("java.lang.Thread") && "interrupt".equals(tree.symbol().name()) && tree.arguments().isEmpty()) {
+      Symbol symbol = tree.symbol();
+      if (!symbol.isUnknown() && symbol.owner().type().isSubtypeOf("java.lang.Thread") && "interrupt".equals(symbol.name()) && tree.arguments().isEmpty()) {
         threadInterrupted = true;
         return;
       }

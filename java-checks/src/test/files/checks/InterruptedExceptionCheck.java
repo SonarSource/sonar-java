@@ -1,4 +1,13 @@
+enum Level {
+  WARN;
+}
+interface Log {
+  void log(Level level, String s, Exception e);
+}
+
 class A {
+  static final Log LOGGER;
+
   public void run () {
     try {
       while (true) {
@@ -8,6 +17,18 @@ class A {
       LOGGER.log(Level.WARN, "Interrupted!", e);
     }catch (InterruptedException e) { // Noncompliant [[sc=13;ec=35]] {{Either re-interrupt this method or rethrow the "InterruptedException".}}
         LOGGER.log(Level.WARN, "Interrupted!", e);
+    }
+  }
+
+  public void runUnknownSymbol () {
+    try {
+      while (true) {
+        // do stuff
+      }
+    }catch (java.io.IOException e) {
+      LOGGER.log(Level.WARN, "Interrupted!", e);
+    }catch (InterruptedException e) { // Noncompliant
+      unknownField.log(Level.WARN, "Interrupted!", e);
     }
   }
 
