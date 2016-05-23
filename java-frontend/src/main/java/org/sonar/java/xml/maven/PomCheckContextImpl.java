@@ -74,7 +74,7 @@ public class PomCheckContextImpl extends XmlCheckContextImpl implements PomCheck
       // in case of unknown start column
       startColumn = 0;
     }
-    TextSpan ts = new TextSpan(startLine, startColumn, startLine, startColumn);
+    TextSpan ts = new TextSpan(startLine, startColumn, location.tree.endLocation().line(), location.tree.endLocation().column());
     return new AnalyzerMessage(check, file, ts, location.msg, 0);
   }
 }
