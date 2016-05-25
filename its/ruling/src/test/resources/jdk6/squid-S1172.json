@@ -44,9 +44,6 @@
 'jdk6:java/awt/datatransfer/Clipboard.java':[
 134,
 ],
-'jdk6:java/awt/datatransfer/DataFlavor.java':[
-1342,
-],
 'jdk6:java/awt/dnd/DropTarget.java':[
 515,
 ],
@@ -100,7 +97,6 @@
 546,
 619,
 637,
-1139,
 ],
 'jdk6:java/net/URLStreamHandler.java':[
 513,
@@ -121,9 +117,6 @@
 ],
 'jdk6:java/nio/charset/CharsetEncoder.java':[
 659,
-],
-'jdk6:java/rmi/RMISecurityException.java':[
-47,
 ],
 'jdk6:java/security/AllPermission.java':[
 63,
