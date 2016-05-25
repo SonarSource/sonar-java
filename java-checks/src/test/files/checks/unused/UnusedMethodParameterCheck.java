@@ -126,4 +126,11 @@ class Annotations {
   public void bar(@Nonnull Object event, int arg2) { // Noncompliant {{Remove this unused method parameter "event".}} [[sc=35;ec=40]]
     System.out.println(arg2);
   }
+
+  @MyAnnotation
+  void qix(int a, int b) { // Compliant
+    compute(a);
+  }
 }
+
+@interface MyAnnotation {}
