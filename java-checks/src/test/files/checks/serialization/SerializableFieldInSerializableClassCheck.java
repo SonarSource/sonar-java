@@ -25,8 +25,8 @@ enum A {
 class Person2 implements Serializable {
   Address address; //Compliant: read/write methods are implemented
   transient Address address2;
-  private void writeObject(java.io.ObjectOutputStream out) throws IOException {}
-  private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {}
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {}
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {}
 }
 interface MyCustomInterface extends Serializable {}
 class Person3 implements MyCustomInterface {
@@ -113,4 +113,16 @@ abstract class MyAbstractNonSerializableMap<K,V> extends MyNonSerializableMap<K,
   static MyAbstractNonSerializableMap foo() {
     return null;
   }
+}
+
+class IncompleteSerializableMethods1 implements Serializable {
+  Address address; // Noncompliant - read/write methods are not exactly matching signatures (throwing wrong types)
+  private void writeObject(java.io.ObjectOutputStream out) {}
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException {}
+}
+
+class IncompleteSerializableMethods2 implements Serializable {
+  Address address; // Noncompliant - write methods is wrongly implemented
+  private void writeObject(java.io.ObjectOutputStream out) throws java.lang.ClassCastException {} // wrong thrown type
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {}
 }
