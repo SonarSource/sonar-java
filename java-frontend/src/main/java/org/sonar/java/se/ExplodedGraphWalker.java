@@ -161,7 +161,9 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
     methodTree = tree;
     constraintManager = new ConstraintManager();
     workList = new LinkedList<>();
-    LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
+    if(DEBUG_MODE_ACTIVATED) {
+      LOG.debug("Exploring Exploded Graph for method " + tree.simpleName().name() + " at line " + ((JavaTree) tree).getLine());
+    }
     programState = ProgramState.EMPTY_STATE;
     steps = 0;
     for (ProgramState startingState : startingStates(tree, programState)) {
@@ -178,7 +180,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
       programState = node.programState;
       if (programPosition.block.successors().isEmpty()) {
         checkerDispatcher.executeCheckEndOfExecutionPath(constraintManager);
-        LOG.debug("End of potential path reached!");
         continue;
       }
       try {
@@ -352,7 +353,6 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
   }
 
   private void visit(Tree tree, @Nullable Tree terminator) {
-    LOG.debug("visiting node " + tree.kind().name() + " at line " + ((JavaTree) tree).getLine());
     if (!checkerDispatcher.executeCheckPreStatement(tree)) {
       // Some of the check pre statement sink the execution on this node.
       return;
