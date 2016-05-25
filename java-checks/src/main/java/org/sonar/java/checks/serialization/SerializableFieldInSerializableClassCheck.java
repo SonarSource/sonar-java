@@ -20,6 +20,7 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
@@ -34,12 +35,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S1948")
@@ -111,18 +112,19 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     return isStatic(variableTree) || isTransientSerializableOrInjected(variableTree);
   }
 
-  private static boolean isCollectionOfSerializable(TypeTree typeTree) {
-    Type type = typeTree.symbolType();
-    if (isSubtypeOfCollectionApi(type) && typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      TypeArguments typeArgs = ((ParameterizedTypeTree) typeTree).typeArguments();
-      for (Tree t : typeArgs) {
-        if (!isSerializable(t)) {
-          return false;
+  private static boolean isCollectionOfSerializable(Tree tree) {
+    if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      ParameterizedTypeTree typeTree = (ParameterizedTypeTree) tree;
+      if (isSubtypeOfCollectionApi(typeTree.symbolType())) {
+        for (Tree t : typeTree.typeArguments()) {
+          if (!isCollectionOfSerializable(t)) {
+            return false;
+          }
         }
+        return true;
       }
-      return true;
     }
-    return false;
+    return isSerializable(tree);
   }
 
   private static boolean isSubtypeOfCollectionApi(Type type) {

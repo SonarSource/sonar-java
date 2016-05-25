@@ -41,7 +41,10 @@ class Person5 implements Serializable {
   Integer integer; //Compliant
 }
 
+class B<T> {}
+
 class Person6<E, F extends Serializable> implements Serializable {
+  private B<Objects> bs; // Noncompliant
   private List<Person6> persons; // Compliant
   private List things; // Noncompliant {{Make "things" transient or serializable.}}
   private List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
@@ -64,6 +67,9 @@ class Person7 implements Serializable {
   private Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
   private Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
   private Map<String, String> ok; // Compliant
+
+  private Map<String, List<String>> nestedOk; // Compliant
+  private Map<String, List<Object>> nestedLeft; // Noncompliant {{Make "nestedLeft" transient or serializable.}}
 
   private Map<String, String> nok1 = new MyNonSerializableMap<>(); // Noncompliant
   private MyNonSerializableMap<String, String> nok2; // Noncompliant
