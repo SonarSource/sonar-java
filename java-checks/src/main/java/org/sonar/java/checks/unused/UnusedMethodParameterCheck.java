@@ -76,7 +76,11 @@ public class UnusedMethodParameterCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean isExcluded(MethodTree tree) {
-    return ((MethodTreeImpl) tree).isMainMethod() || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
+    return ((MethodTreeImpl) tree).isMainMethod() || isAnnotated(tree) || isOverriding(tree) || isSerializableMethod(tree) || isDesignedForExtension(tree);
+  }
+
+  private static boolean isAnnotated(MethodTree tree) {
+    return !tree.modifiers().annotations().isEmpty();
   }
 
   private static boolean isDesignedForExtension(MethodTree tree) {
