@@ -25,8 +25,8 @@ enum A {
 class Person2 implements Serializable {
   Address address; //Compliant: read/write methods are implemented
   transient Address address2;
-  private void writeObject(java.io.ObjectOutputStream out) throws IOException {}
-  private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {}
+  private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {}
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {}
 }
 interface MyCustomInterface extends Serializable {}
 class Person3 implements MyCustomInterface {
@@ -41,7 +41,10 @@ class Person5 implements Serializable {
   Integer integer; //Compliant
 }
 
+class B<T> {}
+
 class Person6<E, F extends Serializable> implements Serializable {
+  private B<Objects> bs; // Noncompliant
   private List<Person6> persons; // Compliant
   private List things; // Noncompliant {{Make "things" transient or serializable.}}
   private List<MyObject> objects; // Noncompliant {{Make "objects" transient or serializable.}}
@@ -64,6 +67,9 @@ class Person7 implements Serializable {
   private Map<String, Object> right; // Noncompliant {{Make "right" transient or serializable.}}
   private Map<Object, String> left; // Noncompliant {{Make "left" transient or serializable.}}
   private Map<String, String> ok; // Compliant
+
+  private Map<String, List<String>> nestedOk; // Compliant
+  private Map<String, List<Object>> nestedLeft; // Noncompliant {{Make "nestedLeft" transient or serializable.}}
 
   private Map<String, String> nok1 = new MyNonSerializableMap<>(); // Noncompliant
   private MyNonSerializableMap<String, String> nok2; // Noncompliant
@@ -107,4 +113,16 @@ abstract class MyAbstractNonSerializableMap<K,V> extends MyNonSerializableMap<K,
   static MyAbstractNonSerializableMap foo() {
     return null;
   }
+}
+
+class IncompleteSerializableMethods1 implements Serializable {
+  Address address; // Noncompliant - read/write methods are not exactly matching signatures (throwing wrong types)
+  private void writeObject(java.io.ObjectOutputStream out) {}
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException {}
+}
+
+class IncompleteSerializableMethods2 implements Serializable {
+  Address address; // Noncompliant - write methods is wrongly implemented
+  private void writeObject(java.io.ObjectOutputStream out) throws java.lang.ClassCastException {} // wrong thrown type
+  private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, java.lang.ClassNotFoundException {}
 }

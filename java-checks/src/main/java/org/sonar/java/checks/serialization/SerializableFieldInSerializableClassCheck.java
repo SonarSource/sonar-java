@@ -20,7 +20,9 @@
 package org.sonar.java.checks.serialization;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.resolve.JavaType;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
@@ -34,12 +36,12 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ParameterizedTypeTree;
 import org.sonar.plugins.java.api.tree.Tree;
-import org.sonar.plugins.java.api.tree.TypeArguments;
 import org.sonar.plugins.java.api.tree.TypeTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 import org.sonar.plugins.java.api.tree.WildcardTree;
 
 import javax.annotation.Nullable;
+
 import java.util.List;
 
 @Rule(key = "S1948")
@@ -111,18 +113,19 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
     return isStatic(variableTree) || isTransientSerializableOrInjected(variableTree);
   }
 
-  private static boolean isCollectionOfSerializable(TypeTree typeTree) {
-    Type type = typeTree.symbolType();
-    if (isSubtypeOfCollectionApi(type) && typeTree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
-      TypeArguments typeArgs = ((ParameterizedTypeTree) typeTree).typeArguments();
-      for (Tree t : typeArgs) {
-        if (!isSerializable(t)) {
-          return false;
+  private static boolean isCollectionOfSerializable(Tree tree) {
+    if (tree.is(Tree.Kind.PARAMETERIZED_TYPE)) {
+      ParameterizedTypeTree typeTree = (ParameterizedTypeTree) tree;
+      if (isSubtypeOfCollectionApi(typeTree.symbolType())) {
+        for (Tree t : typeTree.typeArguments()) {
+          if (!isCollectionOfSerializable(t)) {
+            return false;
+          }
         }
+        return true;
       }
-      return true;
     }
-    return false;
+    return isSerializable(tree);
   }
 
   private static boolean isSubtypeOfCollectionApi(Type type) {
@@ -136,17 +139,38 @@ public class SerializableFieldInSerializableClassCheck extends IssuableSubscript
   private static boolean hasSpecialHandlingSerializationMethods(ClassTree classTree) {
     boolean hasWriteObject = false;
     boolean hasReadObject = false;
+    String classFullyQualifiedName = classTree.symbol().type().fullyQualifiedName();
     for (Tree member : classTree.members()) {
+
+      MethodMatcher writeObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("writeObject").addParameter("java.io.ObjectOutputStream");
+      MethodMatcher readObjectMatcher = MethodMatcher.create().typeDefinition(classFullyQualifiedName).name("readObject").addParameter("java.io.ObjectInputStream");
+
       if (member.is(Tree.Kind.METHOD)) {
         MethodTree methodTree = (MethodTree) member;
-        // FIXME detect methods based on type of arg and throws, not arity.
-        if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE) && methodTree.parameters().size() == 1) {
-          hasWriteObject |= "writeObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 1;
-          hasReadObject |= "readObject".equals(methodTree.simpleName().name()) && methodTree.throwsClauses().size() == 2;
+        if (ModifiersUtils.hasModifier(methodTree.modifiers(), Modifier.PRIVATE)) {
+          hasWriteObject |= writeObjectMatcher.matches(methodTree) && methodThrows(methodTree, "java.io.IOException");
+          hasReadObject |= readObjectMatcher.matches(methodTree) && methodThrows(methodTree, "java.io.IOException", "java.lang.ClassNotFoundException");
         }
       }
     }
     return hasReadObject && hasWriteObject;
+  }
+
+  private static boolean methodThrows(MethodTree methodTree, String... throwClauseFullyQualifiedNames) {
+    List<Type> thrownTypes = methodTree.symbol().thrownTypes();
+    if (thrownTypes.isEmpty() || thrownTypes.size() != throwClauseFullyQualifiedNames.length) {
+      return false;
+    }
+    for (Type thrownType : thrownTypes) {
+      boolean match = false;
+      for (String fullyQualifiedName : throwClauseFullyQualifiedNames) {
+        match |= thrownType.is(fullyQualifiedName);
+      }
+      if (!match) {
+        return false;
+      }
+    }
+    return true;
   }
 
   private static boolean isTransientSerializableOrInjected(VariableTree member) {
