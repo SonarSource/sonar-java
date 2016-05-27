@@ -1,7 +1,11 @@
 language: java
 sudo: false
 jdk:
-- oraclejdk7
+- oraclejdk8
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
 git:
   submodules: false
 install: true

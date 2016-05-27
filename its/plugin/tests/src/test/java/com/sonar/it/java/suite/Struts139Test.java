@@ -141,14 +141,15 @@ public class Struts139Test {
   @Test
   public void unit_test_metrics() {
     setCurrentProjectWithAccessors();
-    assertThat(getProjectMeasure("coverage").getValue()).isEqualTo(25.5, Delta.delta(0.1));
-    assertThat(getCoreModuleMeasure("coverage").getValue()).isEqualTo(37.1, Delta.delta(0.2));
-    assertThat(getProjectMeasure("line_coverage").getValue()).isEqualTo(26.0);
+    assertThat(getProjectMeasure("lines_to_cover").getValue()).isEqualTo(15474, Delta.delta(10));
+    assertThat(getProjectMeasure("coverage").getValue()).isEqualTo(25.1, Delta.delta(0.1));
+    assertThat(getCoreModuleMeasure("coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
+    assertThat(getProjectMeasure("line_coverage").getValue()).isEqualTo(25.5);
     assertThat(getProjectMeasure("branch_coverage").getValue()).isEqualTo(24.1);
     // overall coverage is the same as UT if no IT.
-    assertThat(getCoreModuleMeasure("overall_coverage").getValue()).isEqualTo(37.1, Delta.delta(0.2));
-    assertThat(getProjectMeasure("overall_coverage").getValue()).isEqualTo(25.5, Delta.delta(0.1));
-    assertThat(getProjectMeasure("overall_line_coverage").getValue()).isEqualTo(26.0);
+    assertThat(getCoreModuleMeasure("overall_coverage").getValue()).isEqualTo(36.8, Delta.delta(0.2));
+    assertThat(getProjectMeasure("overall_coverage").getValue()).isEqualTo(25.1, Delta.delta(0.1));
+    assertThat(getProjectMeasure("overall_line_coverage").getValue()).isEqualTo(25.5);
     assertThat(getProjectMeasure("overall_branch_coverage").getValue()).isEqualTo(24.1);
     assertThat(getProjectMeasure("tests").getIntValue()).isEqualTo(307);
     assertThat(getProjectMeasure("test_execution_time").getIntValue()).isGreaterThan(200);
