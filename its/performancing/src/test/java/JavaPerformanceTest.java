@@ -64,7 +64,7 @@ public class JavaPerformanceTest {
 
     double time = sensorTime(build.getProjectDir(), result.getLogs(), SENSOR_NAME);
 
-    double expected = 169;
+    double expected = 179;
     assertThat(time).isEqualTo(expected, Delta.delta(expected * 0.04));
   }
 
