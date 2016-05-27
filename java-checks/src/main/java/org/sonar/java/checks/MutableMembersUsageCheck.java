@@ -20,7 +20,10 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.check.Rule;
+import org.sonar.java.matcher.MethodMatcher;
+import org.sonar.java.matcher.NameCriteria;
 import org.sonar.plugins.java.api.JavaFileScanner;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -30,6 +33,7 @@ import org.sonar.plugins.java.api.tree.BaseTreeVisitor;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.MemberSelectExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.ReturnStatementTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -46,13 +50,14 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   private static final List<String> MUTABLE_TYPES = ImmutableList.of(
     "java.util.Collection",
     "java.util.Date",
-    "java.util.Hashtable"
-  );
+    "java.util.Hashtable");
   private static final List<String> IMMUTABLE_TYPES = ImmutableList.of(
     "java.util.Collections.UnmodifiableCollection",
     "java.util.Collections.UnmodifiableMap",
-    "com.google.common.collect.ImmutableCollection"
-  );
+    "com.google.common.collect.ImmutableCollection");
+
+  private static final MethodMatcher UNMODIFIABLE_COLLECTION_CALL = MethodMatcher.create().typeDefinition("java.util.Collections").name(NameCriteria.startsWith("unmodifiable"))
+    .withNoParameterConstraint();
 
   private JavaFileScannerContext context;
   private Deque<List<Symbol>> parametersStack = new LinkedList<>();
@@ -77,7 +82,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   @Override
   public void visitAssignmentExpression(AssignmentExpressionTree tree) {
     super.visitAssignmentExpression(tree);
-    if (!isMutableType(tree.expression().symbolType())) {
+    if (!isMutableType(tree.expression())) {
       return;
     }
     ExpressionTree variable = tree.variable();
@@ -98,7 +103,7 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   public void visitVariable(VariableTree tree) {
     super.visitVariable(tree);
     ExpressionTree initializer = tree.initializer();
-    if (initializer == null || !isMutableType(initializer.symbolType())) {
+    if (initializer == null || !isMutableType(initializer)) {
       return;
     }
     checkStore(initializer);
@@ -117,15 +122,56 @@ public class MutableMembersUsageCheck extends BaseTreeVisitor implements JavaFil
   public void visitReturnStatement(ReturnStatementTree tree) {
     super.visitReturnStatement(tree);
     ExpressionTree expressionTree = tree.expression();
-    if (expressionTree == null || !isMutableType(expressionTree.symbolType())) {
+    if (expressionTree == null || !isMutableType(expressionTree)) {
       return;
     }
     if (expressionTree.is(Tree.Kind.IDENTIFIER)) {
       IdentifierTree identifierTree = (IdentifierTree) expressionTree;
-      if (identifierTree.symbol().isPrivate()) {
+      if (identifierTree.symbol().isPrivate() && !isImmutableConstant((Symbol.VariableSymbol) identifierTree.symbol())) {
         context.reportIssue(this, identifierTree, "Return a copy of \"" + identifierTree.name() + "\".");
       }
     }
+  }
+
+  private static boolean isImmutableConstant(Symbol.VariableSymbol symbol) {
+    if (symbol.isStatic() && symbol.isFinal()) {
+      VariableTree declaration = symbol.declaration();
+      // symbol is private, so declaration can only be null if assignment is done in static block
+      if (declaration.initializer() != null) {
+        return !isMutableType(declaration.initializer());
+      }
+      return !assignementsOfMutableType(symbol.usages());
+    }
+
+    return false;
+  }
+
+  private static boolean assignementsOfMutableType(List<IdentifierTree> usages) {
+    for (IdentifierTree usage : usages) {
+      Tree current = usage;
+      Tree parent = usage.parent();
+      do {
+        if (parent.is(Tree.Kind.ASSIGNMENT)) {
+          break;
+        }
+        current = parent;
+        parent = current.parent();
+      } while (parent != null);
+      if (parent != null) {
+        AssignmentExpressionTree assignment = (AssignmentExpressionTree) parent;
+        if (assignment.variable().equals(current) && isMutableType(assignment.expression())) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private static boolean isMutableType(ExpressionTree expressionTree) {
+    if (expressionTree.is(Tree.Kind.METHOD_INVOCATION) && UNMODIFIABLE_COLLECTION_CALL.matches((MethodInvocationTree) expressionTree)) {
+      return false;
+    }
+    return isMutableType(expressionTree.symbolType());
   }
 
   private static boolean isMutableType(Type type) {

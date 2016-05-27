@@ -2,6 +2,8 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
 import com.google.common.collect.ImmutableCollection;
 import java.util.Collections;
 
@@ -45,7 +47,6 @@ class A {
     List<String> plop = Collections.unmodifiableList(list);
     return plop;
   }
-
 }
 
 class C {
@@ -119,5 +120,52 @@ class ReturnRef {
 
   private Hashtable<Integer,String> getValuesOK(){
     return (Hashtable<Integer, String>) ht.clone(); // shallow copy
+  }
+}
+
+class Fields {
+  private static final List<String> UNMODIFIABLE = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
+  private static final List<String> UNMODIFIABLE2;
+  private static final Object UNMODIFIABLE_OBJECT;
+  static {
+    UNMODIFIABLE2 = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
+    UNMODIFIABLE_OBJECT = UNMODIFIABLE2;
+  }
+  private static final ImmutableCollection UNMODIFIABLE3 = getImmutableCollection();
+
+  private static final List<String> MODIFIABLE = new ArrayList<>();
+  private static final List<String> MODIFIABLE2;
+  static {
+    MODIFIABLE2 = new ArrayList<>();
+  }
+
+  private static List<String> unmodifiable_not_final = Collections.unmodifiableList(Arrays.asList("A", "B", "C"));
+
+  public List<String> foo1() {
+    return UNMODIFIABLE; // Compliant
+  }
+
+  public List<String> foo2() {
+    return UNMODIFIABLE2; // Compliant
+  }
+
+  public List<String> foo3() {
+    return UNMODIFIABLE3; // Compliant
+  }
+
+  public List<String> bar1() {
+    return unmodifiable_not_final; // Noncompliant
+  }
+
+  public List<String> bar2() {
+    return MODIFIABLE; // Noncompliant
+  }
+
+  public List<String> bar3() {
+    return MODIFIABLE2; // Noncompliant
+  }
+
+  private static ImmutableCollection getImmutableCollection() {
+    return null;
   }
 }
