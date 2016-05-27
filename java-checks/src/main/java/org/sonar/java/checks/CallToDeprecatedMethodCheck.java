@@ -59,7 +59,7 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
       if (isDeprecated(symbol) && nestedDeprecationLevel == 0) {
         String name;
         if (isConstructor(symbol)) {
-          name = symbol.owner().name();
+          name = symbol.owner().name(); 
         } else {
           name = symbol.name();
         }
@@ -81,7 +81,7 @@ public class CallToDeprecatedMethodCheck extends IssuableSubscriptionVisitor {
 
   @Override
   public void leaveNode(Tree tree) {
-    if (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree)) {
+    if (hasSemantic() && (isDeprecatedMethod(tree) || isDeprecatedClassTree(tree))) {
       nestedDeprecationLevel--;
     }
   }
