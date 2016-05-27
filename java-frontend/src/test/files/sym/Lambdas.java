@@ -78,3 +78,12 @@ class test {
   }
 
 }
+
+class Overload<T> {
+  // Overloaded method resolved by lambdas can lead to IOOBException if arity is not checked.
+  void foo(java.util.function.Consumer<T> c) {}
+  void foo(Runnable r) {}
+  void test() {
+    new Overload<String>().foo(() -> sout("")).foo(s -> sout(s));
+  }
+}
