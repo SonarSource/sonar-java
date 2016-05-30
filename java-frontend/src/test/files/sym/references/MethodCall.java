@@ -1,4 +1,4 @@
-package references; import java.util.List;
+package references; import java.util.List;import java.util.Collection;
 
 @SuppressWarnings("all")
 class MethodCall extends Parent {
@@ -300,5 +300,34 @@ class variadicGenericMethods {
 
   static <T> S<T> from(T t) {return null;}
   static <T> S<T> from(T... values) {return null;}
+
+}
+
+public static final class Builder<B> {
+  public <T extends B> Builder<B> putAll() {
+    Class<? extends T> type;
+    T value;
+    cast(type, value);
+    return this;
+  }
+
+  private static <B, T extends B> T cast(Class<T> type, B value) {
+    return null;
+  }
+}
+
+class Predicate<S> {
+  public static <T> Predicate<T> in(Collection<? extends T> inParam) {
+    return null;
+  }
+}
+class Maps<V> {
+  private boolean removeIf(Predicate<? super V> valuePredicate) {
+    return true;
+  }
+
+ public boolean removeAll(Collection<?> collection) {
+    return removeIf(Predicate.in(collection));
+  }
 
 }

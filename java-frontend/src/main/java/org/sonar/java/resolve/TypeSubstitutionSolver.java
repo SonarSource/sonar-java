@@ -230,7 +230,7 @@ public class TypeSubstitutionSolver {
   private boolean isValidSubstitution(TypeSubstitution candidate, TypeVariableJavaType typeVar, JavaType typeParam, JavaType site) {
     for (JavaType bound : typeVar.bounds) {
       JavaType currentBound = applySubstitution(bound, candidate);
-      while (currentBound.isTagged(JavaType.TYPEVAR)) {
+      while (currentBound.isTagged(JavaType.TYPEVAR) && !currentBound.symbol().owner().isMethodSymbol()) {
         JavaType newBound = candidate.substitutedType(currentBound);
         if (currentBound.equals(newBound)) {
           break;

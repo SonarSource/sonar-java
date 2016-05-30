@@ -105,7 +105,10 @@ public class SymbolTableTest {
     JavaSymbol applyMethod = result.symbol("apply");
     assertThat(result.reference(83, 12)).isSameAs(applyMethod);
     assertThat(result.reference(89, 61)).isSameAs(applyMethod);
-    assertThat(applyMethod.usages()).hasSize(2);
+    // this method does not compile but is resolved whereas it should not.
+    assertThat(result.reference(85, 12)).isSameAs(applyMethod);
+
+    assertThat(applyMethod.usages()).hasSize(3);
   }
 
   @Test
@@ -876,6 +879,11 @@ public class SymbolTableTest {
 
     assertThat(result.reference(298, 5)).isSameAs(result.symbol("from", 302));
     assertThat(result.reference(297, 5)).isSameAs(result.symbol("from", 301));
+
+    assertThat(result.reference(310, 5)).isSameAs(result.symbol("cast", 314));
+    assertThat(result.reference(330, 31)).isSameAs(result.symbol("in", 320));
+    assertThat(result.reference(330, 12)).isSameAs(result.symbol("removeIf", 325));
+
   }
 
   @Test
