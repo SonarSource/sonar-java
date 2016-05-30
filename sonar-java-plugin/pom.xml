@@ -48,13 +48,13 @@
       <version>${project.version}</version>
     </dependency>
 
+    <!--<dependency>-->
+      <!--<groupId>org.sonarsource.sonarqube</groupId>-->
+      <!--<artifactId>sonar-java-api</artifactId>-->
+      <!--<scope>provided</scope>-->
+    <!--</dependency>-->
     <dependency>
-      <groupId>org.codehaus.sonar</groupId>
-      <artifactId>sonar-java-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.sonar</groupId>
+      <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
       <scope>provided</scope>
     </dependency>
@@ -112,7 +112,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>3600000</maxsize>
+                  <maxsize>5600000</maxsize>
                   <minsize>2000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>

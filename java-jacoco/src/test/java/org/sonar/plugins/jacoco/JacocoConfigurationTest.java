@@ -26,6 +26,8 @@ import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 
+import java.io.File;
+
 import static org.fest.assertions.Assertions.assertThat;
 
 public class JacocoConfigurationTest {
@@ -37,7 +39,7 @@ public class JacocoConfigurationTest {
   @Before
   public void setUp() {
     settings = new Settings(new PropertyDefinitions().addComponents(JacocoConfiguration.getPropertyDefinitions()));
-    fileSystem = new DefaultFileSystem(null);
+    fileSystem = new DefaultFileSystem((File)null);
     jacocoSettings = new JacocoConfiguration(settings, fileSystem);
   }
 
@@ -45,12 +47,12 @@ public class JacocoConfigurationTest {
   public void shouldExecuteOnProject() throws Exception {
     assertThat(jacocoSettings.shouldExecuteOnProject(true)).isFalse();
     assertThat(jacocoSettings.shouldExecuteOnProject(false)).isFalse();
-    DefaultInputFile phpFile = new DefaultInputFile("src/foo/bar.php");
+    DefaultInputFile phpFile = new DefaultInputFile("", "src/foo/bar.php");
     phpFile.setLanguage("php");
     fileSystem.add(phpFile);
     assertThat(jacocoSettings.shouldExecuteOnProject(true)).isFalse();
     assertThat(jacocoSettings.shouldExecuteOnProject(false)).isFalse();
-    DefaultInputFile javaFile = new DefaultInputFile("src/foo/bar.java");
+    DefaultInputFile javaFile = new DefaultInputFile("", "src/foo/bar.java");
     javaFile.setLanguage("java");
     fileSystem.add(javaFile);
     assertThat(jacocoSettings.shouldExecuteOnProject(true)).isTrue();

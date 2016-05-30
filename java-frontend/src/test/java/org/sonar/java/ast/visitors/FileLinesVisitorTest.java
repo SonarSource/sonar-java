@@ -29,8 +29,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.FileLinesContext;
-import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.JavaSquid;
 import org.sonar.java.SonarComponents;
@@ -53,16 +51,11 @@ public class FileLinesVisitorTest {
 
   private JavaConfiguration conf;
   private File baseDir;
-  private Project sonarProject;
 
   @Before
   public void setUp() throws Exception {
-    sonarProject = mock(Project.class);
     conf = new JavaConfiguration(Charsets.UTF_8);
-    ProjectFileSystem pfs = mock(ProjectFileSystem.class);
     baseDir = new File("src/test/files/metrics");
-    when(sonarProject.getFileSystem()).thenReturn(pfs);
-    when(pfs.getBasedir()).thenReturn(baseDir);
   }
 
   private void checkLines(String filename, FileLinesContext context) {

@@ -20,8 +20,6 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.sonar.check.Rule;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
 import org.sonar.plugins.java.api.tree.ClassTree;
@@ -29,8 +27,8 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S3306")
 public class ConstructorInjectionCheck extends IssuableSubscriptionVisitor {
@@ -46,18 +44,14 @@ public class ConstructorInjectionCheck extends IssuableSubscriptionVisitor {
       return;
     }
     List<Tree> members = ((ClassTree) tree).members();
-    List<MethodTree> constructors = filterByKind(members, Tree.Kind.CONSTRUCTOR);
-    for (MethodTree constructor : constructors) {
-      if (isPrivateConstructor(constructor)) {
-        return;
-      }
+    Optional<Tree> first = members.stream().filter(t -> t.is(Tree.Kind.CONSTRUCTOR) && isPrivateConstructor((MethodTree) t)).findFirst();
+    if(first.isPresent()) {
+      return;
     }
-    List<VariableTree> fields = filterByKind(members, Tree.Kind.VARIABLE);
-    for (VariableTree field : fields) {
-      if (isAnnotatedWithInject(field)) {
-        reportIssue(field.simpleName(), "Use constructor injection for this field.");
-      }
-    }
+    members.stream()
+      .filter(t -> t.is(Tree.Kind.VARIABLE) && isAnnotatedWithInject((VariableTree) t))
+      .forEach(field -> reportIssue(((VariableTree) field).simpleName(), "Use constructor injection for this field.")
+    );
   }
 
   private static boolean isPrivateConstructor(MethodTree constructor) {
@@ -66,18 +60,6 @@ public class ConstructorInjectionCheck extends IssuableSubscriptionVisitor {
 
   private static boolean isAnnotatedWithInject(VariableTree field) {
     return field.symbol().metadata().isAnnotatedWith("javax.inject.Inject");
-  }
-
-  @SuppressWarnings("unchecked")
-  private static <X extends Tree> List<X> filterByKind(List<? extends Tree> list, final Tree.Kind kind) {
-    List<Tree> filteredList = new ArrayList<>(list);
-    CollectionUtils.filter(filteredList, new Predicate() {
-      @Override
-      public boolean evaluate(Object object) {
-        return ((Tree) object).is(kind);
-      }
-    });
-    return (List<X>) filteredList;
   }
 
 }

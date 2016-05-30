@@ -27,11 +27,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.sonar.api.batch.SensorContext;
+import org.sonar.api.batch.fs.InputComponent;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.fs.TextRange;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
+import org.sonar.api.batch.sensor.issue.NewIssue;
+import org.sonar.api.batch.sensor.issue.NewIssueLocation;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.issue.Issuable;
 import org.sonar.api.issue.Issue;
@@ -50,11 +54,9 @@ import java.util.Collection;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.fest.assertions.Fail.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyCollectionOf;
 import static org.mockito.Matchers.anyDouble;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -124,7 +126,6 @@ public class SonarComponentsTest {
     assertThat(sonarComponents.getResourcePerspectives()).isEqualTo(resourcePerspectives);
     assertThat(sonarComponents.getJavaClasspath()).isEmpty();
     assertThat(sonarComponents.getJavaTestClasspath()).isEqualTo(javaTestClasspathList);
-    assertThat(sonarComponents.issuableFor(mock(InputFile.class))).isEqualTo(issuable);
     assertThat(sonarComponents.highlightableFor(file)).isEqualTo(highlightable);
     assertThat(sonarComponents.symbolizableFor(file)).isEqualTo(symbolizable);
     assertThat(sonarComponents.fileLinesContextFor(file)).isEqualTo(fileLinesContext);
@@ -178,15 +179,10 @@ public class SonarComponentsTest {
   public void creation_of_both_types_test_checks() {
     JavaCheck expectedCheck = new CustomCheck();
     JavaCheck expectedTestCheck = new CustomTestCheck();
-    CheckRegistrar expectedRegistrar = new CheckRegistrar() {
-      @Override
-      public void register(RegistrarContext registrarContext) {
-        registrarContext.registerClassesForRepository(
-          REPOSITORY_NAME,
-          Lists.<Class<? extends JavaCheck>>newArrayList(CustomCheck.class),
-          Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class));
-      }
-    };
+    CheckRegistrar expectedRegistrar = registrarContext -> registrarContext.registerClassesForRepository(
+      REPOSITORY_NAME,
+      Lists.<Class<? extends JavaCheck>>newArrayList(CustomCheck.class),
+      Lists.<Class<? extends JavaCheck>>newArrayList(CustomTestCheck.class));
 
     when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(Lists.newArrayList(expectedTestCheck));
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null, null, checkFactory, context, new CheckRegistrar[] {
@@ -211,7 +207,7 @@ public class SonarComponentsTest {
 
     Issuable issuable = mock(Issuable.class);
 
-    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(null);
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, null, null, null, checkFactory, context, new CheckRegistrar[] {
       expectedRegistrar
@@ -227,20 +223,15 @@ public class SonarComponentsTest {
     CheckRegistrar expectedRegistrar = getRegistrar(expectedCheck);
 
     DefaultFileSystem fileSystem = new DefaultFileSystem(new File(""));
-    fileSystem.add(new DefaultInputFile("file.java"));
     File file = new File("file.java");
 
-    Issuable issuable = mock(Issuable.class);
-    when(resourcePerspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(null);
-    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
-
     SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fileSystem, null, null, checkFactory, context, new CheckRegistrar[] {
       expectedRegistrar
     });
 
     sonarComponents.addIssue(file, expectedCheck, 0, "message", null);
-    verify(issuable, never()).addIssue(any(Issue.class));
   }
 
   @Test
@@ -250,21 +241,30 @@ public class SonarComponentsTest {
 
     DefaultFileSystem fileSystem = new DefaultFileSystem(new File(""));
     File file = new File("file.java");
-    InputFile inputFile = new DefaultInputFile("file.java");
+    DefaultInputFile inputFile = new DefaultInputFile("", "file.java");
+    inputFile.setLines(45);
+    int[] linesOffset = new int[45];
+    linesOffset[35] = 12;
+    linesOffset[42] = 1;
+    inputFile.setOriginalLineOffsets(linesOffset);
+    inputFile.setLastValidOffset(420);
     fileSystem.add(inputFile);
+    context = mock(SensorContext.class);
+    NewIssue newIssue = mock(NewIssue.class);
+    when(newIssue.forRule(any(RuleKey.class))).thenReturn(newIssue);
+    when(newIssue.gap(anyDouble())).thenReturn(newIssue);
+    when(context.newIssue()).thenReturn(newIssue);
 
-    Issuable issuable = mock(Issuable.class);
-    Issuable.IssueBuilder issueBuilder = mock(Issuable.IssueBuilder.class);
-    when(issuable.newIssueBuilder()).thenReturn(issueBuilder);
-    when(issueBuilder.ruleKey(any(RuleKey.class))).thenReturn(issueBuilder);
-    when(issueBuilder.message(anyString())).thenReturn(issueBuilder);
-    when(issueBuilder.line(anyInt())).thenReturn(issueBuilder);
-    when(issueBuilder.effortToFix(anyDouble())).thenReturn(issueBuilder);
-    when(resourcePerspectives.as(eq(Issuable.class), any(InputFile.class))).thenReturn(issuable);
-    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<JavaCheck>());
+    NewIssueLocation newIssueLocation = mock(NewIssueLocation.class);
+    when(newIssue.newLocation()).thenReturn(newIssueLocation);
+    when(newIssueLocation.at(any(TextRange.class))).thenReturn(newIssueLocation);
+    when(newIssueLocation.on(any(InputComponent.class))).thenReturn(newIssueLocation);
+
+
+    when(this.checks.all()).thenReturn(Lists.newArrayList(expectedCheck)).thenReturn(new ArrayList<>());
     when(this.checks.ruleKey(any(JavaCheck.class))).thenReturn(mock(RuleKey.class));
 
-    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fileSystem, null, null, checkFactory, context, new CheckRegistrar[] {
+    SonarComponents sonarComponents = new SonarComponents(fileLinesContextFactory, resourcePerspectives, fileSystem, null, null, checkFactory, context, new CheckRegistrar[]{
       expectedRegistrar
     });
 
@@ -273,14 +273,7 @@ public class SonarComponentsTest {
     sonarComponents.addIssue(new File("."), expectedCheck, 42, "message on line", 1.0);
     sonarComponents.addIssue(new File("unknown_file"), expectedCheck, 42, "message on line", 1.0);
     sonarComponents.reportIssue(new AnalyzerMessage(expectedCheck, file, 35, "other message", 0));
-    verify(issuable, times(3)).addIssue(any(Issue.class));
-
-    try {
-      sonarComponents.reportIssueAfterSQ52(mock(AnalyzerMessage.class), RuleKey.of("squid", "S109"), inputFile, null);
-      fail("NoClassDefFoundError expected");
-    } catch (NoClassDefFoundError e) {
-      assertThat(e.getMessage()).isEqualTo("org/sonar/api/batch/fs/InputComponent");
-    }
+    verify(context, times(3)).newIssue();
   }
 
   private static CheckRegistrar getRegistrar(final JavaCheck expectedCheck) {

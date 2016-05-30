@@ -22,8 +22,6 @@ package org.sonar.plugins.surefire;
 import org.fest.assertions.Assertions;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
@@ -32,12 +30,10 @@ import org.sonar.api.config.Settings;
 import org.sonar.api.measures.CoreMetrics;
 import org.sonar.api.measures.Metric;
 import org.sonar.api.resources.Project;
-import org.sonar.api.resources.ProjectFileSystem;
 import org.sonar.api.resources.Qualifiers;
 import org.sonar.api.resources.Resource;
 import org.sonar.api.resources.Scopes;
 import org.sonar.api.scan.filesystem.PathResolver;
-import org.sonar.api.test.IsResource;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
@@ -67,19 +63,14 @@ public class SurefireSensorTest {
   @Before
   public void before() {
     project = mock(Project.class);
-    fs = new DefaultFileSystem(new File("src/test/resource"));
-    DefaultInputFile javaFile = new DefaultInputFile("src/org/foo/java");
+    fs = new DefaultFileSystem(new File("src/test/resources"));
+    DefaultInputFile javaFile = new DefaultInputFile("", "src/org/foo/java");
     javaFile.setLanguage("java");
     fs.add(javaFile);
     perspectives = mock(ResourcePerspectives.class);
 
     javaResourceLocator = mock(JavaResourceLocator.class);
-    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(new Answer<Resource>() {
-      @Override
-      public Resource answer(InvocationOnMock invocation) throws Throwable {
-        return resource((String) invocation.getArguments()[0]);
-      }
-    });
+    when(javaResourceLocator.findResourceByClassName(anyString())).thenAnswer(invocation -> resource((String) invocation.getArguments()[0]));
 
     surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), fs, pathResolver);
   }
@@ -98,7 +89,7 @@ public class SurefireSensorTest {
 
   @Test
   public void should_not_execute_if_filesystem_does_not_contains_java_files() {
-    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem(null), pathResolver);
+    surefireSensor = new SurefireSensor(new SurefireJavaParser(perspectives, javaResourceLocator), mock(Settings.class), new DefaultFileSystem((File)null), pathResolver);
     Assertions.assertThat(surefireSensor.shouldExecuteOnProject(project)).isFalse();
   }
 
@@ -107,11 +98,11 @@ public class SurefireSensorTest {
     Settings settings = mock(Settings.class);
     when(settings.getString(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)).thenReturn("unknown");
 
-    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
-    when(projectFileSystem.resolvePath("unknown")).thenReturn(new File("src/test/resources/unknown"));
-
-    Project project = mock(Project.class);
-    when(project.getFileSystem()).thenReturn(projectFileSystem);
+//    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
+//    when(projectFileSystem.resolvePath("unknown")).thenReturn(new File("src/test/resources/unknown"));
+//
+//    Project project = mock(Project.class);
+//    when(project.getFileSystem()).thenReturn(projectFileSystem);
 
     SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings, fs, pathResolver);
     surefireSensor.analyse(project, mockContext());
@@ -248,4 +239,5 @@ public class SurefireSensorTest {
     verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.SKIPPED_TESTS), eq(2d));
     verify(context).saveMeasure(eq(resource("org.sonar.Foo")), eq(CoreMetrics.TEST_SUCCESS_DENSITY), eq(50d));
   }
+
 }

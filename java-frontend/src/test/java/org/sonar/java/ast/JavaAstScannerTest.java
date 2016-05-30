@@ -71,7 +71,7 @@ public class JavaAstScannerTest {
   @Before
   public void setUp() throws Exception {
     context = mock(SensorContext.class);
-    fs = new DefaultFileSystem(null);
+    fs = new DefaultFileSystem((File) null);
   }
 
   @Test

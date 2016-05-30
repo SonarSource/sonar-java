@@ -23,7 +23,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
@@ -31,7 +31,6 @@ import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.rule.CheckFactory;
 import org.sonar.api.batch.rule.Checks;
 import org.sonar.api.component.ResourcePerspectives;
-import org.sonar.api.issue.Issuable;
 import org.sonar.api.measures.FileLinesContext;
 import org.sonar.api.measures.FileLinesContextFactory;
 import org.sonar.api.rule.RuleKey;
@@ -46,10 +45,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-public class SonarComponents implements BatchExtension {
-
-  private static final boolean IS_SONARQUBE_52 = isSonarQube52();
+@BatchSide
+public class SonarComponents {
 
   private final FileLinesContextFactory fileLinesContextFactory;
   private final ResourcePerspectives resourcePerspectives;
@@ -114,10 +111,6 @@ public class SonarComponents implements BatchExtension {
 
   public Highlightable highlightableFor(File file) {
     return resourcePerspectives.as(Highlightable.class, inputFromIOFile(file));
-  }
-
-  public Issuable issuableFor(InputPath inputPath) {
-    return resourcePerspectives.as(Issuable.class, inputPath);
   }
 
   public List<File> getJavaClasspath() {
@@ -201,15 +194,11 @@ public class SonarComponents implements BatchExtension {
       return;
     }
     Double cost = analyzerMessage.getCost();
-    if (IS_SONARQUBE_52) {
-      reportIssueAfterSQ52(analyzerMessage, key, inputPath, cost);
-    } else {
-      reportIssueBeforeSQ52(inputPath, key, cost, analyzerMessage.getMessage(), analyzerMessage.getLine());
-    }
+    reportIssue(analyzerMessage, key, inputPath, cost);
   }
 
   @VisibleForTesting
-  void reportIssueAfterSQ52(AnalyzerMessage analyzerMessage, RuleKey key, InputPath inputPath, Double cost) {
+  void reportIssue(AnalyzerMessage analyzerMessage, RuleKey key, InputPath inputPath, Double cost) {
     JavaIssue issue = JavaIssue.create(context, key, cost);
     AnalyzerMessage.TextSpan textSpan = analyzerMessage.primaryLocation();
     if (textSpan == null) {
@@ -226,24 +215,4 @@ public class SonarComponents implements BatchExtension {
     issue.save();
   }
 
-  private void reportIssueBeforeSQ52(InputPath inputFile, RuleKey key, @Nullable Double cost, String message, @Nullable Integer line) {
-    Issuable issuable = issuableFor(inputFile);
-    if (issuable != null) {
-      Issuable.IssueBuilder newIssueBuilder = issuable.newIssueBuilder()
-        .ruleKey(key)
-        .message(message)
-        .line(line)
-        .effortToFix(cost);
-      issuable.addIssue(newIssueBuilder.build());
-    }
-  }
-
-  private static boolean isSonarQube52() {
-    try {
-      Issuable.IssueBuilder.class.getMethod("newLocation");
-      return true;
-    } catch (NoSuchMethodException e) {
-      return false;
-    }
-  }
 }

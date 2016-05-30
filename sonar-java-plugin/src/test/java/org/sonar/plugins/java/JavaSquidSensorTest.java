@@ -59,23 +59,23 @@ import static org.mockito.Mockito.when;
 
 public class JavaSquidSensorTest {
 
-  private final DefaultFileSystem fileSystem = new DefaultFileSystem(null);
+  private final DefaultFileSystem fileSystem = new DefaultFileSystem((File) null);
   private JavaSquidSensor sensor;
 
   @Before
   public void setUp() {
     sensor = new JavaSquidSensor(new JavaClasspath(mock(Project.class),
-      new Settings(), new DefaultFileSystem(null)), mock(SonarComponents.class), fileSystem,
+      new Settings(), fileSystem), mock(SonarComponents.class), fileSystem,
       mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter());
   }
 
   @Test
   public void should_execute_on_java_project() {
     Project project = mock(Project.class);
-    fileSystem.add(new DefaultInputFile("fake.php").setLanguage("php"));
+    fileSystem.add(new DefaultInputFile("", "fake.php").setLanguage("php"));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
 
-    fileSystem.add(new DefaultInputFile("fake.java").setLanguage("java"));
+    fileSystem.add(new DefaultInputFile("", "fake.java").setLanguage("java"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 
@@ -93,9 +93,9 @@ public class JavaSquidSensorTest {
   private void testIssueCreation(InputFile.Type onType, int expectedIssues) {
     Settings settings = new Settings();
     DefaultFileSystem fs = new DefaultFileSystem(new File("src/test/java/"));
-    String effectiveKey = "src/test/java/org/sonar/plugins/java/JavaSquidSensorTest.java";
+    String effectiveKey = "org/sonar/plugins/java/JavaSquidSensorTest.java";
     File file = new File(effectiveKey);
-    fs.add(new DefaultInputFile(file.getPath()).setFile(file).setLanguage("java").setType(onType).setKey(effectiveKey));
+    fs.add(new DefaultInputFile("", file.getPath()).setLanguage("java").setType(onType));
     Project project = mock(Project.class);
     JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
 

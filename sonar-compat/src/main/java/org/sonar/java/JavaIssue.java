@@ -38,7 +38,7 @@ public final class JavaIssue {
   public static JavaIssue create(SensorContext context, RuleKey ruleKey, @Nullable Double effortToFix) {
     NewIssue newIssue = context.newIssue()
       .forRule(ruleKey)
-      .effortToFix(effortToFix);
+      .gap(effortToFix);
     return new JavaIssue(newIssue);
   }
 

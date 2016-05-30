@@ -17,22 +17,30 @@
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
-package org.sonar.plugins.java;
+package org.sonar.plugins.surefire;
 
-import org.junit.Test;
-import org.sonar.api.batch.fs.internal.DefaultFileSystem;
-import org.sonar.api.batch.rule.CheckFactory;
-import org.sonar.api.component.ResourcePerspectives;
+import org.apache.commons.lang.ObjectUtils;
+import org.mockito.ArgumentMatcher;
+import org.sonar.api.resources.Resource;
 
-import java.io.File;
+public class IsResource extends ArgumentMatcher<Resource> {
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+  private String scope;
+  private String qualifier;
+  private String key;
 
-public class JavaCommonRulesDecoratorTest {
-  @Test
-  public void test_declaration() throws Exception {
-    JavaCommonRulesDecorator decorator = new JavaCommonRulesDecorator(new DefaultFileSystem((File)null), mock(CheckFactory.class), mock(ResourcePerspectives.class));
-    assertThat(decorator.language()).isEqualTo(Java.KEY);
+  public IsResource(String scope, String qualifier) {
+    this.scope = scope;
+    this.qualifier = qualifier;
+  }
+  public IsResource(String scope, String qualifier, String key) {
+    this(scope, qualifier);
+    this.key = key;
+  }
+
+  @Override
+  public boolean matches(Object o) {
+    Resource r = (Resource) o;
+    return ObjectUtils.equals(r.getScope(), scope) && ObjectUtils.equals(r.getQualifier(), qualifier) && (key == null || r.getKey().equals(key));
   }
 }

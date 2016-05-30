@@ -20,7 +20,7 @@
 package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.collections.CollectionUtils;
+import com.google.common.collect.ImmutableMultiset;
 import org.sonar.check.Rule;
 import org.sonar.java.resolve.JavaSymbol;
 import org.sonar.java.resolve.JavaType;
@@ -75,7 +75,7 @@ public class RedundantAbstractMethodCheck extends IssuableSubscriptionVisitor {
   }
 
   private static boolean differentThrows(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {
-    return !CollectionUtils.isEqualCollection(method.thrownTypes(), overridee.thrownTypes());
+    return !ImmutableMultiset.copyOf(method.thrownTypes()).equals(ImmutableMultiset.copyOf(overridee.thrownTypes()));
   }
 
   private static boolean differentReturnType(JavaSymbol.MethodJavaSymbol method, JavaSymbol.MethodJavaSymbol overridee) {

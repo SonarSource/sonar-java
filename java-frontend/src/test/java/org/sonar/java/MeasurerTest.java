@@ -142,7 +142,7 @@ public class MeasurerTest {
    */
   private void checkMetric(boolean separateAccessorsFromMethods, File baseDir, String filename, String metric, double expectedValue) {
     context = mock(SensorContext.class);
-    DefaultInputFile inputFile = new DefaultInputFile(filename);
+    DefaultInputFile inputFile = new DefaultInputFile("", filename);
     fs.add(inputFile);
     when(context.getResource(any(InputPath.class))).thenReturn(mock(Resource.class));
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));

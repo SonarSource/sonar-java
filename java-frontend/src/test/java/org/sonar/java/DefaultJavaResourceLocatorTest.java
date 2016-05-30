@@ -49,7 +49,7 @@ public class DefaultJavaResourceLocatorTest {
     File file = new File("src/test/java/org/sonar/java/DefaultJavaResourceLocatorTest.java");
     when(sensorContext.getResource(any(InputPath.class))).thenReturn(org.sonar.api.resources.File.create(file.getPath()));
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
-    fs.add(new DefaultInputFile(file.getPath()));
+    fs.add(new DefaultInputFile("", file.getPath()));
     DefaultJavaResourceLocator jrl = new DefaultJavaResourceLocator(fs, javaClasspath);
     jrl.setSensorContext(sensorContext);
     org.sonar.java.ast.JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(jrl));

@@ -54,7 +54,7 @@ public class XmlFileSensorTest {
 
   @Before
   public void setUp() {
-    fileSystem = new DefaultFileSystem(null);
+    fileSystem = new DefaultFileSystem((File)null);
     sensor = new XmlFileSensor(mock(SonarComponents.class), fileSystem);
   }
 
@@ -66,13 +66,13 @@ public class XmlFileSensorTest {
   @Test
   public void should_execute_on_project_having_xml() {
     Project project = mock(Project.class);
-    fileSystem.add(new DefaultInputFile("fake.java").setLanguage(Java.KEY));
+    fileSystem.add(new DefaultInputFile("","fake.java").setLanguage(Java.KEY));
     assertThat(sensor.shouldExecuteOnProject(project)).isFalse();
 
-    fileSystem.add(new DefaultInputFile("fake.xml"));
+    fileSystem.add(new DefaultInputFile("", "fake.xml"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
 
-    fileSystem.add(new DefaultInputFile("myModule/pom.xml"));
+    fileSystem.add(new DefaultInputFile("", "myModule/pom.xml"));
     assertThat(sensor.shouldExecuteOnProject(project)).isTrue();
   }
 
@@ -80,7 +80,7 @@ public class XmlFileSensorTest {
   public void test_issues_creation() throws Exception {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     final File file = new File("src/test/files/maven/pom.xml");
-    fs.add(new DefaultInputFile(file.getPath()).setFile(file));
+    fs.add(new DefaultInputFile("", file.getPath()));
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     XmlFileSensor sensor = new XmlFileSensor(sonarComponents, fs);
 

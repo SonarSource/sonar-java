@@ -63,7 +63,7 @@ public class StrutsTest {
     DefaultFileSystem fs = new DefaultFileSystem(prjDir);
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
-      fs.add(new DefaultInputFile(file.getPath()));
+      fs.add(new DefaultInputFile("",file.getPath()));
     }
     Measurer measurer = new Measurer(fs, context, separateAccessorsFromMethods, mock(NoSonarFilter.class));
     JavaResourceLocator javaResourceLocator = mock(JavaResourceLocator.class);

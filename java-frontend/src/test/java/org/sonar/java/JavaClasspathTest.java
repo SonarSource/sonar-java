@@ -45,7 +45,7 @@ public class JavaClasspathTest {
   @Before
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    DefaultInputFile inputFile = new DefaultInputFile("foo.java");
+    DefaultInputFile inputFile = new DefaultInputFile("","foo.java");
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.MAIN);
     fs.add(inputFile);
@@ -196,13 +196,16 @@ public class JavaClasspathTest {
   public void libraries_without_dir() throws Exception {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "hello.jar");
-    fs.setBaseDir(new File("src/test/files/classpath/"));
     checkIllegalStateException("No files nor directories matching 'hello.jar'");
   }
 
   @Test
   public void libraries_should_read_dir_of_class_files() {
-    fs.setBaseDir(new File("src/test/files/"));
+    fs = new DefaultFileSystem(new File("src/test/files/"));
+    DefaultInputFile inputFile = new DefaultInputFile("","foo.java");
+    inputFile.setLanguage("java");
+    inputFile.setType(InputFile.Type.MAIN);
+    fs.add(inputFile);
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "classpath");
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).hasSize(3);
@@ -226,7 +229,7 @@ public class JavaClasspathTest {
   public void sonar_binaries_should_not_check_for_existence_of_files_when_no_sources() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "toto/**/hello.jar");
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    DefaultInputFile inputFile = new DefaultInputFile("plop.java");
+    DefaultInputFile inputFile = new DefaultInputFile("", "plop.java");
     inputFile.setType(InputFile.Type.TEST);
     inputFile.setLanguage("java");
     fs.add(inputFile);

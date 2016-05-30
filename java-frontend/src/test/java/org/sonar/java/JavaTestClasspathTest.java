@@ -43,7 +43,7 @@ public class JavaTestClasspathTest {
   @Before
   public void setUp() throws Exception {
     fs = new DefaultFileSystem(new File("src/test/files/classpath/"));
-    DefaultInputFile inputFile = new DefaultInputFile("foo.java");
+    DefaultInputFile inputFile = new DefaultInputFile("", "foo.java");
     inputFile.setLanguage("java");
     inputFile.setType(InputFile.Type.TEST);
     fs.add(inputFile);
@@ -72,7 +72,6 @@ public class JavaTestClasspathTest {
   public void libraries_without_dir() throws Exception {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES, "bin");
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES, "hello.jar");
-    fs.setBaseDir(new File("src/test/files/classpath/"));
     checkIllegalStateException("No files nor directories matching 'hello.jar'");
   }
 

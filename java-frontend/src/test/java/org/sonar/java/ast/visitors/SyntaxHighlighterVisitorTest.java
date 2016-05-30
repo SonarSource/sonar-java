@@ -174,6 +174,12 @@ public class SyntaxHighlighterVisitorTest {
     }
 
     @Override
+    public HighlightingBuilder highlight(int startLine, int startLineOffset, int endLine, int endLineOffset, String typeOfText) {
+      // TODO implement this properly for cases requiring it.
+      return null;
+    }
+
+    @Override
     public void done() {
       done = true;
     }

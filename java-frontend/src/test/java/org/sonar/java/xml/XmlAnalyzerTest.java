@@ -82,7 +82,7 @@ public class XmlAnalyzerTest {
   public void should_not_scan_file_with_parsing_issue() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(PARSE_ISSUE_POM);
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile).setLanguage("xml"));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()).setLanguage("xml"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
@@ -96,7 +96,7 @@ public class XmlAnalyzerTest {
   public void should_not_scan_invalid_pom_file() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(INVALID_POM);
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile).setLanguage("xml"));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()).setLanguage("xml"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
@@ -110,7 +110,7 @@ public class XmlAnalyzerTest {
   public void should_interrupt_analysis_when_InterruptedException_is_thrown() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File pomFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile(pomFile.getAbsolutePath()).setFile(pomFile));
+    fs.add(new DefaultInputFile("", pomFile.getAbsolutePath()));
     XmlCheckThrowingException check = new XmlCheckThrowingException(new RuntimeException("Analysis cancelled"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, check);
 
@@ -125,7 +125,7 @@ public class XmlAnalyzerTest {
   public void should_scan_xml_file_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
@@ -139,7 +139,7 @@ public class XmlAnalyzerTest {
   public void should_scan_pom_file_with_xml_check() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK);
@@ -153,7 +153,7 @@ public class XmlAnalyzerTest {
   public void should_scan_pom_file_with_pom_check() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, POM_CHECK);
@@ -167,7 +167,7 @@ public class XmlAnalyzerTest {
   public void should_scan_xml_file__when_no_check_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents);
@@ -181,7 +181,7 @@ public class XmlAnalyzerTest {
   public void should_not_run_pom_check_when_no_pom_file_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File xmlFile = new File("src/test/files/xml/parsing.xml");
-    fs.add(new DefaultInputFile(xmlFile.getAbsolutePath()).setFile(xmlFile).setLanguage("xml"));
+    fs.add(new DefaultInputFile("", xmlFile.getAbsolutePath()).setLanguage("xml"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, XML_CHECK, POM_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, XML_CHECK, POM_CHECK);
@@ -222,7 +222,7 @@ public class XmlAnalyzerTest {
   public void should_not_scan_when_no_xml_check_provided() {
     DefaultFileSystem fs = new DefaultFileSystem(new File(""));
     File pomFile = new File(VALID_POM);
-    fs.add(new DefaultInputFile(pomFile.getAbsolutePath()).setFile(pomFile).setLanguage("xml"));
+    fs.add(new DefaultInputFile("", pomFile.getAbsolutePath()).setLanguage("xml"));
     SonarComponents sonarComponents = createSonarComponentsMock(fs, JAVA_CHECK);
 
     XmlAnalyzer analyzer = new XmlAnalyzer(sonarComponents, JAVA_CHECK);
