@@ -34,9 +34,11 @@ import java.util.Set;
 public class TypeInferenceSolver {
 
   private final Symbols symbols;
+  private final Types types;
 
-  public TypeInferenceSolver(Symbols symbols) {
+  public TypeInferenceSolver(ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
     this.symbols = symbols;
+    this.types = new Types(parametrizedTypeCache, symbols);
   }
 
   TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
@@ -104,8 +106,8 @@ public class TypeInferenceSolver {
     return substitution;
   }
 
-  private static JavaType leastUpperBound(List<JavaType> remainingArgTypes) {
-    return (JavaType) Types.leastUpperBound(mapToBoxedSet(remainingArgTypes));
+  private JavaType leastUpperBound(List<JavaType> remainingArgTypes) {
+    return (JavaType) types.leastUpperBound(mapToBoxedSet(remainingArgTypes));
   }
 
   private static Set<Type> mapToBoxedSet(List<JavaType> types) {

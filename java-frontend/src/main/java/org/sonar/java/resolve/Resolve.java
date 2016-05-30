@@ -56,11 +56,12 @@ public class Resolve {
 
   private final BytecodeCompleter bytecodeCompleter;
   private final TypeSubstitutionSolver typeSubstitutionSolver;
-  private final Types types = new Types();
+  private final Types types;
   private final Symbols symbols;
 
   public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter, ParametrizedTypeCache parametrizedTypeCache) {
     this.symbols = symbols;
+    this.types = new Types(parametrizedTypeCache, symbols);
     this.bytecodeCompleter = bytecodeCompleter;
     this.typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
   }
@@ -833,7 +834,7 @@ public class Resolve {
   }
 
   Type leastUpperBound(Set<Type> refTypes) {
-    return Types.leastUpperBound(refTypes);
+    return types.leastUpperBound(refTypes);
   }
 
   Resolution unresolved() {

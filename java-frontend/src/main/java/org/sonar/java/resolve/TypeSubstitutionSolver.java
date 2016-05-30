@@ -40,7 +40,7 @@ public class TypeSubstitutionSolver {
   public TypeSubstitutionSolver(ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
     this.parametrizedTypeCache = parametrizedTypeCache;
     this.symbols = symbols;
-    this.typeInferenceSolver = new TypeInferenceSolver(symbols);
+    this.typeInferenceSolver = new TypeInferenceSolver(parametrizedTypeCache, symbols);
   }
 
   @CheckForNull

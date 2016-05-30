@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import org.fest.assertions.Fail;
+import org.junit.Before;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.plugins.java.api.semantic.Type;
@@ -40,8 +41,15 @@ import static org.fest.assertions.Assertions.assertThat;
 
 public class TypesTest {
 
-  private Symbols symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), new ParametrizedTypeCache()));
-  private Types types = new Types();
+  private Symbols symbols;
+  private Types types;
+
+  @Before
+  public void setUp() {
+    ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
+    symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), parametrizedTypeCache));
+    types = new Types(parametrizedTypeCache, symbols);
+  }
 
   @Test
   public void isSubtype() {
@@ -122,14 +130,14 @@ public class TypesTest {
     ClassTree classA = (ClassTree) cut.types().get(0);
     Type varType = ((VariableTree) classA.members().get(0)).type().symbolType();
     Type a = classA.symbol().type();
-    assertThat(Types.leastUpperBound(Sets.newHashSet(a))).isSameAs(a);
-    assertThat(Types.leastUpperBound(Sets.newHashSet(varType))).isSameAs(varType);
+    assertThat(types.leastUpperBound(Sets.newHashSet(a))).isSameAs(a);
+    assertThat(types.leastUpperBound(Sets.newHashSet(varType))).isSameAs(varType);
   }
 
   @Test
   public void lub_should_fail_if_no_type_provided() {
     try {
-      Types.leastUpperBound(Sets.<Type>newHashSet());
+      types.leastUpperBound(Sets.<Type>newHashSet());
       Fail.fail("should have failed");
     } catch (Exception e) {
       assertThat(e).isInstanceOf(IllegalArgumentException.class);
@@ -143,7 +151,7 @@ public class TypesTest {
       "class B extends Exception {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub.is("java.lang.Exception")).isTrue();
   }
@@ -158,7 +166,7 @@ public class TypesTest {
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
     Type c = typesFromInput.get(2);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b, c));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b, c));
 
     assertThat(lub.is("java.io.Serializable")).isTrue();
   }
@@ -170,7 +178,7 @@ public class TypesTest {
       "class B {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub.is("java.lang.Object")).isTrue();
   }
@@ -182,11 +190,11 @@ public class TypesTest {
       "class B extends A {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub).isSameAs(a);
 
-    lub = Types.leastUpperBound(Sets.newHashSet(b, a));
+    lub = types.leastUpperBound(Sets.newHashSet(b, a));
 
     assertThat(lub).isSameAs(a);
   }
@@ -199,7 +207,7 @@ public class TypesTest {
       "class C extends B {}");
     Type a = typesFromInput.get(0);
     Type c = typesFromInput.get(2);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, c));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, c));
 
     assertThat(lub.is("java.lang.Throwable")).isTrue();
   }
@@ -213,7 +221,7 @@ public class TypesTest {
       "interface I2 {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
 
     Type i1 = typesFromInput.get(2);
     // should be <I1 & I2>, not only i1 (first interface of first type analyzed)
@@ -229,7 +237,7 @@ public class TypesTest {
       "interface I2 {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
 
     // should be <Exception & I1 & I2>
     assertThat(lub.is("java.lang.Exception")).isTrue();
@@ -247,10 +255,10 @@ public class TypesTest {
     Type i1 = typesFromInput.get(2);
     Type i2 = typesFromInput.get(3);
 
-    Type best = Types.best(Lists.newArrayList(i1, a, b, i2));
+    Type best = types.best(Lists.newArrayList(i1, a, b, i2));
     assertThat(best.is("A")).isTrue();
 
-    best = Types.best(Lists.newArrayList(i2, i1));
+    best = types.best(Lists.newArrayList(i2, i1));
     assertThat(best.is("I1")).isTrue();
   }
 
@@ -261,7 +269,7 @@ public class TypesTest {
       "class B extends UnknownException {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
 
     assertThat(lub.isUnknown()).isTrue();
   }
@@ -275,7 +283,7 @@ public class TypesTest {
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
 
-    Type lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = types.leastUpperBound(Sets.newHashSet(a, b));
     assertThat(lub).isSameAs(a.symbol().superClass());
 
     typesFromInput = declaredTypes(
@@ -283,11 +291,73 @@ public class TypesTest {
       "class B extends A<String> {}");
     a = typesFromInput.get(0);
     b = typesFromInput.get(1);
-    lub = Types.leastUpperBound(Sets.newHashSet(a, b));
+    lub = types.leastUpperBound(Sets.newHashSet(a, b));
     assertThat(lub).isSameAs(a);
     // FIXME : should be the other way around but we don't care about type parameter in lub for now.
     assertThat(lub).isSameAs(b.symbol().superClass().erasure());
     assertThat(lub).isNotSameAs(b.symbol().superClass());
+  }
+
+  @Test
+  public void lub_of_generics_with_raw_type() {
+    List<Type> typesFromInput = declaredTypes(
+      "class Parent<X> {}",
+      "class Child<Y> extends Parent<Y> {}",
+
+      "class ChildString extends Child<String> {}",
+      "class ChildRaw extends Child {}");
+    Type ChildString = typesFromInput.get(2);
+    Type ChildRaw = typesFromInput.get(3);
+
+    JavaType lub = (JavaType) types.leastUpperBound(Sets.newHashSet(ChildString, ChildRaw));
+    assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isFalse();
+    assertThat(lub.is("Child")).isTrue();
+  }
+
+  @Test
+  public void lub_of_generics_without_loop() {
+    List<Type> typesFromInput = declaredTypes(
+      "class Parent<X> {}",
+      "class Child<Y> extends Parent<Y> {}",
+
+      "class A {}",
+      "class B extends A {}",
+      "class C extends A {}",
+
+      "class ChildB extends Child<B> {}",
+      "class ChildC extends Child<C> {}");
+    Type childB = typesFromInput.get(5);
+    Type childC = typesFromInput.get(6);
+
+    JavaType lub = (JavaType) types.leastUpperBound(Sets.newHashSet(childB, childC));
+    assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
+    ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
+    assertThat(ptt.rawType.is("Child")).isTrue();
+    JavaType substitution = ptt.substitution(ptt.typeParameters().get(0));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+  }
+
+  @Test
+  public void lub_of_generics_infinite_types() {
+    List<Type> typesFromInput = declaredTypes(
+      "class Parent<X> {}",
+      "class Child<Y> extends Parent<Y> {}",
+
+      "class ChildInteger extends Child<Integer> {}",
+      "class ChildString extends Child<String> {}");
+    Type childInteger = typesFromInput.get(2);
+    Type childString = typesFromInput.get(3);
+
+    JavaType lub = (JavaType) types.leastUpperBound(Sets.newHashSet(childInteger, childString));
+    assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
+    ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
+    assertThat(ptt.rawType.is("Child")).isTrue();
+    JavaType substitution = ptt.substitution(ptt.typeParameters().get(0));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) substitution).bound.is("java.lang.Object")).isTrue();
   }
 
   private static List<Type> declaredTypes(String... lines) {

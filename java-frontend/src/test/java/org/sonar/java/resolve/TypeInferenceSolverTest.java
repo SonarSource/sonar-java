@@ -24,8 +24,11 @@ import com.google.common.collect.Lists;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.java.resolve.WildCardType.BoundType;
+import org.sonar.plugins.java.api.semantic.Type;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -42,7 +45,7 @@ public class TypeInferenceSolverTest {
   public void setUp() {
     parametrizedTypeCache = new ParametrizedTypeCache();
     symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), parametrizedTypeCache));
-    typeInferenceSolver = new TypeInferenceSolver(symbols);
+    typeInferenceSolver = new TypeInferenceSolver(parametrizedTypeCache, symbols);
     T = getTypeVariable("T");
   }
 
@@ -83,17 +86,14 @@ public class TypeInferenceSolverTest {
   @Test
   public void inferTypeSubstitution_varargs_and_generics() {
     TypeVariableJavaType X = getTypeVariable("X");
-    JavaSymbol.TypeJavaSymbol aSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", symbols.defaultPackage);
-    ClassJavaType aType = (ClassJavaType) aSymbol.type;
-    aType.interfaces = ImmutableList.of();
-    aType.supertype = symbols.objectType;
+    JavaType aType = createType("A", symbols.objectType);
 
     // A<{X=X}>
-    JavaType aXType = parametrizedTypeCache.getParametrizedTypeType(aSymbol, new TypeSubstitution().add(X, X));
+    JavaType aXType = parametrizedTypeCache.getParametrizedTypeType(aType.symbol, new TypeSubstitution().add(X, X));
     // A
     JavaType aRawType = aXType.erasure();
     // A<{X=? extends T}>
-    JavaType aWCextendsTType = parametrizedTypeCache.getParametrizedTypeType(aSymbol, new TypeSubstitution().add(X, new WildCardType(T, BoundType.EXTENDS)));
+    JavaType aWCextendsTType = parametrizedTypeCache.getParametrizedTypeType(aType.symbol, new TypeSubstitution().add(X, new WildCardType(T, BoundType.EXTENDS)));
 
     // formals = A<{X=? extends T}>[]
     List<JavaType> formals = Lists.<JavaType>newArrayList(new ArrayJavaType(aWCextendsTType, symbols.arrayClass));
@@ -104,29 +104,20 @@ public class TypeInferenceSolverTest {
     assertThat(substitution.substitutedType(T)).isSameAs(symbols.objectType);
 
     // raw type with generic type : A, A<String>
-    args = Lists.<JavaType>newArrayList(aRawType, parametrizedTypeCache.getParametrizedTypeType(aSymbol, new TypeSubstitution().add(X, symbols.stringType)));
+    args = Lists.<JavaType>newArrayList(aRawType, parametrizedTypeCache.getParametrizedTypeType(aType.symbol, new TypeSubstitution().add(X, symbols.stringType)));
     substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T);
     assertThat(substitution.substitutedType(T)).isSameAs(symbols.objectType);
   }
 
   @Test
   public void inferTypeSubstitution_varargs() {
-    JavaSymbol.TypeJavaSymbol aSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", symbols.defaultPackage);
-    ClassJavaType aType = (ClassJavaType) aSymbol.type;
-    aType.interfaces = ImmutableList.of();
-    aType.supertype = symbols.objectType;
+    JavaType aType = createType("A", symbols.objectType);
 
     // B <: A
-    JavaSymbol.TypeJavaSymbol bSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "B", symbols.defaultPackage);
-    ClassJavaType bType = (ClassJavaType) bSymbol.type;
-    bType.interfaces = ImmutableList.of();
-    bType.supertype = aType;
+    JavaType bType = createType("B", aType);
 
     // C <: A
-    JavaSymbol.TypeJavaSymbol cSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "C", symbols.defaultPackage);
-    ClassJavaType cType = (ClassJavaType) cSymbol.type;
-    cType.interfaces = ImmutableList.of();
-    cType.supertype = aType;
+    JavaType cType = createType("C", aType);
 
     // formals = T[] (varargs)
     List<JavaType> formals = Lists.<JavaType>newArrayList(new ArrayJavaType(T, symbols.arrayClass));
@@ -140,6 +131,49 @@ public class TypeInferenceSolverTest {
     args = Lists.<JavaType>newArrayList(symbols.intType, symbols.longType);
     substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T);
     assertThat(substitution.substitutedType(T).is("java.lang.Number")).isTrue();
+  }
+
+  private JavaType createType(String string, JavaType superType) {
+    JavaSymbol.TypeJavaSymbol symbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", symbols.defaultPackage);
+    ClassJavaType type = (ClassJavaType) symbol.type;
+    type.interfaces = ImmutableList.of();
+    type.supertype = superType;
+    return type;
+  }
+
+  @Test
+  public void typeSubstitution_with_varargs_and_generics() {
+    Result result = Result.createForJavaFile("src/test/files/resolve/ParametrizedMethodAndVarargs");
+
+    JavaType childB = (JavaType) result.symbol("childB").type();
+    JavaType childC = (JavaType) result.symbol("childC").type();
+
+    JavaSymbol.MethodJavaSymbol variadicMethod;
+    List<JavaType> args;
+    TypeSubstitution typeSubstitution;
+
+    variadicMethod = (JavaSymbol.MethodJavaSymbol) result.symbol("bar");
+    args = Lists.newArrayList(childB, childB);
+    typeSubstitution = inferTypeSubstitution(variadicMethod, args);
+    assertThat(typeSubstitution.substitutedType(variadicMethod.typeVariableTypes.get(0)).is("B")).isTrue();
+
+    variadicMethod = (JavaSymbol.MethodJavaSymbol) result.symbol("foo");
+    args = Lists.newArrayList(childB, childC);
+    typeSubstitution = inferTypeSubstitution(variadicMethod, args);
+    assertThat(variadicMethod.usages()).hasSize(1);
+    assertThat(typeSubstitution.substitutedType(variadicMethod.typeVariableTypes.get(0)).is("A")).isTrue();
+  }
+
+  private TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> args) {
+    return typeInferenceSolver.inferTypeSubstitution(method, toJavaTypes(method.parameterTypes()), args);
+  }
+
+  private List<JavaType> toJavaTypes(List<Type> types) {
+    List<JavaType> result = new ArrayList<>(types.size());
+    for (Type type : types) {
+      result.add((JavaType) type);
+    }
+    return result;
   }
 
   private TypeSubstitution typeSubstitutionForTypeParametersWithVarargs(List<JavaType> formals, List<JavaType> args, TypeVariableJavaType... typeParameters) {
