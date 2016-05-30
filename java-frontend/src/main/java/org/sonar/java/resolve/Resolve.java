@@ -28,6 +28,8 @@ import org.sonar.java.model.expression.ConditionalExpressionTreeImpl;
 import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.semantic.Type;
 import org.sonar.plugins.java.api.tree.ConditionalExpressionTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -582,6 +584,10 @@ public class Resolve {
 
   private boolean isAcceptableType(JavaType arg, JavaType formal, boolean autoboxing) {
     if(arg.isTagged(JavaType.DEFERRED)) {
+      List<JavaType> samMethodArgs = findSamMethodArgs(formal);
+      if(((DeferredType) arg).tree().is(Tree.Kind.LAMBDA_EXPRESSION)) {
+        return ((LambdaExpressionTree) ((DeferredType) arg).tree()).parameters().size() == samMethodArgs.size();
+      }
       // we accept all deferred type as we will resolve this later.
       return true;
     }
