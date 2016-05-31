@@ -26,6 +26,10 @@
       <artifactId>sslr-squid-bridge</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>sonar-compat</artifactId>
       <version>${project.version}</version>

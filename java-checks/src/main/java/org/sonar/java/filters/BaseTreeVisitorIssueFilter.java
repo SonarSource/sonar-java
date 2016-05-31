@@ -19,13 +19,12 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.DiscreteDomains;
+import com.google.common.collect.ContiguousSet;
+import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Ranges;
-import com.google.common.collect.Sets;
-
+import com.google.common.collect.Range;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.utils.AnnotationUtils;
 import org.sonar.check.Rule;
@@ -110,7 +109,7 @@ public abstract class BaseTreeVisitorIssueFilter extends BaseTreeVisitor impleme
     SyntaxToken firstSyntaxToken = FirstSyntaxTokenFinder.firstSyntaxToken(tree);
     SyntaxToken lastSyntaxToken = LastSyntaxTokenFinder.lastSyntaxToken(tree);
     if (firstSyntaxToken != null && lastSyntaxToken != null) {
-      Set<Integer> filteredlines = Sets.newHashSet(Ranges.closed(firstSyntaxToken.line(), lastSyntaxToken.line()).asSet(DiscreteDomains.integers()));
+      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(firstSyntaxToken.line(), lastSyntaxToken.line()), DiscreteDomain.integers());
       computeFilteredLinesForRule(filteredlines, rulesKeysByRulesClass.get(filteredRule), excludeLine);
     }
   }

@@ -48,20 +48,9 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!--<dependency>-->
-      <!--<groupId>org.sonarsource.sonarqube</groupId>-->
-      <!--<artifactId>sonar-java-api</artifactId>-->
-      <!--<scope>provided</scope>-->
-    <!--</dependency>-->
     <dependency>
       <groupId>org.sonarsource.sonarqube</groupId>
       <artifactId>sonar-plugin-api</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.collections</groupId>
-      <artifactId>google-collections</artifactId>
-      <version>1.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -112,7 +101,7 @@
             <configuration>
               <rules>
                 <requireFilesSize>
-                  <maxsize>5600000</maxsize>
+                  <maxsize>6400000</maxsize>
                   <minsize>2000000</minsize>
                   <files>
                     <file>${project.build.directory}/${project.build.finalName}.jar</file>

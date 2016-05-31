@@ -29,9 +29,9 @@ import org.objectweb.asm.ClassReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonar.java.bytecode.ClassLoaderBuilder;
+import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import javax.annotation.Nullable;
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -232,8 +232,8 @@ public class BytecodeCompleter implements JavaSymbol.Completer {
   }
 
   public void done() {
-    if (classLoader != null && classLoader instanceof Closeable) {
-      Closeables.closeQuietly((Closeable) classLoader);
+    if (classLoader != null && classLoader instanceof SquidClassLoader) {
+      ((SquidClassLoader) classLoader).close();
     }
   }
 

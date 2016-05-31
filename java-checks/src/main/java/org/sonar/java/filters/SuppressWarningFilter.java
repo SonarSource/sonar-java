@@ -19,12 +19,12 @@
  */
 package org.sonar.java.filters;
 
-import com.google.common.collect.DiscreteDomains;
+import com.google.common.collect.ContiguousSet;
+import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Ranges;
-
+import com.google.common.collect.Range;
 import org.sonar.api.issue.Issue;
 import org.sonar.api.rule.RuleKey;
 import org.sonar.api.utils.AnnotationUtils;
@@ -122,7 +122,7 @@ public class SuppressWarningFilter extends BaseTreeVisitorIssueFilter {
 
     if (startLine != -1) {
       int endLine = LastSyntaxTokenFinder.lastSyntaxToken(tree).line();
-      Set<Integer> filteredlines = Ranges.closed(startLine, endLine).asSet(DiscreteDomains.integers());
+      Set<Integer> filteredlines = ContiguousSet.create(Range.closed(startLine, endLine), DiscreteDomain.integers());
       for (String rule : rules) {
         excludeLines(filteredlines, rule);
       }
