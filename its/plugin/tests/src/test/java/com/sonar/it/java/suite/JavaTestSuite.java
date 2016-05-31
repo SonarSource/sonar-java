@@ -60,13 +60,6 @@ public class JavaTestSuite {
     ORCHESTRATOR = orchestratorBuilder.build();
   }
 
-  public static boolean sonarqube_version_is_prior_to_5_0() {
-    return !ORCHESTRATOR.getServer().version().isGreaterThanOrEquals("5.0");
-  }
-  public static boolean sonarqube_version_is_prior_to_5_2() {
-    return !ORCHESTRATOR.getServer().version().isGreaterThanOrEquals("5.2");
-  }
-
   public static String keyFor(String projectKey, String pkgDir, String cls) {
     return projectKey + ":src/main/java/" + pkgDir + cls;
   }

@@ -32,7 +32,6 @@ import org.sonar.wsclient.services.ResourceQuery;
 import java.util.Date;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class Struts139Test {
 
@@ -233,22 +232,6 @@ public class Struts139Test {
       JavaTestSuite.keyFor(MODULE_CORE, "org/apache/struts/config/", "ConfigRuleSet.java"),
       "function_complexity_distribution", "file_complexity_distribution");
     assertThat(orchestrator.getServer().getWsClient().find(query).getMeasures().size()).isEqualTo(0);
-  }
-
-  @Test
-  public void designMeasures() {
-    assumeTrue(JavaTestSuite.sonarqube_version_is_prior_to_5_2());
-    setCurrentProjectWithAccessors();
-    assertThat(getCoreModuleMeasure("package_cycles").getIntValue()).isGreaterThan(10);
-    assertThat(getCoreModuleMeasure("package_cycles").getIntValue()).isLessThan(50);
-
-    assertThat(getCoreModuleMeasure("package_feedback_edges").getIntValue()).isGreaterThan(3);
-    assertThat(getCoreModuleMeasure("package_feedback_edges").getIntValue()).isLessThan(10);
-
-    assertThat(getCoreModuleMeasure("package_tangles").getIntValue()).isGreaterThan(10);
-    assertThat(getCoreModuleMeasure("package_tangles").getIntValue()).isLessThan(50);
-
-    assertThat(orchestrator.getServer().getWsClient().find(ResourceQuery.createForMetrics(PROJECT_STRUTS, "dit", "noc")).getMeasures().size()).isEqualTo(0);
   }
 
   @Test

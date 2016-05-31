@@ -26,7 +26,6 @@ import com.sonar.orchestrator.build.SonarRunner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
 import com.sonar.orchestrator.version.Version;
-
 import org.fest.assertions.Condition;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -34,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.sonar.api.CoreProperties;
-import org.sonar.wsclient.Sonar;
 import org.sonar.wsclient.issue.Issue;
 import org.sonar.wsclient.issue.IssueClient;
 import org.sonar.wsclient.issue.IssueQuery;
@@ -46,7 +44,6 @@ import java.io.File;
 import java.util.List;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assume.assumeTrue;
 
 public class JavaTest {
 
@@ -140,27 +137,6 @@ public class JavaTest {
     result = orchestrator.executeBuildQuietly(inspection);
     assertThat(result.getStatus()).isEqualTo(0);
 
-  }
-
-  /**
-   * SONAR-3228
-   */
-  @Test
-  public void shouldPersistMetricsEvenIfZero() {
-    assumeTrue(JavaTestSuite.sonarqube_version_is_prior_to_5_2());
-    MavenBuild build = MavenBuild.create()
-      .setPom(TestUtils.projectPom("zero-value-metric-project"))
-      .setCleanPackageSonarGoals();
-    orchestrator.executeBuild(build);
-
-    Sonar wsClient = orchestrator.getServer().getWsClient();
-
-    Resource project = wsClient.find(ResourceQuery.createForMetrics("com.sonarsource.it.projects:zero-value-metric-project",
-      "package_cycles", "package_feedback_edges", "package_tangles"));
-
-    assertThat(project.getMeasureIntValue("package_cycles")).isEqualTo(0);
-    assertThat(project.getMeasureIntValue("package_feedback_edges")).isEqualTo(0);
-    assertThat(project.getMeasureIntValue("package_tangles")).isEqualTo(0);
   }
 
   /**

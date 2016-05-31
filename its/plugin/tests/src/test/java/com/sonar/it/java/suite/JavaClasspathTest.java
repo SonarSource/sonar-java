@@ -144,11 +144,7 @@ public class JavaClasspathTest {
       .setProperty("sonar.profile", "dit-check")
       .setProperty("sonar.dynamicAnalysis", "false");
     int status = ORCHESTRATOR.executeBuildQuietly(build).getStatus();
-    if (JavaTestSuite.sonarqube_version_is_prior_to_5_0()) {
-      assertThat(status).isEqualTo(0);
-    } else {
-      assertThat(status).isGreaterThan(0);
-    }
+    assertThat(status).isGreaterThan(0);
   }
 
   private static void buildDitProject() {
