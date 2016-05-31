@@ -357,7 +357,7 @@ public class TypesTest {
     JavaType substitution = ptt.substitution(ptt.typeParameters().get(0));
     assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
     assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
-    assertThat(((WildCardType) substitution).bound.is("java.lang.Object")).isTrue();
+    assertThat(((WildCardType) substitution).bound.isSubtypeOf("java.lang.Comparable")).isTrue();
   }
 
   private static List<Type> declaredTypes(String... lines) {
