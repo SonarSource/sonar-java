@@ -45,7 +45,8 @@ public class TypeInferenceSolverTest {
   public void setUp() {
     parametrizedTypeCache = new ParametrizedTypeCache();
     symbols = new Symbols(new BytecodeCompleter(Lists.<java.io.File>newArrayList(), parametrizedTypeCache));
-    typeInferenceSolver = new TypeInferenceSolver(parametrizedTypeCache, symbols);
+    Types types = new Types(new TypeSubstitutionSolver(parametrizedTypeCache, symbols), parametrizedTypeCache, symbols);
+    typeInferenceSolver = new TypeInferenceSolver(types, symbols);
     T = getTypeVariable("T");
   }
 

@@ -35,7 +35,9 @@ import org.sonar.plugins.java.api.tree.VariableTree;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -48,7 +50,9 @@ public class TypesTest {
   public void setUp() {
     ParametrizedTypeCache parametrizedTypeCache = new ParametrizedTypeCache();
     symbols = new Symbols(new BytecodeCompleter(Lists.<File>newArrayList(), parametrizedTypeCache));
-    types = new Types(parametrizedTypeCache, symbols);
+    TypeSubstitutionSolver typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
+
+    types = new Types(typeSubstitutionSolver, parametrizedTypeCache, symbols);
   }
 
   @Test
@@ -255,10 +259,10 @@ public class TypesTest {
     Type i1 = typesFromInput.get(2);
     Type i2 = typesFromInput.get(3);
 
-    Type best = types.best(Lists.newArrayList(i1, a, b, i2));
+    Type best = Types.best(Lists.newArrayList(i1, a, b, i2));
     assertThat(best.is("A")).isTrue();
 
-    best = types.best(Lists.newArrayList(i2, i1));
+    best = Types.best(Lists.newArrayList(i2, i1));
     assertThat(best.is("I1")).isTrue();
   }
 
@@ -340,6 +344,34 @@ public class TypesTest {
   }
 
   @Test
+  public void lub_of_generics_without_loop2() {
+    List<Type> typesFromInput = declaredTypes(
+      "class Parent<X> {}",
+      "class Child<Y> extends Parent<Y> {}",
+      "class Other<Z> {}",
+
+      "class A {}",
+
+      "class ChildP extends Parent<Other<? extends A>> {}",
+      "class ChildC extends Child<Other<? extends A>> {}");
+    Type ChildP = typesFromInput.get(4);
+    Type childC = typesFromInput.get(5);
+
+    JavaType lub = (JavaType) types.leastUpperBound(Sets.newHashSet(ChildP, childC));
+    assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
+    ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
+    assertThat(ptt.rawType.is("Parent")).isTrue();
+    JavaType substitution = ptt.substitution(ptt.typeParameters().get(0));
+    assertThat(substitution.isTagged(JavaType.PARAMETERIZED)).isTrue();
+    ptt = (ParametrizedTypeJavaType) substitution;
+    assertThat(ptt.rawType.is("Other")).isTrue();
+    substitution = ptt.substitution(ptt.typeParameters().get(0));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+  }
+
+  @Test
   public void lub_of_generics_infinite_types() {
     List<Type> typesFromInput = declaredTypes(
       "class Parent<X> {}",
@@ -358,6 +390,60 @@ public class TypesTest {
     assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
     assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
     assertThat(((WildCardType) substitution).bound.isSubtypeOf("java.lang.Comparable")).isTrue();
+  }
+
+  @Test
+  public void supertypes() {
+    Type arrayList = declaredTypes("class MyArrayList extends java.util.ArrayList<String> {}").get(0);
+    Set<Type> supertypes = types.supertypes((JavaType) arrayList);
+
+    assertContains(supertypes,
+      "MyArrayList",
+      // from MyArrayList
+      "java.util.ArrayList<java.lang.String>",
+      // from ArrayList
+      "java.util.AbstractList<java.lang.String>",
+      "java.util.RandomAccess",
+      "java.lang.Cloneable",
+      "java.io.Serializable",
+      // from ArrayList and AbstractList
+      "java.util.List<java.lang.String>",
+      // from AbstractList
+      "java.util.AbstractCollection<java.lang.String>",
+      // from List and AbstractCollection
+      "java.util.Collection<java.lang.String>",
+      // from AbstractCollection
+      "java.lang.Object",
+      // from Collection
+      "java.lang.Iterable<java.lang.String>");
+  }
+
+  private static void assertContains(Set<Type> supertypes, String... fullyQualifiedNames) {
+    Set<String> toCheck = new HashSet<>(Arrays.asList(fullyQualifiedNames));
+    assertThat(supertypes.stream().allMatch(t -> match((JavaType) t, toCheck, fullyQualifiedNames))).isTrue();
+    assertThat(toCheck).isEmpty();
+  }
+
+  private static boolean match(JavaType type, Set<String> toCheck, String... fullyQualifiedNames) {
+    for (String fullyQualifiedName : fullyQualifiedNames) {
+      String newFullyQualifiedName = fullyQualifiedName;
+      String typeArgFullyQualifiedName = null;
+      int param = fullyQualifiedName.indexOf('<');
+      if (param > 0) {
+        newFullyQualifiedName = fullyQualifiedName.substring(0, param);
+        typeArgFullyQualifiedName = fullyQualifiedName.substring(param + 1, fullyQualifiedName.length() - 1);
+      }
+      if (type.is(newFullyQualifiedName)) {
+        if (typeArgFullyQualifiedName != null) {
+          assertThat(type.isTagged(JavaType.PARAMETERIZED)).isTrue();
+          ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) type;
+          assertThat(ptt.typeSubstitution.substitutedTypes().get(0).is(typeArgFullyQualifiedName)).isTrue();
+        }
+        toCheck.remove(fullyQualifiedName);
+        return true;
+      }
+    }
+    return false;
   }
 
   private static List<Type> declaredTypes(String... lines) {

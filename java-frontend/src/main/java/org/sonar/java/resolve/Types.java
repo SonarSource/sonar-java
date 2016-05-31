@@ -26,8 +26,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
+import org.sonar.java.resolve.JavaSymbol.TypeJavaSymbol;
 import org.sonar.java.resolve.WildCardType.BoundType;
 import org.sonar.plugins.java.api.semantic.Symbol;
+import org.sonar.plugins.java.api.semantic.Symbol.TypeSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
 import java.util.ArrayList;
@@ -44,11 +46,13 @@ public class Types {
 
   private final Symbols symbols;
   private final ParametrizedTypeCache parametrizedTypeCache;
+  private final TypeSubstitutionSolver typeSubstitutionSolver;
   private final Set<Set<Type>> lubCache = new HashSet<>();
 
-  public Types(ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
+  public Types(TypeSubstitutionSolver typeSubstitutionSolver, ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
     this.symbols = symbols;
     this.parametrizedTypeCache = parametrizedTypeCache;
+    this.typeSubstitutionSolver = typeSubstitutionSolver;
   }
 
   /**
@@ -129,16 +133,6 @@ public class Types {
     if(types.size() == 1) {
       return first;
     }
-    // Handle particular case while generics are not properly supported if a type is subtype of another then lub is that type: solve some cases of conditional operator.
-    // FIXME: should be removed when dealing with generics is properly supported see SONARJAVA-1631
-    if(types.size() == 2) {
-      Type type2 = iterator.next();
-      if(first.isSubtypeOf(type2)) {
-        return type2;
-      } else if(type2.isSubtypeOf(first)) {
-        return first;
-      }
-    }
 
     List<Set<Type>> supertypes = supertypes(types);
     List<Set<Type>> erasedSupertypes = erased(supertypes);
@@ -153,30 +147,60 @@ public class Types {
 
     Type erasedBest = best(minimalErasedCandidates);
 
-    Collection<Type> parameterizations = relevantParameterizations.get(erasedBest);
-    if (parameterizations != null && !parameterizations.contains(erasedBest)) {
+    Collection<Type> erasedTypeParameterizations = relevantParameterizations.get(erasedBest);
+    if (erasedTypeParameterizations != null && !erasedTypeParameterizations.contains(erasedBest)) {
       Set<Type> searchedTypes = new HashSet<>(types);
       if (!lubCache.contains(searchedTypes)) {
         lubCache.add(searchedTypes);
-        return leastContainingParameterization(Lists.newArrayList(parameterizations));
+        ArrayList<Type> parameterization = Lists.newArrayList(erasedTypeParameterizations);
+        return leastContainingParameterization(parameterization);
       }
     }
     return erasedBest;
 
   }
 
-  private static List<Set<Type>> supertypes(Iterable<Type> types) {
+  private List<Set<Type>> supertypes(Iterable<Type> types) {
     List<Set<Type>> results = new ArrayList<>();
     for (Type type : types) {
-      Set<Type> supertypes = new LinkedHashSet<>();
-      Type ownType = type;
-      supertypes.add(ownType);
-      for (Type supertype : ((JavaType) type).symbol.superTypes()) {
-        supertypes.add(supertype);
-      }
-      results.add(supertypes);
+      results.add(supertypes((JavaType) type));
     }
     return results;
+  }
+
+  @VisibleForTesting
+  Set<Type> supertypes(JavaType type) {
+    List<Type> result = new ArrayList<>();
+    result.add(type);
+
+    TypeSymbol symbol = type.symbol();
+    TypeSubstitution substitution = getTypeSubstitution(type);
+
+    for (Type interfaceType : symbol.interfaces()) {
+      JavaType substitutedInterface = typeSubstitutionSolver.applySubstitution((JavaType) interfaceType, substitution);
+      result.addAll(supertypes(substitutedInterface));
+    }
+
+    Type superClass = symbol.superClass();
+    while (superClass != null) {
+      JavaType substitutedSuperClass = typeSubstitutionSolver.applySubstitution((JavaType) superClass, substitution);
+      substitution = getTypeSubstitution(substitutedSuperClass);
+
+      result.add(substitutedSuperClass);
+
+      TypeJavaSymbol superClassSymbol = substitutedSuperClass.getSymbol();
+      for (Type interfaceType : superClassSymbol.interfaces()) {
+        JavaType substitutedInterface = typeSubstitutionSolver.applySubstitution((JavaType) interfaceType, substitution);
+        result.addAll(supertypes(substitutedInterface));
+      }
+
+      superClass = superClassSymbol.superClass();
+    }
+    return new LinkedHashSet<>(result);
+  }
+
+  private static TypeSubstitution getTypeSubstitution(JavaType type) {
+    return type.isTagged(JavaType.PARAMETERIZED) ? ((ParametrizedTypeJavaType) type).typeSubstitution : new TypeSubstitution();
   }
 
   private static List<Set<Type>> erased(Iterable<Set<Type>> typeSets) {
@@ -275,7 +299,9 @@ public class Types {
     if (types.size() == 1) {
       return types.get(0);
     }
-    Type reduction = leastContainingTypeArgument((JavaType) types.get(0), (JavaType) types.get(1));
+    JavaType type1 = (JavaType) types.get(0);
+    JavaType type2 = (JavaType) types.get(1);
+    Type reduction = leastContainingTypeArgument(type1, type2);
 
     List<Type> reducedList = Lists.newArrayList(reduction);
     reducedList.addAll(types.subList(2, types.size()));

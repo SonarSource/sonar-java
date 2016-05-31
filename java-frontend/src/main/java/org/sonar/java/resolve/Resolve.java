@@ -61,9 +61,9 @@ public class Resolve {
 
   public Resolve(Symbols symbols, BytecodeCompleter bytecodeCompleter, ParametrizedTypeCache parametrizedTypeCache) {
     this.symbols = symbols;
-    this.types = new Types(parametrizedTypeCache, symbols);
     this.bytecodeCompleter = bytecodeCompleter;
     this.typeSubstitutionSolver = new TypeSubstitutionSolver(parametrizedTypeCache, symbols);
+    this.types = new Types(this.typeSubstitutionSolver, parametrizedTypeCache, symbols);
   }
 
   @Nullable

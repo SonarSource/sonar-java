@@ -36,9 +36,9 @@ public class TypeInferenceSolver {
   private final Symbols symbols;
   private final Types types;
 
-  public TypeInferenceSolver(ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
+  public TypeInferenceSolver(Types types, Symbols symbols) {
     this.symbols = symbols;
-    this.types = new Types(parametrizedTypeCache, symbols);
+    this.types = types;
   }
 
   TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
