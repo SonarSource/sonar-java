@@ -75,7 +75,7 @@ public class WildCardType extends JavaType {
   public boolean isSubtypeOfBound(JavaType type) {
     switch (boundType) {
       case SUPER:
-        return !boundIsTypeVarAndNotType(type) && bound.isSubtypeOf(type);
+        return bound.isSubtypeOf(type);
       case EXTENDS:
         return !boundIsTypeVarAndNotType(type) && type.isSubtypeOf(bound);
       case UNBOUNDED:
