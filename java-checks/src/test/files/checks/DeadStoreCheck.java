@@ -195,4 +195,18 @@ class A {
     }
 
   }
+
+  public class MyClass {
+    private static class Foo {
+      void bar(int p){
+      }
+    }
+
+    public static void main(String... args) {
+      Foo x = new Foo(); // compliant
+      List<Integer> list = new ArrayList<>();
+      list.forEach(x::bar);
+    }
+
+  }
 }

@@ -21,8 +21,6 @@ package org.sonar.java.cfg;
 
 import com.google.common.base.Charsets;
 import com.sonar.sslr.api.typed.ActionParser;
-import java.io.File;
-import java.util.Collections;
 import org.junit.Test;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.resolve.SemanticModel;
@@ -30,6 +28,9 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
+
+import java.io.File;
+import java.util.Collections;
 
 import static org.fest.assertions.Assertions.assertThat;
 
@@ -99,6 +100,15 @@ public class LiveVariablesTest {
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).isEmpty();
     assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).isEmpty();
+  }
+
+  @Test
+  public void method_ref_liveness() throws Exception {
+    CFG cfg = buildCFG("boolean foo(Object a) { if(true) { System.out.println(''); }foo(a::toString);}");
+    LiveVariables liveVariables = LiveVariables.analyze(cfg);
+    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(0))).isEmpty();
+    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(2))).hasSize(1);
+    assertThat(liveVariables.getOut(cfg.reversedBlocks().get(3))).hasSize(1);
   }
 
   @Test
