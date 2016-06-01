@@ -203,7 +203,7 @@ class A {
     }
 
     public static void main(String... args) {
-      Foo x = new Foo(); // FP dead store
+      Foo x = new Foo(); // compliant
       List<Integer> list = new ArrayList<>();
       list.forEach(x::bar);
     }
