@@ -109,6 +109,39 @@ public class TypeInferenceSolverTest {
     assertThat(substitution.substitutedType(T)).isSameAs(symbols.objectType);
   }
 
+  @Test
+  public void inferTypeSubstitution_varargs() {
+    JavaSymbol.TypeJavaSymbol aSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "A", symbols.defaultPackage);
+    ClassJavaType aType = (ClassJavaType) aSymbol.type;
+    aType.interfaces = ImmutableList.of();
+    aType.supertype = symbols.objectType;
+
+    // B <: A
+    JavaSymbol.TypeJavaSymbol bSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "B", symbols.defaultPackage);
+    ClassJavaType bType = (ClassJavaType) bSymbol.type;
+    bType.interfaces = ImmutableList.of();
+    bType.supertype = aType;
+
+    // C <: A
+    JavaSymbol.TypeJavaSymbol cSymbol = new JavaSymbol.TypeJavaSymbol(Flags.PUBLIC, "C", symbols.defaultPackage);
+    ClassJavaType cType = (ClassJavaType) cSymbol.type;
+    cType.interfaces = ImmutableList.of();
+    cType.supertype = aType;
+
+    // formals = T[] (varargs)
+    List<JavaType> formals = Lists.<JavaType>newArrayList(new ArrayJavaType(T, symbols.arrayClass));
+
+    // args = B, C
+    List<JavaType> args = Lists.<JavaType>newArrayList(bType, cType);
+    TypeSubstitution substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T);
+    assertThat(substitution.substitutedType(T)).isSameAs(aType);
+
+    // args = int, long
+    args = Lists.<JavaType>newArrayList(symbols.intType, symbols.longType);
+    substitution = typeSubstitutionForTypeParametersWithVarargs(formals, args, T);
+    assertThat(substitution.substitutedType(T).is("java.lang.Number")).isTrue();
+  }
+
   private TypeSubstitution typeSubstitutionForTypeParametersWithVarargs(List<JavaType> formals, List<JavaType> args, TypeVariableJavaType... typeParameters) {
     return typeSubstitutionForTypeParameters(formals, args, true, typeParameters);
   }
