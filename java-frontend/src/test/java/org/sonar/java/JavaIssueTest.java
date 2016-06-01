@@ -20,6 +20,7 @@
 package org.sonar.java;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.TextPointer;
@@ -32,9 +33,6 @@ import org.sonar.api.rule.RuleKey;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class JavaIssueTest {
 
@@ -50,7 +48,7 @@ public class JavaIssueTest {
     DefaultIssue newIssue = new DefaultIssue(storage);
     DefaultIssue newIssueOnFile = new DefaultIssue(storage);
     DefaultIssue newIssueOnLine = new DefaultIssue(storage);
-    when(sensorContext.newIssue()).thenReturn(newIssue, newIssueOnFile, newIssueOnLine);
+    Mockito.when(sensorContext.newIssue()).thenReturn(newIssue, newIssueOnFile, newIssueOnLine);
 
     // issue with secondary locations
     JavaIssue javaIssue = JavaIssue.create(sensorContext, ruleKey, null);
@@ -59,7 +57,7 @@ public class JavaIssueTest {
     javaIssue.addSecondaryLocation(file, 3, 1, 3, 5, "secondary message 2");
     javaIssue.save();
 
-    verify(storage, times(1)).store(newIssue);
+    Mockito.verify(storage, Mockito.times(1)).store(newIssue);
 
     assertThat(newIssue.ruleKey()).isEqualTo(ruleKey);
     assertLocation(newIssue.primaryLocation(), file, "main message", 1, 2, 1, 6);
@@ -72,7 +70,7 @@ public class JavaIssueTest {
     javaIssue.setPrimaryLocationOnFile(file, "file message");
     javaIssue.save();
 
-    verify(storage, times(1)).store(newIssueOnFile);
+    Mockito.verify(storage, Mockito.times(1)).store(newIssueOnFile);
     assertThat(newIssueOnFile.ruleKey()).isEqualTo(ruleKey);
     IssueLocation location = newIssueOnFile.primaryLocation();
     assertThat(location.inputComponent()).isEqualTo(file);
@@ -84,7 +82,7 @@ public class JavaIssueTest {
     javaIssue.setPrimaryLocation(file, "line message", 2, -1, 2, -1);
     javaIssue.save();
 
-    verify(storage, times(1)).store(newIssueOnLine);
+    Mockito.verify(storage, Mockito.times(1)).store(newIssueOnLine);
     assertLocation(newIssueOnLine.primaryLocation(), file, "line message", 2, 0, 2, 4);
   }
 

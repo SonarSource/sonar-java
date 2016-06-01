@@ -98,12 +98,6 @@ public class SurefireSensorTest {
     Settings settings = mock(Settings.class);
     when(settings.getString(SurefireUtils.SUREFIRE_REPORTS_PATH_PROPERTY)).thenReturn("unknown");
 
-//    ProjectFileSystem projectFileSystem = mock(ProjectFileSystem.class);
-//    when(projectFileSystem.resolvePath("unknown")).thenReturn(new File("src/test/resources/unknown"));
-//
-//    Project project = mock(Project.class);
-//    when(project.getFileSystem()).thenReturn(projectFileSystem);
-
     SurefireSensor surefireSensor = new SurefireSensor(mock(SurefireJavaParser.class), settings, fs, pathResolver);
     surefireSensor.analyse(project, mockContext());
   }

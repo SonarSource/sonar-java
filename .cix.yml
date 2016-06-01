@@ -9,8 +9,6 @@ TEST:
 
 SQ_VERSION:
   - LTS
-  - 5.2
-  - 5.3
   - DEV
   - LATEST_RELEASE
 
