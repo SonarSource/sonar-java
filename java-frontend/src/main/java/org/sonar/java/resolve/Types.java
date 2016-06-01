@@ -35,7 +35,6 @@ import org.sonar.plugins.java.api.semantic.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -269,21 +268,18 @@ public class Types {
 
   @VisibleForTesting
   static Type best(List<Type> minimalCandidates) {
-    Collections.sort(minimalCandidates, new Comparator<Type>() {
+    Collections.sort(minimalCandidates, (t1, t2) -> {
       // Sort minimal candidates by name with classes before interfaces, to guarantee always the same type is returned when approximated.
-      @Override
-      public int compare(Type type, Type t1) {
-        Symbol.TypeSymbol typeSymbol = type.symbol();
-        Symbol.TypeSymbol t1Symbol = t1.symbol();
-        if (typeSymbol.isInterface() && t1Symbol.isInterface()) {
-          return type.name().compareTo(t1.name());
-        } else if (typeSymbol.isInterface()) {
-          return 1;
-        } else if (t1Symbol.isInterface()) {
-          return -1;
-        }
-        return type.name().compareTo(t1.name());
+      Symbol.TypeSymbol t1Symbol = t1.symbol();
+      Symbol.TypeSymbol t2Symbol = t2.symbol();
+      if (t1Symbol.isInterface() && t2Symbol.isInterface()) {
+        return t1.name().compareTo(t2.name());
+      } else if (t1Symbol.isInterface()) {
+        return 1;
+      } else if (t2Symbol.isInterface()) {
+        return -1;
       }
+      return t1.name().compareTo(t2.name());
     });
     // FIXME SONARJAVA-1632 should return union of types
     return minimalCandidates.get(0);
@@ -320,27 +316,30 @@ public class Types {
       JavaType subs1 = typeSubstitution1.substitutedType(typeVar);
       JavaType subs2 = typeSubstitution2.substitutedType(typeVar);
 
-      boolean isWildcard1 = subs1.isTagged(JavaType.WILDCARD);
-      boolean isWildcard2 = subs2.isTagged(JavaType.WILDCARD);
-
-      JavaType newSubs;
-      if (subs1 == subs2) {
-        newSubs = subs1;
-      } else if (isWildcard1 && isWildcard2) {
-        newSubs = lctaBothWildcards((WildCardType) subs1, (WildCardType) subs2);
-      } else if (isWildcard1 ^ isWildcard2) {
-        JavaType rawType = isWildcard1 ? subs2 : subs1;
-        WildCardType wildcardType = (WildCardType) (isWildcard1 ? subs1 : subs2);
-        newSubs = lctaOneWildcard(rawType, wildcardType);
-      } else {
-        // subs1 and subs2 are not wildcards
-        JavaType newBound = (JavaType) cachedLeastUpperBound(Sets.newHashSet(subs1, subs2));
-        newSubs = parametrizedTypeCache.getWildcardType(newBound, BoundType.EXTENDS);
-      }
+      JavaType newSubs = getNewTypeArgumentType(subs1, subs2);
       newTypeSubstitution.add(typeVar, newSubs);
     }
 
     return parametrizedTypeCache.getParametrizedTypeType(type1.symbol, newTypeSubstitution);
+  }
+
+  private JavaType getNewTypeArgumentType(JavaType subs1, JavaType subs2) {
+    boolean isWildcard1 = subs1.isTagged(JavaType.WILDCARD);
+    boolean isWildcard2 = subs2.isTagged(JavaType.WILDCARD);
+
+    JavaType result;
+    if (subs1.equals(subs2)) {
+      result = subs1;
+    } else if (isWildcard1 && isWildcard2) {
+      result = lctaBothWildcards((WildCardType) subs1, (WildCardType) subs2);
+    } else if (isWildcard1 ^ isWildcard2) {
+      JavaType rawType = isWildcard1 ? subs2 : subs1;
+      WildCardType wildcardType = (WildCardType) (isWildcard1 ? subs1 : subs2);
+      result = lctaOneWildcard(rawType, wildcardType);
+    } else {
+      result = lctaNoWildcard(subs1, subs2);
+    }
+    return result;
   }
 
   private JavaType lctaOneWildcard(JavaType rawType, WildCardType wildcardType) {
@@ -365,6 +364,11 @@ public class Types {
       return type1.bound;
     }
     return symbols.unboundedWildcard;
+  }
+
+  private JavaType lctaNoWildcard(JavaType type1, JavaType Type2) {
+    JavaType lub = (JavaType) cachedLeastUpperBound(Sets.newHashSet(type1, Type2));
+    return parametrizedTypeCache.getWildcardType(lub, BoundType.EXTENDS);
   }
 
   /**
