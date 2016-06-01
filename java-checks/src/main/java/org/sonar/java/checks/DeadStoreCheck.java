@@ -89,16 +89,31 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
     for (Tree element : elements) {
       Symbol symbol;
       switch (element.kind()) {
+        case PLUS_ASSIGNMENT:
+        case DIVIDE_ASSIGNMENT:
+        case MINUS_ASSIGNMENT:
+        case MULTIPLY_ASSIGNMENT:
+        case OR_ASSIGNMENT:
+        case XOR_ASSIGNMENT:
+        case AND_ASSIGNMENT:
+        case LEFT_SHIFT_ASSIGNMENT:
+        case RIGHT_SHIFT_ASSIGNMENT:
+        case UNSIGNED_RIGHT_SHIFT_ASSIGNMENT:
+        case REMAINDER_ASSIGNMENT:
         case ASSIGNMENT:
           AssignmentExpressionTree assignmentExpressionTree = (AssignmentExpressionTree) element;
           ExpressionTree lhs = ExpressionsHelper.skipParentheses(assignmentExpressionTree.variable());
           if (lhs.is(Tree.Kind.IDENTIFIER)) {
             symbol = ((IdentifierTree) lhs).symbol();
-            if (isLocalVariable(symbol) && !out.contains(symbol)) {
+            if (isLocalVariable(symbol) && !out.contains(symbol) && (assignmentExpressionTree.is(Tree.Kind.ASSIGNMENT) || isParentExpressionStatement(element))) {
               createIssue(assignmentExpressionTree.operatorToken(), assignmentExpressionTree.expression(), symbol);
             }
             assignmentLHS.add(lhs);
-            out.remove(symbol);
+            if(element.is(Tree.Kind.ASSIGNMENT)) {
+              out.remove(symbol);
+            } else {
+              out.add(symbol);
+            }
           }
           break;
         case IDENTIFIER:
