@@ -37,6 +37,7 @@ import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.ExpressionTree;
 import org.sonar.plugins.java.api.tree.IdentifierTree;
 import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
+import org.sonar.plugins.java.api.tree.MethodReferenceTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
@@ -118,6 +119,10 @@ public class DeadStoreCheck extends IssuableSubscriptionVisitor {
         case LAMBDA_EXPRESSION:
           LambdaExpressionTree lambda = (LambdaExpressionTree) element;
           out.addAll(getUsedLocalVarInSubTree(lambda.body(), methodSymbol));
+          break;
+        case METHOD_REFERENCE:
+          MethodReferenceTree methodRef = (MethodReferenceTree) element;
+          out.addAll(getUsedLocalVarInSubTree(methodRef.expression(), methodSymbol));
           break;
         case TRY_STATEMENT:
           TryStatementTree tryStatement = (TryStatementTree) element;
