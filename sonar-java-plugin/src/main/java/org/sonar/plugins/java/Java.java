@@ -19,12 +19,12 @@
  */
 package org.sonar.plugins.java;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang.StringUtils;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.AbstractLanguage;
 
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Java language implementation
@@ -79,21 +79,11 @@ public class Java extends AbstractLanguage {
    */
   @Override
   public String[] getFileSuffixes() {
-    String[] suffixes = filterEmptyStrings(settings.getStringArray(Java.FILE_SUFFIXES_KEY));
+    String[] suffixes = Arrays.stream(settings.getStringArray(Java.FILE_SUFFIXES_KEY)).filter(s -> s != null && !s.trim().isEmpty()).toArray(String[]::new);
     if (suffixes.length == 0) {
-      suffixes = StringUtils.split(DEFAULT_FILE_SUFFIXES, ",");
+      suffixes = Iterables.toArray(Splitter.on(',').split(DEFAULT_FILE_SUFFIXES), String.class);
     }
     return suffixes;
-  }
-
-  private static String[] filterEmptyStrings(String[] stringArray) {
-    List<String> nonEmptyStrings = Lists.newArrayList();
-    for (String string : stringArray) {
-      if (StringUtils.isNotBlank(string.trim())) {
-        nonEmptyStrings.add(string.trim());
-      }
-    }
-    return nonEmptyStrings.toArray(new String[nonEmptyStrings.size()]);
   }
 
 }
