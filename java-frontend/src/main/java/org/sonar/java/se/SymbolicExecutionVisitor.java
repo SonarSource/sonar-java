@@ -20,8 +20,8 @@
 package org.sonar.java.se;
 
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.ast.visitors.SubscriptionVisitor;
 import org.sonar.java.se.symbolicvalues.BinaryRelation;
 import org.sonar.plugins.java.api.JavaFileScanner;
@@ -30,7 +30,7 @@ import org.sonar.plugins.java.api.tree.Tree;
 import java.util.List;
 
 public class SymbolicExecutionVisitor extends SubscriptionVisitor {
-  private static final Logger LOG = LoggerFactory.getLogger(SymbolicExecutionVisitor.class);
+  private static final Logger LOG = Loggers.get(SymbolicExecutionVisitor.class);
 
   private final ExplodedGraphWalker.ExplodedGraphWalkerFactory egwFactory;
 

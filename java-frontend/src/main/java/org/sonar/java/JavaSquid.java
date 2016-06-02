@@ -23,11 +23,11 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.design.Dependency;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.utils.TimeProfiler;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.api.utils.log.Profiler;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.java.ast.JavaAstScanner;
 import org.sonar.java.ast.parser.JavaParser;
@@ -52,7 +52,7 @@ import java.util.List;
 
 public class JavaSquid {
 
-  private static final Logger LOG = LoggerFactory.getLogger(JavaSquid.class);
+  private static final Logger LOG = Loggers.get(JavaSquid.class);
 
   private final JavaAstScanner astScanner;
   private final JavaAstScanner astScannerForTests;
@@ -139,24 +139,24 @@ public class JavaSquid {
   }
 
   private void scanSources(Iterable<File> sourceFiles) {
-    TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Main Files AST scan");
+    Profiler profiler = Profiler.create(LOG).startInfo("Java Main Files AST scan");
     astScanner.scan(sourceFiles);
-    profiler.stop();
+    profiler.stopInfo();
   }
 
   private void scanTests(Iterable<File> testFiles) {
-    TimeProfiler profiler = new TimeProfiler(getClass()).start("Java Test Files AST scan");
+    Profiler profiler = Profiler.create(LOG).startInfo("Java Test Files AST scan");
     astScannerForTests.scan(testFiles);
-    profiler.stop();
+    profiler.stopInfo();
   }
 
   private void scanBytecode(Collection<File> bytecodeFilesOrDirectories) {
     if (hasBytecode(bytecodeFilesOrDirectories)) {
-      TimeProfiler profiler = new TimeProfiler(getClass()).start("Java bytecode scan");
+      Profiler profiler = Profiler.create(LOG).startInfo("Java bytecode scan");
 
       bytecodeScanner.scan(bytecodeFilesOrDirectories);
       bytecodeScanned = true;
-      profiler.stop();
+      profiler.stopInfo();
     } else {
       LOG.warn("Java bytecode has not been made available to the analyzer. The " + Joiner.on(", ").join(bytecodeScanner.getVisitors()) + " are disabled.");
       bytecodeScanned = false;

@@ -24,13 +24,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Maps;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.resources.Resource;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -41,7 +40,7 @@ import java.util.Map;
 
 public class DefaultJavaResourceLocator implements JavaResourceLocator {
 
-  private static final Logger LOG = LoggerFactory.getLogger(JavaResourceLocator.class);
+  private static final Logger LOG = Loggers.get(JavaResourceLocator.class);
 
   private final FileSystem fs;
   private final JavaClasspath javaClasspath;

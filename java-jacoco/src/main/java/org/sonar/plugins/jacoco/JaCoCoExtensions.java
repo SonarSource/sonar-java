@@ -20,15 +20,16 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import java.util.List;
+
 
 public class JaCoCoExtensions {
 
 
-  public static final Logger LOG = LoggerFactory.getLogger(JaCoCoExtensions.class.getName());
+  public static final Logger LOG = Loggers.get(JaCoCoExtensions.class.getName());
 
   private JaCoCoExtensions(){
   }

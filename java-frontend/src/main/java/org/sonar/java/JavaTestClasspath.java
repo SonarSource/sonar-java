@@ -20,20 +20,20 @@
 package org.sonar.java;
 
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
-import org.sonar.api.utils.TimeProfiler;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.api.utils.log.Profiler;
 
 import java.io.File;
 import java.util.List;
 
 public class JavaTestClasspath extends AbstractJavaClasspath {
 
-  private static final Logger LOG = LoggerFactory.getLogger(JavaTestClasspath.class);
+  private static final Logger LOG = Loggers.get(JavaTestClasspath.class);
 
   public JavaTestClasspath(Project project, Settings settings, FileSystem fs) {
     super(project, settings, fs, InputFile.Type.TEST);
@@ -42,7 +42,7 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
   @Override
   protected void init() {
     if (!initialized) {
-      TimeProfiler profiler = new TimeProfiler(getClass()).start("JavaTestClasspath initialization");
+      Profiler profiler = Profiler.create(LOG).startInfo("JavaTestClasspath initialization");
       initialized = true;
       validateLibraries = project.getModules().isEmpty();
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);
@@ -53,7 +53,7 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
       }
       elements = Lists.newArrayList(binaries);
       elements.addAll(libraries);
-      profiler.stop();
+      profiler.stopInfo();
     }
   }
 

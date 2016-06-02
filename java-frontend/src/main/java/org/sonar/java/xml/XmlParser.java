@@ -20,8 +20,8 @@
 package org.sonar.java.xml;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,7 +41,7 @@ import java.util.LinkedList;
 
 public class XmlParser {
 
-  private static final Logger LOG = LoggerFactory.getLogger(XmlParser.class);
+  private static final Logger LOG = Loggers.get(XmlParser.class);
 
   public static final String START_LINE_ATTRIBUTE = "start_line";
   public static final String START_COLUMN_ATTRIBUTE = "start_column";

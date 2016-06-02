@@ -20,8 +20,8 @@
 package org.sonar.java.bytecode;
 
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.bytecode.loader.SquidClassLoader;
 
 import java.io.File;
@@ -31,7 +31,7 @@ import java.util.List;
 
 public final class ClassLoaderBuilder {
 
-  private static final Logger LOG = LoggerFactory.getLogger(ClassLoaderBuilder.class);
+  private static final Logger LOG = Loggers.get(ClassLoaderBuilder.class);
 
   private ClassLoaderBuilder() {
     // only static methods

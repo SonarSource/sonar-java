@@ -31,14 +31,14 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.utils.WildcardPattern;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -51,7 +51,7 @@ import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
 public abstract class AbstractJavaClasspath implements BatchExtension {
 
   private static final char SEPARATOR = ',';
-  private static final Logger LOG = LoggerFactory.getLogger(AbstractJavaClasspath.class);
+  private static final Logger LOG = Loggers.get(AbstractJavaClasspath.class);
   protected final Project project;
   protected final Settings settings;
   protected final FileSystem fs;

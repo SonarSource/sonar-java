@@ -24,8 +24,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
 import com.sonar.sslr.api.typed.ActionParser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.JavaConfiguration;
 import org.sonar.java.ast.parser.JavaParser;
 import org.sonar.java.model.VisitorsBridge;
@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 public class JavaAstScanner {
-  private static final Logger LOG = LoggerFactory.getLogger(JavaAstScanner.class);
+  private static final Logger LOG = Loggers.get(JavaAstScanner.class);
 
   private final ActionParser<Tree> parser;
   private VisitorsBridge visitor;

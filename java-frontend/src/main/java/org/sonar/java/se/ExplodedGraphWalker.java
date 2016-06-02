@@ -26,8 +26,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.cfg.CFG;
 import org.sonar.java.cfg.LiveVariables;
 import org.sonar.java.matcher.MethodMatcher;
@@ -85,7 +85,7 @@ public class ExplodedGraphWalker extends BaseTreeVisitor {
    */
   private static final int MAX_STEPS = 10000;
   public static final int MAX_NESTED_BOOLEAN_STATES = 10000;
-  private static final Logger LOG = LoggerFactory.getLogger(ExplodedGraphWalker.class);
+  private static final Logger LOG = Loggers.get(ExplodedGraphWalker.class);
   private static final Set<String> THIS_SUPER = ImmutableSet.of("this", "super");
 
   private static final boolean DEBUG_MODE_ACTIVATED = false;

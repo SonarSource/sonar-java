@@ -20,8 +20,6 @@
 package org.sonar.plugins.surefire;
 
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
@@ -32,6 +30,8 @@ import org.sonar.api.test.MutableTestPlan;
 import org.sonar.api.test.TestCase;
 import org.sonar.api.utils.ParsingUtils;
 import org.sonar.api.utils.StaxParser;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.java.api.JavaResourceLocator;
 import org.sonar.plugins.surefire.data.SurefireStaxHandler;
 import org.sonar.plugins.surefire.data.UnitTestClassReport;
@@ -40,6 +40,7 @@ import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.xml.stream.XMLStreamException;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Map;
@@ -49,7 +50,7 @@ import java.util.Map;
  */
 public class SurefireJavaParser implements BatchExtension {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SurefireJavaParser.class);
+  private static final Logger LOGGER = Loggers.get(SurefireJavaParser.class);
   private final ResourcePerspectives perspectives;
   private final JavaResourceLocator javaResourceLocator;
 

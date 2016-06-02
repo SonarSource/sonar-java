@@ -21,8 +21,8 @@ package org.sonar.java.bytecode.asm;
 
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.ClassReader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class AsmClassProviderImpl extends AsmClassProvider {
 
-  private static final Logger LOG = LoggerFactory.getLogger(AsmClassProviderImpl.class);
+  private static final Logger LOG = Loggers.get(AsmClassProviderImpl.class);
 
   private final ClassLoader classLoader;
   private final Map<String, AsmClass> asmClassCache = new HashMap<>();

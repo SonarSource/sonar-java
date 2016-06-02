@@ -23,8 +23,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sonar.sslr.api.RecognitionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.CharsetAwareVisitor;
 import org.sonar.java.JavaVersionAwareVisitor;
 import org.sonar.java.SonarComponents;
@@ -48,7 +48,7 @@ import java.util.List;
 
 public class VisitorsBridge {
 
-  private static final Logger LOG = LoggerFactory.getLogger(VisitorsBridge.class);
+  private static final Logger LOG = Loggers.get(VisitorsBridge.class);
 
   private final List<JavaFileScanner> scanners;
   private List<JavaFileScanner> executableScanners;

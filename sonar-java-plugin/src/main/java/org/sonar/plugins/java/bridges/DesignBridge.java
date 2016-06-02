@@ -20,8 +20,6 @@
 package org.sonar.plugins.java.bridges;
 
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.design.Dependency;
@@ -33,7 +31,9 @@ import org.sonar.api.measures.PersistenceMode;
 import org.sonar.api.resources.Directory;
 import org.sonar.api.resources.Project;
 import org.sonar.api.resources.Resource;
-import org.sonar.api.utils.TimeProfiler;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
+import org.sonar.api.utils.log.Profiler;
 import org.sonar.graph.Cycle;
 import org.sonar.graph.DirectedGraph;
 import org.sonar.graph.Dsm;
@@ -50,7 +50,7 @@ import java.util.Set;
 
 public class DesignBridge {
 
-  private static final Logger LOG = LoggerFactory.getLogger(DesignBridge.class);
+  private static final Logger LOG = Loggers.get(DesignBridge.class);
 
   private final SensorContext context;
   private final DirectedGraph<Resource, Dependency> graph;
@@ -66,7 +66,7 @@ public class DesignBridge {
 
   public void saveDesign(Project sonarProject) {
     Collection<Resource> directories = resourceMapping.directories();
-    TimeProfiler profiler = new TimeProfiler(LOG).start("Package design analysis");
+    Profiler profiler = Profiler.create(LOG).startInfo("Package design analysis");
     LOG.debug("{} packages to analyze", directories.size());
 
     IncrementalCyclesAndFESSolver<Resource> cyclesAndFESSolver = new IncrementalCyclesAndFESSolver<>(graph, directories);
@@ -87,7 +87,7 @@ public class DesignBridge {
     Measure dsmMeasure = new Measure(CoreMetrics.DEPENDENCY_MATRIX, dsmJson).setPersistenceMode(PersistenceMode.DATABASE);
     context.saveMeasure(sonarProject, dsmMeasure);
 
-    profiler.stop();
+    profiler.stopInfo();
 
     for (Resource sonarPackage : directories) {
       onPackage(sonarPackage);

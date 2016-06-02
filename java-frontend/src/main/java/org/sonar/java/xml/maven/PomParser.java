@@ -19,8 +19,8 @@
  */
 package org.sonar.java.xml.maven;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.maven.model.LocatedAttributeAdapter;
 import org.sonar.maven.model.LocatedTreeImpl;
 import org.sonar.maven.model.XmlLocation;
@@ -42,7 +42,7 @@ import java.io.IOException;
 
 public class PomParser {
 
-  private static final Logger LOG = LoggerFactory.getLogger(PomParser.class);
+  private static final Logger LOG = Loggers.get(PomParser.class);
 
   private PomParser() {
   }

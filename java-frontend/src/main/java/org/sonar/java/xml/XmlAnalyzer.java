@@ -22,8 +22,8 @@ package org.sonar.java.xml;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.xml.maven.PomCheck;
 import org.sonar.java.xml.maven.PomCheckContext;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 
 public class XmlAnalyzer {
 
-  private static final Logger LOG = LoggerFactory.getLogger(XmlAnalyzer.class);
+  private static final Logger LOG = Loggers.get(XmlAnalyzer.class);
   private final SonarComponents sonarComponents;
   private final List<XmlCheck> xmlChecks;
   private final List<PomCheck> pomChecks;

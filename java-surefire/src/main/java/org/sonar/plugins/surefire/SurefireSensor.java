@@ -19,8 +19,6 @@
  */
 package org.sonar.plugins.surefire;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.Sensor;
 import org.sonar.api.batch.SensorContext;
@@ -28,6 +26,8 @@ import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.Settings;
 import org.sonar.api.resources.Project;
 import org.sonar.api.scan.filesystem.PathResolver;
+import org.sonar.api.utils.log.Logger;
+import org.sonar.api.utils.log.Loggers;
 import org.sonar.plugins.surefire.api.SurefireUtils;
 
 import java.io.File;
@@ -35,7 +35,7 @@ import java.io.File;
 @DependedUpon("surefire-java")
 public class SurefireSensor implements Sensor {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(SurefireSensor.class);
+  private static final Logger LOGGER = Loggers.get(SurefireSensor.class);
 
   private final SurefireJavaParser surefireJavaParser;
   private final Settings settings;
