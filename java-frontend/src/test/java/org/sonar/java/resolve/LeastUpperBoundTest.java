@@ -54,14 +54,18 @@ public class LeastUpperBoundTest {
     leastUpperBound = new LeastUpperBound(typeSubstitutionSolver, parametrizedTypeCache, symbols);
   }
 
+  private JavaType leastUpperBound(Type... types) {
+    return (JavaType) leastUpperBound.leastUpperBound(Sets.newLinkedHashSet(Lists.newArrayList(types)));
+  }
+
   @Test
   public void lub_of_one_element_is_itself() {
     CompilationUnitTree cut = treeOf("class A<T> { A<String> var; }");
     ClassTree classA = (ClassTree) cut.types().get(0);
     Type varType = ((VariableTree) classA.members().get(0)).type().symbolType();
     Type a = classA.symbol().type();
-    assertThat(leastUpperBound.leastUpperBound(Sets.newHashSet(a))).isSameAs(a);
-    assertThat(leastUpperBound.leastUpperBound(Sets.newHashSet(varType))).isSameAs(varType);
+    assertThat(leastUpperBound(a)).isSameAs(a);
+    assertThat(leastUpperBound(varType)).isSameAs(varType);
   }
 
   @Test
@@ -81,7 +85,7 @@ public class LeastUpperBoundTest {
       "class B extends Exception {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
 
     assertThat(lub.is("java.lang.Exception")).isTrue();
   }
@@ -96,7 +100,7 @@ public class LeastUpperBoundTest {
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
     Type c = typesFromInput.get(2);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b, c));
+    Type lub = leastUpperBound(a, b, c);
 
     assertThat(lub.is("java.io.Serializable")).isTrue();
   }
@@ -108,7 +112,7 @@ public class LeastUpperBoundTest {
       "class B {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
 
     assertThat(lub.is("java.lang.Object")).isTrue();
   }
@@ -120,11 +124,11 @@ public class LeastUpperBoundTest {
       "class B extends A {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
 
     assertThat(lub).isSameAs(a);
 
-    lub = leastUpperBound.leastUpperBound(Sets.newHashSet(b, a));
+    lub = leastUpperBound(b, a);
 
     assertThat(lub).isSameAs(a);
   }
@@ -137,7 +141,7 @@ public class LeastUpperBoundTest {
       "class C extends B {}");
     Type a = typesFromInput.get(0);
     Type c = typesFromInput.get(2);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, c));
+    Type lub = leastUpperBound(a, c);
 
     assertThat(lub.is("java.lang.Throwable")).isTrue();
   }
@@ -151,7 +155,7 @@ public class LeastUpperBoundTest {
       "interface I2 {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
 
     Type i1 = typesFromInput.get(2);
     // should be <I1 & I2>, not only i1 (first interface of first type analyzed)
@@ -167,7 +171,7 @@ public class LeastUpperBoundTest {
       "interface I2 {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
 
     // should be <Exception & I1 & I2>
     assertThat(lub.is("java.lang.Exception")).isTrue();
@@ -199,7 +203,7 @@ public class LeastUpperBoundTest {
       "class B extends UnknownException {}");
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
 
     assertThat(lub.isUnknown()).isTrue();
   }
@@ -213,7 +217,7 @@ public class LeastUpperBoundTest {
     Type a = typesFromInput.get(0);
     Type b = typesFromInput.get(1);
 
-    Type lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    Type lub = leastUpperBound(a, b);
     assertThat(lub).isSameAs(a.symbol().superClass());
 
     typesFromInput = declaredTypes(
@@ -221,7 +225,7 @@ public class LeastUpperBoundTest {
       "class B extends A<String> {}");
     a = typesFromInput.get(0);
     b = typesFromInput.get(1);
-    lub = leastUpperBound.leastUpperBound(Sets.newHashSet(a, b));
+    lub = leastUpperBound(a, b);
     assertThat(lub).isSameAs(a);
     // FIXME : should be the other way around but we don't care about type parameter in lub for now.
     assertThat(lub).isSameAs(b.symbol().superClass().erasure());
@@ -239,7 +243,7 @@ public class LeastUpperBoundTest {
     Type ChildString = typesFromInput.get(2);
     Type ChildRaw = typesFromInput.get(3);
 
-    JavaType lub = (JavaType) leastUpperBound.leastUpperBound(Sets.newHashSet(ChildString, ChildRaw));
+    JavaType lub = leastUpperBound(ChildString, ChildRaw);
     assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isFalse();
     assertThat(lub.is("Child")).isTrue();
   }
@@ -247,19 +251,23 @@ public class LeastUpperBoundTest {
   @Test
   public void lub_of_generics_without_loop() {
     List<Type> typesFromInput = declaredTypes(
-      "class Parent<X> {}",
-      "class Child<Y> extends Parent<Y> {}",
+      "class Parent<X1, X2> {}",
+      "class Child<Y1, Y2> extends Parent<Y1, Y2> {}",
+      "class GrandChild<Z1, Z2> extends Child<Z1, Z2> {}",
 
       "class A {}",
       "class B extends A {}",
       "class C extends A {}",
+      "class D extends C {}",
 
-      "class ChildB extends Child<B> {}",
-      "class ChildC extends Child<C> {}");
-    Type childB = typesFromInput.get(5);
-    Type childC = typesFromInput.get(6);
+      "class ChildBA extends Child<B, A> {}",
+      "class ChildCA extends Child<C, A> {}",
+      "class GrandChildDA extends GrandChild<D, D> {}");
+    Type childBA = typesFromInput.get(7);
+    Type childCA = typesFromInput.get(8);
+    Type grandChildDD = typesFromInput.get(9);
 
-    JavaType lub = (JavaType) leastUpperBound.leastUpperBound(Sets.newHashSet(childB, childC));
+    JavaType lub = leastUpperBound(childBA, childCA, grandChildDD);
     assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
     ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
     assertThat(ptt.rawType.is("Child")).isTrue();
@@ -267,6 +275,70 @@ public class LeastUpperBoundTest {
     assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
     assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
     assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+    substitution = ptt.substitution(ptt.typeParameters().get(1));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+  }
+
+  @Test
+  public void lub_of_generics_with_multiple_typeArgs_and_wildcards() {
+    List<Type> typesFromInput = declaredTypes(
+      "class Parent<X1, X2, X3, X4, X5, X6> {}",
+
+      "class A {}",
+      "class B extends A {}",
+      "class C extends A {}",
+      "class D extends C {}",
+
+      // -------------- Parent< X1 ----- , X2 ------- , X3 ------- , X4 ----- , X5 ------- , X6>
+      "class P1 extends Parent< ? super B, ? extends B, ? extends A, A,         ? super A  , ? super B > {}",
+      "class P2 extends Parent< ? super C, ? extends C, A,           ? super A, ? extends A, ? extends C > {}",
+      "class P3 extends Parent< ? super D, ? extends D, A,           A,         A          , ? > {}");
+    Type p1 = typesFromInput.get(5);
+    Type p2 = typesFromInput.get(6);
+    Type p3 = typesFromInput.get(7);
+
+    JavaType lub = leastUpperBound(p1, p2, p3);
+    assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
+    ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
+    assertThat(ptt.rawType.is("Parent")).isTrue();
+    JavaType substitution;
+
+    // X1
+    substitution = ptt.substitution(ptt.typeParameters().get(0));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
+    // FIXME SONARJAVA-1632 - should be B & C & D
+    assertThat(((WildCardType) substitution).bound.is("B")).isTrue();
+
+    // X2
+    substitution = ptt.substitution(ptt.typeParameters().get(1));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+
+    // X3
+    substitution = ptt.substitution(ptt.typeParameters().get(2));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.EXTENDS);
+    assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+
+    // X4
+    substitution = ptt.substitution(ptt.typeParameters().get(3));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.SUPER);
+    assertThat(((WildCardType) substitution).bound.is("A")).isTrue();
+
+    // X5
+    substitution = ptt.substitution(ptt.typeParameters().get(4));
+    assertThat(substitution.isTagged(JavaType.CLASS)).isTrue();
+    assertThat(substitution.is("A")).isTrue();
+
+    // X6
+    substitution = ptt.substitution(ptt.typeParameters().get(5));
+    assertThat(substitution.isTagged(JavaType.WILDCARD)).isTrue();
+    assertThat(((WildCardType) substitution).boundType).isEqualTo(WildCardType.BoundType.UNBOUNDED);
   }
 
   @Test
@@ -283,7 +355,7 @@ public class LeastUpperBoundTest {
     Type ChildP = typesFromInput.get(4);
     Type childC = typesFromInput.get(5);
 
-    JavaType lub = (JavaType) leastUpperBound.leastUpperBound(Sets.newHashSet(ChildP, childC));
+    JavaType lub = leastUpperBound(ChildP, childC);
     assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
     ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
     assertThat(ptt.rawType.is("Parent")).isTrue();
@@ -308,7 +380,7 @@ public class LeastUpperBoundTest {
     Type childInteger = typesFromInput.get(2);
     Type childString = typesFromInput.get(3);
 
-    JavaType lub = (JavaType) leastUpperBound.leastUpperBound(Sets.newHashSet(childInteger, childString));
+    JavaType lub = leastUpperBound(childInteger, childString);
     assertThat(lub.isTagged(JavaType.PARAMETERIZED)).isTrue();
     ParametrizedTypeJavaType ptt = (ParametrizedTypeJavaType) lub;
     assertThat(ptt.rawType.is("Child")).isTrue();

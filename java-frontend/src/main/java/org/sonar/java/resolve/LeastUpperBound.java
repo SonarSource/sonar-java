@@ -21,9 +21,9 @@ package org.sonar.java.resolve;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Sets;
 
 import org.sonar.plugins.java.api.semantic.Symbol;
@@ -32,6 +32,7 @@ import org.sonar.plugins.java.api.semantic.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -206,7 +207,7 @@ public class LeastUpperBound {
    * @return the set of known parameterizations for each generic type G of MEC 
    */
   private static Multimap<Type, Type> relevantParameterizations(List<Type> minimalErasedCandidates, List<Set<Type>> supertypes) {
-    Multimap<Type, Type> result = HashMultimap.create();
+    Multimap<Type, Type> result = Multimaps.newSetMultimap(new HashMap<>(), () -> new LinkedHashSet<>());
     for (Set<Type> supertypesSet : supertypes) {
       for (Type supertype : supertypesSet) {
         Type erasedSupertype = supertype.erasure();
@@ -296,7 +297,7 @@ public class LeastUpperBound {
 
   private JavaType lctaOneWildcard(JavaType rawType, WildCardType wildcardType) {
     if (wildcardType.boundType == WildCardType.BoundType.SUPER) {
-      JavaType glb = (JavaType) greatestLowerBound(Sets.newHashSet(rawType, wildcardType.bound));
+      JavaType glb = (JavaType) greatestLowerBound(Lists.newArrayList(rawType, wildcardType.bound));
       return parametrizedTypeCache.getWildcardType(glb, WildCardType.BoundType.SUPER);
     }
     JavaType lub = (JavaType) cachedLeastUpperBound(Sets.newHashSet(rawType, wildcardType.bound));
@@ -305,7 +306,7 @@ public class LeastUpperBound {
 
   private JavaType lctaBothWildcards(WildCardType type1, WildCardType type2) {
     if (type1.boundType == WildCardType.BoundType.SUPER && type2.boundType == WildCardType.BoundType.SUPER) {
-      JavaType glb = (JavaType) greatestLowerBound(Sets.newHashSet(type1.bound, type2.bound));
+      JavaType glb = (JavaType) greatestLowerBound(Lists.newArrayList(type1.bound, type2.bound));
       return parametrizedTypeCache.getWildcardType(glb, WildCardType.BoundType.SUPER);
     }
     if (type1.boundType == WildCardType.BoundType.EXTENDS && type2.boundType == WildCardType.BoundType.EXTENDS) {
@@ -328,7 +329,7 @@ public class LeastUpperBound {
    * @param types
    * @return
    */
-  private static Type greatestLowerBound(Set<Type> types) {
+  private static Type greatestLowerBound(List<Type> types) {
     // TODO SONARJAVA-1632 implement, should return intersection of all types, not only first one
     return types.iterator().next();
   }
