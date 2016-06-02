@@ -19,9 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
-
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -29,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TypeInferenceSolver {
 
@@ -105,8 +103,8 @@ public class TypeInferenceSolver {
     return substitution;
   }
 
-  private static Set<Type> mapToBoxedSet(Iterable<JavaType> types) {
-    return Sets.newHashSet(Iterables.transform(Sets.<JavaType>newHashSet(types), type -> type.isPrimitive() ? type.primitiveWrapperType : type));
+  private static Set<Type> mapToBoxedSet(List<JavaType> types) {
+    return types.stream().map(type -> type.isPrimitive() ? type.primitiveWrapperType : type).collect(Collectors.toSet());
   }
 
   private TypeSubstitution inferTypeSubstitutionInParameterizedType(MethodJavaSymbol method, TypeSubstitution substitution, ParametrizedTypeJavaType formalType, JavaType argType,

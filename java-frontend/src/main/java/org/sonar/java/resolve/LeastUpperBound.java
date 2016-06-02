@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LeastUpperBound {
 
@@ -95,22 +96,21 @@ public class LeastUpperBound {
     Collection<Type> erasedTypeParameterizations = relevantParameterizations.get(erasedBest);
     if (erasedTypeParameterizations != null && !erasedTypeParameterizations.contains(erasedBest)) {
       Set<Type> searchedTypes = new HashSet<>(types);
+      // if we already encountered these types in LUB calculation,
+      // we interrupt calculation and use the erasure of the parameterized type instead
       if (!lubCache.contains(searchedTypes)) {
         lubCache.add(searchedTypes);
-        ArrayList<Type> parameterization = Lists.newArrayList(erasedTypeParameterizations);
-        return leastContainingParameterization(parameterization);
+        return leastContainingParameterization(new ArrayList<>(erasedTypeParameterizations));
       }
     }
     return erasedBest;
 
   }
 
-  private List<Set<Type>> supertypes(Iterable<Type> types) {
-    List<Set<Type>> results = new ArrayList<>();
-    for (Type type : types) {
-      results.add(supertypes((JavaType) type));
-    }
-    return results;
+  private List<Set<Type>> supertypes(Collection<Type> types) {
+    return types.stream()
+      .map(type -> supertypes((JavaType) type).stream().collect(Collectors.toCollection(LinkedHashSet::new)))
+      .collect(Collectors.toList());
   }
 
   @VisibleForTesting
@@ -139,12 +139,9 @@ public class LeastUpperBound {
   }
 
   private Set<Type> interfacesWithSubstitution(Symbol.TypeSymbol symbol, TypeSubstitution substitution) {
-    Set<Type> interfaces = new HashSet<>();
-    for (Type interfaceType : symbol.interfaces()) {
-      JavaType substitutedInterface = applySubstitution(interfaceType, substitution);
-      interfaces.addAll(supertypes(substitutedInterface));
-    }
-    return interfaces;
+    return symbol.interfaces().stream()
+      .flatMap(interfaceType -> supertypes(applySubstitution(interfaceType, substitution)).stream())
+      .collect(Collectors.toSet());
   }
 
   private static TypeSubstitution getTypeSubstitution(JavaType type) {
@@ -155,24 +152,12 @@ public class LeastUpperBound {
     return typeSubstitutionSolver.applySubstitution((JavaType) type, substitution);
   }
 
-  private static List<Set<Type>> erased(Iterable<Set<Type>> typeSets) {
-    List<Set<Type>> results = new ArrayList<>();
-    for (Set<Type> typeSet : typeSets) {
-      Set<Type> erasedTypes = new LinkedHashSet<>();
-      for (Type type : typeSet) {
-        erasedTypes.add(type.erasure());
-      }
-      results.add(erasedTypes);
-    }
-    return results;
+  private static List<Set<Type>> erased(List<Set<Type>> typeSets) {
+    return typeSets.stream().map(set -> set.stream().map(type -> type.erasure()).collect(Collectors.toCollection(LinkedHashSet::new))).collect(Collectors.toList());
   }
 
   private static List<Type> intersection(List<Set<Type>> supertypes) {
-    List<Type> results = new ArrayList<>(supertypes.get(0));
-    for (int i = 1; i < supertypes.size(); i++) {
-      results.retainAll(supertypes.get(i));
-    }
-    return results;
+    return new ArrayList<>(supertypes.stream().reduce(Sets::intersection).get());
   }
 
   /**
@@ -184,14 +169,7 @@ public class LeastUpperBound {
   private static List<Type> minimalCandidates(List<Type> erasedCandidates) {
     List<Type> results = new ArrayList<>();
     for (Type v : erasedCandidates) {
-      boolean isValid = true;
-      for (Type w : erasedCandidates) {
-        if (!w.equals(v) && w.isSubtypeOf(v)) {
-          isValid = false;
-          break;
-        }
-      }
-      if (isValid) {
+      if (erasedCandidates.stream().noneMatch(w -> !w.equals(v) && w.isSubtypeOf(v))) {
         results.add(v);
       }
     }
@@ -276,21 +254,21 @@ public class LeastUpperBound {
     return parametrizedTypeCache.getParametrizedTypeType(type1.symbol, newTypeSubstitution);
   }
 
-  private JavaType getNewTypeArgumentType(JavaType subs1, JavaType subs2) {
-    boolean isWildcard1 = subs1.isTagged(JavaType.WILDCARD);
-    boolean isWildcard2 = subs2.isTagged(JavaType.WILDCARD);
+  private JavaType getNewTypeArgumentType(JavaType type1, JavaType type2) {
+    boolean isWildcard1 = type1.isTagged(JavaType.WILDCARD);
+    boolean isWildcard2 = type2.isTagged(JavaType.WILDCARD);
 
     JavaType result;
-    if (subs1.equals(subs2)) {
-      result = subs1;
+    if (type1.equals(type2)) {
+      result = type1;
     } else if (isWildcard1 && isWildcard2) {
-      result = lctaBothWildcards((WildCardType) subs1, (WildCardType) subs2);
+      result = lctaBothWildcards((WildCardType) type1, (WildCardType) type2);
     } else if (isWildcard1 ^ isWildcard2) {
-      JavaType rawType = isWildcard1 ? subs2 : subs1;
-      WildCardType wildcardType = (WildCardType) (isWildcard1 ? subs1 : subs2);
+      JavaType rawType = isWildcard1 ? type2 : type1;
+      WildCardType wildcardType = (WildCardType) (isWildcard1 ? type1 : type2);
       result = lctaOneWildcard(rawType, wildcardType);
     } else {
-      result = lctaNoWildcard(subs1, subs2);
+      result = lctaNoWildcard(type1, type2);
     }
     return result;
   }
@@ -313,7 +291,7 @@ public class LeastUpperBound {
       JavaType lub = (JavaType) cachedLeastUpperBound(Sets.newHashSet(type1.bound, type2.bound));
       return parametrizedTypeCache.getWildcardType(lub, WildCardType.BoundType.EXTENDS);
     }
-    if (type1.bound == type2.bound) {
+    if (type1.bound.equals(type2.bound)) {
       return type1.bound;
     }
     return symbols.unboundedWildcard;
