@@ -25,6 +25,7 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.tree.AnnotationTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
@@ -33,10 +34,15 @@ import org.sonar.plugins.java.api.tree.Tree;
 import org.sonar.plugins.java.api.tree.Tree.Kind;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Rule(key = "S2156")
 public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisitor {
+
+  private static final String GUAVA_FQCN = "com.google.common.annotations.VisibleForTesting";
+  private static final String MESSAGE = "Remove this \"protected\" modifier.";
 
   @Override
   public List<Kind> nodesToVisit() {
@@ -47,9 +53,7 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
-      for (Tree member : classTree.members()) {
-        checkMember(member);
-      }
+      classTree.members().forEach(this::checkMember);
     }
   }
 
@@ -67,9 +71,24 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
 
   private void checkMemberModifier(ModifiersTree modifiers) {
     ModifierKeywordTree modifier = ModifiersUtils.getModifier(modifiers, Modifier.PROTECTED);
-    if (modifier != null) {
-      reportIssue(modifier.keyword(), "Remove this \"protected\" modifier.");
+    if (modifier != null && isNotVisibleForTesting(modifiers)) {
+      reportIssue(modifier.keyword(), MESSAGE);
     }
+  }
+
+  private static boolean isNotVisibleForTesting(ModifiersTree modifiers) {
+    Collection<AnnotationTree> annotations = modifiers.annotations();
+    Optional<AnnotationTree> found = annotations.stream()
+            .filter(ProtectedMemberInFinalClassCheck::isVisibleForTesting)
+            .findFirst();
+
+    return !found.isPresent();
+  }
+
+  private static boolean isVisibleForTesting(AnnotationTree annotationTree) {
+    return annotationTree.annotationType()
+            .symbolType()
+            .is(GUAVA_FQCN);
   }
 
 }

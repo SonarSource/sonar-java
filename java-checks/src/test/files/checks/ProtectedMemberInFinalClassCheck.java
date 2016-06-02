@@ -22,3 +22,10 @@ class B {
 final class C extends B {
   protected void method3() {} //Compliant method is overriden
 }
+
+final class D {
+  @com.google.common.annotations.VisibleForTesting
+  protected int xx; //Compliant @VisibleForTesting is used
+  @com.google.common.annotations.VisibleForTesting
+  protected void method5() {} //Compliant @VisibleForTesting is used
+}
