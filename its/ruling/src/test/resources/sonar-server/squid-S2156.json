@@ -1,7 +1,4 @@
 {
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/startup/LogServerId.java':[
-45,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/startup/RegisterNewMeasureFilters.java':[
 81,
 93,

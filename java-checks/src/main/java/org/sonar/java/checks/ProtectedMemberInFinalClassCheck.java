@@ -25,7 +25,9 @@ import org.sonar.check.Rule;
 import org.sonar.java.model.ModifiersUtils;
 import org.sonar.java.model.declaration.MethodTreeImpl;
 import org.sonar.plugins.java.api.IssuableSubscriptionVisitor;
+import org.sonar.plugins.java.api.semantic.Symbol;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Modifier;
 import org.sonar.plugins.java.api.tree.ModifierKeywordTree;
 import org.sonar.plugins.java.api.tree.ModifiersTree;
@@ -38,6 +40,9 @@ import java.util.List;
 @Rule(key = "S2156")
 public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisitor {
 
+  private static final String GUAVA_FQCN = "com.google.common.annotations.VisibleForTesting";
+  private static final String MESSAGE = "Remove this \"protected\" modifier.";
+
   @Override
   public List<Kind> nodesToVisit() {
     return ImmutableList.of(Tree.Kind.CLASS);
@@ -47,29 +52,39 @@ public class ProtectedMemberInFinalClassCheck extends IssuableSubscriptionVisito
   public void visitNode(Tree tree) {
     ClassTree classTree = (ClassTree) tree;
     if (ModifiersUtils.hasModifier(classTree.modifiers(), Modifier.FINAL)) {
-      for (Tree member : classTree.members()) {
-        checkMember(member);
-      }
+      classTree.members().forEach(this::checkMember);
     }
   }
 
   private void checkMember(Tree member) {
     if (member.is(Kind.VARIABLE)) {
       VariableTree variableTree = (VariableTree) member;
-      checkMemberModifier(variableTree.modifiers());
+      checkVariableCompliance(variableTree);
     } else if (member.is(Kind.METHOD)) {
       MethodTreeImpl methodTree = (MethodTreeImpl) member;
       if (BooleanUtils.isFalse(methodTree.isOverriding())) {
-        checkMemberModifier(methodTree.modifiers());
+        checkMethodCompliance(methodTree);
       }
     }
   }
 
-  private void checkMemberModifier(ModifiersTree modifiers) {
+  private void checkMethodCompliance(MethodTree methodTree) {
+    checkComplianceOnModifiersAndSymbol(methodTree.modifiers(), methodTree.symbol());
+  }
+
+  private void checkVariableCompliance(VariableTree variableTree) {
+    checkComplianceOnModifiersAndSymbol(variableTree.modifiers(), variableTree.symbol());
+  }
+
+  private void checkComplianceOnModifiersAndSymbol(ModifiersTree modifiers, Symbol symbol) {
     ModifierKeywordTree modifier = ModifiersUtils.getModifier(modifiers, Modifier.PROTECTED);
-    if (modifier != null) {
-      reportIssue(modifier.keyword(), "Remove this \"protected\" modifier.");
+    if (modifier != null && !isVisibleForTesting(symbol)) {
+      reportIssue(modifier.keyword(), MESSAGE);
     }
+  }
+
+  private boolean isVisibleForTesting(Symbol symbol) {
+    return symbol.metadata().isAnnotatedWith(GUAVA_FQCN);
   }
 
 }

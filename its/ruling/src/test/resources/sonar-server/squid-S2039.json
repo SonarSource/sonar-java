@@ -67,9 +67,6 @@
 46,
 48,
 ],
-'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/platform/SettingsChangeNotifier.java':[
-30,
-],
 'org.codehaus.sonar:sonar-server:src/main/java/org/sonar/server/qualitygate/ws/QGatesWs.java':[
 31,
 32,
