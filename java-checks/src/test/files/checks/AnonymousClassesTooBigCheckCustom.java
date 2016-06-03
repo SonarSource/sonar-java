@@ -42,7 +42,7 @@ class A {
     Callable<Integer> c0 = ()-> {
       return 1;
     };
-    Callable<Integer> c1 = ()-> { // Noncompliant {{Reduce this lambda expression number of lines from 8 to at most 6.}}
+    Callable<Integer> c1 = ()-> { // Noncompliant [[sc=28;ec=32;secondary=52]] {{Reduce this lambda expression number of lines from 8 to at most 6.}}
       System.out.println();
       System.out.println();
       System.out.println();
@@ -52,7 +52,7 @@ class A {
     };
 
     Callable<Integer> c2 = ()-> 1 + 2;
-    Callable<Integer> c3 = ()-> 1 + 2+ // Noncompliant {{Reduce this lambda expression number of lines from 7 to at most 6.}}
+    Callable<Integer> c3 = ()-> 1 + 2+ // Noncompliant [[sc=28;ec=32;secondary=61]] {{Reduce this lambda expression number of lines from 7 to at most 6.}}
         2 +
         3 * 4 +
         5+
