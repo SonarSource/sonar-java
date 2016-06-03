@@ -25,17 +25,14 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
 
 public class JavaTestClasspathTest {
 
-  private Project project;
   private DefaultFileSystem fs;
   private Settings settings;
   private JavaTestClasspath javaTestClasspath;
@@ -48,7 +45,6 @@ public class JavaTestClasspathTest {
     inputFile.setType(InputFile.Type.TEST);
     fs.add(inputFile);
     settings = new Settings();
-    project = mock(Project.class);
   }
 
   @Test
@@ -87,7 +83,7 @@ public class JavaTestClasspathTest {
 
 
   private JavaTestClasspath createJavaClasspath() {
-    return new JavaTestClasspath(project, settings, fs);
+    return new JavaTestClasspath(settings, fs);
   }
 
 

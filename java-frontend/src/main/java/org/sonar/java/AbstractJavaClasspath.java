@@ -35,7 +35,6 @@ import org.sonar.api.BatchExtension;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 import org.sonar.api.utils.WildcardPattern;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
@@ -52,7 +51,6 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
 
   private static final char SEPARATOR = ',';
   private static final Logger LOG = Loggers.get(AbstractJavaClasspath.class);
-  protected final Project project;
   protected final Settings settings;
   protected final FileSystem fs;
   private final InputFile.Type fileType;
@@ -62,11 +60,11 @@ public abstract class AbstractJavaClasspath implements BatchExtension {
   protected boolean validateLibraries;
   protected boolean initialized;
 
-  public AbstractJavaClasspath(Project project, Settings settings, FileSystem fs, InputFile.Type fileType) {
-    this.project = project;
+  public AbstractJavaClasspath(Settings settings, FileSystem fs, InputFile.Type fileType) {
     this.settings = settings;
     this.fs = fs;
     this.fileType = fileType;
+    validateLibraries = fs.hasFiles(fs.predicates().all());
     initialized = false;
   }
 

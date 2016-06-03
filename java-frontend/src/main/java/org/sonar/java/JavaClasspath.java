@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -35,8 +34,8 @@ public class JavaClasspath extends AbstractJavaClasspath {
 
   private static final Logger LOG = Loggers.get(JavaClasspath.class);
 
-  public JavaClasspath(Project project, Settings settings, FileSystem fs) {
-    super(project, settings, fs, InputFile.Type.MAIN);
+  public JavaClasspath(Settings settings, FileSystem fs) {
+    super(settings, fs, InputFile.Type.MAIN);
   }
 
   @Override
@@ -44,7 +43,6 @@ public class JavaClasspath extends AbstractJavaClasspath {
     if (!initialized) {
       Profiler profiler = Profiler.create(LOG).startInfo("JavaClasspath initialization");
       initialized = true;
-      validateLibraries = project.getModules().isEmpty();
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES);
       boolean useDeprecatedProperties = binaries.isEmpty() && libraries.isEmpty();

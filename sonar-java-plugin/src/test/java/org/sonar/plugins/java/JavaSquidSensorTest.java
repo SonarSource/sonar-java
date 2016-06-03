@@ -64,8 +64,7 @@ public class JavaSquidSensorTest {
 
   @Before
   public void setUp() {
-    sensor = new JavaSquidSensor(new JavaClasspath(mock(Project.class),
-      new Settings(), fileSystem), mock(SonarComponents.class), fileSystem,
+    sensor = new JavaSquidSensor(new JavaClasspath(new Settings(), fileSystem), mock(SonarComponents.class), fileSystem,
       mock(DefaultJavaResourceLocator.class), new Settings(), mock(NoSonarFilter.class), new PostAnalysisIssueFilter());
   }
 
@@ -96,8 +95,7 @@ public class JavaSquidSensorTest {
     String effectiveKey = "org/sonar/plugins/java/JavaSquidSensorTest.java";
     File file = new File(effectiveKey);
     fs.add(new DefaultInputFile("", file.getPath()).setLanguage("java").setType(onType));
-    Project project = mock(Project.class);
-    JavaClasspath javaClasspath = new JavaClasspath(project, settings, fs);
+    JavaClasspath javaClasspath = new JavaClasspath(settings, fs);
 
     SonarComponents sonarComponents = createSonarComponentsMock(fs);
     DefaultJavaResourceLocator javaResourceLocator = new DefaultJavaResourceLocator(fs, javaClasspath);
@@ -108,10 +106,11 @@ public class JavaSquidSensorTest {
     resource.setEffectiveKey(effectiveKey);
     when(context.getResource(any(InputPath.class))).thenReturn(resource);
 
+    Project project = mock(Project.class);
     jss.analyse(project, context);
 
     String message = "Rename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.";
-    verify(noSonarFilter, times(1)).addComponent(effectiveKey, Sets.newHashSet(88));
+    verify(noSonarFilter, times(1)).addComponent(effectiveKey, Sets.newHashSet(87));
     verify(sonarComponents, times(expectedIssues)).reportIssue(any(AnalyzerMessage.class));
 
     settings.setProperty(CoreProperties.DESIGN_SKIP_DESIGN_PROPERTY, true);

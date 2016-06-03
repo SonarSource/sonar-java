@@ -23,7 +23,6 @@ import com.google.common.collect.Lists;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.api.utils.log.Profiler;
@@ -35,8 +34,8 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
 
   private static final Logger LOG = Loggers.get(JavaTestClasspath.class);
 
-  public JavaTestClasspath(Project project, Settings settings, FileSystem fs) {
-    super(project, settings, fs, InputFile.Type.TEST);
+  public JavaTestClasspath(Settings settings, FileSystem fs) {
+    super(settings, fs, InputFile.Type.TEST);
   }
 
   @Override
@@ -44,7 +43,6 @@ public class JavaTestClasspath extends AbstractJavaClasspath {
     if (!initialized) {
       Profiler profiler = Profiler.create(LOG).startInfo("JavaTestClasspath initialization");
       initialized = true;
-      validateLibraries = project.getModules().isEmpty();
       binaries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_BINARIES);
       List<File> libraries = getFilesFromProperty(JavaClasspathProperties.SONAR_JAVA_TEST_LIBRARIES);
       if(libraries.isEmpty()) {

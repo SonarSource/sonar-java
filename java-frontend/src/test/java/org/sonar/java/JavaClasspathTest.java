@@ -19,25 +19,20 @@
  */
 package org.sonar.java;
 
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.Settings;
-import org.sonar.api.resources.Project;
 
 import java.io.File;
 
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class JavaClasspathTest {
 
-  private Project project;
   private DefaultFileSystem fs;
   private Settings settings;
   private JavaClasspath javaClasspath;
@@ -50,7 +45,6 @@ public class JavaClasspathTest {
     inputFile.setType(InputFile.Type.MAIN);
     fs.add(inputFile);
     settings = new Settings();
-    project = mock(Project.class);
   }
 
   @Test
@@ -69,7 +63,7 @@ public class JavaClasspathTest {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "lib/hello.jar");
 
-    javaClasspath = new JavaClasspath(project, settings, fs);
+    javaClasspath = new JavaClasspath(settings, fs);
     assertThat(javaClasspath.getElements()).hasSize(2);
     assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
     assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
@@ -216,12 +210,8 @@ public class JavaClasspathTest {
 
   @Test
   public void parent_module_should_not_validate_sonar_libraries() {
-    when(project.getModules()).thenReturn(Lists.newArrayList(mock(Project.class)));
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_LIBRARIES, "non-existing.jar");
     javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).isEmpty();
-
-    when(project.getModules()).thenReturn(Lists.<Project>newArrayList());
     checkIllegalStateException("No files nor directories matching 'non-existing.jar'");
   }
 
@@ -262,6 +252,6 @@ public class JavaClasspathTest {
   }
 
   private JavaClasspath createJavaClasspath() {
-    return new JavaClasspath(project, settings, fs);
+    return new JavaClasspath(settings, fs);
   }
 }
