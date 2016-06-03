@@ -19,10 +19,6 @@
  */
 package org.sonar.java.resolve;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
-
 import org.sonar.java.resolve.JavaSymbol.MethodJavaSymbol;
 import org.sonar.plugins.java.api.semantic.Type;
 
@@ -30,13 +26,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class TypeInferenceSolver {
 
   private final Symbols symbols;
+  private final LeastUpperBound leastUpperBound;
 
-  public TypeInferenceSolver(Symbols symbols) {
+  public TypeInferenceSolver(LeastUpperBound leastUpperBound, Symbols symbols) {
     this.symbols = symbols;
+    this.leastUpperBound = leastUpperBound;
   }
 
   TypeSubstitution inferTypeSubstitution(MethodJavaSymbol method, List<JavaType> formals, List<JavaType> argTypes) {
@@ -95,7 +94,7 @@ public class TypeInferenceSolver {
     if (argType.isArray()) {
       newArgType = ((ArrayJavaType) argType).elementType;
     } else if (variableArity) {
-      newArgType = leastUpperBound(remainingArgTypes);
+      newArgType = (JavaType) leastUpperBound.leastUpperBound(mapToBoxedSet(remainingArgTypes));
     }
     if (newArgType != null) {
       TypeSubstitution newSubstitution = inferTypeSubstitution(method, substitution, formalType.elementType, newArgType, variableArity, remainingArgTypes);
@@ -104,20 +103,8 @@ public class TypeInferenceSolver {
     return substitution;
   }
 
-  private static JavaType leastUpperBound(List<JavaType> remainingArgTypes) {
-    return (JavaType) Types.leastUpperBound(mapToBoxedSet(remainingArgTypes));
-  }
-
   private static Set<Type> mapToBoxedSet(List<JavaType> types) {
-    return Sets.newHashSet(Iterables.transform(Sets.<Type>newHashSet(types), new Function<Type, Type>() {
-      @Override
-      public Type apply(Type type) {
-        if (type.isPrimitive()) {
-          return ((JavaType) type).primitiveWrapperType;
-        }
-        return type;
-      }
-    }));
+    return types.stream().map(type -> type.isPrimitive() ? type.primitiveWrapperType : type).collect(Collectors.toSet());
   }
 
   private TypeSubstitution inferTypeSubstitutionInParameterizedType(MethodJavaSymbol method, TypeSubstitution substitution, ParametrizedTypeJavaType formalType, JavaType argType,

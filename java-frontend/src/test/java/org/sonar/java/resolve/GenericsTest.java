@@ -662,7 +662,7 @@ public class GenericsTest {
     methodHasUsagesWithSameTypeAs(aType, "f14", "bString");
     methodHasUsagesWithSameTypeAs(aType, "f15", "object");
 
-    methodHasUsagesWithSameTypeAs(aType, "f16", "bObject", "bObject", "bObject", "bObject", "bString");
+    methodHasUsagesWithSameTypeAs(aType, "f16", "bObject", "bObject", "bObject", "comparable", "bString");
 
     methodHasUsagesWithSameTypeAs(aType, "f17", "object");
   }

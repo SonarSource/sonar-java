@@ -126,6 +126,7 @@ class ParametrizedMethodsWithTypeInference {
   B<? super Object> wcSuperObject;
   D dType;
   A aType;
+  B<Comparable<? extends Comparable>> comparable;
 
   interface I {
   }

@@ -22,6 +22,7 @@ package org.sonar.java.resolve;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+
 import org.fest.assertions.Fail;
 import org.fest.assertions.ObjectAssert;
 import org.junit.Before;
@@ -502,8 +503,12 @@ public class TypeAndReferenceSolverTest {
     assertThat(((ParametrizedTypeJavaType) testedType).typeSubstitution).isEqualTo(expectedType.typeSubstitution);
 
     testedType = typeOf("true ? new java.util.ArrayList<Integer>() : new java.util.ArrayList<String>()");
-    assertThat(testedType).isInstanceOf(ClassJavaType.class);
+    assertThat(testedType).isInstanceOf(ParametrizedTypeJavaType.class);
     assertThat(testedType.is("java.util.ArrayList")).isTrue();
+
+    testedType = typeOf("true ? ((Iterable<Class<? extends String>>) new java.util.ArrayList<Class<? extends String>>()) : new java.util.ArrayList<Class<? extends String>>()");
+    assertThat(testedType).isInstanceOf(ParametrizedTypeJavaType.class);
+    assertThat(testedType.is("java.lang.Iterable")).isTrue();
   }
 
   @Test

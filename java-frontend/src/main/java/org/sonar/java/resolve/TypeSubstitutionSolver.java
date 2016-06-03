@@ -30,17 +30,24 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class TypeSubstitutionSolver {
 
   private final ParametrizedTypeCache parametrizedTypeCache;
   private final Symbols symbols;
-  private TypeInferenceSolver typeInferenceSolver;
+  private final LeastUpperBound leastUpperBound;
+  private final TypeInferenceSolver typeInferenceSolver;
 
   public TypeSubstitutionSolver(ParametrizedTypeCache parametrizedTypeCache, Symbols symbols) {
     this.parametrizedTypeCache = parametrizedTypeCache;
     this.symbols = symbols;
-    this.typeInferenceSolver = new TypeInferenceSolver(symbols);
+    this.leastUpperBound = new LeastUpperBound(this, parametrizedTypeCache, symbols);
+    this.typeInferenceSolver = new TypeInferenceSolver(leastUpperBound, symbols);
+  }
+
+  Type leastUpperBound(Set<Type> refTypes) {
+    return leastUpperBound.leastUpperBound(refTypes);
   }
 
   @CheckForNull

@@ -833,7 +833,7 @@ public class Resolve {
   }
 
   Type leastUpperBound(Set<Type> refTypes) {
-    return Types.leastUpperBound(refTypes);
+    return typeSubstitutionSolver.leastUpperBound(refTypes);
   }
 
   Resolution unresolved() {
