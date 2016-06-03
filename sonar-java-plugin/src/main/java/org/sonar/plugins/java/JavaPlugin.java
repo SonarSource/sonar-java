@@ -54,8 +54,6 @@ public class JavaPlugin extends SonarPlugin {
     builder.add(
         JavaClasspath.class,
         JavaTestClasspath.class,
-        JavaCommonRulesEngine.class,
-        JavaCommonRulesDecorator.class,
         Java.class,
         CommonRulesSonarWayProfile.class,
         PropertyDefinition.builder(Java.FILE_SUFFIXES_KEY)
