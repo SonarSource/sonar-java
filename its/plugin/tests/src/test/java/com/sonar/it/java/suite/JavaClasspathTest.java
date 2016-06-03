@@ -112,11 +112,11 @@ public class JavaClasspathTest {
     SonarRunner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.binaries", "target/classes");
     runner.setProperty("sonar.libraries", guavaJarPath);
-    String logs = ORCHESTRATOR.executeBuild(runner).getLogs();
+    BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(runner);
 
-    assertThat(logs).contains("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin," +
+    assertThat(buildResult.getLogs()).contains("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin," +
       " please use sonar.java.binaries and sonar.java.libraries instead");
-    assertThat(getNumberOfViolations()).isEqualTo(2);
+    assertThat(buildResult.isSuccess()).isFalse();
   }
 
   @Test
@@ -124,7 +124,7 @@ public class JavaClasspathTest {
     SonarRunner runner = ditProjectSonarRunner();
     String logs = ORCHESTRATOR.executeBuild(runner).getLogs();
 
-    assertThat(logs).doesNotContain("sonar.binaries and sonar.libraries are deprecated since version 2.5 of sonar-java-plugin," +
+    assertThat(logs).doesNotContain("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin," +
       " please use sonar.java.binaries and sonar.java.libraries instead");
     assertThat(getNumberOfViolations()).isEqualTo(0);
   }

@@ -25,6 +25,7 @@ import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
 import org.sonar.api.config.Settings;
+import org.sonar.squidbridge.api.AnalysisException;
 
 import java.io.File;
 
@@ -56,17 +57,6 @@ public class JavaClasspathTest {
   public void when_property_not_defined_project_classpath_null_getElements_should_be_empty() {
     javaClasspath = createJavaClasspath();
     assertThat(javaClasspath.getElements()).isEmpty();
-  }
-
-  @Test
-  public void new_properties_not_set_should_fall_back_on_old_ones() throws Exception {
-    settings.setProperty("sonar.binaries", "bin");
-    settings.setProperty("sonar.libraries", "lib/hello.jar");
-
-    javaClasspath = new JavaClasspath(settings, fs);
-    assertThat(javaClasspath.getElements()).hasSize(2);
-    assertThat(javaClasspath.getElements()).onProperty("name").contains("bin", "hello.jar");
-    assertThat(javaClasspath.getBinaryDirs()).hasSize(1);
   }
 
   @Test
@@ -187,10 +177,16 @@ public class JavaClasspathTest {
   }
 
   @Test
-  public void libraries_without_dir() throws Exception {
+  public void deprecated_properties_set_should_fail_the_analysis() throws Exception {
     settings.setProperty("sonar.binaries", "bin");
     settings.setProperty("sonar.libraries", "hello.jar");
-    checkIllegalStateException("No files nor directories matching 'hello.jar'");
+    try {
+      javaClasspath = createJavaClasspath();
+      javaClasspath.getElements();
+      fail("Exception should have been raised");
+    }catch (AnalysisException ise) {
+      assertThat(ise.getMessage()).isEqualTo("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin, please use sonar.java.binaries and sonar.java.libraries instead");
+    }
   }
 
   @Test
@@ -231,14 +227,6 @@ public class JavaClasspathTest {
   public void invalid_sonar_java_binaries_should_fail_analysis() {
     settings.setProperty(JavaClasspathProperties.SONAR_JAVA_BINARIES, "dummyDir");
     checkIllegalStateException("No files nor directories matching 'dummyDir'");
-  }
-
-  @Test
-  public void specifying_dir_for_library_should_check_for_jar_files() {
-    settings.setProperty("sonar.libraries", "lib");
-    javaClasspath = createJavaClasspath();
-    assertThat(javaClasspath.getElements()).hasSize(3);
-
   }
 
   private void checkIllegalStateException(String message) {
