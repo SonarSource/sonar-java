@@ -20,6 +20,8 @@
 package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.resolve.SemanticModel;
@@ -31,6 +33,7 @@ import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,18 +97,21 @@ public class VisitorsBridgeForTests extends VisitorsBridge {
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-      File file = getFile();
-      AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(syntaxNode), message, cost != null ? cost : 0);
-      for (Location location : secondary) {
-        AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
-        analyzerMessage.secondaryLocations.add(secondaryLocation);
-      }
-      issues.add(analyzerMessage);
+      issues.add(createAnalyzerMessage(javaCheck, syntaxNode, null, message, secondary, cost));
     }
 
     @Override
     public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-      issues.add(new AnalyzerMessage(javaCheck, getFile(), AnalyzerMessage.textSpanBetween(startTree, endTree), message, 0));
+      issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, ImmutableList.of(), null));
+    }
+
+    @Override
+    public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+      issues.add(createAnalyzerMessage(javaCheck, startTree, endTree, message, secondary, cost));
+    }
+
+    private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+      return createAnalyzerMessage(getFile(), javaCheck, startTree, endTree, message, secondary, cost);
     }
   }
 }

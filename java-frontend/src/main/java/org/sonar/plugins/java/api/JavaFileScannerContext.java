@@ -20,6 +20,7 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
+
 import org.sonar.plugins.java.api.tree.ClassTree;
 import org.sonar.plugins.java.api.tree.CompilationUnitTree;
 import org.sonar.plugins.java.api.tree.MethodTree;
@@ -75,7 +76,9 @@ public interface JavaFileScannerContext {
 
   void reportIssue(JavaCheck javaCheck, Tree tree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
-  void reportIssue(JavaCheck javaCheck, Tree starTree, Tree endTree, String message);
+  void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message);
+
+  void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondaryLocations, @Nullable Integer cost);
 
   class Location {
     public final String msg;

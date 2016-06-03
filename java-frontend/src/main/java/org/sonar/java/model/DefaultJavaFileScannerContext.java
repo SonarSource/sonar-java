@@ -21,6 +21,7 @@ package org.sonar.java.model;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
+
 import org.sonar.java.AnalyzerMessage;
 import org.sonar.java.SonarComponents;
 import org.sonar.java.ast.visitors.ComplexityVisitor;
@@ -34,6 +35,7 @@ import org.sonar.plugins.java.api.tree.MethodTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import javax.annotation.Nullable;
+
 import java.io.File;
 import java.util.List;
 
@@ -123,21 +125,28 @@ public class DefaultJavaFileScannerContext implements JavaFileScannerContext {
 
   @Override
   public void reportIssue(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    sonarComponents.reportIssue(createAnalyzerMessage(javaCheck, syntaxNode, message, secondary, cost));
+    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, syntaxNode, null, message, secondary, cost));
   }
 
-  private AnalyzerMessage createAnalyzerMessage(JavaCheck javaCheck, Tree syntaxNode, String message, List<Location> secondary, @Nullable Integer cost) {
-    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(syntaxNode), message, cost != null ? cost : 0);
+  @Override
+  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
+    reportIssue(javaCheck, startTree, endTree, message, ImmutableList.<Location>of(), null);
+  }
+
+  @Override
+  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message, List<Location> secondary, @Nullable Integer cost) {
+    sonarComponents.reportIssue(createAnalyzerMessage(file, javaCheck, startTree, endTree, message, secondary, cost));
+  }
+
+  protected static AnalyzerMessage createAnalyzerMessage(File file, JavaCheck javaCheck, Tree startTree, @Nullable Tree endTree, String message, List<Location> secondary,
+    @Nullable Integer cost) {
+    AnalyzerMessage.TextSpan textSpan = endTree != null ? AnalyzerMessage.textSpanBetween(startTree, endTree) : AnalyzerMessage.textSpanFor(startTree);
+    AnalyzerMessage analyzerMessage = new AnalyzerMessage(javaCheck, file, textSpan, message, cost != null ? cost : 0);
     for (Location location : secondary) {
       AnalyzerMessage secondaryLocation = new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanFor(location.syntaxNode), location.msg, 0);
       analyzerMessage.secondaryLocations.add(secondaryLocation);
     }
     return analyzerMessage;
-  }
-
-  @Override
-  public void reportIssue(JavaCheck javaCheck, Tree startTree, Tree endTree, String message) {
-    sonarComponents.reportIssue(new AnalyzerMessage(javaCheck, file, AnalyzerMessage.textSpanBetween(startTree, endTree), message, 0));
   }
 
   @Override
