@@ -42,6 +42,7 @@ import org.sonar.plugins.java.api.tree.TryStatementTree;
 import org.sonar.plugins.java.api.tree.VariableTree;
 
 import javax.annotation.Nullable;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -261,6 +262,8 @@ public class UnclosedResourcesCheck extends SECheck {
           } else {
             closeResource(programState.peekValue());
           }
+        } else {
+          closeArguments(syntaxNode.arguments(), 1);
         }
       } else if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isOpeningResultSet(syntaxNode.symbol())) {
         final SymbolicValue value = getTargetValue(syntaxNode);
