@@ -8,7 +8,7 @@ Please search issues on our [Jira](http://jira.sonarsource.com/browse/SONARJAVA)
  
  To avoid frustration, please discuss before submitting any contribution! 
 
-## Coding recommandation
+## Coding recommendation
 
 #### Make your changes minimal !
  The less code is modified the easier it is to review and makes your contribution more likely to be accepted.
