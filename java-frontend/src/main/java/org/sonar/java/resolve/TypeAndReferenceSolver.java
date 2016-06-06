@@ -86,6 +86,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Computes types and references of Identifier and MemberSelectExpression.
@@ -554,8 +555,10 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     if (newClassTreeImpl.isTypeSet()) {
       return;
     }
+    List<JavaType> typeArgumentsTypes = ImmutableList.of();
     if (tree.typeArguments() != null) {
       resolveAs((List<Tree>) tree.typeArguments(), JavaSymbol.TYP);
+      typeArgumentsTypes = tree.typeArguments().stream().map(this::getType).collect(Collectors.toList());
     }
     resolveAs((List<ExpressionTree>) tree.arguments(), JavaSymbol.VAR);
     List<JavaType> parameterTypes = getParameterTypes(tree.arguments());
@@ -567,8 +570,7 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
     JavaType identifierType = resolveIdentifierType(newClassEnv, enclosingExpression, typeTree, constructorIdentifier.name());
     JavaSymbol.TypeJavaSymbol constructorIdentifierSymbol = (JavaSymbol.TypeJavaSymbol) identifierType.symbol();
     parameterTypes = addImplicitOuterClassParameter(parameterTypes, constructorIdentifierSymbol);
-    // FIXME SONARJAVA-1667 type arguments should not be ignored for the resolution of the constructor
-    Resolution resolution = resolveConstructorSymbol(constructorIdentifier, identifierType, newClassEnv, parameterTypes);
+    Resolution resolution = resolveConstructorSymbol(constructorIdentifier, identifierType, newClassEnv, parameterTypes, typeArgumentsTypes);
     ClassTree classBody = tree.classBody();
     JavaType constructedType = identifierType;
     if (classBody != null) {
@@ -634,7 +636,11 @@ public class TypeAndReferenceSolver extends BaseTreeVisitor {
   }
 
   private Resolve.Resolution resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes) {
-    Resolve.Resolution resolution = resolve.findMethod(methodEnv, (JavaType) type, "<init>", argTypes);
+    return resolveConstructorSymbol(identifier, type, methodEnv, argTypes, ImmutableList.of());
+  }
+
+  private Resolve.Resolution resolveConstructorSymbol(IdentifierTree identifier, Type type, Resolve.Env methodEnv, List<JavaType> argTypes, List<JavaType> typeArgumentsTypes) {
+    Resolve.Resolution resolution = resolve.findMethod(methodEnv, (JavaType) type, "<init>", argTypes, typeArgumentsTypes);
     JavaSymbol symbol = resolution.symbol();
     inferArgumentTypes(argTypes, resolution);
     associateReference(identifier, symbol);

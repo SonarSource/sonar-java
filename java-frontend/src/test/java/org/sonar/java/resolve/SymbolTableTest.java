@@ -659,6 +659,17 @@ public class SymbolTableTest {
     assertThat(result.reference(76, 5)).isSameAs(result.symbol("foo", 72));
   }
 
+  @Test
+  public void constructorWithTypeArguments() {
+    Result result = Result.createFor("ConstructorWithTypeArguments");
+
+    JavaSymbol.TypeJavaSymbol classSymbol = (JavaSymbol.TypeJavaSymbol) result.symbol("MyClass");
+    List<JavaSymbol> constructors = classSymbol.members.lookup("<init>");
+
+    assertThat(constructors.get(0).usages()).hasSize(1);
+    assertThat(constructors.get(1).usages()).hasSize(1);
+  }
+
   private static Type getNewClassTreeType(IdentifierTree constructorId) {
     Tree tree = constructorId;
     while (!tree.is(Tree.Kind.NEW_CLASS)) {
