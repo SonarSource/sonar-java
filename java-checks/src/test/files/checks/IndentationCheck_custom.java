@@ -1,3 +1,5 @@
+import java.util.stream.IntStream;
+
 class Foo {
   int a;                          // Noncompliant {{Make this line start at column 5.}}
    int b;                         // Compliant - already reported
@@ -119,4 +121,26 @@ public @interface Example {
   public static class Inner {                    // Noncompliant {{Make this line start at column 5.}}
     public static final String FOO = "foo";      // Noncompliant {{Make this line start at column 9.}}
   }
+}
+
+class Lambsa {
+    void foo() {
+        IntStream
+            .range(1, 5)
+            .map((a -> {
+                return a + 1;
+            }));
+        IntStream
+            .range(1, 5)
+            .map((a -> {
+              return a + 1; // Noncompliant {{Make this line start at column 17.}}
+            }));
+
+        IntStream
+            .range(1, 5)
+            .map((
+                a -> {
+                    return a + 1;
+                }));
+    }
 }

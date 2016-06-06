@@ -21,6 +21,7 @@ package org.sonar.java.checks;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+
 import org.sonar.check.Rule;
 import org.sonar.check.RuleProperty;
 import org.sonar.java.RspecKey;
@@ -33,6 +34,7 @@ import org.sonar.plugins.java.api.tree.BlockTree;
 import org.sonar.plugins.java.api.tree.CaseGroupTree;
 import org.sonar.plugins.java.api.tree.CaseLabelTree;
 import org.sonar.plugins.java.api.tree.ClassTree;
+import org.sonar.plugins.java.api.tree.LambdaExpressionTree;
 import org.sonar.plugins.java.api.tree.MethodInvocationTree;
 import org.sonar.plugins.java.api.tree.StatementTree;
 import org.sonar.plugins.java.api.tree.SyntaxToken;
@@ -174,12 +176,30 @@ public class IndentationCheck extends IssuableSubscriptionVisitor {
   private void adjustBlockForExceptionalParents(Tree parent) {
     if (parent.is(Kind.CASE_GROUP)) {
       expectedLevel -= indentationLevel;
+    } else if (parent.is(Kind.LAMBDA_EXPRESSION)
+      && getPreviousToken((LambdaExpressionTree) parent).line() != FirstSyntaxTokenFinder.firstSyntaxToken(parent).line()) {
+      expectedLevel += indentationLevel;
     }
+  }
+
+  private static SyntaxToken getPreviousToken(LambdaExpressionTree lambda) {
+    Tree previous = null;
+    for (Tree children : ((JavaTree) lambda.parent()).children()) {
+      if (children.equals(lambda)) {
+        break;
+      }
+      previous = children;
+    }
+
+    return LastSyntaxTokenFinder.lastSyntaxToken(previous);
   }
 
   private void restoreBlockForExceptionalParents(Tree parent) {
     if (parent.is(Kind.CASE_GROUP)) {
       expectedLevel += indentationLevel;
+    } else if (parent.is(Kind.LAMBDA_EXPRESSION)
+      && getPreviousToken((LambdaExpressionTree) parent).line() != FirstSyntaxTokenFinder.firstSyntaxToken(parent).line()) {
+      expectedLevel -= indentationLevel;
     }
   }
 
