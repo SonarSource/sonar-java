@@ -369,7 +369,7 @@ public class A {
     defSystem.getRootDirectories();
   }
 
-  public void methodNamedClose() throws FileNotFoundException, IOException {
+  public void methodNamedClose() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of close method
     try {
     } finally {
@@ -377,11 +377,27 @@ public class A {
     }
   }
 
-  public void methodNamedCloseQuietly() throws FileNotFoundException, IOException {
+  public void unknownMethodNamedClose() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of close method
+    try {
+    } finally {
+      Foo.close(is);
+    }
+  }
+
+  public void methodNamedCloseQuietly() throws FileNotFoundException {
     FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
     try {
     } finally {
       closeQuietly(new FileInputStream("/tmp/foo"), is);
+    }
+  }
+
+  public void unknownMethodCloseQuietly() throws FileNotFoundException  {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
+    try {
+    } finally {
+      Foo.closeQuietly(is);
     }
   }
 

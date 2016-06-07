@@ -182,9 +182,10 @@ public class UnclosedResourcesCheck extends SECheck {
   }
 
   private static class PreStatementVisitor extends CheckerTreeNodeVisitor {
-    private static final String CLOSE_METHOD_NAME = "close";
-    private static final String GET_MORE_RESULTS_METHOD_NAME = "getMoreResults";
-
+    // closing methods
+    private static final String CLOSE = "close";
+    private static final String GET_MORE_RESULTS = "getMoreResults";
+    // opening resources method
     private static final String GET_RESULT_SET = "getResultSet";
 
     private final ConstraintManager constraintManager;
@@ -252,37 +253,27 @@ public class UnclosedResourcesCheck extends SECheck {
 
     @Override
     public void visitMethodInvocation(MethodInvocationTree syntaxNode) {
-      final ExpressionTree methodSelect = syntaxNode.methodSelect();
-      if (isClosingResource(syntaxNode.symbol())) {
-        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-          final ExpressionTree targetExpression = ((MemberSelectExpressionTree) methodSelect).expression();
-          if (targetExpression.is(Tree.Kind.IDENTIFIER)) {
-            final IdentifierTree identifier = (IdentifierTree) targetExpression;
-            closeResource(programState.getValue(identifier.symbol()));
-          } else {
-            closeResource(programState.peekValue());
-          }
-        } else {
-          closeArguments(syntaxNode.arguments(), 1);
-        }
-      } else if (syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT) && isOpeningResultSet(syntaxNode.symbol())) {
-        final SymbolicValue value = getTargetValue(syntaxNode);
-        constraintManager.setValueFactory(new WrappedValueFactory(value));
-      } else if (isClosingResultSets(syntaxNode.symbol())) {
-        if (methodSelect.is(Tree.Kind.MEMBER_SELECT)) {
-          final SymbolicValue value = getTargetValue(syntaxNode);
+      Symbol symbol = syntaxNode.symbol();
+      if (symbol.isMethodSymbol() && syntaxNode.methodSelect().is(Tree.Kind.MEMBER_SELECT)) {
+        String methodName = symbol.name();
+        SymbolicValue value = getTargetValue(syntaxNode);
+        if (CLOSE.equals(methodName)) {
+          closeResource(value);
+        } else if (GET_MORE_RESULTS.equals(methodName)) {
           closeResultSetsRelatedTo(value);
+        } else if (GET_RESULT_SET.equals(methodName)) {
+          constraintManager.setValueFactory(new WrappedValueFactory(value));
         }
-      } else {
-        closeArguments(syntaxNode.arguments(), 1);
       }
+      // close any resource used as argument, even for unknown methods
+      closeArguments(syntaxNode.arguments(), 1);
     }
 
     private SymbolicValue getTargetValue(MethodInvocationTree syntaxNode) {
-      final ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
-      final SymbolicValue value;
+      ExpressionTree targetExpression = ((MemberSelectExpressionTree) syntaxNode.methodSelect()).expression();
+      SymbolicValue value;
       if (targetExpression.is(Tree.Kind.IDENTIFIER)) {
-        final IdentifierTree identifier = (IdentifierTree) targetExpression;
+        IdentifierTree identifier = (IdentifierTree) targetExpression;
         value = programState.getValue(identifier.symbol());
       } else {
         value = programState.peekValue();
@@ -317,23 +308,6 @@ public class UnclosedResourcesCheck extends SECheck {
         }
       }
     }
-
-    private static boolean isClosingResource(Symbol symbol) {
-      return isMethodMatchingName(symbol, CLOSE_METHOD_NAME);
-    }
-
-    private static boolean isClosingResultSets(Symbol symbol) {
-      return isMethodMatchingName(symbol, GET_MORE_RESULTS_METHOD_NAME);
-    }
-
-    private static boolean isOpeningResultSet(Symbol symbol) {
-      return isMethodMatchingName(symbol, GET_RESULT_SET);
-    }
-
-    private static boolean isMethodMatchingName(Symbol symbol, String matchName) {
-      return symbol.isMethodSymbol() && matchName.equals(symbol.name());
-    }
-
   }
 
   private static class PostStatementVisitor extends CheckerTreeNodeVisitor {
