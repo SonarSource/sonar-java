@@ -44,6 +44,33 @@ if (0) {                          // Compliant - already reported
       .map((a -> {
         return a + 1;
       }));
+
+    IntStream.range(1, 5).map(
+      a -> {
+        return a + 1;
+      });
+
+    IntStream.range(1, 5).map(a -> a + 1);
+
+    IntStream
+      .range(1, 5)
+      .map(
+        a -> a + 1);
+
+    IntStream
+      .range(1, 5)
+      .map((
+        a -> {
+          return a + 1;
+        }));
+
+    IntStream
+      .range(1, 5)
+      .map((
+        (int a) -> {
+          return a + 1;
+        }));
+
     IntStream
       .range(1, 5)
       .map(a -> {
