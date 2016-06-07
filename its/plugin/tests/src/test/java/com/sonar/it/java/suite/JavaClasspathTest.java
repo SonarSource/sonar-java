@@ -22,7 +22,7 @@ package com.sonar.it.java.suite;
 import com.sonar.orchestrator.Orchestrator;
 import com.sonar.orchestrator.build.BuildResult;
 import com.sonar.orchestrator.build.MavenBuild;
-import com.sonar.orchestrator.build.SonarRunner;
+import com.sonar.orchestrator.build.SonarScanner;
 import com.sonar.orchestrator.locator.MavenLocation;
 import com.sonar.orchestrator.locator.MavenLocator;
 import org.junit.Before;
@@ -74,7 +74,7 @@ public class JavaClasspathTest {
 
   @Test
   public void should_use_new_java_binaries_property() {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.binaries", "target/classes");
     ORCHESTRATOR.executeBuild(runner);
     assertThat(getNumberOfViolations()).isEqualTo(1);
@@ -82,7 +82,7 @@ public class JavaClasspathTest {
 
   @Test
   public void invalid_binaries_dir_should_fail_analysis() {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.binaries", "target/dummy__Dir");
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(runner);
     assertThat(buildResult.getStatus()).isNotEqualTo(0);
@@ -91,7 +91,7 @@ public class JavaClasspathTest {
 
   @Test
   public void relative_path_and_wildcard_for_binaries_should_be_supported() {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.binaries", "target/../target/clas**, ");
     ORCHESTRATOR.executeBuild(runner);
     assertThat(getNumberOfViolations()).isEqualTo(1);
@@ -99,7 +99,7 @@ public class JavaClasspathTest {
 
   @Test
   public void should_use_new_java_libraries_property() {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.binaries", "target/classes");
     runner.setProperty("sonar.java.libraries", guavaJarPath);
     ORCHESTRATOR.executeBuild(runner);
@@ -109,7 +109,7 @@ public class JavaClasspathTest {
 
   @Test
   public void should_support_the_old_binaries_and_libraries_properties() {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.binaries", "target/classes");
     runner.setProperty("sonar.libraries", guavaJarPath);
     BuildResult buildResult = ORCHESTRATOR.executeBuildQuietly(runner);
@@ -121,7 +121,7 @@ public class JavaClasspathTest {
 
   @Test
   public void should_not_log_warnings_if_properties_not_set() {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     String logs = ORCHESTRATOR.executeBuild(runner).getLogs();
 
     assertThat(logs).doesNotContain("sonar.binaries and sonar.libraries are not supported since version 4.0 of sonar-java-plugin," +
@@ -131,7 +131,7 @@ public class JavaClasspathTest {
 
   @Test
   public void directory_of_classes_in_library_should_be_supported() throws Exception {
-    SonarRunner runner = ditProjectSonarRunner();
+    SonarScanner runner = ditProjectSonarRunner();
     runner.setProperty("sonar.java.libraries", "target/classes");
     ORCHESTRATOR.executeBuild(runner);
     assertThat(getNumberOfViolations()).isEqualTo(1);
@@ -159,8 +159,8 @@ public class JavaClasspathTest {
     ORCHESTRATOR.executeBuild(build);
   }
 
-  private static SonarRunner ditProjectSonarRunner() {
-    return SonarRunner.create(TestUtils.projectDir("dit-check"))
+  private static SonarScanner ditProjectSonarRunner() {
+    return SonarScanner.create(TestUtils.projectDir("dit-check"))
       .setProperty("sonar.projectKey", PROJECT_KEY)
       .setProperty("sonar.projectName", "dit-check")
       .setProperty("sonar.projectVersion", "1.0-SNAPSHOT")
