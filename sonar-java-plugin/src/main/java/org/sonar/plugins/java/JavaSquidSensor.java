@@ -94,8 +94,8 @@ public class JavaSquidSensor implements Sensor {
     // Design
     boolean skipPackageDesignAnalysis = settings.getBoolean(CoreProperties.DESIGN_SKIP_PACKAGE_DESIGN_PROPERTY);
     if (!skipPackageDesignAnalysis && squid.isBytecodeScanned()) {
-      DesignBridge designBridge = new DesignBridge(context, squid.getGraph(), javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
-      designBridge.saveDesign(project);
+      DesignBridge designBridge = new DesignBridge(squid.getGraph(), javaResourceLocator.getResourceMapping(), sonarComponents.getResourcePerspectives());
+      designBridge.saveDesign();
     }
   }
 
