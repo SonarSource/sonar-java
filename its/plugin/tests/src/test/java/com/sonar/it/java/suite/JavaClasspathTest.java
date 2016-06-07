@@ -137,16 +137,6 @@ public class JavaClasspathTest {
     assertThat(getNumberOfViolations()).isEqualTo(1);
   }
 
-  @Test
-  public void no_source_files_should_not_validate_binaries_for_backward_compatibility_with_sonar_maven_plugin_2_2() throws Exception {
-    MavenBuild build = MavenBuild.create(TestUtils.projectPom("multi-module-project"))
-      .setCleanPackageSonarGoals()
-      .setProperty("sonar.profile", "dit-check")
-      .setProperty("sonar.dynamicAnalysis", "false");
-    int status = ORCHESTRATOR.executeBuildQuietly(build).getStatus();
-    assertThat(status).isGreaterThan(0);
-  }
-
   private static void buildDitProject() {
     mavenOnDitProject("clean package");
   }
