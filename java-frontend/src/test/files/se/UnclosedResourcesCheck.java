@@ -368,4 +368,44 @@ public class A {
     final FileSystem defSystem = FileSystems.getDefault(); // Compliant - default file system cannot be closed
     defSystem.getRootDirectories();
   }
+
+  public void methodNamedClose() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of close method
+    try {
+    } finally {
+      close(is);
+    }
+  }
+
+  public void unknownMethodNamedClose() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of close method
+    try {
+    } finally {
+      Foo.close(is);
+    }
+  }
+
+  public void methodNamedCloseQuietly() throws FileNotFoundException {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
+    try {
+    } finally {
+      closeQuietly(new FileInputStream("/tmp/foo"), is);
+    }
+  }
+
+  public void unknownMethodCloseQuietly() throws FileNotFoundException  {
+    FileInputStream is = new FileInputStream("/tmp/foo"); // Compliant - used as parameter of closeQuietly method
+    try {
+    } finally {
+      Foo.closeQuietly(is);
+    }
+  }
+
+  private static void closeQuietly(FileInputStream ... streams) {
+    // supposedly close the input streams
+  }
+
+  private static void close(FileInputStream fis) {
+    // supposedly close the input stream
+  }
 }
