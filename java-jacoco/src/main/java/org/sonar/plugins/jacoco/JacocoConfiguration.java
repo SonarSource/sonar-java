@@ -20,9 +20,9 @@
 package org.sonar.plugins.jacoco;
 
 import com.google.common.collect.ImmutableList;
-import org.sonar.api.BatchExtension;
 import org.sonar.api.CoreProperties;
 import org.sonar.api.PropertyType;
+import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
@@ -30,7 +30,8 @@ import org.sonar.api.resources.Qualifiers;
 
 import java.util.List;
 
-public class JacocoConfiguration implements BatchExtension {
+@BatchSide
+public class JacocoConfiguration {
 
   public static final String REPORT_PATH_PROPERTY = "sonar.jacoco.reportPath";
   public static final String REPORT_PATH_DEFAULT_VALUE = "target/jacoco.exec";

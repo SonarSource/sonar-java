@@ -22,7 +22,7 @@ package org.sonar.plugins.java.api;
 import com.google.common.annotations.Beta;
 import com.google.common.base.Preconditions;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.BatchSide;
 
 /**
  * This batch extension should be extended to provide the classes to be used to instantiate checks.
@@ -37,7 +37,8 @@ import org.sonar.api.BatchExtension;
  * </pre>
  */
 @Beta
-public interface CheckRegistrar extends BatchExtension {
+@BatchSide
+public interface CheckRegistrar {
 
   /**
    * This method is called during an analysis to get the classes to use to instantiate checks.

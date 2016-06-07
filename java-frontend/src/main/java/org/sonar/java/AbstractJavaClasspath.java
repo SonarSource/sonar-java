@@ -31,7 +31,7 @@ import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.OrFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
 import org.sonar.api.config.Settings;
@@ -47,7 +47,8 @@ import java.util.List;
 
 import static org.apache.commons.io.filefilter.FileFilterUtils.suffixFileFilter;
 
-public abstract class AbstractJavaClasspath implements BatchExtension {
+@BatchSide
+public abstract class AbstractJavaClasspath {
 
   private static final char SEPARATOR = ',';
   private static final Logger LOG = Loggers.get(AbstractJavaClasspath.class);

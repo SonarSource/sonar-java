@@ -20,7 +20,7 @@
 package org.sonar.plugins.surefire;
 
 import org.apache.commons.lang.StringUtils;
-import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.BatchSide;
 import org.sonar.api.batch.SensorContext;
 import org.sonar.api.component.ResourcePerspectives;
 import org.sonar.api.measures.CoreMetrics;
@@ -40,7 +40,6 @@ import org.sonar.plugins.surefire.data.UnitTestResult;
 import org.sonar.squidbridge.api.AnalysisException;
 
 import javax.xml.stream.XMLStreamException;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Map;
@@ -48,7 +47,8 @@ import java.util.Map;
 /**
  * @since 2.4
  */
-public class SurefireJavaParser implements BatchExtension {
+@BatchSide
+public class SurefireJavaParser {
 
   private static final Logger LOGGER = Loggers.get(SurefireJavaParser.class);
   private final ResourcePerspectives perspectives;

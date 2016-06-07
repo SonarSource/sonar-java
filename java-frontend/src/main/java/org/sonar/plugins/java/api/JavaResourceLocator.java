@@ -20,17 +20,17 @@
 package org.sonar.plugins.java.api;
 
 import com.google.common.annotations.Beta;
-import org.sonar.api.BatchExtension;
+import org.sonar.api.batch.BatchSide;
 import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 
 import javax.annotation.CheckForNull;
-
 import java.io.File;
 import java.util.Collection;
 
 @Beta
-public interface JavaResourceLocator extends BatchExtension, JavaFileScanner {
+@BatchSide
+public interface JavaResourceLocator extends JavaFileScanner {
 
   /**
    * @return null if not found
