@@ -32,11 +32,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
-import org.sonar.api.batch.SensorContext;
-import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
+import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.api.resources.Resource;
 import org.sonar.java.Measurer;
 import org.sonar.java.ast.parser.JavaNodeBuilder;
 import org.sonar.java.model.InternalSyntaxToken;
@@ -54,50 +53,46 @@ import org.sonar.sslr.grammar.LexerlessGrammarBuilder;
 import java.io.File;
 import java.io.InterruptedIOException;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class JavaAstScannerTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
 
-  SensorContext context;
+  SensorContextTester context;
   private DefaultFileSystem fs;
 
   @Before
   public void setUp() throws Exception {
-    context = mock(SensorContext.class);
-    fs = new DefaultFileSystem((File) null);
+    context = SensorContextTester.create(new File(""));
+    fs = context.fileSystem();
   }
 
   @Test
   public void comments() {
     File file = new File("src/test/files/metrics/Comments.java");
-    Resource resource = mock(Resource.class);
-    when(resource.getEffectiveKey()).thenReturn(file.getAbsolutePath());
-    when(context.getResource(any(InputPath.class))).thenReturn(resource);
+    DefaultInputFile resource = new DefaultInputFile("", "src/test/files/metrics/Comments.java");
+    fs.add(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
-    verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(15));
+    verify(noSonarFilter).noSonarInFile(resource, ImmutableSet.of(15));
   }
 
   @Test
   public void noSonarLines() throws Exception {
     File file = new File("src/test/files/metrics/NoSonar.java");
-    Resource resource = mock(Resource.class);
-    when(resource.getEffectiveKey()).thenReturn(file.getAbsolutePath());
-    when(context.getResource(any(InputPath.class))).thenReturn(resource);
+    DefaultInputFile resource = new DefaultInputFile("", "src/test/files/metrics/NoSonar.java");
+    fs.add(resource);
     NoSonarFilter noSonarFilter = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilter)));
-    verify(noSonarFilter).addComponent(file.getAbsolutePath(), ImmutableSet.of(8));
+    verify(noSonarFilter).noSonarInFile(resource, ImmutableSet.of(8));
     //No Sonar on tests files
     NoSonarFilter noSonarFilterForTest = mock(NoSonarFilter.class);
     JavaAstScanner.scanSingleFileForTests(file, new VisitorsBridge(new Measurer(fs, context, false, noSonarFilterForTest).new TestFileMeasurer()));
-    verify(noSonarFilterForTest).addComponent(file.getAbsolutePath(), ImmutableSet.of(8));
+    verify(noSonarFilterForTest).noSonarInFile(resource, ImmutableSet.of(8));
   }
 
   @Test

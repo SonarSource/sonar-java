@@ -24,15 +24,11 @@ import com.google.common.collect.Maps;
 import org.apache.commons.io.FileUtils;
 import org.fest.assertions.Delta;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.InputFile;
-import org.sonar.api.batch.fs.InputPath;
 import org.sonar.api.batch.fs.internal.DefaultFileSystem;
 import org.sonar.api.batch.fs.internal.DefaultInputFile;
+import org.sonar.api.batch.sensor.internal.SensorContextTester;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.api.measures.Measure;
-import org.sonar.api.resources.Resource;
 import org.sonar.java.bytecode.visitor.ResourceMapping;
 import org.sonar.plugins.java.api.JavaFileScannerContext;
 import org.sonar.plugins.java.api.JavaResourceLocator;
@@ -45,16 +41,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class SquidUserGuideTest {
 
   private static JavaSquid squid;
-  private static SensorContext context;
+  private static SensorContextTester context;
 
   private void initAndScan(boolean separateAccessorsFromMethods) {
     File prjDir = new File("target/test-projects/commons-collections-3.2.1");
@@ -63,9 +55,8 @@ public class SquidUserGuideTest {
 
     JavaConfiguration conf = new JavaConfiguration(Charsets.UTF_8);
     conf.setSeparateAccessorsFromMethods(separateAccessorsFromMethods);
-    context = mock(SensorContext.class);
-    when(context.getResource(any(InputPath.class))).thenReturn(mock(Resource.class));
-    DefaultFileSystem fs = new DefaultFileSystem(srcDir);
+    context = SensorContextTester.create(srcDir);
+    DefaultFileSystem fs = context.fileSystem();
     Collection<File> files = FileUtils.listFiles(srcDir, new String[]{"java"}, true);
     for (File file : files) {
       fs.add(new DefaultInputFile("", file.getPath()));
@@ -124,16 +115,22 @@ public class SquidUserGuideTest {
   }
 
   private Map<String, Double> getMetrics() {
-    ArgumentCaptor<Measure> captor = ArgumentCaptor.forClass(Measure.class);
-    ArgumentCaptor<InputFile> files = ArgumentCaptor.forClass(InputFile.class);
-    verify(context, atLeastOnce()).saveMeasure(files.capture(), captor.capture());
     Map<String, Double> metrics = new HashMap<>();
-    for (Measure measure : captor.getAllValues()) {
-      if(measure.getValue() != null ){
-        if(metrics.get(measure.getMetricKey())==null) {
-          metrics.put(measure.getMetricKey(), measure.getValue());
-        } else {
-          metrics.put(measure.getMetricKey(), metrics.get(measure.getMetricKey()) + measure.getValue());
+    for (InputFile inputFile : context.fileSystem().inputFiles()) {
+      for (org.sonar.api.batch.sensor.measure.Measure measure : context.measures(inputFile.key())) {
+        if (measure.value() != null) {
+          String key = measure.metric().key();
+          double value = 0;
+          try {
+            value = Double.parseDouble("" + measure.value());
+          } catch (NumberFormatException nfe) {
+            //do nothing
+          }
+          if (metrics.get(key) == null) {
+            metrics.put(key, value);
+          } else {
+            metrics.put(key, metrics.get(key) + value);
+          }
         }
       }
     }

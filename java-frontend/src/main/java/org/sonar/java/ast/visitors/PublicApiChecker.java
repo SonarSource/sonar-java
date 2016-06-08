@@ -72,8 +72,8 @@ public class PublicApiChecker extends BaseTreeVisitor {
 
   private final Deque<ClassTree> classTrees = new LinkedList<>();
   private final Deque<Tree> currentParents = new LinkedList<>();
-  private double publicApi;
-  private double documentedPublicApi;
+  private int publicApi;
+  private int documentedPublicApi;
   private final boolean separateAccessorsFromMethods;
 
   public static PublicApiChecker newInstanceWithAccessorsHandledAsMethods() {
@@ -277,11 +277,11 @@ public class PublicApiChecker extends BaseTreeVisitor {
     return null;
   }
 
-  public double getPublicApi() {
+  public int getPublicApi() {
     return publicApi;
   }
 
-  public double getUndocumentedPublicApi() {
+  public int getUndocumentedPublicApi() {
     return publicApi - documentedPublicApi;
   }
 

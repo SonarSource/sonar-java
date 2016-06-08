@@ -95,30 +95,29 @@ public class SurefireJavaParserTest {
   @Test
   public void should_store_zero_tests_when_directory_is_null_or_non_existing_or_a_file() throws Exception {
 
-    SensorContextTester context = mockContext();
+    SensorContext context = mock(SensorContext.class);
     parser.collect(context, null, false);
-//    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
+    verify(context, never()).newMeasure();
 
-    context = mockContext();
+    context = mock(SensorContext.class);
     parser.collect(context, getDir("nonExistingReportsDirectory"), false);
-//    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
+    verify(context, never()).newMeasure();
 
-    context = mockContext();
+    context = mock(SensorContext.class);
     parser.collect(context, getDir("file.txt"), true);
-//    verify(context, never()).saveMeasure(eq(CoreMetrics.TESTS), anyDouble());
+    verify(context, never()).newMeasure();
   }
 
   @Test
   public void shouldAggregateReports() throws URISyntaxException {
     SensorContextTester context = mockContext();
-
     parser.collect(context, getDir("multipleReports"), true);
-
-    // Only 6 tests measures should be stored, no more: the TESTS-AllTests.xml must not be read as there's 1 file result per unit test
-    // (SONAR-2841).
-//    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.SKIPPED_TESTS), eq(0.0));
-//    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TESTS), anyDouble());
-//    verify(context, times(6)).saveMeasure(argThat(new IsResource(Scopes.FILE, Qualifiers.FILE)), eq(CoreMetrics.TEST_ERRORS), anyDouble());
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.MetricsCollectorRegistryTest")).hasSize(6);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.CloverCollectorTest")).hasSize(6);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.CheckstyleCollectorTest")).hasSize(6);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.SonarMojoTest")).hasSize(6);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.JDependsCollectorTest")).hasSize(6);
+    assertThat(context.measures(":ch.hortis.sonar.mvn.mc.JavaNCSSCollectorTest")).hasSize(6);
   }
 
   // SONAR-2841: if there's only a test suite report, then it should be read.

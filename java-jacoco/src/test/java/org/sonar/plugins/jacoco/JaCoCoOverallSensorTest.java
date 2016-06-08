@@ -69,7 +69,7 @@ public class JaCoCoOverallSensorTest {
 
   @Test
   public void testSensorDefinition() {
-    org.fest.assertions.Assertions.assertThat(sensor.toString()).isEqualTo("JaCoCoOverallSensor");
+    assertThat(sensor.toString()).isEqualTo("JaCoCoOverallSensor");
   }
 
   @Test
@@ -136,9 +136,6 @@ public class JaCoCoOverallSensorTest {
     int[] oneHitlines = new int[] {};
     int[] zeroHitlines = new int[] {3, 6, 7, 10, 11, 14, 15, 17, 18, 20, 23, 24};
     verifyOverallMetrics(resource, zeroHitlines, oneHitlines, 0);
-//    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_LINES, 12.0)));
-//    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_COVERAGE_LINE_HITS_DATA, "3=0;6=0;7=0;10=0;11=0;14=0;15=0;17=0;18=0;20=0;23=0;24=0")));
-//    verify(context).saveMeasure(eq(resource), argThat(new IsMeasure(CoreMetrics.OVERALL_UNCOVERED_CONDITIONS, 2.0)));
   }
 
   private void verifyOverallMetrics(InputFile resource,int[] zeroHitlines, int[] oneHitlines, int coveredConditions) {

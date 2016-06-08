@@ -22,15 +22,13 @@ package org.sonar.java;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.Files;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.ce.measure.RangeDistributionBuilder;
 import org.sonar.api.issue.NoSonarFilter;
 import org.sonar.api.measures.CoreMetrics;
-import org.sonar.api.measures.Measure;
 import org.sonar.api.measures.Metric;
-import org.sonar.api.measures.PersistenceMode;
-import org.sonar.api.measures.RangeDistributionBuilder;
 import org.sonar.java.ast.visitors.AccessorsUtils;
 import org.sonar.java.ast.visitors.CommentLinesVisitor;
 import org.sonar.java.ast.visitors.LinesOfCodeVisitor;
@@ -45,6 +43,7 @@ import org.sonar.plugins.java.api.tree.NewClassTree;
 import org.sonar.plugins.java.api.tree.Tree;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -67,7 +66,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
 
   private final Deque<ClassTree> classTrees = new LinkedList<>();
   private Charset charset;
-  private double classes;
+  private int classes;
 
   public Measurer(FileSystem fs, SensorContext context, boolean separateAccessorsFromMethods, NoSonarFilter noSonarFilter) {
     this.fs = fs;
@@ -105,7 +104,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
       publicApiChecker = PublicApiChecker.newInstanceWithAccessorsSeparatedFromMethods();
     }
     publicApiChecker.scan(context.getTree());
-    methodComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_METHODS);
+    methodComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_METHODS); //CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION,
     CommentLinesVisitor commentLinesVisitor = createCommentLineVisitorAndFindNoSonar(context);
     super.scanFile(context);
     //leave file.
@@ -122,11 +121,10 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     saveMetricOnFile(CoreMetrics.COMMENT_LINES, commentLinesVisitor.commentLinesMetric());
     saveMetricOnFile(CoreMetrics.STATEMENTS, new StatementVisitor().numberOfStatements(context.getTree()));
     saveMetricOnFile(CoreMetrics.NCLOC, new LinesOfCodeVisitor().linesOfCode(context.getTree()));
+    saveMetricOnFile(CoreMetrics.FUNCTION_COMPLEXITY_DISTRIBUTION, methodComplexityDistribution.build());
 
-    sensorContext.saveMeasure(sonarFile, methodComplexityDistribution.build(true).setPersistenceMode(PersistenceMode.MEMORY));
-
-    RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, LIMITS_COMPLEXITY_FILES);
-    sensorContext.saveMeasure(sonarFile, fileComplexityDistribution.add(fileComplexity).build(true).setPersistenceMode(PersistenceMode.MEMORY));
+    RangeDistributionBuilder fileComplexityDistribution = new RangeDistributionBuilder(LIMITS_COMPLEXITY_FILES);
+    saveMetricOnFile(CoreMetrics.FILE_COMPLEXITY_DISTRIBUTION, fileComplexityDistribution.add(fileComplexity).build());
     saveLinesMetric();
 
   }
@@ -134,7 +132,7 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
   private CommentLinesVisitor createCommentLineVisitorAndFindNoSonar(JavaFileScannerContext context) {
     CommentLinesVisitor commentLinesVisitor = new CommentLinesVisitor();
     commentLinesVisitor.analyzeCommentLines(context.getTree());
-    noSonarFilter.addComponent(sensorContext.getResource(sonarFile).getEffectiveKey(), commentLinesVisitor.noSonarLines());
+    noSonarFilter.noSonarInFile(sonarFile, commentLinesVisitor.noSonarLines());
     return commentLinesVisitor;
   }
 
@@ -182,8 +180,8 @@ public class Measurer extends SubscriptionVisitor implements CharsetAwareVisitor
     return tree.is(Tree.Kind.CLASS) || tree.is(Tree.Kind.INTERFACE) || tree.is(Tree.Kind.ENUM) || tree.is(Tree.Kind.ANNOTATION_TYPE);
   }
 
-  private void saveMetricOnFile(Metric metric, double value) {
-    sensorContext.saveMeasure(sonarFile, new Measure(metric, value));
+  private <T extends Serializable> void saveMetricOnFile(Metric<T> metric, T value) {
+    sensorContext.<T>newMeasure().forMetric(metric).on(sonarFile).withValue(value).save();
   }
 
   @Override
