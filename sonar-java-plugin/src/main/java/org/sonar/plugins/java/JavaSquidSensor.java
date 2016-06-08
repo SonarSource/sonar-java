@@ -24,13 +24,13 @@ import org.sonar.api.CoreProperties;
 import org.sonar.api.batch.DependedUpon;
 import org.sonar.api.batch.DependsUpon;
 import org.sonar.api.batch.Phase;
-import org.sonar.api.batch.Sensor;
-import org.sonar.api.batch.SensorContext;
 import org.sonar.api.batch.fs.FileSystem;
 import org.sonar.api.batch.fs.InputFile;
+import org.sonar.api.batch.sensor.Sensor;
+import org.sonar.api.batch.sensor.SensorContext;
+import org.sonar.api.batch.sensor.SensorDescriptor;
 import org.sonar.api.config.Settings;
 import org.sonar.api.issue.NoSonarFilter;
-import org.sonar.api.resources.Project;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import org.sonar.java.DefaultJavaResourceLocator;
@@ -76,12 +76,12 @@ public class JavaSquidSensor implements Sensor {
   }
 
   @Override
-  public boolean shouldExecuteOnProject(Project project) {
-    return fs.hasFiles(fs.predicates().hasLanguage(Java.KEY));
+  public void describe(SensorDescriptor descriptor) {
+    descriptor.onlyOnLanguage(Java.KEY);
   }
 
   @Override
-  public void analyse(Project project, SensorContext context) {
+  public void execute(SensorContext context) {
     javaResourceLocator.setSensorContext(context);
     postAnalysisIssueFilter.setResourceMapping(javaResourceLocator.getResourceMapping());
     sonarComponents.registerCheckClasses(CheckList.REPOSITORY_KEY, CheckList.getJavaChecks());
